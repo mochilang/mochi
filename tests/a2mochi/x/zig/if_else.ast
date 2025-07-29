@@ -1,4 +1,12 @@
 (program
-  (call print (string big))
-  (call print (string small))
+  (let x (int 5))
+  (if
+    (binary > (selector x) (int 3))
+    (block
+      (call print (string big))
+    )
+    (block
+      (call print (string small))
+    )
+  )
 )
