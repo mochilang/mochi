@@ -491,7 +491,8 @@ func gatherEnumElements(ms []item) []item {
 }
 
 var appendExprRE = regexp.MustCompile(`"\[" \+ \(([^+]+) \+ \[([^\]]+)\]\)\.map\{[^}]*\}\.joined\(separator: ","\) \+ "\]"`)
-var sumRe = regexp.MustCompile(`\(?([^()]*)\)?\.reduce\(0,\+\)`)
+var sumParensRe = regexp.MustCompile(`\(([^()]*)\.reduce\(0,\+\)\)`)
+var sumRe = regexp.MustCompile(`([^()]+)\.reduce\(0,\+\)`)
 var avgRe = regexp.MustCompile(`Double\(\(?([^()]*)\)?\.reduce\(0,\+\)\)\s*/\s*Double\(\(?([^()]*)\)?\.count\)`)
 var closureRe = regexp.MustCompile(`^\{\s*\(([^)]*)\)\s*->\s*([A-Za-z0-9_<>.?]+)\s*in\s*(.+)\s*\}$`)
 
@@ -504,6 +505,9 @@ func rewriteAppendExpr(expr string) string {
 }
 
 func rewriteSum(expr string) string {
+	if m := sumParensRe.FindStringSubmatch(expr); m != nil {
+		return sumParensRe.ReplaceAllString(expr, "sum($1)")
+	}
 	if m := sumRe.FindStringSubmatch(expr); m != nil {
 		return sumRe.ReplaceAllString(expr, "sum($1)")
 	}
