@@ -376,6 +376,15 @@ func Transform(n *Node) (*ast.Node, error) {
 	return root, nil
 }
 
+// TransformString parses Ruby source and transforms it to a Mochi AST.
+func TransformString(src string) (*ast.Node, error) {
+       n, err := Parse(src)
+       if err != nil {
+               return nil, err
+       }
+       return Transform(n)
+}
+
 // TransformFile reads a Ruby file and converts it.
 func TransformFile(path string) (*ast.Node, error) {
 	data, err := os.ReadFile(path)

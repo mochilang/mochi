@@ -3,12 +3,13 @@
 package ruby
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"os/exec"
-	"strconv"
-	"strings"
+        "bytes"
+        "encoding/json"
+        "fmt"
+       "os"
+        "os/exec"
+        "strconv"
+        "strings"
 )
 
 // Node represents a Ruby AST node produced by ripper.
@@ -69,6 +70,15 @@ func Parse(src string) (*Node, error) {
 	node := buildNode(data)
 	node.Source = src
 	return &node, nil
+}
+
+// ParseFile reads Ruby source code from a file and parses it using Parse.
+func ParseFile(path string) (*Node, error) {
+       data, err := os.ReadFile(path)
+       if err != nil {
+               return nil, err
+       }
+       return Parse(string(data))
 }
 
 func buildNode(v any) Node {
