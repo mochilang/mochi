@@ -249,6 +249,8 @@ public class AstJson {
         case NOT_EQUAL_TO:
         case LESS_THAN_EQUAL:
         case GREATER_THAN_EQUAL:
+        case CONDITIONAL_AND:
+        case CONDITIONAL_OR:
             BinaryTree bt = (BinaryTree) expr;
             out.print("{\"kind\":\"Binary\",\"op\":\"");
             out.print(expr.getKind().name());

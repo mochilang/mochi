@@ -19,7 +19,11 @@ func Print(node *ast.Node) (string, error) {
 	}
 	var b strings.Builder
 	b.WriteString(header())
-	b.WriteString(node.Source())
+	src := node.Source()
+	if !strings.HasSuffix(src, "\n") {
+		src += "\n"
+	}
+	b.WriteString(src)
 	return b.String(), nil
 }
 

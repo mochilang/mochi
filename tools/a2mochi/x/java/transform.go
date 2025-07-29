@@ -124,6 +124,16 @@ func exprNode(e Expr) *mochias.Node {
 	case "Ident":
 		return &mochias.Node{Kind: "selector", Value: e.Name}
 	case "Binary":
+		// special case: string compare via compareTo
+		if e.Left != nil && e.Left.Kind == "Call" &&
+			e.Right != nil && e.Right.Kind == "Literal" && e.Right.Value == "0" {
+			c := e.Left
+			if c.Target != nil && c.Target.Kind == "Member" && c.Target.Name == "compareTo" && len(c.Args) == 1 {
+				l := exprNode(*c.Target.Expr)
+				r := exprNode(c.Args[0])
+				return &mochias.Node{Kind: "binary", Value: op(e.Op), Children: []*mochias.Node{l, r}}
+			}
+		}
 		l := exprNode(*e.Left)
 		r := exprNode(*e.Right)
 		if l.Kind == "int" && r.Kind == "int" && e.Op == "DIVIDE" {
@@ -136,8 +146,13 @@ func exprNode(e Expr) *mochias.Node {
 		return &mochias.Node{Kind: "binary", Value: op(e.Op), Children: []*mochias.Node{l, r}}
 	case "Call":
 		// special case: <expr>.length()
-		if e.Target != nil && e.Target.Kind == "Member" && e.Target.Name == "length" && len(e.Args) == 0 {
-			return &mochias.Node{Kind: "call", Value: "len", Children: []*mochias.Node{exprNode(*e.Target.Expr)}}
+		if e.Target != nil && e.Target.Kind == "Member" {
+			if e.Target.Name == "length" && len(e.Args) == 0 {
+				return &mochias.Node{Kind: "call", Value: "len", Children: []*mochias.Node{exprNode(*e.Target.Expr)}}
+			}
+			if e.Target.Name == "charAt" && len(e.Args) == 1 {
+				return &mochias.Node{Kind: "index", Children: []*mochias.Node{exprNode(*e.Target.Expr), exprNode(e.Args[0])}}
+			}
 		}
 		n := &mochias.Node{Kind: "call"}
 		n.Children = append(n.Children, exprNode(*e.Target))
@@ -194,6 +209,10 @@ func op(k string) string {
 		return "<="
 	case "GREATER_THAN_EQUAL":
 		return ">="
+	case "CONDITIONAL_AND":
+		return "&&"
+	case "CONDITIONAL_OR":
+		return "||"
 	}
 	return k
 }
