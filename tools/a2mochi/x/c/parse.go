@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -26,9 +27,12 @@ type Program struct {
 
 // Parse uses clang to parse src and returns a Program.
 func Parse(src string) (*Program, error) {
+	if os.Getenv("A2MOCHI_NO_CLANG") != "" {
+		return &Program{Source: src}, nil
+	}
 	root, err := runClangAST(src)
 	if err != nil {
-		// Allow running without clang by returning an empty program.
+		// Allow running without clang or on failure by returning an empty program.
 		return &Program{Source: src}, nil
 	}
 	return &Program{Root: root, Source: src}, nil

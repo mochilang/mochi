@@ -7,7 +7,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -64,9 +63,7 @@ func run(src string) ([]byte, error) {
 }
 
 func TestTransform_Golden(t *testing.T) {
-	if _, err := exec.LookPath("clang"); err != nil {
-		t.Skipf("clang not installed: %v", err)
-	}
+	os.Setenv("A2MOCHI_NO_CLANG", "1")
 
 	root := repoRoot(t)
 	pattern := filepath.Join(root, "tests/transpiler/x/c", "*.c")
@@ -79,33 +76,7 @@ func TestTransform_Golden(t *testing.T) {
 	}
 
 	skip := map[string]bool{
-		"bench_block":              true,
-		"cross_join":               true,
-		"cross_join_filter":        true,
-		"cross_join_triple":        true,
-		"dataset_sort_take_limit":  false,
-		"dataset_where_filter":     true,
-		"for_list_collection":      true,
-		"for_map_collection":       true,
-		"group_by":                 true,
-		"group_by_join":            true,
-		"group_by_left_join":       true,
-		"group_by_multi_join":      true,
-		"group_by_multi_join_sort": true,
-		// support if-then-else constructs now
-		// "if_then_else":             true,
-		// "if_then_else_nested":      true,
-		"in_operator_extended": true,
-		"inner_join":           true,
-		"join_multi":           true,
-		"left_join":            true,
-		"left_join_multi":      true,
-		// match expressions now handled
-		// "match_expr":               true,
-		// "match_full":               true,
-		"membership":        false,
-		"typed_var":         true,
-		"user_type_literal": true,
+		"bench_block": true,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/c")
