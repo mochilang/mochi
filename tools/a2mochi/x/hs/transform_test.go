@@ -153,6 +153,8 @@ func TestTransform_Golden(t *testing.T) {
 		"bool_chain":          true,
 		"closure":             true,
 		"let_and_print":       true,
+		"typed_var":           true,
+		"typed_let":           true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "hs")
 	os.MkdirAll(outDir, 0o755)

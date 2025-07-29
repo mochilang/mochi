@@ -6,7 +6,7 @@ subset of the language is recognised – single line function declarations,
 variable bindings and trivial `main` blocks built from `putStrLn`, `print` and
 `mapM_` loops.
 
-Completed programs: 19/104
+Completed programs: 21/104
 
 - append_builtin
 - avg_builtin
@@ -27,3 +27,5 @@ Completed programs: 19/104
 - bool_chain
 - closure
 - let_and_print
+- typed_var
+- typed_let
