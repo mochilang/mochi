@@ -1,4 +1,8 @@
-import * as ts from "./node_modules/typescript/lib/typescript.js";
+// Import the TypeScript compiler via Deno's npm compatibility layer. This
+// avoids the need to keep a vendored copy of the library in this repository
+// and ensures that the tests work in environments where `npm install` has not
+// been executed.
+import * as ts from "npm:typescript";
 
 interface TSParam {
   name: string;

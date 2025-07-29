@@ -1,11 +1,11 @@
 (program
-  (var a
+  (let a
     (type int)
     (group
       (binary - (int 10) (int 3))
     )
   )
-  (var b
+  (let b
     (type int)
     (group
       (binary + (int 2) (int 2))

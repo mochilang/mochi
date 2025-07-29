@@ -1,5 +1,5 @@
 (program
-  (var nums
+  (let nums
     (type list (type int))
     (list (int 1) (int 2))
   )

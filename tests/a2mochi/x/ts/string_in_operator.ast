@@ -1,0 +1,15 @@
+(program
+  (let s (type string) (string catch))
+  (call print
+    (call
+      (selector includes (selector s))
+      (string cat)
+    )
+  )
+  (call print
+    (call
+      (selector includes (selector s))
+      (string dog)
+    )
+  )
+)

@@ -1,0 +1,3 @@
+let s: string = "catch"
+print(s.includes("cat"))
+print(s.includes("dog"))

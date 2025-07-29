@@ -1,0 +1,23 @@
+(program
+  (type M
+    (field a (type int))
+    (field b (type int))
+  )
+  (let m
+    (type M)
+    (map
+      (entry (string a) (int 1))
+      (entry (string b) (int 2))
+    )
+  )
+  (call print
+    (group
+      (binary in (string a) (selector m))
+    )
+  )
+  (call print
+    (group
+      (binary in (string c) (selector m))
+    )
+  )
+)
