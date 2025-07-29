@@ -2,7 +2,7 @@
   (fun main
     (let _11676
       (map
-        (entry (selector alice) (int 1))
+        (entry (string alice) (int 1))
       )
     )
     (var _11706 (selector _11676))

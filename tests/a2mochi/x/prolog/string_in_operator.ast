@@ -1,0 +1,24 @@
+(program
+  (fun main
+    (let _11828 (string catch))
+    (if
+      (binary in (string cat) (selector _11828))
+      (block
+        (call print (bool true))
+      )
+      (block
+        (call print (bool false))
+      )
+    )
+    (if
+      (binary in (string dog) (selector _11828))
+      (block
+        (call print (bool true))
+      )
+      (block
+        (call print (bool false))
+      )
+    )
+  )
+  (call main)
+)
