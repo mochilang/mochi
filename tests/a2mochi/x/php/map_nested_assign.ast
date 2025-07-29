@@ -11,12 +11,7 @@
   )
   (assign
     (index
-      (group
-        (cast
-          (index (selector data) (string outer))
-          (type map (type string) (type any))
-        )
-      )
+      (index (selector data) (string outer))
       (string inner)
     )
     (int 2)

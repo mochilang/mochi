@@ -14,12 +14,7 @@
   )
   (call print
     (index
-      (group
-        (cast
-          (index (selector matrix) (int 1))
-          (type map (type string) (type any))
-        )
-      )
+      (index (selector matrix) (int 1))
       (int 0)
     )
   )
