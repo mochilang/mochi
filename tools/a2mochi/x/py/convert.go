@@ -279,7 +279,7 @@ func ConvertSource(n *Node) (string, error) {
 		return "", fmt.Errorf("nil node")
 	}
 	var b strings.Builder
-	if err := emitAST(&b, n, "", n.Lines, map[string]bool{}); err != nil {
+	if err := emitAST(&b, n, "", n.Lines, map[string]bool{}, map[string][]string{}); err != nil {
 		return "", err
 	}
 	code := strings.TrimSpace(b.String())
@@ -327,44 +327,44 @@ func newConvertError(line int, lines []string, msg string) error {
 	return fmt.Errorf("line %d: %s\n%s", line, msg, strings.TrimRight(b.String(), "\n"))
 }
 
-func emitAST(b *strings.Builder, n *Node, indent string, lines []string, seen map[string]bool) error {
+func emitAST(b *strings.Builder, n *Node, indent string, lines []string, seen map[string]bool, structs map[string][]string) error {
 	if n == nil {
 		return nil
 	}
 	switch n.Type {
 	case "Module":
 		for _, c := range n.Body {
-			if err := emitAST(b, c, indent, lines, seen); err != nil {
+			if err := emitAST(b, c, indent, lines, seen, structs); err != nil {
 				return err
 			}
 		}
 	case "Import", "ImportFrom", "Global":
 		return nil
 	case "FunctionDef":
-		return emitFuncDef(b, n, indent, lines, seen)
+		return emitFuncDef(b, n, indent, lines, seen, structs)
 	case "ClassDef":
-		return emitClassDef(b, n, indent, lines, seen)
+		return emitClassDef(b, n, indent, lines, seen, structs)
 	case "Return":
-		return emitReturnStmt(b, n, lines)
+		return emitReturnStmt(b, n, lines, structs)
 	case "Expr":
-		return emitExprStmt(b, n, lines, seen)
+		return emitExprStmt(b, n, lines, seen, structs)
 	case "Assign":
-		return emitAssignStmt(b, n, lines, seen)
+		return emitAssignStmt(b, n, lines, seen, structs)
 	case "AugAssign":
-		return emitAugAssignStmt(b, n, lines, seen)
+		return emitAugAssignStmt(b, n, lines, seen, structs)
 	case "For":
-		return emitForStmt(b, n, indent, lines, seen)
+		return emitForStmt(b, n, indent, lines, seen, structs)
 	case "While":
-		return emitWhileStmt(b, n, indent, lines, seen)
+		return emitWhileStmt(b, n, indent, lines, seen, structs)
 	case "If":
-		return emitIfStmt(b, n, indent, lines, seen)
+		return emitIfStmt(b, n, indent, lines, seen, structs)
 	case "Continue":
 		b.WriteString("continue\n")
 	case "Break":
 		b.WriteString("break\n")
 	case "Assert":
 		b.WriteString("expect ")
-		if err := emitExpr(b, n.Test, lines); err != nil {
+		if err := emitExpr(b, n.Test, lines, structs); err != nil {
 			return err
 		}
 		b.WriteByte('\n')
@@ -374,10 +374,10 @@ func emitAST(b *strings.Builder, n *Node, indent string, lines []string, seen ma
 	return nil
 }
 
-func emitFuncDef(b *strings.Builder, n *Node, indent string, lines []string, seen map[string]bool) error {
+func emitFuncDef(b *strings.Builder, n *Node, indent string, lines []string, seen map[string]bool, structs map[string][]string) error {
 	if n.Name == "main" {
 		for _, st := range n.Body {
-			if err := emitAST(b, st, indent, lines, seen); err != nil {
+			if err := emitAST(b, st, indent, lines, seen, structs); err != nil {
 				return err
 			}
 		}
@@ -399,7 +399,7 @@ func emitFuncDef(b *strings.Builder, n *Node, indent string, lines []string, see
 		b.WriteString(a.Arg)
 		if a.Annotation != nil {
 			b.WriteString(": ")
-			if err := emitExpr(b, a.Annotation, lines); err != nil {
+			if err := emitExpr(b, a.Annotation, lines, structs); err != nil {
 				return err
 			}
 		} else {
@@ -409,7 +409,7 @@ func emitFuncDef(b *strings.Builder, n *Node, indent string, lines []string, see
 	b.WriteByte(')')
 	b.WriteString(": ")
 	if n.Returns != nil {
-		if err := emitExpr(b, n.Returns, lines); err != nil {
+		if err := emitExpr(b, n.Returns, lines, structs); err != nil {
 			return err
 		}
 	} else if rt := inferReturnType(n, lines); rt != "" {
@@ -421,7 +421,7 @@ func emitFuncDef(b *strings.Builder, n *Node, indent string, lines []string, see
 	for _, st := range n.Body {
 		b.WriteString(indent)
 		b.WriteString("  ")
-		if err := emitAST(b, st, indent+"  ", lines, seen); err != nil {
+		if err := emitAST(b, st, indent+"  ", lines, seen, structs); err != nil {
 			return err
 		}
 	}
@@ -430,18 +430,20 @@ func emitFuncDef(b *strings.Builder, n *Node, indent string, lines []string, see
 	return nil
 }
 
-func emitClassDef(b *strings.Builder, n *Node, indent string, lines []string, seen map[string]bool) error {
+func emitClassDef(b *strings.Builder, n *Node, indent string, lines []string, seen map[string]bool, structs map[string][]string) error {
 	b.WriteString("type ")
 	b.WriteString(n.Name)
 	b.WriteString(" {\n")
+	var fields []string
 	for _, st := range n.Body {
 		if st.Type == "AnnAssign" && st.Target != nil && st.Target.Type == "Name" {
 			b.WriteString(indent)
 			b.WriteString("  ")
 			b.WriteString(st.Target.ID)
+			fields = append(fields, st.Target.ID)
 			if st.Annotation != nil {
 				b.WriteString(": ")
-				if err := emitExpr(b, st.Annotation, lines); err != nil {
+				if err := emitExpr(b, st.Annotation, lines, structs); err != nil {
 					return err
 				}
 			}
@@ -450,14 +452,17 @@ func emitClassDef(b *strings.Builder, n *Node, indent string, lines []string, se
 	}
 	b.WriteString(indent)
 	b.WriteString("}\n")
+	if structs != nil {
+		structs[n.Name] = fields
+	}
 	return nil
 }
 
-func emitReturnStmt(b *strings.Builder, n *Node, lines []string) error {
+func emitReturnStmt(b *strings.Builder, n *Node, lines []string, structs map[string][]string) error {
 	b.WriteString("return")
 	if v := n.valueNode(); v != nil {
 		b.WriteByte(' ')
-		if err := emitExpr(b, v, lines); err != nil {
+		if err := emitExpr(b, v, lines, structs); err != nil {
 			return err
 		}
 	}
@@ -465,18 +470,18 @@ func emitReturnStmt(b *strings.Builder, n *Node, lines []string) error {
 	return nil
 }
 
-func emitExprStmt(b *strings.Builder, n *Node, lines []string, seen map[string]bool) error {
+func emitExprStmt(b *strings.Builder, n *Node, lines []string, seen map[string]bool, structs map[string][]string) error {
 	if call := n.valueNode(); call != nil && call.Type == "Call" && call.Func != nil && call.Func.Type == "Name" && call.Func.ID == "main" {
 		return nil
 	}
-	if err := emitExpr(b, n.valueNode(), lines); err != nil {
+	if err := emitExpr(b, n.valueNode(), lines, structs); err != nil {
 		return err
 	}
 	b.WriteString("\n")
 	return nil
 }
 
-func emitAssignStmt(b *strings.Builder, n *Node, lines []string, seen map[string]bool) error {
+func emitAssignStmt(b *strings.Builder, n *Node, lines []string, seen map[string]bool, structs map[string][]string) error {
 	if len(n.Body) > 0 {
 		return newConvertError(n.Line, lines, "complex assignment")
 	}
@@ -515,18 +520,18 @@ func emitAssignStmt(b *strings.Builder, n *Node, lines []string, seen map[string
 	if !declared {
 		b.WriteString("var ")
 	}
-	if err := emitExpr(b, nameNode, lines); err != nil {
+	if err := emitExpr(b, nameNode, lines, structs); err != nil {
 		return err
 	}
 	b.WriteString(" = ")
-	if err := emitExpr(b, n.valueNode(), lines); err != nil {
+	if err := emitExpr(b, n.valueNode(), lines, structs); err != nil {
 		return err
 	}
 	b.WriteString("\n")
 	return nil
 }
 
-func emitAugAssignStmt(b *strings.Builder, n *Node, lines []string, seen map[string]bool) error {
+func emitAugAssignStmt(b *strings.Builder, n *Node, lines []string, seen map[string]bool, structs map[string][]string) error {
 	if n.Target == nil || n.Op == nil {
 		return newConvertError(n.Line, lines, "bad augmented assign")
 	}
@@ -540,11 +545,11 @@ func emitAugAssignStmt(b *strings.Builder, n *Node, lines []string, seen map[str
 	if !declared {
 		b.WriteString("var ")
 	}
-	if err := emitExpr(b, n.Target, lines); err != nil {
+	if err := emitExpr(b, n.Target, lines, structs); err != nil {
 		return err
 	}
 	b.WriteString(" = ")
-	if err := emitExpr(b, n.Target, lines); err != nil {
+	if err := emitExpr(b, n.Target, lines, structs); err != nil {
 		return err
 	}
 	b.WriteByte(' ')
@@ -565,16 +570,16 @@ func emitAugAssignStmt(b *strings.Builder, n *Node, lines []string, seen map[str
 		return newConvertError(n.Line, lines, "unhandled aug assign operator")
 	}
 	b.WriteByte(' ')
-	if err := emitExpr(b, n.valueNode(), lines); err != nil {
+	if err := emitExpr(b, n.valueNode(), lines, structs); err != nil {
 		return err
 	}
 	b.WriteByte('\n')
 	return nil
 }
 
-func emitForStmt(b *strings.Builder, n *Node, indent string, lines []string, seen map[string]bool) error {
+func emitForStmt(b *strings.Builder, n *Node, indent string, lines []string, seen map[string]bool, structs map[string][]string) error {
 	b.WriteString("for ")
-	if err := emitExpr(b, n.Target, lines); err != nil {
+	if err := emitExpr(b, n.Target, lines, structs); err != nil {
 		return err
 	}
 	b.WriteString(" in ")
@@ -583,24 +588,24 @@ func emitForStmt(b *strings.Builder, n *Node, indent string, lines []string, see
 		switch len(args) {
 		case 1:
 			b.WriteString("0..")
-			if err := emitExpr(b, args[0], lines); err != nil {
+			if err := emitExpr(b, args[0], lines, structs); err != nil {
 				return err
 			}
 		case 2:
-			if err := emitExpr(b, args[0], lines); err != nil {
+			if err := emitExpr(b, args[0], lines, structs); err != nil {
 				return err
 			}
 			b.WriteString("..")
-			if err := emitExpr(b, args[1], lines); err != nil {
+			if err := emitExpr(b, args[1], lines, structs); err != nil {
 				return err
 			}
 		default:
-			if err := emitExpr(b, n.Iter, lines); err != nil {
+			if err := emitExpr(b, n.Iter, lines, structs); err != nil {
 				return err
 			}
 		}
 	} else {
-		if err := emitExpr(b, n.Iter, lines); err != nil {
+		if err := emitExpr(b, n.Iter, lines, structs); err != nil {
 			return err
 		}
 	}
@@ -608,7 +613,7 @@ func emitForStmt(b *strings.Builder, n *Node, indent string, lines []string, see
 	for _, st := range n.Body {
 		b.WriteString(indent)
 		b.WriteString("  ")
-		if err := emitAST(b, st, indent+"  ", lines, seen); err != nil {
+		if err := emitAST(b, st, indent+"  ", lines, seen, structs); err != nil {
 			return err
 		}
 	}
@@ -617,16 +622,16 @@ func emitForStmt(b *strings.Builder, n *Node, indent string, lines []string, see
 	return nil
 }
 
-func emitWhileStmt(b *strings.Builder, n *Node, indent string, lines []string, seen map[string]bool) error {
+func emitWhileStmt(b *strings.Builder, n *Node, indent string, lines []string, seen map[string]bool, structs map[string][]string) error {
 	b.WriteString("while ")
-	if err := emitExpr(b, n.Test, lines); err != nil {
+	if err := emitExpr(b, n.Test, lines, structs); err != nil {
 		return err
 	}
 	b.WriteString(" {\n")
 	for _, st := range n.Body {
 		b.WriteString(indent)
 		b.WriteString("  ")
-		if err := emitAST(b, st, indent+"  ", lines, seen); err != nil {
+		if err := emitAST(b, st, indent+"  ", lines, seen, structs); err != nil {
 			return err
 		}
 	}
@@ -635,19 +640,19 @@ func emitWhileStmt(b *strings.Builder, n *Node, indent string, lines []string, s
 	return nil
 }
 
-func emitIfStmt(b *strings.Builder, n *Node, indent string, lines []string, seen map[string]bool) error {
+func emitIfStmt(b *strings.Builder, n *Node, indent string, lines []string, seen map[string]bool, structs map[string][]string) error {
 	if n.Test != nil && n.Test.Type == "Compare" && len(n.Test.Ops) == 1 && n.Test.Ops[0].Type == "Eq" && n.Test.Left != nil && n.Test.Left.Type == "Name" && n.Test.Left.ID == "__name__" {
 		return nil
 	}
 	b.WriteString("if ")
-	if err := emitExpr(b, n.Test, lines); err != nil {
+	if err := emitExpr(b, n.Test, lines, structs); err != nil {
 		return err
 	}
 	b.WriteString(" {\n")
 	for _, st := range n.Body {
 		b.WriteString(indent)
 		b.WriteString("  ")
-		if err := emitAST(b, st, indent+"  ", lines, seen); err != nil {
+		if err := emitAST(b, st, indent+"  ", lines, seen, structs); err != nil {
 			return err
 		}
 	}
@@ -658,7 +663,7 @@ func emitIfStmt(b *strings.Builder, n *Node, indent string, lines []string, seen
 		for _, st := range n.Orelse {
 			b.WriteString(indent)
 			b.WriteString("  ")
-			if err := emitAST(b, st, indent+"  ", lines, seen); err != nil {
+			if err := emitAST(b, st, indent+"  ", lines, seen, structs); err != nil {
 				return err
 			}
 		}
@@ -669,7 +674,7 @@ func emitIfStmt(b *strings.Builder, n *Node, indent string, lines []string, seen
 	return nil
 }
 
-func emitExpr(b *strings.Builder, n *Node, lines []string) error {
+func emitExpr(b *strings.Builder, n *Node, lines []string, structs map[string][]string) error {
 	if n == nil {
 		return nil
 	}
@@ -681,11 +686,11 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 			if len(args) == 1 {
 				if a, bnode, ok := listUnionAllArgs(args[0]); ok {
 					b.WriteString("len(")
-					if err := emitExpr(b, a, lines); err != nil {
+					if err := emitExpr(b, a, lines, structs); err != nil {
 						return err
 					}
 					b.WriteString(" union all ")
-					if err := emitExpr(b, bnode, lines); err != nil {
+					if err := emitExpr(b, bnode, lines, structs); err != nil {
 						return err
 					}
 					b.WriteByte(')')
@@ -697,13 +702,13 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 			args := n.callArgs()
 			if len(args) == 1 {
 				if op, left, right, ok := setBinOp(args[0]); ok {
-					if err := emitExpr(b, left, lines); err != nil {
+					if err := emitExpr(b, left, lines, structs); err != nil {
 						return err
 					}
 					b.WriteString(" ")
 					b.WriteString(op)
 					b.WriteString(" ")
-					if err := emitExpr(b, right, lines); err != nil {
+					if err := emitExpr(b, right, lines, structs); err != nil {
 						return err
 					}
 					return nil
@@ -717,7 +722,7 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 				if i > 0 {
 					b.WriteString(", ")
 				}
-				if err := emitExpr(b, a, lines); err != nil {
+				if err := emitExpr(b, a, lines, structs); err != nil {
 					return err
 				}
 			}
@@ -731,7 +736,7 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 					inner := args[0]
 					if inner.Type == "Call" && inner.Func != nil && inner.Func.Type == "Attribute" && inner.Func.Attr == "values" && len(inner.callArgs()) == 0 {
 						b.WriteString("values(")
-						if err := emitExpr(b, inner.Func.valueNode(), lines); err != nil {
+						if err := emitExpr(b, inner.Func.valueNode(), lines, structs); err != nil {
 							return err
 						}
 						b.WriteString(")")
@@ -748,24 +753,42 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 					}
 					b.WriteString(kw.Arg)
 					b.WriteString(": ")
-					if err := emitExpr(b, kw.valueNode(), lines); err != nil {
+					if err := emitExpr(b, kw.valueNode(), lines, structs); err != nil {
 						return err
 					}
 				}
 				b.WriteString("}")
 				return nil
 			}
+			if len(n.Keywords) == 0 && strings.Title(fn.ID) == fn.ID {
+				if fields, ok := structs[fn.ID]; ok && len(fields) == len(n.callArgs()) {
+					b.WriteString("{")
+					args := n.callArgs()
+					for i, a := range args {
+						if i > 0 {
+							b.WriteString(", ")
+						}
+						b.WriteString(fields[i])
+						b.WriteString(": ")
+						if err := emitExpr(b, a, lines, structs); err != nil {
+							return err
+						}
+					}
+					b.WriteString("}")
+					return nil
+				}
+			}
 			b.WriteString(fn.ID)
 		} else if fn != nil && fn.Type == "Attribute" {
 			if fn.Attr == "values" && len(n.callArgs()) == 0 && len(n.Keywords) == 0 {
 				b.WriteString("values(")
-				if err := emitExpr(b, fn.valueNode(), lines); err != nil {
+				if err := emitExpr(b, fn.valueNode(), lines, structs); err != nil {
 					return err
 				}
 				b.WriteString(")")
 				return nil
 			}
-			if err := emitExpr(b, fn.valueNode(), lines); err != nil {
+			if err := emitExpr(b, fn.valueNode(), lines, structs); err != nil {
 				return err
 			}
 			b.WriteByte('.')
@@ -781,7 +804,7 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 			if i > 0 {
 				b.WriteString(", ")
 			}
-			if err := emitExpr(b, a, lines); err != nil {
+			if err := emitExpr(b, a, lines, structs); err != nil {
 				return err
 			}
 		}
@@ -793,7 +816,7 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 				b.WriteString(kw.Arg)
 				b.WriteString(": ")
 			}
-			if err := emitExpr(b, kw.valueNode(), lines); err != nil {
+			if err := emitExpr(b, kw.valueNode(), lines, structs); err != nil {
 				return err
 			}
 			args = append(args, kw)
@@ -815,11 +838,11 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 		if n.Op != nil && n.Op.Type == "Add" && n.Left != nil && n.Right != nil &&
 			n.Left.Type == "Name" && n.Right.Type == "List" && len(n.Right.Elts) == 1 {
 			b.WriteString("append(")
-			if err := emitExpr(b, n.Left, lines); err != nil {
+			if err := emitExpr(b, n.Left, lines, structs); err != nil {
 				return err
 			}
 			b.WriteString(", ")
-			if err := emitExpr(b, n.Right.Elts[0], lines); err != nil {
+			if err := emitExpr(b, n.Right.Elts[0], lines, structs); err != nil {
 				return err
 			}
 			b.WriteByte(')')
@@ -830,12 +853,12 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 		cp := binOpPrec(n)
 		if lp > 0 && lp < cp {
 			b.WriteByte('(')
-			if err := emitExpr(b, n.Left, lines); err != nil {
+			if err := emitExpr(b, n.Left, lines, structs); err != nil {
 				return err
 			}
 			b.WriteByte(')')
 		} else {
-			if err := emitExpr(b, n.Left, lines); err != nil {
+			if err := emitExpr(b, n.Left, lines, structs); err != nil {
 				return err
 			}
 		}
@@ -861,19 +884,19 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 		b.WriteByte(' ')
 		if rp > 0 && rp < cp {
 			b.WriteByte('(')
-			if err := emitExpr(b, n.Right, lines); err != nil {
+			if err := emitExpr(b, n.Right, lines, structs); err != nil {
 				return err
 			}
 			b.WriteByte(')')
 		} else {
-			if err := emitExpr(b, n.Right, lines); err != nil {
+			if err := emitExpr(b, n.Right, lines, structs); err != nil {
 				return err
 			}
 		}
 	case "Compare":
 		if lc, ok := existsListComp(n); ok {
 			b.WriteString("exists(")
-			if err := emitExpr(b, lc, lines); err != nil {
+			if err := emitExpr(b, lc, lines, structs); err != nil {
 				return err
 			}
 			b.WriteByte(')')
@@ -881,17 +904,17 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 		}
 		if len(n.Ops) == 1 && n.Ops[0].Type == "NotIn" && len(n.Comparators) == 1 {
 			b.WriteString("!(")
-			if err := emitExpr(b, n.Left, lines); err != nil {
+			if err := emitExpr(b, n.Left, lines, structs); err != nil {
 				return err
 			}
 			b.WriteString(" in ")
-			if err := emitExpr(b, n.Comparators[0], lines); err != nil {
+			if err := emitExpr(b, n.Comparators[0], lines, structs); err != nil {
 				return err
 			}
 			b.WriteByte(')')
 			return nil
 		}
-		if err := emitExpr(b, n.Left, lines); err != nil {
+		if err := emitExpr(b, n.Left, lines, structs); err != nil {
 			return err
 		}
 		if len(n.Ops) == 0 || len(n.Comparators) == 0 {
@@ -918,11 +941,11 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 			return newConvertError(n.Line, lines, "unhandled compare operator")
 		}
 		b.WriteByte(' ')
-		if err := emitExpr(b, n.Comparators[0], lines); err != nil {
+		if err := emitExpr(b, n.Comparators[0], lines, structs); err != nil {
 			return err
 		}
 	case "Attribute":
-		if err := emitExpr(b, n.valueNode(), lines); err != nil {
+		if err := emitExpr(b, n.valueNode(), lines, structs); err != nil {
 			return err
 		}
 		b.WriteByte('.')
@@ -941,7 +964,7 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 			if i > 0 {
 				b.WriteString(", ")
 			}
-			if err := emitExpr(b, e, lines); err != nil {
+			if err := emitExpr(b, e, lines, structs); err != nil {
 				return err
 			}
 		}
@@ -952,11 +975,11 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 			if i > 0 {
 				b.WriteString(", ")
 			}
-			if err := emitExpr(b, n.Keys[i], lines); err != nil {
+			if err := emitExpr(b, n.Keys[i], lines, structs); err != nil {
 				return err
 			}
 			b.WriteString(": ")
-			if err := emitExpr(b, n.Values[i], lines); err != nil {
+			if err := emitExpr(b, n.Values[i], lines, structs); err != nil {
 				return err
 			}
 		}
@@ -985,43 +1008,60 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 		b.WriteString(") : int => ")
 		b.WriteString(body)
 	case "ListComp":
-		if len(n.Generators) == 1 {
-			g := n.Generators[0]
-			b.WriteString("from ")
-			if err := emitExpr(b, g.Target, lines); err != nil {
+		if len(n.Generators) == 0 {
+			return newConvertError(n.Line, lines, "unsupported listcomp")
+		}
+		g := n.Generators[0]
+		b.WriteString("from ")
+		if err := emitExpr(b, g.Target, lines, structs); err != nil {
+			return err
+		}
+		b.WriteString(" in ")
+		if err := emitExpr(b, g.Iter, lines, structs); err != nil {
+			return err
+		}
+		for _, g := range n.Generators[1:] {
+			b.WriteString(" from ")
+			if err := emitExpr(b, g.Target, lines, structs); err != nil {
 				return err
 			}
 			b.WriteString(" in ")
-			if err := emitExpr(b, g.Iter, lines); err != nil {
+			if err := emitExpr(b, g.Iter, lines, structs); err != nil {
 				return err
 			}
-			if len(g.Ifs) > 0 {
-				b.WriteString(" where ")
-				if err := emitExpr(b, g.Ifs[0], lines); err != nil {
+		}
+		condCount := 0
+		for _, g := range n.Generators {
+			for _, c := range g.Ifs {
+				if condCount == 0 {
+					b.WriteString(" where ")
+				} else {
+					b.WriteString(" && ")
+				}
+				if err := emitExpr(b, c, lines, structs); err != nil {
 					return err
 				}
+				condCount++
 			}
-			b.WriteString(" select ")
-			if err := emitExpr(b, n.Elt, lines); err != nil {
-				return err
-			}
-		} else {
-			return newConvertError(n.Line, lines, "unsupported list comp")
+		}
+		b.WriteString(" select ")
+		if err := emitExpr(b, n.Elt, lines, structs); err != nil {
+			return err
 		}
 	case "IfExp":
 		if c := condBool(n); c != nil {
-			return emitExpr(b, c, lines)
+			return emitExpr(b, c, lines, structs)
 		}
 		if arg, ok := avgArg(n); ok {
 			b.WriteString("avg(")
-			if err := emitExpr(b, arg, lines); err != nil {
+			if err := emitExpr(b, arg, lines, structs); err != nil {
 				return err
 			}
 			b.WriteByte(')')
 			return nil
 		}
 		b.WriteString("if ")
-		if err := emitExpr(b, n.Test, lines); err != nil {
+		if err := emitExpr(b, n.Test, lines, structs); err != nil {
 			return err
 		}
 		b.WriteString(" then ")
@@ -1029,12 +1069,12 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 		if len(n.Body) > 0 {
 			thenExpr = n.Body[0]
 		}
-		if err := emitExpr(b, thenExpr, lines); err != nil {
+		if err := emitExpr(b, thenExpr, lines, structs); err != nil {
 			return err
 		}
 		if len(n.Orelse) > 0 {
 			b.WriteString(" else ")
-			if err := emitExpr(b, n.Orelse[0], lines); err != nil {
+			if err := emitExpr(b, n.Orelse[0], lines, structs); err != nil {
 				return err
 			}
 		}
@@ -1052,36 +1092,36 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 					}
 				}
 			}
-			if err := emitExpr(b, v, lines); err != nil {
+			if err := emitExpr(b, v, lines, structs); err != nil {
 				return err
 			}
 		}
 	case "Subscript":
-		if err := emitExpr(b, n.valueNode(), lines); err != nil {
+		if err := emitExpr(b, n.valueNode(), lines, structs); err != nil {
 			return err
 		}
 		b.WriteByte('[')
 		if n.Slice != nil {
 			if n.Slice.Type == "Slice" {
 				if n.Slice.Lower != nil {
-					if err := emitExpr(b, n.Slice.Lower, lines); err != nil {
+					if err := emitExpr(b, n.Slice.Lower, lines, structs); err != nil {
 						return err
 					}
 				}
 				b.WriteByte(':')
 				if n.Slice.Upper != nil {
-					if err := emitExpr(b, n.Slice.Upper, lines); err != nil {
+					if err := emitExpr(b, n.Slice.Upper, lines, structs); err != nil {
 						return err
 					}
 				}
 				if n.Slice.Step != nil {
 					b.WriteByte(':')
-					if err := emitExpr(b, n.Slice.Step, lines); err != nil {
+					if err := emitExpr(b, n.Slice.Step, lines, structs); err != nil {
 						return err
 					}
 				}
 			} else {
-				if err := emitExpr(b, n.Slice, lines); err != nil {
+				if err := emitExpr(b, n.Slice, lines, structs); err != nil {
 					return err
 				}
 			}
@@ -1098,7 +1138,7 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 			case "Not":
 				b.WriteByte('!')
 				b.WriteByte('(')
-				if err := emitExpr(b, n.Operand, lines); err != nil {
+				if err := emitExpr(b, n.Operand, lines, structs); err != nil {
 					return err
 				}
 				b.WriteByte(')')
@@ -1108,7 +1148,7 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 				return newConvertError(n.Line, lines, "unhandled unary operator")
 			}
 		}
-		if err := emitExpr(b, n.Operand, lines); err != nil {
+		if err := emitExpr(b, n.Operand, lines, structs); err != nil {
 			return err
 		}
 		b.WriteByte(')')
