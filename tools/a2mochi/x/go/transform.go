@@ -298,6 +298,16 @@ func tryIIFE(c *ast.CallExpr) *mast.Node {
 			return n
 		}
 	}
+
+	if n := tryJSONMarshal(fn); n != nil {
+		return n
+	}
+	if n := trySum(fn); n != nil {
+		return n
+	}
+	if n := tryMinMax(fn); n != nil {
+		return n
+	}
 	return nil
 }
 
@@ -409,6 +419,212 @@ func tryMapMembership(fn *ast.FuncLit) *mast.Node {
 		transformExpr(idx.Index),
 		transformExpr(idx.X),
 	}}
+}
+
+// tryJSONMarshal unwraps `json.Marshal` helper functions used to pretty print
+// values. It expects the function body to marshal an expression to JSON and
+// ultimately return the resulting string. The returned Mochi node is the
+// marshalled expression itself.
+func tryJSONMarshal(fn *ast.FuncLit) *mast.Node {
+	if len(fn.Body.List) < 2 {
+		return nil
+	}
+	as, ok := fn.Body.List[0].(*ast.AssignStmt)
+	if !ok || as.Tok != token.DEFINE || len(as.Lhs) != 2 || len(as.Rhs) != 1 {
+		return nil
+	}
+	bIdent, ok := as.Lhs[0].(*ast.Ident)
+	if !ok {
+		return nil
+	}
+	call, ok := as.Rhs[0].(*ast.CallExpr)
+	if !ok {
+		return nil
+	}
+	sel, ok := call.Fun.(*ast.SelectorExpr)
+	if !ok {
+		return nil
+	}
+	pkg, ok := sel.X.(*ast.Ident)
+	if !ok || pkg.Name != "json" || sel.Sel.Name != "Marshal" || len(call.Args) != 1 {
+		return nil
+	}
+	ret, ok := fn.Body.List[len(fn.Body.List)-1].(*ast.ReturnStmt)
+	if !ok || len(ret.Results) != 1 {
+		return nil
+	}
+	switch rv := ret.Results[0].(type) {
+	case *ast.CallExpr:
+		if id, ok := rv.Fun.(*ast.Ident); !ok || id.Name != "string" || len(rv.Args) != 1 {
+			return nil
+		}
+		if arg, ok := rv.Args[0].(*ast.Ident); !ok || arg.Name != bIdent.Name {
+			return nil
+		}
+	case *ast.Ident:
+		found := false
+		for _, st := range fn.Body.List[1 : len(fn.Body.List)-1] {
+			if as2, ok := st.(*ast.AssignStmt); ok && as2.Tok == token.DEFINE && len(as2.Lhs) == 1 && len(as2.Rhs) == 1 {
+				if id2, ok := as2.Lhs[0].(*ast.Ident); ok && id2.Name == rv.Name {
+					if call2, ok := as2.Rhs[0].(*ast.CallExpr); ok {
+						if fid, ok := call2.Fun.(*ast.Ident); ok && fid.Name == "string" && len(call2.Args) == 1 {
+							if b, ok := call2.Args[0].(*ast.Ident); ok && b.Name == bIdent.Name {
+								found = true
+							}
+						}
+					}
+				}
+			}
+		}
+		if !found {
+			return nil
+		}
+	default:
+		return nil
+	}
+	return transformExpr(call.Args[0])
+}
+
+// trySum matches `s := 0; for _, v := range xs { s += v }; return s`.
+func trySum(fn *ast.FuncLit) *mast.Node {
+	if len(fn.Body.List) != 3 {
+		return nil
+	}
+	init, ok := fn.Body.List[0].(*ast.AssignStmt)
+	if !ok || init.Tok != token.DEFINE || len(init.Lhs) != 1 || len(init.Rhs) != 1 {
+		return nil
+	}
+	accIdent, ok := init.Lhs[0].(*ast.Ident)
+	if !ok {
+		return nil
+	}
+	if lit, ok := init.Rhs[0].(*ast.BasicLit); !ok || lit.Value != "0" {
+		return nil
+	}
+	rng, ok := fn.Body.List[1].(*ast.RangeStmt)
+	if !ok || rng.Body == nil || len(rng.Body.List) != 1 {
+		return nil
+	}
+	add, ok := rng.Body.List[0].(*ast.AssignStmt)
+	if !ok || add.Tok != token.ADD_ASSIGN || len(add.Lhs) != 1 || len(add.Rhs) != 1 {
+		return nil
+	}
+	if id, ok := add.Lhs[0].(*ast.Ident); !ok || id.Name != accIdent.Name {
+		return nil
+	}
+	ret, ok := fn.Body.List[2].(*ast.ReturnStmt)
+	if !ok || len(ret.Results) != 1 {
+		return nil
+	}
+	if id, ok := ret.Results[0].(*ast.Ident); !ok || id.Name != accIdent.Name {
+		return nil
+	}
+	return &mast.Node{Kind: "call", Value: "sum", Children: []*mast.Node{transformExpr(rng.X)}}
+}
+
+// tryMinMax matches loops computing the minimum or maximum of a slice.
+func tryMinMax(fn *ast.FuncLit) *mast.Node {
+	if len(fn.Body.List) < 3 {
+		return nil
+	}
+	idx := 0
+	// optional len check
+	if ifs, ok := fn.Body.List[0].(*ast.IfStmt); ok {
+		if be, ok := ifs.Cond.(*ast.BinaryExpr); ok && be.Op == token.EQL {
+			if call, ok := be.X.(*ast.CallExpr); ok {
+				if id, ok := call.Fun.(*ast.Ident); ok && id.Name == "len" && len(call.Args) == 1 {
+					if lit, ok := be.Y.(*ast.BasicLit); ok && lit.Value == "0" {
+						if len(ifs.Body.List) == 1 {
+							if ret0, ok := ifs.Body.List[0].(*ast.ReturnStmt); ok && len(ret0.Results) == 1 {
+								if lit0, ok := ret0.Results[0].(*ast.BasicLit); ok && lit0.Value == "0" {
+									idx = 1
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	if len(fn.Body.List[idx:]) != 3 {
+		return nil
+	}
+	as, ok := fn.Body.List[idx].(*ast.AssignStmt)
+	if !ok || as.Tok != token.DEFINE || len(as.Lhs) != 1 || len(as.Rhs) != 1 {
+		return nil
+	}
+	accIdent, ok := as.Lhs[0].(*ast.Ident)
+	if !ok {
+		return nil
+	}
+	firstIdx, ok := as.Rhs[0].(*ast.IndexExpr)
+	if !ok {
+		return nil
+	}
+	base := firstIdx.X
+	rng, ok := fn.Body.List[idx+1].(*ast.RangeStmt)
+	if !ok || rng.Body == nil || len(rng.Body.List) != 1 {
+		return nil
+	}
+	sliceExpr, ok := rng.X.(*ast.SliceExpr)
+	if !ok || sliceExpr.Low == nil {
+		return nil
+	}
+	if !astEqual(sliceExpr.X, base) {
+		return nil
+	}
+	if lit, ok := sliceExpr.Low.(*ast.BasicLit); !ok || lit.Value != "1" {
+		return nil
+	}
+	ifSt, ok := rng.Body.List[0].(*ast.IfStmt)
+	if !ok || len(ifSt.Body.List) != 1 {
+		return nil
+	}
+	assign, ok := ifSt.Body.List[0].(*ast.AssignStmt)
+	if !ok || assign.Tok != token.ASSIGN || len(assign.Lhs) != 1 || len(assign.Rhs) != 1 {
+		return nil
+	}
+	if id, ok := assign.Lhs[0].(*ast.Ident); !ok || id.Name != accIdent.Name {
+		return nil
+	}
+	valIdent, ok := rng.Value.(*ast.Ident)
+	if !ok {
+		return nil
+	}
+	if id, ok := assign.Rhs[0].(*ast.Ident); !ok || id.Name != valIdent.Name {
+		return nil
+	}
+	cond, ok := ifSt.Cond.(*ast.BinaryExpr)
+	if !ok {
+		return nil
+	}
+	if lx, ok := cond.X.(*ast.Ident); !ok || lx.Name != valIdent.Name {
+		return nil
+	}
+	if ly, ok := cond.Y.(*ast.Ident); !ok || ly.Name != accIdent.Name {
+		return nil
+	}
+	ret, ok := fn.Body.List[idx+2].(*ast.ReturnStmt)
+	if !ok || len(ret.Results) != 1 {
+		return nil
+	}
+	if rid, ok := ret.Results[0].(*ast.Ident); !ok || rid.Name != accIdent.Name {
+		return nil
+	}
+	switch cond.Op {
+	case token.LSS:
+		return &mast.Node{Kind: "call", Value: "min", Children: []*mast.Node{transformExpr(base)}}
+	case token.GTR:
+		return &mast.Node{Kind: "call", Value: "max", Children: []*mast.Node{transformExpr(base)}}
+	}
+	return nil
+}
+
+// astEqual reports whether two expressions refer to the same identifier.
+func astEqual(a, b ast.Expr) bool {
+	ida, ok := a.(*ast.Ident)
+	idb, ok2 := b.(*ast.Ident)
+	return ok && ok2 && ida.Name == idb.Name
 }
 
 func transformExpr(e ast.Expr) *mast.Node {
