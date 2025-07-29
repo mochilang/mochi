@@ -149,6 +149,9 @@ func toNodes(a *astJSON) []Node {
 
 func mapType(t string) string {
 	t = strings.TrimSpace(t)
+	if t == "*" {
+		return "any"
+	}
 	if strings.HasSuffix(t, "?") {
 		t = strings.TrimSuffix(t, "?")
 	}
@@ -219,6 +222,20 @@ func mapType(t string) string {
 		}
 		return "list<" + inner + ">"
 	}
+	if strings.HasPrefix(t, "Iterable<") && strings.HasSuffix(t, ">") {
+		inner := mapType(t[9 : len(t)-1])
+		if inner == "" {
+			inner = "any"
+		}
+		return "list<" + inner + ">"
+	}
+	if strings.HasPrefix(t, "Sequence<") && strings.HasSuffix(t, ">") {
+		inner := mapType(t[9 : len(t)-1])
+		if inner == "" {
+			inner = "any"
+		}
+		return "list<" + inner + ">"
+	}
 	if strings.HasPrefix(t, "Set<") && strings.HasSuffix(t, ">") {
 		inner := mapType(t[4 : len(t)-1])
 		if inner == "" {
@@ -279,6 +296,21 @@ func mapType(t string) string {
 	}
 	if strings.HasPrefix(t, "Pair<") && strings.HasSuffix(t, ">") {
 		inner := t[5 : len(t)-1]
+		parts := splitGeneric(inner)
+		first := "any"
+		second := "any"
+		if len(parts) == 2 {
+			if f := mapType(parts[0]); f != "" {
+				first = f
+			}
+			if s := mapType(parts[1]); s != "" {
+				second = s
+			}
+		}
+		return "tuple<" + first + ", " + second + ">"
+	}
+	if strings.HasPrefix(t, "Map.Entry<") && strings.HasSuffix(t, ">") {
+		inner := t[10 : len(t)-1]
 		parts := splitGeneric(inner)
 		first := "any"
 		second := "any"
