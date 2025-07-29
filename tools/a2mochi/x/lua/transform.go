@@ -233,9 +233,14 @@ func exprToNode(e luaast.Expr, mut map[string]bool) *ast.Node {
 		return node("binary", "+", exprToNode(v.Lhs, mut), exprToNode(v.Rhs, mut))
 	case *luaast.LogicalOpExpr:
 		if v.Operator == "or" {
-			if num, ok := v.Rhs.(*luaast.NumberExpr); ok && num.Value == "0" {
-				if lhs, ok := v.Lhs.(*luaast.LogicalOpExpr); ok && lhs.Operator == "and" {
-					if num1, ok := lhs.Rhs.(*luaast.NumberExpr); ok && num1.Value == "1" {
+			if lhs, ok := v.Lhs.(*luaast.LogicalOpExpr); ok && lhs.Operator == "and" {
+				if num0, ok := lhs.Rhs.(*luaast.NumberExpr); ok && num0.Value == "0" {
+					if num1, ok := v.Rhs.(*luaast.NumberExpr); ok && num1.Value == "1" {
+						return node("unary", "!", exprToNode(lhs.Lhs, mut))
+					}
+				}
+				if num1, ok := lhs.Rhs.(*luaast.NumberExpr); ok && num1.Value == "1" {
+					if num0, ok := v.Rhs.(*luaast.NumberExpr); ok && num0.Value == "0" {
 						return exprToNode(lhs.Lhs, mut)
 					}
 				}
@@ -304,6 +309,9 @@ func exprToNode(e luaast.Expr, mut map[string]bool) *ast.Node {
 			}
 			if isLenFunc(fn) && len(v.Args) == 1 {
 				return node("call", "len", exprToNode(v.Args[0], mut))
+			}
+			if isInOperatorFunc(fn) && len(v.Args) == 2 {
+				return node("binary", "in", exprToNode(v.Args[1], mut), exprToNode(v.Args[0], mut))
 			}
 		}
 		if (callee == "pairs" || callee == "ipairs") && len(args) == 1 {
@@ -1130,6 +1138,56 @@ func isLenFunc(fn *luaast.FunctionExpr) bool {
 		visitStmt(st)
 	}
 	return found
+}
+
+func isInOperatorFunc(fn *luaast.FunctionExpr) bool {
+	if fn.ParList == nil || len(fn.ParList.Names) != 2 || len(fn.Stmts) != 2 {
+		return false
+	}
+	loop, ok := fn.Stmts[0].(*luaast.GenericForStmt)
+	if !ok || len(loop.Names) != 2 || len(loop.Exprs) != 1 || len(loop.Stmts) != 1 {
+		return false
+	}
+	call, ok := loop.Exprs[0].(*luaast.FuncCallExpr)
+	if !ok || len(call.Args) != 1 {
+		return false
+	}
+	id, ok := call.Func.(*luaast.IdentExpr)
+	if !ok || id.Value != "ipairs" {
+		return false
+	}
+	lst, ok := call.Args[0].(*luaast.IdentExpr)
+	if !ok || lst.Value != fn.ParList.Names[0] {
+		return false
+	}
+	condIf, ok := loop.Stmts[0].(*luaast.IfStmt)
+	if !ok || len(condIf.Then) != 1 {
+		return false
+	}
+	rel, ok := condIf.Condition.(*luaast.RelationalOpExpr)
+	if !ok || rel.Operator != "==" {
+		return false
+	}
+	left, ok1 := rel.Lhs.(*luaast.IdentExpr)
+	right, ok2 := rel.Rhs.(*luaast.IdentExpr)
+	if !ok1 || !ok2 || left.Value != loop.Names[1] || right.Value != fn.ParList.Names[1] {
+		return false
+	}
+	retTrue, ok := condIf.Then[0].(*luaast.ReturnStmt)
+	if !ok || len(retTrue.Exprs) != 1 {
+		return false
+	}
+	if _, ok := retTrue.Exprs[0].(*luaast.TrueExpr); !ok {
+		return false
+	}
+	retFalse, ok := fn.Stmts[1].(*luaast.ReturnStmt)
+	if !ok || len(retFalse.Exprs) != 1 {
+		return false
+	}
+	if _, ok := retFalse.Exprs[0].(*luaast.FalseExpr); !ok {
+		return false
+	}
+	return true
 }
 
 func tryValuesCall(call *luaast.FuncCallExpr, mut map[string]bool) (string, bool) {

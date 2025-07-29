@@ -143,6 +143,7 @@ func TestTransformGolden(t *testing.T) {
 		"string_contains":     true,
 		"string_index":        true,
 		"string_in_operator":  true,
+		"in_operator":         true,
 		"substring_builtin":   true,
 		"sum_builtin":         true,
 		"tail_recursion":      true,

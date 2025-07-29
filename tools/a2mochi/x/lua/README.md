@@ -1,7 +1,7 @@
 # a2mochi Lua Converter
 
-Completed programs: 63/104
-Date: 2025-07-29 17:46:12 GMT+7
+Completed programs: 64/104
+Date: 2025-07-29 18:23:07 GMT+7
 
 This directory contains helpers and golden files for converting Lua programs
 under `tests/transpiler/x/lua` back into Mochi code.
@@ -44,7 +44,7 @@ Supported examples:
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
-- [ ] in_operator
+- [x] in_operator
 - [ ] in_operator_extended
 - [ ] inner_join
 - [ ] join_multi
