@@ -9,6 +9,14 @@
     (int 2)
   )
   (call print
-    (index (selector scores) (string bob))
+    (index
+      (group
+        (cast
+          (selector scores)
+          (type map (type string) (type any))
+        )
+      )
+      (string bob)
+    )
   )
 )

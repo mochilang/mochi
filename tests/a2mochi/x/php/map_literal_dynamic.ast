@@ -8,7 +8,23 @@
     )
   )
   (call print
-    (index (selector m) (string a))
-    (index (selector m) (string b))
+    (index
+      (group
+        (cast
+          (selector m)
+          (type map (type string) (type any))
+        )
+      )
+      (string a)
+    )
+    (index
+      (group
+        (cast
+          (selector m)
+          (type map (type string) (type any))
+        )
+      )
+      (string b)
+    )
   )
 )

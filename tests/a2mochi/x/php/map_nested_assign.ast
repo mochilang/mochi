@@ -20,7 +20,15 @@
     (index
       (group
         (cast
-          (index (selector data) (string outer))
+          (index
+            (group
+              (cast
+                (selector data)
+                (type map (type string) (type any))
+              )
+            )
+            (string outer)
+          )
           (type map (type string) (type any))
         )
       )
