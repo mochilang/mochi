@@ -668,6 +668,40 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 	switch n.Type {
 	case "Call":
 		fn := n.Func
+		if fn != nil && fn.Type == "Name" && fn.ID == "len" {
+			args := n.callArgs()
+			if len(args) == 1 {
+				if a, bnode, ok := listUnionAllArgs(args[0]); ok {
+					b.WriteString("len(")
+					if err := emitExpr(b, a, lines); err != nil {
+						return err
+					}
+					b.WriteString(" union all ")
+					if err := emitExpr(b, bnode, lines); err != nil {
+						return err
+					}
+					b.WriteByte(')')
+					return nil
+				}
+			}
+		}
+		if fn != nil && fn.Type == "Name" && fn.ID == "list" {
+			args := n.callArgs()
+			if len(args) == 1 {
+				if op, left, right, ok := setBinOp(args[0]); ok {
+					if err := emitExpr(b, left, lines); err != nil {
+						return err
+					}
+					b.WriteString(" ")
+					b.WriteString(op)
+					b.WriteString(" ")
+					if err := emitExpr(b, right, lines); err != nil {
+						return err
+					}
+					return nil
+				}
+			}
+		}
 		if fn != nil && fn.Type == "Name" && fn.ID == "print" {
 			b.WriteString("print(")
 			args := n.callArgs()
@@ -812,6 +846,26 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 			return err
 		}
 	case "Compare":
+		if lc, ok := existsListComp(n); ok {
+			b.WriteString("exists(")
+			if err := emitExpr(b, lc, lines); err != nil {
+				return err
+			}
+			b.WriteByte(')')
+			return nil
+		}
+		if len(n.Ops) == 1 && n.Ops[0].Type == "NotIn" && len(n.Comparators) == 1 {
+			b.WriteString("!(")
+			if err := emitExpr(b, n.Left, lines); err != nil {
+				return err
+			}
+			b.WriteString(" in ")
+			if err := emitExpr(b, n.Comparators[0], lines); err != nil {
+				return err
+			}
+			b.WriteByte(')')
+			return nil
+		}
 		if err := emitExpr(b, n.Left, lines); err != nil {
 			return err
 		}
@@ -835,8 +889,6 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 			b.WriteString(">=")
 		case "In":
 			b.WriteString("in")
-		case "NotIn":
-			b.WriteString("not in")
 		default:
 			return newConvertError(n.Line, lines, "unhandled compare operator")
 		}
@@ -1151,4 +1203,73 @@ func condBool(n *Node) *Node {
 		}
 	}
 	return nil
+}
+
+func existsListComp(n *Node) (*Node, bool) {
+	if n == nil || n.Type != "Compare" || len(n.Ops) != 1 || len(n.Comparators) != 1 {
+		return nil, false
+	}
+	if n.Ops[0].Type != "Gt" {
+		return nil, false
+	}
+	right := n.Comparators[0]
+	if right == nil || right.Type != "Constant" {
+		return nil, false
+	}
+	if v := right.constValue(); v != 0 && v != 0.0 {
+		return nil, false
+	}
+	call := n.Left
+	if call == nil || call.Type != "Call" || call.Func == nil || call.Func.Type != "Name" || call.Func.ID != "len" {
+		return nil, false
+	}
+	args := call.callArgs()
+	if len(args) != 1 || args[0].Type != "ListComp" {
+		return nil, false
+	}
+	return args[0], true
+}
+
+func listUnionAllArgs(n *Node) (*Node, *Node, bool) {
+	if n == nil || n.Type != "BinOp" || n.Op == nil || n.Op.Type != "Add" {
+		return nil, nil, false
+	}
+	if n.Left.Type == "List" && n.Right.Type == "List" {
+		return n.Left, n.Right, true
+	}
+	return nil, nil, false
+}
+
+func setBinOp(n *Node) (string, *Node, *Node, bool) {
+	if n == nil || n.Type != "BinOp" || n.Op == nil {
+		return "", nil, nil, false
+	}
+	l := n.Left
+	r := n.Right
+	if l == nil || r == nil {
+		return "", nil, nil, false
+	}
+	if l.Type != "Call" || r.Type != "Call" || l.Func == nil || r.Func == nil {
+		return "", nil, nil, false
+	}
+	if l.Func.Type != "Name" || r.Func.Type != "Name" || l.Func.ID != "set" || r.Func.ID != "set" {
+		return "", nil, nil, false
+	}
+	largs := l.callArgs()
+	rargs := r.callArgs()
+	if len(largs) != 1 || len(rargs) != 1 {
+		return "", nil, nil, false
+	}
+	var op string
+	switch n.Op.Type {
+	case "BitOr":
+		op = "union"
+	case "Sub":
+		op = "except"
+	case "BitAnd":
+		op = "intersect"
+	default:
+		return "", nil, nil, false
+	}
+	return op, largs[0], rargs[0], true
 }
