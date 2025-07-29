@@ -1,0 +1,123 @@
+{
+  "forms": [
+    [
+      "ns",
+      "main"
+    ],
+    [
+      "require",
+      [
+        "quote",
+        "clojure.set"
+      ]
+    ],
+    [
+      "defrecord",
+      "People",
+      [
+        "name",
+        "age"
+      ]
+    ],
+    [
+      "def",
+      "people",
+      [
+        {
+          "age": 30,
+          "name": "Alice"
+        },
+        {
+          "age": 15,
+          "name": "Bob"
+        },
+        {
+          "age": 65,
+          "name": "Charlie"
+        },
+        {
+          "age": 45,
+          "name": "Diana"
+        }
+      ]
+    ],
+    [
+      "def",
+      "adults",
+      [
+        "for",
+        [
+          "person",
+          "people",
+          "when",
+          [
+            "\u003e=",
+            [
+              "age",
+              "person"
+            ],
+            18
+          ]
+        ],
+        {
+          "age": [
+            "age",
+            "person"
+          ],
+          "is_senior": [
+            "\u003e=",
+            [
+              "age",
+              "person"
+            ],
+            60
+          ],
+          "name": [
+            "name",
+            "person"
+          ]
+        }
+      ]
+    ],
+    [
+      "defn",
+      "-main",
+      [],
+      [
+        "println",
+        "--- Adults ---"
+      ],
+      [
+        "doseq",
+        [
+          "person",
+          "adults"
+        ],
+        [
+          "println",
+          [
+            "name",
+            "person"
+          ],
+          "is",
+          [
+            "age",
+            "person"
+          ],
+          [
+            "if",
+            [
+              "is_senior",
+              "person"
+            ],
+            " (senior)",
+            ""
+          ]
+        ]
+      ]
+    ],
+    [
+      "-main"
+    ]
+  ]
+}

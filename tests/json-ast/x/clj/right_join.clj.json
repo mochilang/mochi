@@ -1,0 +1,191 @@
+{
+  "forms": [
+    [
+      "ns",
+      "main"
+    ],
+    [
+      "require",
+      [
+        "quote",
+        "clojure.set"
+      ]
+    ],
+    [
+      "defrecord",
+      "Orders",
+      [
+        "id",
+        "customerId",
+        "total"
+      ]
+    ],
+    [
+      "defrecord",
+      "Customers",
+      [
+        "id",
+        "name"
+      ]
+    ],
+    [
+      "def",
+      "customers",
+      [
+        {
+          "id": 1,
+          "name": "Alice"
+        },
+        {
+          "id": 2,
+          "name": "Bob"
+        },
+        {
+          "id": 3,
+          "name": "Charlie"
+        },
+        {
+          "id": 4,
+          "name": "Diana"
+        }
+      ]
+    ],
+    [
+      "def",
+      "orders",
+      [
+        {
+          "customerId": 1,
+          "id": 100,
+          "total": 250
+        },
+        {
+          "customerId": 2,
+          "id": 101,
+          "total": 125
+        },
+        {
+          "customerId": 1,
+          "id": 102,
+          "total": 300
+        }
+      ]
+    ],
+    [
+      "def",
+      "result",
+      [
+        "for",
+        [
+          "o",
+          "orders",
+          "c",
+          [
+            "let",
+            [
+              "c_tmp",
+              [
+                "filter",
+                [
+                  "fn",
+                  [
+                    "c"
+                  ],
+                  [
+                    "=",
+                    [
+                      "customerId",
+                      "o"
+                    ],
+                    [
+                      "id",
+                      "c"
+                    ]
+                  ]
+                ],
+                "customers"
+              ]
+            ],
+            [
+              "if",
+              [
+                "seq",
+                "c_tmp"
+              ],
+              "c_tmp",
+              [
+                null
+              ]
+            ]
+          ]
+        ],
+        {
+          "customerName": [
+            "name",
+            "c"
+          ],
+          "order": "o"
+        }
+      ]
+    ],
+    [
+      "defn",
+      "-main",
+      [],
+      [
+        "println",
+        "--- Right Join using syntax ---"
+      ],
+      [
+        "doseq",
+        [
+          "entry",
+          "result"
+        ],
+        [
+          "if",
+          [
+            "order",
+            "entry"
+          ],
+          [
+            "println",
+            "Customer",
+            [
+              "customerName",
+              "entry"
+            ],
+            "has order",
+            [
+              "id",
+              [
+                "order",
+                "entry"
+              ]
+            ],
+            "- $",
+            [
+              "total",
+              [
+                "order",
+                "entry"
+              ]
+            ]
+          ],
+          [
+            "println",
+            "Customer",
+            [
+              "customerName",
+              "entry"
+            ],
+            "has no orders"
+          ]
+        ]
+      ]
+    ],
+    [
+      "-main"
+    ]
+  ]
+}

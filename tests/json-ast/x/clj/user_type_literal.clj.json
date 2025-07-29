@@ -1,0 +1,44 @@
+{
+  "forms": [
+    [
+      "ns",
+      "main"
+    ],
+    [
+      "require",
+      [
+        "quote",
+        "clojure.set"
+      ]
+    ],
+    [
+      "def",
+      "book",
+      {
+        "author": {
+          "age": 42,
+          "name": "Bob"
+        },
+        "title": "Go"
+      }
+    ],
+    [
+      "defn",
+      "-main",
+      [],
+      [
+        "println",
+        [
+          "name",
+          [
+            "author",
+            "book"
+          ]
+        ]
+      ]
+    ],
+    [
+      "-main"
+    ]
+  ]
+}

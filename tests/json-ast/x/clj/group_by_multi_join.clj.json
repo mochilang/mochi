@@ -1,0 +1,251 @@
+{
+  "forms": [
+    [
+      "ns",
+      "main"
+    ],
+    [
+      "require",
+      [
+        "quote",
+        "clojure.set"
+      ]
+    ],
+    [
+      "defrecord",
+      "Partsupp",
+      [
+        "part",
+        "supplier",
+        "cost",
+        "qty"
+      ]
+    ],
+    [
+      "defrecord",
+      "Suppliers",
+      [
+        "id",
+        "nation"
+      ]
+    ],
+    [
+      "defrecord",
+      "Nations",
+      [
+        "id",
+        "name"
+      ]
+    ],
+    [
+      "def",
+      "nations",
+      [
+        {
+          "id": 1,
+          "name": "A"
+        },
+        {
+          "id": 2,
+          "name": "B"
+        }
+      ]
+    ],
+    [
+      "def",
+      "suppliers",
+      [
+        {
+          "id": 1,
+          "nation": 1
+        },
+        {
+          "id": 2,
+          "nation": 2
+        }
+      ]
+    ],
+    [
+      "def",
+      "partsupp",
+      [
+        {
+          "cost": 10,
+          "part": 100,
+          "qty": 2,
+          "supplier": 1
+        },
+        {
+          "cost": 20,
+          "part": 100,
+          "qty": 1,
+          "supplier": 2
+        },
+        {
+          "cost": 5,
+          "part": 200,
+          "qty": 3,
+          "supplier": 1
+        }
+      ]
+    ],
+    [
+      "def",
+      "filtered",
+      [
+        "for",
+        [
+          "ps",
+          "partsupp",
+          "s",
+          "suppliers",
+          "n",
+          "nations",
+          "when",
+          [
+            "and",
+            [
+              "=",
+              [
+                "id",
+                "s"
+              ],
+              [
+                "supplier",
+                "ps"
+              ]
+            ],
+            [
+              "=",
+              [
+                "id",
+                "n"
+              ],
+              [
+                "nation",
+                "s"
+              ]
+            ],
+            [
+              "=",
+              [
+                "name",
+                "n"
+              ],
+              "A"
+            ]
+          ]
+        ],
+        {
+          "part": [
+            "part",
+            "ps"
+          ],
+          "value": [
+            "*",
+            [
+              "cost",
+              "ps"
+            ],
+            [
+              "qty",
+              "ps"
+            ]
+          ]
+        }
+      ]
+    ],
+    [
+      "def",
+      "grouped",
+      [
+        "for",
+        [
+          "g",
+          [
+            "for",
+            [
+              [
+                "k",
+                "rows"
+              ],
+              [
+                "group-by",
+                "key",
+                [
+                  "for",
+                  [
+                    "x",
+                    "filtered",
+                    "let",
+                    [
+                      "k",
+                      [
+                        "part",
+                        "x"
+                      ]
+                    ]
+                  ],
+                  {
+                    "item": "x",
+                    "key": "k"
+                  }
+                ]
+              ],
+              "let",
+              [
+                "g",
+                {
+                  "items": [
+                    "map",
+                    "item",
+                    "rows"
+                  ],
+                  "key": "k"
+                }
+              ]
+            ],
+            "g"
+          ]
+        ],
+        {
+          "part": [
+            "key",
+            "g"
+          ],
+          "total": [
+            "reduce",
+            "+",
+            0,
+            [
+              "for",
+              [
+                "r",
+                [
+                  "items",
+                  "g"
+                ]
+              ],
+              [
+                "value",
+                "r"
+              ]
+            ]
+          ]
+        }
+      ]
+    ],
+    [
+      "defn",
+      "-main",
+      [],
+      [
+        "println",
+        "grouped"
+      ]
+    ],
+    [
+      "-main"
+    ]
+  ]
+}

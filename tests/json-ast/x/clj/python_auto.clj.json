@@ -1,0 +1,90 @@
+{
+  "forms": [
+    [
+      "ns",
+      "main"
+    ],
+    [
+      "require",
+      [
+        "quote",
+        "clojure.set"
+      ]
+    ],
+    [
+      "def",
+      "math",
+      {
+        "e": "Math/E",
+        "log": [
+          "fn",
+          [
+            "x"
+          ],
+          [
+            "Math/log",
+            "x"
+          ]
+        ],
+        "pi": "Math/PI",
+        "pow": [
+          "fn",
+          [
+            "x",
+            "y"
+          ],
+          [
+            "Math/pow",
+            "x",
+            "y"
+          ]
+        ],
+        "sin": [
+          "fn",
+          [
+            "x"
+          ],
+          [
+            "Math/sin",
+            "x"
+          ]
+        ],
+        "sqrt": [
+          "fn",
+          [
+            "x"
+          ],
+          [
+            "Math/sqrt",
+            "x"
+          ]
+        ]
+      }
+    ],
+    [
+      "defn",
+      "-main",
+      [],
+      [
+        "println",
+        [
+          [
+            "sqrt",
+            "math"
+          ],
+          16
+        ]
+      ],
+      [
+        "println",
+        [
+          "pi",
+          "math"
+        ]
+      ]
+    ],
+    [
+      "-main"
+    ]
+  ]
+}

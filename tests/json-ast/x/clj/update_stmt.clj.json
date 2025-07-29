@@ -1,0 +1,114 @@
+{
+  "forms": [
+    [
+      "ns",
+      "main"
+    ],
+    [
+      "require",
+      [
+        "quote",
+        "clojure.set"
+      ]
+    ],
+    [
+      "def",
+      "people",
+      [
+        {
+          "age": 17,
+          "name": "Alice",
+          "status": "minor"
+        },
+        {
+          "age": 25,
+          "name": "Bob",
+          "status": "unknown"
+        },
+        {
+          "age": 18,
+          "name": "Charlie",
+          "status": "unknown"
+        },
+        {
+          "age": 16,
+          "name": "Diana",
+          "status": "minor"
+        }
+      ]
+    ],
+    [
+      "defn",
+      "-main",
+      [],
+      [
+        "def",
+        "people",
+        [
+          "vec",
+          [
+            "map",
+            [
+              "fn",
+              [
+                "item"
+              ],
+              [
+                "let",
+                [
+                  "name",
+                  [
+                    "name",
+                    "item"
+                  ],
+                  "age",
+                  [
+                    "age",
+                    "item"
+                  ],
+                  "status",
+                  [
+                    "status",
+                    "item"
+                  ]
+                ],
+                [
+                  "if",
+                  [
+                    "\u003e=",
+                    "age",
+                    18
+                  ],
+                  [
+                    "assoc",
+                    [
+                      "assoc",
+                      "item",
+                      "status",
+                      "adult"
+                    ],
+                    "age",
+                    [
+                      "+",
+                      "age",
+                      1
+                    ]
+                  ],
+                  "item"
+                ]
+              ]
+            ],
+            "people"
+          ]
+        ]
+      ],
+      [
+        "println",
+        "ok"
+      ]
+    ],
+    [
+      "-main"
+    ]
+  ]
+}

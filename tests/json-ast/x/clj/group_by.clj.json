@@ -1,0 +1,206 @@
+{
+  "forms": [
+    [
+      "ns",
+      "main"
+    ],
+    [
+      "require",
+      [
+        "quote",
+        "clojure.set"
+      ]
+    ],
+    [
+      "defrecord",
+      "People",
+      [
+        "name",
+        "age",
+        "city"
+      ]
+    ],
+    [
+      "def",
+      "people",
+      [
+        {
+          "age": 30,
+          "city": "Paris",
+          "name": "Alice"
+        },
+        {
+          "age": 15,
+          "city": "Hanoi",
+          "name": "Bob"
+        },
+        {
+          "age": 65,
+          "city": "Paris",
+          "name": "Charlie"
+        },
+        {
+          "age": 45,
+          "city": "Hanoi",
+          "name": "Diana"
+        },
+        {
+          "age": 70,
+          "city": "Paris",
+          "name": "Eve"
+        },
+        {
+          "age": 22,
+          "city": "Hanoi",
+          "name": "Frank"
+        }
+      ]
+    ],
+    [
+      "def",
+      "stats",
+      [
+        "for",
+        [
+          "g",
+          [
+            "for",
+            [
+              [
+                "k",
+                "rows"
+              ],
+              [
+                "group-by",
+                "key",
+                [
+                  "for",
+                  [
+                    "person",
+                    "people",
+                    "let",
+                    [
+                      "k",
+                      [
+                        "city",
+                        "person"
+                      ]
+                    ]
+                  ],
+                  {
+                    "item": "person",
+                    "key": "k"
+                  }
+                ]
+              ],
+              "let",
+              [
+                "g",
+                {
+                  "items": [
+                    "map",
+                    "item",
+                    "rows"
+                  ],
+                  "key": "k"
+                }
+              ]
+            ],
+            "g"
+          ]
+        ],
+        {
+          "avg_age": [
+            "double",
+            [
+              "/",
+              [
+                "reduce",
+                "+",
+                0,
+                [
+                  "for",
+                  [
+                    "p",
+                    [
+                      "items",
+                      "g"
+                    ]
+                  ],
+                  [
+                    "age",
+                    "p"
+                  ]
+                ]
+              ],
+              [
+                "count",
+                [
+                  "for",
+                  [
+                    "p",
+                    [
+                      "items",
+                      "g"
+                    ]
+                  ],
+                  [
+                    "age",
+                    "p"
+                  ]
+                ]
+              ]
+            ]
+          ],
+          "city": [
+            "key",
+            "g"
+          ],
+          "count": [
+            "count",
+            [
+              "items",
+              "g"
+            ]
+          ]
+        }
+      ]
+    ],
+    [
+      "defn",
+      "-main",
+      [],
+      [
+        "println",
+        "--- People grouped by city ---"
+      ],
+      [
+        "doseq",
+        [
+          "s",
+          "stats"
+        ],
+        [
+          "println",
+          [
+            "city",
+            "s"
+          ],
+          ": count =",
+          [
+            "count",
+            "s"
+          ],
+          ", avg_age =",
+          [
+            "avg_age",
+            "s"
+          ]
+        ]
+      ]
+    ],
+    [
+      "-main"
+    ]
+  ]
+}
