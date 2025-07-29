@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let x = 2 in\n  let label = (match x with | 1 -\u003e \"one\" | 2 -\u003e \"two\" | 3 -\u003e \"three\" | _ -\u003e \"unknown\") in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [label]))",
+      "line": 3,
+      "col": 1,
+      "endLine": 6,
+      "endCol": 78,
+      "snippet": "let () =\n  let x = 2 in\n  let label = (match x with | 1 -\u003e \"one\" | 2 -\u003e \"two\" | 3 -\u003e \"three\" | _ -\u003e \"unknown\") in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [label]));"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

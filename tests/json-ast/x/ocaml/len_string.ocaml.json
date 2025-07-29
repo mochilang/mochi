@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (String.length \"mochi\")]))",
+      "line": 3,
+      "col": 1,
+      "endLine": 4,
+      "endCol": 110,
+      "snippet": "let () =\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (String.length \"mochi\")]));"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

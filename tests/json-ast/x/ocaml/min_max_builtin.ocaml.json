@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let nums = [3; 1; 4] in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (List.fold_left min max_int nums)]));\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (List.fold_left max min_int nums)]))",
+      "line": 3,
+      "col": 1,
+      "endLine": 6,
+      "endCol": 120,
+      "snippet": "let () =\n  let nums = [3; 1; 4] in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (List.fold_left min max_int nums)]));\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (List.fold_left max min_int nums)]));"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

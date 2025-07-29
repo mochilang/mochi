@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let m = ref [(\"a\", 1); (\"b\", 2)] in\n  (try List.iter (fun (k, _) -\u003e\n    try\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int k]));\n    with Continue -\u003e ()) !m with Break -\u003e ())",
+      "line": 3,
+      "col": 1,
+      "endLine": 8,
+      "endCol": 46,
+      "snippet": "let () =\n  let m = ref [(\"a\", 1); (\"b\", 2)] in\n  (try List.iter (fun (k, _) -\u003e\n    try\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int k]));\n    with Continue -\u003e ()) !m with Break -\u003e ())"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

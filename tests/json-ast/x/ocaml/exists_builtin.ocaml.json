@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let data = [1; 2] in\n  let flag = (List.length (List.filter_map (fun x -\u003e if (x == 1) then Some (x) else None) data) \u003e 0) in\n  print_endline (String.concat \" \" [string_of_bool flag])",
+      "line": 3,
+      "col": 1,
+      "endLine": 6,
+      "endCol": 59,
+      "snippet": "let () =\n  let data = [1; 2] in\n  let flag = (List.length (List.filter_map (fun x -\u003e if (x == 1) then Some (x) else None) data) \u003e 0) in\n  print_endline (String.concat \" \" [string_of_bool flag]);"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

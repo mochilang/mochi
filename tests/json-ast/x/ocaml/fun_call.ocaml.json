@@ -1,0 +1,29 @@
+{
+  "funcs": [
+    {
+      "name": "add",
+      "params": [
+        "a",
+        "b"
+      ],
+      "body": "(a + b)",
+      "line": 3,
+      "col": 1,
+      "endLine": 4,
+      "endCol": 10,
+      "snippet": "let rec add a b =\n  (a + b)"
+    }
+  ],
+  "prints": [
+    {
+      "expr": "print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (add 2 3)]))",
+      "line": 6,
+      "col": 1,
+      "endLine": 7,
+      "endCol": 96,
+      "snippet": "let () =\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (add 2 3)]));"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

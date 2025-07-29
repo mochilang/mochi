@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let a = 10 in\n  let b = 20 in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (a + b)]))",
+      "line": 3,
+      "col": 1,
+      "endLine": 6,
+      "endCol": 94,
+      "snippet": "let () =\n  let a = 10 in\n  let b = 20 in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (a + b)]));"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

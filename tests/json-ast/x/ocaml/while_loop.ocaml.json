@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let i = ref 0 in\n  (try while (!i \u003c 3) do\n    try\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int !i]));\n  i := (!i + 1);\n    with Continue -\u003e ()\n  done with Break -\u003e ())",
+      "line": 3,
+      "col": 1,
+      "endLine": 10,
+      "endCol": 25,
+      "snippet": "let () =\n  let i = ref 0 in\n  (try while (!i \u003c 3) do\n    try\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int !i]));\n  i := (!i + 1);\n    with Continue -\u003e ()\n  done with Break -\u003e ())"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

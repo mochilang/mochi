@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let customers = [[(\"id\", 1); (\"name\", \"Alice\")]; [(\"id\", 2); (\"name\", \"Bob\")]; [(\"id\", 3); (\"name\", \"Charlie\")]] in\n  let orders = [[(\"id\", 100); (\"customerId\", 1)]; [(\"id\", 101); (\"customerId\", 1)]; [(\"id\", 102); (\"customerId\", 2)]] in\n  let stats = (let __groups0 = ref [] in\n  List.iter (fun c -\u003e\n  List.iter (fun o -\u003e\n    if ((List.assoc \"customerId\" o) == (List.assoc \"id\" c)) then (\n    let key = (List.assoc \"name\" c) in\n    let cur = try List.assoc key !__groups0 with Not_found -\u003e [] in\n    __groups0 := (key, c :: cur) :: List.remove_assoc key !__groups0;\n    )\n  ) orders;\n  ) customers;\n  let __res0 = ref [] in\n  List.iter (fun (g_key, g_items) -\u003e\n    let g = List.rev g_items in\n    __res0 := [(\"name\", g_key); (\"count\", List.length (List.filter_map (fun r -\u003e if (List.assoc \"o\" r) then Some (r) else None) g))] :: !__res0\n  ) !__groups0;\n  List.rev !__res0) in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [\"--- Group Left Join ---\"]));\n  (try List.iter (fun s -\u003e\n    try\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [(List.assoc \"name\" s); \"orders:\"; string_of_int (List.assoc \"count\" s))]));\n    with Continue -\u003e ()) stats with Break -\u003e ())",
+      "line": 3,
+      "col": 1,
+      "endLine": 26,
+      "endCol": 49,
+      "snippet": "let () =\n  let customers = [[(\"id\", 1); (\"name\", \"Alice\")]; [(\"id\", 2); (\"name\", \"Bob\")]; [(\"id\", 3); (\"name\", \"Charlie\")]] in\n  let orders = [[(\"id\", 100); (\"customerId\", 1)]; [(\"id\", 101); (\"customerId\", 1)]; [(\"id\", 102); (\"customerId\", 2)]] in\n  let stats = (let __groups0 = ref [] in\n  List.iter (fun c -\u003e\n  List.iter (fun o -\u003e\n    if ((List.assoc \"customerId\" o) == (List.assoc \"id\" c)) then (\n    let key = (List.assoc \"name\" c) in\n    let cur = try List.assoc key !__groups0 with Not_found -\u003e [] in\n    __groups0 := (key, c :: cur) :: List.remove_assoc key !__groups0;\n    )\n  ) orders;\n  ) customers;\n  let __res0 = ref [] in\n  List.iter (fun (g_key, g_items) -\u003e\n    let g = List.rev g_items in\n    __res0 := [(\"name\", g_key); (\"count\", List.length (List.filter_map (fun r -\u003e if (List.assoc \"o\" r) then Some (r) else None) g))] :: !__res0\n  ) !__groups0;\n  List.rev !__res0) in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [\"--- Group Left Join ---\"]));\n  (try List.iter (fun s -\u003e\n    try\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [(List.assoc \"name\" s); \"orders:\"; string_of_int (List.assoc \"count\" s))]));\n    with Continue -\u003e ()) stats with Break -\u003e ())"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

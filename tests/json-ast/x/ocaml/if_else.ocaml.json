@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let x = 5 in\n  if (x \u003e 3) then (\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [\"big\"]));\n  ) else (\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [\"small\"]));\n  )",
+      "line": 3,
+      "col": 1,
+      "endLine": 9,
+      "endCol": 5,
+      "snippet": "let () =\n  let x = 5 in\n  if (x \u003e 3) then (\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [\"big\"]));\n  ) else (\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [\"small\"]));\n  );"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

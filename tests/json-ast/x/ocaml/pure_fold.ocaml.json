@@ -1,0 +1,28 @@
+{
+  "funcs": [
+    {
+      "name": "triple",
+      "params": [
+        "x"
+      ],
+      "body": "(x * 3)",
+      "line": 3,
+      "col": 1,
+      "endLine": 4,
+      "endCol": 10,
+      "snippet": "let rec triple x =\n  (x * 3)"
+    }
+  ],
+  "prints": [
+    {
+      "expr": "print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (triple (1 + 2))]))",
+      "line": 6,
+      "col": 1,
+      "endLine": 7,
+      "endCol": 103,
+      "snippet": "let () =\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (triple (1 + 2))]));"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

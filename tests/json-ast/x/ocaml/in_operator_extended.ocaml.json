@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let xs = [1; 2; 3] in\n  let ys = (List.filter_map (fun x -\u003e if ((x mod 2) == 1) then Some (x) else None) xs) in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool ((List.mem 1 ys))]));\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool ((List.mem 2 ys))]));\n  let m = [(\"a\", 1)] in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool ((List.mem \"a\" m))]));\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool ((List.mem \"b\" m))]));\n  let s = \"hello\" in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool ((let len_s = String.length s and len_sub = String.length \"ell\" in let rec aux i = if i + len_sub \u003e len_s then false else if String.sub s i len_sub = \"ell\" then true else aux (i + 1) in aux 0))]));\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool ((let len_s = String.length s and len_sub = String.length \"foo\" in let rec aux i = if i + len_sub \u003e len_s then false else if String.sub s i len_sub = \"foo\" then true else aux (i + 1) in aux 0))]))",
+      "line": 3,
+      "col": 1,
+      "endLine": 13,
+      "endCol": 281,
+      "snippet": "let () =\n  let xs = [1; 2; 3] in\n  let ys = (List.filter_map (fun x -\u003e if ((x mod 2) == 1) then Some (x) else None) xs) in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool ((List.mem 1 ys))]));\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool ((List.mem 2 ys))]));\n  let m = [(\"a\", 1)] in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool ((List.mem \"a\" m))]));\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool ((List.mem \"b\" m))]));\n  let s = \"hello\" in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool ((let len_s = String.length s and len_sub = String.length \"ell\" in let rec aux i = if i + len_sub \u003e len_s then false else if String.sub s i len_sub = \"ell\" then true else aux (i + 1) in aux 0))]));\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool ((let len_s = String.length s and len_sub = String.length \"foo\" in let rec aux i = if i + len_sub \u003e len_s then false else if String.sub s i len_sub = \"foo\" then true else aux (i + 1) in aux 0))]));"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

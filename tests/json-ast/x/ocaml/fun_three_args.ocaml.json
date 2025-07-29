@@ -1,0 +1,30 @@
+{
+  "funcs": [
+    {
+      "name": "sum3",
+      "params": [
+        "a",
+        "b",
+        "c"
+      ],
+      "body": "((a + b) + c)",
+      "line": 3,
+      "col": 1,
+      "endLine": 4,
+      "endCol": 16,
+      "snippet": "let rec sum3 a b c =\n  ((a + b) + c)"
+    }
+  ],
+  "prints": [
+    {
+      "expr": "print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (sum3 1 2 3)]))",
+      "line": 6,
+      "col": 1,
+      "endLine": 7,
+      "endCol": 99,
+      "snippet": "let () =\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (sum3 1 2 3)]));"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

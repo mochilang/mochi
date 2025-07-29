@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let prefix = \"fore\" in\n  let s1 = \"forest\" in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool (String.sub s1 0 (String.length prefix - 0) == prefix)]));\n  let s2 = \"desert\" in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool (String.sub s2 0 (String.length prefix - 0) == prefix)]))",
+      "line": 3,
+      "col": 1,
+      "endLine": 8,
+      "endCol": 142,
+      "snippet": "let () =\n  let prefix = \"fore\" in\n  let s1 = \"forest\" in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool (String.sub s1 0 (String.length prefix - 0) == prefix)]));\n  let s2 = \"desert\" in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool (String.sub s2 0 (String.length prefix - 0) == prefix)]));"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

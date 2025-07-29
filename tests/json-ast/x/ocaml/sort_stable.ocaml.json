@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let items = [[(\"n\", 1); (\"v\", \"a\")]; [(\"n\", 1); (\"v\", \"b\")]; [(\"n\", 2); (\"v\", \"c\")]] in\n  let result = (let __tmp0 = (List.map (fun i -\u003e (List.assoc \"v\" i)) items) in\n  let __tmp0 = List.sort (fun a b -\u003e compare (Last.assoc \"n\" a) (Lbst.assoc \"n\" b)) __tmp0 in\n  __tmp0) in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [result]))",
+      "line": 3,
+      "col": 1,
+      "endLine": 8,
+      "endCol": 79,
+      "snippet": "let () =\n  let items = [[(\"n\", 1); (\"v\", \"a\")]; [(\"n\", 1); (\"v\", \"b\")]; [(\"n\", 2); (\"v\", \"c\")]] in\n  let result = (let __tmp0 = (List.map (fun i -\u003e (List.assoc \"v\" i)) items) in\n  let __tmp0 = List.sort (fun a b -\u003e compare (Last.assoc \"n\" a) (Lbst.assoc \"n\" b)) __tmp0 in\n  __tmp0) in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [result]));"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

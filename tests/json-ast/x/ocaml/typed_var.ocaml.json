@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let x = ref 0 in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int !x]))",
+      "line": 3,
+      "col": 1,
+      "endLine": 5,
+      "endCol": 89,
+      "snippet": "let () =\n  let x = ref 0 in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int !x]));"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

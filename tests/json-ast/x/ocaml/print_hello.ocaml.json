@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "print_endline (String.concat \" \" [\"hello\"])",
+      "line": 3,
+      "col": 1,
+      "endLine": 4,
+      "endCol": 47,
+      "snippet": "let () =\n  print_endline (String.concat \" \" [\"hello\"]);"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

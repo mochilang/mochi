@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let matrix = ref [[1; 2]; [3; 4]] in\n  matrix := (List.mapi (fun i x -\u003e if i = 1 then (List.mapi (fun i x -\u003e if i = 0 then 5 else x) (List.nth (!matrix) 1)) else x) (!matrix));\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (List.nth (List.nth (!matrix) 1) 0)]))",
+      "line": 3,
+      "col": 1,
+      "endLine": 6,
+      "endCol": 122,
+      "snippet": "let () =\n  let matrix = ref [[1; 2]; [3; 4]] in\n  matrix := (List.mapi (fun i x -\u003e if i = 1 then (List.mapi (fun i x -\u003e if i = 0 then 5 else x) (List.nth (!matrix) 1)) else x) (!matrix));\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (List.nth (List.nth (!matrix) 1) 0)]));"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

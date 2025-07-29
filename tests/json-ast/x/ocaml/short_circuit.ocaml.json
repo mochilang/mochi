@@ -1,0 +1,29 @@
+{
+  "funcs": [
+    {
+      "name": "boom",
+      "params": [
+        "a",
+        "b"
+      ],
+      "body": "print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [\"boom\"]));\n  true",
+      "line": 3,
+      "col": 1,
+      "endLine": 5,
+      "endCol": 7,
+      "snippet": "let rec boom a b =\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [\"boom\"]));\n  true"
+    }
+  ],
+  "prints": [
+    {
+      "expr": "print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool (false \u0026\u0026 boom 1 2)]));\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool (true || boom 1 2)]))",
+      "line": 7,
+      "col": 1,
+      "endLine": 9,
+      "endCol": 106,
+      "snippet": "let () =\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool (false \u0026\u0026 boom 1 2)]));\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool (true || boom 1 2)]));"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

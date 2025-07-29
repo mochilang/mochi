@@ -1,0 +1,26 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let data = [[(\"tag\", \"a\"); (\"val\", 1)]; [(\"tag\", \"a\"); (\"val\", 2)]; [(\"tag\", \"b\"); (\"val\", 3)]] in\n  let groups = (let __groups0 = ref [] in\n  List.iter (fun d -\u003e\n    let key = (List.assoc \"tag\" d) in\n    let cur = try List.assoc key !__groups0 with Not_found -\u003e [] in\n    __groups0 := (key, d :: cur) :: List.remove_assoc key !__groups0;\n  ) data;\n  let __res0 = ref [] in\n  List.iter (fun (g_key, g_items) -\u003e\n    let g = List.rev g_items in\n    __res0 := g :: !__res0\n  ) !__groups0;\n  List.rev !__res0) in\n  let tmp = ref [] in\n  (try List.iter (fun g -\u003e\n    try\n  let total = ref 0 in\n  (try List.iter (fun x -\u003e\n    try\n  total := (!total + (List.assoc \"val\" x));\n    with Continue -\u003e ()) (List.assoc \"items\" g) with Break -\u003e ())\n  tmp := List.append !tmp [[(\"tag\", (List.assoc \"key\" g)); (\"total\", !total)]];\n    with Continue -\u003e ()) groups with Break -\u003e ())",
+      "line": 3,
+      "col": 1,
+      "endLine": 26,
+      "endCol": 50,
+      "snippet": "let () =\n  let data = [[(\"tag\", \"a\"); (\"val\", 1)]; [(\"tag\", \"a\"); (\"val\", 2)]; [(\"tag\", \"b\"); (\"val\", 3)]] in\n  let groups = (let __groups0 = ref [] in\n  List.iter (fun d -\u003e\n    let key = (List.assoc \"tag\" d) in\n    let cur = try List.assoc key !__groups0 with Not_found -\u003e [] in\n    __groups0 := (key, d :: cur) :: List.remove_assoc key !__groups0;\n  ) data;\n  let __res0 = ref [] in\n  List.iter (fun (g_key, g_items) -\u003e\n    let g = List.rev g_items in\n    __res0 := g :: !__res0\n  ) !__groups0;\n  List.rev !__res0) in\n  let tmp = ref [] in\n  (try List.iter (fun g -\u003e\n    try\n  let total = ref 0 in\n  (try List.iter (fun x -\u003e\n    try\n  total := (!total + (List.assoc \"val\" x));\n    with Continue -\u003e ()) (List.assoc \"items\" g) with Break -\u003e ())\n  tmp := List.append !tmp [[(\"tag\", (List.assoc \"key\" g)); (\"total\", !total)]];\n    with Continue -\u003e ()) groups with Break -\u003e ())"
+    }
+  ],
+  "types": [],
+  "vars": [
+    {
+      "name": "result",
+      "expr": "(let __tmp0 = (List.map (fun r -\u003e r) !tmp) in\n  let __tmp0 = List.sort (fun a b -\u003e compare (List.assoc \"tag\" a) (List.assoc \"tag\" b)) __tmp0 in\n  __tmp0) in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [result]))",
+      "mutable": false,
+      "line": 27,
+      "col": 3,
+      "endLine": 30,
+      "endCol": 79,
+      "snippet": "let result = (let __tmp0 = (List.map (fun r -\u003e r) !tmp) in\n  let __tmp0 = List.sort (fun a b -\u003e compare (List.assoc \"tag\" a) (List.assoc \"tag\" b)) __tmp0 in\n  __tmp0) in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [result]));"
+    }
+  ]
+}

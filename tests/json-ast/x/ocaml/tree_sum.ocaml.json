@@ -1,0 +1,39 @@
+{
+  "funcs": [
+    {
+      "name": "sum_tree",
+      "params": [
+        "t"
+      ],
+      "body": "match t with\n  | Leaf -\u003e 0\n  | Node (left, value, right) -\u003e sum_tree left + value + sum_tree right",
+      "line": 7,
+      "col": 1,
+      "endLine": 10,
+      "endCol": 72,
+      "snippet": "let rec sum_tree t =\n  match t with\n  | Leaf -\u003e 0\n  | Node (left, value, right) -\u003e sum_tree left + value + sum_tree right"
+    }
+  ],
+  "prints": [
+    {
+      "expr": "print_endline (string_of_int (sum_tree t))",
+      "line": 15,
+      "col": 1,
+      "endLine": 16,
+      "endCol": 45,
+      "snippet": "let () =\n  print_endline (string_of_int (sum_tree t))"
+    }
+  ],
+  "types": [],
+  "vars": [
+    {
+      "name": "t",
+      "expr": "Node (Leaf, 1, Node (Leaf, 2, Leaf))",
+      "mutable": false,
+      "line": 12,
+      "col": 1,
+      "endLine": 13,
+      "endCol": 39,
+      "snippet": "let t =\n  Node (Leaf, 1, Node (Leaf, 2, Leaf))"
+    }
+  ]
+}

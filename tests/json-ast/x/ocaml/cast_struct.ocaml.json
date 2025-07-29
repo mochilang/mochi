@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let todo = [(\"title\", Obj.repr \"hi\")] in\n  print_endline (String.concat \" \" [(Obj.obj (List.assoc \"title\" todo) : string)])",
+      "line": 3,
+      "col": 1,
+      "endLine": 5,
+      "endCol": 84,
+      "snippet": "let () =\n  let todo = [(\"title\", Obj.repr \"hi\")] in\n  print_endline (String.concat \" \" [(Obj.obj (List.assoc \"title\" todo) : string)]);"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

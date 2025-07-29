@@ -1,0 +1,28 @@
+{
+  "funcs": [
+    {
+      "name": "inc",
+      "params": [
+        "x"
+      ],
+      "body": "(x + k)",
+      "line": 3,
+      "col": 1,
+      "endLine": 4,
+      "endCol": 10,
+      "snippet": "let rec inc x =\n  (x + k)"
+    }
+  ],
+  "prints": [
+    {
+      "expr": "let k = 2 in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (inc 3)]))",
+      "line": 6,
+      "col": 1,
+      "endLine": 8,
+      "endCol": 94,
+      "snippet": "let () =\n  let k = 2 in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (inc 3)]));"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

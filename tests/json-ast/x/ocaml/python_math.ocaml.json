@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let r = 3.0 in\n  let area = (3.141592653589793 *. Float.pow r 2.0) in\n  let root = sqrt 49.0 in\n  let sin45 = sin (3.141592653589793 /. 4.0) in\n  let log_e = log 2.718281828459045 in\n  print_endline (String.concat \" \" [\"Circle area with r =\"; string_of_float r; \"=\u003e\"; string_of_float area]);\n  print_endline (String.concat \" \" [\"Square root of 49:\"; string_of_float root]);\n  print_endline (String.concat \" \" [\"sin(π/4):\"; string_of_float sin45]);\n  print_endline (String.concat \" \" [\"log(e):\"; string_of_float log_e])",
+      "line": 3,
+      "col": 1,
+      "endLine": 12,
+      "endCol": 72,
+      "snippet": "let () =\n  let r = 3.0 in\n  let area = (3.141592653589793 *. Float.pow r 2.0) in\n  let root = sqrt 49.0 in\n  let sin45 = sin (3.141592653589793 /. 4.0) in\n  let log_e = log 2.718281828459045 in\n  print_endline (String.concat \" \" [\"Circle area with r =\"; string_of_float r; \"=\u003e\"; string_of_float area]);\n  print_endline (String.concat \" \" [\"Square root of 49:\"; string_of_float root]);\n  print_endline (String.concat \" \" [\"sin(π/4):\"; string_of_float sin45]);\n  print_endline (String.concat \" \" [\"log(e):\"; string_of_float log_e]);"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

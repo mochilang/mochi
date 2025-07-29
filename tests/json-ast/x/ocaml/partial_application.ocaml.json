@@ -1,0 +1,29 @@
+{
+  "funcs": [
+    {
+      "name": "add",
+      "params": [
+        "a",
+        "b"
+      ],
+      "body": "(a + b)",
+      "line": 3,
+      "col": 1,
+      "endLine": 4,
+      "endCol": 10,
+      "snippet": "let rec add a b =\n  (a + b)"
+    }
+  ],
+  "prints": [
+    {
+      "expr": "let add5 = add 5 in\n  print_endline (String.concat \" \" [string_of_int (add5 3)])",
+      "line": 6,
+      "col": 1,
+      "endLine": 8,
+      "endCol": 62,
+      "snippet": "let () =\n  let add5 = add 5 in\n  print_endline (String.concat \" \" [string_of_int (add5 3)]);"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

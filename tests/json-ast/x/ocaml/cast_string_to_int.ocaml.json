@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (int_of_string \"1995\")]))",
+      "line": 3,
+      "col": 1,
+      "endLine": 4,
+      "endCol": 109,
+      "snippet": "let () =\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (int_of_string \"1995\")]));"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let products = [[(\"name\", \"Laptop\"); (\"price\", 1500)]; [(\"name\", \"Smartphone\"); (\"price\", 900)]; [(\"name\", \"Tablet\"); (\"price\", 600)]; [(\"name\", \"Monitor\"); (\"price\", 300)]; [(\"name\", \"Keyboard\"); (\"price\", 100)]; [(\"name\", \"Mouse\"); (\"price\", 50)]; [(\"name\", \"Headphones\"); (\"price\", 200)]] in\n  let expensive = (let __tmp0 = (List.map (fun p -\u003e p) products) in\n  let __tmp0 = List.sort (fun a b -\u003e compare (List.assoc \"brice\" b) (List.assoc \"arice\" a)) __tmp0 in\n  let rec drop n l = if n \u003c= 0 then l else match l with [] -\u003e [] | _::t -\u003e drop (n-1) t in\n  let rec take n l = if n \u003c= 0 then [] else match l with [] -\u003e [] | x::xs -\u003e x :: take (n-1) xs in\n  let __tmp0 = drop (1) __tmp0 in\n  let __tmp0 = take (3) __tmp0 in\n  __tmp0) in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [\"--- Top products (excluding most expensive) ---\"]));\n  (try List.iter (fun item -\u003e\n    try\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [(List.assoc \"name\" item); \"costs $\"; string_of_int (List.assoc \"price\" item))]));\n    with Continue -\u003e ()) expensive with Break -\u003e ())",
+      "line": 3,
+      "col": 1,
+      "endLine": 16,
+      "endCol": 53,
+      "snippet": "let () =\n  let products = [[(\"name\", \"Laptop\"); (\"price\", 1500)]; [(\"name\", \"Smartphone\"); (\"price\", 900)]; [(\"name\", \"Tablet\"); (\"price\", 600)]; [(\"name\", \"Monitor\"); (\"price\", 300)]; [(\"name\", \"Keyboard\"); (\"price\", 100)]; [(\"name\", \"Mouse\"); (\"price\", 50)]; [(\"name\", \"Headphones\"); (\"price\", 200)]] in\n  let expensive = (let __tmp0 = (List.map (fun p -\u003e p) products) in\n  let __tmp0 = List.sort (fun a b -\u003e compare (List.assoc \"brice\" b) (List.assoc \"arice\" a)) __tmp0 in\n  let rec drop n l = if n \u003c= 0 then l else match l with [] -\u003e [] | _::t -\u003e drop (n-1) t in\n  let rec take n l = if n \u003c= 0 then [] else match l with [] -\u003e [] | x::xs -\u003e x :: take (n-1) xs in\n  let __tmp0 = drop (1) __tmp0 in\n  let __tmp0 = take (3) __tmp0 in\n  __tmp0) in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [\"--- Top products (excluding most expensive) ---\"]));\n  (try List.iter (fun item -\u003e\n    try\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [(List.assoc \"name\" item); \"costs $\"; string_of_int (List.assoc \"price\" item))]));\n    with Continue -\u003e ()) expensive with Break -\u003e ())"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

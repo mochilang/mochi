@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let x = 12 in\n  let msg = if (x \u003e 10) then \"yes\" else \"no\" in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [msg]))",
+      "line": 3,
+      "col": 1,
+      "endLine": 6,
+      "endCol": 76,
+      "snippet": "let () =\n  let x = 12 in\n  let msg = if (x \u003e 10) then \"yes\" else \"no\" in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [msg]));"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

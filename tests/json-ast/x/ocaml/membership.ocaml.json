@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let nums = [1; 2; 3] in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool ((List.mem 2 nums))]));\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool ((List.mem 4 nums))]))",
+      "line": 3,
+      "col": 1,
+      "endLine": 6,
+      "endCol": 107,
+      "snippet": "let () =\n  let nums = [1; 2; 3] in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool ((List.mem 2 nums))]));\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool ((List.mem 4 nums))]));"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

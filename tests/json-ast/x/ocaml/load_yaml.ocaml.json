@@ -1,0 +1,28 @@
+{
+  "funcs": [
+    {
+      "name": "__show",
+      "params": [
+        "v"
+      ],
+      "body": "let open Obj in\n  let rec list_aux o =\n    if is_int o \u0026\u0026 (magic (obj o) : int) = 0 then \"\" else\n     let hd = field o 0 in\n     let tl = field o 1 in\n     let rest = list_aux tl in\n     if rest = \"\" then __show (obj hd) else __show (obj hd) ^ \"; \" ^ rest\n  in\n  let r = repr v in\n  if is_int r then string_of_int (magic v) else\n  match tag r with\n    | 0 -\u003e if size r = 0 then \"[]\" else \"[\" ^ list_aux r ^ \"]\"\n    | 252 -\u003e (magic v : string)\n    | 253 -\u003e string_of_float (magic v)\n    | _ -\u003e \"\u003cvalue\u003e\"",
+      "line": 3,
+      "col": 1,
+      "endLine": 18,
+      "endCol": 21,
+      "snippet": "let rec __show v =\n  let open Obj in\n  let rec list_aux o =\n    if is_int o \u0026\u0026 (magic (obj o) : int) = 0 then \"\" else\n     let hd = field o 0 in\n     let tl = field o 1 in\n     let rest = list_aux tl in\n     if rest = \"\" then __show (obj hd) else __show (obj hd) ^ \"; \" ^ rest\n  in\n  let r = repr v in\n  if is_int r then string_of_int (magic v) else\n  match tag r with\n    | 0 -\u003e if size r = 0 then \"[]\" else \"[\" ^ list_aux r ^ \"]\"\n    | 252 -\u003e (magic v : string)\n    | 253 -\u003e string_of_float (magic v)\n    | _ -\u003e \"\u003cvalue\u003e\""
+    }
+  ],
+  "prints": [
+    {
+      "expr": "let people = [[(\"age\", 30); (\"email\", \"alice@example.com\"); (\"name\", \"Alice\")]; [(\"age\", 15); (\"email\", \"bob@example.com\"); (\"name\", \"Bob\")]; [(\"age\", 20); (\"email\", \"charlie@example.com\"); (\"name\", \"Charlie\")]] in\n  let adults = (List.filter_map (fun p -\u003e if ((List.assoc \"age\" p) \u003e= 18) then Some ([(\"name\", (List.assoc \"name\" p)); (\"email\", (List.assoc \"email\" p))]) else None) people) in\n  (try List.iter (fun a -\u003e\n    try\n  print_endline (String.concat \" \" [__show ((List.assoc \"name\" a)); __show ((List.assoc \"email\" a))]);\n    with Continue -\u003e ()) adults with Break -\u003e ())",
+      "line": 23,
+      "col": 1,
+      "endLine": 29,
+      "endCol": 50,
+      "snippet": "let () =\n  let people = [[(\"age\", 30); (\"email\", \"alice@example.com\"); (\"name\", \"Alice\")]; [(\"age\", 15); (\"email\", \"bob@example.com\"); (\"name\", \"Bob\")]; [(\"age\", 20); (\"email\", \"charlie@example.com\"); (\"name\", \"Charlie\")]] in\n  let adults = (List.filter_map (fun p -\u003e if ((List.assoc \"age\" p) \u003e= 18) then Some ([(\"name\", (List.assoc \"name\" p)); (\"email\", (List.assoc \"email\" p))]) else None) people) in\n  (try List.iter (fun a -\u003e\n    try\n  print_endline (String.concat \" \" [__show ((List.assoc \"name\" a)); __show ((List.assoc \"email\" a))]);\n    with Continue -\u003e ()) adults with Break -\u003e ())"
+    }
+  ],
+  "types": [],
+  "vars": []
+}
