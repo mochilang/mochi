@@ -437,6 +437,14 @@ func simpleExpr(n pnode.Node) (string, bool) {
 			}
 		case "array_values":
 			name = "values"
+		case "min":
+			if len(args) == 1 {
+				return fmt.Sprintf("min(%s)", args[0]), true
+			}
+		case "max":
+			if len(args) == 1 {
+				return fmt.Sprintf("max(%s)", args[0]), true
+			}
 		case "intval":
 			if len(args) == 1 {
 				return fmt.Sprintf("(%s as int)", args[0]), true
