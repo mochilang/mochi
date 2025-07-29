@@ -17,7 +17,9 @@
         (call
           (selector map
             (call
-              (selector stream (unknown))
+              (selector stream
+                (cast (selector grouped) (type "java.util.List<?>"))
+              )
             )
           )
           (unknown)

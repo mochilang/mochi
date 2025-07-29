@@ -6,7 +6,21 @@
         (call
           (selector map
             (call
-              (selector stream (unknown))
+              (selector stream
+                (cast
+                  (call
+                    (selector asList
+                      (selector Arrays
+                        (selector util (selector java))
+                      )
+                    )
+                    (selector a (selector m))
+                    (selector b (selector m))
+                    (selector c (selector m))
+                  )
+                  (type "java.util.List<?>")
+                )
+              )
             )
           )
           (unknown)

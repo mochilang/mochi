@@ -1,5 +1,1 @@
-run: error[T002]: undefined variable: unknown
-  --> :15:10
-
-help:
-  Check if the variable was declared in this scope.
+run: parse error: 7:27: unexpected token "!" (expected PostfixExpr)

@@ -5,7 +5,7 @@
     (type int)
     (block
       (if
-        (unknown)
+        (unary ! (selector _nowSeeded))
         (block
           (let s
             (call
@@ -16,7 +16,11 @@
           (if
             (binary &&
               (binary != (selector s) (unknown))
-              (unknown)
+              (unary !
+                (call
+                  (selector isEmpty (selector s))
+                )
+              )
             )
             (block (unknown))
           )
@@ -25,11 +29,30 @@
       (if
         (selector _nowSeeded)
         (block
-          (assign (selector _nowSeed) (unknown))
+          (assign
+            (selector _nowSeed)
+            (cast
+              (binary %
+                (binary +
+                  (binary * (selector _nowSeed) (int 1664525))
+                  (int 1013904223)
+                )
+                (int 2147483647)
+              )
+              (type int)
+            )
+          )
           (return (selector _nowSeed))
         )
       )
-      (return (unknown))
+      (return
+        (cast
+          (call
+            (selector currentTimeMillis (selector System))
+          )
+          (type int)
+        )
+      )
     )
   )
   (fun _mem
@@ -40,7 +63,19 @@
           (selector getRuntime (selector Runtime))
         )
       )
-      (return (unknown))
+      (return
+        (cast
+          (binary -
+            (call
+              (selector totalMemory (selector rt))
+            )
+            (call
+              (selector freeMemory (selector rt))
+            )
+          )
+          (type int)
+        )
+      )
     )
   )
   (unknown)

@@ -5,5 +5,10 @@
     (block (unknown))
   )
   (unknown)
-  (call print (unknown))
+  (call print
+    (cast
+      (index (selector c) (string n))
+      (type int)
+    )
+  )
 )
