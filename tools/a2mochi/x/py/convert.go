@@ -523,6 +523,11 @@ func emitAssignStmt(b *strings.Builder, n *Node, lines []string, seen map[string
 	if err := emitExpr(b, nameNode, lines, structs); err != nil {
 		return err
 	}
+	if !declared {
+		if t := listStructType(n.valueNode(), structs); t != "" {
+			fmt.Fprintf(b, ": list<%s>", t)
+		}
+	}
 	b.WriteString(" = ")
 	if err := emitExpr(b, n.valueNode(), lines, structs); err != nil {
 		return err
@@ -637,6 +642,104 @@ func emitWhileStmt(b *strings.Builder, n *Node, indent string, lines []string, s
 	}
 	b.WriteString(indent)
 	b.WriteString("}\n")
+	return nil
+}
+
+func emitListCompQuery(b *strings.Builder, n *Node, slice *Node, lines []string, structs map[string][]string) error {
+	if len(n.Generators) == 0 {
+		return newConvertError(n.Line, lines, "unsupported listcomp")
+	}
+	g := n.Generators[0]
+	b.WriteString("from ")
+	if err := emitExpr(b, g.Target, lines, structs); err != nil {
+		return err
+	}
+	b.WriteString(" in ")
+	iter := g.Iter
+	var sortExpr *Node
+	desc := false
+	if iter != nil && iter.Type == "Call" && iter.Func != nil && iter.Func.Type == "Name" && iter.Func.ID == "sorted" {
+		args := iter.callArgs()
+		if len(args) > 0 {
+			iter = args[0]
+		}
+		for _, kw := range iter.Keywords {
+			_ = kw
+		}
+		for _, kw := range g.Iter.Keywords {
+			if kw.Arg == "key" {
+				if val := kw.valueNode(); val != nil && val.Type == "Lambda" && len(val.Body) > 0 {
+					sortExpr = val.Body[0]
+				} else {
+					sortExpr = kw.valueNode()
+				}
+			} else if kw.Arg == "reverse" {
+				if v, ok := kw.valueNode().constValue().(bool); ok && v {
+					desc = true
+				}
+			}
+		}
+	}
+	if err := emitExpr(b, iter, lines, structs); err != nil {
+		return err
+	}
+	for _, g := range n.Generators[1:] {
+		b.WriteString(" from ")
+		if err := emitExpr(b, g.Target, lines, structs); err != nil {
+			return err
+		}
+		b.WriteString(" in ")
+		if err := emitExpr(b, g.Iter, lines, structs); err != nil {
+			return err
+		}
+	}
+	condCount := 0
+	for _, g := range n.Generators {
+		for _, c := range g.Ifs {
+			if condCount == 0 {
+				b.WriteString(" where ")
+			} else {
+				b.WriteString(" && ")
+			}
+			if err := emitExpr(b, c, lines, structs); err != nil {
+				return err
+			}
+			condCount++
+		}
+	}
+	if sortExpr != nil {
+		b.WriteString(" sort by ")
+		if desc {
+			b.WriteByte('-')
+		}
+		if err := emitExpr(b, sortExpr, lines, structs); err != nil {
+			return err
+		}
+	}
+	if slice != nil {
+		if slice.Lower != nil {
+			b.WriteString(" skip ")
+			if err := emitExpr(b, slice.Lower, lines, structs); err != nil {
+				return err
+			}
+		}
+		if slice.Upper != nil {
+			b.WriteString(" take ")
+			if slice.Lower != nil && slice.Upper.Type == "BinOp" && slice.Upper.Op != nil && slice.Upper.Op.Type == "Add" && nodesEqual(slice.Lower, slice.Upper.Left) {
+				if err := emitExpr(b, slice.Upper.Right, lines, structs); err != nil {
+					return err
+				}
+			} else {
+				if err := emitExpr(b, slice.Upper, lines, structs); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	b.WriteString(" select ")
+	if err := emitExpr(b, n.Elt, lines, structs); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -762,6 +865,7 @@ func emitExpr(b *strings.Builder, n *Node, lines []string, structs map[string][]
 			}
 			if len(n.Keywords) == 0 && strings.Title(fn.ID) == fn.ID {
 				if fields, ok := structs[fn.ID]; ok && len(fields) == len(n.callArgs()) {
+					b.WriteString(fn.ID)
 					b.WriteString("{")
 					args := n.callArgs()
 					for i, a := range args {
@@ -823,7 +927,12 @@ func emitExpr(b *strings.Builder, n *Node, lines []string, structs map[string][]
 		}
 		b.WriteString(")")
 	case "Name":
-		b.WriteString(n.ID)
+		switch n.ID {
+		case "str":
+			b.WriteString("string")
+		default:
+			b.WriteString(n.ID)
+		}
 	case "Constant":
 		v := n.constValue()
 		switch vv := v.(type) {
@@ -1008,46 +1117,7 @@ func emitExpr(b *strings.Builder, n *Node, lines []string, structs map[string][]
 		b.WriteString(") : int => ")
 		b.WriteString(body)
 	case "ListComp":
-		if len(n.Generators) == 0 {
-			return newConvertError(n.Line, lines, "unsupported listcomp")
-		}
-		g := n.Generators[0]
-		b.WriteString("from ")
-		if err := emitExpr(b, g.Target, lines, structs); err != nil {
-			return err
-		}
-		b.WriteString(" in ")
-		if err := emitExpr(b, g.Iter, lines, structs); err != nil {
-			return err
-		}
-		for _, g := range n.Generators[1:] {
-			b.WriteString(" from ")
-			if err := emitExpr(b, g.Target, lines, structs); err != nil {
-				return err
-			}
-			b.WriteString(" in ")
-			if err := emitExpr(b, g.Iter, lines, structs); err != nil {
-				return err
-			}
-		}
-		condCount := 0
-		for _, g := range n.Generators {
-			for _, c := range g.Ifs {
-				if condCount == 0 {
-					b.WriteString(" where ")
-				} else {
-					b.WriteString(" && ")
-				}
-				if err := emitExpr(b, c, lines, structs); err != nil {
-					return err
-				}
-				condCount++
-			}
-		}
-		b.WriteString(" select ")
-		if err := emitExpr(b, n.Elt, lines, structs); err != nil {
-			return err
-		}
+		return emitListCompQuery(b, n, nil, lines, structs)
 	case "IfExp":
 		if c := condBool(n); c != nil {
 			return emitExpr(b, c, lines, structs)
@@ -1097,6 +1167,9 @@ func emitExpr(b *strings.Builder, n *Node, lines []string, structs map[string][]
 			}
 		}
 	case "Subscript":
+		if lc := n.valueNode(); lc != nil && lc.Type == "ListComp" && n.Slice != nil && n.Slice.Type == "Slice" {
+			return emitListCompQuery(b, lc, n.Slice, lines, structs)
+		}
 		if err := emitExpr(b, n.valueNode(), lines, structs); err != nil {
 			return err
 		}
@@ -1394,4 +1467,24 @@ func lambdaType(n *Node, lines []string) string {
 		}
 	}
 	return fmt.Sprintf("fun(%s): int", strings.Join(args, ", "))
+}
+
+func listStructType(n *Node, structs map[string][]string) string {
+	if n == nil || n.Type != "List" || len(n.Elts) == 0 {
+		return ""
+	}
+	first := n.Elts[0]
+	if first.Type != "Call" || first.Func == nil || first.Func.Type != "Name" {
+		return ""
+	}
+	name := first.Func.ID
+	if _, ok := structs[name]; !ok {
+		return ""
+	}
+	for _, e := range n.Elts[1:] {
+		if e.Type != "Call" || e.Func == nil || e.Func.Type != "Name" || e.Func.ID != name {
+			return ""
+		}
+	}
+	return name
 }
