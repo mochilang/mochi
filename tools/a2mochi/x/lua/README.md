@@ -1,7 +1,7 @@
 # a2mochi Lua Converter
 
-Completed programs: 14/104
-Date: 2025-07-28 11:26:53 GMT+0000
+Completed programs: 18/104
+Date: 2025-07-29 09:48:00 GMT+0000
 
 This directory contains helpers and golden files for converting Lua programs
 under `tests/transpiler/x/lua` back into Mochi code.
@@ -22,3 +22,6 @@ Supported examples:
 - [x] break_continue
 - [x] cast_string_to_int
 - [x] cast_struct
+- [x] fun_call
+- [x] count_builtin
+- [x] closure
