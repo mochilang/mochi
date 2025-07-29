@@ -142,6 +142,7 @@ func TestTransform_Golden(t *testing.T) {
 		"in_operator":         true,
 		"map_in_operator":     true,
 		"for_map_collection":  true,
+		"json_builtin":        true,
 		"fun_call":            true,
 		"fun_three_args":      true,
 		"fun_expr_in_let":     true,
