@@ -63,6 +63,10 @@ func run(src string) ([]byte, error) {
 	return bytes.TrimSpace(out.Bytes()), nil
 }
 
+func writeError(dir, name, msg string) {
+	_ = os.WriteFile(filepath.Join(dir, name+".error"), []byte(msg), 0o644)
+}
+
 func TestTransformGolden(t *testing.T) {
 	if _, err := exec.LookPath("deno"); err != nil {
 		t.Skipf("deno not installed: %v", err)
@@ -84,16 +88,22 @@ func TestTransformGolden(t *testing.T) {
 	for _, path := range files {
 		name := strings.TrimSuffix(filepath.Base(path), ".ts")
 		t.Run(name, func(t *testing.T) {
+			errPath := filepath.Join(outDir, name+".error")
+			os.Remove(errPath)
+
 			data, err := os.ReadFile(path)
 			if err != nil {
+				writeError(outDir, name, fmt.Sprintf("read src: %v", err))
 				t.Fatalf("read src: %v", err)
 			}
 			prog, err := ts.Parse(string(data))
 			if err != nil {
+				writeError(outDir, name, fmt.Sprintf("parse: %v", err))
 				t.Fatalf("parse: %v", err)
 			}
 			node, err := ts.Transform(prog)
 			if err != nil {
+				writeError(outDir, name, fmt.Sprintf("transform: %v", err))
 				t.Fatalf("transform: %v", err)
 			}
 			astPath := filepath.Join(outDir, name+".ast")
@@ -102,14 +112,17 @@ func TestTransformGolden(t *testing.T) {
 			}
 			wantAST, err := os.ReadFile(astPath)
 			if err != nil {
+				writeError(outDir, name, fmt.Sprintf("missing golden: %v", err))
 				t.Fatalf("missing golden: %v", err)
 			}
 			if node.String() != string(wantAST) {
+				writeError(outDir, name, "golden mismatch")
 				t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", node.String(), wantAST)
 			}
 
 			code, err := ts.Print(node)
 			if err != nil {
+				writeError(outDir, name, fmt.Sprintf("print: %v", err))
 				t.Fatalf("print: %v", err)
 			}
 			mochiPath := filepath.Join(outDir, name+".mochi")
@@ -119,6 +132,7 @@ func TestTransformGolden(t *testing.T) {
 
 			gotOut, err := run(code)
 			if err != nil {
+				writeError(outDir, name, fmt.Sprintf("run: %v", err))
 				t.Fatalf("run: %v", err)
 			}
 			if *goldenUpdate {
@@ -126,15 +140,19 @@ func TestTransformGolden(t *testing.T) {
 			}
 			vmSrc, err := os.ReadFile(filepath.Join(rootDir, "tests/vm/valid", name+".mochi"))
 			if err != nil {
+				writeError(outDir, name, fmt.Sprintf("missing vm source: %v", err))
 				t.Fatalf("missing vm source: %v", err)
 			}
 			wantOut, err := run(string(vmSrc))
 			if err != nil {
+				writeError(outDir, name, fmt.Sprintf("run vm: %v", err))
 				t.Fatalf("run vm: %v", err)
 			}
 			if !bytes.Equal(gotOut, wantOut) {
+				writeError(outDir, name, fmt.Sprintf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut))
 				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
 			}
+			os.Remove(errPath)
 		})
 	}
 }
@@ -152,9 +170,16 @@ func updateReadme() {
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".ts")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
-			compiled++
-			mark = "[x]"
+		outPath := filepath.Join(outDir, name+".out")
+		if outData, err := os.ReadFile(outPath); err == nil {
+			vmSrc, err1 := os.ReadFile(filepath.Join(root, "tests", "vm/valid", name+".mochi"))
+			if err1 == nil {
+				wantOut, err2 := run(string(vmSrc))
+				if err2 == nil && bytes.Equal(bytes.TrimSpace(outData), wantOut) {
+					compiled++
+					mark = "[x]"
+				}
+			}
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}
