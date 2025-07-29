@@ -73,6 +73,20 @@ func walkPrints(n *Node, vars map[string]string, prints *[]string) {
 		}
 	case "CallExpr":
 		if callee := calleeName(n); callee == "printf" || callee == "puts" {
+			if callee == "printf" && len(n.Inner) >= 3 {
+				format := valueWithVars(&n.Inner[1], vars)
+				if format == "\"%d\\n\"" || format == "\"%d\"" {
+					val := valueWithVars(&n.Inner[2], vars)
+					switch val {
+					case "1":
+						*prints = append(*prints, "true")
+						return
+					case "0":
+						*prints = append(*prints, "false")
+						return
+					}
+				}
+			}
 			if arg := firstValueWithVars(n, vars); arg != "" {
 				*prints = append(*prints, arg)
 			}
