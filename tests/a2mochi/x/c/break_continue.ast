@@ -15,7 +15,10 @@
         (index (selector n_arr) (selector i))
       )
       (if
-        (binary == (selector "n % 2") (int 0))
+        (binary ==
+          (binary % (selector n) (int 2))
+          (int 0)
+        )
         (block (continue))
         (block)
       )
@@ -24,7 +27,7 @@
         (block (break))
         (block)
       )
-      (call print (selector n))
+      (call print (string "odd number:") (selector n))
     )
   )
 )

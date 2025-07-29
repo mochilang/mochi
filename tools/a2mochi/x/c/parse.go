@@ -25,7 +25,7 @@ type Assign struct {
 	Expr string
 }
 type PrintStmt struct {
-	Expr    string
+	Exprs   []string
 	Newline bool
 }
 type While struct {
@@ -185,7 +185,7 @@ func parseBlock(lines []string, idx *int) []Stmt {
 			continue
 		}
 		if m := rePuts.FindStringSubmatch(ln); m != nil {
-			out = append(out, PrintStmt{Expr: strconv.Quote(m[1]), Newline: true})
+			out = append(out, PrintStmt{Exprs: []string{strconv.Quote(m[1])}, Newline: true})
 			(*idx)++
 			continue
 		}
@@ -193,13 +193,16 @@ func parseBlock(lines []string, idx *int) []Stmt {
 			args := parseArgs(m[1])
 			newline := false
 			if len(args) > 0 {
-				fmt := strings.TrimSpace(args[0])
-				if strings.HasSuffix(fmt, `\n"`) {
+				fmtStr := strings.TrimSpace(args[0])
+				if strings.HasSuffix(fmtStr, `\n"`) {
 					newline = true
 				}
+				args = args[1:]
 			}
-			arg := strings.TrimSpace(args[len(args)-1])
-			out = append(out, PrintStmt{Expr: arg, Newline: newline})
+			for i := range args {
+				args[i] = strings.TrimSpace(args[i])
+			}
+			out = append(out, PrintStmt{Exprs: args, Newline: newline})
 			(*idx)++
 			continue
 		}
