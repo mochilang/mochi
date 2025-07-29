@@ -9,8 +9,10 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	"mochi/ast"
 	"mochi/parser"
@@ -172,6 +174,7 @@ func TestTransformGolden(t *testing.T) {
 		"print_hello":        true,
 		"unary_neg":          true,
 		"count_builtin":      true,
+		"exists_builtin":     true,
 		// dataset joins not yet supported
 		"cross_join":         false,
 		"cross_join_triple":  false,
@@ -265,4 +268,40 @@ func TestTransformGolden(t *testing.T) {
 			}
 		})
 	}
+}
+
+func updateReadme() {
+	root := findRepoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "transpiler", "x", "ex")
+	outDir := filepath.Join(root, "tests", "a2mochi", "x", "ex")
+	pattern := filepath.Join(srcDir, "*.exs")
+	files, _ := filepath.Glob(pattern)
+	sort.Strings(files)
+	total := len(files)
+	compiled := 0
+	var lines []string
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".exs")
+		mark := "[ ]"
+		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
+			compiled++
+			mark = "[x]"
+		}
+		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+	}
+	var buf bytes.Buffer
+	buf.WriteString("# Elixir AST Conversion\n\n")
+	buf.WriteString("This directory provides a small converter that turns a subset of Elixir source code into Mochi AST form. The implementation mirrors the Python and TypeScript converters and is mostly regex based.\n\n")
+	fmt.Fprintf(&buf, "Completed programs: %d/%d\n", compiled, total)
+	buf.WriteString("Date: " + time.Now().In(time.FixedZone("GMT+7", 7*3600)).Format("2006-01-02 15:04:05") + " GMT+7\n\n")
+	buf.WriteString("## Checklist\n")
+	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteByte('\n')
+	_ = os.WriteFile(filepath.Join(root, "tools", "a2mochi", "x", "ex", "README.md"), buf.Bytes(), 0o644)
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	os.Exit(code)
 }
