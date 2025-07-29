@@ -1,7 +1,7 @@
 # a2mochi Erlang Converter
 
-Completed programs: 44/103
-Date: 2025-07-29 15:21 GMT+7
+Completed programs: 48/103
+Date: 2025-07-29 17:49 GMT+7
 
 This directory stores golden files for the Erlang to Mochi converter.
 
@@ -56,7 +56,7 @@ This directory stores golden files for the Erlang to Mochi converter.
 - [x] let_and_print
 - [x] list_assign
 - [x] list_index
-- [ ] list_nested_assign
+- [x] list_nested_assign
 - [ ] list_set_ops
 - [ ] load_jsonl
 - [ ] load_yaml
@@ -66,7 +66,7 @@ This directory stores golden files for the Erlang to Mochi converter.
 - [x] map_int_key
 - [x] map_literal_dynamic
 - [x] map_membership
-- [ ] map_nested_assign
+- [x] map_nested_assign
 - [ ] match_expr
 - [ ] match_full
 - [ ] math_ops
@@ -82,11 +82,11 @@ This directory stores golden files for the Erlang to Mochi converter.
 - [ ] python_auto
 - [ ] python_math
 - [ ] query_sum_select
-- [ ] record_assign
+- [x] record_assign
 - [ ] right_join
 - [ ] save_jsonl_stdout
 - [x] short_circuit
-- [ ] slice
+- [x] slice
 - [ ] sort_stable
 - [ ] str_builtin
 - [x] string_compare

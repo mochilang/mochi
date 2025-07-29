@@ -4,6 +4,7 @@ package erl
 
 import (
 	"fmt"
+	"os"
 	"regexp"
 	"strings"
 
@@ -29,6 +30,7 @@ var lambdaRe = regexp.MustCompile(`^fun\(([^)]*)\)\s*->\s*(.+)\s*end$`)
 var seqRangeRe = regexp.MustCompile(`lists:seq\(1,\s*([^\)]+)\s*-\s*1\)`)
 var listAssignRe = regexp.MustCompile(`^lists:sublist\(([^,]+),\s*([^,\)]+)\)\s*\+\+\s*\[([^\]]+)\]\s*\+\+\s*lists:nthtail\(([^,]+),\s*([^\)]+)\)$`)
 var listsAnyRe = regexp.MustCompile(`lists:any\(fun\(([^)]*)\)\s*->\s*(.+?)\s*end,\s*([^\)]+)\)`)
+var listsSublistCall = "lists:sublist("
 
 func node(kind string, value any, children ...*ast.Node) *ast.Node {
 	return &ast.Node{Kind: kind, Value: value, Children: children}
@@ -50,6 +52,9 @@ func Transform(p *Program) (*ast.Node, error) {
 	src, err := formatProgram(p)
 	if err != nil {
 		return nil, err
+	}
+	if os.Getenv("ERL_DEBUG") != "" {
+		fmt.Println("SOURCE:\n" + src)
 	}
 	prog, err := parser.ParseString(src)
 	if err != nil {
@@ -183,13 +188,11 @@ func rewriteLine(ln string, recs []Record) []string {
 				fmt.Sprintf("%s[%s] = %s", m[1], idx, val),
 			}
 		}
-		if m3 := mapsPutRe.FindStringSubmatch(expr); m3 != nil {
-			key := strings.TrimSpace(m3[1])
-			val := strings.TrimSpace(m3[2])
-			mp := strings.TrimSpace(m3[3])
+		if k, v, mp, ok := parseMapsPut(expr); ok {
+			val := rewriteMapsGet(v)
 			return []string{
 				fmt.Sprintf("var %s = %s", m[1], mp),
-				fmt.Sprintf("%s[%s] = %s", m[1], key, val),
+				fmt.Sprintf("%s[%s] = %s", m[1], k, val),
 			}
 		}
 		prefix = "let " + m[1] + " = "
@@ -259,13 +262,11 @@ func rewriteLine(ln string, recs []Record) []string {
 			return "substring(" + target + ", " + start + ", " + start + " + " + length + ")"
 		})
 	}
-	if listsNthRe.MatchString(ln) {
-		ln = listsNthRe.ReplaceAllStringFunc(ln, func(s string) string {
-			m := listsNthRe.FindStringSubmatch(s)
-			idx := strings.TrimSpace(m[1])
-			list := strings.TrimSpace(m[2])
-			return list + "[(" + idx + ") - 1]"
-		})
+	if strings.Contains(ln, "lists:nth(") {
+		ln = rewriteListsNth(ln)
+	}
+	if strings.Contains(ln, listsSublistCall) {
+		ln = rewriteSublist(ln)
 	}
 	if printCallRe.MatchString(ln) {
 		ln = printCallRe.ReplaceAllString(ln, "print($1)")
@@ -338,7 +339,7 @@ func rewriteLine(ln string, recs []Record) []string {
 		ln = strings.ReplaceAll(ln, "=>", ":")
 	}
 	if mapsGetRe.MatchString(ln) {
-		ln = mapsGetRe.ReplaceAllString(ln, "$2[$1]")
+		ln = rewriteMapsGet(ln)
 	}
 	if mapsPutRe.MatchString(ln) {
 		ln = mapsPutRe.ReplaceAllString(ln, "$3[$1] = $2")
@@ -389,4 +390,170 @@ func fixPlusNeg(s string) string {
 		}
 	}
 	return s
+}
+
+func rewriteMapsGet(s string) string {
+	for {
+		idx := strings.LastIndex(s, "maps:get(")
+		if idx == -1 {
+			break
+		}
+		start := idx + len("maps:get(")
+		depth := 1
+		j := start
+		for j < len(s) && depth > 0 {
+			switch s[j] {
+			case '(':
+				depth++
+			case ')':
+				depth--
+			}
+			j++
+		}
+		if depth != 0 {
+			break
+		}
+		content := s[start : j-1]
+		// split first comma outside nested parens
+		partDepth := 0
+		split := -1
+		for i := 0; i < len(content); i++ {
+			switch content[i] {
+			case '(':
+				partDepth++
+			case ')':
+				if partDepth > 0 {
+					partDepth--
+				}
+			case ',':
+				if partDepth == 0 {
+					split = i
+					i = len(content)
+				}
+			}
+		}
+		if split == -1 {
+			break
+		}
+		key := strings.TrimSpace(content[:split])
+		mp := strings.TrimSpace(content[split+1:])
+		replacement := mp + "[" + key + "]"
+		s = s[:idx] + replacement + s[j:]
+	}
+	return s
+}
+
+func rewriteListsNth(s string) string {
+	for {
+		idx := strings.LastIndex(s, "lists:nth(")
+		if idx == -1 {
+			break
+		}
+		start := idx + len("lists:nth(")
+		depth := 1
+		j := start
+		for j < len(s) && depth > 0 {
+			switch s[j] {
+			case '(':
+				depth++
+			case ')':
+				depth--
+			}
+			j++
+		}
+		if depth != 0 {
+			break
+		}
+		content := s[start : j-1]
+		args := splitArgs(content, 2)
+		if len(args) != 2 {
+			break
+		}
+		idxExpr := strings.TrimSpace(args[0])
+		listExpr := strings.TrimSpace(args[1])
+		replacement := fmt.Sprintf("%s[(%s) - 1]", listExpr, idxExpr)
+		s = s[:idx] + replacement + s[j:]
+	}
+	return s
+}
+
+func rewriteSublist(s string) string {
+	for {
+		idx := strings.LastIndex(s, listsSublistCall)
+		if idx == -1 {
+			break
+		}
+		start := idx + len(listsSublistCall)
+		depth := 1
+		j := start
+		for j < len(s) && depth > 0 {
+			switch s[j] {
+			case '(':
+				depth++
+			case ')':
+				depth--
+			}
+			j++
+		}
+		if depth != 0 {
+			break
+		}
+		content := s[start : j-1]
+		args := splitArgs(content, 3)
+		if len(args) != 3 {
+			break
+		}
+		list := strings.TrimSpace(args[0])
+		startExpr := strings.TrimSpace(args[1])
+		length := strings.TrimSpace(args[2])
+		replacement := fmt.Sprintf("%s[(%s) - 1:(%s) - 1 + (%s)]", list, startExpr, startExpr, length)
+		s = s[:idx] + replacement + s[j:]
+	}
+	return s
+}
+
+func parseMapsPut(s string) (key, val, mp string, ok bool) {
+	s = strings.TrimSpace(s)
+	if !strings.HasPrefix(s, "maps:put(") || !strings.HasSuffix(s, ")") {
+		return
+	}
+	content := s[len("maps:put(") : len(s)-1]
+	args := splitArgs(content, 3)
+	if len(args) != 3 {
+		return
+	}
+	key = strings.TrimSpace(args[0])
+	val = strings.TrimSpace(args[1])
+	mp = strings.TrimSpace(args[2])
+	ok = true
+	return
+}
+
+func splitArgs(s string, n int) []string {
+	parts := make([]string, 0, n)
+	depth := 0
+	last := 0
+	for i := 0; i < len(s); i++ {
+		switch s[i] {
+		case '(', '[':
+			depth++
+		case ')', ']':
+			if depth > 0 {
+				depth--
+			}
+		case ',':
+			if depth == 0 {
+				parts = append(parts, s[last:i])
+				last = i + 1
+				if len(parts) == n-1 {
+					i = len(s)
+					break
+				}
+			}
+		}
+	}
+	if last < len(s) {
+		parts = append(parts, s[last:])
+	}
+	return parts
 }
