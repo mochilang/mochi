@@ -35,6 +35,26 @@ func convertNode(n Node, level int, out *[]string) {
 					*out = append(*out, idt+"print(len("+expr+"))")
 					return
 				}
+				if base.Type == "binary" && len(base.Children) == 3 {
+					left := base.Children[0]
+					op := base.Children[1]
+					right := base.Children[2]
+					if op.Type == "@tok" && op.Value == "/" {
+						if left.Type == "call" && len(left.Children) == 3 &&
+							left.Children[2].Type == "@ident" && left.Children[2].Value == "to_f" {
+							inner := left.Children[0]
+							if inner.Type == "call" && len(inner.Children) == 3 &&
+								inner.Children[2].Type == "@ident" && inner.Children[2].Value == "sum" &&
+								right.Type == "call" && len(right.Children) == 3 &&
+								right.Children[2].Type == "@ident" && right.Children[2].Value == "length" {
+								arr := right.Children[0]
+								expr := exprString(arr)
+								*out = append(*out, idt+"print(avg("+expr+"))")
+								return
+							}
+						}
+					}
+				}
 				if base.Type == "ifop" {
 					cond := exprString(base.Children[0])
 					t := exprString(base.Children[1])
@@ -47,10 +67,23 @@ func convertNode(n Node, level int, out *[]string) {
 					return
 				}
 				arg := exprString(argNode)
+				// debug: print arg
+				// fmt.Fprintln(os.Stderr, "arg:", arg)
 				if idx := strings.Index(arg, ".join"); idx != -1 {
 					pre := strings.TrimSpace(arg[:idx])
 					if strings.HasPrefix(pre, "(") && strings.HasSuffix(pre, ")") {
 						pre = strings.TrimSuffix(strings.TrimPrefix(pre, "("), ")")
+					}
+					// special-case [" + (a + [b]).join(', ') + "]" -> append(a, b)
+					if strings.HasPrefix(pre, "\"[\" + ") {
+						rest := strings.TrimPrefix(pre, "\"[\" + ")
+						parts2 := strings.Split(rest, " + ")
+						if len(parts2) == 2 {
+							arr := strings.TrimSpace(parts2[0])
+							elem := strings.TrimSpace(parts2[1])
+							*out = append(*out, idt+"print(append("+arr+", "+elem+"))")
+							return
+						}
 					}
 					var parts []string
 					var b strings.Builder
@@ -312,7 +345,7 @@ func Transform(n *Node) (*ast.Node, error) {
 	src := strings.Join(lines, "\n")
 	prog, err := parser.ParseString(src)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("parse error for\n%s\n%w", src, err)
 	}
 
 	root := &ast.Node{Kind: "program"}
