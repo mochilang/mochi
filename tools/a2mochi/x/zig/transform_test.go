@@ -147,6 +147,8 @@ func TestTransform_Golden(t *testing.T) {
 		"test_block":          true,
 		"two-sum":             true,
 		"cast_string_to_int":  true,
+		"membership":          true,
+		"string_prefix_slice": true,
 	}
 
 	if _, err := exec.LookPath("zig"); err != nil {
@@ -164,5 +166,8 @@ func TestTransform_Golden(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			runTransform(t, srcPath, root, outDir)
 		})
+	}
+	if *update {
+		zig.UpdateReadme()
 	}
 }

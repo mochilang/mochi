@@ -18,8 +18,8 @@ func Print(n *ast.Node) (string, error) {
 	src := n.Source()
 	var b strings.Builder
 	b.Write(meta.Header("//"))
-	b.WriteString(src)
-	if !strings.HasSuffix(src, "\n") {
+	for _, line := range strings.Split(src, "\n") {
+		b.WriteString(strings.TrimRight(line, " \t"))
 		b.WriteByte('\n')
 	}
 	return b.String(), nil

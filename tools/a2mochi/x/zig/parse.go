@@ -2,7 +2,11 @@
 
 package zig
 
-import "os"
+import (
+	"fmt"
+	"os"
+	"strings"
+)
 
 // Program is a very small wrapper around the Zig source code to convert.
 // The original implementation relied on the Zig compiler to produce a JSON AST
@@ -16,6 +20,9 @@ type Program struct {
 // syntactic checks because the small subset of Zig supported by the converter
 // can be processed using simple textual rules.
 func Parse(src string) (*Program, error) {
+	if strings.TrimSpace(src) == "" {
+		return nil, fmt.Errorf("empty source")
+	}
 	return &Program{Src: src}, nil
 }
 
