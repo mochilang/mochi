@@ -2,9 +2,7 @@
   (call print
     (binary +
       (int 1)
-      (group
-        (binary * (int 2) (int 3))
-      )
+      (binary * (int 2) (int 3))
     )
   )
   (call print
@@ -17,9 +15,7 @@
   )
   (call print
     (binary +
-      (group
-        (binary * (int 2) (int 3))
-      )
+      (binary * (int 2) (int 3))
       (int 1)
     )
   )
