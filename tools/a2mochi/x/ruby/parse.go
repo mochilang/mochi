@@ -226,7 +226,7 @@ func exprString(n Node) string {
 				recv := exprString(call.Children[0])
 				meth := call.Children[2]
 				if meth.Type == "@ident" {
-					if meth.Value == "include?" {
+					if meth.Value == "include?" || meth.Value == "key?" {
 						arg := args
 						if arg.Type == "arg_paren" && len(arg.Children) > 0 {
 							arg = arg.Children[0]

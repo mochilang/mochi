@@ -125,6 +125,7 @@ func TestTransformGolden(t *testing.T) {
 		"map_index":           true,
 		"map_int_key":         true,
 		"map_literal_dynamic": true,
+		"map_membership":      true,
 		"map_nested_assign":   true,
 		"membership":          true,
 		"print_hello":         true,
