@@ -235,10 +235,16 @@ func parseFallback(src string) (*Program, error) {
 				if next == "" || reForRange.MatchString(next) || reForIn.MatchString(next) || reWhile.MatchString(next) {
 					break
 				}
-				if st := parseLine(next); st != nil {
+				if m := reIf.FindStringSubmatch(next); m != nil {
+					st, ni := parseIf(lines, i+1)
 					body = append(body, st)
+					i = ni
+				} else if st := parseLine(next); st != nil {
+					body = append(body, st)
+					i++
+				} else {
+					i++
 				}
-				i++
 			}
 			p.Stmts = append(p.Stmts, ForRange{Var: m[1], Start: strings.TrimSpace(m[2]), End: strings.TrimSpace(m[3]), Body: body})
 			continue
@@ -257,10 +263,16 @@ func parseFallback(src string) (*Program, error) {
 				if next == "" || reForRange.MatchString(next) || reForIn.MatchString(next) || reWhile.MatchString(next) {
 					break
 				}
-				if st := parseLine(next); st != nil {
+				if m := reIf.FindStringSubmatch(next); m != nil {
+					st, ni := parseIf(lines, i+1)
 					body = append(body, st)
+					i = ni
+				} else if st := parseLine(next); st != nil {
+					body = append(body, st)
+					i++
+				} else {
+					i++
 				}
-				i++
 			}
 			p.Stmts = append(p.Stmts, ForIn{Var: varName, Expr: strings.TrimSpace(m[2]), Body: body})
 			continue
@@ -272,10 +284,16 @@ func parseFallback(src string) (*Program, error) {
 				if next == "" || reForRange.MatchString(next) || reForIn.MatchString(next) || reWhile.MatchString(next) {
 					break
 				}
-				if st := parseLine(next); st != nil {
+				if m := reIf.FindStringSubmatch(next); m != nil {
+					st, ni := parseIf(lines, i+1)
 					body = append(body, st)
+					i = ni
+				} else if st := parseLine(next); st != nil {
+					body = append(body, st)
+					i++
+				} else {
+					i++
 				}
-				i++
 			}
 			p.Stmts = append(p.Stmts, While{Cond: strings.TrimSpace(m[1]), Body: body})
 			continue
@@ -301,6 +319,30 @@ func parseFallback(src string) (*Program, error) {
 		}
 	}
 	return p, nil
+}
+
+func parseIf(lines []string, i int) (Stmt, int) {
+	line := strings.TrimSpace(lines[i])
+	m := reIf.FindStringSubmatch(line)
+	if m == nil {
+		return nil, i
+	}
+	var thenBody, elseBody []Stmt
+	if i+1 < len(lines) {
+		if st := parseLine(strings.TrimSpace(lines[i+1])); st != nil {
+			thenBody = append(thenBody, st)
+		}
+		i++
+	}
+	if i+1 < len(lines) && reElse.MatchString(strings.TrimSpace(lines[i+1])) {
+		if i+2 < len(lines) {
+			if st := parseLine(strings.TrimSpace(lines[i+2])); st != nil {
+				elseBody = append(elseBody, st)
+			}
+		}
+		i += 2
+	}
+	return If{Cond: strings.TrimSpace(m[1]), Then: thenBody, Else: elseBody}, i
 }
 
 func parseLine(line string) Stmt {
