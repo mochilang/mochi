@@ -1,0 +1,14 @@
+(program
+  (var m {"a": 1, "b": 2})
+  (fun main
+    (type int)
+    (for k
+      (in (selector m))
+      (block
+        (call print (selector k))
+      )
+    )
+    (return (int 0))
+  )
+  (call main)
+)
