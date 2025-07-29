@@ -118,6 +118,12 @@ func TestTransform_Golden(t *testing.T) {
 		"string_prefix_slice": true,
 		"var_assignment":      true,
 		"user_type_literal":   true,
+		"if_else":             true,
+		"if_then_else":        true,
+		"if_then_else_nested": true,
+		"for_loop":            true,
+		"for_list_collection": true,
+		"while_loop":          true,
 	}
 
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "php")

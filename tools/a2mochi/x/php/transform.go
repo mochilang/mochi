@@ -48,6 +48,7 @@ func Transform(p *Program) (*ast.Node, error) {
 		}
 		n.Children = append(n.Children, &ast.Node{Kind: "call", Value: "print", Children: []*ast.Node{expr}})
 	}
+	n.Children = append(n.Children, p.Stmts...)
 	if len(n.Children) == 0 {
 		return nil, fmt.Errorf("no convertible symbols found")
 	}
