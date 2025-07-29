@@ -124,6 +124,8 @@ func TestTransform_Golden(t *testing.T) {
 		"for_loop":            true,
 		"for_list_collection": true,
 		"while_loop":          true,
+		"append_builtin":      true,
+		"break_continue":      true,
 	}
 
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "php")
