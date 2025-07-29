@@ -69,13 +69,17 @@ func Parse(src string) (*Program, error) {
 	scriptFile.Close()
 	defer os.Remove(scriptFile.Name())
 
+	cp := strings.Join([]string{
+		"/usr/share/java/clojure-1.11.jar",
+		"/usr/share/java/data.json.jar",
+		"/usr/share/java/tools.reader.jar",
+	}, ":")
+	expr := fmt.Sprintf("(do (load-file \"%s\") (any2mochi.parse/-main \"%s\"))", scriptFile.Name(), tmp.Name())
 	cmd := exec.Command(
-		"clojure",
-		"-Sdeps",
-		"{:deps {org.clojure/data.json {:mvn/version \"2.5.0\"}}}",
-		"-M",
-		scriptFile.Name(),
-		tmp.Name(),
+		"java",
+		"-cp", cp,
+		"clojure.main",
+		"-e", expr,
 	)
 	var out bytes.Buffer
 	var stderr bytes.Buffer

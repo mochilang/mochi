@@ -21,6 +21,10 @@ import (
 
 var update = flag.Bool("update", false, "update golden files")
 
+func updateReadme() {
+	clj.UpdateReadmeForTests()
+}
+
 func repoRoot(t *testing.T) string {
 	dir, err := os.Getwd()
 	if err != nil {
@@ -123,10 +127,14 @@ func TestTransformGolden(t *testing.T) {
 
 			gotOut, err := run(mochiSrc)
 			if err != nil {
+				if *update {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0o644)
+				}
 				t.Fatalf("run: %v", err)
 			}
 			if *update {
 				os.WriteFile(filepath.Join(outDir, name+".out"), gotOut, 0o644)
+				os.Remove(filepath.Join(outDir, name+".error"))
 			}
 			vmSrc, err := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
 			if err != nil {
@@ -140,5 +148,8 @@ func TestTransformGolden(t *testing.T) {
 				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
 			}
 		})
+	}
+	if *update {
+		updateReadme()
 	}
 }
