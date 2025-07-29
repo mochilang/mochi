@@ -93,6 +93,11 @@ func TestTransformGolden(t *testing.T) {
 		"str_builtin":         true,
 		"unary_neg":           true,
 		"var_assignment":      true,
+		"list_assign":         true,
+		"map_assign":          true,
+		"map_int_key":         true,
+		"map_membership":      true,
+		"membership":          true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "swift")
 	os.MkdirAll(outDir, 0o755)

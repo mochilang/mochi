@@ -227,6 +227,7 @@ func parseStatementsIndent(body string, indent int) []string {
 			l = rewriteContains(l)
 			l = rewriteMapContains(l)
 			l = strings.ReplaceAll(l, ")!", ")")
+			l = strings.ReplaceAll(l, "]!", "]")
 			l = strings.ReplaceAll(l, "_append(", "append(")
 			l = strings.ReplaceAll(l, "_values(", "values(")
 			l = strings.ReplaceAll(l, "_exists(", "exists(")
