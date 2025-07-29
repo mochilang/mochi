@@ -137,7 +137,11 @@ func writeStmt(b *strings.Builder, n *Node, indent int) {
 		}
 		c0 := n.Children[0]
 		if c0.Kind == "range" {
-			fmt.Fprintf(b, "%sfor %s in %s..%s {\n", ind, n.Value, exprString(c0.Children[0]), exprString(c0.Children[1]))
+			if len(c0.Children) == 1 {
+				fmt.Fprintf(b, "%sfor %s in %s {\n", ind, n.Value, exprString(c0.Children[0]))
+			} else {
+				fmt.Fprintf(b, "%sfor %s in %s..%s {\n", ind, n.Value, exprString(c0.Children[0]), exprString(c0.Children[1]))
+			}
 		} else {
 			fmt.Fprintf(b, "%sfor %s in %s {\n", ind, n.Value, exprString(c0.Children[0]))
 		}
