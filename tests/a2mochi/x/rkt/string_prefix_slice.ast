@@ -3,7 +3,7 @@
   (let s1 (string forest))
   (call print
     (binary ==
-      (call substr
+      (call substring
         (selector s1)
         (int 0)
         (call len (selector prefix))
@@ -14,7 +14,7 @@
   (let s2 (string desert))
   (call print
     (binary ==
-      (call substr
+      (call substring
         (selector s2)
         (int 0)
         (call len (selector prefix))
