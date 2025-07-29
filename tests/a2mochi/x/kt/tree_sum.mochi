@@ -8,5 +8,3 @@ type Node {
 }
 fun sum_tree(t: Tree): int {
 }
-fun main() {
-}

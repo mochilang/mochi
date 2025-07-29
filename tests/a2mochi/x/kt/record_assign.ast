@@ -5,5 +5,4 @@
   (fun inc
     (param c (type Counter))
   )
-  (fun main)
 )

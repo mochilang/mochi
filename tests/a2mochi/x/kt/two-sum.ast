@@ -4,5 +4,4 @@
     (param target (type int))
     (type list<int>)
   )
-  (fun main)
 )

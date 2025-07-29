@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"mochi/ast"
+	"mochi/parser"
 )
 
 // Transform builds a Mochi AST from a parsed Kotlin Program.
@@ -15,15 +16,27 @@ func Transform(p *Program) (*ast.Node, error) {
 		return nil, fmt.Errorf("nil program")
 	}
 	root := &ast.Node{Kind: "program"}
-	for _, d := range p.Nodes {
+	for i := range p.Nodes {
+		d := &p.Nodes[i]
+		if d.Kind == "func" && d.Name == "main" && len(d.Stmts) > 0 {
+			src := genMochiFromStmts(d.Stmts)
+			prog, err := parser.ParseString(src)
+			if err != nil {
+				return nil, err
+			}
+			n := ast.FromProgram(prog)
+			root.Children = append(root.Children, n.Children...)
+			continue
+		}
+
 		var n *ast.Node
 		switch d.Kind {
 		case "var":
-			n = varNode(d)
+			n = varNode(*d)
 		case "func":
-			n = funcNode(d)
+			n = funcNode(*d)
 		case "type":
-			n = typeDeclNode(d)
+			n = typeDeclNode(*d)
 		}
 		if n != nil {
 			root.Children = append(root.Children, n)
@@ -85,6 +98,19 @@ func typeDeclNode(n Node) *ast.Node {
 		typ.Children = append(typ.Children, fld)
 	}
 	return typ
+}
+
+func genMochiFromStmts(stmts []Stmt) string {
+	var b strings.Builder
+	for _, s := range stmts {
+		switch s.Kind {
+		case "let":
+			fmt.Fprintf(&b, "let %s = %s\n", sanitizeName(s.Name), s.Expr)
+		case "print":
+			fmt.Fprintf(&b, "print(%s)\n", s.Expr)
+		}
+	}
+	return b.String()
 }
 
 func sanitizeName(s string) string {

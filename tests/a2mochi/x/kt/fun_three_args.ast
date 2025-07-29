@@ -5,5 +5,4 @@
     (param c (type int))
     (type int)
   )
-  (fun main)
 )

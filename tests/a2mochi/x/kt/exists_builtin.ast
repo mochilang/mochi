@@ -1,1 +1,5 @@
-(program (fun main))
+(program
+  (let data
+    (list (int 1) (int 2))
+  )
+)

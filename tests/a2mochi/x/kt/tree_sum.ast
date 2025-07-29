@@ -10,5 +10,4 @@
     (param t (type Tree))
     (type int)
   )
-  (fun main)
 )

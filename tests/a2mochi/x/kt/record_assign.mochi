@@ -4,5 +4,3 @@ type Counter {
 }
 fun inc(c: Counter) {
 }
-fun main() {
-}
