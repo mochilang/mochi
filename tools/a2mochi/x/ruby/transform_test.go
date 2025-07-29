@@ -110,6 +110,7 @@ func TestTransformGolden(t *testing.T) {
 		"cast_string_to_int":  true,
 		"count_builtin":       true,
 		"for_list_collection": true,
+		"for_map_collection":  true,
 		"if_else":             true,
 		"len_builtin":         true,
 		"len_map":             true,

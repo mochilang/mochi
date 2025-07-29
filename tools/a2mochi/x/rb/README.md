@@ -5,7 +5,7 @@ Created: 2025-07-28
 This directory contains helpers and golden files for converting Ruby
 programs under `tests/transpiler/x/rb` into Mochi AST form.
 
-Completed programs: 30/104
+Completed programs: 31/104
 
 ## Checklist
 - [x] append_builtin
@@ -38,3 +38,4 @@ Completed programs: 30/104
 - [x] len_map
 - [x] let_and_print
 - [x] var_assignment
+- [x] for_map_collection
