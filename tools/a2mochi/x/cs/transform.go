@@ -15,6 +15,8 @@ var (
 	longLit     = regexp.MustCompile(`(\d+)L\b`)
 	appendRegex = regexp.MustCompile(`(\w+)\.Append\(([^\)]*)\)\.ToArray\(\)`)
 	joinRegex   = regexp.MustCompile(`string\.Join\([^,]+,\s*(.+)\)`)
+	avgRegex    = regexp.MustCompile(`([\w\[\],\s]+)\.Average\(\)`)
+	newArrRegex = regexp.MustCompile(`new\s+[^\[]+\[\]\s*\{([^}]*)\}`)
 )
 
 func stripLong(s string) string { return longLit.ReplaceAllString(s, "$1") }
@@ -29,6 +31,17 @@ func rewriteExpr(s string) string {
 		}
 		return m
 	})
+	s = avgRegex.ReplaceAllString(s, "avg($1)")
+	s = newArrRegex.ReplaceAllStringFunc(s, func(m string) string {
+		sub := newArrRegex.FindStringSubmatch(m)
+		if len(sub) == 2 {
+			inner := strings.ReplaceAll(sub[1], " ", "")
+			return "[" + inner + "]"
+		}
+		return m
+	})
+	s = strings.ReplaceAll(s, `.ToString("0.0")`, "")
+	s = strings.ReplaceAll(s, `.ToString()`, "")
 	if q := strings.Index(s, "?"); q != -1 {
 		if c := strings.Index(s[q+1:], ":"); c != -1 {
 			cond := strings.TrimSpace(s[:q])
@@ -147,7 +160,9 @@ func convertBodyLines(body []string) []string {
 		l = stripLong(l)
 		switch {
 		case strings.HasPrefix(l, "Console.WriteLine("):
-			l = "print(" + strings.TrimPrefix(strings.TrimSuffix(l, ")"), "Console.WriteLine(") + ")"
+			inner := strings.TrimPrefix(l, "Console.WriteLine(")
+			inner = strings.TrimSuffix(inner, ")")
+			l = "print(" + inner + ")"
 		case strings.HasPrefix(l, "return "):
 			l = "return " + strings.TrimSpace(strings.TrimPrefix(l, "return "))
 		case strings.HasPrefix(l, "foreach ("):
