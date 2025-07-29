@@ -111,6 +111,7 @@ func TestTransform_Golden(t *testing.T) {
 		"len_map":             true,
 		"len_string":          true,
 		"substring_builtin":   true,
+		"str_builtin":         true,
 		"string_contains":     true,
 		"string_in_operator":  true,
 		"string_index":        true,
