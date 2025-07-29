@@ -1,0 +1,627 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "products"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "name"
+                    },
+                    "Value": {
+                      "Value": "Laptop"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "price"
+                    },
+                    "Value": {
+                      "Value": "1500"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "name"
+                    },
+                    "Value": {
+                      "Value": "Smartphone"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "price"
+                    },
+                    "Value": {
+                      "Value": "900"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "name"
+                    },
+                    "Value": {
+                      "Value": "Tablet"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "price"
+                    },
+                    "Value": {
+                      "Value": "600"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "name"
+                    },
+                    "Value": {
+                      "Value": "Monitor"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "price"
+                    },
+                    "Value": {
+                      "Value": "300"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "name"
+                    },
+                    "Value": {
+                      "Value": "Keyboard"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "price"
+                    },
+                    "Value": {
+                      "Value": "100"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "name"
+                    },
+                    "Value": {
+                      "Value": "Mouse"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "price"
+                    },
+                    "Value": {
+                      "Value": "50"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "name"
+                    },
+                    "Value": {
+                      "Value": "Headphones"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "price"
+                    },
+                    "Value": {
+                      "Value": "200"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "expensive"
+        }
+      ],
+      "Rhs": [
+        {
+          "Func": {
+            "ParList": {
+              "HasVargs": false,
+              "Names": []
+            },
+            "Stmts": [
+              {
+                "Names": [
+                  "tmp"
+                ],
+                "Exprs": [
+                  {
+                    "Fields": []
+                  }
+                ]
+              },
+              {
+                "Names": [
+                  "_res"
+                ],
+                "Exprs": [
+                  {
+                    "Fields": []
+                  }
+                ]
+              },
+              {
+                "Names": [
+                  "_",
+                  "p"
+                ],
+                "Exprs": [
+                  {
+                    "Func": {
+                      "Value": "ipairs"
+                    },
+                    "Receiver": null,
+                    "Method": "",
+                    "Args": [
+                      {
+                        "Value": "products"
+                      }
+                    ],
+                    "AdjustRet": false
+                  }
+                ],
+                "Stmts": [
+                  {
+                    "Expr": {
+                      "Func": {
+                        "Object": {
+                          "Value": "table"
+                        },
+                        "Key": {
+                          "Value": "insert"
+                        }
+                      },
+                      "Receiver": null,
+                      "Method": "",
+                      "Args": [
+                        {
+                          "Value": "tmp"
+                        },
+                        {
+                          "Fields": [
+                            {
+                              "Key": {
+                                "Value": "k"
+                              },
+                              "Value": {
+                                "Operator": "-",
+                                "Lhs": {
+                                  "Value": "0"
+                                },
+                                "Rhs": {
+                                  "Object": {
+                                    "Value": "p"
+                                  },
+                                  "Key": {
+                                    "Value": "price"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "Key": {
+                                "Value": "v"
+                              },
+                              "Value": {
+                                "Value": "p"
+                              }
+                            }
+                          ]
+                        }
+                      ],
+                      "AdjustRet": false
+                    }
+                  }
+                ]
+              },
+              {
+                "Expr": {
+                  "Func": {
+                    "Object": {
+                      "Value": "table"
+                    },
+                    "Key": {
+                      "Value": "sort"
+                    }
+                  },
+                  "Receiver": null,
+                  "Method": "",
+                  "Args": [
+                    {
+                      "Value": "tmp"
+                    },
+                    {
+                      "ParList": {
+                        "HasVargs": false,
+                        "Names": [
+                          "a",
+                          "b"
+                        ]
+                      },
+                      "Stmts": [
+                        {
+                          "Exprs": [
+                            {
+                              "Operator": "\u003c",
+                              "Lhs": {
+                                "Object": {
+                                  "Value": "a"
+                                },
+                                "Key": {
+                                  "Value": "k"
+                                }
+                              },
+                              "Rhs": {
+                                "Object": {
+                                  "Value": "b"
+                                },
+                                "Key": {
+                                  "Value": "k"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "AdjustRet": false
+                }
+              },
+              {
+                "Names": [
+                  "i",
+                  "p"
+                ],
+                "Exprs": [
+                  {
+                    "Func": {
+                      "Value": "ipairs"
+                    },
+                    "Receiver": null,
+                    "Method": "",
+                    "Args": [
+                      {
+                        "Value": "tmp"
+                      }
+                    ],
+                    "AdjustRet": false
+                  }
+                ],
+                "Stmts": [
+                  {
+                    "Lhs": [
+                      {
+                        "Object": {
+                          "Value": "_res"
+                        },
+                        "Key": {
+                          "Value": "i"
+                        }
+                      }
+                    ],
+                    "Rhs": [
+                      {
+                        "Object": {
+                          "Value": "p"
+                        },
+                        "Key": {
+                          "Value": "v"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Names": [
+                  "_slice"
+                ],
+                "Exprs": [
+                  {
+                    "Fields": []
+                  }
+                ]
+              },
+              {
+                "Names": [
+                  "_start"
+                ],
+                "Exprs": [
+                  {
+                    "Operator": "+",
+                    "Lhs": {
+                      "Value": "1"
+                    },
+                    "Rhs": {
+                      "Value": "1"
+                    }
+                  }
+                ]
+              },
+              {
+                "Names": [
+                  "_stop"
+                ],
+                "Exprs": [
+                  {
+                    "Expr": {
+                      "Value": "_res"
+                    }
+                  }
+                ]
+              },
+              {
+                "Condition": {
+                  "Operator": "\u003c",
+                  "Lhs": {
+                    "Value": "3"
+                  },
+                  "Rhs": {
+                    "Operator": "+",
+                    "Lhs": {
+                      "Operator": "-",
+                      "Lhs": {
+                        "Value": "_stop"
+                      },
+                      "Rhs": {
+                        "Value": "_start"
+                      }
+                    },
+                    "Rhs": {
+                      "Value": "1"
+                    }
+                  }
+                },
+                "Then": [
+                  {
+                    "Lhs": [
+                      {
+                        "Value": "_stop"
+                      }
+                    ],
+                    "Rhs": [
+                      {
+                        "Operator": "-",
+                        "Lhs": {
+                          "Operator": "+",
+                          "Lhs": {
+                            "Value": "_start"
+                          },
+                          "Rhs": {
+                            "Value": "3"
+                          }
+                        },
+                        "Rhs": {
+                          "Value": "1"
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "Else": null
+              },
+              {
+                "Name": "i",
+                "Init": {
+                  "Value": "_start"
+                },
+                "Limit": {
+                  "Value": "_stop"
+                },
+                "Step": null,
+                "Stmts": [
+                  {
+                    "Lhs": [
+                      {
+                        "Object": {
+                          "Value": "_slice"
+                        },
+                        "Key": {
+                          "Operator": "+",
+                          "Lhs": {
+                            "Expr": {
+                              "Value": "_slice"
+                            }
+                          },
+                          "Rhs": {
+                            "Value": "1"
+                          }
+                        }
+                      }
+                    ],
+                    "Rhs": [
+                      {
+                        "Object": {
+                          "Value": "_res"
+                        },
+                        "Key": {
+                          "Value": "i"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Lhs": [
+                  {
+                    "Value": "_res"
+                  }
+                ],
+                "Rhs": [
+                  {
+                    "Value": "_slice"
+                  }
+                ]
+              },
+              {
+                "Exprs": [
+                  {
+                    "Value": "_res"
+                  }
+                ]
+              }
+            ]
+          },
+          "Receiver": null,
+          "Method": "",
+          "Args": [],
+          "AdjustRet": false
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Value": "--- Top products (excluding most expensive) ---"
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Names": [
+        "_",
+        "item"
+      ],
+      "Exprs": [
+        {
+          "Func": {
+            "Value": "ipairs"
+          },
+          "Receiver": null,
+          "Method": "",
+          "Args": [
+            {
+              "Value": "expensive"
+            }
+          ],
+          "AdjustRet": false
+        }
+      ],
+      "Stmts": [
+        {
+          "Expr": {
+            "Func": {
+              "Value": "print"
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Func": {
+                  "Object": {
+                    "Value": "string"
+                  },
+                  "Key": {
+                    "Value": "format"
+                  }
+                },
+                "Receiver": null,
+                "Method": "",
+                "Args": [
+                  {
+                    "Value": "%s costs $ %s"
+                  },
+                  {
+                    "Object": {
+                      "Value": "item"
+                    },
+                    "Key": {
+                      "Value": "name"
+                    }
+                  },
+                  {
+                    "Object": {
+                      "Value": "item"
+                    },
+                    "Key": {
+                      "Value": "price"
+                    }
+                  }
+                ],
+                "AdjustRet": false
+              }
+            ],
+            "AdjustRet": false
+          }
+        }
+      ]
+    }
+  ]
+}

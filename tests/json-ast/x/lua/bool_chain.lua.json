@@ -1,0 +1,224 @@
+{
+  "stmts": [
+    {
+      "Name": {
+        "Func": {
+          "Value": "boom"
+        },
+        "Receiver": null,
+        "Method": ""
+      },
+      "Func": {
+        "ParList": {
+          "HasVargs": false,
+          "Names": []
+        },
+        "Stmts": [
+          {
+            "Expr": {
+              "Func": {
+                "Value": "print"
+              },
+              "Receiver": null,
+              "Method": "",
+              "Args": [
+                {
+                  "Value": "boom"
+                }
+              ],
+              "AdjustRet": false
+            }
+          },
+          {
+            "Exprs": [
+              {}
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Operator": "or",
+            "Lhs": {
+              "Operator": "and",
+              "Lhs": {
+                "Operator": "and",
+                "Lhs": {
+                  "Operator": "and",
+                  "Lhs": {
+                    "Operator": "\u003c",
+                    "Lhs": {
+                      "Value": "1"
+                    },
+                    "Rhs": {
+                      "Value": "2"
+                    }
+                  },
+                  "Rhs": {
+                    "Operator": "\u003c",
+                    "Lhs": {
+                      "Value": "2"
+                    },
+                    "Rhs": {
+                      "Value": "3"
+                    }
+                  }
+                },
+                "Rhs": {
+                  "Operator": "\u003c",
+                  "Lhs": {
+                    "Value": "3"
+                  },
+                  "Rhs": {
+                    "Value": "4"
+                  }
+                }
+              },
+              "Rhs": {
+                "Value": "1"
+              }
+            },
+            "Rhs": {
+              "Value": "0"
+            }
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Operator": "or",
+            "Lhs": {
+              "Operator": "and",
+              "Lhs": {
+                "Operator": "and",
+                "Lhs": {
+                  "Operator": "and",
+                  "Lhs": {
+                    "Operator": "\u003c",
+                    "Lhs": {
+                      "Value": "1"
+                    },
+                    "Rhs": {
+                      "Value": "2"
+                    }
+                  },
+                  "Rhs": {
+                    "Operator": "\u003e",
+                    "Lhs": {
+                      "Value": "2"
+                    },
+                    "Rhs": {
+                      "Value": "3"
+                    }
+                  }
+                },
+                "Rhs": {
+                  "Func": {
+                    "Value": "boom"
+                  },
+                  "Receiver": null,
+                  "Method": "",
+                  "Args": [],
+                  "AdjustRet": false
+                }
+              },
+              "Rhs": {
+                "Value": "1"
+              }
+            },
+            "Rhs": {
+              "Value": "0"
+            }
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Operator": "or",
+            "Lhs": {
+              "Operator": "and",
+              "Lhs": {
+                "Operator": "and",
+                "Lhs": {
+                  "Operator": "and",
+                  "Lhs": {
+                    "Operator": "and",
+                    "Lhs": {
+                      "Operator": "\u003c",
+                      "Lhs": {
+                        "Value": "1"
+                      },
+                      "Rhs": {
+                        "Value": "2"
+                      }
+                    },
+                    "Rhs": {
+                      "Operator": "\u003c",
+                      "Lhs": {
+                        "Value": "2"
+                      },
+                      "Rhs": {
+                        "Value": "3"
+                      }
+                    }
+                  },
+                  "Rhs": {
+                    "Operator": "\u003e",
+                    "Lhs": {
+                      "Value": "3"
+                    },
+                    "Rhs": {
+                      "Value": "4"
+                    }
+                  }
+                },
+                "Rhs": {
+                  "Func": {
+                    "Value": "boom"
+                  },
+                  "Receiver": null,
+                  "Method": "",
+                  "Args": [],
+                  "AdjustRet": false
+                }
+              },
+              "Rhs": {
+                "Value": "1"
+              }
+            },
+            "Rhs": {
+              "Value": "0"
+            }
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

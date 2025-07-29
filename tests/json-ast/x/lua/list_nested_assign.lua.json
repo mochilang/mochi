@@ -1,0 +1,126 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "matrix"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": null,
+                    "Value": {
+                      "Value": "1"
+                    }
+                  },
+                  {
+                    "Key": null,
+                    "Value": {
+                      "Value": "2"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": null,
+                    "Value": {
+                      "Value": "3"
+                    }
+                  },
+                  {
+                    "Key": null,
+                    "Value": {
+                      "Value": "4"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Object": {
+            "Object": {
+              "Value": "matrix"
+            },
+            "Key": {
+              "Operator": "+",
+              "Lhs": {
+                "Value": "1"
+              },
+              "Rhs": {
+                "Value": "1"
+              }
+            }
+          },
+          "Key": {
+            "Operator": "+",
+            "Lhs": {
+              "Value": "0"
+            },
+            "Rhs": {
+              "Value": "1"
+            }
+          }
+        }
+      ],
+      "Rhs": [
+        {
+          "Value": "5"
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Object": {
+              "Object": {
+                "Value": "matrix"
+              },
+              "Key": {
+                "Operator": "+",
+                "Lhs": {
+                  "Value": "1"
+                },
+                "Rhs": {
+                  "Value": "1"
+                }
+              }
+            },
+            "Key": {
+              "Operator": "+",
+              "Lhs": {
+                "Value": "0"
+              },
+              "Rhs": {
+                "Value": "1"
+              }
+            }
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,435 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "customers"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "id"
+                    },
+                    "Value": {
+                      "Value": "1"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "name"
+                    },
+                    "Value": {
+                      "Value": "Alice"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "id"
+                    },
+                    "Value": {
+                      "Value": "2"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "name"
+                    },
+                    "Value": {
+                      "Value": "Bob"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "orders"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "id"
+                    },
+                    "Value": {
+                      "Value": "100"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "customerId"
+                    },
+                    "Value": {
+                      "Value": "1"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "id"
+                    },
+                    "Value": {
+                      "Value": "101"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "customerId"
+                    },
+                    "Value": {
+                      "Value": "2"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "items"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "orderId"
+                    },
+                    "Value": {
+                      "Value": "100"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "sku"
+                    },
+                    "Value": {
+                      "Value": "a"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "result"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": []
+        }
+      ]
+    },
+    {
+      "Names": [
+        "_",
+        "o"
+      ],
+      "Exprs": [
+        {
+          "Func": {
+            "Value": "ipairs"
+          },
+          "Receiver": null,
+          "Method": "",
+          "Args": [
+            {
+              "Value": "orders"
+            }
+          ],
+          "AdjustRet": false
+        }
+      ],
+      "Stmts": [
+        {
+          "Names": [
+            "_",
+            "c"
+          ],
+          "Exprs": [
+            {
+              "Func": {
+                "Value": "ipairs"
+              },
+              "Receiver": null,
+              "Method": "",
+              "Args": [
+                {
+                  "Value": "customers"
+                }
+              ],
+              "AdjustRet": false
+            }
+          ],
+          "Stmts": [
+            {
+              "Names": [
+                "_",
+                "i"
+              ],
+              "Exprs": [
+                {
+                  "Func": {
+                    "Value": "ipairs"
+                  },
+                  "Receiver": null,
+                  "Method": "",
+                  "Args": [
+                    {
+                      "Value": "items"
+                    }
+                  ],
+                  "AdjustRet": false
+                }
+              ],
+              "Stmts": [
+                {
+                  "Condition": {
+                    "Operator": "and",
+                    "Lhs": {
+                      "Operator": "==",
+                      "Lhs": {
+                        "Object": {
+                          "Value": "o"
+                        },
+                        "Key": {
+                          "Value": "customerId"
+                        }
+                      },
+                      "Rhs": {
+                        "Object": {
+                          "Value": "c"
+                        },
+                        "Key": {
+                          "Value": "id"
+                        }
+                      }
+                    },
+                    "Rhs": {
+                      "Operator": "==",
+                      "Lhs": {
+                        "Object": {
+                          "Value": "o"
+                        },
+                        "Key": {
+                          "Value": "id"
+                        }
+                      },
+                      "Rhs": {
+                        "Object": {
+                          "Value": "i"
+                        },
+                        "Key": {
+                          "Value": "orderId"
+                        }
+                      }
+                    }
+                  },
+                  "Then": [
+                    {
+                      "Expr": {
+                        "Func": {
+                          "Object": {
+                            "Value": "table"
+                          },
+                          "Key": {
+                            "Value": "insert"
+                          }
+                        },
+                        "Receiver": null,
+                        "Method": "",
+                        "Args": [
+                          {
+                            "Value": "result"
+                          },
+                          {
+                            "Fields": [
+                              {
+                                "Key": {
+                                  "Value": "orderId"
+                                },
+                                "Value": {
+                                  "Object": {
+                                    "Value": "o"
+                                  },
+                                  "Key": {
+                                    "Value": "id"
+                                  }
+                                }
+                              },
+                              {
+                                "Key": {
+                                  "Value": "name"
+                                },
+                                "Value": {
+                                  "Object": {
+                                    "Value": "c"
+                                  },
+                                  "Key": {
+                                    "Value": "name"
+                                  }
+                                }
+                              },
+                              {
+                                "Key": {
+                                  "Value": "item"
+                                },
+                                "Value": {
+                                  "Value": "i"
+                                }
+                              }
+                            ]
+                          }
+                        ],
+                        "AdjustRet": false
+                      }
+                    }
+                  ],
+                  "Else": null
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Value": "--- Left Join Multi ---"
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Names": [
+        "_",
+        "r"
+      ],
+      "Exprs": [
+        {
+          "Func": {
+            "Value": "ipairs"
+          },
+          "Receiver": null,
+          "Method": "",
+          "Args": [
+            {
+              "Value": "result"
+            }
+          ],
+          "AdjustRet": false
+        }
+      ],
+      "Stmts": [
+        {
+          "Expr": {
+            "Func": {
+              "Value": "print"
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Func": {
+                  "Object": {
+                    "Value": "string"
+                  },
+                  "Key": {
+                    "Value": "format"
+                  }
+                },
+                "Receiver": null,
+                "Method": "",
+                "Args": [
+                  {
+                    "Value": "%s %s %s"
+                  },
+                  {
+                    "Object": {
+                      "Value": "r"
+                    },
+                    "Key": {
+                      "Value": "orderId"
+                    }
+                  },
+                  {
+                    "Object": {
+                      "Value": "r"
+                    },
+                    "Key": {
+                      "Value": "name"
+                    }
+                  },
+                  {
+                    "Object": {
+                      "Value": "r"
+                    },
+                    "Key": {
+                      "Value": "item"
+                    }
+                  }
+                ],
+                "AdjustRet": false
+              }
+            ],
+            "AdjustRet": false
+          }
+        }
+      ]
+    }
+  ]
+}

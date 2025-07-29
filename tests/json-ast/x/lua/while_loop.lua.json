@@ -1,0 +1,62 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "i"
+        }
+      ],
+      "Rhs": [
+        {
+          "Value": "0"
+        }
+      ]
+    },
+    {
+      "Condition": {
+        "Operator": "\u003c",
+        "Lhs": {
+          "Value": "i"
+        },
+        "Rhs": {
+          "Value": "3"
+        }
+      },
+      "Stmts": [
+        {
+          "Expr": {
+            "Func": {
+              "Value": "print"
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Value": "i"
+              }
+            ],
+            "AdjustRet": false
+          }
+        },
+        {
+          "Lhs": [
+            {
+              "Value": "i"
+            }
+          ],
+          "Rhs": [
+            {
+              "Operator": "+",
+              "Lhs": {
+                "Value": "i"
+              },
+              "Rhs": {
+                "Value": "1"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "stmts": [
+    {
+      "Name": {
+        "Func": {
+          "Value": "sum_rec"
+        },
+        "Receiver": null,
+        "Method": ""
+      },
+      "Func": {
+        "ParList": {
+          "HasVargs": false,
+          "Names": [
+            "n",
+            "acc"
+          ]
+        },
+        "Stmts": [
+          {
+            "Condition": {
+              "Operator": "==",
+              "Lhs": {
+                "Value": "n"
+              },
+              "Rhs": {
+                "Value": "0"
+              }
+            },
+            "Then": [
+              {
+                "Exprs": [
+                  {
+                    "Value": "acc"
+                  }
+                ]
+              }
+            ],
+            "Else": null
+          },
+          {
+            "Exprs": [
+              {
+                "Func": {
+                  "Value": "sum_rec"
+                },
+                "Receiver": null,
+                "Method": "",
+                "Args": [
+                  {
+                    "Operator": "-",
+                    "Lhs": {
+                      "Value": "n"
+                    },
+                    "Rhs": {
+                      "Value": "1"
+                    }
+                  },
+                  {
+                    "Operator": "+",
+                    "Lhs": {
+                      "Value": "acc"
+                    },
+                    "Rhs": {
+                      "Value": "n"
+                    }
+                  }
+                ],
+                "AdjustRet": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Func": {
+              "Value": "sum_rec"
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Value": "10"
+              },
+              {
+                "Value": "0"
+              }
+            ],
+            "AdjustRet": false
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

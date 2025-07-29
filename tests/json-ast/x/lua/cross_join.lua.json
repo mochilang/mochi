@@ -1,0 +1,426 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "customers"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "id"
+                    },
+                    "Value": {
+                      "Value": "1"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "name"
+                    },
+                    "Value": {
+                      "Value": "Alice"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "id"
+                    },
+                    "Value": {
+                      "Value": "2"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "name"
+                    },
+                    "Value": {
+                      "Value": "Bob"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "id"
+                    },
+                    "Value": {
+                      "Value": "3"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "name"
+                    },
+                    "Value": {
+                      "Value": "Charlie"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "orders"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "id"
+                    },
+                    "Value": {
+                      "Value": "100"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "customerId"
+                    },
+                    "Value": {
+                      "Value": "1"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "total"
+                    },
+                    "Value": {
+                      "Value": "250"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "id"
+                    },
+                    "Value": {
+                      "Value": "101"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "customerId"
+                    },
+                    "Value": {
+                      "Value": "2"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "total"
+                    },
+                    "Value": {
+                      "Value": "125"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "id"
+                    },
+                    "Value": {
+                      "Value": "102"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "customerId"
+                    },
+                    "Value": {
+                      "Value": "1"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "total"
+                    },
+                    "Value": {
+                      "Value": "300"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "result"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": []
+        }
+      ]
+    },
+    {
+      "Names": [
+        "_",
+        "o"
+      ],
+      "Exprs": [
+        {
+          "Func": {
+            "Value": "ipairs"
+          },
+          "Receiver": null,
+          "Method": "",
+          "Args": [
+            {
+              "Value": "orders"
+            }
+          ],
+          "AdjustRet": false
+        }
+      ],
+      "Stmts": [
+        {
+          "Names": [
+            "_",
+            "c"
+          ],
+          "Exprs": [
+            {
+              "Func": {
+                "Value": "ipairs"
+              },
+              "Receiver": null,
+              "Method": "",
+              "Args": [
+                {
+                  "Value": "customers"
+                }
+              ],
+              "AdjustRet": false
+            }
+          ],
+          "Stmts": [
+            {
+              "Expr": {
+                "Func": {
+                  "Object": {
+                    "Value": "table"
+                  },
+                  "Key": {
+                    "Value": "insert"
+                  }
+                },
+                "Receiver": null,
+                "Method": "",
+                "Args": [
+                  {
+                    "Value": "result"
+                  },
+                  {
+                    "Fields": [
+                      {
+                        "Key": {
+                          "Value": "orderId"
+                        },
+                        "Value": {
+                          "Object": {
+                            "Value": "o"
+                          },
+                          "Key": {
+                            "Value": "id"
+                          }
+                        }
+                      },
+                      {
+                        "Key": {
+                          "Value": "orderCustomerId"
+                        },
+                        "Value": {
+                          "Object": {
+                            "Value": "o"
+                          },
+                          "Key": {
+                            "Value": "customerId"
+                          }
+                        }
+                      },
+                      {
+                        "Key": {
+                          "Value": "pairedCustomerName"
+                        },
+                        "Value": {
+                          "Object": {
+                            "Value": "c"
+                          },
+                          "Key": {
+                            "Value": "name"
+                          }
+                        }
+                      },
+                      {
+                        "Key": {
+                          "Value": "orderTotal"
+                        },
+                        "Value": {
+                          "Object": {
+                            "Value": "o"
+                          },
+                          "Key": {
+                            "Value": "total"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "AdjustRet": false
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Value": "--- Cross Join: All order-customer pairs ---"
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Names": [
+        "_",
+        "entry"
+      ],
+      "Exprs": [
+        {
+          "Func": {
+            "Value": "ipairs"
+          },
+          "Receiver": null,
+          "Method": "",
+          "Args": [
+            {
+              "Value": "result"
+            }
+          ],
+          "AdjustRet": false
+        }
+      ],
+      "Stmts": [
+        {
+          "Expr": {
+            "Func": {
+              "Value": "print"
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Func": {
+                  "Object": {
+                    "Value": "string"
+                  },
+                  "Key": {
+                    "Value": "format"
+                  }
+                },
+                "Receiver": null,
+                "Method": "",
+                "Args": [
+                  {
+                    "Value": "Order %s (customerId: %s , total: $ %s ) paired with %s"
+                  },
+                  {
+                    "Object": {
+                      "Value": "entry"
+                    },
+                    "Key": {
+                      "Value": "orderId"
+                    }
+                  },
+                  {
+                    "Object": {
+                      "Value": "entry"
+                    },
+                    "Key": {
+                      "Value": "orderCustomerId"
+                    }
+                  },
+                  {
+                    "Object": {
+                      "Value": "entry"
+                    },
+                    "Key": {
+                      "Value": "orderTotal"
+                    }
+                  },
+                  {
+                    "Object": {
+                      "Value": "entry"
+                    },
+                    "Key": {
+                      "Value": "pairedCustomerName"
+                    }
+                  }
+                ],
+                "AdjustRet": false
+              }
+            ],
+            "AdjustRet": false
+          }
+        }
+      ]
+    }
+  ]
+}

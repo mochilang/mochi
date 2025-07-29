@@ -1,0 +1,451 @@
+{
+  "stmts": [
+    {
+      "Name": {
+        "Func": {
+          "Value": "twoSum"
+        },
+        "Receiver": null,
+        "Method": ""
+      },
+      "Func": {
+        "ParList": {
+          "HasVargs": false,
+          "Names": [
+            "nums",
+            "target"
+          ]
+        },
+        "Stmts": [
+          {
+            "Lhs": [
+              {
+                "Value": "n"
+              }
+            ],
+            "Rhs": [
+              {
+                "Func": {
+                  "ParList": {
+                    "HasVargs": false,
+                    "Names": [
+                      "v"
+                    ]
+                  },
+                  "Stmts": [
+                    {
+                      "Condition": {
+                        "Operator": "and",
+                        "Lhs": {
+                          "Operator": "==",
+                          "Lhs": {
+                            "Func": {
+                              "Value": "type"
+                            },
+                            "Receiver": null,
+                            "Method": "",
+                            "Args": [
+                              {
+                                "Value": "v"
+                              }
+                            ],
+                            "AdjustRet": false
+                          },
+                          "Rhs": {
+                            "Value": "table"
+                          }
+                        },
+                        "Rhs": {
+                          "Operator": "~=",
+                          "Lhs": {
+                            "Object": {
+                              "Value": "v"
+                            },
+                            "Key": {
+                              "Value": "items"
+                            }
+                          },
+                          "Rhs": {}
+                        }
+                      },
+                      "Then": [
+                        {
+                          "Exprs": [
+                            {
+                              "Expr": {
+                                "Object": {
+                                  "Value": "v"
+                                },
+                                "Key": {
+                                  "Value": "items"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ],
+                      "Else": [
+                        {
+                          "Condition": {
+                            "Operator": "and",
+                            "Lhs": {
+                              "Operator": "==",
+                              "Lhs": {
+                                "Func": {
+                                  "Value": "type"
+                                },
+                                "Receiver": null,
+                                "Method": "",
+                                "Args": [
+                                  {
+                                    "Value": "v"
+                                  }
+                                ],
+                                "AdjustRet": false
+                              },
+                              "Rhs": {
+                                "Value": "table"
+                              }
+                            },
+                            "Rhs": {
+                              "Operator": "==",
+                              "Lhs": {
+                                "Object": {
+                                  "Value": "v"
+                                },
+                                "Key": {
+                                  "Value": "1"
+                                }
+                              },
+                              "Rhs": {}
+                            }
+                          },
+                          "Then": [
+                            {
+                              "Names": [
+                                "c"
+                              ],
+                              "Exprs": [
+                                {
+                                  "Value": "0"
+                                }
+                              ]
+                            },
+                            {
+                              "Names": [
+                                "_"
+                              ],
+                              "Exprs": [
+                                {
+                                  "Func": {
+                                    "Value": "pairs"
+                                  },
+                                  "Receiver": null,
+                                  "Method": "",
+                                  "Args": [
+                                    {
+                                      "Value": "v"
+                                    }
+                                  ],
+                                  "AdjustRet": false
+                                }
+                              ],
+                              "Stmts": [
+                                {
+                                  "Lhs": [
+                                    {
+                                      "Value": "c"
+                                    }
+                                  ],
+                                  "Rhs": [
+                                    {
+                                      "Operator": "+",
+                                      "Lhs": {
+                                        "Value": "c"
+                                      },
+                                      "Rhs": {
+                                        "Value": "1"
+                                      }
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "Exprs": [
+                                {
+                                  "Value": "c"
+                                }
+                              ]
+                            }
+                          ],
+                          "Else": [
+                            {
+                              "Exprs": [
+                                {
+                                  "Expr": {
+                                    "Value": "v"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "Receiver": null,
+                "Method": "",
+                "Args": [
+                  {
+                    "Value": "nums"
+                  }
+                ],
+                "AdjustRet": false
+              }
+            ]
+          },
+          {
+            "Name": "i",
+            "Init": {
+              "Value": "0"
+            },
+            "Limit": {
+              "Operator": "-",
+              "Lhs": {
+                "Value": "n"
+              },
+              "Rhs": {
+                "Value": "1"
+              }
+            },
+            "Step": null,
+            "Stmts": [
+              {
+                "Name": "j",
+                "Init": {
+                  "Operator": "+",
+                  "Lhs": {
+                    "Value": "i"
+                  },
+                  "Rhs": {
+                    "Value": "1"
+                  }
+                },
+                "Limit": {
+                  "Operator": "-",
+                  "Lhs": {
+                    "Value": "n"
+                  },
+                  "Rhs": {
+                    "Value": "1"
+                  }
+                },
+                "Step": null,
+                "Stmts": [
+                  {
+                    "Condition": {
+                      "Operator": "==",
+                      "Lhs": {
+                        "Operator": "+",
+                        "Lhs": {
+                          "Object": {
+                            "Value": "nums"
+                          },
+                          "Key": {
+                            "Operator": "+",
+                            "Lhs": {
+                              "Value": "i"
+                            },
+                            "Rhs": {
+                              "Value": "1"
+                            }
+                          }
+                        },
+                        "Rhs": {
+                          "Object": {
+                            "Value": "nums"
+                          },
+                          "Key": {
+                            "Operator": "+",
+                            "Lhs": {
+                              "Value": "j"
+                            },
+                            "Rhs": {
+                              "Value": "1"
+                            }
+                          }
+                        }
+                      },
+                      "Rhs": {
+                        "Value": "target"
+                      }
+                    },
+                    "Then": [
+                      {
+                        "Exprs": [
+                          {
+                            "Fields": [
+                              {
+                                "Key": null,
+                                "Value": {
+                                  "Value": "i"
+                                }
+                              },
+                              {
+                                "Key": null,
+                                "Value": {
+                                  "Value": "j"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ],
+                    "Else": null
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "Exprs": [
+              {
+                "Fields": [
+                  {
+                    "Key": null,
+                    "Value": {
+                      "Operator": "-",
+                      "Lhs": {
+                        "Value": "0"
+                      },
+                      "Rhs": {
+                        "Value": "1"
+                      }
+                    }
+                  },
+                  {
+                    "Key": null,
+                    "Value": {
+                      "Operator": "-",
+                      "Lhs": {
+                        "Value": "0"
+                      },
+                      "Rhs": {
+                        "Value": "1"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "result"
+        }
+      ],
+      "Rhs": [
+        {
+          "Func": {
+            "Value": "twoSum"
+          },
+          "Receiver": null,
+          "Method": "",
+          "Args": [
+            {
+              "Fields": [
+                {
+                  "Key": null,
+                  "Value": {
+                    "Value": "2"
+                  }
+                },
+                {
+                  "Key": null,
+                  "Value": {
+                    "Value": "7"
+                  }
+                },
+                {
+                  "Key": null,
+                  "Value": {
+                    "Value": "11"
+                  }
+                },
+                {
+                  "Key": null,
+                  "Value": {
+                    "Value": "15"
+                  }
+                }
+              ]
+            },
+            {
+              "Value": "9"
+            }
+          ],
+          "AdjustRet": false
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Object": {
+              "Value": "result"
+            },
+            "Key": {
+              "Operator": "+",
+              "Lhs": {
+                "Value": "0"
+              },
+              "Rhs": {
+                "Value": "1"
+              }
+            }
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Object": {
+              "Value": "result"
+            },
+            "Key": {
+              "Operator": "+",
+              "Lhs": {
+                "Value": "1"
+              },
+              "Rhs": {
+                "Value": "1"
+              }
+            }
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

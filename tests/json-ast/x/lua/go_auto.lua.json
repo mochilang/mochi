@@ -1,0 +1,135 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "testpkg"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": {
+                "Value": "Add"
+              },
+              "Value": {
+                "ParList": {
+                  "HasVargs": false,
+                  "Names": [
+                    "a",
+                    "b"
+                  ]
+                },
+                "Stmts": [
+                  {
+                    "Exprs": [
+                      {
+                        "Operator": "+",
+                        "Lhs": {
+                          "Value": "a"
+                        },
+                        "Rhs": {
+                          "Value": "b"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "Key": {
+                "Value": "Pi"
+              },
+              "Value": {
+                "Value": "3.14"
+              }
+            },
+            {
+              "Key": {
+                "Value": "Answer"
+              },
+              "Value": {
+                "Value": "42"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Func": {
+              "Object": {
+                "Value": "testpkg"
+              },
+              "Key": {
+                "Value": "Add"
+              }
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Value": "2"
+              },
+              {
+                "Value": "3"
+              }
+            ],
+            "AdjustRet": false
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Object": {
+              "Value": "testpkg"
+            },
+            "Key": {
+              "Value": "Pi"
+            }
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Object": {
+              "Value": "testpkg"
+            },
+            "Key": {
+              "Value": "Answer"
+            }
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

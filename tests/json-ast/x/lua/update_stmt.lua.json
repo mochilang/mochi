@@ -1,0 +1,266 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "people"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "name"
+                    },
+                    "Value": {
+                      "Value": "Alice"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "age"
+                    },
+                    "Value": {
+                      "Value": "17"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "status"
+                    },
+                    "Value": {
+                      "Value": "minor"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "name"
+                    },
+                    "Value": {
+                      "Value": "Bob"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "age"
+                    },
+                    "Value": {
+                      "Value": "25"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "status"
+                    },
+                    "Value": {
+                      "Value": "unknown"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "name"
+                    },
+                    "Value": {
+                      "Value": "Charlie"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "age"
+                    },
+                    "Value": {
+                      "Value": "18"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "status"
+                    },
+                    "Value": {
+                      "Value": "unknown"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "name"
+                    },
+                    "Value": {
+                      "Value": "Diana"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "age"
+                    },
+                    "Value": {
+                      "Value": "16"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "status"
+                    },
+                    "Value": {
+                      "Value": "minor"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "_i0",
+      "Init": {
+        "Value": "1"
+      },
+      "Limit": {
+        "Expr": {
+          "Value": "people"
+        }
+      },
+      "Step": null,
+      "Stmts": [
+        {
+          "Names": [
+            "item"
+          ],
+          "Exprs": [
+            {
+              "Object": {
+                "Value": "people"
+              },
+              "Key": {
+                "Value": "_i0"
+              }
+            }
+          ]
+        },
+        {
+          "Condition": {
+            "Operator": "\u003e=",
+            "Lhs": {
+              "Object": {
+                "Value": "item"
+              },
+              "Key": {
+                "Value": "age"
+              }
+            },
+            "Rhs": {
+              "Value": "18"
+            }
+          },
+          "Then": [
+            {
+              "Lhs": [
+                {
+                  "Object": {
+                    "Value": "item"
+                  },
+                  "Key": {
+                    "Value": "status"
+                  }
+                }
+              ],
+              "Rhs": [
+                {
+                  "Value": "adult"
+                }
+              ]
+            },
+            {
+              "Lhs": [
+                {
+                  "Object": {
+                    "Value": "item"
+                  },
+                  "Key": {
+                    "Value": "age"
+                  }
+                }
+              ],
+              "Rhs": [
+                {
+                  "Operator": "+",
+                  "Lhs": {
+                    "Object": {
+                      "Value": "item"
+                    },
+                    "Key": {
+                      "Value": "age"
+                    }
+                  },
+                  "Rhs": {
+                    "Value": "1"
+                  }
+                }
+              ]
+            }
+          ],
+          "Else": null
+        },
+        {
+          "Lhs": [
+            {
+              "Object": {
+                "Value": "people"
+              },
+              "Key": {
+                "Value": "_i0"
+              }
+            }
+          ],
+          "Rhs": [
+            {
+              "Value": "item"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Value": "ok"
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

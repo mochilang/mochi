@@ -1,0 +1,61 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "x"
+        }
+      ],
+      "Rhs": [
+        {
+          "Value": "5"
+        }
+      ]
+    },
+    {
+      "Condition": {
+        "Operator": "\u003e",
+        "Lhs": {
+          "Value": "x"
+        },
+        "Rhs": {
+          "Value": "3"
+        }
+      },
+      "Then": [
+        {
+          "Expr": {
+            "Func": {
+              "Value": "print"
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Value": "big"
+              }
+            ],
+            "AdjustRet": false
+          }
+        }
+      ],
+      "Else": [
+        {
+          "Expr": {
+            "Func": {
+              "Value": "print"
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Value": "small"
+              }
+            ],
+            "AdjustRet": false
+          }
+        }
+      ]
+    }
+  ]
+}

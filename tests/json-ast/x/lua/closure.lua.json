@@ -1,0 +1,97 @@
+{
+  "stmts": [
+    {
+      "Name": {
+        "Func": {
+          "Value": "makeAdder"
+        },
+        "Receiver": null,
+        "Method": ""
+      },
+      "Func": {
+        "ParList": {
+          "HasVargs": false,
+          "Names": [
+            "n"
+          ]
+        },
+        "Stmts": [
+          {
+            "Exprs": [
+              {
+                "ParList": {
+                  "HasVargs": false,
+                  "Names": [
+                    "x"
+                  ]
+                },
+                "Stmts": [
+                  {
+                    "Exprs": [
+                      {
+                        "Operator": "+",
+                        "Lhs": {
+                          "Value": "x"
+                        },
+                        "Rhs": {
+                          "Value": "n"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "add10"
+        }
+      ],
+      "Rhs": [
+        {
+          "Func": {
+            "Value": "makeAdder"
+          },
+          "Receiver": null,
+          "Method": "",
+          "Args": [
+            {
+              "Value": "10"
+            }
+          ],
+          "AdjustRet": false
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Func": {
+              "Value": "add10"
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Value": "7"
+              }
+            ],
+            "AdjustRet": false
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

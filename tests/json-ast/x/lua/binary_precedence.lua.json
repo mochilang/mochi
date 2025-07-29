@@ -1,0 +1,112 @@
+{
+  "stmts": [
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Operator": "+",
+            "Lhs": {
+              "Value": "1"
+            },
+            "Rhs": {
+              "Operator": "*",
+              "Lhs": {
+                "Value": "2"
+              },
+              "Rhs": {
+                "Value": "3"
+              }
+            }
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Operator": "*",
+            "Lhs": {
+              "Operator": "+",
+              "Lhs": {
+                "Value": "1"
+              },
+              "Rhs": {
+                "Value": "2"
+              }
+            },
+            "Rhs": {
+              "Value": "3"
+            }
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Operator": "+",
+            "Lhs": {
+              "Operator": "*",
+              "Lhs": {
+                "Value": "2"
+              },
+              "Rhs": {
+                "Value": "3"
+              }
+            },
+            "Rhs": {
+              "Value": "1"
+            }
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Operator": "*",
+            "Lhs": {
+              "Value": "2"
+            },
+            "Rhs": {
+              "Operator": "+",
+              "Lhs": {
+                "Value": "3"
+              },
+              "Rhs": {
+                "Value": "1"
+              }
+            }
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

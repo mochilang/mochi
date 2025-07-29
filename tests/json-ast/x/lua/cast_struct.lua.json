@@ -1,0 +1,45 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "todo"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": {
+                "Value": "title"
+              },
+              "Value": {
+                "Value": "hi"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Object": {
+              "Value": "todo"
+            },
+            "Key": {
+              "Value": "title"
+            }
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

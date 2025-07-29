@@ -1,0 +1,97 @@
+{
+  "stmts": [
+    {
+      "Name": {
+        "Func": {
+          "Value": "outer"
+        },
+        "Receiver": null,
+        "Method": ""
+      },
+      "Func": {
+        "ParList": {
+          "HasVargs": false,
+          "Names": [
+            "x"
+          ]
+        },
+        "Stmts": [
+          {
+            "Name": {
+              "Func": {
+                "Value": "inner"
+              },
+              "Receiver": null,
+              "Method": ""
+            },
+            "Func": {
+              "ParList": {
+                "HasVargs": false,
+                "Names": [
+                  "y"
+                ]
+              },
+              "Stmts": [
+                {
+                  "Exprs": [
+                    {
+                      "Operator": "+",
+                      "Lhs": {
+                        "Value": "x"
+                      },
+                      "Rhs": {
+                        "Value": "y"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "Exprs": [
+              {
+                "Func": {
+                  "Value": "inner"
+                },
+                "Receiver": null,
+                "Method": "",
+                "Args": [
+                  {
+                    "Value": "5"
+                  }
+                ],
+                "AdjustRet": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Func": {
+              "Value": "outer"
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Value": "3"
+              }
+            ],
+            "AdjustRet": false
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

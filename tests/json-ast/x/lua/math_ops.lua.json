@@ -1,0 +1,67 @@
+{
+  "stmts": [
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Operator": "*",
+            "Lhs": {
+              "Value": "6"
+            },
+            "Rhs": {
+              "Value": "7"
+            }
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Operator": "/",
+            "Lhs": {
+              "Value": "7"
+            },
+            "Rhs": {
+              "Value": "2"
+            }
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Operator": "%",
+            "Lhs": {
+              "Value": "7"
+            },
+            "Rhs": {
+              "Value": "2"
+            }
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

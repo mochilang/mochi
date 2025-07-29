@@ -1,0 +1,2018 @@
+{
+  "stmts": [
+    {
+      "Name": {
+        "Func": {
+          "Value": "input"
+        },
+        "Receiver": null,
+        "Method": ""
+      },
+      "Func": {
+        "ParList": {
+          "HasVargs": false,
+          "Names": []
+        },
+        "Stmts": [
+          {
+            "Exprs": [
+              {
+                "Func": {
+                  "Object": {
+                    "Value": "io"
+                  },
+                  "Key": {
+                    "Value": "read"
+                  }
+                },
+                "Receiver": null,
+                "Method": "",
+                "Args": [
+                  {
+                    "Value": "*l"
+                  }
+                ],
+                "AdjustRet": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "Names": [
+        "_nil"
+      ],
+      "Exprs": [
+        {
+          "Fields": []
+        }
+      ]
+    },
+    {
+      "Names": [
+        "_now_seed"
+      ],
+      "Exprs": [
+        {
+          "Value": "0"
+        }
+      ]
+    },
+    {
+      "Names": [
+        "_now_seeded"
+      ],
+      "Exprs": [
+        {}
+      ]
+    },
+    {
+      "Stmts": [
+        {
+          "Names": [
+            "s"
+          ],
+          "Exprs": [
+            {
+              "Func": {
+                "Object": {
+                  "Value": "os"
+                },
+                "Key": {
+                  "Value": "getenv"
+                }
+              },
+              "Receiver": null,
+              "Method": "",
+              "Args": [
+                {
+                  "Value": "MOCHI_NOW_SEED"
+                }
+              ],
+              "AdjustRet": false
+            }
+          ]
+        },
+        {
+          "Condition": {
+            "Operator": "and",
+            "Lhs": {
+              "Value": "s"
+            },
+            "Rhs": {
+              "Operator": "~=",
+              "Lhs": {
+                "Value": "s"
+              },
+              "Rhs": {
+                "Value": ""
+              }
+            }
+          },
+          "Then": [
+            {
+              "Names": [
+                "v"
+              ],
+              "Exprs": [
+                {
+                  "Func": {
+                    "Value": "tonumber"
+                  },
+                  "Receiver": null,
+                  "Method": "",
+                  "Args": [
+                    {
+                      "Value": "s"
+                    }
+                  ],
+                  "AdjustRet": false
+                }
+              ]
+            },
+            {
+              "Condition": {
+                "Value": "v"
+              },
+              "Then": [
+                {
+                  "Lhs": [
+                    {
+                      "Value": "_now_seed"
+                    }
+                  ],
+                  "Rhs": [
+                    {
+                      "Value": "v"
+                    }
+                  ]
+                },
+                {
+                  "Lhs": [
+                    {
+                      "Value": "_now_seeded"
+                    }
+                  ],
+                  "Rhs": [
+                    {}
+                  ]
+                }
+              ],
+              "Else": null
+            }
+          ],
+          "Else": null
+        }
+      ]
+    },
+    {
+      "Names": [
+        "_now"
+      ],
+      "Exprs": [
+        {
+          "ParList": {
+            "HasVargs": false,
+            "Names": []
+          },
+          "Stmts": [
+            {
+              "Condition": {
+                "Value": "_now_seeded"
+              },
+              "Then": [
+                {
+                  "Lhs": [
+                    {
+                      "Value": "_now_seed"
+                    }
+                  ],
+                  "Rhs": [
+                    {
+                      "Operator": "%",
+                      "Lhs": {
+                        "Operator": "+",
+                        "Lhs": {
+                          "Operator": "*",
+                          "Lhs": {
+                            "Value": "_now_seed"
+                          },
+                          "Rhs": {
+                            "Value": "1664525"
+                          }
+                        },
+                        "Rhs": {
+                          "Value": "1013904223"
+                        }
+                      },
+                      "Rhs": {
+                        "Value": "2147483647"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "Exprs": [
+                    {
+                      "Value": "_now_seed"
+                    }
+                  ]
+                }
+              ],
+              "Else": null
+            },
+            {
+              "Exprs": [
+                {
+                  "Operator": "+",
+                  "Lhs": {
+                    "Operator": "*",
+                    "Lhs": {
+                      "Func": {
+                        "Object": {
+                          "Value": "os"
+                        },
+                        "Key": {
+                          "Value": "time"
+                        }
+                      },
+                      "Receiver": null,
+                      "Method": "",
+                      "Args": [],
+                      "AdjustRet": false
+                    },
+                    "Rhs": {
+                      "Value": "1000000000"
+                    }
+                  },
+                  "Rhs": {
+                    "Func": {
+                      "Object": {
+                        "Value": "math"
+                      },
+                      "Key": {
+                        "Value": "floor"
+                      }
+                    },
+                    "Receiver": null,
+                    "Method": "",
+                    "Args": [
+                      {
+                        "Operator": "*",
+                        "Lhs": {
+                          "Func": {
+                            "Object": {
+                              "Value": "os"
+                            },
+                            "Key": {
+                              "Value": "clock"
+                            }
+                          },
+                          "Receiver": null,
+                          "Method": "",
+                          "Args": [],
+                          "AdjustRet": false
+                        },
+                        "Rhs": {
+                          "Value": "1000000000"
+                        }
+                      }
+                    ],
+                    "AdjustRet": false
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Names": [
+        "_padStart"
+      ],
+      "Exprs": [
+        {
+          "ParList": {
+            "HasVargs": false,
+            "Names": [
+              "s",
+              "len",
+              "ch"
+            ]
+          },
+          "Stmts": [
+            {
+              "Condition": {
+                "Operator": "or",
+                "Lhs": {
+                  "Operator": "==",
+                  "Lhs": {
+                    "Value": "ch"
+                  },
+                  "Rhs": {}
+                },
+                "Rhs": {
+                  "Operator": "==",
+                  "Lhs": {
+                    "Value": "ch"
+                  },
+                  "Rhs": {
+                    "Value": ""
+                  }
+                }
+              },
+              "Then": [
+                {
+                  "Lhs": [
+                    {
+                      "Value": "ch"
+                    }
+                  ],
+                  "Rhs": [
+                    {
+                      "Value": " "
+                    }
+                  ]
+                }
+              ],
+              "Else": null
+            },
+            {
+              "Condition": {
+                "Operator": "\u003e=",
+                "Lhs": {
+                  "Expr": {
+                    "Value": "s"
+                  }
+                },
+                "Rhs": {
+                  "Value": "len"
+                }
+              },
+              "Then": [
+                {
+                  "Exprs": [
+                    {
+                      "Value": "s"
+                    }
+                  ]
+                }
+              ],
+              "Else": null
+            },
+            {
+              "Names": [
+                "fill"
+              ],
+              "Exprs": [
+                {
+                  "Func": {
+                    "Object": {
+                      "Value": "string"
+                    },
+                    "Key": {
+                      "Value": "sub"
+                    }
+                  },
+                  "Receiver": null,
+                  "Method": "",
+                  "Args": [
+                    {
+                      "Value": "ch"
+                    },
+                    {
+                      "Value": "1"
+                    },
+                    {
+                      "Value": "1"
+                    }
+                  ],
+                  "AdjustRet": false
+                }
+              ]
+            },
+            {
+              "Exprs": [
+                {
+                  "Lhs": {
+                    "Func": {
+                      "Object": {
+                        "Value": "string"
+                      },
+                      "Key": {
+                        "Value": "rep"
+                      }
+                    },
+                    "Receiver": null,
+                    "Method": "",
+                    "Args": [
+                      {
+                        "Value": "fill"
+                      },
+                      {
+                        "Operator": "-",
+                        "Lhs": {
+                          "Value": "len"
+                        },
+                        "Rhs": {
+                          "Expr": {
+                            "Value": "s"
+                          }
+                        }
+                      }
+                    ],
+                    "AdjustRet": false
+                  },
+                  "Rhs": {
+                    "Value": "s"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Names": [
+        "_gcd"
+      ],
+      "Exprs": [
+        {
+          "ParList": {
+            "HasVargs": false,
+            "Names": [
+              "a",
+              "b"
+            ]
+          },
+          "Stmts": [
+            {
+              "Lhs": [
+                {
+                  "Value": "a"
+                }
+              ],
+              "Rhs": [
+                {
+                  "Func": {
+                    "Object": {
+                      "Value": "math"
+                    },
+                    "Key": {
+                      "Value": "abs"
+                    }
+                  },
+                  "Receiver": null,
+                  "Method": "",
+                  "Args": [
+                    {
+                      "Value": "a"
+                    }
+                  ],
+                  "AdjustRet": false
+                }
+              ]
+            },
+            {
+              "Lhs": [
+                {
+                  "Value": "b"
+                }
+              ],
+              "Rhs": [
+                {
+                  "Func": {
+                    "Object": {
+                      "Value": "math"
+                    },
+                    "Key": {
+                      "Value": "abs"
+                    }
+                  },
+                  "Receiver": null,
+                  "Method": "",
+                  "Args": [
+                    {
+                      "Value": "b"
+                    }
+                  ],
+                  "AdjustRet": false
+                }
+              ]
+            },
+            {
+              "Condition": {
+                "Operator": "~=",
+                "Lhs": {
+                  "Value": "b"
+                },
+                "Rhs": {
+                  "Value": "0"
+                }
+              },
+              "Stmts": [
+                {
+                  "Lhs": [
+                    {
+                      "Value": "a"
+                    },
+                    {
+                      "Value": "b"
+                    }
+                  ],
+                  "Rhs": [
+                    {
+                      "Value": "b"
+                    },
+                    {
+                      "Operator": "%",
+                      "Lhs": {
+                        "Value": "a"
+                      },
+                      "Rhs": {
+                        "Value": "b"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Exprs": [
+                {
+                  "Value": "a"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Names": [
+        "_bigrat"
+      ],
+      "Exprs": [
+        {
+          "ParList": {
+            "HasVargs": false,
+            "Names": [
+              "n",
+              "d"
+            ]
+          },
+          "Stmts": [
+            {
+              "Condition": {
+                "Operator": "and",
+                "Lhs": {
+                  "Operator": "and",
+                  "Lhs": {
+                    "Operator": "and",
+                    "Lhs": {
+                      "Operator": "==",
+                      "Lhs": {
+                        "Func": {
+                          "Value": "type"
+                        },
+                        "Receiver": null,
+                        "Method": "",
+                        "Args": [
+                          {
+                            "Value": "n"
+                          }
+                        ],
+                        "AdjustRet": false
+                      },
+                      "Rhs": {
+                        "Value": "table"
+                      }
+                    },
+                    "Rhs": {
+                      "Operator": "~=",
+                      "Lhs": {
+                        "Object": {
+                          "Value": "n"
+                        },
+                        "Key": {
+                          "Value": "num"
+                        }
+                      },
+                      "Rhs": {}
+                    }
+                  },
+                  "Rhs": {
+                    "Operator": "~=",
+                    "Lhs": {
+                      "Object": {
+                        "Value": "n"
+                      },
+                      "Key": {
+                        "Value": "den"
+                      }
+                    },
+                    "Rhs": {}
+                  }
+                },
+                "Rhs": {
+                  "Operator": "==",
+                  "Lhs": {
+                    "Value": "d"
+                  },
+                  "Rhs": {}
+                }
+              },
+              "Then": [
+                {
+                  "Exprs": [
+                    {
+                      "Value": "n"
+                    }
+                  ]
+                }
+              ],
+              "Else": null
+            },
+            {
+              "Condition": {
+                "Operator": "==",
+                "Lhs": {
+                  "Value": "d"
+                },
+                "Rhs": {}
+              },
+              "Then": [
+                {
+                  "Lhs": [
+                    {
+                      "Value": "d"
+                    }
+                  ],
+                  "Rhs": [
+                    {
+                      "Value": "1"
+                    }
+                  ]
+                }
+              ],
+              "Else": null
+            },
+            {
+              "Condition": {
+                "Operator": "\u003c",
+                "Lhs": {
+                  "Value": "d"
+                },
+                "Rhs": {
+                  "Value": "0"
+                }
+              },
+              "Then": [
+                {
+                  "Lhs": [
+                    {
+                      "Value": "n"
+                    },
+                    {
+                      "Value": "d"
+                    }
+                  ],
+                  "Rhs": [
+                    {
+                      "Expr": {
+                        "Value": "n"
+                      }
+                    },
+                    {
+                      "Expr": {
+                        "Value": "d"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "Else": null
+            },
+            {
+              "Names": [
+                "g"
+              ],
+              "Exprs": [
+                {
+                  "Func": {
+                    "Value": "_gcd"
+                  },
+                  "Receiver": null,
+                  "Method": "",
+                  "Args": [
+                    {
+                      "Value": "n"
+                    },
+                    {
+                      "Value": "d"
+                    }
+                  ],
+                  "AdjustRet": false
+                }
+              ]
+            },
+            {
+              "Exprs": [
+                {
+                  "Fields": [
+                    {
+                      "Key": {
+                        "Value": "num"
+                      },
+                      "Value": {
+                        "Operator": "/",
+                        "Lhs": {
+                          "Value": "n"
+                        },
+                        "Rhs": {
+                          "Value": "g"
+                        }
+                      }
+                    },
+                    {
+                      "Key": {
+                        "Value": "den"
+                      },
+                      "Value": {
+                        "Operator": "/",
+                        "Lhs": {
+                          "Value": "d"
+                        },
+                        "Rhs": {
+                          "Value": "g"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Names": [
+        "_add"
+      ],
+      "Exprs": [
+        {
+          "ParList": {
+            "HasVargs": false,
+            "Names": [
+              "a",
+              "b"
+            ]
+          },
+          "Stmts": [
+            {
+              "Exprs": [
+                {
+                  "Func": {
+                    "Value": "_bigrat"
+                  },
+                  "Receiver": null,
+                  "Method": "",
+                  "Args": [
+                    {
+                      "Operator": "+",
+                      "Lhs": {
+                        "Operator": "*",
+                        "Lhs": {
+                          "Object": {
+                            "Value": "a"
+                          },
+                          "Key": {
+                            "Value": "num"
+                          }
+                        },
+                        "Rhs": {
+                          "Object": {
+                            "Value": "b"
+                          },
+                          "Key": {
+                            "Value": "den"
+                          }
+                        }
+                      },
+                      "Rhs": {
+                        "Operator": "*",
+                        "Lhs": {
+                          "Object": {
+                            "Value": "b"
+                          },
+                          "Key": {
+                            "Value": "num"
+                          }
+                        },
+                        "Rhs": {
+                          "Object": {
+                            "Value": "a"
+                          },
+                          "Key": {
+                            "Value": "den"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "Operator": "*",
+                      "Lhs": {
+                        "Object": {
+                          "Value": "a"
+                        },
+                        "Key": {
+                          "Value": "den"
+                        }
+                      },
+                      "Rhs": {
+                        "Object": {
+                          "Value": "b"
+                        },
+                        "Key": {
+                          "Value": "den"
+                        }
+                      }
+                    }
+                  ],
+                  "AdjustRet": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Names": [
+        "_sub"
+      ],
+      "Exprs": [
+        {
+          "ParList": {
+            "HasVargs": false,
+            "Names": [
+              "a",
+              "b"
+            ]
+          },
+          "Stmts": [
+            {
+              "Exprs": [
+                {
+                  "Func": {
+                    "Value": "_bigrat"
+                  },
+                  "Receiver": null,
+                  "Method": "",
+                  "Args": [
+                    {
+                      "Operator": "-",
+                      "Lhs": {
+                        "Operator": "*",
+                        "Lhs": {
+                          "Object": {
+                            "Value": "a"
+                          },
+                          "Key": {
+                            "Value": "num"
+                          }
+                        },
+                        "Rhs": {
+                          "Object": {
+                            "Value": "b"
+                          },
+                          "Key": {
+                            "Value": "den"
+                          }
+                        }
+                      },
+                      "Rhs": {
+                        "Operator": "*",
+                        "Lhs": {
+                          "Object": {
+                            "Value": "b"
+                          },
+                          "Key": {
+                            "Value": "num"
+                          }
+                        },
+                        "Rhs": {
+                          "Object": {
+                            "Value": "a"
+                          },
+                          "Key": {
+                            "Value": "den"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "Operator": "*",
+                      "Lhs": {
+                        "Object": {
+                          "Value": "a"
+                        },
+                        "Key": {
+                          "Value": "den"
+                        }
+                      },
+                      "Rhs": {
+                        "Object": {
+                          "Value": "b"
+                        },
+                        "Key": {
+                          "Value": "den"
+                        }
+                      }
+                    }
+                  ],
+                  "AdjustRet": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Names": [
+        "_mul"
+      ],
+      "Exprs": [
+        {
+          "ParList": {
+            "HasVargs": false,
+            "Names": [
+              "a",
+              "b"
+            ]
+          },
+          "Stmts": [
+            {
+              "Exprs": [
+                {
+                  "Func": {
+                    "Value": "_bigrat"
+                  },
+                  "Receiver": null,
+                  "Method": "",
+                  "Args": [
+                    {
+                      "Operator": "*",
+                      "Lhs": {
+                        "Object": {
+                          "Value": "a"
+                        },
+                        "Key": {
+                          "Value": "num"
+                        }
+                      },
+                      "Rhs": {
+                        "Object": {
+                          "Value": "b"
+                        },
+                        "Key": {
+                          "Value": "num"
+                        }
+                      }
+                    },
+                    {
+                      "Operator": "*",
+                      "Lhs": {
+                        "Object": {
+                          "Value": "a"
+                        },
+                        "Key": {
+                          "Value": "den"
+                        }
+                      },
+                      "Rhs": {
+                        "Object": {
+                          "Value": "b"
+                        },
+                        "Key": {
+                          "Value": "den"
+                        }
+                      }
+                    }
+                  ],
+                  "AdjustRet": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Names": [
+        "_div"
+      ],
+      "Exprs": [
+        {
+          "ParList": {
+            "HasVargs": false,
+            "Names": [
+              "a",
+              "b"
+            ]
+          },
+          "Stmts": [
+            {
+              "Exprs": [
+                {
+                  "Func": {
+                    "Value": "_bigrat"
+                  },
+                  "Receiver": null,
+                  "Method": "",
+                  "Args": [
+                    {
+                      "Operator": "*",
+                      "Lhs": {
+                        "Object": {
+                          "Value": "a"
+                        },
+                        "Key": {
+                          "Value": "num"
+                        }
+                      },
+                      "Rhs": {
+                        "Object": {
+                          "Value": "b"
+                        },
+                        "Key": {
+                          "Value": "den"
+                        }
+                      }
+                    },
+                    {
+                      "Operator": "*",
+                      "Lhs": {
+                        "Object": {
+                          "Value": "a"
+                        },
+                        "Key": {
+                          "Value": "den"
+                        }
+                      },
+                      "Rhs": {
+                        "Object": {
+                          "Value": "b"
+                        },
+                        "Key": {
+                          "Value": "num"
+                        }
+                      }
+                    }
+                  ],
+                  "AdjustRet": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": {
+        "Func": {
+          "Value": "num"
+        },
+        "Receiver": null,
+        "Method": ""
+      },
+      "Func": {
+        "ParList": {
+          "HasVargs": false,
+          "Names": [
+            "x"
+          ]
+        },
+        "Stmts": [
+          {
+            "Condition": {
+              "Operator": "and",
+              "Lhs": {
+                "Operator": "==",
+                "Lhs": {
+                  "Func": {
+                    "Value": "type"
+                  },
+                  "Receiver": null,
+                  "Method": "",
+                  "Args": [
+                    {
+                      "Value": "x"
+                    }
+                  ],
+                  "AdjustRet": false
+                },
+                "Rhs": {
+                  "Value": "table"
+                }
+              },
+              "Rhs": {
+                "Operator": "~=",
+                "Lhs": {
+                  "Object": {
+                    "Value": "x"
+                  },
+                  "Key": {
+                    "Value": "num"
+                  }
+                },
+                "Rhs": {}
+              }
+            },
+            "Then": [
+              {
+                "Exprs": [
+                  {
+                    "Object": {
+                      "Value": "x"
+                    },
+                    "Key": {
+                      "Value": "num"
+                    }
+                  }
+                ]
+              }
+            ],
+            "Else": null
+          },
+          {
+            "Exprs": [
+              {
+                "Value": "x"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "Name": {
+        "Func": {
+          "Value": "denom"
+        },
+        "Receiver": null,
+        "Method": ""
+      },
+      "Func": {
+        "ParList": {
+          "HasVargs": false,
+          "Names": [
+            "x"
+          ]
+        },
+        "Stmts": [
+          {
+            "Condition": {
+              "Operator": "and",
+              "Lhs": {
+                "Operator": "==",
+                "Lhs": {
+                  "Func": {
+                    "Value": "type"
+                  },
+                  "Receiver": null,
+                  "Method": "",
+                  "Args": [
+                    {
+                      "Value": "x"
+                    }
+                  ],
+                  "AdjustRet": false
+                },
+                "Rhs": {
+                  "Value": "table"
+                }
+              },
+              "Rhs": {
+                "Operator": "~=",
+                "Lhs": {
+                  "Object": {
+                    "Value": "x"
+                  },
+                  "Key": {
+                    "Value": "den"
+                  }
+                },
+                "Rhs": {}
+              }
+            },
+            "Then": [
+              {
+                "Exprs": [
+                  {
+                    "Object": {
+                      "Value": "x"
+                    },
+                    "Key": {
+                      "Value": "den"
+                    }
+                  }
+                ]
+              }
+            ],
+            "Else": null
+          },
+          {
+            "Exprs": [
+              {
+                "Value": "1"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "Names": [
+        "_sha256"
+      ],
+      "Exprs": [
+        {
+          "ParList": {
+            "HasVargs": false,
+            "Names": [
+              "bs"
+            ]
+          },
+          "Stmts": [
+            {
+              "Names": [
+                "tmp"
+              ],
+              "Exprs": [
+                {
+                  "Func": {
+                    "Object": {
+                      "Value": "os"
+                    },
+                    "Key": {
+                      "Value": "tmpname"
+                    }
+                  },
+                  "Receiver": null,
+                  "Method": "",
+                  "Args": [],
+                  "AdjustRet": false
+                }
+              ]
+            },
+            {
+              "Names": [
+                "f"
+              ],
+              "Exprs": [
+                {
+                  "Func": {
+                    "Value": "assert"
+                  },
+                  "Receiver": null,
+                  "Method": "",
+                  "Args": [
+                    {
+                      "Func": {
+                        "Object": {
+                          "Value": "io"
+                        },
+                        "Key": {
+                          "Value": "open"
+                        }
+                      },
+                      "Receiver": null,
+                      "Method": "",
+                      "Args": [
+                        {
+                          "Value": "tmp"
+                        },
+                        {
+                          "Value": "wb"
+                        }
+                      ],
+                      "AdjustRet": false
+                    }
+                  ],
+                  "AdjustRet": false
+                }
+              ]
+            },
+            {
+              "Name": "i",
+              "Init": {
+                "Value": "1"
+              },
+              "Limit": {
+                "Expr": {
+                  "Value": "bs"
+                }
+              },
+              "Step": null,
+              "Stmts": [
+                {
+                  "Expr": {
+                    "Func": null,
+                    "Receiver": {
+                      "Value": "f"
+                    },
+                    "Method": "write",
+                    "Args": [
+                      {
+                        "Func": {
+                          "Object": {
+                            "Value": "string"
+                          },
+                          "Key": {
+                            "Value": "char"
+                          }
+                        },
+                        "Receiver": null,
+                        "Method": "",
+                        "Args": [
+                          {
+                            "Object": {
+                              "Value": "bs"
+                            },
+                            "Key": {
+                              "Value": "i"
+                            }
+                          }
+                        ],
+                        "AdjustRet": false
+                      }
+                    ],
+                    "AdjustRet": false
+                  }
+                }
+              ]
+            },
+            {
+              "Expr": {
+                "Func": null,
+                "Receiver": {
+                  "Value": "f"
+                },
+                "Method": "close",
+                "Args": [],
+                "AdjustRet": false
+              }
+            },
+            {
+              "Names": [
+                "p"
+              ],
+              "Exprs": [
+                {
+                  "Func": {
+                    "Object": {
+                      "Value": "io"
+                    },
+                    "Key": {
+                      "Value": "popen"
+                    }
+                  },
+                  "Receiver": null,
+                  "Method": "",
+                  "Args": [
+                    {
+                      "Lhs": {
+                        "Value": "sha256sum "
+                      },
+                      "Rhs": {
+                        "Value": "tmp"
+                      }
+                    }
+                  ],
+                  "AdjustRet": false
+                }
+              ]
+            },
+            {
+              "Names": [
+                "out"
+              ],
+              "Exprs": [
+                {
+                  "Operator": "or",
+                  "Lhs": {
+                    "Func": null,
+                    "Receiver": {
+                      "Value": "p"
+                    },
+                    "Method": "read",
+                    "Args": [
+                      {
+                        "Value": "*l"
+                      }
+                    ],
+                    "AdjustRet": false
+                  },
+                  "Rhs": {
+                    "Value": ""
+                  }
+                }
+              ]
+            },
+            {
+              "Expr": {
+                "Func": null,
+                "Receiver": {
+                  "Value": "p"
+                },
+                "Method": "close",
+                "Args": [],
+                "AdjustRet": false
+              }
+            },
+            {
+              "Expr": {
+                "Func": {
+                  "Object": {
+                    "Value": "os"
+                  },
+                  "Key": {
+                    "Value": "remove"
+                  }
+                },
+                "Receiver": null,
+                "Method": "",
+                "Args": [
+                  {
+                    "Value": "tmp"
+                  }
+                ],
+                "AdjustRet": false
+              }
+            },
+            {
+              "Names": [
+                "hex"
+              ],
+              "Exprs": [
+                {
+                  "Func": {
+                    "Object": {
+                      "Value": "string"
+                    },
+                    "Key": {
+                      "Value": "sub"
+                    }
+                  },
+                  "Receiver": null,
+                  "Method": "",
+                  "Args": [
+                    {
+                      "Value": "out"
+                    },
+                    {
+                      "Value": "1"
+                    },
+                    {
+                      "Value": "64"
+                    }
+                  ],
+                  "AdjustRet": false
+                }
+              ]
+            },
+            {
+              "Names": [
+                "res"
+              ],
+              "Exprs": [
+                {
+                  "Fields": []
+                }
+              ]
+            },
+            {
+              "Name": "i",
+              "Init": {
+                "Value": "1"
+              },
+              "Limit": {
+                "Expr": {
+                  "Value": "hex"
+                }
+              },
+              "Step": {
+                "Value": "2"
+              },
+              "Stmts": [
+                {
+                  "Lhs": [
+                    {
+                      "Object": {
+                        "Value": "res"
+                      },
+                      "Key": {
+                        "Operator": "+",
+                        "Lhs": {
+                          "Expr": {
+                            "Value": "res"
+                          }
+                        },
+                        "Rhs": {
+                          "Value": "1"
+                        }
+                      }
+                    }
+                  ],
+                  "Rhs": [
+                    {
+                      "Func": {
+                        "Value": "tonumber"
+                      },
+                      "Receiver": null,
+                      "Method": "",
+                      "Args": [
+                        {
+                          "Func": {
+                            "Object": {
+                              "Value": "string"
+                            },
+                            "Key": {
+                              "Value": "sub"
+                            }
+                          },
+                          "Receiver": null,
+                          "Method": "",
+                          "Args": [
+                            {
+                              "Value": "hex"
+                            },
+                            {
+                              "Value": "i"
+                            },
+                            {
+                              "Operator": "+",
+                              "Lhs": {
+                                "Value": "i"
+                              },
+                              "Rhs": {
+                                "Value": "1"
+                              }
+                            }
+                          ],
+                          "AdjustRet": false
+                        },
+                        {
+                          "Value": "16"
+                        }
+                      ],
+                      "AdjustRet": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Exprs": [
+                {
+                  "Value": "res"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Names": [
+        "_indexOf"
+      ],
+      "Exprs": [
+        {
+          "ParList": {
+            "HasVargs": false,
+            "Names": [
+              "s",
+              "ch"
+            ]
+          },
+          "Stmts": [
+            {
+              "Name": "i",
+              "Init": {
+                "Value": "1"
+              },
+              "Limit": {
+                "Expr": {
+                  "Value": "s"
+                }
+              },
+              "Step": null,
+              "Stmts": [
+                {
+                  "Condition": {
+                    "Operator": "==",
+                    "Lhs": {
+                      "Func": {
+                        "Object": {
+                          "Value": "string"
+                        },
+                        "Key": {
+                          "Value": "sub"
+                        }
+                      },
+                      "Receiver": null,
+                      "Method": "",
+                      "Args": [
+                        {
+                          "Value": "s"
+                        },
+                        {
+                          "Value": "i"
+                        },
+                        {
+                          "Value": "i"
+                        }
+                      ],
+                      "AdjustRet": false
+                    },
+                    "Rhs": {
+                      "Value": "ch"
+                    }
+                  },
+                  "Then": [
+                    {
+                      "Exprs": [
+                        {
+                          "Operator": "-",
+                          "Lhs": {
+                            "Value": "i"
+                          },
+                          "Rhs": {
+                            "Value": "1"
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "Else": null
+                }
+              ]
+            },
+            {
+              "Exprs": [
+                {
+                  "Expr": {
+                    "Value": "1"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Names": [
+        "_parseIntStr"
+      ],
+      "Exprs": [
+        {
+          "ParList": {
+            "HasVargs": false,
+            "Names": [
+              "str"
+            ]
+          },
+          "Stmts": [
+            {
+              "Names": [
+                "n"
+              ],
+              "Exprs": [
+                {
+                  "Func": {
+                    "Value": "tonumber"
+                  },
+                  "Receiver": null,
+                  "Method": "",
+                  "Args": [
+                    {
+                      "Value": "str"
+                    },
+                    {
+                      "Value": "10"
+                    }
+                  ],
+                  "AdjustRet": false
+                }
+              ]
+            },
+            {
+              "Condition": {
+                "Operator": "==",
+                "Lhs": {
+                  "Value": "n"
+                },
+                "Rhs": {}
+              },
+              "Then": [
+                {
+                  "Exprs": [
+                    {
+                      "Value": "0"
+                    }
+                  ]
+                }
+              ],
+              "Else": null
+            },
+            {
+              "Exprs": [
+                {
+                  "Func": {
+                    "Object": {
+                      "Value": "math"
+                    },
+                    "Key": {
+                      "Value": "floor"
+                    }
+                  },
+                  "Receiver": null,
+                  "Method": "",
+                  "Args": [
+                    {
+                      "Value": "n"
+                    }
+                  ],
+                  "AdjustRet": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Names": [
+        "slice"
+      ],
+      "Exprs": [
+        {
+          "ParList": {
+            "HasVargs": false,
+            "Names": [
+              "lst",
+              "s",
+              "e"
+            ]
+          },
+          "Stmts": [
+            {
+              "Condition": {
+                "Operator": "\u003c",
+                "Lhs": {
+                  "Value": "s"
+                },
+                "Rhs": {
+                  "Value": "0"
+                }
+              },
+              "Then": [
+                {
+                  "Lhs": [
+                    {
+                      "Value": "s"
+                    }
+                  ],
+                  "Rhs": [
+                    {
+                      "Operator": "+",
+                      "Lhs": {
+                        "Expr": {
+                          "Value": "lst"
+                        }
+                      },
+                      "Rhs": {
+                        "Value": "s"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "Else": null
+            },
+            {
+              "Condition": {
+                "Operator": "==",
+                "Lhs": {
+                  "Value": "e"
+                },
+                "Rhs": {}
+              },
+              "Then": [
+                {
+                  "Lhs": [
+                    {
+                      "Value": "e"
+                    }
+                  ],
+                  "Rhs": [
+                    {
+                      "Expr": {
+                        "Value": "lst"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "Else": null
+            },
+            {
+              "Names": [
+                "r"
+              ],
+              "Exprs": [
+                {
+                  "Fields": []
+                }
+              ]
+            },
+            {
+              "Name": "i",
+              "Init": {
+                "Operator": "+",
+                "Lhs": {
+                  "Value": "s"
+                },
+                "Rhs": {
+                  "Value": "1"
+                }
+              },
+              "Limit": {
+                "Value": "e"
+              },
+              "Step": null,
+              "Stmts": [
+                {
+                  "Lhs": [
+                    {
+                      "Object": {
+                        "Value": "r"
+                      },
+                      "Key": {
+                        "Operator": "+",
+                        "Lhs": {
+                          "Expr": {
+                            "Value": "r"
+                          }
+                        },
+                        "Rhs": {
+                          "Value": "1"
+                        }
+                      }
+                    }
+                  ],
+                  "Rhs": [
+                    {
+                      "Object": {
+                        "Value": "lst"
+                      },
+                      "Key": {
+                        "Value": "i"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Exprs": [
+                {
+                  "Value": "r"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Stmts": [
+        {
+          "Names": [
+            "_bench_start"
+          ],
+          "Exprs": [
+            {
+              "Func": {
+                "Value": "_now"
+              },
+              "Receiver": null,
+              "Method": "",
+              "Args": [],
+              "AdjustRet": false
+            }
+          ]
+        },
+        {
+          "Lhs": [
+            {
+              "Value": "n"
+            }
+          ],
+          "Rhs": [
+            {
+              "Value": "1000"
+            }
+          ]
+        },
+        {
+          "Lhs": [
+            {
+              "Value": "s"
+            }
+          ],
+          "Rhs": [
+            {
+              "Value": "0"
+            }
+          ]
+        },
+        {
+          "Name": "i",
+          "Init": {
+            "Value": "1"
+          },
+          "Limit": {
+            "Operator": "-",
+            "Lhs": {
+              "Value": "n"
+            },
+            "Rhs": {
+              "Value": "1"
+            }
+          },
+          "Step": null,
+          "Stmts": [
+            {
+              "Lhs": [
+                {
+                  "Value": "s"
+                }
+              ],
+              "Rhs": [
+                {
+                  "Operator": "+",
+                  "Lhs": {
+                    "Value": "s"
+                  },
+                  "Rhs": {
+                    "Value": "i"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "Names": [
+            "_bench_end"
+          ],
+          "Exprs": [
+            {
+              "Func": {
+                "Value": "_now"
+              },
+              "Receiver": null,
+              "Method": "",
+              "Args": [],
+              "AdjustRet": false
+            }
+          ]
+        },
+        {
+          "Expr": {
+            "Func": {
+              "Value": "print"
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Value": "{\n  \"duration_us\": 571223,\n  \"memory_bytes\": 0,\n  \"name\": \"simple\"\n}"
+              }
+            ],
+            "AdjustRet": false
+          }
+        }
+      ]
+    }
+  ]
+}

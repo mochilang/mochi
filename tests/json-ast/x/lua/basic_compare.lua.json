@@ -1,0 +1,97 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "a"
+        }
+      ],
+      "Rhs": [
+        {
+          "Operator": "-",
+          "Lhs": {
+            "Value": "10"
+          },
+          "Rhs": {
+            "Value": "3"
+          }
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "b"
+        }
+      ],
+      "Rhs": [
+        {
+          "Operator": "+",
+          "Lhs": {
+            "Value": "2"
+          },
+          "Rhs": {
+            "Value": "2"
+          }
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Value": "a"
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Operator": "==",
+            "Lhs": {
+              "Value": "a"
+            },
+            "Rhs": {
+              "Value": "7"
+            }
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Operator": "\u003c",
+            "Lhs": {
+              "Value": "b"
+            },
+            "Rhs": {
+              "Value": "5"
+            }
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

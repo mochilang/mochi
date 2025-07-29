@@ -1,0 +1,442 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "xs"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": null,
+              "Value": {
+                "Value": "1"
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Value": "2"
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Value": "3"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "ys"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": []
+        }
+      ]
+    },
+    {
+      "Names": [
+        "_",
+        "x"
+      ],
+      "Exprs": [
+        {
+          "Func": {
+            "Value": "ipairs"
+          },
+          "Receiver": null,
+          "Method": "",
+          "Args": [
+            {
+              "Value": "xs"
+            }
+          ],
+          "AdjustRet": false
+        }
+      ],
+      "Stmts": [
+        {
+          "Condition": {
+            "Operator": "==",
+            "Lhs": {
+              "Operator": "%",
+              "Lhs": {
+                "Value": "x"
+              },
+              "Rhs": {
+                "Value": "2"
+              }
+            },
+            "Rhs": {
+              "Value": "1"
+            }
+          },
+          "Then": [
+            {
+              "Expr": {
+                "Func": {
+                  "Object": {
+                    "Value": "table"
+                  },
+                  "Key": {
+                    "Value": "insert"
+                  }
+                },
+                "Receiver": null,
+                "Method": "",
+                "Args": [
+                  {
+                    "Value": "ys"
+                  },
+                  {
+                    "Value": "x"
+                  }
+                ],
+                "AdjustRet": false
+              }
+            }
+          ],
+          "Else": null
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Func": {
+              "ParList": {
+                "HasVargs": false,
+                "Names": [
+                  "lst",
+                  "v"
+                ]
+              },
+              "Stmts": [
+                {
+                  "Names": [
+                    "_",
+                    "x"
+                  ],
+                  "Exprs": [
+                    {
+                      "Func": {
+                        "Value": "ipairs"
+                      },
+                      "Receiver": null,
+                      "Method": "",
+                      "Args": [
+                        {
+                          "Value": "lst"
+                        }
+                      ],
+                      "AdjustRet": false
+                    }
+                  ],
+                  "Stmts": [
+                    {
+                      "Condition": {
+                        "Operator": "==",
+                        "Lhs": {
+                          "Value": "x"
+                        },
+                        "Rhs": {
+                          "Value": "v"
+                        }
+                      },
+                      "Then": [
+                        {
+                          "Exprs": [
+                            {}
+                          ]
+                        }
+                      ],
+                      "Else": null
+                    }
+                  ]
+                },
+                {
+                  "Exprs": [
+                    {}
+                  ]
+                }
+              ]
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Value": "ys"
+              },
+              {
+                "Value": "1"
+              }
+            ],
+            "AdjustRet": false
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Func": {
+              "ParList": {
+                "HasVargs": false,
+                "Names": [
+                  "lst",
+                  "v"
+                ]
+              },
+              "Stmts": [
+                {
+                  "Names": [
+                    "_",
+                    "x"
+                  ],
+                  "Exprs": [
+                    {
+                      "Func": {
+                        "Value": "ipairs"
+                      },
+                      "Receiver": null,
+                      "Method": "",
+                      "Args": [
+                        {
+                          "Value": "lst"
+                        }
+                      ],
+                      "AdjustRet": false
+                    }
+                  ],
+                  "Stmts": [
+                    {
+                      "Condition": {
+                        "Operator": "==",
+                        "Lhs": {
+                          "Value": "x"
+                        },
+                        "Rhs": {
+                          "Value": "v"
+                        }
+                      },
+                      "Then": [
+                        {
+                          "Exprs": [
+                            {}
+                          ]
+                        }
+                      ],
+                      "Else": null
+                    }
+                  ]
+                },
+                {
+                  "Exprs": [
+                    {}
+                  ]
+                }
+              ]
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Value": "ys"
+              },
+              {
+                "Value": "2"
+              }
+            ],
+            "AdjustRet": false
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "m"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": {
+                "Value": "a"
+              },
+              "Value": {
+                "Value": "1"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Operator": "~=",
+            "Lhs": {
+              "Object": {
+                "Value": "m"
+              },
+              "Key": {
+                "Value": "a"
+              }
+            },
+            "Rhs": {}
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Operator": "~=",
+            "Lhs": {
+              "Object": {
+                "Value": "m"
+              },
+              "Key": {
+                "Value": "b"
+              }
+            },
+            "Rhs": {}
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "s"
+        }
+      ],
+      "Rhs": [
+        {
+          "Value": "hello"
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Operator": "~=",
+            "Lhs": {
+              "Func": {
+                "Object": {
+                  "Value": "string"
+                },
+                "Key": {
+                  "Value": "find"
+                }
+              },
+              "Receiver": null,
+              "Method": "",
+              "Args": [
+                {
+                  "Value": "s"
+                },
+                {
+                  "Value": "ell"
+                },
+                {
+                  "Value": "1"
+                },
+                {}
+              ],
+              "AdjustRet": false
+            },
+            "Rhs": {}
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Operator": "~=",
+            "Lhs": {
+              "Func": {
+                "Object": {
+                  "Value": "string"
+                },
+                "Key": {
+                  "Value": "find"
+                }
+              },
+              "Receiver": null,
+              "Method": "",
+              "Args": [
+                {
+                  "Value": "s"
+                },
+                {
+                  "Value": "foo"
+                },
+                {
+                  "Value": "1"
+                },
+                {}
+              ],
+              "AdjustRet": false
+            },
+            "Rhs": {}
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

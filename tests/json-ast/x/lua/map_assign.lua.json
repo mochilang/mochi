@@ -1,0 +1,62 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "scores"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": {
+                "Value": "alice"
+              },
+              "Value": {
+                "Value": "1"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Object": {
+            "Value": "scores"
+          },
+          "Key": {
+            "Value": "bob"
+          }
+        }
+      ],
+      "Rhs": [
+        {
+          "Value": "2"
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Object": {
+              "Value": "scores"
+            },
+            "Key": {
+              "Value": "bob"
+            }
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}
