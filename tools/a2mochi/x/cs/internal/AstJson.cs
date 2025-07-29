@@ -254,7 +254,9 @@ public static class AstJson
             case ExpressionStatementSyntax es:
                 if (es.Expression is AssignmentExpressionSyntax ass)
                 {
-                    var asn = new Node { Kind = "assign", Value = ass.Left.ToString(), Children = new List<Node> { ParseExpr(ass.Right) } };
+                    var asn = new Node { Kind = "assign" };
+                    asn.Children.Add(ParseExpr(ass.Left));
+                    asn.Children.Add(ParseExpr(ass.Right));
                     return asn;
                 }
                 if (es.Expression is InvocationExpressionSyntax inv)
