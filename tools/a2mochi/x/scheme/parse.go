@@ -68,6 +68,19 @@ func Parse(src string) (*Program, error) {
      (symbol->string spec)]
     [else #f]))
 
+(define (expr->json e)
+  (cond
+    [(number? e) e]
+    [(string? e) e]
+    [(boolean? e) (if e #t #f)]
+    [(symbol? e) (hash 'var (symbol->string e))]
+    [(and (pair? e) (eq? (car e) 'list))
+     (hash 'list (map expr->json (cdr e)))]
+    [(pair? e)
+     (hash 'call (symbol->string (car e))
+           'args (map expr->json (cdr e)))]
+    [else #f]))
+
 (define (item f)
   (cond
     [(and (pair? f) (eq? (car f) 'define))
@@ -89,9 +102,7 @@ func Parse(src string) (*Program, error) {
          [(symbol? name)
           (let ([val (car body)])
             (hash 'kind "var" 'name (symbol->string name)
-                  'value (cond [(number? val) val]
-                              [(string? val) val]
-                              [else #f])))]
+                  'value (expr->json val)))]
          [else #f]))]
     [(and (pair? f) (eq? (car f) 'import))
      (for/list ([s (cdr f)] #:when (module-name s))
@@ -108,16 +119,12 @@ func Parse(src string) (*Program, error) {
        [(symbol? (cadr f))
         (let ([val (caddr f)])
           (hash 'kind "assign" 'name (symbol->string (cadr f))
-                'value (cond [(number? val) val]
-                            [(string? val) val]
-                            [else #f])))]
+                'value (expr->json val)))]
        [else #f])]
     [(and (pair? f) (eq? (car f) 'display))
      (let ([val (cadr f)])
        (hash 'kind "print"
-             'value (cond [(number? val) val]
-                         [(string? val) val]
-                         [else #f])))]
+             'value (expr->json val)))]
     [(and (pair? f) (eq? (car f) 'newline))
      (hash 'kind "print" 'value "")]
     [else #f]))
