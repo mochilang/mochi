@@ -1,6 +1,3 @@
-print
-print
-print
-print
-print
-print
+print(take(drop([1, 2, 3], 1), (3 - 1)))
+print(take(drop([1, 2, 3], 0), (2 - 0)))
+print(substring("hello", 1, 4))

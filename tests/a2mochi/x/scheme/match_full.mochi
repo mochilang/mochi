@@ -1,20 +1,13 @@
-fun to_str(x: any) {
-}
 let x = 2
-let label
-print
-print
+let label = cond(else("unknown"))
+print(label)
 let day = "sun"
-let mood
-print
-print
+let mood = cond(else("normal"))
+print(mood)
 let ok = "true"
-let status
-print
-print
+let status = cond(else(quote(nil)))
+print(status)
 fun classify(n: any) {
 }
-print
-print
-print
-print
+print(classify(0))
+print(classify(5))

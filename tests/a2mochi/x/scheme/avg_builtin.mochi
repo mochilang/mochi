@@ -1,1 +1,1 @@
-print(exact_to_inexact((apply(+, xs) / length(xs))))
+print(exact_to_inexact((sum(xs) / length(xs))))

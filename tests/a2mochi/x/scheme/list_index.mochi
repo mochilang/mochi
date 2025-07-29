@@ -1,3 +1,2 @@
-let xs
-print
-print
+let xs = [10, 20, 30]
+print(list_ref(xs, 1))

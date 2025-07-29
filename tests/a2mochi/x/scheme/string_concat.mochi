@@ -1,10 +1,1 @@
-fun to_str(x: any) {
-}
-fun upper(s: any) {
-}
-fun lower(s: any) {
-}
-fun fmod(a: any, b: any) {
-}
-print
-print
+print(string_append("hello ", "world"))

@@ -1,16 +1,4 @@
-fun to_str(x: any) {
-}
-fun upper(s: any) {
-}
-fun lower(s: any) {
-}
-fun fmod(a: any, b: any) {
-}
-print
-print
-print
-print
-print
-print
-print
-print
+print(if string<_p("a", "b") then true else false)
+print(if string<=_p("a", "a") then true else false)
+print(if string>_p("b", "a") then true else false)
+print(if string>=_p("b", "b") then true else false)

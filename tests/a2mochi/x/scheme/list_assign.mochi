@@ -1,3 +1,2 @@
-let nums
-print
-print
+let nums = [1, 2]
+print(list_ref(nums, 1))

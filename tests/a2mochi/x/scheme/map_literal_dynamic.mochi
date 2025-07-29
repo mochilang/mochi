@@ -1,7 +1,6 @@
 let x = 3
 let y = 4
-let m
-print
-print
-print
-print
+let m = alist_to_hash_table([cons("a", x), cons("b", y)])
+print(hash_table_ref(m, "a"))
+print(" ")
+print(hash_table_ref(m, "b"))

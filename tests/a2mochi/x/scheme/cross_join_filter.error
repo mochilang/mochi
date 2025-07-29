@@ -1,1 +1,5 @@
-parse mochi: parse error: 3:83: unexpected token "," (expected ")")
+check: error[T002]: undefined variable: res2
+  --> :3:13
+
+help:
+  Check if the variable was declared in this scope.

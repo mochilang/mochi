@@ -1,4 +1,4 @@
 let customers = [alist_to_hash_table([cons("id", 1), cons("name", "Alice")]), alist_to_hash_table([cons("id", 2), cons("name", "Bob")]), alist_to_hash_table([cons("id", 3), cons("name", "Charlie")])]
 let orders = [alist_to_hash_table([cons("id", 100), cons("customerId", 1), cons("total", 250)]), alist_to_hash_table([cons("id", 101), cons("customerId", 2), cons("total", 125)]), alist_to_hash_table([cons("id", 102), cons("customerId", 1), cons("total", 300)])]
-let result = begin(for_each(lambda(o(), for_each(lambda(c(), set_bang(res14, append(res14, alist_to_hash_table([cons("orderId", hash_table_ref(o, "id")), cons("orderCustomerId", hash_table_ref(o, "customerId")), cons("pairedCustomerName", hash_table_ref(c, "name")), cons("orderTotal", hash_table_ref(o, "total"))])))), customers)), orders), res14)
+let result = res14
 print("--- Cross Join: All order-customer pairs ---")

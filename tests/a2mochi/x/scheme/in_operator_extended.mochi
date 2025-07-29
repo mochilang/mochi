@@ -1,16 +1,10 @@
-let xs
-let ys
-print
-print
-print
-print
-let m
-print
-print
-print
-print
+let xs = [1, 2, 3]
+let ys = res35
+print(if cond(else(if member(1, ys) then "true" else "false")) then 1 else 0)
+print(if cond(else(if member(2, ys) then "true" else "false")) then 1 else 0)
+let m = alist_to_hash_table([cons("a", 1)])
+print(if cond(else(if member("a", m) then "true" else "false")) then 1 else 0)
+print(if cond(else(if member("b", m) then "true" else "false")) then 1 else 0)
 let s = "hello"
-print
-print
-print
-print
+print(if cond(else(if member("ell", s) then "true" else "false")) then 1 else 0)
+print(if cond(else(if member("foo", s) then "true" else "false")) then 1 else 0)

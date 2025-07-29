@@ -1,6 +1,5 @@
-let customers
-let orders
-let items
-let result
-print
-print
+let customers = [alist_to_hash_table([cons("id", 1), cons("name", "Alice")]), alist_to_hash_table([cons("id", 2), cons("name", "Bob")])]
+let orders = [alist_to_hash_table([cons("id", 100), cons("customerId", 1)]), alist_to_hash_table([cons("id", 101), cons("customerId", 2)])]
+let items = [alist_to_hash_table([cons("orderId", 100), cons("sku", "a")])]
+let result = res39
+print("--- Left Join Multi ---")

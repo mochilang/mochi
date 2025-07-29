@@ -1,2 +1,1 @@
-print
-print
+print(hash_table_size(alist_to_hash_table([cons("a", 1), cons("b", 2)])))

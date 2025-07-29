@@ -1,6 +1,5 @@
-let data
-let groups
-let tmp
-let result
-print
-print
+let data = [alist_to_hash_table([cons("tag", "a"), cons("val", 1)]), alist_to_hash_table([cons("tag", "a"), cons("val", 2)]), alist_to_hash_table([cons("tag", "b"), cons("val", 3)])]
+let groups = res33
+let tmp = []
+let result = res34
+print(result)

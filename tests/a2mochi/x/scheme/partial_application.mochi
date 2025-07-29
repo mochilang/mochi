@@ -1,5 +1,4 @@
 fun add(a: any, b: any) {
 }
-let add5
-print
-print
+let add5 = add(5)
+print(add5(3))

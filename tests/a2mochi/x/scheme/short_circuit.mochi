@@ -1,6 +1,4 @@
 fun boom(a: any, b: any) {
 }
-print
-print
-print
-print
+print(if and("false", boom(1, 2)) then 1 else 0)
+print(if or("true", boom(1, 2)) then 1 else 0)
