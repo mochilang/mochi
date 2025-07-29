@@ -135,6 +135,10 @@ public static class AstJson
     {
         switch (e)
         {
+            case CastExpressionSyntax ce:
+                return ParseExpr(ce.Expression);
+            case PredefinedTypeSyntax pt:
+                return new Node { Kind = "ident", Value = pt.Keyword.Text };
             case LiteralExpressionSyntax lit:
                 return new Node { Kind = "literal", Value = lit.Token.ValueText };
             case IdentifierNameSyntax id:
