@@ -443,6 +443,9 @@ func tryIIFE(c *ast.CallExpr) *mast.Node {
 	if n := tryAvg(fn); n != nil {
 		return n
 	}
+	if n := tryMapValuesIIFE(fn); n != nil {
+		return n
+	}
 	if n := tryQuery(fn); n != nil {
 		return n
 	}
@@ -1025,6 +1028,76 @@ func tryMapKeysIIFE(fn *ast.FuncLit) ast.Expr {
 		return nil
 	}
 	return rng.X
+}
+
+// tryMapValuesIIFE detects an immediately invoked function that builds and
+// returns a slice of map values. It returns the map expression if the pattern
+// matches.
+func tryMapValuesIIFE(fn *ast.FuncLit) *mast.Node {
+	if len(fn.Body.List) < 3 {
+		return nil
+	}
+	init, ok := fn.Body.List[0].(*ast.AssignStmt)
+	if !ok || init.Tok != token.DEFINE || len(init.Lhs) != 1 {
+		return nil
+	}
+	resIdent, ok := init.Lhs[0].(*ast.Ident)
+	if !ok {
+		return nil
+	}
+	rng, ok := fn.Body.List[1].(*ast.RangeStmt)
+	if !ok || rng.Body == nil || len(rng.Body.List) != 1 || rng.Value == nil {
+		return nil
+	}
+	assign, ok := rng.Body.List[0].(*ast.AssignStmt)
+	if !ok || len(assign.Lhs) != 1 || len(assign.Rhs) != 1 || assign.Tok != token.ASSIGN {
+		return nil
+	}
+	if id, ok := assign.Lhs[0].(*ast.Ident); !ok || id.Name != resIdent.Name {
+		return nil
+	}
+	call, ok := assign.Rhs[0].(*ast.CallExpr)
+	if !ok || len(call.Args) != 2 {
+		return nil
+	}
+	if fid, ok := call.Fun.(*ast.Ident); !ok || fid.Name != "append" {
+		return nil
+	}
+	if a0, ok := call.Args[0].(*ast.Ident); !ok || a0.Name != resIdent.Name {
+		return nil
+	}
+	valIdent, ok := rng.Value.(*ast.Ident)
+	if !ok {
+		return nil
+	}
+	if a1, ok := call.Args[1].(*ast.Ident); !ok || a1.Name != valIdent.Name {
+		return nil
+	}
+	idx := 2
+	if len(fn.Body.List) == 4 {
+		if es, ok := fn.Body.List[2].(*ast.ExprStmt); ok {
+			if sc, ok := es.X.(*ast.CallExpr); ok {
+				if sel, ok := sc.Fun.(*ast.SelectorExpr); ok {
+					if pkg, ok := sel.X.(*ast.Ident); ok && pkg.Name == "sort" && sel.Sel.Name == "Ints" && len(sc.Args) == 1 {
+						if arg, ok := sc.Args[0].(*ast.Ident); ok && arg.Name == resIdent.Name {
+							idx = 3
+						}
+					}
+				}
+			}
+		}
+	}
+	if len(fn.Body.List[idx:]) != 1 {
+		return nil
+	}
+	ret, ok := fn.Body.List[idx].(*ast.ReturnStmt)
+	if !ok || len(ret.Results) != 1 {
+		return nil
+	}
+	if rid, ok := ret.Results[0].(*ast.Ident); !ok || rid.Name != resIdent.Name {
+		return nil
+	}
+	return &mast.Node{Kind: "call", Value: "values", Children: []*mast.Node{transformExpr(rng.X)}}
 }
 
 // tryExists matches patterns like len(func(){ res:=[]T{}; for _,v:=range xs { if v == k { res = append(res,v) } }; return res }()) > 0
