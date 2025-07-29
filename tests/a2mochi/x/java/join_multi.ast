@@ -1,0 +1,23 @@
+(program
+  (let customers
+    (list (unknown) (unknown))
+  )
+  (let orders
+    (list (unknown) (unknown))
+  )
+  (let items
+    (list (unknown) (unknown))
+  )
+  (let result (unknown))
+  (call print (string "--- Multi Join ---"))
+  (for r
+    (in (selector result))
+    (block
+      (call print
+        (selector name (selector r))
+        (string " bought item ")
+        (selector sku (selector r))
+      )
+    )
+  )
+)

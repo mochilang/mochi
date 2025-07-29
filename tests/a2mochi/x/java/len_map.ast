@@ -1,0 +1,8 @@
+(program
+  (call print
+    (call
+      (selector boolStr)
+      (call len (unknown))
+    )
+  )
+)

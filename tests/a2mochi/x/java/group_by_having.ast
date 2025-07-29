@@ -1,0 +1,7 @@
+(program
+  (let people
+    (list (unknown) (unknown) (unknown) (unknown) (unknown) (unknown) (unknown))
+  )
+  (let big (unknown))
+  (unknown)
+)

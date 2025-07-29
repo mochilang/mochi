@@ -1,0 +1,20 @@
+(program
+  (let customers
+    (list (unknown) (unknown))
+  )
+  (let orders
+    (list (unknown) (unknown) (unknown))
+  )
+  (let stats (unknown))
+  (call print (string "--- Orders per customer ---"))
+  (for s
+    (in (selector stats))
+    (block
+      (call print
+        (selector name (selector s))
+        (string " orders: ")
+        (selector count (selector s))
+      )
+    )
+  )
+)

@@ -1,0 +1,30 @@
+(program
+  (let items
+    (list (unknown) (unknown) (unknown) (unknown))
+  )
+  (let grouped (unknown))
+  (call print
+    (call
+      (selector collect
+        (call
+          (selector map
+            (call
+              (selector stream (unknown))
+            )
+          )
+          (unknown)
+        )
+      )
+      (call
+        (selector joining
+          (selector Collectors
+            (selector stream
+              (selector util (selector java))
+            )
+          )
+        )
+        (string " ")
+      )
+    )
+  )
+)

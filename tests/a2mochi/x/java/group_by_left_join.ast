@@ -1,0 +1,20 @@
+(program
+  (let customers
+    (list (unknown) (unknown) (unknown))
+  )
+  (let orders
+    (list (unknown) (unknown) (unknown))
+  )
+  (let stats (unknown))
+  (call print (string "--- Group Left Join ---"))
+  (for s
+    (in (selector stats))
+    (block
+      (call print
+        (selector name (selector s))
+        (string " orders: ")
+        (selector count (selector s))
+      )
+    )
+  )
+)

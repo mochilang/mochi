@@ -1,0 +1,7 @@
+(program
+  (let scores (unknown))
+  (unknown)
+  (call print
+    (index (selector scores) (string bob))
+  )
+)

@@ -1,0 +1,6 @@
+(program
+  (let book (unknown))
+  (call print
+    (selector name (unknown))
+  )
+)

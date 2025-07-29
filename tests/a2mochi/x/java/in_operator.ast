@@ -1,0 +1,21 @@
+(program
+  (let xs
+    (list (int 1) (int 2) (int 3))
+  )
+  (call print
+    (call
+      (selector anyMatch
+        (call
+          (selector stream
+            (selector Arrays
+              (selector util (selector java))
+            )
+          )
+          (selector xs)
+        )
+      )
+      (unknown)
+    )
+  )
+  (call print (unknown))
+)

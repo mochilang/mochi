@@ -1,0 +1,44 @@
+(program
+  (let xs
+    (list (int 1) (int 2) (int 3))
+  )
+  (let ys (unknown))
+  (let m (unknown))
+  (let s (string hello))
+  (call print
+    (call
+      (selector contains (selector ys))
+      (int 1)
+    )
+  )
+  (call print
+    (call
+      (selector contains (selector ys))
+      (int 2)
+    )
+  )
+  (call print
+    (call
+      (selector containsKey (selector m))
+      (string a)
+    )
+  )
+  (call print
+    (call
+      (selector containsKey (selector m))
+      (string b)
+    )
+  )
+  (call print
+    (call
+      (selector contains (selector s))
+      (string ell)
+    )
+  )
+  (call print
+    (call
+      (selector contains (selector s))
+      (string foo)
+    )
+  )
+)

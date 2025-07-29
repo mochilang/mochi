@@ -1,0 +1,5 @@
+run: error[T003]: unknown function: twoSum
+  --> :2:14
+
+help:
+  Ensure the function is defined before it's called.

@@ -1,0 +1,5 @@
+(program
+  (let _nowSeeded (bool false))
+  (var _nowSeed (type int))
+  (unknown)
+)

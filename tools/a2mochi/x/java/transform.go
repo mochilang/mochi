@@ -50,6 +50,10 @@ func stmtNode(s Stmt, mutated map[string]bool) *mochias.Node {
 		}
 		return n
 	case "Assign":
+		if s.Target != nil {
+			lhs := exprNode(*s.Target)
+			return &mochias.Node{Kind: "assign", Children: []*mochias.Node{lhs, exprNode(*s.Expr)}}
+		}
 		return &mochias.Node{Kind: "assign", Value: s.Name, Children: []*mochias.Node{exprNode(*s.Expr)}}
 	case "Print":
 		call := &mochias.Node{Kind: "call", Value: "print"}
@@ -471,12 +475,32 @@ func scanMutations(stmts []Stmt, m map[string]bool) {
 	for _, st := range stmts {
 		switch st.Kind {
 		case "Assign":
-			m[st.Name] = true
+			if st.Target != nil {
+				if n := targetBaseName(st.Target); n != "" {
+					m[n] = true
+				}
+			} else {
+				m[st.Name] = true
+			}
 		case "While", "ForRange", "ForEach":
 			scanMutations(st.Body, m)
 		case "If":
 			scanMutations(st.Then, m)
 			scanMutations(st.Else, m)
 		}
+	}
+}
+
+func targetBaseName(e *Expr) string {
+	if e == nil {
+		return ""
+	}
+	switch e.Kind {
+	case "Ident":
+		return e.Name
+	case "Member", "Index":
+		return targetBaseName(e.Expr)
+	default:
+		return ""
 	}
 }

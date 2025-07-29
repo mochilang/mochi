@@ -4,7 +4,8 @@
     (binary < (selector i) (int 3))
     (block
       (call print (selector i))
-      (assign i
+      (assign
+        (selector i)
         (binary + (selector i) (int 1))
       )
     )

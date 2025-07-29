@@ -1,0 +1,41 @@
+(program
+  (let nation
+    (list (unknown))
+  )
+  (let customer
+    (list (unknown))
+  )
+  (let orders
+    (list (unknown) (unknown))
+  )
+  (let lineitem
+    (list (unknown) (unknown))
+  )
+  (let start_date (string 1993-10-01))
+  (let end_date (string 1994-01-01))
+  (let result (unknown))
+  (call print
+    (call
+      (selector collect
+        (call
+          (selector map
+            (call
+              (selector stream (unknown))
+            )
+          )
+          (unknown)
+        )
+      )
+      (call
+        (selector joining
+          (selector Collectors
+            (selector stream
+              (selector util (selector java))
+            )
+          )
+        )
+        (string " ")
+      )
+    )
+  )
+)

@@ -1,0 +1,17 @@
+(program
+  (let products
+    (list (unknown) (unknown) (unknown) (unknown) (unknown) (unknown) (unknown))
+  )
+  (let expensive (unknown))
+  (call print (string "--- Top products (excluding most expensive) ---"))
+  (for item
+    (in (selector expensive))
+    (block
+      (call print
+        (selector name (selector item))
+        (string " costs $ ")
+        (selector price (selector item))
+      )
+    )
+  )
+)

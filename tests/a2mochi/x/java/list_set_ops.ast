@@ -1,0 +1,114 @@
+(program
+  (call print
+    (call str
+      (call
+        (selector toArray
+          (call
+            (selector distinct
+              (call
+                (selector concat
+                  (selector IntStream
+                    (selector stream
+                      (selector util (selector java))
+                    )
+                  )
+                )
+                (call
+                  (selector stream
+                    (selector Arrays
+                      (selector util (selector java))
+                    )
+                  )
+                  (list (int 1) (int 2))
+                )
+                (call
+                  (selector stream
+                    (selector Arrays
+                      (selector util (selector java))
+                    )
+                  )
+                  (list (int 2) (int 3))
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (call print
+    (call str
+      (call
+        (selector toArray
+          (call
+            (selector filter
+              (call
+                (selector stream
+                  (selector Arrays
+                    (selector util (selector java))
+                  )
+                )
+                (list (int 1) (int 2) (int 3))
+              )
+            )
+            (unknown)
+          )
+        )
+      )
+    )
+  )
+  (call print
+    (call str
+      (call
+        (selector toArray
+          (call
+            (selector filter
+              (call
+                (selector stream
+                  (selector Arrays
+                    (selector util (selector java))
+                  )
+                )
+                (list (int 1) (int 2) (int 3))
+              )
+            )
+            (unknown)
+          )
+        )
+      )
+    )
+  )
+  (call print
+    (call len
+      (call
+        (selector toArray
+          (call
+            (selector concat
+              (selector IntStream
+                (selector stream
+                  (selector util (selector java))
+                )
+              )
+            )
+            (call
+              (selector stream
+                (selector Arrays
+                  (selector util (selector java))
+                )
+              )
+              (list (int 1) (int 2))
+            )
+            (call
+              (selector stream
+                (selector Arrays
+                  (selector util (selector java))
+                )
+              )
+              (list (int 2) (int 3))
+            )
+          )
+        )
+      )
+    )
+  )
+)

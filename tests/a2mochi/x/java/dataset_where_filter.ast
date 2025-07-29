@@ -1,0 +1,22 @@
+(program
+  (let people
+    (list (unknown) (unknown) (unknown) (unknown))
+  )
+  (let adults (unknown))
+  (call print (string "--- Adults ---"))
+  (for person
+    (in (selector adults))
+    (block
+      (call print
+        (selector name (selector person))
+        (string " is ")
+        (selector age (selector person))
+        (if_expr
+          (selector is_senior (selector person))
+          (string " (senior)")
+          (string "")
+        )
+      )
+    )
+  )
+)
