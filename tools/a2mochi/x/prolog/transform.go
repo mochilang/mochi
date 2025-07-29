@@ -49,8 +49,8 @@ func parseExpr(expr string) (*ast.Node, error) {
 func parseBodyNodes(body string) ([]*ast.Node, error) {
 	clauses := splitClauses(body)
 	var out []*ast.Node
-	for _, c := range clauses {
-		c = strings.TrimSpace(c)
+	for i := 0; i < len(clauses); i++ {
+		c := strings.TrimSpace(clauses[i])
 		switch {
 		case c == "" || c == "true":
 			continue
@@ -134,6 +134,36 @@ func parseBodyNodes(body string) ([]*ast.Node, error) {
 			}
 			call := node("call", "contains", n1, n2)
 			out = append(out, node("call", "print", call))
+		case func() bool { _, _, _, _, ok := parseNth04(c); return ok }():
+			idx, list, _, rest, _ := parseNth04(c)
+			if i+1 < len(clauses) {
+				next := strings.TrimSpace(clauses[i+1])
+				idx2, outList, val, rest2, ok2 := parseNth04(next)
+				if ok2 && idx2 == idx && rest2 == rest {
+					base, err := parseExpr(list)
+					if err != nil {
+						return nil, err
+					}
+					out = append(out, node("var", outList, base))
+					idxNode, err := parseExpr(idx)
+					if err != nil {
+						return nil, err
+					}
+					valNode, err := parseExpr(val)
+					if err != nil {
+						return nil, err
+					}
+					tgt, err := parseExpr(outList)
+					if err != nil {
+						return nil, err
+					}
+					assign := node("assign", nil, node("index", nil, tgt, idxNode), valNode)
+					out = append(out, assign)
+					i++
+					continue
+				}
+			}
+			// unsupported 4-arg nth0
 		case func() bool { _, _, _, ok := parseNth0(c); return ok }():
 			idx, list, outVar, _ := parseNth0(c)
 			n1, err := parseExpr(list)
@@ -144,7 +174,7 @@ func parseBodyNodes(body string) ([]*ast.Node, error) {
 			if err != nil {
 				return nil, err
 			}
-			index := node("index", n1, n2)
+			index := node("index", nil, n1, n2)
 			out = append(out, node("let", outVar, index))
 		case func() bool { _, _, _, ok := parseCallAssign(c); return ok }():
 			name, args, outVar, _ := parseCallAssign(c)
@@ -336,6 +366,24 @@ func parseNth0(s string) (index, list, outVar string, ok bool) {
 	index = parts[0]
 	list = parts[1]
 	outVar = parts[2]
+	ok = true
+	return
+}
+
+func parseNth04(s string) (index, list, elem, rest string, ok bool) {
+	s = strings.TrimSpace(s)
+	if !strings.HasPrefix(s, "nth0(") {
+		return
+	}
+	inner := strings.TrimSuffix(strings.TrimPrefix(s, "nth0("), ")")
+	parts := parseArgs(inner)
+	if len(parts) != 4 {
+		return
+	}
+	index = parts[0]
+	list = parts[1]
+	elem = parts[2]
+	rest = parts[3]
 	ok = true
 	return
 }
