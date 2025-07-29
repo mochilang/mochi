@@ -143,6 +143,7 @@ function parse(src: string): TSDecl[] {
         params,
         ret: rt,
         body,
+        bodyNodes,
         startOff: stmt.getStart(source),
         endOff: stmt.end,
         doc,
@@ -403,6 +404,46 @@ function parse(src: string): TSDecl[] {
         kind: "expr",
         node: ts.SyntaxKind[stmt.kind],
         expr: stmt.expression.getText(source),
+        start: start.line,
+        startCol: start.col,
+        end: end.line,
+        endCol: end.col,
+        snippet,
+        startOff: stmt.getStart(source),
+        endOff: stmt.end,
+        doc,
+      });
+    } else if (ts.isReturnStatement(stmt)) {
+      decls.push({
+        kind: "return",
+        node: ts.SyntaxKind[stmt.kind],
+        expr: stmt.expression ? stmt.expression.getText(source) : "",
+        start: start.line,
+        startCol: start.col,
+        end: end.line,
+        endCol: end.col,
+        snippet,
+        startOff: stmt.getStart(source),
+        endOff: stmt.end,
+        doc,
+      });
+    } else if (ts.isBreakStatement(stmt)) {
+      decls.push({
+        kind: "break",
+        node: ts.SyntaxKind[stmt.kind],
+        start: start.line,
+        startCol: start.col,
+        end: end.line,
+        endCol: end.col,
+        snippet,
+        startOff: stmt.getStart(source),
+        endOff: stmt.end,
+        doc,
+      });
+    } else if (ts.isContinueStatement(stmt)) {
+      decls.push({
+        kind: "continue",
+        node: ts.SyntaxKind[stmt.kind],
         start: start.line,
         startCol: start.col,
         end: end.line,
