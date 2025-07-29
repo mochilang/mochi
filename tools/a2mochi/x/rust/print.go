@@ -62,3 +62,13 @@ func Print(node *mochiast.Node) (string, error) {
 	}
 	return out, nil
 }
+
+// PrintWithHeader prints the Mochi AST and prepends a generated header with the
+// original Rust source code.
+func PrintWithHeader(src string, node *mochiast.Node) (string, error) {
+	code, err := Print(node)
+	if err != nil {
+		return "", err
+	}
+	return withHeader(src, []byte(code)), nil
+}

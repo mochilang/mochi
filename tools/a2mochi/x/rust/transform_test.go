@@ -118,6 +118,8 @@ func TestTransformGolden(t *testing.T) {
 		"typed_var":           true,
 		"typed_let":           true,
 		"unary_neg":           true,
+		"cast_string_to_int":  true,
+		"count_builtin":       true,
 		"list_index":          true,
 		"list_assign":         true,
 		"list_set_ops":        true,

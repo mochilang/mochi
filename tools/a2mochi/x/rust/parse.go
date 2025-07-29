@@ -121,6 +121,11 @@ func Parse(src string) (*Program, error) {
 	return &Program{Source: src, AST: ast}, nil
 }
 
+// ParseBytes parses Rust source code from a byte slice.
+func ParseBytes(data []byte) (*Program, error) {
+	return Parse(string(data))
+}
+
 // ParseFile reads the Rust file and parses it.
 func ParseFile(path string) (*Program, error) {
 	data, err := os.ReadFile(path)
@@ -136,6 +141,11 @@ func ParseASTFile(path string) (*ASTNode, error) {
 	if err != nil {
 		return nil, err
 	}
+	return ParseAST(string(data))
+}
+
+// ParseASTBytes parses Rust source bytes into an ASTNode.
+func ParseASTBytes(data []byte) (*ASTNode, error) {
 	return ParseAST(string(data))
 }
 
