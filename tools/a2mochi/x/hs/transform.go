@@ -396,6 +396,36 @@ func buildProgramNodeFromItems(items []Item) (*ast.Node, error) {
 	items = reorderVars(items)
 	root := &ast.Node{Kind: "program"}
 	for _, it := range items {
+		if it.Name == "main" && it.Kind == "var" {
+			body := strings.TrimSpace(it.Body)
+			if strings.HasPrefix(body, "do") {
+				body = strings.TrimSpace(strings.TrimPrefix(body, "do"))
+			}
+			if strings.HasPrefix(body, "print") || strings.HasPrefix(body, "putStrLn") {
+				arg := strings.TrimSpace(strings.TrimPrefix(body, "print"))
+				if strings.HasPrefix(body, "putStrLn") {
+					arg = strings.TrimSpace(strings.TrimPrefix(body, "putStrLn"))
+					if strings.HasPrefix(arg, "show ") {
+						arg = strings.TrimSpace(strings.TrimPrefix(arg, "show "))
+						arg = "str(" + arg + ")"
+					}
+				}
+				arg = strings.Trim(arg, "()")
+				pitem := Item{Kind: "print", Body: arg}
+				node, err := itemToNode(pitem)
+				if err != nil {
+					return nil, err
+				}
+				if node != nil {
+					root.Children = append(root.Children, node)
+				}
+				continue
+			}
+			continue
+		}
+		if it.Name == "main" && it.Kind == "sig" {
+			continue
+		}
 		node, err := itemToNode(it)
 		if err != nil {
 			return nil, err
