@@ -108,6 +108,8 @@ func TestTransform_Golden(t *testing.T) {
 		"list_index":          true,
 		"slice":               true,
 		"cast_string_to_int":  true,
+		"min_max_builtin":     true,
+		"sum_builtin":         true,
 		"if_else":             true,
 		"typed_let":           true,
 		"typed_var":           true,

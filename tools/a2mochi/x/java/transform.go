@@ -152,6 +152,12 @@ func exprNode(e Expr) *mochias.Node {
 		if n := tryParseInt(e); n != nil {
 			return n
 		}
+		if n := trySumBuiltin(e); n != nil {
+			return n
+		}
+		if n := tryMinMaxBuiltin(e); n != nil {
+			return n
+		}
 		// special handling for method calls on an object
 		if e.Target != nil && e.Target.Kind == "Member" {
 			if p := memberPath(e.Target); p == "java.util.Arrays.copyOfRange" && len(e.Args) == 3 {
@@ -195,6 +201,10 @@ func exprNode(e Expr) *mochias.Node {
 				if len(e.Args) == 1 && e.Target.Expr != nil && e.Target.Expr.Kind == "Ident" && e.Target.Expr.Name == "String" {
 					return &mochias.Node{Kind: "call", Value: "str", Children: []*mochias.Node{exprNode(e.Args[0])}}
 				}
+			case "get":
+				if len(e.Args) == 1 {
+					return &mochias.Node{Kind: "index", Children: []*mochias.Node{exprNode(*e.Target.Expr), exprNode(e.Args[0])}}
+				}
 			}
 		}
 		n := &mochias.Node{Kind: "call"}
@@ -221,6 +231,9 @@ func exprNode(e Expr) *mochias.Node {
 		}
 		return &mochias.Node{Kind: "unknown"}
 	case "Cond":
+		if n := trySumWrapper(e); n != nil {
+			return n
+		}
 		if e.Then != nil && e.Else != nil {
 			// special case for boolean expression encoded as 1/0
 			if e.Then.Kind == "Literal" && e.Then.Value == "1" &&
@@ -398,6 +411,58 @@ func tryParseInt(e Expr) *mochias.Node {
 		val := exprNode(e.Args[0])
 		t := &mochias.Node{Kind: "type", Value: "int"}
 		return &mochias.Node{Kind: "cast", Children: []*mochias.Node{val, t}}
+	}
+	return nil
+}
+
+func trySumBuiltin(e Expr) *mochias.Node {
+	if e.Kind != "Call" || e.Target == nil {
+		return nil
+	}
+	if e.Target.Kind == "Ident" && e.Target.Name == "sum" && len(e.Args) == 1 {
+		return &mochias.Node{Kind: "call", Value: "sum", Children: []*mochias.Node{exprNode(e.Args[0])}}
+	}
+	if e.Target.Kind == "Member" && e.Target.Name == "sum" && len(e.Args) == 0 {
+		base := e.Target.Expr
+		if base != nil && base.Kind == "Call" && base.Target != nil && base.Target.Kind == "Member" {
+			if memberPath(base.Target) == "java.util.Arrays.stream" && len(base.Args) == 1 {
+				return &mochias.Node{Kind: "call", Value: "sum", Children: []*mochias.Node{exprNode(base.Args[0])}}
+			}
+		}
+	}
+	return nil
+}
+
+func tryMinMaxBuiltin(e Expr) *mochias.Node {
+	if e.Kind != "Call" || e.Target == nil || len(e.Args) != 1 {
+		return nil
+	}
+	if e.Target.Kind == "Ident" && (e.Target.Name == "min" || e.Target.Name == "max") {
+		return &mochias.Node{Kind: "call", Value: e.Target.Name, Children: []*mochias.Node{exprNode(e.Args[0])}}
+	}
+	return nil
+}
+
+func trySumWrapper(e Expr) *mochias.Node {
+	if e.Kind != "Cond" || e.Cond == nil {
+		return nil
+	}
+	cond := e.Cond
+	if cond.Kind != "Binary" || cond.Op != "EQUAL_TO" || cond.Left == nil || cond.Right == nil {
+		return nil
+	}
+	if cond.Right.Kind != "Literal" || cond.Right.Value != "0" {
+		return nil
+	}
+	left := cond.Left
+	if left.Kind != "Binary" || left.Op != "REMAINDER" || left.Left == nil || left.Right == nil {
+		return nil
+	}
+	if left.Right.Kind != "Literal" || left.Right.Value != "1" {
+		return nil
+	}
+	if n := trySumBuiltin(*left.Left); n != nil {
+		return n
 	}
 	return nil
 }
