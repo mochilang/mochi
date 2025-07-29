@@ -46,6 +46,14 @@ type Node struct {
 	Else      string   `json:"else,omitempty"`
 	BodyNodes []Node   `json:"bodyNodes,omitempty"`
 	ElseNodes []Node   `json:"elseNodes,omitempty"`
+	Start     int      `json:"start,omitempty"`
+	StartCol  int      `json:"startCol,omitempty"`
+	End       int      `json:"end,omitempty"`
+	EndCol    int      `json:"endCol,omitempty"`
+	Snippet   string   `json:"snippet,omitempty"`
+	StartOff  int      `json:"startOff,omitempty"`
+	EndOff    int      `json:"endOff,omitempty"`
+	Doc       string   `json:"doc,omitempty"`
 }
 
 // Program is the result of parsing a TypeScript source file.
