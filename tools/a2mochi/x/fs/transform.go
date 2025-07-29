@@ -17,34 +17,34 @@ func Transform(p *Program) (*ast.Node, error) {
 	}
 	root := &ast.Node{Kind: "program"}
 
+	for _, v := range p.Vars {
+		n, err := varNode(v)
+		if err != nil {
+			return nil, err
+		}
+		root.Children = append(root.Children, n)
+	}
+
 	if len(p.Stmts) > 0 {
 		ns, err := stmtsToNodes(p.Stmts)
 		if err != nil {
 			return nil, err
 		}
-		root.Children = ns
-		return root, nil
+		root.Children = append(root.Children, ns...)
 	}
 
-	if len(p.Vars) > 0 || len(p.Prints) > 0 {
-		for _, v := range p.Vars {
-			n, err := varNode(v)
-			if err != nil {
-				return nil, err
-			}
-			root.Children = append(root.Children, n)
+	for _, pr := range p.Prints {
+		n, err := printNode(PrintStmt{Expr: pr})
+		if err != nil {
+			return nil, err
 		}
-		for _, pr := range p.Prints {
-			n, err := printNode(PrintStmt{Expr: pr})
-			if err != nil {
-				return nil, err
-			}
-			root.Children = append(root.Children, n)
-		}
-		return root, nil
+		root.Children = append(root.Children, n)
 	}
 
-	return nil, fmt.Errorf("unsupported")
+	if len(root.Children) == 0 {
+		return nil, fmt.Errorf("unsupported")
+	}
+	return root, nil
 }
 
 func stmtsToNodes(stmts []Stmt) ([]*ast.Node, error) {
@@ -303,6 +303,10 @@ func convertBuiltins(expr string) string {
 		arg := strings.TrimSpace(expr[i+len("List.length"):])
 		expr = expr[:i] + "len(" + arg + ")"
 	}
+	if i := strings.Index(expr, "Seq.length"); i != -1 {
+		arg := strings.TrimSpace(expr[i+len("Seq.length"):])
+		expr = expr[:i] + "len(" + arg + ")"
+	}
 	if i := strings.Index(expr, "String.length"); i != -1 {
 		arg := strings.TrimSpace(expr[i+len("String.length"):])
 		expr = expr[:i] + "len(" + arg + ")"
@@ -340,16 +344,31 @@ func convertBuiltins(expr string) string {
 
 func stripStringCall(expr string) string {
 	trimmed := strings.TrimSpace(expr)
-	if strings.HasPrefix(trimmed, "string (") && strings.HasSuffix(trimmed, ")") {
-		return strings.TrimSpace(trimmed[len("string (") : len(trimmed)-1])
+	for {
+		// remove surrounding parentheses
+		for strings.HasPrefix(trimmed, "(") && strings.HasSuffix(trimmed, ")") {
+			inner := strings.TrimSpace(trimmed[1 : len(trimmed)-1])
+			if inner == trimmed {
+				break
+			}
+			trimmed = inner
+		}
+		var changed bool
+		if strings.HasPrefix(trimmed, "string (") && strings.HasSuffix(trimmed, ")") {
+			trimmed = strings.TrimSpace(trimmed[len("string (") : len(trimmed)-1])
+			changed = true
+		} else if strings.HasPrefix(trimmed, "string(") && strings.HasSuffix(trimmed, ")") {
+			trimmed = strings.TrimSpace(trimmed[len("string(") : len(trimmed)-1])
+			changed = true
+		} else if strings.HasPrefix(trimmed, "string ") {
+			trimmed = strings.TrimSpace(trimmed[len("string "):])
+			changed = true
+		}
+		if !changed {
+			break
+		}
 	}
-	if strings.HasPrefix(trimmed, "string(") && strings.HasSuffix(trimmed, ")") {
-		return strings.TrimSpace(trimmed[len("string(") : len(trimmed)-1])
-	}
-	if strings.HasPrefix(trimmed, "string ") {
-		return strings.TrimSpace(trimmed[len("string "):])
-	}
-	return expr
+	return trimmed
 }
 
 func mapType(t string) string {
