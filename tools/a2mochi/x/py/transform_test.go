@@ -127,6 +127,7 @@ func TestTransform_Golden(t *testing.T) {
 		"string_contains":         true,
 		"string_in_operator":      true,
 		"substring_builtin":       true,
+		"json_builtin":            true,
 		"tail_recursion":          true,
 		"short_circuit":           true,
 		"values_builtin":          true,
