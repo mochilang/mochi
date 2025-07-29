@@ -594,15 +594,15 @@ func sanitizeExpr(code string) string {
 				depth++
 			case ')':
 				depth--
-				if depth == 0 {
-					break
-				}
 			}
 			end++
+			if depth == 0 {
+				break
+			}
 		}
-		arg := strings.TrimSpace(code[idx+len(".push(") : end])
+		arg := strings.TrimSpace(code[idx+len(".push(") : end-1])
 		repl := fmt.Sprintf("%s = append(%s, %s)", name, name, arg)
-		code = code[:start] + repl + code[end+1:]
+		code = code[:start] + repl + code[end:]
 	}
 	if strings.HasPrefix(code, "{") && strings.HasSuffix(code, "}") {
 		inner := strings.TrimSpace(code[1 : len(code)-1])
