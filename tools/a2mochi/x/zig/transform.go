@@ -48,8 +48,12 @@ func TransformFile(path string) (*ast.Node, error) {
 
 var headerRE = regexp.MustCompile(`^(?:pub\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)\s*([^\{]*)\{`)
 var printRE = regexp.MustCompile(`print\("\{[^}]+\}\\n",\s*\.\{(.*)\}\)`)
-var declRE = regexp.MustCompile(`^(const|var)\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$`)
-var typedArrRE = regexp.MustCompile(`^\[_\]\w+\{(.*)\}$`)
+
+// declRE matches simple variable declarations with an optional type.
+var declRE = regexp.MustCompile(`^(const|var)\s+([A-Za-z_][A-Za-z0-9_]*)(?:\s*:\s*([A-Za-z_][A-Za-z0-9_]*))?\s*=\s*(.*)$`)
+
+// typedArrRE matches array literals like [_]i64{1, 2} or [2]i64{1, 2}
+var typedArrRE = regexp.MustCompile(`^\[[^\]]*\]\w+\{(.*)\}$`)
 var numberRE = regexp.MustCompile(`^\d+(?:\.\d+)?$`)
 var orderRE = regexp.MustCompile(`std\.mem\.order\(u8,\s*([^,]+),\s*([^\)]+)\)\s*([!=]=)\s*\.(lt|gt)`)
 
@@ -118,9 +122,28 @@ func convertFunction(lines []string) string {
 		}
 		t = strings.TrimSuffix(t, ";")
 		if m := declRE.FindStringSubmatch(t); m != nil {
+			kw := m[1]
 			name := m[2]
-			val := strings.TrimSpace(m[3])
-			b.WriteString("  let " + name + " = " + val + "\n")
+			typ := strings.TrimSpace(m[3])
+			val := strings.TrimSpace(m[4])
+			val = transformExpr(val)
+			if typ != "" {
+				if strings.HasPrefix(val, ".{") && strings.HasSuffix(val, "}") {
+					inner := strings.TrimSuffix(strings.TrimPrefix(val, ".{"), "}")
+					inner = strings.TrimSpace(inner)
+					inner = strings.ReplaceAll(inner, " = ", ": ")
+					inner = strings.ReplaceAll(inner, ".", "")
+					val = typ + " {" + inner + "}"
+				} else {
+					// skip typed declarations not using struct literals
+					continue
+				}
+			}
+			decl := "let "
+			if kw == "var" {
+				decl = "var "
+			}
+			b.WriteString("  " + decl + name + " = " + val + "\n")
 			continue
 		}
 		if p := extractPrint(t); p != "" {
@@ -176,9 +199,27 @@ func convertLoop(lines []string) string {
 		}
 		t = strings.TrimSuffix(t, ";")
 		if m := declRE.FindStringSubmatch(t); m != nil {
+			kw := m[1]
 			name := m[2]
-			val := strings.TrimSpace(m[3])
-			b.WriteString("  let " + name + " = " + val + "\n")
+			typ := strings.TrimSpace(m[3])
+			val := strings.TrimSpace(m[4])
+			val = transformExpr(val)
+			if typ != "" {
+				if strings.HasPrefix(val, ".{") && strings.HasSuffix(val, "}") {
+					inner := strings.TrimSuffix(strings.TrimPrefix(val, ".{"), "}")
+					inner = strings.TrimSpace(inner)
+					inner = strings.ReplaceAll(inner, " = ", ": ")
+					inner = strings.ReplaceAll(inner, ".", "")
+					val = typ + " {" + inner + "}"
+				} else {
+					continue
+				}
+			}
+			decl := "let "
+			if kw == "var" {
+				decl = "var "
+			}
+			b.WriteString("  " + decl + name + " = " + val + "\n")
 			continue
 		}
 		if t == "}" {
@@ -243,11 +284,31 @@ func translate(src string) (string, error) {
 				}
 				t := strings.TrimSpace(strings.TrimSuffix(l, ";"))
 				if m := declRE.FindStringSubmatch(t); m != nil {
-					val := strings.TrimSpace(m[3])
-					if typedArrRE.MatchString(val) || numberRE.MatchString(val) {
-						val = transformExpr(val)
-						out.WriteString("let " + m[2] + " = " + val + "\n")
+					kw := m[1]
+					name := m[2]
+					typ := strings.TrimSpace(m[3])
+					val := strings.TrimSpace(m[4])
+					val = transformExpr(val)
+					if typ != "" {
+						if strings.HasPrefix(val, ".{") && strings.HasSuffix(val, "}") {
+							inner := strings.TrimSuffix(strings.TrimPrefix(val, ".{"), "}")
+							inner = strings.TrimSpace(inner)
+							inner = strings.ReplaceAll(inner, " = ", ": ")
+							inner = strings.ReplaceAll(inner, ".", "")
+							val = typ + " {" + inner + "}"
+						} else {
+							continue
+						}
 					}
+					decl := "let "
+					if kw == "var" {
+						decl = "var "
+					}
+					out.WriteString(decl + name + " = " + val + "\n")
+					continue
+				}
+				if t != "}" {
+					out.WriteString(t + "\n")
 				}
 			}
 			continue
