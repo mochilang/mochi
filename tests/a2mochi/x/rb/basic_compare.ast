@@ -1,15 +1,5 @@
-(program
-  (var a
-    (binary - (int 10) (int 3))
-  )
-  (var b
-    (binary + (int 2) (int 2))
-  )
-  (call print (selector a))
-  (call print
-    (binary == (selector a) (int 7))
-  )
-  (call print
-    (binary < (selector b) (int 5))
-  )
-)
+var a = (10 - 3)
+var b = (2 + 2)
+print(a)
+print((a == 7))
+print((b < 5))

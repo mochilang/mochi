@@ -345,6 +345,30 @@ func digitsStringValue(n Node) (string, bool) {
 	return "", false
 }
 
+// firstArg unwraps nested argument nodes and returns the first real argument.
+func firstArg(n Node) Node {
+	for {
+		switch n.Type {
+		case "arg_paren", "args_add_block", "args_new":
+			if len(n.Children) > 0 {
+				n = n.Children[0]
+				continue
+			}
+		case "args_add", "stmts_add":
+			if len(n.Children) > 0 {
+				n = n.Children[len(n.Children)-1]
+				continue
+			}
+		case "paren", "stmts_new":
+			if len(n.Children) > 0 {
+				n = n.Children[0]
+				continue
+			}
+		}
+		return n
+	}
+}
+
 func snippetAround(src string, line int) string {
 	lines := strings.Split(src, "\n")
 	start := line - 2

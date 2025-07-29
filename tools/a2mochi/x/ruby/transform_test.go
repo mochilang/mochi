@@ -106,6 +106,7 @@ func TestTransformGolden(t *testing.T) {
 	}
 
 	allowed := map[string]bool{
+		"basic_compare":       true,
 		"break_continue":      true,
 		"cast_string_to_int":  true,
 		"count_builtin":       true,

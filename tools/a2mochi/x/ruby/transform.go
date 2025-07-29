@@ -25,20 +25,25 @@ func convertNode(n Node, level int, out *[]string) {
 			if (f.Type == "@ident" && f.Value == "puts") ||
 				(f.Type == "fcall" && len(f.Children) > 0 && f.Children[0].Type == "@ident" && f.Children[0].Value == "puts") {
 				argNode := n.Children[len(n.Children)-1]
-				if val, ok := digitsStringValue(argNode); ok {
+				base := firstArg(argNode)
+				if val, ok := digitsStringValue(base); ok {
 					*out = append(*out, idt+"print(int(\""+val+"\"))")
 					return
 				}
-				if argNode.Type == "call" && len(argNode.Children) == 3 && argNode.Children[2].Type == "@ident" && argNode.Children[2].Value == "length" {
-					expr := exprString(argNode.Children[0])
+				if base.Type == "call" && len(base.Children) == 3 && base.Children[2].Type == "@ident" && base.Children[2].Value == "length" {
+					expr := exprString(base.Children[0])
 					*out = append(*out, idt+"print(len("+expr+"))")
 					return
 				}
-				if argNode.Type == "ifop" {
-					cond := exprString(argNode.Children[0])
-					t := exprString(argNode.Children[1])
-					e := exprString(argNode.Children[2])
-					*out = append(*out, idt+"print(if "+cond+" then "+t+" else "+e+")")
+				if base.Type == "ifop" {
+					cond := exprString(base.Children[0])
+					t := exprString(base.Children[1])
+					e := exprString(base.Children[2])
+					if t == "1" && e == "0" {
+						*out = append(*out, idt+"print("+cond+")")
+					} else {
+						*out = append(*out, idt+"print(if "+cond+" then "+t+" else "+e+")")
+					}
 					return
 				}
 				arg := exprString(argNode)
