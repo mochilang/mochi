@@ -20,6 +20,10 @@ var stringStrNotZeroRe = regexp.MustCompile(`string:str\(([^,]+),\s*([^\)]+)\)\s
 var stringStrZeroRe = regexp.MustCompile(`string:str\(([^,]+),\s*([^\)]+)\)\s*(=|=:=)\s*0`)
 var substrRe = regexp.MustCompile(`string:substr\(([^,]+),\s*([^,]+?)\s*\+\s*1,\s*([^\)]+)\)`)
 var plusNegRe = regexp.MustCompile(`\+\s*-([0-9]+)`)
+var listsNthRe = regexp.MustCompile(`lists:nth\(([^,]+?)\s*\+\s*1,\s*([^\)]+)\)`)
+var listsMemberRe = regexp.MustCompile(`lists:member\(([^,]+),\s*([^\)]+)\)`)
+var assignMapPutRe = regexp.MustCompile(`^\s*[A-Za-z_][A-Za-z0-9_]*\s*=\s*maps:put\(([^,]+),\s*([^,]+),\s*([^\)]+)\)`)
+var notMemberRe = regexp.MustCompile(`not\s+lists:member\(([^,]+),\s*([^\)]+)\)`)
 
 func node(kind string, value any, children ...*ast.Node) *ast.Node {
 	return &ast.Node{Kind: kind, Value: value, Children: children}
@@ -140,6 +144,20 @@ func formatProgram(p *Program) (string, error) {
 
 func rewriteLine(ln string, recs []Record) string {
 	ln = strings.TrimSuffix(strings.TrimSpace(ln), ",")
+	if m := assignMapPutRe.FindStringSubmatch(ln); m != nil {
+		return strings.TrimSpace(m[3]) + "[" + strings.TrimSpace(m[1]) + "] = " + strings.TrimSpace(m[2])
+	}
+	if listsNthRe.MatchString(ln) {
+		ln = listsNthRe.ReplaceAllStringFunc(ln, func(s string) string {
+			m := listsNthRe.FindStringSubmatch(s)
+			return strings.TrimSpace(m[2]) + "[" + strings.TrimSpace(m[1]) + "]"
+		})
+	}
+	if notMemberRe.MatchString(ln) {
+		ln = notMemberRe.ReplaceAllString(ln, "!($1 in $2)")
+	} else if listsMemberRe.MatchString(ln) {
+		ln = listsMemberRe.ReplaceAllString(ln, "$1 in $2")
+	}
 	if strings.HasPrefix(ln, "io:format(") {
 		ln = strings.TrimPrefix(ln, "io:format(")
 		ln = rewritePrint(ln)

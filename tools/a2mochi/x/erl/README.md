@@ -1,6 +1,6 @@
 # a2mochi Erlang Converter
 
-Completed programs: 24/103
+Completed programs: 28/103
 Date: 2025-07-29
 
 This directory stores golden files for the Erlang to Mochi converter.
@@ -30,3 +30,7 @@ Supported programs:
 - [x] bool_chain
 - [x] short_circuit
 - [x] unary_neg
+- [x] list_index
+- [x] membership
+- [x] in_operator
+- [x] map_in_operator
