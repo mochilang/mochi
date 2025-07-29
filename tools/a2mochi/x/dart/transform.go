@@ -31,14 +31,22 @@ func Transform(p *Program) (*ast.Node, error) {
 		root.Children = append(root.Children, classNode(c))
 	}
 
-	// Functions
-	for _, fn := range p.Functions {
-		n, err := funcNode(fn)
-		if err != nil {
-			return nil, err
-		}
-		root.Children = append(root.Children, n)
-	}
+       // Functions
+       hasMain := false
+       for _, fn := range p.Functions {
+               if fn.Name == "main" {
+                       hasMain = true
+               }
+               n, err := funcNode(fn)
+               if err != nil {
+                       return nil, err
+               }
+               root.Children = append(root.Children, n)
+       }
+
+       if hasMain {
+               root.Children = append(root.Children, &ast.Node{Kind: "call", Value: "main"})
+       }
 
 	return root, nil
 }
@@ -53,6 +61,9 @@ func parseStmt(src string) (*ast.Node, error) {
 	}
 	return ast.FromStatement(prog.Statements[0]), nil
 }
+
+// TestParseStmt exposes parseStmt for debugging.
+func TestParseStmt(src string) (*ast.Node, error) { return parseStmt(src) }
 
 func classNode(c Class) *ast.Node {
 	n := &ast.Node{Kind: "type", Value: c.Name}
@@ -132,8 +143,11 @@ func parseTopLevelVars(src string, funcs []Function, classes []Class) []string {
 		if skip[ln] {
 			continue
 		}
-		l := strings.TrimSpace(strings.TrimSuffix(line, ";"))
-		if strings.HasPrefix(l, "var ") {
+               l := strings.TrimSpace(strings.TrimSuffix(line, ";"))
+               if strings.HasPrefix(l, "//") {
+                       continue
+               }
+               if strings.HasPrefix(l, "var ") {
 			vars = append(vars, convertQuotes("let "+strings.TrimSpace(l[4:])))
 			continue
 		}
@@ -149,6 +163,11 @@ func parseTopLevelVars(src string, funcs []Function, classes []Class) []string {
 		}
 	}
 	return vars
+}
+
+// TestParseTopVars exposes parseTopLevelVars for debugging.
+func TestParseTopVars(src string, funcs []Function, classes []Class) []string {
+        return parseTopLevelVars(src, funcs, classes)
 }
 
 var quoteRe = regexp.MustCompile(`'([^']*)'`)
@@ -182,6 +201,11 @@ func convertBodyLine(s string) string {
 	s = convertReduce(s)
 	s = convertLength(s)
 	return convertQuotes(s)
+}
+
+// TestConvert exposes convertBodyLine for tests and debugging.
+func TestConvert(s string) string {
+        return convertBodyLine(s)
 }
 
 var arrowRe = regexp.MustCompile(`\(([^()]*)\)\s*=>`)
@@ -234,13 +258,14 @@ func convertAvg(s string) string {
 var spreadRe = regexp.MustCompile(`\[\.\.\.([A-Za-z_][A-Za-z0-9_]*)\s*,\s*([^\]]+)\]`)
 
 func convertSpread(s string) string {
-	if m := spreadPrintRe.FindStringSubmatch(s); m != nil {
-		return fmt.Sprintf("print(append(%s, %s))", m[1], m[2])
-	}
-	return spreadRe.ReplaceAllString(s, "append($1, $2)")
+        s = spreadRe.ReplaceAllString(s, "append($1, $2)")
+        if m := spreadPrintRe.FindStringSubmatch(s); m != nil {
+                return fmt.Sprintf("print(append(%s, %s))", m[1], m[2])
+        }
+        return s
 }
 
-var spreadPrintRe = regexp.MustCompile(`^print\("\[" \+ append\(([^,]+),\s*([^\)]+)\)\.join\("[, ]*"\) \+ "\]"\)$`)
+var spreadPrintRe = regexp.MustCompile(`^\s*print\("\[" \+ append\(([^,]+),\s*([^\)]+)\)\.join\((?:"|')[, ]*(?:"|')\) \+ "\]"\)$`)
 
 var lengthRe = regexp.MustCompile(`([A-Za-z0-9_\]\)]+)\.length`)
 
