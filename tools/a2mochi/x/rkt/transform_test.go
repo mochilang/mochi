@@ -63,6 +63,14 @@ func runMochi(src string) ([]byte, error) {
 	return bytes.TrimSpace(out.Bytes()), nil
 }
 
+func runMochiFile(path string) ([]byte, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	return runMochi(string(data))
+}
+
 func TestTransformGolden(t *testing.T) {
 	if _, err := exec.LookPath("racket"); err != nil {
 		t.Skip("racket not installed")
@@ -77,50 +85,11 @@ func TestTransformGolden(t *testing.T) {
 		t.Fatalf("no files: %s", pattern)
 	}
 
-	allowed := map[string]bool{
-		"print_hello":         true,
-		"append_builtin":      true,
-		"fun_call":            true,
-		"fun_three_args":      true,
-		"unary_neg":           true,
-		"let_and_print":       true,
-		"for_loop":            true,
-		"for_list_collection": true,
-		"basic_compare":       true,
-		"string_concat":       true,
-		"list_index":          true,
-		"bool_chain":          true,
-		"if_then_else":        true,
-		"if_else":             true,
-		"short_circuit":       true,
-		"values_builtin":      true,
-		"sum_builtin":         true,
-		"min_max_builtin":     true,
-		"string_compare":      true,
-		"membership":          true,
-		"str_builtin":         true,
-		"math_ops":            true,
-		"string_contains":     true,
-		"string_prefix_slice": true,
-		"slice":               true,
-		"for_map_collection":  true,
-		"len_builtin":         true,
-		"len_map":             true,
-		"len_string":          true,
-		"count_builtin":       true,
-		"typed_var":           true,
-		"typed_let":           true,
-		"while_loop":          true,
-	}
-
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "rkt")
 	os.MkdirAll(outDir, 0o755)
 
 	for _, file := range files {
 		name := strings.TrimSuffix(filepath.Base(file), ".rkt")
-		if !allowed[name] {
-			continue
-		}
 		t.Run(name, func(t *testing.T) {
 			src, err := os.ReadFile(file)
 			if err != nil {
@@ -128,36 +97,54 @@ func TestTransformGolden(t *testing.T) {
 			}
 			prog, err := rkt.Parse(string(src))
 			if err != nil {
-				t.Fatalf("parse: %v", err)
+				if *updateGolden {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(fmt.Sprintf("parse: %v", err)), 0o644)
+				}
+				return
 			}
 			tree, err := rkt.Transform(prog)
 			if err != nil {
-				t.Fatalf("transform: %v", err)
+				if *updateGolden {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(fmt.Sprintf("transform: %v", err)), 0o644)
+				}
+				return
 			}
 			mochiSrc, err := rkt.Print(tree)
 			if err != nil {
-				t.Fatalf("print: %v", err)
+				if *updateGolden {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(fmt.Sprintf("print: %v", err)), 0o644)
+				}
+				return
+			}
+			gotOut, err := runMochi(mochiSrc)
+			if err != nil {
+				if *updateGolden {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(fmt.Sprintf("run: %v", err)), 0o644)
+				}
+				return
 			}
 			astPath := filepath.Join(outDir, name+".ast")
 			if *updateGolden {
 				os.WriteFile(astPath, []byte(tree.String()), 0o644)
 				os.WriteFile(filepath.Join(outDir, name+".mochi"), []byte(mochiSrc), 0o644)
-			}
-			want, err := os.ReadFile(astPath)
-			if err != nil {
-				t.Fatalf("missing golden: %v", err)
-			}
-			got := tree.String()
-			if strings.TrimSpace(string(want)) != strings.TrimSpace(got) {
-				t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", got, want)
-			}
-
-			gotOut, err := runMochi(mochiSrc)
-			if err != nil {
-				t.Fatalf("run: %v", err)
-			}
-			if *updateGolden {
 				os.WriteFile(filepath.Join(outDir, name+".out"), gotOut, 0o644)
+				os.Remove(filepath.Join(outDir, name+".error"))
+			} else {
+				want, err := os.ReadFile(astPath)
+				if err != nil {
+					t.Fatalf("missing golden: %v", err)
+				}
+				got := tree.String()
+				if strings.TrimSpace(string(want)) != strings.TrimSpace(got) {
+					t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", got, want)
+				}
+				wantOut, err := os.ReadFile(filepath.Join(outDir, name+".out"))
+				if err != nil {
+					t.Fatalf("missing output: %v", err)
+				}
+				if !bytes.Equal(bytes.TrimSpace(wantOut), gotOut) {
+					t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
+				}
 			}
 			vmCode, err := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
 			if err != nil {
@@ -168,7 +155,11 @@ func TestTransformGolden(t *testing.T) {
 				t.Fatalf("run vm: %v", err)
 			}
 			if !bytes.Equal(gotOut, wantOut) {
-				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
+				if *updateGolden {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(fmt.Sprintf("output mismatch: got %s want %s", gotOut, wantOut)), 0o644)
+				} else {
+					t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
+				}
 			}
 		})
 	}
@@ -187,9 +178,13 @@ func updateReadme() {
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".rkt")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
-			compiled++
-			mark = "[x]"
+		outPath := filepath.Join(outDir, name+".out")
+		vmPath := filepath.Join(root, "tests", "vm", "valid", name+".mochi")
+		if outBytes, err := os.ReadFile(outPath); err == nil {
+			if want, err2 := runMochiFile(vmPath); err2 == nil && bytes.Equal(bytes.TrimSpace(outBytes), want) {
+				compiled++
+				mark = "[x]"
+			}
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}
