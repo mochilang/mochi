@@ -25,6 +25,21 @@ import (
 
 var update = flag.Bool("update", false, "update golden files")
 
+func findRoot() string {
+	dir, _ := os.Getwd()
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return dir
+}
+
 func repoRoot(t *testing.T) string {
 	dir, err := os.Getwd()
 	if err != nil {
@@ -82,6 +97,23 @@ func parseProgram(t *testing.T, src []byte) (*rust.Program, rust.ASTNode) {
 	return prog, node
 }
 
+func parseProgramE(src []byte) (*rust.Program, rust.ASTNode, error) {
+	prog, err := rust.Parse(string(src))
+	if err != nil {
+		return nil, rust.ASTNode{}, fmt.Errorf("parse: %w", err)
+	}
+	data, err := rust.MarshalAST(prog.AST)
+	if err != nil {
+		return nil, rust.ASTNode{}, fmt.Errorf("marshal: %w", err)
+	}
+	var node rust.ASTNode
+	if err := json.Unmarshal(data, &node); err != nil {
+		return nil, rust.ASTNode{}, fmt.Errorf("unmarshal: %w", err)
+	}
+	prog.AST = &node
+	return prog, node, nil
+}
+
 func transformSource(t *testing.T, src string, astNode *rust.ASTNode) (*ast.Node, string) {
 	prog := &rust.Program{Source: src, AST: astNode}
 	node, err := rust.Transform(prog)
@@ -99,6 +131,19 @@ func transformSource(t *testing.T, src string, astNode *rust.ASTNode) (*ast.Node
 	return node, code
 }
 
+func transformSourceE(src string, astNode *rust.ASTNode) (*ast.Node, string, error) {
+	prog := &rust.Program{Source: src, AST: astNode}
+	node, err := rust.Transform(prog)
+	if err != nil {
+		return nil, "", fmt.Errorf("transform: %w", err)
+	}
+	code, err := rust.ConvertSourceAST(src, astNode)
+	if err != nil {
+		return nil, "", fmt.Errorf("generate mochi: %w", err)
+	}
+	return node, code, nil
+}
+
 func runMochi(t *testing.T, rootDir, path string) []byte {
 	cmd := exec.Command("go", "run", "./cmd/mochi", "run", path)
 	cmd.Dir = rootDir
@@ -109,6 +154,74 @@ func runMochi(t *testing.T, rootDir, path string) []byte {
 		t.Fatalf("run mochi: %v\n%s", err, out.String())
 	}
 	return out.Bytes()
+}
+
+func runMochiE(rootDir, path string) ([]byte, error) {
+	cmd := exec.Command("go", "run", "./cmd/mochi", "run", path)
+	cmd.Dir = rootDir
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &out
+	err := cmd.Run()
+	return out.Bytes(), err
+}
+
+func processFile(rootDir, outDir, srcPath string) error {
+	name := strings.TrimSuffix(filepath.Base(srcPath), ".rs")
+	data, err := os.ReadFile(srcPath)
+	if err != nil {
+		return fmt.Errorf("read src: %w", err)
+	}
+	_, astNode, err := parseProgramE(data)
+	if err != nil {
+		return err
+	}
+	node, code, err := transformSourceE(string(data), &astNode)
+	if err != nil {
+		return err
+	}
+	var astBuf bytes.Buffer
+	if err := ast.Fprint(&astBuf, node); err != nil {
+		return err
+	}
+	outPath := filepath.Join(outDir, name+".ast")
+	if *update {
+		if err := os.WriteFile(outPath, astBuf.Bytes(), 0644); err != nil {
+			return err
+		}
+	}
+	want, err := os.ReadFile(outPath)
+	if err != nil {
+		return fmt.Errorf("missing golden: %w", err)
+	}
+	if string(astBuf.Bytes()) != string(want) {
+		return fmt.Errorf("golden mismatch")
+	}
+	mochiPath := filepath.Join(outDir, name+".mochi")
+	if err := os.WriteFile(mochiPath, []byte(code), 0644); err != nil {
+		return err
+	}
+	out, err := runMochiE(rootDir, mochiPath)
+	if err != nil {
+		return fmt.Errorf("run mochi: %w\n%s", err, string(out))
+	}
+	outFile := filepath.Join(outDir, name+".out")
+	if err := os.WriteFile(outFile, out, 0644); err != nil {
+		return err
+	}
+	vmSrc, err := os.ReadFile(filepath.Join(rootDir, "tests/vm/valid", name+".mochi"))
+	if err != nil {
+		return fmt.Errorf("read ref: %w", err)
+	}
+	wantOut, err := mochiOutput(string(vmSrc))
+	if err != nil {
+		return fmt.Errorf("run vm: %w", err)
+	}
+	gotOut := bytes.TrimSpace(out)
+	if !bytes.Equal(gotOut, wantOut) {
+		return fmt.Errorf("output mismatch")
+	}
+	return nil
 }
 
 func TestTransformGolden(t *testing.T) {
@@ -176,62 +289,19 @@ func TestTransformGolden(t *testing.T) {
 			continue
 		}
 		t.Run(name, func(t *testing.T) {
-			data, err := os.ReadFile(srcPath)
+			err := processFile(rootDir, outDir, srcPath)
 			if err != nil {
-				t.Fatalf("read src: %v", err)
-			}
-
-			_, astNode := parseProgram(t, data)
-			node, code := transformSource(t, string(data), &astNode)
-
-			var astBuf bytes.Buffer
-			if err := ast.Fprint(&astBuf, node); err != nil {
-				t.Fatalf("print: %v", err)
-			}
-			got := astBuf.Bytes()
-			outPath := filepath.Join(outDir, name+".ast")
-
-			mochiPath := filepath.Join(outDir, name+".mochi")
-			if err := os.WriteFile(mochiPath, []byte(code), 0644); err != nil {
-				t.Fatalf("write mochi: %v", err)
-			}
-
-			out := runMochi(t, rootDir, mochiPath)
-			outFile := filepath.Join(outDir, name+".out")
-			if err := os.WriteFile(outFile, out, 0644); err != nil {
-				t.Fatalf("write out: %v", err)
-			}
-
-			vmSrc, err := os.ReadFile(filepath.Join(rootDir, "tests/vm/valid", name+".mochi"))
-			if err != nil {
-				t.Fatalf("read ref: %v", err)
-			}
-			wantOut, err := mochiOutput(string(vmSrc))
-			if err != nil {
-				t.Fatalf("run vm: %v", err)
-			}
-			gotOut := bytes.TrimSpace(out)
-			if !bytes.Equal(gotOut, wantOut) {
-				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
-			}
-
-			if *update {
-				os.WriteFile(outPath, got, 0644)
-			}
-
-			want, err := os.ReadFile(outPath)
-			if err != nil {
-				t.Fatalf("missing golden: %v", err)
-			}
-			if string(got) != string(want) {
-				t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", got, want)
+				os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0644)
+				t.Fatal(err)
+			} else {
+				os.Remove(filepath.Join(outDir, name+".error"))
 			}
 		})
 	}
 }
 
 func updateReadme() {
-	root := repoRoot(&testing.T{})
+	root := findRoot()
 	srcDir := filepath.Join(root, "tests", "transpiler", "x", "rs")
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "rust")
 	pattern := filepath.Join(srcDir, "*.rs")
@@ -243,9 +313,15 @@ func updateReadme() {
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".rs")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
-			compiled++
-			mark = "[x]"
+		outPath := filepath.Join(outDir, name+".out")
+		vmSrc, err1 := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
+		outData, err2 := os.ReadFile(outPath)
+		if err1 == nil && err2 == nil {
+			wantOut, err := mochiOutput(string(vmSrc))
+			if err == nil && bytes.Equal(bytes.TrimSpace(outData), wantOut) {
+				compiled++
+				mark = "[x]"
+			}
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}
