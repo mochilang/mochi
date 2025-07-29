@@ -122,11 +122,9 @@ func formatProgram(p *Program) (string, error) {
 		} else {
 			parts = append(parts, funLine+" {")
 			for _, line := range f.Body {
-				plines := strings.Split(line, "\n")
-				for _, ln := range plines {
-					ln = rewriteLine(ln, p.Records)
-					parts = append(parts, "  "+strings.TrimSpace(ln))
-				}
+				ln := strings.ReplaceAll(line, "\n", " ")
+				ln = rewriteLine(ln, p.Records)
+				parts = append(parts, "  "+strings.TrimSpace(ln))
 			}
 			parts = append(parts, "}")
 		}
@@ -202,11 +200,11 @@ func rewriteLine(ln string, recs []Record) string {
 			return "substring(" + target + ", " + start + ", " + start + " + " + length + ")"
 		})
 	}
-	if strings.Contains(ln, " andalso ") {
-		ln = strings.ReplaceAll(ln, " andalso ", " && ")
+	if strings.Contains(ln, "andalso") {
+		ln = strings.ReplaceAll(ln, "andalso", "&&")
 	}
-	if strings.Contains(ln, " orelse ") {
-		ln = strings.ReplaceAll(ln, " orelse ", " || ")
+	if strings.Contains(ln, "orelse") {
+		ln = strings.ReplaceAll(ln, "orelse", "||")
 	}
 	if strings.Contains(ln, "#{") {
 		ln = strings.ReplaceAll(ln, "#{", "{")
@@ -239,12 +237,12 @@ func rewriteLine(ln string, recs []Record) string {
 	return ln
 }
 
+var printfRe = regexp.MustCompile(`^"~[sp]~n",\s*\[(.+)\]\)$`)
+
 func rewritePrint(args string) string {
-	if strings.HasPrefix(args, "\"~s~n\", [") && strings.HasSuffix(args, "])") {
-		return "print(" + strings.TrimSuffix(strings.TrimPrefix(args, "\"~s~n\", ["), "])") + ")"
+	trimmed := strings.TrimSpace(args)
+	if m := printfRe.FindStringSubmatch(trimmed); m != nil {
+		return "print(" + m[1] + ")"
 	}
-	if strings.HasPrefix(args, "\"~p~n\", [") && strings.HasSuffix(args, "])") {
-		return "print(" + strings.TrimSuffix(strings.TrimPrefix(args, "\"~p~n\", ["), "])") + ")"
-	}
-	return "print(" + args
+	return "print(" + trimmed
 }

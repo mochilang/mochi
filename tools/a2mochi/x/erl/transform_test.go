@@ -141,11 +141,11 @@ func TestTransform_Golden(t *testing.T) {
 		"string_concat":       true,
 		"string_contains":     true,
 		"string_index":        true,
-		"string_prefix_slice": false,
+		"string_prefix_slice": true,
 		"substring_builtin":   true,
 		"sum_builtin":         true,
-		"bool_chain":          false,
-		"short_circuit":       false,
+		"bool_chain":          true,
+		"short_circuit":       true,
 		"unary_neg":           true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "erl")
