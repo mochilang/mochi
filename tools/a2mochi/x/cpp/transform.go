@@ -297,6 +297,66 @@ func transformBody(body string) ([]*ast.Node, error) {
 
 func convertExpression(s string) string {
 	s = strings.TrimSpace(s)
+	if strings.HasPrefix(s, "std::stoi(") && strings.HasSuffix(s, ")") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(s, "std::stoi("), ")")
+		inner = convertExpression(inner)
+		return inner + " as int"
+	}
+	if strings.HasPrefix(s, "stoi(") && strings.HasSuffix(s, ")") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(s, "stoi("), ")")
+		inner = convertExpression(inner)
+		return inner + " as int"
+	}
+	if m := regexp.MustCompile(`^(.*)\.find\((.*)\)\s*!=\s*std::string::npos$`).FindStringSubmatch(s); m != nil {
+		recv := convertExpression(strings.TrimSpace(m[1]))
+		arg := convertExpression(strings.TrimSpace(m[2]))
+		return recv + ".contains(" + arg + ")"
+	}
+	if strings.Contains(s, ".substr(") {
+		parts := strings.SplitN(s, ".substr(", 2)
+		base := convertExpression(parts[0])
+		args := strings.TrimSuffix(parts[1], ")")
+		ap := strings.SplitN(args, ",", 2)
+		if len(ap) == 2 {
+			start := strings.TrimSpace(ap[0])
+			length := strings.TrimSpace(ap[1])
+			end := ""
+			if m := regexp.MustCompile(`^([^\-]+)\s*-\s*(.+)$`).FindStringSubmatch(length); m != nil && strings.TrimSpace(m[2]) == start {
+				end = convertExpression(strings.TrimSpace(m[1]))
+			} else {
+				end = start + " + " + convertExpression(length)
+			}
+			start = convertExpression(start)
+			return fmt.Sprintf("substring(%s, %s, %s)", base, start, end)
+		}
+	}
+	if strings.HasPrefix(s, "(") && strings.Contains(s, ")(") && strings.HasSuffix(s, ")") {
+		content := strings.TrimSuffix(strings.TrimPrefix(s, "("), ")")
+		parts := strings.SplitN(content, ")(", 2)
+		if len(parts) == 2 {
+			typ := strings.TrimSpace(parts[0])
+			inner := convertExpression(strings.TrimSpace(parts[1]))
+			if strings.HasPrefix(inner, typ+"{") && strings.HasSuffix(inner, "}") {
+				inner = strings.TrimPrefix(inner, typ)
+			}
+			return inner + " as " + typ
+		}
+	}
+	if strings.HasPrefix(s, "Todo{") && strings.HasSuffix(s, "}") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(s, "Todo{"), "}")
+		fields := strings.Split(inner, ",")
+		var pairs []string
+		for _, f := range fields {
+			fv := strings.SplitN(f, "=", 2)
+			if len(fv) != 2 {
+				continue
+			}
+			name := strings.TrimSpace(strings.TrimPrefix(fv[0], "."))
+			val := convertExpression(strings.TrimSpace(fv[1]))
+			pairs = append(pairs, fmt.Sprintf("\"%s\": %s", name, val))
+		}
+		return "{" + strings.Join(pairs, ", ") + "}"
+	}
 	if strings.HasSuffix(s, ".size()") {
 		inner := strings.TrimSuffix(s, ".size()")
 		inner = convertExpression(inner)

@@ -1,0 +1,12 @@
+(program
+  (fun main
+    (type int)
+    (for n
+      (in [1, 2, 3])
+      (block
+        (call print (selector n))
+      )
+    )
+    (return (int 0))
+  )
+)

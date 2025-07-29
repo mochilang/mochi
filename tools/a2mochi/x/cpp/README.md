@@ -3,7 +3,7 @@
 This directory contains helpers and golden files for converting C++ programs under
 `tests/transpiler/x/cpp` back into Mochi AST form using `clang++`.
 
-Completed programs: 18/104
+Completed programs: 24/104
 
 Supported examples:
 - [x] print_hello
@@ -24,6 +24,12 @@ Supported examples:
 - [x] break_continue
 - [x] fun_call
 - [x] if_else
+- [x] for_list_collection
+- [x] for_map_collection
+- [x] cast_string_to_int
+- [x] cast_struct
+- [x] string_contains
+- [x] substring_builtin
 
 The converter is experimental and only understands a very small subset of the
 C++ code emitted by the Mochi transpiler.
