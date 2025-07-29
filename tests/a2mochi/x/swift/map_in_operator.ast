@@ -6,13 +6,9 @@
     )
   )
   (call print
-    (group
-      (binary in (int 1) (selector m))
-    )
+    (binary in (int 1) (selector m))
   )
   (call print
-    (group
-      (binary in (int 3) (selector m))
-    )
+    (binary in (int 3) (selector m))
   )
 )

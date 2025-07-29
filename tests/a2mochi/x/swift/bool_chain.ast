@@ -6,13 +6,17 @@
   )
   (call print
     (binary &&
-      (binary &&
-        (group
-          (binary < (int 1) (int 2))
-        )
-        (group
+      (group
+        (binary &&
           (group
-            (binary < (int 2) (int 3))
+            (group
+              (binary < (int 1) (int 2))
+            )
+          )
+          (group
+            (group
+              (binary < (int 2) (int 3))
+            )
           )
         )
       )
@@ -25,13 +29,17 @@
   )
   (call print
     (binary &&
-      (binary &&
-        (group
-          (binary < (int 1) (int 2))
-        )
-        (group
+      (group
+        (binary &&
           (group
-            (binary > (int 2) (int 3))
+            (group
+              (binary < (int 1) (int 2))
+            )
+          )
+          (group
+            (group
+              (binary > (int 2) (int 3))
+            )
           )
         )
       )
@@ -40,20 +48,26 @@
   )
   (call print
     (binary &&
-      (binary &&
+      (group
         (binary &&
           (group
-            (binary < (int 1) (int 2))
+            (binary &&
+              (group
+                (group
+                  (binary < (int 1) (int 2))
+                )
+              )
+              (group
+                (group
+                  (binary < (int 2) (int 3))
+                )
+              )
+            )
           )
           (group
             (group
-              (binary < (int 2) (int 3))
+              (binary > (int 3) (int 4))
             )
-          )
-        )
-        (group
-          (group
-            (binary > (int 3) (int 4))
           )
         )
       )

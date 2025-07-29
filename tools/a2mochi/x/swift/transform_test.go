@@ -146,7 +146,7 @@ func TestTransformGolden(t *testing.T) {
 		"list_nested_assign":  true,
 		"typed_var":           false,
 		"typed_let":           false,
-		"map_literal_dynamic": false,
+		"map_literal_dynamic": true,
 		"map_nested_assign":   false,
 		"user_type_literal":   false,
 	}

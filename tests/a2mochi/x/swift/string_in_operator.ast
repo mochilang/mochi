@@ -1,13 +1,9 @@
 (program
   (let s (string catch))
   (call print
-    (group
-      (binary in (string cat) (selector s))
-    )
+    (binary in (string cat) (selector s))
   )
   (call print
-    (group
-      (binary in (string dog) (selector s))
-    )
+    (binary in (string dog) (selector s))
   )
 )

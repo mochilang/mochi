@@ -6,13 +6,9 @@
     )
   )
   (call print
-    (group
-      (binary in (string a) (selector m))
-    )
+    (binary in (string a) (selector m))
   )
   (call print
-    (group
-      (binary in (string c) (selector m))
-    )
+    (binary in (string c) (selector m))
   )
 )
