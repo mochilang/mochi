@@ -1,0 +1,152 @@
+{
+  "forms": [
+    [
+      "ns",
+      "main"
+    ],
+    [
+      "require",
+      [
+        "quote",
+        "clojure.set"
+      ]
+    ],
+    [
+      "defrecord",
+      "Orders",
+      [
+        "id",
+        "customerId",
+        "total"
+      ]
+    ],
+    [
+      "defrecord",
+      "Customers",
+      [
+        "id",
+        "name"
+      ]
+    ],
+    [
+      "def",
+      "customers",
+      [
+        {
+          "id": 1,
+          "name": "Alice"
+        },
+        {
+          "id": 2,
+          "name": "Bob"
+        },
+        {
+          "id": 3,
+          "name": "Charlie"
+        }
+      ]
+    ],
+    [
+      "def",
+      "orders",
+      [
+        {
+          "customerId": 1,
+          "id": 100,
+          "total": 250
+        },
+        {
+          "customerId": 2,
+          "id": 101,
+          "total": 125
+        },
+        {
+          "customerId": 1,
+          "id": 102,
+          "total": 300
+        },
+        {
+          "customerId": 4,
+          "id": 103,
+          "total": 80
+        }
+      ]
+    ],
+    [
+      "def",
+      "result",
+      [
+        "for",
+        [
+          "o",
+          "orders",
+          "c",
+          "customers",
+          "when",
+          [
+            "=",
+            [
+              "customerId",
+              "o"
+            ],
+            [
+              "id",
+              "c"
+            ]
+          ]
+        ],
+        {
+          "customerName": [
+            "name",
+            "c"
+          ],
+          "orderId": [
+            "id",
+            "o"
+          ],
+          "total": [
+            "total",
+            "o"
+          ]
+        }
+      ]
+    ],
+    [
+      "defn",
+      "-main",
+      [],
+      [
+        "println",
+        "--- Orders with customer info ---"
+      ],
+      [
+        "doseq",
+        [
+          "entry",
+          "result"
+        ],
+        [
+          "println",
+          "Order",
+          [
+            "orderId",
+            "entry"
+          ],
+          "by",
+          [
+            "customerName",
+            "entry"
+          ],
+          "- $",
+          [
+            "total",
+            "entry"
+          ]
+        ]
+      ]
+    ],
+    [
+      "-main"
+    ]
+  ]
+}

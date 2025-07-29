@@ -1,0 +1,220 @@
+{
+  "forms": [
+    [
+      "ns",
+      "main"
+    ],
+    [
+      "require",
+      [
+        "quote",
+        "clojure.set"
+      ]
+    ],
+    [
+      "defrecord",
+      "Orders",
+      [
+        "id",
+        "customerId"
+      ]
+    ],
+    [
+      "defrecord",
+      "Customers",
+      [
+        "id",
+        "name"
+      ]
+    ],
+    [
+      "def",
+      "customers",
+      [
+        {
+          "id": 1,
+          "name": "Alice"
+        },
+        {
+          "id": 2,
+          "name": "Bob"
+        },
+        {
+          "id": 3,
+          "name": "Charlie"
+        }
+      ]
+    ],
+    [
+      "def",
+      "orders",
+      [
+        {
+          "customerId": 1,
+          "id": 100
+        },
+        {
+          "customerId": 1,
+          "id": 101
+        },
+        {
+          "customerId": 2,
+          "id": 102
+        }
+      ]
+    ],
+    [
+      "def",
+      "stats",
+      [
+        "for",
+        [
+          "g",
+          [
+            "for",
+            [
+              [
+                "k",
+                "rows"
+              ],
+              [
+                "group-by",
+                "key",
+                [
+                  "for",
+                  [
+                    "c",
+                    "customers",
+                    "o",
+                    [
+                      "let",
+                      [
+                        "o_tmp",
+                        [
+                          "filter",
+                          [
+                            "fn",
+                            [
+                              "o"
+                            ],
+                            [
+                              "=",
+                              [
+                                "customerId",
+                                "o"
+                              ],
+                              [
+                                "id",
+                                "c"
+                              ]
+                            ]
+                          ],
+                          "orders"
+                        ]
+                      ],
+                      [
+                        "if",
+                        [
+                          "seq",
+                          "o_tmp"
+                        ],
+                        "o_tmp",
+                        [
+                          null
+                        ]
+                      ]
+                    ],
+                    "let",
+                    [
+                      "k",
+                      [
+                        "name",
+                        "c"
+                      ]
+                    ]
+                  ],
+                  {
+                    "item": {
+                      "c": "c",
+                      "o": "o"
+                    },
+                    "key": "k"
+                  }
+                ]
+              ],
+              "let",
+              [
+                "g",
+                {
+                  "items": [
+                    "map",
+                    "item",
+                    "rows"
+                  ],
+                  "key": "k"
+                }
+              ]
+            ],
+            "g"
+          ]
+        ],
+        {
+          "count": [
+            "count",
+            [
+              "for",
+              [
+                "r",
+                [
+                  "items",
+                  "g"
+                ],
+                "when",
+                [
+                  "o",
+                  "r"
+                ]
+              ],
+              "r"
+            ]
+          ],
+          "name": [
+            "key",
+            "g"
+          ]
+        }
+      ]
+    ],
+    [
+      "defn",
+      "-main",
+      [],
+      [
+        "println",
+        "--- Group Left Join ---"
+      ],
+      [
+        "doseq",
+        [
+          "s",
+          "stats"
+        ],
+        [
+          "println",
+          [
+            "name",
+            "s"
+          ],
+          "orders:",
+          [
+            "count",
+            "s"
+          ]
+        ]
+      ]
+    ],
+    [
+      "-main"
+    ]
+  ]
+}

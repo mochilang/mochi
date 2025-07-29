@@ -1,0 +1,231 @@
+{
+  "forms": [
+    [
+      "ns",
+      "main"
+    ],
+    [
+      "require",
+      [
+        "quote",
+        "clojure.set"
+      ]
+    ],
+    [
+      "defrecord",
+      "People",
+      [
+        "name",
+        "city"
+      ]
+    ],
+    [
+      "def",
+      "people",
+      [
+        {
+          "city": "Paris",
+          "name": "Alice"
+        },
+        {
+          "city": "Hanoi",
+          "name": "Bob"
+        },
+        {
+          "city": "Paris",
+          "name": "Charlie"
+        },
+        {
+          "city": "Hanoi",
+          "name": "Diana"
+        },
+        {
+          "city": "Paris",
+          "name": "Eve"
+        },
+        {
+          "city": "Hanoi",
+          "name": "Frank"
+        },
+        {
+          "city": "Paris",
+          "name": "George"
+        }
+      ]
+    ],
+    [
+      "def",
+      "big",
+      [
+        "for",
+        [
+          "g",
+          [
+            "for",
+            [
+              [
+                "k",
+                "rows"
+              ],
+              [
+                "group-by",
+                "key",
+                [
+                  "for",
+                  [
+                    "p",
+                    "people",
+                    "let",
+                    [
+                      "k",
+                      [
+                        "city",
+                        "p"
+                      ]
+                    ]
+                  ],
+                  {
+                    "item": "p",
+                    "key": "k"
+                  }
+                ]
+              ],
+              "let",
+              [
+                "g",
+                {
+                  "items": [
+                    "map",
+                    "item",
+                    "rows"
+                  ],
+                  "key": "k"
+                }
+              ],
+              "when",
+              [
+                "\u003e=",
+                [
+                  "count",
+                  [
+                    "items",
+                    "g"
+                  ]
+                ],
+                4
+              ]
+            ],
+            "g"
+          ]
+        ],
+        {
+          "city": [
+            "key",
+            "g"
+          ],
+          "num": [
+            "count",
+            [
+              "items",
+              "g"
+            ]
+          ]
+        }
+      ]
+    ],
+    [
+      "defn",
+      "-main",
+      [],
+      [
+        "println",
+        [
+          [
+            "fn",
+            "json_str",
+            [
+              "x"
+            ],
+            [
+              "cond",
+              [
+                "map?",
+                "x"
+              ],
+              [
+                "str",
+                "{",
+                [
+                  "clojure.string/join",
+                  ",",
+                  [
+                    "map",
+                    [
+                      "fn",
+                      [
+                        [
+                          "k",
+                          "v"
+                        ]
+                      ],
+                      [
+                        "str",
+                        "\"",
+                        [
+                          "name",
+                          "k"
+                        ],
+                        "\":",
+                        [
+                          "json_str",
+                          "v"
+                        ]
+                      ]
+                    ],
+                    "x"
+                  ]
+                ],
+                "}"
+              ],
+              [
+                "sequential?",
+                "x"
+              ],
+              [
+                "str",
+                "[",
+                [
+                  "clojure.string/join",
+                  ",",
+                  [
+                    "map",
+                    "json_str",
+                    "x"
+                  ]
+                ],
+                "]"
+              ],
+              [
+                "string?",
+                "x"
+              ],
+              [
+                "pr-str",
+                "x"
+              ],
+              "else",
+              [
+                "str",
+                "x"
+              ]
+            ]
+          ],
+          "big"
+        ]
+      ]
+    ],
+    [
+      "-main"
+    ]
+  ]
+}

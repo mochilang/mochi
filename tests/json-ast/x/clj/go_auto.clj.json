@@ -1,0 +1,68 @@
+{
+  "forms": [
+    [
+      "ns",
+      "main"
+    ],
+    [
+      "require",
+      [
+        "quote",
+        "clojure.set"
+      ]
+    ],
+    [
+      "def",
+      "testpkg",
+      {
+        "Add": [
+          "fn",
+          [
+            "a",
+            "b"
+          ],
+          [
+            "+",
+            "a",
+            "b"
+          ]
+        ],
+        "Answer": 42,
+        "Pi": 3.14
+      }
+    ],
+    [
+      "defn",
+      "-main",
+      [],
+      [
+        "println",
+        [
+          [
+            "Add",
+            "testpkg"
+          ],
+          2,
+          3
+        ]
+      ],
+      [
+        "println",
+        [
+          "Pi",
+          "testpkg"
+        ]
+      ],
+      [
+        "println",
+        [
+          "Answer",
+          "testpkg"
+        ]
+      ]
+    ],
+    [
+      "-main"
+    ]
+  ]
+}

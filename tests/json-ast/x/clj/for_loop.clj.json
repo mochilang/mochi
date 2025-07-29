@@ -1,0 +1,38 @@
+{
+  "forms": [
+    [
+      "ns",
+      "main"
+    ],
+    [
+      "require",
+      [
+        "quote",
+        "clojure.set"
+      ]
+    ],
+    [
+      "defn",
+      "-main",
+      [],
+      [
+        "doseq",
+        [
+          "i",
+          [
+            "range",
+            1,
+            4
+          ]
+        ],
+        [
+          "println",
+          "i"
+        ]
+      ]
+    ],
+    [
+      "-main"
+    ]
+  ]
+}

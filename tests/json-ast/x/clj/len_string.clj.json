@@ -1,0 +1,30 @@
+{
+  "forms": [
+    [
+      "ns",
+      "main"
+    ],
+    [
+      "require",
+      [
+        "quote",
+        "clojure.set"
+      ]
+    ],
+    [
+      "defn",
+      "-main",
+      [],
+      [
+        "println",
+        [
+          "count",
+          "mochi"
+        ]
+      ]
+    ],
+    [
+      "-main"
+    ]
+  ]
+}
