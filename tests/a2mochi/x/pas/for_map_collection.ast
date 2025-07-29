@@ -1,0 +1,20 @@
+(program
+  (type Anon9
+    (field a (type int))
+    (field b (type int))
+  )
+  (var m (type Anon9))
+  (var k (type int))
+  (assign m
+    (map
+      (entry (selector a) (int 1))
+      (entry (selector b) (int 2))
+    )
+  )
+  (for k
+    (in (selector m))
+    (block
+      (call print (selector k))
+    )
+  )
+)

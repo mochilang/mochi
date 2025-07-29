@@ -1,0 +1,53 @@
+parse error: parse error: 35:19: unexpected token "," (expected ":" Expr)
+type Anon10 {
+  name: string
+  age: int
+  city: string
+}
+type Anon11 {
+  city: string
+  count: int
+  sumAge: int
+}
+type Anon12 {
+  city: string
+  count: int
+  avg_age: float
+}
+var people: list<anon10>
+var grp1: list<anon11>
+var idx2: int
+var i3: int
+var sum4: int
+var stats: list<anon12>
+var person: Anon10
+var s: int
+people = [{name: "Alice", age: 30, city: "Paris"}, {name: "Bob", age: 15, city: "Hanoi"}, {name: "Charlie", age: 65, city: "Paris"}, {name: "Diana", age: 45, city: "Hanoi"}, {name: "Eve", age: 70, city: "Paris"}, {name: "Frank", age: 22, city: "Hanoi"}]
+grp1 = []
+for person in people {
+idx2 =(-1)
+for i3 in 0..((len(grp1) - 1)) + 1 {
+if grp1[i3].city == person.city {
+idx2 = i3
+break
+}
+}
+if idx2 ==(-1) {
+grp1 = concat{grp1, [{city: person.city, count: 1, sumAge: person.age}]}
+} else {
+grp1[idx2].count = grp1[idx2].count + 1
+grp1[idx2].sumAge = grp1[idx2].sumAge + person.age
+}
+}
+stats = []
+for g in grp1 {
+sum4 = 0
+for person in g.items {
+sum4 = sum4 + person.age
+}
+stats = concat(stats, [(city: g.city; count: g.count; avg_age: sum4 / len(g.items))])
+}
+print("--- People grouped by city ---")
+for s in stats {
+print(s.city, ": count =", s.count, ", avg_age =", s.avg_age)
+}

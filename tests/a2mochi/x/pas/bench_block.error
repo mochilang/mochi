@@ -1,0 +1,38 @@
+parse error: parse error: 4:17: unexpected token ":" (expected "}")
+var _nowSeed: int64 = 0
+var _nowSeeded: boolean = false
+fun init_now() {
+var s: string; v: int64
+s = GetEnvironmentVariable("MOCHI_NOW_SEED")
+if s != "" {
+Val(s, v)
+_nowSeed = v
+_nowSeeded = true
+}
+}
+fun _now(): int {
+if _nowSeeded {
+_nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647
+return _nowSeed
+} else {
+return Integer(GetTickCount64())
+}
+}
+var bench_start_0: int
+var bench_dur_0: int
+var n: int
+var s: int
+var i: int
+init_now()
+bench_start_0 = _now()
+n = 1000
+s = 0
+for i in 1..((n - 1)) + 1 {
+s = s + i
+}
+bench_dur_0 = (_now() - ((bench_start_0) / 1000) as int)
+print("{")
+print(("  "duration_us": " + str(bench_dur_0)) + ",")
+print("  "memory_bytes": 0,")
+print({"  "name": "" + "simple"} + """)
+print("}")

@@ -1,0 +1,65 @@
+parse error: parse error: 43:27: unexpected token "," (expected ":" Expr)
+type Anon1 {
+  id: int
+  name: string
+}
+type Anon2 {
+  id: int
+  nation: int
+}
+type Anon3 {
+  part: int
+  supplier: int
+  cost: float
+  qty: int
+}
+type Anon4 {
+  part: int
+  value: float
+}
+type Anon5 {
+  part: int
+  total: float
+}
+var nations: list<anon1>
+var suppliers: list<anon2>
+var partsupp: list<anon3>
+var filtered: list<anon4>
+var grp4: list<anon5>
+var idx5: int
+var i6: int
+var grouped: list<anon5>
+var ps: Anon3
+var s: Anon2
+var n: Anon1
+var x: Anon4
+nations = [{id: 1, name: "A"}, {id: 2, name: "B"}]
+suppliers = [{id: 1, nation: 1}, {id: 2, nation: 2}]
+partsupp = [{part: 100, supplier: 1, cost: 10, qty: 2}, {part: 100, supplier: 2, cost: 20, qty: 1}, {part: 200, supplier: 1, cost: 5, qty: 3}]
+filtered = []
+for ps in partsupp {
+for s in suppliers {
+for n in nations {
+if ((s.id == ps.supplier) && (n.id == s.nation)) && (n.name == "A") {
+filtered = concat{filtered, [{part: ps.part, value: ps.cost * ps.qty}]}
+}
+}
+}
+}
+grp4 = []
+for x in filtered {
+idx5 =(-1)
+for i6 in 0..((len(grp4) - 1)) + 1 {
+if grp4[i6].part == x.part {
+idx5 = i6
+break
+}
+}
+if idx5 ==(-1) {
+grp4 = concat{grp4, [{part: x.part, total: x.value}]}
+} else {
+grp4[idx5].total = grp4[idx5].total + x.value
+}
+}
+grouped = grp4
+print(grouped)

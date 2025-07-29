@@ -1,0 +1,38 @@
+parse error: parse error: 26:23: unexpected token "," (expected ":" Expr)
+type Anon56 {
+  id: int
+  name: string
+}
+type Anon57 {
+  id: int
+  customerId: int
+  total: int
+}
+type Anon58 {
+  customerName: string
+  order: Anon57
+}
+var customers: list<anon56>
+var orders: list<anon57>
+var result: list<anon58>
+var c: Anon56
+var o: Anon57
+var entry: int
+customers = [{id: 1, name: "Alice"}, {id: 2, name: "Bob"}, {id: 3, name: "Charlie"}, {id: 4, name: "Diana"}]
+orders = [{id: 100, customerId: 1, total: 250}, {id: 101, customerId: 2, total: 125}, {id: 102, customerId: 1, total: 300}]
+result = []
+for c in customers {
+for o in orders {
+if o.customerId == c.id {
+result = concat{result, [{customerName: c.name, order: o}]}
+}
+}
+}
+print("--- Right Join using syntax ---")
+for entry in result {
+if entry.order {
+print("Customer", entry.customerName, "has order", entry.order.id, "- $", entry.order.total)
+} else {
+print("Customer", entry.customerName, "has no orders")
+}
+}

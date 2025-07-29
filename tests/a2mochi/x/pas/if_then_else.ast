@@ -1,0 +1,13 @@
+(program
+  (var x (type int))
+  (var msg (type string))
+  (assign x (int 12))
+  (assign msg
+    (call IfThen
+      (binary > (selector x) (int 10))
+      (string yes)
+      (string no)
+    )
+  )
+  (call print (selector msg))
+)

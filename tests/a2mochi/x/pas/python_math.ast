@@ -1,0 +1,29 @@
+(program
+  (var r (type float))
+  (var area (type float))
+  (var root (type float))
+  (var sin45 (type float))
+  (var log_e (type float))
+  (assign r (int 3))
+  (assign area
+    (binary *
+      (selector Pi)
+      (call Power (selector r) (int 2))
+    )
+  )
+  (assign root
+    (call Sqrt (int 49))
+  )
+  (assign sin45
+    (call Sin
+      (binary / (selector Pi) (int 4))
+    )
+  )
+  (assign log_e
+    (call Ln (float 2.718281828459045))
+  )
+  (call print (string "Circle area with r =") (selector r) (string =>) (selector area))
+  (call print (string "Square root of 49:") (selector root))
+  (call print (string "sin(π/4):") (selector sin45))
+  (call print (string "log(e):") (selector log_e))
+)

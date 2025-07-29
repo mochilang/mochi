@@ -41,7 +41,7 @@ func FromStatement(s *parser.Statement) *Node {
 		return n
 
 	case s.Assign != nil:
-		if len(s.Assign.Index) == 0 {
+		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
 			return &Node{
 				Kind:  "assign",
 				Value: s.Assign.Name,
@@ -50,8 +50,11 @@ func FromStatement(s *parser.Statement) *Node {
 				},
 			}
 		}
-		// Build target expression with indexes
+		// Build target expression with fields and indexes
 		target := &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: s.Assign.Name}}}
+		for _, f := range s.Assign.Field {
+			target.Ops = append(target.Ops, &parser.PostfixOp{Field: f})
+		}
 		for _, idx := range s.Assign.Index {
 			target.Ops = append(target.Ops, &parser.PostfixOp{Index: idx})
 		}

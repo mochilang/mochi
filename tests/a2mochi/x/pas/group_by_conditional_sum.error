@@ -1,0 +1,45 @@
+parse error: parse error: 32:26: unexpected token ":" (expected "(" (Expr ("," Expr)*)? ")")
+type Anon13 {
+  cat: string
+  val: int
+  flag: bool
+}
+type Anon14 {
+  cat: string
+  sumTrue: int
+  sumTotal: int
+}
+type Anon15 {
+  cat: string
+  share: float
+}
+var items: list<anon13>
+var grp1: list<anon14>
+var idx2: int
+var i3: int
+var result: list<anon15>
+var i: Anon13
+items = [{cat: "a", val: 10, flag: true}, {cat: "a", val: 5, flag: false}, {cat: "b", val: 20, flag: true}]
+grp1 = []
+for i in items {
+idx2 =(-1)
+for i3 in 0..((len(grp1) - 1)) + 1 {
+if grp1[i3].cat == i.cat {
+idx2 = i3
+break
+}
+}
+if idx2 ==(-1) {
+grp1 = concat(grp1, [(cat: i.cat; sumTrue: IfThen(i.flag, i.val, 0); sumTotal: i.val)])
+} else {
+if i.flag {
+grp1[idx2].sumTrue = grp1[idx2].sumTrue + i.val
+}
+grp1[idx2].sumTotal = grp1[idx2].sumTotal + i.val
+}
+}
+result = []
+for g in grp1 {
+result = concat{result, [{cat: g.cat, share: g.sumTrue / g.sumTotal}]}
+}
+print(result)

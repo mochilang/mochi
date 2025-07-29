@@ -1,0 +1,48 @@
+parse error: parse error: 36:19: unexpected token "," (expected ":" Expr)
+type Anon18 {
+  id: int
+  name: string
+}
+type Anon19 {
+  id: int
+  customerId: int
+}
+type Anon20 {
+  name: string
+  count: int
+}
+var customers: list<anon18>
+var orders: list<anon19>
+var grp2: list<anon20>
+var idx3: int
+var i4: int
+var stats: list<anon20>
+var o: Anon19
+var c: Anon18
+var s: int
+customers = [{id: 1, name: "Alice"}, {id: 2, name: "Bob"}]
+orders = [{id: 100, customerId: 1}, {id: 101, customerId: 1}, {id: 102, customerId: 2}]
+grp2 = []
+for o in orders {
+for c in customers {
+if o.customerId == c.id {
+idx3 =(-1)
+for i4 in 0..((len(grp2) - 1)) + 1 {
+if grp2[i4].name == c.name {
+idx3 = i4
+break
+}
+}
+if idx3 ==(-1) {
+grp2 = concat{grp2, [{name: c.name, count: 1}]}
+} else {
+grp2[idx3].count = grp2[idx3].count + 1
+}
+}
+}
+}
+stats = grp2
+print("--- Orders per customer ---")
+for s in stats {
+print(s.name, "orders:", s.count)
+}

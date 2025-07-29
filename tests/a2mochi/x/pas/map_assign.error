@@ -1,0 +1,5 @@
+error[T008]: type mismatch: expected Anon46, got {string: int}
+  --> :6:10
+
+help:
+  Change the value to match the expected type.

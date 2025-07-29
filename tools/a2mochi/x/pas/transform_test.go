@@ -5,6 +5,7 @@ package pas_test
 import (
 	"bytes"
 	"flag"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -19,6 +20,10 @@ import (
 )
 
 var updateGolden = flag.Bool("update", false, "update golden files")
+
+func updateReadme() {
+	pas.UpdateReadmeForTests()
+}
 
 func findRepoRoot(t *testing.T) string {
 	dir, err := os.Getwd()
@@ -78,50 +83,19 @@ func TestTransform_Golden(t *testing.T) {
 	if len(files) == 0 {
 		t.Fatalf("no files: %s", pattern)
 	}
-	allowed := map[string]bool{
-		"print_hello":         true,
-		"for_loop":            true,
-		"let_and_print":       true,
-		"unary_neg":           true,
-		"len_builtin":         true,
-		"len_string":          true,
-		"if_else":             true,
-		"while_loop":          true,
-		"string_concat":       true,
-		"string_compare":      true,
-		"binary_precedence":   true,
-		"str_builtin":         true,
-		"sum_builtin":         true,
-		"list_assign":         true,
-		"list_index":          true,
-		"string_index":        true,
-		"typed_let":           true,
-		"typed_var":           true,
-		"var_assignment":      true,
-		"count_builtin":       true,
-		"len_map":             true,
-		"substring_builtin":   true,
-		"string_contains":     true,
-		"string_in_operator":  true,
-		"string_prefix_slice": true,
-		"bool_chain":          true,
-		"break_continue":      true,
-		"cast_string_to_int":  true,
-		"list_nested_assign":  true,
-		"fun_call":            true,
-		"fun_three_args":      true,
-		"short_circuit":       true,
-		"go_auto":             true,
-		"math_ops":            true,
-	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "pas")
 	os.MkdirAll(outDir, 0o755)
 	for _, srcPath := range files {
 		name := strings.TrimSuffix(filepath.Base(srcPath), ".pas")
-		if !allowed[name] {
-			continue
-		}
 		t.Run(name, func(t *testing.T) {
+			defer func() {
+				if r := recover(); r != nil {
+					if *updateGolden {
+						os.WriteFile(filepath.Join(outDir, name+".error"), []byte(fmt.Sprint(r)), 0o644)
+					}
+					t.Fatalf("panic: %v", r)
+				}
+			}()
 			data, err := os.ReadFile(srcPath)
 			if err != nil {
 				t.Fatalf("read src: %v", err)
@@ -129,7 +103,13 @@ func TestTransform_Golden(t *testing.T) {
 
 			mochiNode, err := parseAndTransform(data)
 			if err != nil {
+				if *updateGolden {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0o644)
+				}
 				t.Fatalf("transform: %v", err)
+			}
+			if *updateGolden {
+				os.Remove(filepath.Join(outDir, name+".error"))
 			}
 
 			astPath := filepath.Join(outDir, name+".ast")
@@ -160,6 +140,9 @@ func TestTransform_Golden(t *testing.T) {
 
 			gotOut, err := runMochi(code)
 			if err != nil {
+				if *updateGolden {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0o644)
+				}
 				t.Fatalf("run: %v", err)
 			}
 			if *updateGolden {
@@ -167,15 +150,27 @@ func TestTransform_Golden(t *testing.T) {
 			}
 			vmSrc, err := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
 			if err != nil {
+				if *updateGolden {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0o644)
+				}
 				t.Fatalf("missing vm source: %v", err)
 			}
 			wantOut, err := runMochi(string(vmSrc))
 			if err != nil {
+				if *updateGolden {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0o644)
+				}
 				t.Fatalf("run vm: %v", err)
 			}
 			if !bytes.Equal(gotOut, wantOut) {
+				if *updateGolden {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte("output mismatch"), 0o644)
+				}
 				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
 			}
 		})
+	}
+	if *updateGolden {
+		updateReadme()
 	}
 }

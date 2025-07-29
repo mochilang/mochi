@@ -1,0 +1,6 @@
+(program
+  (call print
+    (call Sqrt (int 16))
+  )
+  (call print (selector Pi))
+)

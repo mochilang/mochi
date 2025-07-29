@@ -1,0 +1,11 @@
+(program
+  (var n (type int))
+  (for n
+    (in
+      (list (int 1) (int 2) (int 3))
+    )
+    (block
+      (call print (selector n))
+    )
+  )
+)

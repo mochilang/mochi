@@ -1,0 +1,14 @@
+(program
+  (fun anon0
+    (param x (type int))
+    (type int)
+    (return
+      (binary * (selector x) (selector x))
+    )
+  )
+  (var square (type int))
+  (assign square (selector anon0))
+  (call print
+    (call square (int 6))
+  )
+)

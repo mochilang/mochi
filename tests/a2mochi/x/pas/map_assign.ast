@@ -1,0 +1,18 @@
+(program
+  (type Anon46
+    (field alice (type int))
+  )
+  (var scores (type Anon46))
+  (assign scores
+    (map
+      (entry (selector alice) (int 1))
+    )
+  )
+  (assign
+    (index (selector scores) (string bob))
+    (int 2)
+  )
+  (call print
+    (index (selector scores) (string bob))
+  )
+)

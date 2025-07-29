@@ -1,0 +1,21 @@
+(program
+  (fun anon0
+    (param x (type int))
+    (type int)
+    (return
+      (binary + (selector x) (selector n))
+    )
+  )
+  (fun makeAdder
+    (param n (type int))
+    (type int)
+    (return (selector anon0))
+  )
+  (var add10 (type int))
+  (assign add10
+    (call makeAdder (int 10))
+  )
+  (call print
+    (call add10 (int 7))
+  )
+)

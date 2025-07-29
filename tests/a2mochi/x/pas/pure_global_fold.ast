@@ -1,0 +1,14 @@
+(program
+  (fun inc
+    (param x (type int))
+    (type int)
+    (return
+      (binary + (selector x) (selector k))
+    )
+  )
+  (var k (type int))
+  (assign k (int 2))
+  (call print
+    (call inc (int 3))
+  )
+)

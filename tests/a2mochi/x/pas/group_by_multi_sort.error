@@ -1,0 +1,63 @@
+parse error: parse error: 40:19: unexpected token "," (expected ":" Expr)
+type Anon1 {
+  a: string
+  b: int
+  val: int
+}
+type Anon2 {
+  a: string
+  b: int
+}
+type Anon3 {
+  key: Anon2
+  items: list<anon1>
+}
+type Anon4 {
+  a: string
+  b: int
+  total: int
+}
+var items: list<anon1>
+var grp1: list<anon3>
+var idx2: int
+var i3: int
+var sum4: int
+var i5: int
+var j6: int
+var tmp7: Anon4
+var grouped: list<anon4>
+var i: Anon1
+items = [Anon1{a: "x", b: 1, val: 2}, Anon1{a: "x", b: 2, val: 3}, Anon1{a: "y", b: 1, val: 4}, Anon1{a: "y", b: 2, val: 1}]
+grp1 = []
+for i in items {
+idx2 =(-1)
+for i3 in 0..((len(grp1) - 1)) + 1 {
+if (grp1[i3].key.a == i.a) && (grp1[i3].key.b == i.b) {
+idx2 = i3
+break
+}
+}
+if idx2 ==(-1) {
+grp1 = concat{grp1, [Anon3{key: Anon2{a: i.a, b: i.b}, items: [i]}]}
+} else {
+grp1[idx2].items = concat(grp1[idx2].items, [i])
+}
+}
+grouped = []
+for g in grp1 {
+sum4 = 0
+for x in g.items {
+sum4 = sum4 + x.val
+}
+grouped = concat{grouped, [Anon4{a: g.key.a, b: g.key.b, total: sum4}]}
+}
+for i5 in 0..((len(grouped) - 1 - 1)) + 1 {
+for j6 in i5 + 1..((len(grouped) - 1)) + 1 {
+if grouped[i5].total < grouped[j6].total {
+tmp7 = grouped[i5]
+grouped[i5] = grouped[j6]
+grouped[j6] = tmp7
+}
+}
+}
+print(grouped)

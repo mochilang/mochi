@@ -1,0 +1,20 @@
+(program
+  (type Anon61
+    (field a (type int))
+    (field b (type int))
+    (field c (type int))
+  )
+  (var m (type Anon61))
+  (assign m
+    (map
+      (entry (selector a) (int 1))
+      (entry (selector b) (int 2))
+      (entry (selector c) (int 3))
+    )
+  )
+  (call print
+    (selector a (selector m))
+    (selector b (selector m))
+    (selector c (selector m))
+  )
+)

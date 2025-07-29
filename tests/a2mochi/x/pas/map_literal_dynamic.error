@@ -1,0 +1,12 @@
+parse error: parse error: 3:3: unexpected token "b" (expected ":" TypeRef)
+type Anon48 {
+  a
+  b
+}
+var x: int
+var y: int
+var m: Anon48
+x = 3
+y = 4
+m = {a: x, b: y}
+print(m["a"], m["b"])

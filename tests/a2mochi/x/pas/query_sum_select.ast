@@ -1,0 +1,31 @@
+(program
+  (var nums
+    (type list (type int))
+  )
+  (var result (type array))
+  (selector of)
+  (var n (type int))
+  (assign nums
+    (list (int 1) (int 2) (int 3))
+  )
+  (assign result (list))
+  (for n
+    (in (selector nums))
+    (block
+      (if
+        (binary > (selector n) (int 1))
+        (block
+          (assign result
+            (call concat
+              (selector result)
+              (list
+                (call sum (selector n))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (call print (selector result))
+)

@@ -1,0 +1,5 @@
+error[T008]: type mismatch: expected int, got fun(int): int
+  --> :6:8
+
+help:
+  Change the value to match the expected type.

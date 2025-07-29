@@ -1,0 +1,43 @@
+parse error: parse error: 34:23: unexpected token "," (expected ":" Expr)
+type Anon41 {
+  id: int
+  name: string
+}
+type Anon42 {
+  id: int
+  customerId: int
+}
+type Anon43 {
+  orderId: int
+  sku: string
+}
+type Anon44 {
+  orderId: int
+  name: string
+  item: Anon43
+}
+var customers: list<anon41>
+var orders: list<anon42>
+var items: list<anon43>
+var result: list<anon44>
+var i: Anon43
+var r: int
+var o: Anon42
+var c: Anon41
+customers = [{id: 1, name: "Alice"}, {id: 2, name: "Bob"}]
+orders = [{id: 100, customerId: 1}, {id: 101, customerId: 2}]
+items = [{orderId: 100, sku: "a"}]
+result = []
+for o in orders {
+for c in customers {
+for i in items {
+if (o.customerId == c.id) && (o.id == i.orderId) {
+result = concat{result, [{orderId: o.id, name: c.name, item: i}]}
+}
+}
+}
+}
+print("--- Left Join Multi ---")
+for r in result {
+print(r.orderId, r.name, r.item)
+}

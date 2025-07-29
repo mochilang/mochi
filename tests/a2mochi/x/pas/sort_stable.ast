@@ -1,0 +1,44 @@
+(program
+  (type Anon60
+    (field n (type int))
+    (field v (type string))
+  )
+  (var items
+    (type list (type anon60))
+  )
+  (var result
+    (type list (type string))
+  )
+  (var i (type Anon60))
+  (assign items
+    (list
+      (map
+        (entry (selector n) (int 1))
+        (entry (selector v) (string a))
+      )
+      (map
+        (entry (selector n) (int 1))
+        (entry (selector v) (string b))
+      )
+      (map
+        (entry (selector n) (int 2))
+        (entry (selector v) (string c))
+      )
+    )
+  )
+  (assign result (list))
+  (for i
+    (in (selector items))
+    (block
+      (assign result
+        (call concat
+          (selector result)
+          (list
+            (selector v (selector i))
+          )
+        )
+      )
+    )
+  )
+  (call print (selector result))
+)
