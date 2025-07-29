@@ -1,0 +1,54 @@
+{
+  "root": [
+    {
+      "nodeType": "Stmt_Echo",
+      "attributes": {
+        "startLine": 2,
+        "startTokenPos": 1,
+        "startFilePos": 6,
+        "endLine": 2,
+        "endTokenPos": 7,
+        "endFilePos": 24
+      },
+      "exprs": [
+        {
+          "nodeType": "Scalar_String",
+          "attributes": {
+            "startLine": 2,
+            "startTokenPos": 3,
+            "startFilePos": 11,
+            "endLine": 2,
+            "endTokenPos": 3,
+            "endFilePos": 14,
+            "kind": 2,
+            "rawValue": "\"ok\""
+          },
+          "value": "ok"
+        },
+        {
+          "nodeType": "Expr_ConstFetch",
+          "attributes": {
+            "startLine": 2,
+            "startTokenPos": 6,
+            "startFilePos": 17,
+            "endLine": 2,
+            "endTokenPos": 6,
+            "endFilePos": 23
+          },
+          "name": {
+            "nodeType": "Name",
+            "attributes": {
+              "startLine": 2,
+              "startTokenPos": 6,
+              "startFilePos": 17,
+              "endLine": 2,
+              "endTokenPos": 6,
+              "endFilePos": 23
+            },
+            "name": "PHP_EOL"
+          }
+        }
+      ]
+    }
+  ]
+}

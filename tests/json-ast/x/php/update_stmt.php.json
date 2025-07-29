@@ -1,0 +1,1096 @@
+{
+  "root": [
+    {
+      "nodeType": "Stmt_Expression",
+      "attributes": {
+        "startLine": 2,
+        "startTokenPos": 1,
+        "startFilePos": 6,
+        "endLine": 2,
+        "endTokenPos": 97,
+        "endFilePos": 240
+      },
+      "expr": {
+        "nodeType": "Expr_Assign",
+        "attributes": {
+          "startLine": 2,
+          "startTokenPos": 1,
+          "startFilePos": 6,
+          "endLine": 2,
+          "endTokenPos": 96,
+          "endFilePos": 239
+        },
+        "var": {
+          "nodeType": "Expr_Variable",
+          "attributes": {
+            "startLine": 2,
+            "startTokenPos": 1,
+            "startFilePos": 6,
+            "endLine": 2,
+            "endTokenPos": 1,
+            "endFilePos": 12
+          },
+          "name": "people"
+        },
+        "expr": {
+          "nodeType": "Expr_Array",
+          "attributes": {
+            "startLine": 2,
+            "startTokenPos": 5,
+            "startFilePos": 16,
+            "endLine": 2,
+            "endTokenPos": 96,
+            "endFilePos": 239,
+            "kind": 2
+          },
+          "items": [
+            {
+              "nodeType": "ArrayItem",
+              "attributes": {
+                "startLine": 2,
+                "startTokenPos": 6,
+                "startFilePos": 17,
+                "endLine": 2,
+                "endTokenPos": 26,
+                "endFilePos": 69
+              },
+              "key": null,
+              "value": {
+                "nodeType": "Expr_Array",
+                "attributes": {
+                  "startLine": 2,
+                  "startTokenPos": 6,
+                  "startFilePos": 17,
+                  "endLine": 2,
+                  "endTokenPos": 26,
+                  "endFilePos": 69,
+                  "kind": 2
+                },
+                "items": [
+                  {
+                    "nodeType": "ArrayItem",
+                    "attributes": {
+                      "startLine": 2,
+                      "startTokenPos": 7,
+                      "startFilePos": 18,
+                      "endLine": 2,
+                      "endTokenPos": 11,
+                      "endFilePos": 34
+                    },
+                    "key": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 7,
+                        "startFilePos": 18,
+                        "endLine": 2,
+                        "endTokenPos": 7,
+                        "endFilePos": 23,
+                        "kind": 2,
+                        "rawValue": "\"name\""
+                      },
+                      "value": "name"
+                    },
+                    "value": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 11,
+                        "startFilePos": 28,
+                        "endLine": 2,
+                        "endTokenPos": 11,
+                        "endFilePos": 34,
+                        "kind": 2,
+                        "rawValue": "\"Alice\""
+                      },
+                      "value": "Alice"
+                    },
+                    "byRef": false,
+                    "unpack": false
+                  },
+                  {
+                    "nodeType": "ArrayItem",
+                    "attributes": {
+                      "startLine": 2,
+                      "startTokenPos": 14,
+                      "startFilePos": 37,
+                      "endLine": 2,
+                      "endTokenPos": 18,
+                      "endFilePos": 47
+                    },
+                    "key": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 14,
+                        "startFilePos": 37,
+                        "endLine": 2,
+                        "endTokenPos": 14,
+                        "endFilePos": 41,
+                        "kind": 2,
+                        "rawValue": "\"age\""
+                      },
+                      "value": "age"
+                    },
+                    "value": {
+                      "nodeType": "Scalar_Int",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 18,
+                        "startFilePos": 46,
+                        "endLine": 2,
+                        "endTokenPos": 18,
+                        "endFilePos": 47,
+                        "rawValue": "17",
+                        "kind": 10
+                      },
+                      "value": 17
+                    },
+                    "byRef": false,
+                    "unpack": false
+                  },
+                  {
+                    "nodeType": "ArrayItem",
+                    "attributes": {
+                      "startLine": 2,
+                      "startTokenPos": 21,
+                      "startFilePos": 50,
+                      "endLine": 2,
+                      "endTokenPos": 25,
+                      "endFilePos": 68
+                    },
+                    "key": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 21,
+                        "startFilePos": 50,
+                        "endLine": 2,
+                        "endTokenPos": 21,
+                        "endFilePos": 57,
+                        "kind": 2,
+                        "rawValue": "\"status\""
+                      },
+                      "value": "status"
+                    },
+                    "value": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 25,
+                        "startFilePos": 62,
+                        "endLine": 2,
+                        "endTokenPos": 25,
+                        "endFilePos": 68,
+                        "kind": 2,
+                        "rawValue": "\"minor\""
+                      },
+                      "value": "minor"
+                    },
+                    "byRef": false,
+                    "unpack": false
+                  }
+                ]
+              },
+              "byRef": false,
+              "unpack": false
+            },
+            {
+              "nodeType": "ArrayItem",
+              "attributes": {
+                "startLine": 2,
+                "startTokenPos": 29,
+                "startFilePos": 72,
+                "endLine": 2,
+                "endTokenPos": 49,
+                "endFilePos": 124
+              },
+              "key": null,
+              "value": {
+                "nodeType": "Expr_Array",
+                "attributes": {
+                  "startLine": 2,
+                  "startTokenPos": 29,
+                  "startFilePos": 72,
+                  "endLine": 2,
+                  "endTokenPos": 49,
+                  "endFilePos": 124,
+                  "kind": 2
+                },
+                "items": [
+                  {
+                    "nodeType": "ArrayItem",
+                    "attributes": {
+                      "startLine": 2,
+                      "startTokenPos": 30,
+                      "startFilePos": 73,
+                      "endLine": 2,
+                      "endTokenPos": 34,
+                      "endFilePos": 87
+                    },
+                    "key": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 30,
+                        "startFilePos": 73,
+                        "endLine": 2,
+                        "endTokenPos": 30,
+                        "endFilePos": 78,
+                        "kind": 2,
+                        "rawValue": "\"name\""
+                      },
+                      "value": "name"
+                    },
+                    "value": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 34,
+                        "startFilePos": 83,
+                        "endLine": 2,
+                        "endTokenPos": 34,
+                        "endFilePos": 87,
+                        "kind": 2,
+                        "rawValue": "\"Bob\""
+                      },
+                      "value": "Bob"
+                    },
+                    "byRef": false,
+                    "unpack": false
+                  },
+                  {
+                    "nodeType": "ArrayItem",
+                    "attributes": {
+                      "startLine": 2,
+                      "startTokenPos": 37,
+                      "startFilePos": 90,
+                      "endLine": 2,
+                      "endTokenPos": 41,
+                      "endFilePos": 100
+                    },
+                    "key": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 37,
+                        "startFilePos": 90,
+                        "endLine": 2,
+                        "endTokenPos": 37,
+                        "endFilePos": 94,
+                        "kind": 2,
+                        "rawValue": "\"age\""
+                      },
+                      "value": "age"
+                    },
+                    "value": {
+                      "nodeType": "Scalar_Int",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 41,
+                        "startFilePos": 99,
+                        "endLine": 2,
+                        "endTokenPos": 41,
+                        "endFilePos": 100,
+                        "rawValue": "25",
+                        "kind": 10
+                      },
+                      "value": 25
+                    },
+                    "byRef": false,
+                    "unpack": false
+                  },
+                  {
+                    "nodeType": "ArrayItem",
+                    "attributes": {
+                      "startLine": 2,
+                      "startTokenPos": 44,
+                      "startFilePos": 103,
+                      "endLine": 2,
+                      "endTokenPos": 48,
+                      "endFilePos": 123
+                    },
+                    "key": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 44,
+                        "startFilePos": 103,
+                        "endLine": 2,
+                        "endTokenPos": 44,
+                        "endFilePos": 110,
+                        "kind": 2,
+                        "rawValue": "\"status\""
+                      },
+                      "value": "status"
+                    },
+                    "value": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 48,
+                        "startFilePos": 115,
+                        "endLine": 2,
+                        "endTokenPos": 48,
+                        "endFilePos": 123,
+                        "kind": 2,
+                        "rawValue": "\"unknown\""
+                      },
+                      "value": "unknown"
+                    },
+                    "byRef": false,
+                    "unpack": false
+                  }
+                ]
+              },
+              "byRef": false,
+              "unpack": false
+            },
+            {
+              "nodeType": "ArrayItem",
+              "attributes": {
+                "startLine": 2,
+                "startTokenPos": 52,
+                "startFilePos": 127,
+                "endLine": 2,
+                "endTokenPos": 72,
+                "endFilePos": 183
+              },
+              "key": null,
+              "value": {
+                "nodeType": "Expr_Array",
+                "attributes": {
+                  "startLine": 2,
+                  "startTokenPos": 52,
+                  "startFilePos": 127,
+                  "endLine": 2,
+                  "endTokenPos": 72,
+                  "endFilePos": 183,
+                  "kind": 2
+                },
+                "items": [
+                  {
+                    "nodeType": "ArrayItem",
+                    "attributes": {
+                      "startLine": 2,
+                      "startTokenPos": 53,
+                      "startFilePos": 128,
+                      "endLine": 2,
+                      "endTokenPos": 57,
+                      "endFilePos": 146
+                    },
+                    "key": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 53,
+                        "startFilePos": 128,
+                        "endLine": 2,
+                        "endTokenPos": 53,
+                        "endFilePos": 133,
+                        "kind": 2,
+                        "rawValue": "\"name\""
+                      },
+                      "value": "name"
+                    },
+                    "value": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 57,
+                        "startFilePos": 138,
+                        "endLine": 2,
+                        "endTokenPos": 57,
+                        "endFilePos": 146,
+                        "kind": 2,
+                        "rawValue": "\"Charlie\""
+                      },
+                      "value": "Charlie"
+                    },
+                    "byRef": false,
+                    "unpack": false
+                  },
+                  {
+                    "nodeType": "ArrayItem",
+                    "attributes": {
+                      "startLine": 2,
+                      "startTokenPos": 60,
+                      "startFilePos": 149,
+                      "endLine": 2,
+                      "endTokenPos": 64,
+                      "endFilePos": 159
+                    },
+                    "key": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 60,
+                        "startFilePos": 149,
+                        "endLine": 2,
+                        "endTokenPos": 60,
+                        "endFilePos": 153,
+                        "kind": 2,
+                        "rawValue": "\"age\""
+                      },
+                      "value": "age"
+                    },
+                    "value": {
+                      "nodeType": "Scalar_Int",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 64,
+                        "startFilePos": 158,
+                        "endLine": 2,
+                        "endTokenPos": 64,
+                        "endFilePos": 159,
+                        "rawValue": "18",
+                        "kind": 10
+                      },
+                      "value": 18
+                    },
+                    "byRef": false,
+                    "unpack": false
+                  },
+                  {
+                    "nodeType": "ArrayItem",
+                    "attributes": {
+                      "startLine": 2,
+                      "startTokenPos": 67,
+                      "startFilePos": 162,
+                      "endLine": 2,
+                      "endTokenPos": 71,
+                      "endFilePos": 182
+                    },
+                    "key": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 67,
+                        "startFilePos": 162,
+                        "endLine": 2,
+                        "endTokenPos": 67,
+                        "endFilePos": 169,
+                        "kind": 2,
+                        "rawValue": "\"status\""
+                      },
+                      "value": "status"
+                    },
+                    "value": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 71,
+                        "startFilePos": 174,
+                        "endLine": 2,
+                        "endTokenPos": 71,
+                        "endFilePos": 182,
+                        "kind": 2,
+                        "rawValue": "\"unknown\""
+                      },
+                      "value": "unknown"
+                    },
+                    "byRef": false,
+                    "unpack": false
+                  }
+                ]
+              },
+              "byRef": false,
+              "unpack": false
+            },
+            {
+              "nodeType": "ArrayItem",
+              "attributes": {
+                "startLine": 2,
+                "startTokenPos": 75,
+                "startFilePos": 186,
+                "endLine": 2,
+                "endTokenPos": 95,
+                "endFilePos": 238
+              },
+              "key": null,
+              "value": {
+                "nodeType": "Expr_Array",
+                "attributes": {
+                  "startLine": 2,
+                  "startTokenPos": 75,
+                  "startFilePos": 186,
+                  "endLine": 2,
+                  "endTokenPos": 95,
+                  "endFilePos": 238,
+                  "kind": 2
+                },
+                "items": [
+                  {
+                    "nodeType": "ArrayItem",
+                    "attributes": {
+                      "startLine": 2,
+                      "startTokenPos": 76,
+                      "startFilePos": 187,
+                      "endLine": 2,
+                      "endTokenPos": 80,
+                      "endFilePos": 203
+                    },
+                    "key": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 76,
+                        "startFilePos": 187,
+                        "endLine": 2,
+                        "endTokenPos": 76,
+                        "endFilePos": 192,
+                        "kind": 2,
+                        "rawValue": "\"name\""
+                      },
+                      "value": "name"
+                    },
+                    "value": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 80,
+                        "startFilePos": 197,
+                        "endLine": 2,
+                        "endTokenPos": 80,
+                        "endFilePos": 203,
+                        "kind": 2,
+                        "rawValue": "\"Diana\""
+                      },
+                      "value": "Diana"
+                    },
+                    "byRef": false,
+                    "unpack": false
+                  },
+                  {
+                    "nodeType": "ArrayItem",
+                    "attributes": {
+                      "startLine": 2,
+                      "startTokenPos": 83,
+                      "startFilePos": 206,
+                      "endLine": 2,
+                      "endTokenPos": 87,
+                      "endFilePos": 216
+                    },
+                    "key": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 83,
+                        "startFilePos": 206,
+                        "endLine": 2,
+                        "endTokenPos": 83,
+                        "endFilePos": 210,
+                        "kind": 2,
+                        "rawValue": "\"age\""
+                      },
+                      "value": "age"
+                    },
+                    "value": {
+                      "nodeType": "Scalar_Int",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 87,
+                        "startFilePos": 215,
+                        "endLine": 2,
+                        "endTokenPos": 87,
+                        "endFilePos": 216,
+                        "rawValue": "16",
+                        "kind": 10
+                      },
+                      "value": 16
+                    },
+                    "byRef": false,
+                    "unpack": false
+                  },
+                  {
+                    "nodeType": "ArrayItem",
+                    "attributes": {
+                      "startLine": 2,
+                      "startTokenPos": 90,
+                      "startFilePos": 219,
+                      "endLine": 2,
+                      "endTokenPos": 94,
+                      "endFilePos": 237
+                    },
+                    "key": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 90,
+                        "startFilePos": 219,
+                        "endLine": 2,
+                        "endTokenPos": 90,
+                        "endFilePos": 226,
+                        "kind": 2,
+                        "rawValue": "\"status\""
+                      },
+                      "value": "status"
+                    },
+                    "value": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 94,
+                        "startFilePos": 231,
+                        "endLine": 2,
+                        "endTokenPos": 94,
+                        "endFilePos": 237,
+                        "kind": 2,
+                        "rawValue": "\"minor\""
+                      },
+                      "value": "minor"
+                    },
+                    "byRef": false,
+                    "unpack": false
+                  }
+                ]
+              },
+              "byRef": false,
+              "unpack": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "nodeType": "Stmt_Foreach",
+      "attributes": {
+        "startLine": 3,
+        "startTokenPos": 99,
+        "startFilePos": 242,
+        "endLine": 9,
+        "endTokenPos": 169,
+        "endFilePos": 404
+      },
+      "expr": {
+        "nodeType": "Expr_Variable",
+        "attributes": {
+          "startLine": 3,
+          "startTokenPos": 102,
+          "startFilePos": 251,
+          "endLine": 3,
+          "endTokenPos": 102,
+          "endFilePos": 257
+        },
+        "name": "people"
+      },
+      "keyVar": {
+        "nodeType": "Expr_Variable",
+        "attributes": {
+          "startLine": 3,
+          "startTokenPos": 106,
+          "startFilePos": 262,
+          "endLine": 3,
+          "endTokenPos": 106,
+          "endFilePos": 265
+        },
+        "name": "idx"
+      },
+      "byRef": false,
+      "valueVar": {
+        "nodeType": "Expr_Variable",
+        "attributes": {
+          "startLine": 3,
+          "startTokenPos": 110,
+          "startFilePos": 270,
+          "endLine": 3,
+          "endTokenPos": 110,
+          "endFilePos": 274
+        },
+        "name": "item"
+      },
+      "stmts": [
+        {
+          "nodeType": "Stmt_If",
+          "attributes": {
+            "startLine": 4,
+            "startTokenPos": 115,
+            "startFilePos": 281,
+            "endLine": 7,
+            "endTokenPos": 157,
+            "endFilePos": 377
+          },
+          "cond": {
+            "nodeType": "Expr_BinaryOp_GreaterOrEqual",
+            "attributes": {
+              "startLine": 4,
+              "startTokenPos": 118,
+              "startFilePos": 285,
+              "endLine": 4,
+              "endTokenPos": 125,
+              "endFilePos": 302
+            },
+            "left": {
+              "nodeType": "Expr_ArrayDimFetch",
+              "attributes": {
+                "startLine": 4,
+                "startTokenPos": 118,
+                "startFilePos": 285,
+                "endLine": 4,
+                "endTokenPos": 121,
+                "endFilePos": 296
+              },
+              "var": {
+                "nodeType": "Expr_Variable",
+                "attributes": {
+                  "startLine": 4,
+                  "startTokenPos": 118,
+                  "startFilePos": 285,
+                  "endLine": 4,
+                  "endTokenPos": 118,
+                  "endFilePos": 289
+                },
+                "name": "item"
+              },
+              "dim": {
+                "nodeType": "Scalar_String",
+                "attributes": {
+                  "startLine": 4,
+                  "startTokenPos": 120,
+                  "startFilePos": 291,
+                  "endLine": 4,
+                  "endTokenPos": 120,
+                  "endFilePos": 295,
+                  "kind": 2,
+                  "rawValue": "\"age\""
+                },
+                "value": "age"
+              }
+            },
+            "right": {
+              "nodeType": "Scalar_Int",
+              "attributes": {
+                "startLine": 4,
+                "startTokenPos": 125,
+                "startFilePos": 301,
+                "endLine": 4,
+                "endTokenPos": 125,
+                "endFilePos": 302,
+                "rawValue": "18",
+                "kind": 10
+              },
+              "value": 18
+            }
+          },
+          "stmts": [
+            {
+              "nodeType": "Stmt_Expression",
+              "attributes": {
+                "startLine": 5,
+                "startTokenPos": 130,
+                "startFilePos": 311,
+                "endLine": 5,
+                "endTokenPos": 138,
+                "endFilePos": 336
+              },
+              "expr": {
+                "nodeType": "Expr_Assign",
+                "attributes": {
+                  "startLine": 5,
+                  "startTokenPos": 130,
+                  "startFilePos": 311,
+                  "endLine": 5,
+                  "endTokenPos": 137,
+                  "endFilePos": 335
+                },
+                "var": {
+                  "nodeType": "Expr_ArrayDimFetch",
+                  "attributes": {
+                    "startLine": 5,
+                    "startTokenPos": 130,
+                    "startFilePos": 311,
+                    "endLine": 5,
+                    "endTokenPos": 133,
+                    "endFilePos": 325
+                  },
+                  "var": {
+                    "nodeType": "Expr_Variable",
+                    "attributes": {
+                      "startLine": 5,
+                      "startTokenPos": 130,
+                      "startFilePos": 311,
+                      "endLine": 5,
+                      "endTokenPos": 130,
+                      "endFilePos": 315
+                    },
+                    "name": "item"
+                  },
+                  "dim": {
+                    "nodeType": "Scalar_String",
+                    "attributes": {
+                      "startLine": 5,
+                      "startTokenPos": 132,
+                      "startFilePos": 317,
+                      "endLine": 5,
+                      "endTokenPos": 132,
+                      "endFilePos": 324,
+                      "kind": 1,
+                      "rawValue": "'status'"
+                    },
+                    "value": "status"
+                  }
+                },
+                "expr": {
+                  "nodeType": "Scalar_String",
+                  "attributes": {
+                    "startLine": 5,
+                    "startTokenPos": 137,
+                    "startFilePos": 329,
+                    "endLine": 5,
+                    "endTokenPos": 137,
+                    "endFilePos": 335,
+                    "kind": 2,
+                    "rawValue": "\"adult\""
+                  },
+                  "value": "adult"
+                }
+              }
+            },
+            {
+              "nodeType": "Stmt_Expression",
+              "attributes": {
+                "startLine": 6,
+                "startTokenPos": 140,
+                "startFilePos": 342,
+                "endLine": 6,
+                "endTokenPos": 155,
+                "endFilePos": 373
+              },
+              "expr": {
+                "nodeType": "Expr_Assign",
+                "attributes": {
+                  "startLine": 6,
+                  "startTokenPos": 140,
+                  "startFilePos": 342,
+                  "endLine": 6,
+                  "endTokenPos": 154,
+                  "endFilePos": 372
+                },
+                "var": {
+                  "nodeType": "Expr_ArrayDimFetch",
+                  "attributes": {
+                    "startLine": 6,
+                    "startTokenPos": 140,
+                    "startFilePos": 342,
+                    "endLine": 6,
+                    "endTokenPos": 143,
+                    "endFilePos": 353
+                  },
+                  "var": {
+                    "nodeType": "Expr_Variable",
+                    "attributes": {
+                      "startLine": 6,
+                      "startTokenPos": 140,
+                      "startFilePos": 342,
+                      "endLine": 6,
+                      "endTokenPos": 140,
+                      "endFilePos": 346
+                    },
+                    "name": "item"
+                  },
+                  "dim": {
+                    "nodeType": "Scalar_String",
+                    "attributes": {
+                      "startLine": 6,
+                      "startTokenPos": 142,
+                      "startFilePos": 348,
+                      "endLine": 6,
+                      "endTokenPos": 142,
+                      "endFilePos": 352,
+                      "kind": 1,
+                      "rawValue": "'age'"
+                    },
+                    "value": "age"
+                  }
+                },
+                "expr": {
+                  "nodeType": "Expr_BinaryOp_Plus",
+                  "attributes": {
+                    "startLine": 6,
+                    "startTokenPos": 147,
+                    "startFilePos": 357,
+                    "endLine": 6,
+                    "endTokenPos": 154,
+                    "endFilePos": 372
+                  },
+                  "left": {
+                    "nodeType": "Expr_ArrayDimFetch",
+                    "attributes": {
+                      "startLine": 6,
+                      "startTokenPos": 147,
+                      "startFilePos": 357,
+                      "endLine": 6,
+                      "endTokenPos": 150,
+                      "endFilePos": 368
+                    },
+                    "var": {
+                      "nodeType": "Expr_Variable",
+                      "attributes": {
+                        "startLine": 6,
+                        "startTokenPos": 147,
+                        "startFilePos": 357,
+                        "endLine": 6,
+                        "endTokenPos": 147,
+                        "endFilePos": 361
+                      },
+                      "name": "item"
+                    },
+                    "dim": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 6,
+                        "startTokenPos": 149,
+                        "startFilePos": 363,
+                        "endLine": 6,
+                        "endTokenPos": 149,
+                        "endFilePos": 367,
+                        "kind": 2,
+                        "rawValue": "\"age\""
+                      },
+                      "value": "age"
+                    }
+                  },
+                  "right": {
+                    "nodeType": "Scalar_Int",
+                    "attributes": {
+                      "startLine": 6,
+                      "startTokenPos": 154,
+                      "startFilePos": 372,
+                      "endLine": 6,
+                      "endTokenPos": 154,
+                      "endFilePos": 372,
+                      "rawValue": "1",
+                      "kind": 10
+                    },
+                    "value": 1
+                  }
+                }
+              }
+            }
+          ],
+          "elseifs": [],
+          "else": null
+        },
+        {
+          "nodeType": "Stmt_Expression",
+          "attributes": {
+            "startLine": 8,
+            "startTokenPos": 159,
+            "startFilePos": 381,
+            "endLine": 8,
+            "endTokenPos": 167,
+            "endFilePos": 402
+          },
+          "expr": {
+            "nodeType": "Expr_Assign",
+            "attributes": {
+              "startLine": 8,
+              "startTokenPos": 159,
+              "startFilePos": 381,
+              "endLine": 8,
+              "endTokenPos": 166,
+              "endFilePos": 401
+            },
+            "var": {
+              "nodeType": "Expr_ArrayDimFetch",
+              "attributes": {
+                "startLine": 8,
+                "startTokenPos": 159,
+                "startFilePos": 381,
+                "endLine": 8,
+                "endTokenPos": 162,
+                "endFilePos": 393
+              },
+              "var": {
+                "nodeType": "Expr_Variable",
+                "attributes": {
+                  "startLine": 8,
+                  "startTokenPos": 159,
+                  "startFilePos": 381,
+                  "endLine": 8,
+                  "endTokenPos": 159,
+                  "endFilePos": 387
+                },
+                "name": "people"
+              },
+              "dim": {
+                "nodeType": "Expr_Variable",
+                "attributes": {
+                  "startLine": 8,
+                  "startTokenPos": 161,
+                  "startFilePos": 389,
+                  "endLine": 8,
+                  "endTokenPos": 161,
+                  "endFilePos": 392
+                },
+                "name": "idx"
+              }
+            },
+            "expr": {
+              "nodeType": "Expr_Variable",
+              "attributes": {
+                "startLine": 8,
+                "startTokenPos": 166,
+                "startFilePos": 397,
+                "endLine": 8,
+                "endTokenPos": 166,
+                "endFilePos": 401
+              },
+              "name": "item"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "nodeType": "Stmt_Echo",
+      "attributes": {
+        "startLine": 10,
+        "startTokenPos": 172,
+        "startFilePos": 407,
+        "endLine": 10,
+        "endTokenPos": 178,
+        "endFilePos": 425
+      },
+      "exprs": [
+        {
+          "nodeType": "Scalar_String",
+          "attributes": {
+            "startLine": 10,
+            "startTokenPos": 174,
+            "startFilePos": 412,
+            "endLine": 10,
+            "endTokenPos": 174,
+            "endFilePos": 415,
+            "kind": 2,
+            "rawValue": "\"ok\""
+          },
+          "value": "ok"
+        },
+        {
+          "nodeType": "Expr_ConstFetch",
+          "attributes": {
+            "startLine": 10,
+            "startTokenPos": 177,
+            "startFilePos": 418,
+            "endLine": 10,
+            "endTokenPos": 177,
+            "endFilePos": 424
+          },
+          "name": {
+            "nodeType": "Name",
+            "attributes": {
+              "startLine": 10,
+              "startTokenPos": 177,
+              "startFilePos": 418,
+              "endLine": 10,
+              "endTokenPos": 177,
+              "endFilePos": 424
+            },
+            "name": "PHP_EOL"
+          }
+        }
+      ]
+    }
+  ]
+}
