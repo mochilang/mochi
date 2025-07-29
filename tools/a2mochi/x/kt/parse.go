@@ -345,6 +345,41 @@ func parseNaive(src string) (*Program, error) {
 						nodes = append(nodes, Node{Kind: "type", Name: name, Fields: fields})
 					}
 				}
+			} else if strings.HasPrefix(trimmed, "class ") || strings.HasPrefix(trimmed, "sealed class ") || strings.HasPrefix(trimmed, "enum class ") {
+				rest := trimmed
+				switch {
+				case strings.HasPrefix(rest, "sealed class "):
+					rest = strings.TrimPrefix(rest, "sealed class ")
+				case strings.HasPrefix(rest, "enum class "):
+					rest = strings.TrimPrefix(rest, "enum class ")
+				default:
+					rest = strings.TrimPrefix(rest, "class ")
+				}
+				if open := strings.Index(rest, "("); open != -1 {
+					name := strings.TrimSpace(rest[:open])
+					if close := strings.Index(rest, ")"); close != -1 {
+						fieldsPart := rest[open+1 : close]
+						var fields []Field
+						for _, p := range splitParams(fieldsPart) {
+							p = strings.TrimSpace(p)
+							p = strings.TrimPrefix(p, "val ")
+							p = strings.TrimPrefix(p, "var ")
+							kv := strings.SplitN(p, ":", 2)
+							if len(kv) == 2 {
+								fields = append(fields, Field{Name: strings.TrimSpace(kv[0]), Typ: strings.TrimSpace(kv[1])})
+							}
+						}
+						nodes = append(nodes, Node{Kind: "type", Name: name, Fields: fields})
+					} else {
+						nodes = append(nodes, Node{Kind: "type", Name: strings.TrimSpace(rest)})
+					}
+				} else {
+					name := strings.TrimSpace(rest)
+					if idx := strings.IndexAny(name, " {:"); idx != -1 {
+						name = name[:idx]
+					}
+					nodes = append(nodes, Node{Kind: "type", Name: name})
+				}
 			} else if strings.HasPrefix(trimmed, "interface ") || strings.HasPrefix(trimmed, "sealed interface ") {
 				name := strings.TrimSpace(strings.TrimPrefix(strings.TrimPrefix(trimmed, "sealed interface "), "interface "))
 				if idx := strings.IndexAny(name, " {:"); idx != -1 {
