@@ -17,6 +17,8 @@ func Print(n *ast.Node) (string, error) {
 	}
 	var b strings.Builder
 	b.Write(meta.Header("//"))
-	b.WriteString(n.Source())
+	if err := ast.Fprint(&b, n); err != nil {
+		return "", err
+	}
 	return b.String(), nil
 }
