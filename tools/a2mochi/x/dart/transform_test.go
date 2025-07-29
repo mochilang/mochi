@@ -141,17 +141,21 @@ func TestTransform_Golden(t *testing.T) {
 		t.Fatalf("no files: %s", pattern)
 	}
 
-	allowed := map[string]bool{
-		"append_builtin":     true,
-		"binary_precedence":  true,
-		"break_continue":     true,
-		"cast_string_to_int": true,
-		"exists_builtin":     true,
-		"let_and_print":      true,
-		"list_index":         true,
-		"map_int_key":        true,
-		"print_hello":        true,
-		"string_concat":      true,
+        allowed := map[string]bool{
+                "append_builtin":     true,
+                "avg_builtin":        true,
+                "binary_precedence":  true,
+                "break_continue":     true,
+                "cast_string_to_int": true,
+                "exists_builtin":     true,
+                "for_list_collection": true,
+                "for_loop":          true,
+                "let_and_print":      true,
+                "len_builtin":        true,
+                "list_index":         true,
+                "map_int_key":        true,
+                "print_hello":        true,
+                "string_concat":      true,
 		"string_contains":    true,
 		"string_in_operator": true,
 		"string_index":       true,

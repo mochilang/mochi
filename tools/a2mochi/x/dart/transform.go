@@ -218,13 +218,13 @@ func convertBodyLine(s string) string {
 	s = convertTernaryPrint(s)
 	s = convertTernary(s)
 	s = convertIsEmpty(s)
-	s = convertAvg(s)
-	s = convertSpread(s)
-	s = convertReduce(s)
-	s = convertAny(s)
-	s = convertJoinPrint(s)
-	s = convertLength(s)
-	return convertQuotes(s)
+        s = convertSpread(s)
+        s = convertReduce(s)
+        s = convertLength(s)
+        s = convertAvg(s)
+        s = convertAny(s)
+        s = convertJoinPrint(s)
+        return convertQuotes(s)
 }
 
 // TestConvert exposes convertBodyLine for tests and debugging.
@@ -251,7 +251,7 @@ func convertTernaryPrint(s string) string {
 	return s
 }
 
-var printTernaryRe = regexp.MustCompile(`^\s*print\(([^?]+)\?\s*([^:]+)\s*:\s*([^)]*)\)$`)
+var printTernaryRe = regexp.MustCompile(`^\s*print\(([^?]+)\?\s*([^:]+)\s*:\s*(.*)\)$`)
 
 var ternaryRe = regexp.MustCompile(`([^?]+)\?\s*([^:]+)\s*:\s*(.+)`)
 
@@ -262,7 +262,7 @@ func convertTernary(s string) string {
 	return s
 }
 
-var isEmptyRe = regexp.MustCompile(`([^\s]+)\.isEmpty`)
+var isEmptyRe = regexp.MustCompile(`((?:\[[^\]]+\]|[^\s]+))\.isEmpty`)
 
 func convertIsEmpty(s string) string {
 	return isEmptyRe.ReplaceAllString(s, "len($1) == 0")
@@ -291,13 +291,13 @@ func convertSpread(s string) string {
 
 var spreadPrintRe = regexp.MustCompile(`^\s*print\("\[" \+ append\(([^,]+),\s*([^\)]+)\)\.join\((?:"|')[, ]*(?:"|')\) \+ "\]"\)$`)
 
-var lengthRe = regexp.MustCompile(`([A-Za-z0-9_\]\)]+)\.length`)
+var lengthRe = regexp.MustCompile(`((?:[A-Za-z_][A-Za-z0-9_]*|\[[^\]]+\]))\.length`)
 
 func convertLength(s string) string {
 	return lengthRe.ReplaceAllString(s, "len($1)")
 }
 
-var reduceSumRe = regexp.MustCompile(`([^\s]+)\.reduce\(\([^)]*\)\s*=>\s*[^+]+\+[^)]+\)`)
+var reduceSumRe = regexp.MustCompile(`((?:\[[^\]]+\]|[^\s]+))\.reduce\((?:fun)?\([^)]*\)\s*=>\s*[^+]+\+[^)]+\)`)
 
 func convertReduce(s string) string {
 	return reduceSumRe.ReplaceAllString(s, "sum($1)")
