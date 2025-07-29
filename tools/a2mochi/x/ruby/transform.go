@@ -35,15 +35,32 @@ func convertNode(n Node, level int, out *[]string) {
 					return
 				}
 				arg := exprString(argNode)
-				if strings.Contains(arg, ".join") {
-					start := strings.Index(arg, "[")
-					end := strings.Index(arg, "]")
-					if start == 0 && end > start {
-						elems := strings.Split(arg[start+1:end], ",")
-						for i, e := range elems {
-							elems[i] = strings.TrimSpace(e)
+				if idx := strings.Index(arg, ".join"); idx != -1 {
+					pre := strings.TrimSpace(arg[:idx])
+					if strings.HasPrefix(pre, "(") && strings.HasSuffix(pre, ")") {
+						pre = strings.TrimSuffix(strings.TrimPrefix(pre, "("), ")")
+					}
+					var parts []string
+					var b strings.Builder
+					inQuote := false
+					for _, r := range pre {
+						if r == '"' {
+							inQuote = !inQuote
 						}
-						*out = append(*out, idt+"print("+strings.Join(elems, ", ")+")")
+						if r == ' ' && !inQuote {
+							if b.Len() > 0 {
+								parts = append(parts, b.String())
+								b.Reset()
+							}
+							continue
+						}
+						b.WriteRune(r)
+					}
+					if b.Len() > 0 {
+						parts = append(parts, b.String())
+					}
+					if len(parts) > 0 {
+						*out = append(*out, idt+"print("+strings.Join(parts, ", ")+")")
 						return
 					}
 				}
@@ -89,7 +106,13 @@ func convertNode(n Node, level int, out *[]string) {
 		*out = append(*out, idt+"}")
 	case "return", "break", "next":
 		expr := exprString(n)
-		if n.Type == "next" {
+		if expr == "" {
+			if n.Type == "next" {
+				expr = "continue"
+			} else {
+				expr = n.Type
+			}
+		} else if n.Type == "next" {
 			expr = strings.Replace(expr, "next", "continue", 1)
 		}
 		*out = append(*out, idt+expr)

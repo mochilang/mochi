@@ -1,6 +1,2 @@
-(program
-  (var s (string mochi))
-  (call print
-    (index (selector s) (int 1))
-  )
-)
+var s = "mochi"
+print(s[1])

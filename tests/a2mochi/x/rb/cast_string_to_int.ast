@@ -1,5 +1,1 @@
-(program
-  (call print
-    (call int (string 1995))
-  )
-)
+print("1995")

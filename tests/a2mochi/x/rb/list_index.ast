@@ -1,8 +1,2 @@
-(program
-  (var xs
-    (list (int 10) (int 20) (int 30))
-  )
-  (call print
-    (index (selector xs) (int 1))
-  )
-)
+var xs = [10, 20, 30]
+print(xs[1])
