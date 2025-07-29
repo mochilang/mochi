@@ -352,6 +352,9 @@ func emitImport(b *strings.Builder, n *Node, lines []string, imports map[string]
 			alias = strings.TrimSpace(parts[1])
 		}
 		key := module + ":" + alias
+		if module == "json" {
+			return nil
+		}
 		if imports[key] {
 			return nil
 		}
@@ -868,8 +871,24 @@ func emitExpr(b *strings.Builder, n *Node, lines []string, structs map[string][]
 			}
 		}
 		if fn != nil && fn.Type == "Name" && fn.ID == "print" {
-			b.WriteString("print(")
 			args := n.callArgs()
+			if len(args) == 1 {
+				call := args[0]
+				if call.Type == "Call" && call.Func != nil && call.Func.Type == "Attribute" && call.Func.Attr == "dumps" {
+					if v := call.Func.valueNode(); v != nil && v.Type == "Name" && v.ID == "json" {
+						argList := call.callArgs()
+						if len(argList) > 0 {
+							b.WriteString("json(")
+							if err := emitExpr(b, argList[0], lines, structs); err != nil {
+								return err
+							}
+							b.WriteByte(')')
+							return nil
+						}
+					}
+				}
+			}
+			b.WriteString("print(")
 			for i, a := range args {
 				if i > 0 {
 					b.WriteString(", ")
@@ -880,6 +899,19 @@ func emitExpr(b *strings.Builder, n *Node, lines []string, structs map[string][]
 			}
 			b.WriteString(")")
 			return nil
+		}
+		if fn != nil && fn.Type == "Attribute" && fn.Attr == "dumps" {
+			if v := fn.valueNode(); v != nil && v.Type == "Name" && v.ID == "json" {
+				args := n.callArgs()
+				if len(args) > 0 {
+					b.WriteString("json(")
+					if err := emitExpr(b, args[0], lines, structs); err != nil {
+						return err
+					}
+					b.WriteByte(')')
+					return nil
+				}
+			}
 		}
 		if fn != nil && fn.Type == "Name" {
 			if fn.ID == "list" {
