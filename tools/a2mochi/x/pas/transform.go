@@ -96,16 +96,18 @@ func convertExpr(s string) string {
 	s = convertStringLits(s)
 	s = convertStringIndex(s)
 	s = convertRecordLit(s)
+	s = stripFormatSpec(s)
 	return s
 }
 
 var (
-	highRe      = regexp.MustCompile(`High\(([^\)]+)\)`)
-	copyRe      = regexp.MustCompile(`copy\(([^,]+),\s*([^,]+),\s*([^\)]+)\)`)
-	posRe       = regexp.MustCompile(`Pos\(([^,]+),\s*([^\)]+)\)`)
-	posCmpRe    = regexp.MustCompile(`Pos\(([^,]+),\s*([^\)]+)\)\s*(<>|=)\s*0`)
-	strToIntRe  = regexp.MustCompile(`StrToInt\(([^\)]+)\)`)
-	recordLitRe = regexp.MustCompile(`\(([^()]+:[^()]+)\)`)
+	highRe       = regexp.MustCompile(`High\(([^\)]+)\)`)
+	copyRe       = regexp.MustCompile(`copy\(([^,]+),\s*([^,]+),\s*([^\)]+)\)`)
+	posRe        = regexp.MustCompile(`Pos\(([^,]+),\s*([^\)]+)\)`)
+	posCmpRe     = regexp.MustCompile(`Pos\(([^,]+),\s*([^\)]+)\)\s*(<>|=)\s*0`)
+	strToIntRe   = regexp.MustCompile(`StrToInt\(([^\)]+)\)`)
+	recordLitRe  = regexp.MustCompile(`\(([^()]+:[^()]+)\)`)
+	formatSpecRe = regexp.MustCompile(`:[0-9]+(?::[0-9]+)?`)
 )
 
 func convertBuiltins(s string) string {
@@ -193,6 +195,10 @@ func convertStringIndex(s string) string {
 		}
 		return fmt.Sprintf("%s[%s - 1]", name, inner)
 	})
+}
+
+func stripFormatSpec(s string) string {
+	return formatSpecRe.ReplaceAllString(s, "")
 }
 
 func toMochiType(t string) string {
@@ -426,14 +432,18 @@ func convertFallback(src string) ([]byte, error) {
 				rest := strings.TrimSpace(strings.TrimPrefix(l, "var"))
 				rest = strings.TrimSuffix(rest, ";")
 				if idx := strings.Index(rest, ":"); idx != -1 {
-					name := strings.TrimSpace(rest[:idx])
+					namePart := strings.TrimSpace(rest[:idx])
 					typ := toMochiType(strings.TrimSpace(rest[idx+1:]))
-					if name != "" {
-						line := "var " + name
+					for _, nm := range strings.Split(namePart, ",") {
+						nm = strings.TrimSpace(nm)
+						if nm == "" {
+							continue
+						}
+						line := "var " + nm
 						if typ != "" {
 							line += ": " + typ
 							if typ == "string" {
-								stringVars[name] = true
+								stringVars[nm] = true
 							}
 						}
 						appendLine(line)
@@ -493,9 +503,23 @@ func convertFallback(src string) ([]byte, error) {
 				return addError(i, "bad for")
 			}
 			iterExpr := convertExpr(strings.TrimSpace(rest[:doIdx]))
-			appendLine(fmt.Sprintf("for %s in %s {", varName, iterExpr))
-			loopDepth++
-			waitingBegin = true
+			body := strings.TrimSpace(rest[doIdx+3:])
+			if body != "" && strings.ToLower(body) != "begin" {
+				if strings.HasSuffix(body, ";") {
+					body = strings.TrimSuffix(body, ";")
+				}
+				if strings.Contains(body, ":=") {
+					parts := strings.SplitN(body, ":=", 2)
+					body = strings.TrimSpace(parts[0]) + " = " + convertExpr(strings.TrimSpace(parts[1]))
+				} else {
+					body = convertExpr(body)
+				}
+				appendLine(fmt.Sprintf("for %s in %s { %s }", varName, iterExpr, body))
+			} else {
+				appendLine(fmt.Sprintf("for %s in %s {", varName, iterExpr))
+				loopDepth++
+				waitingBegin = true
+			}
 
 		case strings.HasPrefix(lowerStmt, "for ") && strings.Contains(lowerStmt, " to ") && strings.Contains(lowerStmt, " do"):
 			parts := strings.SplitN(stmt, ":=", 2)
@@ -512,10 +536,29 @@ func convertFallback(src string) ([]byte, error) {
 			rest = rest[toIdx+3:]
 			doIdx := strings.Index(strings.ToLower(rest), " do")
 			endRaw := strings.TrimSpace(rest[:doIdx])
-			endExpr := "(" + convertExpr(endRaw) + ") + 1"
-			appendLine(fmt.Sprintf("for %s in %s..%s {", varName, startExpr, endExpr))
-			loopDepth++
-			waitingBegin = true
+			endExpr := convertExpr(endRaw)
+			if strings.HasSuffix(endExpr, " - 1") {
+				endExpr = strings.TrimSuffix(endExpr, " - 1")
+			} else {
+				endExpr = "(" + endExpr + ") + 1"
+			}
+			body := strings.TrimSpace(rest[doIdx+3:])
+			if body != "" && strings.ToLower(body) != "begin" {
+				if strings.HasSuffix(body, ";") {
+					body = strings.TrimSuffix(body, ";")
+				}
+				if strings.Contains(body, ":=") {
+					parts := strings.SplitN(body, ":=", 2)
+					body = strings.TrimSpace(parts[0]) + " = " + convertExpr(strings.TrimSpace(parts[1]))
+				} else {
+					body = convertExpr(body)
+				}
+				appendLine(fmt.Sprintf("for %s in %s..%s { %s }", varName, startExpr, endExpr, body))
+			} else {
+				appendLine(fmt.Sprintf("for %s in %s..%s {", varName, startExpr, endExpr))
+				loopDepth++
+				waitingBegin = true
+			}
 
 		case strings.HasPrefix(lowerStmt, "while ") && strings.Contains(lowerStmt, " do"):
 			doIdx := strings.LastIndex(lowerStmt, " do")
@@ -565,12 +608,40 @@ func convertFallback(src string) ([]byte, error) {
 				if strings.HasSuffix(rest, ";") {
 					rest = strings.TrimSuffix(rest, ";")
 				}
-				if strings.Contains(rest, ":=") {
-					parts := strings.SplitN(rest, ":=", 2)
-					rest = strings.TrimSpace(parts[0]) + " = " + strings.TrimSpace(parts[1])
+				lowerRest := strings.ToLower(rest)
+				if strings.HasPrefix(lowerRest, "begin ") && strings.HasSuffix(lowerRest, "end") {
+					body := strings.TrimSpace(rest[len("begin"):])
+					body = strings.TrimSuffix(body, "end")
+					body = strings.TrimSuffix(body, ";")
+					var stmts []string
+					for _, part := range strings.Split(body, ";") {
+						p := strings.TrimSpace(part)
+						if p == "" {
+							continue
+						}
+						lowerP := strings.ToLower(p)
+						if strings.HasPrefix(lowerP, "exit(") && strings.HasSuffix(lowerP, ")") {
+							inner := strings.TrimSpace(p[5 : len(p)-1])
+							p = "return " + convertExpr(inner)
+						} else if lowerP == "exit" {
+							p = "return"
+						} else if strings.Contains(p, ":=") {
+							ps := strings.SplitN(p, ":=", 2)
+							p = strings.TrimSpace(ps[0]) + " = " + convertExpr(strings.TrimSpace(ps[1]))
+						} else {
+							p = convertExpr(p)
+						}
+						stmts = append(stmts, p)
+					}
+					appendLine(fmt.Sprintf("if %s { %s }", cond, strings.Join(stmts, "; ")))
+				} else {
+					if strings.Contains(rest, ":=") {
+						parts := strings.SplitN(rest, ":=", 2)
+						rest = strings.TrimSpace(parts[0]) + " = " + strings.TrimSpace(parts[1])
+					}
+					rest = convertExpr(rest)
+					appendLine(fmt.Sprintf("if %s { %s }", cond, rest))
 				}
-				rest = convertExpr(rest)
-				appendLine(fmt.Sprintf("if %s { %s }", cond, rest))
 			}
 
 		case (lowerStmt == "end" || lowerStmt == "end;") && ifDepth > 0:
