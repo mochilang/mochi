@@ -529,6 +529,35 @@ func sanitizeExpr(code string) string {
 		code = code[:loc[0]] + repl + code[loc[1]:]
 	}
 
+	// convert `expr.contains(arg)` to `strings.Contains(expr, arg)`
+	reContains := regexp.MustCompile(`([A-Za-z0-9_]+)\.contains\(([^)]*)\)`)
+	for {
+		loc := reContains.FindStringSubmatchIndex(code)
+		if loc == nil {
+			break
+		}
+		parts := reContains.FindStringSubmatch(code[loc[0]:loc[1]])
+		expr := parts[1]
+		arg := strings.TrimSpace(parts[2])
+		repl := fmt.Sprintf("strings.Contains(%s, %s)", expr, arg)
+		code = code[:loc[0]] + repl + code[loc[1]:]
+	}
+
+	// convert `String::from(&expr[start..end])` to `substring(expr, start, end)`
+	reSubstr := regexp.MustCompile(`String::from\(&?([^\[]+)\[(\d+)\s+as\s+usize\s*\.\.\s*(\d+)\s+as\s+usize\]\)`)
+	for {
+		loc := reSubstr.FindStringSubmatchIndex(code)
+		if loc == nil {
+			break
+		}
+		parts := reSubstr.FindStringSubmatch(code[loc[0]:loc[1]])
+		expr := strings.TrimSpace(parts[1])
+		start := parts[2]
+		end := parts[3]
+		repl := fmt.Sprintf("substring(%s, %s, %s)", expr, start, end)
+		code = code[:loc[0]] + repl + code[loc[1]:]
+	}
+
 	// convert string indexing via chars().nth().unwrap()
 	reCharIndex := regexp.MustCompile(`([A-Za-z0-9_]+)\.chars\(\)\.nth\(([^)]*)\)\.unwrap\(\)`)
 	for {
