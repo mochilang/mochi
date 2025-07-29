@@ -17,8 +17,11 @@ func Print(n *ast.Node) (string, error) {
 	}
 	var b strings.Builder
 	b.Write(transpmeta.Header("//"))
-	code := n.Source()
+	code := strings.TrimSpace(n.Source())
 	code = strings.ReplaceAll(code, "union_all", "union all")
 	b.WriteString(code)
+	if !strings.HasSuffix(code, "\n") {
+		b.WriteByte('\n')
+	}
 	return b.String(), nil
 }
