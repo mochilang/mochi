@@ -3,7 +3,662 @@
     {
       "name": "main",
       "ret": "int",
-      "body": "{\n    struct Adult {const char* name; int age; int is_senior;};\n    Adult adults[4]; size_t adults_len = 0;\n    for(size_t i=0;i\u003c4;i++){ People person=people[i]; if(person.age\u003e=18){ adults[adults_len++] = (Adult){person.name,person.age,person.age\u003e=60}; }}\n    puts(\"--- Adults ---\");\n    for(size_t i=0;i\u003cadults_len;i++){ Adult person=adults[i]; if(person.is_senior){ printf(\"%s is %d  (senior)\\n\", person.name, person.age); } else { printf(\"%s is %d\\n\", person.name, person.age); }}\n    return 0;\n"
+      "body": {
+        "kind": "CompoundStmt",
+        "inner": [
+          {
+            "kind": "DeclStmt",
+            "inner": [
+              {
+                "kind": "RecordDecl",
+                "name": "Adult",
+                "inner": [
+                  {
+                    "kind": "FieldDecl",
+                    "name": "name",
+                    "type": "string"
+                  },
+                  {
+                    "kind": "FieldDecl",
+                    "name": "age",
+                    "type": "int"
+                  },
+                  {
+                    "kind": "FieldDecl",
+                    "name": "is_senior",
+                    "type": "int"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "DeclStmt",
+            "inner": [
+              {
+                "kind": "VarDecl",
+                "name": "adults",
+                "type": "Adult[4]"
+              }
+            ]
+          },
+          {
+            "kind": "DeclStmt",
+            "inner": [
+              {
+                "kind": "VarDecl",
+                "name": "adults_len",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "IntegerLiteral",
+                        "type": "int",
+                        "value": "0"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "ForStmt",
+            "inner": [
+              {
+                "kind": "DeclStmt",
+                "inner": [
+                  {
+                    "kind": "VarDecl",
+                    "name": "i",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "IntegerLiteral",
+                            "type": "int",
+                            "value": "0"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": ""
+              },
+              {
+                "kind": "BinaryOperator",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "DeclRefExpr",
+                        "type": "int"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "IntegerLiteral",
+                        "type": "int",
+                        "value": "4"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "UnaryOperator",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int"
+                  }
+                ]
+              },
+              {
+                "kind": "CompoundStmt",
+                "inner": [
+                  {
+                    "kind": "DeclStmt",
+                    "inner": [
+                      {
+                        "kind": "VarDecl",
+                        "name": "person",
+                        "type": "People",
+                        "inner": [
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "People",
+                            "inner": [
+                              {
+                                "kind": "ArraySubscriptExpr",
+                                "type": "People",
+                                "inner": [
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "People",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "People[4]"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "int"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "IfStmt",
+                    "inner": [
+                      {
+                        "kind": "BinaryOperator",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "MemberExpr",
+                                "name": "age",
+                                "type": "int",
+                                "inner": [
+                                  {
+                                    "kind": "DeclRefExpr",
+                                    "type": "People"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "IntegerLiteral",
+                            "type": "int",
+                            "value": "18"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "CompoundStmt",
+                        "inner": [
+                          {
+                            "kind": "BinaryOperator",
+                            "type": "Adult",
+                            "inner": [
+                              {
+                                "kind": "ArraySubscriptExpr",
+                                "type": "Adult",
+                                "inner": [
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "Adult",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "Adult[4]"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "UnaryOperator",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "int"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "ImplicitCastExpr",
+                                "type": "Adult",
+                                "inner": [
+                                  {
+                                    "kind": "CompoundLiteralExpr",
+                                    "type": "Adult",
+                                    "inner": [
+                                      {
+                                        "kind": "InitListExpr",
+                                        "type": "Adult",
+                                        "inner": [
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "string",
+                                            "inner": [
+                                              {
+                                                "kind": "MemberExpr",
+                                                "name": "name",
+                                                "type": "string",
+                                                "inner": [
+                                                  {
+                                                    "kind": "DeclRefExpr",
+                                                    "type": "People"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "int",
+                                            "inner": [
+                                              {
+                                                "kind": "MemberExpr",
+                                                "name": "age",
+                                                "type": "int",
+                                                "inner": [
+                                                  {
+                                                    "kind": "DeclRefExpr",
+                                                    "type": "People"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "BinaryOperator",
+                                            "type": "int",
+                                            "inner": [
+                                              {
+                                                "kind": "ImplicitCastExpr",
+                                                "type": "int",
+                                                "inner": [
+                                                  {
+                                                    "kind": "MemberExpr",
+                                                    "name": "age",
+                                                    "type": "int",
+                                                    "inner": [
+                                                      {
+                                                        "kind": "DeclRefExpr",
+                                                        "type": "People"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "IntegerLiteral",
+                                                "type": "int",
+                                                "value": "60"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "CallExpr",
+            "type": "int",
+            "inner": [
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "int (*)(const char *)",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int (const char *)"
+                  }
+                ]
+              },
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "string",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "StringLiteral",
+                        "type": "int",
+                        "value": "\"--- Adults ---\""
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "ForStmt",
+            "inner": [
+              {
+                "kind": "DeclStmt",
+                "inner": [
+                  {
+                    "kind": "VarDecl",
+                    "name": "i",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "IntegerLiteral",
+                            "type": "int",
+                            "value": "0"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": ""
+              },
+              {
+                "kind": "BinaryOperator",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "DeclRefExpr",
+                        "type": "int"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "DeclRefExpr",
+                        "type": "int"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "UnaryOperator",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int"
+                  }
+                ]
+              },
+              {
+                "kind": "CompoundStmt",
+                "inner": [
+                  {
+                    "kind": "DeclStmt",
+                    "inner": [
+                      {
+                        "kind": "VarDecl",
+                        "name": "person",
+                        "type": "Adult",
+                        "inner": [
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "Adult",
+                            "inner": [
+                              {
+                                "kind": "ArraySubscriptExpr",
+                                "type": "Adult",
+                                "inner": [
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "Adult",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "Adult[4]"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "int"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "IfStmt",
+                    "inner": [
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "MemberExpr",
+                            "name": "is_senior",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "DeclRefExpr",
+                                "type": "Adult"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "CompoundStmt",
+                        "inner": [
+                          {
+                            "kind": "CallExpr",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "ImplicitCastExpr",
+                                "type": "int (*)(const char *, ...)",
+                                "inner": [
+                                  {
+                                    "kind": "DeclRefExpr",
+                                    "type": "int (const char *, ...)"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "ImplicitCastExpr",
+                                "type": "string",
+                                "inner": [
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "string",
+                                    "inner": [
+                                      {
+                                        "kind": "StringLiteral",
+                                        "type": "int",
+                                        "value": "\"%s is %d  (senior)\\n\""
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "ImplicitCastExpr",
+                                "type": "string",
+                                "inner": [
+                                  {
+                                    "kind": "MemberExpr",
+                                    "name": "name",
+                                    "type": "string",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "Adult"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "ImplicitCastExpr",
+                                "type": "int",
+                                "inner": [
+                                  {
+                                    "kind": "MemberExpr",
+                                    "name": "age",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "Adult"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "CompoundStmt",
+                        "inner": [
+                          {
+                            "kind": "CallExpr",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "ImplicitCastExpr",
+                                "type": "int (*)(const char *, ...)",
+                                "inner": [
+                                  {
+                                    "kind": "DeclRefExpr",
+                                    "type": "int (const char *, ...)"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "ImplicitCastExpr",
+                                "type": "string",
+                                "inner": [
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "string",
+                                    "inner": [
+                                      {
+                                        "kind": "StringLiteral",
+                                        "type": "int",
+                                        "value": "\"%s is %d\\n\""
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "ImplicitCastExpr",
+                                "type": "string",
+                                "inner": [
+                                  {
+                                    "kind": "MemberExpr",
+                                    "name": "name",
+                                    "type": "string",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "Adult"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "ImplicitCastExpr",
+                                "type": "int",
+                                "inner": [
+                                  {
+                                    "kind": "MemberExpr",
+                                    "name": "age",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "Adult"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "ReturnStmt",
+            "inner": [
+              {
+                "kind": "IntegerLiteral",
+                "type": "int",
+                "value": "0"
+              }
+            ]
+          }
+        ]
+      }
     }
   ],
   "structs": [

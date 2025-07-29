@@ -3,7 +3,1478 @@
     {
       "name": "main",
       "ret": "int",
-      "body": "{\n    FilteredItem filtered[12]; size_t filtered_len = 0;\n    for (size_t i=0;i\u003c3;i++){ Partsupp ps = partsupp[i]; for(size_t j=0;j\u003c2;j++){ Suppliers s = suppliers[j]; if(s.id==ps.supplier){ for(size_t k=0;k\u003c2;k++){ Nations n=nations[k]; if(n.id==s.nation \u0026\u0026 strcmp(n.name, \"A\")==0){ filtered[filtered_len++] = (FilteredItem){.part=ps.part,.value=ps.cost*ps.qty}; } } } } }\n    GroupedItem grouped[3]; size_t grouped_len = 0;\n    for(size_t i=0;i\u003cfiltered_len;i++){ FilteredItem x=filtered[i]; int f=0; for(size_t j=0;j\u003cgrouped_len;j++){ if(grouped[j].part==x.part){ grouped[j].total += (int)x.value; f=1; break; } } if(!f){ grouped[grouped_len++] = (GroupedItem){.part=x.part,.total=(int)x.value}; } }\n    for(size_t i=0;i\u003cgrouped_len;i++){ GroupedItem g=grouped[i]; printf(\"{\\\"part\\\": %d, \\\"total\\\": %d}%s\", g.part, g.total, i+1\u003cgrouped_len?\" \":\"\"); }\n    puts(\"\");\n    return 0;\n"
+      "body": {
+        "kind": "CompoundStmt",
+        "inner": [
+          {
+            "kind": "DeclStmt",
+            "inner": [
+              {
+                "kind": "VarDecl",
+                "name": "filtered",
+                "type": "FilteredItem[12]"
+              }
+            ]
+          },
+          {
+            "kind": "DeclStmt",
+            "inner": [
+              {
+                "kind": "VarDecl",
+                "name": "filtered_len",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "IntegerLiteral",
+                        "type": "int",
+                        "value": "0"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "ForStmt",
+            "inner": [
+              {
+                "kind": "DeclStmt",
+                "inner": [
+                  {
+                    "kind": "VarDecl",
+                    "name": "i",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "IntegerLiteral",
+                            "type": "int",
+                            "value": "0"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": ""
+              },
+              {
+                "kind": "BinaryOperator",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "DeclRefExpr",
+                        "type": "int"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "IntegerLiteral",
+                        "type": "int",
+                        "value": "3"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "UnaryOperator",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int"
+                  }
+                ]
+              },
+              {
+                "kind": "CompoundStmt",
+                "inner": [
+                  {
+                    "kind": "DeclStmt",
+                    "inner": [
+                      {
+                        "kind": "VarDecl",
+                        "name": "ps",
+                        "type": "Partsupp",
+                        "inner": [
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "Partsupp",
+                            "inner": [
+                              {
+                                "kind": "ArraySubscriptExpr",
+                                "type": "Partsupp",
+                                "inner": [
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "Partsupp",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "Partsupp[3]"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "int"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "ForStmt",
+                    "inner": [
+                      {
+                        "kind": "DeclStmt",
+                        "inner": [
+                          {
+                            "kind": "VarDecl",
+                            "name": "j",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "ImplicitCastExpr",
+                                "type": "int",
+                                "inner": [
+                                  {
+                                    "kind": "IntegerLiteral",
+                                    "type": "int",
+                                    "value": "0"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": ""
+                      },
+                      {
+                        "kind": "BinaryOperator",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "DeclRefExpr",
+                                "type": "int"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "IntegerLiteral",
+                                "type": "int",
+                                "value": "2"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "UnaryOperator",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "DeclRefExpr",
+                            "type": "int"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "CompoundStmt",
+                        "inner": [
+                          {
+                            "kind": "DeclStmt",
+                            "inner": [
+                              {
+                                "kind": "VarDecl",
+                                "name": "s",
+                                "type": "Suppliers",
+                                "inner": [
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "Suppliers",
+                                    "inner": [
+                                      {
+                                        "kind": "ArraySubscriptExpr",
+                                        "type": "Suppliers",
+                                        "inner": [
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "Suppliers",
+                                            "inner": [
+                                              {
+                                                "kind": "DeclRefExpr",
+                                                "type": "Suppliers[2]"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "int",
+                                            "inner": [
+                                              {
+                                                "kind": "DeclRefExpr",
+                                                "type": "int"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "IfStmt",
+                            "inner": [
+                              {
+                                "kind": "BinaryOperator",
+                                "type": "int",
+                                "inner": [
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "MemberExpr",
+                                        "name": "id",
+                                        "type": "int",
+                                        "inner": [
+                                          {
+                                            "kind": "DeclRefExpr",
+                                            "type": "Suppliers"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "MemberExpr",
+                                        "name": "supplier",
+                                        "type": "int",
+                                        "inner": [
+                                          {
+                                            "kind": "DeclRefExpr",
+                                            "type": "Partsupp"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "CompoundStmt",
+                                "inner": [
+                                  {
+                                    "kind": "ForStmt",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclStmt",
+                                        "inner": [
+                                          {
+                                            "kind": "VarDecl",
+                                            "name": "k",
+                                            "type": "int",
+                                            "inner": [
+                                              {
+                                                "kind": "ImplicitCastExpr",
+                                                "type": "int",
+                                                "inner": [
+                                                  {
+                                                    "kind": "IntegerLiteral",
+                                                    "type": "int",
+                                                    "value": "0"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": ""
+                                      },
+                                      {
+                                        "kind": "BinaryOperator",
+                                        "type": "int",
+                                        "inner": [
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "int",
+                                            "inner": [
+                                              {
+                                                "kind": "DeclRefExpr",
+                                                "type": "int"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "int",
+                                            "inner": [
+                                              {
+                                                "kind": "IntegerLiteral",
+                                                "type": "int",
+                                                "value": "2"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "UnaryOperator",
+                                        "type": "int",
+                                        "inner": [
+                                          {
+                                            "kind": "DeclRefExpr",
+                                            "type": "int"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "CompoundStmt",
+                                        "inner": [
+                                          {
+                                            "kind": "DeclStmt",
+                                            "inner": [
+                                              {
+                                                "kind": "VarDecl",
+                                                "name": "n",
+                                                "type": "Nations",
+                                                "inner": [
+                                                  {
+                                                    "kind": "ImplicitCastExpr",
+                                                    "type": "Nations",
+                                                    "inner": [
+                                                      {
+                                                        "kind": "ArraySubscriptExpr",
+                                                        "type": "Nations",
+                                                        "inner": [
+                                                          {
+                                                            "kind": "ImplicitCastExpr",
+                                                            "type": "Nations",
+                                                            "inner": [
+                                                              {
+                                                                "kind": "DeclRefExpr",
+                                                                "type": "Nations[2]"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "ImplicitCastExpr",
+                                                            "type": "int",
+                                                            "inner": [
+                                                              {
+                                                                "kind": "DeclRefExpr",
+                                                                "type": "int"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "IfStmt",
+                                            "inner": [
+                                              {
+                                                "kind": "BinaryOperator",
+                                                "type": "int",
+                                                "inner": [
+                                                  {
+                                                    "kind": "BinaryOperator",
+                                                    "type": "int",
+                                                    "inner": [
+                                                      {
+                                                        "kind": "ImplicitCastExpr",
+                                                        "type": "int",
+                                                        "inner": [
+                                                          {
+                                                            "kind": "MemberExpr",
+                                                            "name": "id",
+                                                            "type": "int",
+                                                            "inner": [
+                                                              {
+                                                                "kind": "DeclRefExpr",
+                                                                "type": "Nations"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "ImplicitCastExpr",
+                                                        "type": "int",
+                                                        "inner": [
+                                                          {
+                                                            "kind": "MemberExpr",
+                                                            "name": "nation",
+                                                            "type": "int",
+                                                            "inner": [
+                                                              {
+                                                                "kind": "DeclRefExpr",
+                                                                "type": "Suppliers"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "BinaryOperator",
+                                                    "type": "int",
+                                                    "inner": [
+                                                      {
+                                                        "kind": "CallExpr",
+                                                        "type": "int",
+                                                        "inner": [
+                                                          {
+                                                            "kind": "ImplicitCastExpr",
+                                                            "type": "int (*)(const char *, const char *)",
+                                                            "inner": [
+                                                              {
+                                                                "kind": "DeclRefExpr",
+                                                                "type": "int (const char *, const char *)"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "ImplicitCastExpr",
+                                                            "type": "string",
+                                                            "inner": [
+                                                              {
+                                                                "kind": "MemberExpr",
+                                                                "name": "name",
+                                                                "type": "string",
+                                                                "inner": [
+                                                                  {
+                                                                    "kind": "DeclRefExpr",
+                                                                    "type": "Nations"
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "ImplicitCastExpr",
+                                                            "type": "string",
+                                                            "inner": [
+                                                              {
+                                                                "kind": "ImplicitCastExpr",
+                                                                "type": "string",
+                                                                "inner": [
+                                                                  {
+                                                                    "kind": "StringLiteral",
+                                                                    "type": "int",
+                                                                    "value": "\"A\""
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "IntegerLiteral",
+                                                        "type": "int",
+                                                        "value": "0"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "CompoundStmt",
+                                                "inner": [
+                                                  {
+                                                    "kind": "BinaryOperator",
+                                                    "type": "FilteredItem",
+                                                    "inner": [
+                                                      {
+                                                        "kind": "ArraySubscriptExpr",
+                                                        "type": "FilteredItem",
+                                                        "inner": [
+                                                          {
+                                                            "kind": "ImplicitCastExpr",
+                                                            "type": "FilteredItem",
+                                                            "inner": [
+                                                              {
+                                                                "kind": "DeclRefExpr",
+                                                                "type": "FilteredItem[12]"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "UnaryOperator",
+                                                            "type": "int",
+                                                            "inner": [
+                                                              {
+                                                                "kind": "DeclRefExpr",
+                                                                "type": "int"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "ImplicitCastExpr",
+                                                        "type": "FilteredItem",
+                                                        "inner": [
+                                                          {
+                                                            "kind": "CompoundLiteralExpr",
+                                                            "type": "FilteredItem",
+                                                            "inner": [
+                                                              {
+                                                                "kind": "InitListExpr",
+                                                                "type": "FilteredItem",
+                                                                "inner": [
+                                                                  {
+                                                                    "kind": "ImplicitCastExpr",
+                                                                    "type": "int",
+                                                                    "inner": [
+                                                                      {
+                                                                        "kind": "MemberExpr",
+                                                                        "name": "part",
+                                                                        "type": "int",
+                                                                        "inner": [
+                                                                          {
+                                                                            "kind": "DeclRefExpr",
+                                                                            "type": "Partsupp"
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "kind": "BinaryOperator",
+                                                                    "type": "float",
+                                                                    "inner": [
+                                                                      {
+                                                                        "kind": "ImplicitCastExpr",
+                                                                        "type": "float",
+                                                                        "inner": [
+                                                                          {
+                                                                            "kind": "MemberExpr",
+                                                                            "name": "cost",
+                                                                            "type": "float",
+                                                                            "inner": [
+                                                                              {
+                                                                                "kind": "DeclRefExpr",
+                                                                                "type": "Partsupp"
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "kind": "ImplicitCastExpr",
+                                                                        "type": "float",
+                                                                        "inner": [
+                                                                          {
+                                                                            "kind": "ImplicitCastExpr",
+                                                                            "type": "int",
+                                                                            "inner": [
+                                                                              {
+                                                                                "kind": "MemberExpr",
+                                                                                "name": "qty",
+                                                                                "type": "int",
+                                                                                "inner": [
+                                                                                  {
+                                                                                    "kind": "DeclRefExpr",
+                                                                                    "type": "Partsupp"
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "DeclStmt",
+            "inner": [
+              {
+                "kind": "VarDecl",
+                "name": "grouped",
+                "type": "GroupedItem[3]"
+              }
+            ]
+          },
+          {
+            "kind": "DeclStmt",
+            "inner": [
+              {
+                "kind": "VarDecl",
+                "name": "grouped_len",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "IntegerLiteral",
+                        "type": "int",
+                        "value": "0"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "ForStmt",
+            "inner": [
+              {
+                "kind": "DeclStmt",
+                "inner": [
+                  {
+                    "kind": "VarDecl",
+                    "name": "i",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "IntegerLiteral",
+                            "type": "int",
+                            "value": "0"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": ""
+              },
+              {
+                "kind": "BinaryOperator",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "DeclRefExpr",
+                        "type": "int"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "DeclRefExpr",
+                        "type": "int"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "UnaryOperator",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int"
+                  }
+                ]
+              },
+              {
+                "kind": "CompoundStmt",
+                "inner": [
+                  {
+                    "kind": "DeclStmt",
+                    "inner": [
+                      {
+                        "kind": "VarDecl",
+                        "name": "x",
+                        "type": "FilteredItem",
+                        "inner": [
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "FilteredItem",
+                            "inner": [
+                              {
+                                "kind": "ArraySubscriptExpr",
+                                "type": "FilteredItem",
+                                "inner": [
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "FilteredItem",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "FilteredItem[12]"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "int"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "DeclStmt",
+                    "inner": [
+                      {
+                        "kind": "VarDecl",
+                        "name": "f",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "IntegerLiteral",
+                            "type": "int",
+                            "value": "0"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "ForStmt",
+                    "inner": [
+                      {
+                        "kind": "DeclStmt",
+                        "inner": [
+                          {
+                            "kind": "VarDecl",
+                            "name": "j",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "ImplicitCastExpr",
+                                "type": "int",
+                                "inner": [
+                                  {
+                                    "kind": "IntegerLiteral",
+                                    "type": "int",
+                                    "value": "0"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": ""
+                      },
+                      {
+                        "kind": "BinaryOperator",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "DeclRefExpr",
+                                "type": "int"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "DeclRefExpr",
+                                "type": "int"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "UnaryOperator",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "DeclRefExpr",
+                            "type": "int"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "CompoundStmt",
+                        "inner": [
+                          {
+                            "kind": "IfStmt",
+                            "inner": [
+                              {
+                                "kind": "BinaryOperator",
+                                "type": "int",
+                                "inner": [
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "MemberExpr",
+                                        "name": "part",
+                                        "type": "int",
+                                        "inner": [
+                                          {
+                                            "kind": "ArraySubscriptExpr",
+                                            "type": "GroupedItem",
+                                            "inner": [
+                                              {
+                                                "kind": "ImplicitCastExpr",
+                                                "type": "GroupedItem",
+                                                "inner": [
+                                                  {
+                                                    "kind": "DeclRefExpr",
+                                                    "type": "GroupedItem[3]"
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "ImplicitCastExpr",
+                                                "type": "int",
+                                                "inner": [
+                                                  {
+                                                    "kind": "DeclRefExpr",
+                                                    "type": "int"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "MemberExpr",
+                                        "name": "part",
+                                        "type": "int",
+                                        "inner": [
+                                          {
+                                            "kind": "DeclRefExpr",
+                                            "type": "FilteredItem"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "CompoundStmt",
+                                "inner": [
+                                  {
+                                    "kind": "CompoundAssignOperator",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "MemberExpr",
+                                        "name": "total",
+                                        "type": "int",
+                                        "inner": [
+                                          {
+                                            "kind": "ArraySubscriptExpr",
+                                            "type": "GroupedItem",
+                                            "inner": [
+                                              {
+                                                "kind": "ImplicitCastExpr",
+                                                "type": "GroupedItem",
+                                                "inner": [
+                                                  {
+                                                    "kind": "DeclRefExpr",
+                                                    "type": "GroupedItem[3]"
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "ImplicitCastExpr",
+                                                "type": "int",
+                                                "inner": [
+                                                  {
+                                                    "kind": "DeclRefExpr",
+                                                    "type": "int"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "CStyleCastExpr",
+                                        "type": "int",
+                                        "inner": [
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "float",
+                                            "inner": [
+                                              {
+                                                "kind": "MemberExpr",
+                                                "name": "value",
+                                                "type": "float",
+                                                "inner": [
+                                                  {
+                                                    "kind": "DeclRefExpr",
+                                                    "type": "FilteredItem"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "BinaryOperator",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "int"
+                                      },
+                                      {
+                                        "kind": "IntegerLiteral",
+                                        "type": "int",
+                                        "value": "1"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "BreakStmt"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "IfStmt",
+                    "inner": [
+                      {
+                        "kind": "UnaryOperator",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "DeclRefExpr",
+                                "type": "int"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "CompoundStmt",
+                        "inner": [
+                          {
+                            "kind": "BinaryOperator",
+                            "type": "GroupedItem",
+                            "inner": [
+                              {
+                                "kind": "ArraySubscriptExpr",
+                                "type": "GroupedItem",
+                                "inner": [
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "GroupedItem",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "GroupedItem[3]"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "UnaryOperator",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "int"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "ImplicitCastExpr",
+                                "type": "GroupedItem",
+                                "inner": [
+                                  {
+                                    "kind": "CompoundLiteralExpr",
+                                    "type": "GroupedItem",
+                                    "inner": [
+                                      {
+                                        "kind": "InitListExpr",
+                                        "type": "GroupedItem",
+                                        "inner": [
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "int",
+                                            "inner": [
+                                              {
+                                                "kind": "MemberExpr",
+                                                "name": "part",
+                                                "type": "int",
+                                                "inner": [
+                                                  {
+                                                    "kind": "DeclRefExpr",
+                                                    "type": "FilteredItem"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "CStyleCastExpr",
+                                            "type": "int",
+                                            "inner": [
+                                              {
+                                                "kind": "ImplicitCastExpr",
+                                                "type": "float",
+                                                "inner": [
+                                                  {
+                                                    "kind": "MemberExpr",
+                                                    "name": "value",
+                                                    "type": "float",
+                                                    "inner": [
+                                                      {
+                                                        "kind": "DeclRefExpr",
+                                                        "type": "FilteredItem"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "ForStmt",
+            "inner": [
+              {
+                "kind": "DeclStmt",
+                "inner": [
+                  {
+                    "kind": "VarDecl",
+                    "name": "i",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "IntegerLiteral",
+                            "type": "int",
+                            "value": "0"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": ""
+              },
+              {
+                "kind": "BinaryOperator",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "DeclRefExpr",
+                        "type": "int"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "DeclRefExpr",
+                        "type": "int"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "UnaryOperator",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int"
+                  }
+                ]
+              },
+              {
+                "kind": "CompoundStmt",
+                "inner": [
+                  {
+                    "kind": "DeclStmt",
+                    "inner": [
+                      {
+                        "kind": "VarDecl",
+                        "name": "g",
+                        "type": "GroupedItem",
+                        "inner": [
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "GroupedItem",
+                            "inner": [
+                              {
+                                "kind": "ArraySubscriptExpr",
+                                "type": "GroupedItem",
+                                "inner": [
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "GroupedItem",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "GroupedItem[3]"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "int"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "CallExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "int (*)(const char *, ...)",
+                        "inner": [
+                          {
+                            "kind": "DeclRefExpr",
+                            "type": "int (const char *, ...)"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "string",
+                        "inner": [
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "string",
+                            "inner": [
+                              {
+                                "kind": "StringLiteral",
+                                "type": "int",
+                                "value": "\"{\\\"part\\\": %d, \\\"total\\\": %d}%s\""
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "MemberExpr",
+                            "name": "part",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "DeclRefExpr",
+                                "type": "GroupedItem"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "MemberExpr",
+                            "name": "total",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "DeclRefExpr",
+                                "type": "GroupedItem"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "ConditionalOperator",
+                        "type": "string",
+                        "inner": [
+                          {
+                            "kind": "BinaryOperator",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "BinaryOperator",
+                                "type": "int",
+                                "inner": [
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "int"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "IntegerLiteral",
+                                        "type": "int",
+                                        "value": "1"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "ImplicitCastExpr",
+                                "type": "int",
+                                "inner": [
+                                  {
+                                    "kind": "DeclRefExpr",
+                                    "type": "int"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "string",
+                            "inner": [
+                              {
+                                "kind": "StringLiteral",
+                                "type": "int",
+                                "value": "\" \""
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "string",
+                            "inner": [
+                              {
+                                "kind": "StringLiteral",
+                                "type": "int",
+                                "value": "\"\""
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "CallExpr",
+            "type": "int",
+            "inner": [
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "int (*)(const char *)",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int (const char *)"
+                  }
+                ]
+              },
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "string",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "StringLiteral",
+                        "type": "int",
+                        "value": "\"\""
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "ReturnStmt",
+            "inner": [
+              {
+                "kind": "IntegerLiteral",
+                "type": "int",
+                "value": "0"
+              }
+            ]
+          }
+        ]
+      }
     }
   ],
   "structs": [

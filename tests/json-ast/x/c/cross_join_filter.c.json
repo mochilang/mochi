@@ -3,7 +3,507 @@
     {
       "name": "main",
       "ret": "int",
-      "body": "{\n    Pair pairs[] = { (Pair){.n = 2, .l = \"A\"}, (Pair){.n = 2, .l = \"B\"} };\n    puts(\"--- Even pairs ---\");\n    {\n        Pair p_arr[] = {(Pair){.n = 2, .l = \"A\"}, (Pair){.n = 2, .l = \"B\"}};\n        size_t p_len = sizeof(p_arr) / sizeof(p_arr[0]);\n        for (size_t i = 0; i \u003c p_len; i++) {\n            Pair p = p_arr[i];\n            printf(\"%d %s\\n\", p.n, p.l);\n        }\n    }\n    return 0;\n"
+      "body": {
+        "kind": "CompoundStmt",
+        "inner": [
+          {
+            "kind": "DeclStmt",
+            "inner": [
+              {
+                "kind": "VarDecl",
+                "name": "pairs",
+                "type": "Pair[2]",
+                "inner": [
+                  {
+                    "kind": "InitListExpr",
+                    "type": "Pair[2]",
+                    "inner": [
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "Pair",
+                        "inner": [
+                          {
+                            "kind": "CompoundLiteralExpr",
+                            "type": "Pair",
+                            "inner": [
+                              {
+                                "kind": "InitListExpr",
+                                "type": "Pair",
+                                "inner": [
+                                  {
+                                    "kind": "IntegerLiteral",
+                                    "type": "int",
+                                    "value": "2"
+                                  },
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "string",
+                                    "inner": [
+                                      {
+                                        "kind": "ImplicitCastExpr",
+                                        "type": "string",
+                                        "inner": [
+                                          {
+                                            "kind": "StringLiteral",
+                                            "type": "int",
+                                            "value": "\"A\""
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "Pair",
+                        "inner": [
+                          {
+                            "kind": "CompoundLiteralExpr",
+                            "type": "Pair",
+                            "inner": [
+                              {
+                                "kind": "InitListExpr",
+                                "type": "Pair",
+                                "inner": [
+                                  {
+                                    "kind": "IntegerLiteral",
+                                    "type": "int",
+                                    "value": "2"
+                                  },
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "string",
+                                    "inner": [
+                                      {
+                                        "kind": "ImplicitCastExpr",
+                                        "type": "string",
+                                        "inner": [
+                                          {
+                                            "kind": "StringLiteral",
+                                            "type": "int",
+                                            "value": "\"B\""
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "CallExpr",
+            "type": "int",
+            "inner": [
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "int (*)(const char *)",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int (const char *)"
+                  }
+                ]
+              },
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "string",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "StringLiteral",
+                        "type": "int",
+                        "value": "\"--- Even pairs ---\""
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "CompoundStmt",
+            "inner": [
+              {
+                "kind": "DeclStmt",
+                "inner": [
+                  {
+                    "kind": "VarDecl",
+                    "name": "p_arr",
+                    "type": "Pair[2]",
+                    "inner": [
+                      {
+                        "kind": "InitListExpr",
+                        "type": "Pair[2]",
+                        "inner": [
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "Pair",
+                            "inner": [
+                              {
+                                "kind": "CompoundLiteralExpr",
+                                "type": "Pair",
+                                "inner": [
+                                  {
+                                    "kind": "InitListExpr",
+                                    "type": "Pair",
+                                    "inner": [
+                                      {
+                                        "kind": "IntegerLiteral",
+                                        "type": "int",
+                                        "value": "2"
+                                      },
+                                      {
+                                        "kind": "ImplicitCastExpr",
+                                        "type": "string",
+                                        "inner": [
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "string",
+                                            "inner": [
+                                              {
+                                                "kind": "StringLiteral",
+                                                "type": "int",
+                                                "value": "\"A\""
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "Pair",
+                            "inner": [
+                              {
+                                "kind": "CompoundLiteralExpr",
+                                "type": "Pair",
+                                "inner": [
+                                  {
+                                    "kind": "InitListExpr",
+                                    "type": "Pair",
+                                    "inner": [
+                                      {
+                                        "kind": "IntegerLiteral",
+                                        "type": "int",
+                                        "value": "2"
+                                      },
+                                      {
+                                        "kind": "ImplicitCastExpr",
+                                        "type": "string",
+                                        "inner": [
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "string",
+                                            "inner": [
+                                              {
+                                                "kind": "StringLiteral",
+                                                "type": "int",
+                                                "value": "\"B\""
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "DeclStmt",
+                "inner": [
+                  {
+                    "kind": "VarDecl",
+                    "name": "p_len",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "BinaryOperator",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "UnaryExprOrTypeTraitExpr",
+                            "name": "sizeof",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "ParenExpr",
+                                "type": "Pair[2]",
+                                "inner": [
+                                  {
+                                    "kind": "DeclRefExpr",
+                                    "type": "Pair[2]"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "UnaryExprOrTypeTraitExpr",
+                            "name": "sizeof",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "ParenExpr",
+                                "type": "Pair",
+                                "inner": [
+                                  {
+                                    "kind": "ArraySubscriptExpr",
+                                    "type": "Pair",
+                                    "inner": [
+                                      {
+                                        "kind": "ImplicitCastExpr",
+                                        "type": "Pair",
+                                        "inner": [
+                                          {
+                                            "kind": "DeclRefExpr",
+                                            "type": "Pair[2]"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "IntegerLiteral",
+                                        "type": "int",
+                                        "value": "0"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "ForStmt",
+                "inner": [
+                  {
+                    "kind": "DeclStmt",
+                    "inner": [
+                      {
+                        "kind": "VarDecl",
+                        "name": "i",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "IntegerLiteral",
+                                "type": "int",
+                                "value": "0"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": ""
+                  },
+                  {
+                    "kind": "BinaryOperator",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "DeclRefExpr",
+                            "type": "int"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "DeclRefExpr",
+                            "type": "int"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "UnaryOperator",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "DeclRefExpr",
+                        "type": "int"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "CompoundStmt",
+                    "inner": [
+                      {
+                        "kind": "DeclStmt",
+                        "inner": [
+                          {
+                            "kind": "VarDecl",
+                            "name": "p",
+                            "type": "Pair",
+                            "inner": [
+                              {
+                                "kind": "ImplicitCastExpr",
+                                "type": "Pair",
+                                "inner": [
+                                  {
+                                    "kind": "ArraySubscriptExpr",
+                                    "type": "Pair",
+                                    "inner": [
+                                      {
+                                        "kind": "ImplicitCastExpr",
+                                        "type": "Pair",
+                                        "inner": [
+                                          {
+                                            "kind": "DeclRefExpr",
+                                            "type": "Pair[2]"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "ImplicitCastExpr",
+                                        "type": "int",
+                                        "inner": [
+                                          {
+                                            "kind": "DeclRefExpr",
+                                            "type": "int"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "CallExpr",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "int (*)(const char *, ...)",
+                            "inner": [
+                              {
+                                "kind": "DeclRefExpr",
+                                "type": "int (const char *, ...)"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "string",
+                            "inner": [
+                              {
+                                "kind": "ImplicitCastExpr",
+                                "type": "string",
+                                "inner": [
+                                  {
+                                    "kind": "StringLiteral",
+                                    "type": "int",
+                                    "value": "\"%d %s\\n\""
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "MemberExpr",
+                                "name": "n",
+                                "type": "int",
+                                "inner": [
+                                  {
+                                    "kind": "DeclRefExpr",
+                                    "type": "Pair"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "string",
+                            "inner": [
+                              {
+                                "kind": "MemberExpr",
+                                "name": "l",
+                                "type": "string",
+                                "inner": [
+                                  {
+                                    "kind": "DeclRefExpr",
+                                    "type": "Pair"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "ReturnStmt",
+            "inner": [
+              {
+                "kind": "IntegerLiteral",
+                "type": "int",
+                "value": "0"
+              }
+            ]
+          }
+        ]
+      }
     }
   ],
   "structs": [

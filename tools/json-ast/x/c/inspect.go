@@ -20,7 +20,7 @@ type Func struct {
 	Name   string  `json:"name"`
 	Params []Param `json:"params,omitempty"`
 	Ret    string  `json:"ret,omitempty"`
-	Body   string  `json:"body,omitempty"`
+	Body   *Node   `json:"body,omitempty"`
 }
 
 type Param struct {
@@ -47,6 +47,15 @@ type Global struct {
 	Name  string `json:"name"`
 	Typ   string `json:"type"`
 	Value string `json:"value,omitempty"`
+}
+
+// Node represents a statement or expression node within a function body.
+type Node struct {
+	Kind     string  `json:"kind"`
+	Name     string  `json:"name,omitempty"`
+	Type     string  `json:"type,omitempty"`
+	Value    string  `json:"value,omitempty"`
+	Children []*Node `json:"inner,omitempty"`
 }
 
 // Inspect parses a C source string using clang and returns a simplified Program.
@@ -109,7 +118,7 @@ func walkAST(n *clangNode, src string, funcs *[]Func, enums *[]Enum, structs *[]
 			break
 		}
 		var params []Param
-		var body string
+		var body *Node
 		for i := range n.Inner {
 			c := &n.Inner[i]
 			switch c.Kind {
@@ -120,13 +129,7 @@ func walkAST(n *clangNode, src string, funcs *[]Func, enums *[]Enum, structs *[]
 				}
 				params = append(params, Param{Name: c.Name, Typ: typ})
 			case "CompoundStmt":
-				if c.Range != nil {
-					b := c.Range.Begin.Offset
-					e := c.Range.End.Offset
-					if b >= 0 && e >= b && e <= len(src) {
-						body = src[b:e]
-					}
-				}
+				body = parseNode(c)
 			}
 		}
 		ret := ""
@@ -137,7 +140,7 @@ func walkAST(n *clangNode, src string, funcs *[]Func, enums *[]Enum, structs *[]
 			}
 			ret = mapType(strings.TrimSpace(ret))
 		}
-		if body != "" {
+		if body != nil {
 			*funcs = append(*funcs, Func{Name: n.Name, Params: params, Ret: ret, Body: body})
 		}
 
@@ -202,6 +205,38 @@ func walkAST(n *clangNode, src string, funcs *[]Func, enums *[]Enum, structs *[]
 	for i := range n.Inner {
 		walkAST(&n.Inner[i], src, funcs, enums, structs, globals)
 	}
+}
+
+func parseNode(n *clangNode) *Node {
+	if n == nil {
+		return nil
+	}
+	node := &Node{Kind: n.Kind}
+	if n.Name != "" {
+		node.Name = n.Name
+	}
+	if n.Type != nil {
+		node.Type = mapType(n.Type.QualType)
+	}
+	if len(n.Value) > 0 {
+		var v interface{}
+		if err := json.Unmarshal(n.Value, &v); err == nil {
+			switch val := v.(type) {
+			case string:
+				node.Value = strings.TrimSpace(val)
+			default:
+				b, _ := json.Marshal(val)
+				node.Value = string(b)
+			}
+		}
+	}
+	for i := range n.Inner {
+		child := parseNode(&n.Inner[i])
+		if child != nil {
+			node.Children = append(node.Children, child)
+		}
+	}
+	return node
 }
 
 func parseGlobalDecl(s string) Global {

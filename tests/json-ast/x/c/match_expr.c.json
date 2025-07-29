@@ -3,7 +3,208 @@
     {
       "name": "main",
       "ret": "int",
-      "body": "{\n    const char* label = (x == 1 ? \"one\" : (x == 2 ? \"two\" : (x == 3 ? \"three\" : \"unknown\")));\n    puts(label);\n    return 0;\n"
+      "body": {
+        "kind": "CompoundStmt",
+        "inner": [
+          {
+            "kind": "DeclStmt",
+            "inner": [
+              {
+                "kind": "VarDecl",
+                "name": "label",
+                "type": "string",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "ParenExpr",
+                        "type": "string",
+                        "inner": [
+                          {
+                            "kind": "ConditionalOperator",
+                            "type": "string",
+                            "inner": [
+                              {
+                                "kind": "BinaryOperator",
+                                "type": "int",
+                                "inner": [
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "int"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "IntegerLiteral",
+                                    "type": "int",
+                                    "value": "1"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "ImplicitCastExpr",
+                                "type": "string",
+                                "inner": [
+                                  {
+                                    "kind": "StringLiteral",
+                                    "type": "int",
+                                    "value": "\"one\""
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "ParenExpr",
+                                "type": "string",
+                                "inner": [
+                                  {
+                                    "kind": "ConditionalOperator",
+                                    "type": "string",
+                                    "inner": [
+                                      {
+                                        "kind": "BinaryOperator",
+                                        "type": "int",
+                                        "inner": [
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "int",
+                                            "inner": [
+                                              {
+                                                "kind": "DeclRefExpr",
+                                                "type": "int"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "IntegerLiteral",
+                                            "type": "int",
+                                            "value": "2"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "ImplicitCastExpr",
+                                        "type": "string",
+                                        "inner": [
+                                          {
+                                            "kind": "StringLiteral",
+                                            "type": "int",
+                                            "value": "\"two\""
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "ParenExpr",
+                                        "type": "string",
+                                        "inner": [
+                                          {
+                                            "kind": "ConditionalOperator",
+                                            "type": "string",
+                                            "inner": [
+                                              {
+                                                "kind": "BinaryOperator",
+                                                "type": "int",
+                                                "inner": [
+                                                  {
+                                                    "kind": "ImplicitCastExpr",
+                                                    "type": "int",
+                                                    "inner": [
+                                                      {
+                                                        "kind": "DeclRefExpr",
+                                                        "type": "int"
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "IntegerLiteral",
+                                                    "type": "int",
+                                                    "value": "3"
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "ImplicitCastExpr",
+                                                "type": "string",
+                                                "inner": [
+                                                  {
+                                                    "kind": "StringLiteral",
+                                                    "type": "int",
+                                                    "value": "\"three\""
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "ImplicitCastExpr",
+                                                "type": "string",
+                                                "inner": [
+                                                  {
+                                                    "kind": "StringLiteral",
+                                                    "type": "int",
+                                                    "value": "\"unknown\""
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "CallExpr",
+            "type": "int",
+            "inner": [
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "int (*)(const char *)",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int (const char *)"
+                  }
+                ]
+              },
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "string",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "string"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "ReturnStmt",
+            "inner": [
+              {
+                "kind": "IntegerLiteral",
+                "type": "int",
+                "value": "0"
+              }
+            ]
+          }
+        ]
+      }
     }
   ],
   "globals": [

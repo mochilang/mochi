@@ -3,7 +3,61 @@
     {
       "name": "main",
       "ret": "int",
-      "body": "{\n    puts(book.author.name);\n    return 0;\n"
+      "body": {
+        "kind": "CompoundStmt",
+        "inner": [
+          {
+            "kind": "CallExpr",
+            "type": "int",
+            "inner": [
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "int (*)(const char *)",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int (const char *)"
+                  }
+                ]
+              },
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "string",
+                "inner": [
+                  {
+                    "kind": "MemberExpr",
+                    "name": "name",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "MemberExpr",
+                        "name": "author",
+                        "type": "Person",
+                        "inner": [
+                          {
+                            "kind": "DeclRefExpr",
+                            "type": "Book"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "ReturnStmt",
+            "inner": [
+              {
+                "kind": "IntegerLiteral",
+                "type": "int",
+                "value": "0"
+              }
+            ]
+          }
+        ]
+      }
     }
   ],
   "structs": [
