@@ -318,7 +318,7 @@ func convertSpread(s string) string {
 
 var spreadPrintRe = regexp.MustCompile(`^\s*print\("\[" \+ append\(([^,]+),\s*([^\)]+)\)\.join\((?:"|')[, ]*(?:"|')\) \+ "\]"\)$`)
 
-var lengthRe = regexp.MustCompile(`((?:[A-Za-z_][A-Za-z0-9_]*|\[[^\]]+\]))\.length`)
+var lengthRe = regexp.MustCompile(`((?:[A-Za-z_][A-Za-z0-9_]*|\[[^\]]+\]|"[^"]*"|\{[^}]*\}))\.length`)
 
 func convertLength(s string) string {
 	return lengthRe.ReplaceAllString(s, "len($1)")
