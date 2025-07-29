@@ -1,5 +1,0 @@
-(program
-  (let xs
-    (type list (type int))
-  )
-)

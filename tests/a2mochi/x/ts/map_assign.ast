@@ -5,5 +5,17 @@
   (type Scores
     (field alice (type int))
   )
-  (let scores (type Scores))
+  (let scores
+    (type Scores)
+    (map
+      (entry (string alice) (int 1))
+    )
+  )
+  (assign
+    (index (selector scores) (string bob))
+    (int 2)
+  )
+  (call print
+    (index (selector scores) (string bob))
+  )
 )

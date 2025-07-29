@@ -1,6 +1,0 @@
-(program
-  (type Result
-    (field a (type int))
-    (field b (type int))
-  )
-)

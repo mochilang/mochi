@@ -2,5 +2,20 @@
   (fun outer
     (param x (type int))
     (type int)
+    (fun inner
+      (param y (type int))
+      (type int)
+      (return
+        (group
+          (binary + (selector x) (selector y))
+        )
+      )
+    )
+    (return
+      (call inner (int 5))
+    )
+  )
+  (call print
+    (call outer (int 3))
   )
 )

@@ -6,6 +6,7 @@ type M {
   a: int
   b: int
 }
-let x: int
-let y: int
-let m: M
+let x: int = 3
+let y: int = 4
+let m: M = {"a": x, "b": y}
+print((((m["a"]) + " ") + String(m["b"]).trim()))

@@ -1,6 +1,0 @@
-(program
-  (let _nowSeed)
-  (let _nowSeeded)
-  (fun _now (type int))
-  (fun _mem (type int))
-)

@@ -1,7 +1,0 @@
-(program
-  (fun boom
-    (param a (type int))
-    (param b (type int))
-    (type bool)
-  )
-)

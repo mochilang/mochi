@@ -2,6 +2,8 @@ type Result {
   inner: int
 }
 type Data {
-  outer: { inner: number }
+  outer: {inner: number}
 }
-let data: Data
+let data: Data = {"outer": {"inner": 1}}
+data["outer"]["inner"] = 2
+print(data["outer"]["inner"])

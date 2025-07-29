@@ -8,4 +8,5 @@ type M {
   b: int
   c: int
 }
-let m: M
+let m: M = {"a": 1, "b": 2, "c": 3}
+print((("[" + (Object.values(m)).join(", ")) + "]"))

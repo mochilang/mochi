@@ -1,1 +1,2 @@
-let y: int
+let y: int = 0
+print(y)

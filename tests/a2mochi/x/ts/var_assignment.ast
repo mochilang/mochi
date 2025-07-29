@@ -1,3 +1,5 @@
 (program
-  (let x (type int))
+  (let x (type int) (int 1))
+  (assign x (int 2))
+  (call print (selector x))
 )

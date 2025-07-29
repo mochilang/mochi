@@ -1,8 +1,0 @@
-(program
-  (let strings)
-  (let math)
-  (let rawName (type string))
-  (let radius (type int))
-  (let name)
-  (let area)
-)

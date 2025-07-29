@@ -7,5 +7,19 @@
     (field a (type int))
     (field b (type int))
   )
-  (let m (type M))
+  (let m
+    (type M)
+    (map
+      (entry (selector a) (int 1))
+      (entry (selector b) (int 2))
+    )
+  )
+  (call print
+    (call
+      (selector stringify (selector JSON))
+      (selector m)
+      (unknown)
+      (int 2)
+    )
+  )
 )

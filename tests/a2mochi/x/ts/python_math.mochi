@@ -1,6 +1,10 @@
-let math
-let r: int
-let area: int
-let root: int
-let sin45: int
-let log_e: int
+let math = Math
+let r: int = 3.0
+let area: int = ((math.PI * math.pow(r, 2.0)))
+let root: int = math.sqrt(49.0)
+let sin45: int = math.sin(((math.PI / 4.0)))
+let log_e: int = math.log(math.E)
+print("Circle area with r =", r, "=>", area)
+print("Square root of 49:", root)
+print("sin(π/4):", sin45)
+print("log(e):", log_e)

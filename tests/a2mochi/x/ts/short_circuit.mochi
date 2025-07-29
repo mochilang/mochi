@@ -1,2 +1,0 @@
-fun boom(a: int, b: int): bool {
-}
