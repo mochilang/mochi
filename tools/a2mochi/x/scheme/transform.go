@@ -23,7 +23,9 @@ func Transform(p *Program) (*ast.Node, error) {
 		case "var":
 			prog.Children = append(prog.Children, newLet(it.Name))
 		case "import":
-			prog.Children = append(prog.Children, newUse(it.Name))
+			// ignore imports for now
+		case "assign":
+			prog.Children = append(prog.Children, newAssign(it.Name))
 		}
 	}
 
@@ -53,6 +55,10 @@ func newLet(name string) *ast.Node {
 
 func newUse(name string) *ast.Node {
 	return &ast.Node{Kind: "selector", Value: sanitizeName(name), Children: []*ast.Node{{Kind: "selector", Value: "use"}}}
+}
+
+func newAssign(name string) *ast.Node {
+	return &ast.Node{Kind: "assign", Value: sanitizeName(name), Children: []*ast.Node{{Kind: "int", Value: 0}}}
 }
 
 func sanitizeName(s string) string {

@@ -82,6 +82,11 @@ func Parse(src string) (*Program, error) {
     [(and (pair? f) (eq? (car f) 'import))
      (for/list ([s (cdr f)] #:when (module-name s))
        (hash 'kind "import" 'name (module-name s)))]
+    [(and (pair? f) (eq? (car f) 'set!))
+     (cond
+       [(symbol? (cadr f))
+        (hash 'kind "assign" 'name (symbol->string (cadr f)))]
+       [else #f])]
     [else #f]))
 (define forms (read-all in))
 (close-input-port in)
