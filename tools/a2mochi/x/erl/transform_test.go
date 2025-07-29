@@ -159,6 +159,9 @@ func TestTransform_Golden(t *testing.T) {
 		"let_and_print":       true,
 		"list_index":          true,
 		"var_assignment":      true,
+		"map_assign":          true,
+		"map_literal_dynamic": true,
+		"list_assign":         true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "erl")
 	os.MkdirAll(outDir, 0o755)
