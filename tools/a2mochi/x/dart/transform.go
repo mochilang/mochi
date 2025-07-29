@@ -1,209 +1,98 @@
-//go:build slow
-
 package dart
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"os"
-	"os/exec"
-	"path/filepath"
 	"regexp"
 	"strings"
 
 	"mochi/ast"
 	"mochi/parser"
-	"mochi/transpiler/meta"
 )
 
-// Param represents a Dart function parameter.
-type Param struct {
-	Name string `json:"name"`
-	Type string `json:"type"`
-}
-
-// Function represents a parsed Dart function.
-type Function struct {
-	Name   string   `json:"name"`
-	Params []Param  `json:"params"`
-	Ret    string   `json:"ret"`
-	Body   []string `json:"body"`
-	Start  int      `json:"start"`
-	End    int      `json:"end"`
-	Doc    string   `json:"doc,omitempty"`
-}
-
-// Field represents a Dart class field.
-type Field struct {
-	Name string `json:"name"`
-	Type string `json:"type"`
-}
-
-// Class represents a Dart class definition.
-type Class struct {
-	Name   string  `json:"name"`
-	Fields []Field `json:"fields"`
-	Start  int     `json:"start"`
-	End    int     `json:"end"`
-	Doc    string  `json:"doc,omitempty"`
-}
-
-// Node is the root of a parsed Dart file.
-type Node struct {
-	Functions []Function `json:"functions"`
-	Classes   []Class    `json:"classes"`
-	Src       string     `json:"-"`
-}
-
-// Parse parses Dart source into a Node using the dartast helper.
-func Parse(src string) (*Node, error) {
-	funcs, classes, err := parseInternal(src)
-	if err != nil {
-		return nil, err
+// Transform converts a parsed Program into a Mochi AST.
+func Transform(p *Program) (*ast.Node, error) {
+	if p == nil {
+		return nil, fmt.Errorf("nil program")
 	}
-	return &Node{Functions: funcs, Classes: classes, Src: src}, nil
-}
 
-func parseInternal(src string) ([]Function, []Class, error) {
-	if path, err := exec.LookPath("dartast"); err == nil {
-		cmd := exec.Command(path)
-		cmd.Stdin = strings.NewReader(src)
-		var out bytes.Buffer
-		var errBuf bytes.Buffer
-		cmd.Stdout = &out
-		cmd.Stderr = &errBuf
-		if err := cmd.Run(); err != nil {
-			if errBuf.Len() > 0 {
-				return nil, nil, fmt.Errorf("%v: %s", err, errBuf.String())
-			}
-			return nil, nil, err
+	root := &ast.Node{Kind: "program"}
+
+	// Top-level variables
+	for _, stmt := range parseTopLevelVars(p.Src, p.Functions, p.Classes) {
+		n, err := parseStmt(stmt)
+		if err != nil {
+			return nil, err
 		}
-		return decode(out.Bytes())
+		root.Children = append(root.Children, n)
 	}
-	root, err := repoRoot()
-	if err != nil {
-		return nil, nil, err
+
+	// Classes
+	for _, c := range p.Classes {
+		root.Children = append(root.Children, classNode(c))
 	}
-	cmd := exec.Command("go", "run", filepath.Join(root, "cmd", "dartast"))
-	cmd.Stdin = strings.NewReader(src)
-	var out bytes.Buffer
-	var errBuf bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &errBuf
-	if err := cmd.Run(); err != nil {
-		if errBuf.Len() > 0 {
-			return nil, nil, fmt.Errorf("%v: %s", err, errBuf.String())
+
+	// Functions
+	for _, fn := range p.Functions {
+		n, err := funcNode(fn)
+		if err != nil {
+			return nil, err
 		}
-		return nil, nil, err
+		root.Children = append(root.Children, n)
 	}
-	return decode(out.Bytes())
+
+	return root, nil
 }
 
-func decode(data []byte) ([]Function, []Class, error) {
-	var a struct {
-		Functions []Function `json:"functions"`
-		Classes   []Class    `json:"classes"`
-	}
-	if err := json.Unmarshal(data, &a); err != nil {
-		return nil, nil, err
-	}
-	return a.Functions, a.Classes, nil
-}
-
-// ConvertSource converts the parsed Dart node into Mochi source code.
-func ConvertSource(n *Node) (string, error) {
-	var b strings.Builder
-	b.Write(meta.Header("// "))
-	b.WriteString("/*\n")
-	b.WriteString(n.Src)
-	if !strings.HasSuffix(n.Src, "\n") {
-		b.WriteByte('\n')
-	}
-	b.WriteString("*/\n")
-	for _, v := range parseTopLevelVars(n.Src, n.Functions, n.Classes) {
-		b.WriteString(v)
-		b.WriteByte('\n')
-	}
-	for _, c := range n.Classes {
-		b.WriteString("type ")
-		b.WriteString(c.Name)
-		b.WriteString(" {\n")
-		for _, f := range c.Fields {
-			b.WriteString("  ")
-			b.WriteString(f.Name)
-			if t := toMochiType(f.Type); t != "" && t != "any" {
-				b.WriteString(": ")
-				b.WriteString(t)
-			}
-			b.WriteByte('\n')
-		}
-		b.WriteString("}\n")
-	}
-	for _, f := range n.Functions {
-		b.WriteString("fun ")
-		b.WriteString(f.Name)
-		b.WriteByte('(')
-		for i, p := range f.Params {
-			if i > 0 {
-				b.WriteString(", ")
-			}
-			b.WriteString(p.Name)
-			if t := toMochiType(p.Type); t != "" && t != "any" {
-				b.WriteString(": ")
-				b.WriteString(t)
-			}
-		}
-		b.WriteByte(')')
-		if r := toMochiType(f.Ret); r != "" {
-			b.WriteString(": ")
-			b.WriteString(r)
-		}
-		b.WriteString(" {\n")
-		for _, line := range f.Body {
-			b.WriteString(convertBodyLine(line))
-			b.WriteByte('\n')
-		}
-		b.WriteString("}\n")
-	}
-	return b.String(), nil
-}
-
-// Convert converts a parsed Dart node into a Mochi AST.
-func Convert(n *Node) (*ast.Node, error) {
-	src, err := ConvertSource(n)
-	if err != nil {
-		return nil, err
-	}
+func parseStmt(src string) (*ast.Node, error) {
 	prog, err := parser.ParseString(src)
 	if err != nil {
 		return nil, err
 	}
-	return ast.FromProgram(prog), nil
+	if len(prog.Statements) == 0 {
+		return nil, fmt.Errorf("no statement")
+	}
+	return ast.FromStatement(prog.Statements[0]), nil
 }
 
-// --- Helpers copied from dartast and archived converter ---
-
-func repoRoot() (string, error) {
-	dir, err := os.Getwd()
-	if err != nil {
-		return "", err
-	}
-	for i := 0; i < 10; i++ {
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-			return dir, nil
+func classNode(c Class) *ast.Node {
+	n := &ast.Node{Kind: "type", Value: c.Name}
+	for _, f := range c.Fields {
+		fn := &ast.Node{Kind: "field", Value: f.Name}
+		if t := toMochiType(f.Type); t != "" && t != "any" {
+			fn.Children = append(fn.Children, &ast.Node{Kind: "type", Value: t})
 		}
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			break
-		}
-		dir = parent
+		n.Children = append(n.Children, fn)
 	}
-	return "", os.ErrNotExist
+	return n
 }
 
-// typedVarRe matches Dart variable declarations with an optional type. It
-// allows "final" or "const" without a following type.
+func funcNode(fn Function) (*ast.Node, error) {
+	n := &ast.Node{Kind: "fun", Value: fn.Name}
+	for _, p := range fn.Params {
+		pn := &ast.Node{Kind: "param", Value: p.Name}
+		if t := toMochiType(p.Type); t != "" && t != "any" {
+			pn.Children = append(pn.Children, &ast.Node{Kind: "type", Value: t})
+		}
+		n.Children = append(n.Children, pn)
+	}
+	if r := toMochiType(fn.Ret); r != "" {
+		n.Children = append(n.Children, &ast.Node{Kind: "type", Value: r})
+	}
+	for _, line := range fn.Body {
+		stmt := convertBodyLine(line)
+		st, err := parseStmt(stmt)
+		if err != nil {
+			return nil, err
+		}
+		n.Children = append(n.Children, st)
+	}
+	return n, nil
+}
+
+// --- Helpers ---
+
+// typedVarRe matches Dart variable declarations with an optional type.
+// It allows "final" or "const" without a following type.
 var typedVarRe = regexp.MustCompile(`^(?:final|const)?\s*(?:([A-Za-z_][A-Za-z0-9_<>,\[\]\? ]*)\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*(=.*)?$`)
 
 func parseTopLevelVars(src string, funcs []Function, classes []Class) []string {
@@ -281,7 +170,7 @@ func convertArrowFunc(s string) string {
 	return arrowRe.ReplaceAllString(s, "fun($1) =>")
 }
 
-var unaryNegRe = regexp.MustCompile(`([+\-*/])\s*-([A-Za-z0-9_]+)`) // e.g., "+ -2" -> "+ (-2)"
+var unaryNegRe = regexp.MustCompile(`([+\-*/])\s*-([A-Za-z0-9_]+)`) // e.g., "+-2" -> "+ (-2)"
 
 func fixUnaryNeg(s string) string {
 	return unaryNegRe.ReplaceAllString(s, "$1 (-$2)")
