@@ -1,0 +1,61 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\ntype Anon1 = {\n    mutable id: int\n    mutable name: string\n}\ntype Anon2 = {\n    mutable id: int\n    mutable name: string\n}\ntype Anon3 = {\n    mutable id: int\n    mutable customerId: int\n    mutable total: int\n}\ntype Anon4 = {\n    mutable id: int\n    mutable customerId: int\n    mutable total: int\n}\ntype Anon5 = {\n    mutable customerName: obj\n    mutable order: obj\n}\ntype Anon6 = {\n    mutable customerName: obj\n    mutable order: obj\n}\nlet customers: Anon2 list = [{ id = 1; name = \"Alice\" }; { id = 2; name = \"Bob\" }; { id = 3; name = \"Charlie\" }; { id = 4; name = \"Diana\" }]\nlet orders: Anon4 list = [{ id = 100; customerId = 1; total = 250 }; { id = 101; customerId = 2; total = 125 }; { id = 102; customerId = 1; total = 300 }]\nlet result: Anon6 list = [ for c in customers do for o in orders do if (o.customerId) = (c.id) then yield { customerName = c.name; order = o } ]\nprintfn \"%s\" (string \"--- Right Join using syntax ---\")\nfor entry in result do\nif entry.order then\nprintfn \"%s\" (String.concat \" \" [string \"Customer\"; string (entry.customerName); string \"has order\"; string (entry.order.id); string \"- $\"; string (entry.order.total)])\nelse\nprintfn \"%s\" (String.concat \" \" [string \"Customer\"; string (entry.customerName); string \"has no orders\"])\n",
+  "vars": [
+    {
+      "name": "customers",
+      "expr": "[{ id = 1; name = \"Alice\" }; { id = 2; name = \"Bob\" }; { id = 3; name = \"Charlie\" }; { id = 4; name = \"Diana\" }]",
+      "mutable": false,
+      "type": "Anon2 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "orders",
+      "expr": "[{ id = 100; customerId = 1; total = 250 }; { id = 101; customerId = 2; total = 125 }; { id = 102; customerId = 1; total = 300 }]",
+      "mutable": false,
+      "type": "Anon4 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "result",
+      "expr": "[ for c in customers do for o in orders do if (o.customerId) = (c.id) then yield { customerName = c.name; order = o } ]",
+      "mutable": false,
+      "type": "Anon6 list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(string \"--- Right Join using syntax ---\")"
+  ],
+  "stmts": [
+    {
+      "var": "entry",
+      "expr": "result",
+      "body": [
+        {
+          "cond": "entry.order",
+          "then": [
+            {
+              "expr": "(String.concat \" \" [string \"Customer\"; string (entry.customerName); string \"has order\"; string (entry.order.id); string \"- $\"; string (entry.order.total)])",
+              "line": 0,
+              "raw": ""
+            }
+          ],
+          "else": [
+            {
+              "expr": "(String.concat \" \" [string \"Customer\"; string (entry.customerName); string \"has no orders\"])",
+              "line": 0,
+              "raw": ""
+            }
+          ],
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

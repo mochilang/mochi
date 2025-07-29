@@ -1,0 +1,35 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet rec sum_rec n acc =\n    if n = 0 then acc else (sum_rec (n - 1) (acc + n))\nprintfn \"%s\" (string (sum_rec 10 0))\n",
+  "vars": null,
+  "prints": null,
+  "stmts": [
+    {
+      "name": "sum_rec",
+      "params": [
+        {
+          "name": "n",
+          "type": ""
+        },
+        {
+          "name": "acc",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "if n = 0 then acc else (sum_rec (n - 1) (acc + n))",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (sum_rec 10 0))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

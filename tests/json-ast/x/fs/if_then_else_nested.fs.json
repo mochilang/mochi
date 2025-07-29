@@ -1,0 +1,25 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet x: int = 8\nlet msg: string = if x \u003e 10 then \"big\" else (if x \u003e 5 then \"medium\" else \"small\")\nprintfn \"%s\" (string msg)\n",
+  "vars": [
+    {
+      "name": "x",
+      "expr": "8",
+      "mutable": false,
+      "type": "int",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "msg",
+      "expr": "if x \u003e 10 then \"big\" else (if x \u003e 5 then \"medium\" else \"small\")",
+      "mutable": false,
+      "type": "string",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(string msg)"
+  ],
+  "stmts": null
+}

@@ -1,0 +1,73 @@
+{
+  "source": "// Generated 2025-07-22 04:52 +0700\n\ntype Anon1 = {\n    id: int\n    name: string\n}\ntype Anon2 = {\n    id: int\n    name: string\n}\ntype Anon3 = {\n    id: int\n    customerId: int\n}\ntype Anon4 = {\n    id: int\n    customerId: int\n}\ntype Anon5 = {\n    name: obj\n    count: int\n}\ntype Anon6 = {\n    o: Anon4\n    c: Anon2\n}\ntype Anon7 = {\n    key: string\n    items: Anon6 list\n}\ntype Anon8 = {\n    name: obj\n    count: int\n}\nlet customers: Anon2 list = [{ id = 1; name = \"Alice\" }; { id = 2; name = \"Bob\" }]\nlet orders: Anon4 list = [{ id = 100; customerId = 1 }; { id = 101; customerId = 1 }; { id = 102; customerId = 2 }]\nlet stats: Anon8 list = [ for (key, items) in List.groupBy (fun { o = o; c = c } -\u003e c.name) [ for o in orders do for c in customers do if (o.customerId) = (c.id) then yield { o = o; c = c } : Anon6 ] do\n    let g : Anon7 = { key = key; items = items }\n    yield { name = g.key; count = List.length (g.items) } ]\nprintfn \"%s\" \"--- Orders per customer ---\"\nfor s in stats do\nprintfn \"%s\" (String.concat \" \" [string (s.name); string \"orders:\"; string (s.count)])\n",
+  "vars": [
+    {
+      "name": "customers",
+      "expr": "[{ id = 1; name = \"Alice\" }; { id = 2; name = \"Bob\" }]",
+      "mutable": false,
+      "type": "Anon2 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "orders",
+      "expr": "[{ id = 100; customerId = 1 }; { id = 101; customerId = 1 }; { id = 102; customerId = 2 }]",
+      "mutable": false,
+      "type": "Anon4 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "stats",
+      "expr": "[ for (key, items) in List.groupBy (fun { o = o; c = c } -\u003e c.name) [ for o in orders do for c in customers do if (o.customerId) = (c.id) then yield { o = o; c = c } : Anon6 ] do",
+      "mutable": false,
+      "type": "Anon8 list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "g",
+      "params": [
+        {
+          "name": ":",
+          "type": ""
+        },
+        {
+          "name": "Anon7",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "{ key = key; items = items }",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "\"--- Orders per customer ---\"",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "var": "s",
+      "expr": "stats",
+      "body": [
+        {
+          "expr": "(String.concat \" \" [string (s.name); string \"orders:\"; string (s.count)])",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

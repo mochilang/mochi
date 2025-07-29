@@ -1,0 +1,41 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet rec boom () =\n    printfn \"%s\" (string \"boom\")\n    true\nprintfn \"%b\" (((1 \u003c 2) \u0026\u0026 (2 \u003c 3)) \u0026\u0026 (3 \u003c 4))\nprintfn \"%b\" (((1 \u003c 2) \u0026\u0026 (2 \u003e 3)) \u0026\u0026 (boom()))\nprintfn \"%b\" ((((1 \u003c 2) \u0026\u0026 (2 \u003c 3)) \u0026\u0026 (3 \u003e 4)) \u0026\u0026 (boom()))\n",
+  "vars": null,
+  "prints": null,
+  "stmts": [
+    {
+      "name": "boom",
+      "params": null,
+      "ret": "",
+      "body": [
+        {
+          "expr": "(string \"boom\")",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "expr": "true",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(((1 \u003c 2) \u0026\u0026 (2 \u003c 3)) \u0026\u0026 (3 \u003c 4))",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(((1 \u003c 2) \u0026\u0026 (2 \u003e 3)) \u0026\u0026 (boom()))",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "((((1 \u003c 2) \u0026\u0026 (2 \u003c 3)) \u0026\u0026 (3 \u003e 4)) \u0026\u0026 (boom()))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "source": "// Generated 2025-07-22 05:29 +0700\n\ntype Person = {\n    name: string\n    age: int\n    email: string\n}\ntype Anon1 = {\n    name: obj\n    email: obj\n}\ntype Anon2 = {\n    name: obj\n    email: obj\n}\nopen System\n\nopen System.IO\n\nopen YamlDotNet.Serialization\n\nlet people = (let deserializer = DeserializerBuilder().Build()\n    let yamlText = File.ReadAllText(\"../interpreter/valid/people.yaml\")\n    deserializer.Deserialize\u003cPerson list\u003e(yamlText))\nlet adults: Anon2 list = [ for p in people do if (p.age) \u003e= 18 then yield { name = p.name; email = p.email } ]\nfor a in adults do\nprintfn \"%s\" (String.concat \" \" [string (a.name); string (a.email)])\n",
+  "vars": [
+    {
+      "name": "people",
+      "expr": "(let deserializer = DeserializerBuilder().Build()",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "yamlText",
+      "expr": "File.ReadAllText(\"../interpreter/valid/people.yaml\")",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "adults",
+      "expr": "[ for p in people do if (p.age) \u003e= 18 then yield { name = p.name; email = p.email } ]",
+      "mutable": false,
+      "type": "Anon2 list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "var": "a",
+      "expr": "adults",
+      "body": [
+        {
+          "expr": "(String.concat \" \" [string (a.name); string (a.email)])",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

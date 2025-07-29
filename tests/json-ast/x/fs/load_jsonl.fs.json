@@ -1,0 +1,37 @@
+{
+  "source": "// Generated 2025-07-22 06:32 +0700\n\ntype Person = {\n    name: string\n    age: int\n    email: string\n}\ntype Anon1 = {\n    name: obj\n    email: obj\n}\nopen System\n\nopen System.IO\n\nopen System.Text.Json\n\nlet people = (File.ReadLines(\"../interpreter/valid/people.jsonl\") |\u003e Seq.map (fun line -\u003e JsonSerializer.Deserialize\u003cPerson\u003e(line)) |\u003e Seq.toList)\nlet adults: Anon1 list = [ for p in people do if (p.age) \u003e= 18 then yield Map.ofList [(name, p.name); (email, p.email)] ]\nfor a in adults do\nprintfn \"%s\" (String.concat \" \" [string (a.name); string (a.email)])\n",
+  "vars": [
+    {
+      "name": "people",
+      "expr": "(File.ReadLines(\"../interpreter/valid/people.jsonl\") |\u003e Seq.map (fun line -\u003e JsonSerializer.Deserialize\u003cPerson\u003e(line)) |\u003e Seq.toList)",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "adults",
+      "expr": "[ for p in people do if (p.age) \u003e= 18 then yield Map.ofList [(name, p.name); (email, p.email)] ]",
+      "mutable": false,
+      "type": "Anon1 list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "var": "a",
+      "expr": "adults",
+      "body": [
+        {
+          "expr": "(String.concat \" \" [string (a.name); string (a.email)])",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

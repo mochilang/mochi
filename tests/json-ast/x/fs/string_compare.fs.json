@@ -1,0 +1,11 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nprintfn \"%b\" (\"a\" \u003c \"b\")\nprintfn \"%b\" (\"a\" \u003c= \"a\")\nprintfn \"%b\" (\"b\" \u003e \"a\")\nprintfn \"%b\" (\"b\" \u003e= \"b\")\n",
+  "vars": null,
+  "prints": [
+    "(\"a\" \u003c \"b\")",
+    "(\"a\" \u003c= \"a\")",
+    "(\"b\" \u003e \"a\")",
+    "(\"b\" \u003e= \"b\")"
+  ],
+  "stmts": null
+}

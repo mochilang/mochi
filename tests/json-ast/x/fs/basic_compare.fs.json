@@ -1,0 +1,27 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet a: int = 10 - 3\nlet b: int = 2 + 2\nprintfn \"%d\" a\nprintfn \"%b\" (a = 7)\nprintfn \"%b\" (b \u003c 5)\n",
+  "vars": [
+    {
+      "name": "a",
+      "expr": "10 - 3",
+      "mutable": false,
+      "type": "int",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "b",
+      "expr": "2 + 2",
+      "mutable": false,
+      "type": "int",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "a",
+    "(a = 7)",
+    "(b \u003c 5)"
+  ],
+  "stmts": null
+}

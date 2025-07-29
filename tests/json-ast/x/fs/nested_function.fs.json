@@ -1,0 +1,41 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet rec outer x =\n    let rec inner y =\n    x + y\n    inner 5\nprintfn \"%s\" (string (outer 3))\n",
+  "vars": null,
+  "prints": null,
+  "stmts": [
+    {
+      "name": "outer",
+      "params": [
+        {
+          "name": "x",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "let rec inner y =",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "expr": "x + y",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "expr": "inner 5",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (outer 3))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

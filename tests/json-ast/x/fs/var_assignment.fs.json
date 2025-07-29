@@ -1,0 +1,28 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet mutable x: int = 1\nx \u003c- 2\nprintfn \"%d\" x\n",
+  "vars": [
+    {
+      "name": "x",
+      "expr": "1",
+      "mutable": true,
+      "type": "int",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "x",
+      "index": "",
+      "expr": "2",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "x",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

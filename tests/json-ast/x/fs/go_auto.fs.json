@@ -1,0 +1,62 @@
+{
+  "source": "// Generated 2025-07-21 22:29 +0700\n\nopen System\n\nmodule testpkg\nlet rec Add a b =\n    a + b\nlet Pi = 3.14\nlet Answer = 42\n\nprintfn \"%s\" (string (testpkg.Add(2, 3)))\nprintfn \"%s\" (string (testpkg.Pi))\nprintfn \"%s\" (string (testpkg.Answer))\n",
+  "vars": [
+    {
+      "name": "Pi",
+      "expr": "3.14",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "Answer",
+      "expr": "42",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "Add",
+      "params": [
+        {
+          "name": "a",
+          "type": ""
+        },
+        {
+          "name": "b",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "a + b",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (testpkg.Add(2, 3)))",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (testpkg.Pi))",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (testpkg.Answer))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

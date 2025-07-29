@@ -1,0 +1,21 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nfor i in 1 .. (4 - 1) do\nprintfn \"%s\" (string i)\n",
+  "vars": null,
+  "prints": null,
+  "stmts": [
+    {
+      "var": "i",
+      "start": "1",
+      "end": "(4 - 1)",
+      "body": [
+        {
+          "expr": "(string i)",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

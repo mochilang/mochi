@@ -1,0 +1,25 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet data: int list = [1; 2]\nlet flag: bool = not (List.isEmpty [ for x in data do if x = 1 then yield x ])\nprintfn \"%b\" flag\n",
+  "vars": [
+    {
+      "name": "data",
+      "expr": "[1; 2]",
+      "mutable": false,
+      "type": "int list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "flag",
+      "expr": "not (List.isEmpty [ for x in data do if x = 1 then yield x ])",
+      "mutable": false,
+      "type": "bool",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "flag"
+  ],
+  "stmts": null
+}

@@ -1,0 +1,39 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\ntype Anon1 = {\n    mutable name: string\n    mutable price: int\n}\ntype Anon2 = {\n    mutable name: string\n    mutable price: int\n}\nlet products: Anon2 list = [{ name = \"Laptop\"; price = 1500 }; { name = \"Smartphone\"; price = 900 }; { name = \"Tablet\"; price = 600 }; { name = \"Monitor\"; price = 300 }; { name = \"Keyboard\"; price = 100 }; { name = \"Mouse\"; price = 50 }; { name = \"Headphones\"; price = 200 }]\nlet expensive = [ for p in List.take 3 (List.skip 1 (List.sortBy (fun p -\u003e (-(p.price))) products)) do yield p ]\nprintfn \"%s\" (string \"--- Top products (excluding most expensive) ---\")\nfor item in expensive do\nprintfn \"%s\" (String.concat \" \" [string (item.name); string \"costs $\"; string (item.price)])\n",
+  "vars": [
+    {
+      "name": "products",
+      "expr": "[{ name = \"Laptop\"; price = 1500 }; { name = \"Smartphone\"; price = 900 }; { name = \"Tablet\"; price = 600 }; { name = \"Monitor\"; price = 300 }; { name = \"Keyboard\"; price = 100 }; { name = \"Mouse\"; price = 50 }; { name = \"Headphones\"; price = 200 }]",
+      "mutable": false,
+      "type": "Anon2 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "expensive",
+      "expr": "[ for p in List.take 3 (List.skip 1 (List.sortBy (fun p -\u003e (-(p.price))) products)) do yield p ]",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(string \"--- Top products (excluding most expensive) ---\")"
+  ],
+  "stmts": [
+    {
+      "var": "item",
+      "expr": "expensive",
+      "body": [
+        {
+          "expr": "(String.concat \" \" [string (item.name); string \"costs $\"; string (item.price)])",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

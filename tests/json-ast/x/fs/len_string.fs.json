@@ -1,0 +1,8 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nprintfn \"%d\" (String.length \"mochi\")\n",
+  "vars": null,
+  "prints": [
+    "(String.length \"mochi\")"
+  ],
+  "stmts": null
+}

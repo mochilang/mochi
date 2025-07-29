@@ -1,0 +1,25 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet x: int = 12\nlet msg: string = if x \u003e 10 then \"yes\" else \"no\"\nprintfn \"%s\" (string msg)\n",
+  "vars": [
+    {
+      "name": "x",
+      "expr": "12",
+      "mutable": false,
+      "type": "int",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "msg",
+      "expr": "if x \u003e 10 then \"yes\" else \"no\"",
+      "mutable": false,
+      "type": "string",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(string msg)"
+  ],
+  "stmts": null
+}

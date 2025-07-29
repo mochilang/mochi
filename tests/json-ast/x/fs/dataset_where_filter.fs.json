@@ -1,0 +1,39 @@
+{
+  "source": "// Generated 2025-07-22 06:32 +0700\n\ntype Anon1 = {\n    name: string\n    age: int\n}\ntype Anon2 = {\n    name: string\n    age: int\n}\ntype Anon3 = {\n    name: obj\n    age: obj\n    is_senior: bool\n}\ntype Anon4 = {\n    name: obj\n    age: obj\n    is_senior: bool\n}\nlet people: Anon2 list = [{ name = \"Alice\"; age = 30 }; { name = \"Bob\"; age = 15 }; { name = \"Charlie\"; age = 65 }; { name = \"Diana\"; age = 45 }]\nlet adults: Anon4 list = [ for person in people do if (person.age) \u003e= 18 then yield { name = person.name; age = person.age; is_senior = (person.age) \u003e= 60 } ]\nprintfn \"%s\" \"--- Adults ---\"\nfor person in adults do\nprintfn \"%s\" (String.concat \" \" [string (person.name); string \"is\"; string (person.age); string (if person.is_senior then \" (senior)\" else \"\")])\n",
+  "vars": [
+    {
+      "name": "people",
+      "expr": "[{ name = \"Alice\"; age = 30 }; { name = \"Bob\"; age = 15 }; { name = \"Charlie\"; age = 65 }; { name = \"Diana\"; age = 45 }]",
+      "mutable": false,
+      "type": "Anon2 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "adults",
+      "expr": "[ for person in people do if (person.age) \u003e= 18 then yield { name = person.name; age = person.age; is_senior = (person.age) \u003e= 60 } ]",
+      "mutable": false,
+      "type": "Anon4 list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "\"--- Adults ---\""
+  ],
+  "stmts": [
+    {
+      "var": "person",
+      "expr": "adults",
+      "body": [
+        {
+          "expr": "(String.concat \" \" [string (person.name); string \"is\"; string (person.age); string (if person.is_senior then \" (senior)\" else \"\")])",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\ntype Anon1 = {\n    mutable a: int\n    mutable b: int\n}\nlet m: Anon1 = { a = 1; b = 2 }\njson m\n",
+  "vars": [
+    {
+      "name": "m",
+      "expr": "{ a = 1; b = 2 }",
+      "mutable": false,
+      "type": "Anon1",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": null
+}

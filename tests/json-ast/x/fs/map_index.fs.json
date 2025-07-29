@@ -1,0 +1,17 @@
+{
+  "source": "// Generated 2025-07-22 09:07 +0700\n\nlet m = Map.ofList [(\"a\", 1); (\"b\", 2)]\nprintfn \"%s\" (string (m.[\"b\"]))\n",
+  "vars": [
+    {
+      "name": "m",
+      "expr": "Map.ofList [(\"a\", 1); (\"b\", 2)]",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(string (m.[\"b\"]))"
+  ],
+  "stmts": null
+}

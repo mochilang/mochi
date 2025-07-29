@@ -1,0 +1,29 @@
+{
+  "source": "// Generated 2025-07-22 09:07 +0700\n\nlet mutable m = Map.ofList [(\"a\", 1); (\"b\", 2)]\nfor KeyValue(k, _) in m do\nprintfn \"%s\" (string k)\n",
+  "vars": [
+    {
+      "name": "m",
+      "expr": "Map.ofList [(\"a\", 1); (\"b\", 2)]",
+      "mutable": true,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "var": "k",
+      "expr": "m",
+      "body": [
+        {
+          "expr": "(string k)",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

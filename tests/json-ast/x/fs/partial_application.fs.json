@@ -1,0 +1,44 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet rec add a b =\n    a + b\nlet add5 = add 5\nprintfn \"%s\" (string (add5 3))\n",
+  "vars": [
+    {
+      "name": "add5",
+      "expr": "add 5",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "add",
+      "params": [
+        {
+          "name": "a",
+          "type": ""
+        },
+        {
+          "name": "b",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "a + b",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (add5 3))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

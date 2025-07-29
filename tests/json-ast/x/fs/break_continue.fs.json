@@ -1,0 +1,53 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet numbers: int list = [1; 2; 3; 4; 5; 6; 7; 8; 9]\nfor n in numbers do\nif (n % 2) = 0 then\ncontinue\nif n \u003e 7 then\nbreak\nprintfn \"%s\" (String.concat \" \" [string \"odd number:\"; string n])\n",
+  "vars": [
+    {
+      "name": "numbers",
+      "expr": "[1; 2; 3; 4; 5; 6; 7; 8; 9]",
+      "mutable": false,
+      "type": "int list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "var": "n",
+      "expr": "numbers",
+      "body": [
+        {
+          "cond": "(n % 2) = 0",
+          "then": [
+            {
+              "line": 0,
+              "raw": ""
+            }
+          ],
+          "else": null,
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "cond": "n \u003e 7",
+          "then": [
+            {
+              "line": 0,
+              "raw": ""
+            }
+          ],
+          "else": null,
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "expr": "(String.concat \" \" [string \"odd number:\"; string n])",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

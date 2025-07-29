@@ -1,0 +1,17 @@
+{
+  "source": "// Generated 2025-07-22 08:52 +0700\n\ntype Anon1 = {\n    a: int\n    b: int\n    c: int\n}\nlet m: Anon1 = { a = 1; b = 2; c = 3 }\nprintfn \"%s\" ((\"[\" + (String.concat \", \" (List.map string [m.a; m.b; m.c]))) + \"]\")\n",
+  "vars": [
+    {
+      "name": "m",
+      "expr": "{ a = 1; b = 2; c = 3 }",
+      "mutable": false,
+      "type": "Anon1",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "((\"[\" + (String.concat \", \" (List.map string [m.a; m.b; m.c]))) + \"]\")"
+  ],
+  "stmts": null
+}

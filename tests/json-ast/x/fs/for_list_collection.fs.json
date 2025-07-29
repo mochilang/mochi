@@ -1,0 +1,20 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nfor n in [1; 2; 3] do\nprintfn \"%s\" (string n)\n",
+  "vars": null,
+  "prints": null,
+  "stmts": [
+    {
+      "var": "n",
+      "expr": "[1; 2; 3]",
+      "body": [
+        {
+          "expr": "(string n)",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

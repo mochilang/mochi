@@ -1,0 +1,76 @@
+{
+  "source": "// Generated 2025-07-22 04:52 +0700\n\ntype Anon1 = {\n    id: int\n    name: string\n}\ntype Anon2 = {\n    id: int\n    name: string\n}\ntype Anon3 = {\n    id: int\n    nation: int\n}\ntype Anon4 = {\n    id: int\n    nation: int\n}\ntype Anon5 = {\n    part: int\n    supplier: int\n    cost: float\n    qty: int\n}\ntype Anon6 = {\n    part: int\n    supplier: int\n    cost: float\n    qty: int\n}\ntype Anon7 = {\n    part: obj\n    value: obj\n}\ntype Anon8 = {\n    part: obj\n    value: obj\n}\ntype Anon9 = {\n    part: obj\n    total: float\n}\ntype Anon10 = {\n    x: Anon8\n}\ntype Anon11 = {\n    key: obj\n    items: Anon10 list\n}\ntype Anon12 = {\n    part: obj\n    total: float\n}\nlet nations: Anon2 list = [{ id = 1; name = \"A\" }; { id = 2; name = \"B\" }]\nlet suppliers: Anon4 list = [{ id = 1; nation = 1 }; { id = 2; nation = 2 }]\nlet partsupp: Anon6 list = [{ part = 100; supplier = 1; cost = 10.0; qty = 2 }; { part = 100; supplier = 2; cost = 20.0; qty = 1 }; { part = 200; supplier = 1; cost = 5.0; qty = 3 }]\nlet filtered: Anon8 list = [ for ps in partsupp do for s in suppliers do if (s.id) = (ps.supplier) then for n in nations do if (n.id) = (s.nation) then if (n.name) = \"A\" then yield { part = ps.part; value = (ps.cost) * (ps.qty) } ]\nlet grouped: Anon12 list = [ for (key, items) in List.groupBy (fun x -\u003e x.part) filtered do\n    let g : Anon11 = { key = key; items = items }\n    yield { part = g.key; total = List.sum [ for r in g.items do yield r.value ] } ]\nprintfn \"%s\" ((\"[\" + (String.concat \", \" (List.map string grouped))) + \"]\")\n",
+  "vars": [
+    {
+      "name": "nations",
+      "expr": "[{ id = 1; name = \"A\" }; { id = 2; name = \"B\" }]",
+      "mutable": false,
+      "type": "Anon2 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "suppliers",
+      "expr": "[{ id = 1; nation = 1 }; { id = 2; nation = 2 }]",
+      "mutable": false,
+      "type": "Anon4 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "partsupp",
+      "expr": "[{ part = 100; supplier = 1; cost = 10.0; qty = 2 }; { part = 100; supplier = 2; cost = 20.0; qty = 1 }; { part = 200; supplier = 1; cost = 5.0; qty = 3 }]",
+      "mutable": false,
+      "type": "Anon6 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "filtered",
+      "expr": "[ for ps in partsupp do for s in suppliers do if (s.id) = (ps.supplier) then for n in nations do if (n.id) = (s.nation) then if (n.name) = \"A\" then yield { part = ps.part; value = (ps.cost) * (ps.qty) } ]",
+      "mutable": false,
+      "type": "Anon8 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "grouped",
+      "expr": "[ for (key, items) in List.groupBy (fun x -\u003e x.part) filtered do",
+      "mutable": false,
+      "type": "Anon12 list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "g",
+      "params": [
+        {
+          "name": ":",
+          "type": ""
+        },
+        {
+          "name": "Anon11",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "{ key = key; items = items }",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "((\"[\" + (String.concat \", \" (List.map string grouped))) + \"]\")",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

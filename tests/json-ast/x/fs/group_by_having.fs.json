@@ -1,0 +1,47 @@
+{
+  "source": "// Generated 2025-07-22 04:52 +0700\n\ntype Anon1 = {\n    name: string\n    city: string\n}\ntype Anon2 = {\n    name: string\n    city: string\n}\ntype Anon3 = {\n    city: obj\n    num: int\n}\ntype Anon4 = {\n    p: Anon2\n}\ntype Anon5 = {\n    key: string\n    items: Anon4 list\n}\ntype Anon6 = {\n    city: obj\n    num: int\n}\nlet people: Anon2 list = [{ name = \"Alice\"; city = \"Paris\" }; { name = \"Bob\"; city = \"Hanoi\" }; { name = \"Charlie\"; city = \"Paris\" }; { name = \"Diana\"; city = \"Hanoi\" }; { name = \"Eve\"; city = \"Paris\" }; { name = \"Frank\"; city = \"Hanoi\" }; { name = \"George\"; city = \"Paris\" }]\nlet big: Anon6 list = [ for (key, items) in List.groupBy (fun p -\u003e p.city) people do\n    let g : Anon5 = { key = key; items = items }\n    yield { city = g.key; num = List.length (g.items) } ]\njson big\n",
+  "vars": [
+    {
+      "name": "people",
+      "expr": "[{ name = \"Alice\"; city = \"Paris\" }; { name = \"Bob\"; city = \"Hanoi\" }; { name = \"Charlie\"; city = \"Paris\" }; { name = \"Diana\"; city = \"Hanoi\" }; { name = \"Eve\"; city = \"Paris\" }; { name = \"Frank\"; city = \"Hanoi\" }; { name = \"George\"; city = \"Paris\" }]",
+      "mutable": false,
+      "type": "Anon2 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "big",
+      "expr": "[ for (key, items) in List.groupBy (fun p -\u003e p.city) people do",
+      "mutable": false,
+      "type": "Anon6 list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "g",
+      "params": [
+        {
+          "name": ":",
+          "type": ""
+        },
+        {
+          "name": "Anon5",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "{ key = key; items = items }",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

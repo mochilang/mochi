@@ -1,0 +1,11 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nprintfn \"%s\" (string ([1; 2] union [2; 3]))\nprintfn \"%s\" (string ([1; 2; 3] except [2]))\nprintfn \"%s\" (string ([1; 2; 3] intersect [2; 4]))\nprintfn \"%d\" (Seq.length ([1; 2] union [2; 3]))\n",
+  "vars": null,
+  "prints": [
+    "(string ([1; 2] union [2; 3]))",
+    "(string ([1; 2; 3] except [2]))",
+    "(string ([1; 2; 3] intersect [2; 4]))",
+    "(Seq.length ([1; 2] union [2; 3]))"
+  ],
+  "stmts": null
+}

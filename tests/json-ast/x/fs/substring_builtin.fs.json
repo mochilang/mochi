@@ -1,0 +1,8 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nprintfn \"%s\" (string (\"mochi\".Substring(1, 4 - 1)))\n",
+  "vars": null,
+  "prints": [
+    "(string (\"mochi\".Substring(1, 4 - 1)))"
+  ],
+  "stmts": null
+}

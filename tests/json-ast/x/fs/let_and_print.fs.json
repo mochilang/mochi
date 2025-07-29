@@ -1,0 +1,25 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet a: int = 10\nlet b: int = 20\nprintfn \"%d\" (a + b)\n",
+  "vars": [
+    {
+      "name": "a",
+      "expr": "10",
+      "mutable": false,
+      "type": "int",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "b",
+      "expr": "20",
+      "mutable": false,
+      "type": "int",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(a + b)"
+  ],
+  "stmts": null
+}

@@ -1,0 +1,39 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet rec sum3 a b c =\n    (a + b) + c\nprintfn \"%s\" (string (sum3 1 2 3))\n",
+  "vars": null,
+  "prints": null,
+  "stmts": [
+    {
+      "name": "sum3",
+      "params": [
+        {
+          "name": "a",
+          "type": ""
+        },
+        {
+          "name": "b",
+          "type": ""
+        },
+        {
+          "name": "c",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "(a + b) + c",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (sum3 1 2 3))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

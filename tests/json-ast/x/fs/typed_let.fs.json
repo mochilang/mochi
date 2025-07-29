@@ -1,0 +1,17 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet y: int = 0\nprintfn \"%d\" y\n",
+  "vars": [
+    {
+      "name": "y",
+      "expr": "0",
+      "mutable": false,
+      "type": "int",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "y"
+  ],
+  "stmts": null
+}

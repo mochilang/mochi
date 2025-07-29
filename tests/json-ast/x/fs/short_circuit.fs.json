@@ -1,0 +1,45 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet rec boom a b =\n    printfn \"%s\" (string \"boom\")\n    true\nprintfn \"%b\" (false \u0026\u0026 (boom 1 2))\nprintfn \"%b\" (true || (boom 1 2))\n",
+  "vars": null,
+  "prints": null,
+  "stmts": [
+    {
+      "name": "boom",
+      "params": [
+        {
+          "name": "a",
+          "type": ""
+        },
+        {
+          "name": "b",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "(string \"boom\")",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "expr": "true",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(false \u0026\u0026 (boom 1 2))",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(true || (boom 1 2))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

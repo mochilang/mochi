@@ -1,0 +1,35 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet mutable i: int = 0\nwhile i \u003c 3 do\nprintfn \"%d\" i\ni \u003c- i + 1\n",
+  "vars": [
+    {
+      "name": "i",
+      "expr": "0",
+      "mutable": true,
+      "type": "int",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "cond": "i \u003c 3",
+      "body": [
+        {
+          "expr": "i",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "name": "i",
+          "index": "",
+          "expr": "i + 1",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

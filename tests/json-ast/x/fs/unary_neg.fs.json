@@ -1,0 +1,9 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nprintfn \"%d\" (-3)\nprintfn \"%d\" (5 + (-2))\n",
+  "vars": null,
+  "prints": [
+    "(-3)",
+    "(5 + (-2))"
+  ],
+  "stmts": null
+}

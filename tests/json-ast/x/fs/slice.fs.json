@@ -1,0 +1,10 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nprintfn \"%s\" ((\"[\" + (String.concat \", \" (List.map string ([1; 2; 3].[1..(3 - 1)])))) + \"]\")\nprintfn \"%s\" ((\"[\" + (String.concat \", \" (List.map string ([1; 2; 3].[0..(2 - 1)])))) + \"]\")\nprintfn \"%s\" (string (\"hello\".Substring(1, 4 - 1)))\n",
+  "vars": null,
+  "prints": [
+    "((\"[\" + (String.concat \", \" (List.map string ([1; 2; 3].[1..(3 - 1)])))) + \"]\")",
+    "((\"[\" + (String.concat \", \" (List.map string ([1; 2; 3].[0..(2 - 1)])))) + \"]\")",
+    "(string (\"hello\".Substring(1, 4 - 1)))"
+  ],
+  "stmts": null
+}

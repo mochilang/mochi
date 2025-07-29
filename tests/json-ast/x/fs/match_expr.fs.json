@@ -1,0 +1,25 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet x: int = 2\nlet label: string = match x with\n| 1 -\u003e \"one\"\n| 2 -\u003e \"two\"\n| 3 -\u003e \"three\"\n| _ -\u003e \"unknown\"\nprintfn \"%s\" (string label)\n",
+  "vars": [
+    {
+      "name": "x",
+      "expr": "2",
+      "mutable": false,
+      "type": "int",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "label",
+      "expr": "match x with",
+      "mutable": false,
+      "type": "string",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(string label)"
+  ],
+  "stmts": null
+}

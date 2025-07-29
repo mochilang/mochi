@@ -1,0 +1,52 @@
+{
+  "source": "// Generated 2025-07-22 04:52 +0700\n\ntype Anon1 = {\n    a: string\n    b: int\n    val: int\n}\ntype Anon2 = {\n    a: string\n    b: int\n    val: int\n}\ntype Anon3 = {\n    a: obj\n    b: obj\n}\ntype Anon4 = {\n    a: obj\n    b: obj\n    total: float\n}\ntype Anon5 = {\n    i: Anon2\n}\ntype Anon6 = {\n    key: Anon3\n    items: Anon5 list\n}\ntype Anon7 = {\n    a: obj\n    b: obj\n    total: float\n}\nlet items: Anon2 list = [{ a = \"x\"; b = 1; val = 2 }; { a = \"x\"; b = 2; val = 3 }; { a = \"y\"; b = 1; val = 4 }; { a = \"y\"; b = 2; val = 1 }]\nlet grouped: Anon7 list = [ for (key, items) in List.groupBy (fun i -\u003e { a = i.a; b = i.b }) items do\n    let g : Anon6 = { key = key; items = items }\n    yield { a = g.key.a; b = g.key.b; total = List.sum [ for x in g.items do yield x.val ] } ]\nprintfn \"%s\" ((\"[\" + (String.concat \", \" (List.map string grouped))) + \"]\")\n",
+  "vars": [
+    {
+      "name": "items",
+      "expr": "[{ a = \"x\"; b = 1; val = 2 }; { a = \"x\"; b = 2; val = 3 }; { a = \"y\"; b = 1; val = 4 }; { a = \"y\"; b = 2; val = 1 }]",
+      "mutable": false,
+      "type": "Anon2 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "grouped",
+      "expr": "[ for (key, items) in List.groupBy (fun i -\u003e { a = i.a; b = i.b }) items do",
+      "mutable": false,
+      "type": "Anon7 list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "g",
+      "params": [
+        {
+          "name": ":",
+          "type": ""
+        },
+        {
+          "name": "Anon6",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "{ key = key; items = items }",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "((\"[\" + (String.concat \", \" (List.map string grouped))) + \"]\")",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\ntype Anon1 = {\n    mutable outer: Map\u003cstring, int\u003e\n}\ntype Anon2 = {\n    mutable inner: int\n}\nlet mutable data: Anon1 = { outer = { inner = 1 } }\ndata.[\"outer\"].[\"inner\"] \u003c- 2\nprintfn \"%s\" (string (data.[\"outer\"].[\"inner\"]))\n",
+  "vars": [
+    {
+      "name": "data",
+      "expr": "{ outer = { inner = 1 } }",
+      "mutable": true,
+      "type": "Anon1",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "data",
+      "index": "\"outer\"].[\"inner\"",
+      "expr": "2",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (data.[\"outer\"].[\"inner\"]))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

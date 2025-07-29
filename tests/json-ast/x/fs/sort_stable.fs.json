@@ -1,0 +1,25 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\ntype Anon1 = {\n    mutable n: int\n    mutable v: string\n}\ntype Anon2 = {\n    mutable n: int\n    mutable v: string\n}\nlet items: Anon2 list = [{ n = 1; v = \"a\" }; { n = 1; v = \"b\" }; { n = 2; v = \"c\" }]\nlet result = [ for i in List.sortBy (fun i -\u003e (i.n)) items do yield i.v ]\nprintfn \"%s\" ((\"[\" + (String.concat \", \" (List.map string result))) + \"]\")\n",
+  "vars": [
+    {
+      "name": "items",
+      "expr": "[{ n = 1; v = \"a\" }; { n = 1; v = \"b\" }; { n = 2; v = \"c\" }]",
+      "mutable": false,
+      "type": "Anon2 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "result",
+      "expr": "[ for i in List.sortBy (fun i -\u003e (i.n)) items do yield i.v ]",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "((\"[\" + (String.concat \", \" (List.map string result))) + \"]\")"
+  ],
+  "stmts": null
+}

@@ -1,0 +1,52 @@
+{
+  "source": "// Generated 2025-07-22 04:52 +0700\n\ntype Anon1 = {\n    cat: string\n    val: int\n}\ntype Anon2 = {\n    cat: string\n    val: int\n}\ntype Anon3 = {\n    cat: obj\n    total: float\n}\ntype Anon4 = {\n    i: Anon2\n}\ntype Anon5 = {\n    key: string\n    items: Anon4 list\n}\ntype Anon6 = {\n    cat: obj\n    total: float\n}\nlet items: Anon2 list = [{ cat = \"a\"; val = 3 }; { cat = \"a\"; val = 1 }; { cat = \"b\"; val = 5 }; { cat = \"b\"; val = 2 }]\nlet grouped: Anon6 list = [ for (key, items) in List.groupBy (fun i -\u003e i.cat) items do\n    let g : Anon5 = { key = key; items = items }\n    yield { cat = g.key; total = List.sum [ for x in g.items do yield x.val ] } ]\nprintfn \"%s\" ((\"[\" + (String.concat \", \" (List.map string grouped))) + \"]\")\n",
+  "vars": [
+    {
+      "name": "items",
+      "expr": "[{ cat = \"a\"; val = 3 }; { cat = \"a\"; val = 1 }; { cat = \"b\"; val = 5 }; { cat = \"b\"; val = 2 }]",
+      "mutable": false,
+      "type": "Anon2 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "grouped",
+      "expr": "[ for (key, items) in List.groupBy (fun i -\u003e i.cat) items do",
+      "mutable": false,
+      "type": "Anon6 list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "g",
+      "params": [
+        {
+          "name": ":",
+          "type": ""
+        },
+        {
+          "name": "Anon5",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "{ key = key; items = items }",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "((\"[\" + (String.concat \", \" (List.map string grouped))) + \"]\")",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

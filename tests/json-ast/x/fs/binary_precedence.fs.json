@@ -1,0 +1,11 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nprintfn \"%d\" (1 + (2 * 3))\nprintfn \"%d\" ((1 + 2) * 3)\nprintfn \"%d\" ((2 * 3) + 1)\nprintfn \"%d\" (2 * (3 + 1))\n",
+  "vars": null,
+  "prints": [
+    "(1 + (2 * 3))",
+    "((1 + 2) * 3)",
+    "((2 * 3) + 1)",
+    "(2 * (3 + 1))"
+  ],
+  "stmts": null
+}

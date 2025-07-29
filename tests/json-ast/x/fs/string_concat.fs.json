@@ -1,0 +1,8 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nprintfn \"%s\" (string (\"hello \" + \"world\"))\n",
+  "vars": null,
+  "prints": [
+    "(string (\"hello \" + \"world\"))"
+  ],
+  "stmts": null
+}

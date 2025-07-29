@@ -1,0 +1,35 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet rec add a b =\n    a + b\nprintfn \"%s\" (string (add 2 3))\n",
+  "vars": null,
+  "prints": null,
+  "stmts": [
+    {
+      "name": "add",
+      "params": [
+        {
+          "name": "a",
+          "type": ""
+        },
+        {
+          "name": "b",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "a + b",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (add 2 3))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

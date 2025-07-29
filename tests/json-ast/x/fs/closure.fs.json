@@ -1,0 +1,40 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet rec makeAdder n =\n    fun x -\u003e (x + n)\nlet add10 = makeAdder 10\nprintfn \"%s\" (string (add10 7))\n",
+  "vars": [
+    {
+      "name": "add10",
+      "expr": "makeAdder 10",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "makeAdder",
+      "params": [
+        {
+          "name": "n",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "fun x -\u003e (x + n)",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (add10 7))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

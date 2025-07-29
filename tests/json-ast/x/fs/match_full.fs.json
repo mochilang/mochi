@@ -1,0 +1,89 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet x: int = 2\nlet label: string = match x with\n| 1 -\u003e \"one\"\n| 2 -\u003e \"two\"\n| 3 -\u003e \"three\"\n| _ -\u003e \"unknown\"\nprintfn \"%s\" (string label)\nlet day: string = \"sun\"\nlet mood: string = match day with\n| \"mon\" -\u003e \"tired\"\n| \"fri\" -\u003e \"excited\"\n| \"sun\" -\u003e \"relaxed\"\n| _ -\u003e \"normal\"\nprintfn \"%s\" (string mood)\nlet ok: bool = true\nlet status: string = match ok with\n| true -\u003e \"confirmed\"\n| false -\u003e \"denied\"\nprintfn \"%s\" (string status)\nlet rec classify n =\n    match n with\n| 0 -\u003e \"zero\"\n| 1 -\u003e \"one\"\n| _ -\u003e \"many\"\nprintfn \"%s\" (string (classify 0))\nprintfn \"%s\" (string (classify 5))\n",
+  "vars": [
+    {
+      "name": "x",
+      "expr": "2",
+      "mutable": false,
+      "type": "int",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "label",
+      "expr": "match x with",
+      "mutable": false,
+      "type": "string",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "day",
+      "expr": "\"sun\"",
+      "mutable": false,
+      "type": "string",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "mood",
+      "expr": "match day with",
+      "mutable": false,
+      "type": "string",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "ok",
+      "expr": "true",
+      "mutable": false,
+      "type": "bool",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "status",
+      "expr": "match ok with",
+      "mutable": false,
+      "type": "string",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(string label)",
+    "(string mood)",
+    "(string status)"
+  ],
+  "stmts": [
+    {
+      "name": "classify",
+      "params": [
+        {
+          "name": "n",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "match n with",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (classify 0))",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (classify 5))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

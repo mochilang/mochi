@@ -1,0 +1,18 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet s: string = \"catch\"\nprintfn \"%b\" (s.Contains(\"cat\"))\nprintfn \"%b\" (s.Contains(\"dog\"))\n",
+  "vars": [
+    {
+      "name": "s",
+      "expr": "\"catch\"",
+      "mutable": false,
+      "type": "string",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(s.Contains(\"cat\"))",
+    "(s.Contains(\"dog\"))"
+  ],
+  "stmts": null
+}

@@ -1,0 +1,28 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet mutable matrix: list list = [[1; 2]; [3; 4]]\nmatrix.[1].[0] \u003c- 5\nprintfn \"%s\" (string (matrix.[1].[0]))\n",
+  "vars": [
+    {
+      "name": "matrix",
+      "expr": "[[1; 2]; [3; 4]]",
+      "mutable": true,
+      "type": "list list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "matrix",
+      "index": "1].[0",
+      "expr": "5",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (matrix.[1].[0]))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

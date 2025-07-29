@@ -1,0 +1,106 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\ntype Anon1 = {\n    mutable tag: string\n    mutable val: int\n}\ntype Anon2 = {\n    mutable tag: string\n    mutable val: int\n}\ntype Anon3 = {\n    mutable d: obj\n}\ntype Anon4 = {\n    mutable key: obj\n    mutable items: Anon3 list\n}\ntype Anon5 = {\n    mutable tag: obj\n    mutable total: obj\n}\nlet data: Anon2 list = [{ tag = \"a\"; val = 1 }; { tag = \"a\"; val = 2 }; { tag = \"b\"; val = 3 }]\nlet groups = [ for (key, items) in List.groupBy (fun d -\u003e d.tag) data do\n    let g : Anon4 = { key = key; items = items }\n    yield g ]\nlet mutable tmp = []\nfor g in groups do\nlet mutable total: int = 0\nfor x in g.items do\ntotal \u003c- total + (x.val)\ntmp \u003c- tmp @ [{ tag = g.key; total = total }]\nlet result = [ for r in List.sortBy (fun r -\u003e (r.tag)) tmp do yield r ]\nprintfn \"%s\" ((\"[\" + (String.concat \", \" (List.map string result))) + \"]\")\n",
+  "vars": [
+    {
+      "name": "data",
+      "expr": "[{ tag = \"a\"; val = 1 }; { tag = \"a\"; val = 2 }; { tag = \"b\"; val = 3 }]",
+      "mutable": false,
+      "type": "Anon2 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "groups",
+      "expr": "[ for (key, items) in List.groupBy (fun d -\u003e d.tag) data do",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "tmp",
+      "expr": "[]",
+      "mutable": true,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "g",
+      "params": [
+        {
+          "name": ":",
+          "type": ""
+        },
+        {
+          "name": "Anon4",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "{ key = key; items = items }",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "var": "g",
+      "expr": "groups",
+      "body": [
+        {
+          "name": "total",
+          "expr": "0",
+          "mutable": true,
+          "type": "int",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "var": "x",
+      "expr": "g.items",
+      "body": [
+        {
+          "name": "total",
+          "index": "",
+          "expr": "total + (x.val)",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "name": "tmp",
+          "index": "",
+          "expr": "tmp @ [{ tag = g.key; total = total }]",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "name": "result",
+          "expr": "[ for r in List.sortBy (fun r -\u003e (r.tag)) tmp do yield r ]",
+          "mutable": false,
+          "type": "",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "expr": "((\"[\" + (String.concat \", \" (List.map string result))) + \"]\")",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

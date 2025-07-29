@@ -1,0 +1,17 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\ntype Todo = {\n    mutable title: string\n}\ntype Anon1 = {\n    mutable title: string\n}\nlet todo = { title = \"hi\" }\nprintfn \"%s\" (string (todo.title))\n",
+  "vars": [
+    {
+      "name": "todo",
+      "expr": "{ title = \"hi\" }",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(string (todo.title))"
+  ],
+  "stmts": null
+}

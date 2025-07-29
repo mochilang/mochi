@@ -1,0 +1,17 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet square = fun x -\u003e (x * x)\nprintfn \"%s\" (string (square 6))\n",
+  "vars": [
+    {
+      "name": "square",
+      "expr": "fun x -\u003e (x * x)",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(string (square 6))"
+  ],
+  "stmts": null
+}

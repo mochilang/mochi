@@ -1,0 +1,17 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet s: string = \"mochi\"\nprintfn \"%s\" (string (s.[1]))\n",
+  "vars": [
+    {
+      "name": "s",
+      "expr": "\"mochi\"",
+      "mutable": false,
+      "type": "string",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(string (s.[1]))"
+  ],
+  "stmts": null
+}

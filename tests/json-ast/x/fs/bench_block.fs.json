@@ -1,0 +1,164 @@
+{
+  "source": "// Generated 2025-07-25 07:54 +0700\n\nlet mutable _nowSeed:int64 = 0L\nlet mutable _nowSeeded = false\nlet _initNow () =\n    let s = System.Environment.GetEnvironmentVariable(\"MOCHI_NOW_SEED\")\n    if System.String.IsNullOrEmpty(s) |\u003e not then\n        match System.Int32.TryParse(s) with\n        | true, v -\u003e\n            _nowSeed \u003c- int64 v\n            _nowSeeded \u003c- true\n        | _ -\u003e ()\nlet _now () =\n    if _nowSeeded then\n        _nowSeed \u003c- (_nowSeed * 1664525L + 1013904223L) % 2147483647L\n        int _nowSeed\n    else\n        int (System.DateTime.UtcNow.Ticks % 2147483647L)\n\n_initNow()\nlet __bench_start = _now()\nlet n: int = 1000\nlet mutable s: int = 0\nfor i in 1 .. (n - 1) do\n    s \u003c- s + i\nlet __bench_end = _now()\nprintfn \"{\\n  \\\"duration_us\\\": %d,\\n  \\\"memory_bytes\\\": 0,\\n  \\\"name\\\": \\\"simple\\\"\\n}\" ((__bench_end - __bench_start) / 1000)\n",
+  "vars": [
+    {
+      "name": "_nowSeed",
+      "expr": "0L",
+      "mutable": true,
+      "type": "int64",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "_nowSeeded",
+      "expr": "false",
+      "mutable": true,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "__bench_start",
+      "expr": "_now()",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "n",
+      "expr": "1000",
+      "mutable": false,
+      "type": "int",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "s",
+      "expr": "0",
+      "mutable": true,
+      "type": "int",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "_initNow",
+      "params": null,
+      "ret": "",
+      "body": [
+        {
+          "name": "s",
+          "expr": "System.Environment.GetEnvironmentVariable(\"MOCHI_NOW_SEED\")",
+          "mutable": false,
+          "type": "",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "expr": "if System.String.IsNullOrEmpty(s) |\u003e not then",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "expr": "match System.Int32.TryParse(s) with",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "expr": "| true, v -\u003e",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "name": "_nowSeed",
+          "index": "",
+          "expr": "int64 v",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "name": "_nowSeeded",
+          "index": "",
+          "expr": "true",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "expr": "| _ -\u003e ()",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "_now",
+      "params": null,
+      "ret": "",
+      "body": [
+        {
+          "expr": "if _nowSeeded then",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "name": "_nowSeed",
+          "index": "",
+          "expr": "(_nowSeed * 1664525L + 1013904223L) % 2147483647L",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "expr": "int _nowSeed",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "expr": "else",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "expr": "int (System.DateTime.UtcNow.Ticks % 2147483647L)",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "var": "i",
+      "start": "1",
+      "end": "(n - 1)",
+      "body": [
+        {
+          "name": "s",
+          "index": "",
+          "expr": "s + i",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "name": "__bench_end",
+          "expr": "_now()",
+          "mutable": false,
+          "type": "",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "expr": "duration_us\\\": %d,\\n  \\\"memory_bytes\\\": 0,\\n  \\\"name\\\": \\\"simple\\\"\\n}\" ((__bench_end - __bench_start) / 1000)",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

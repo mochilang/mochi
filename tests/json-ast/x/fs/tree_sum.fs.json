@@ -1,0 +1,40 @@
+{
+  "source": "// Generated 2025-07-21 21:44 +0700\n\ntype Tree =\n    | Leaf\n    | Node of obj * int * obj\nlet rec sum_tree t =\n    match t with\n| Leaf -\u003e 0\n| Node left value right -\u003e ((sum_tree left) + value) + (sum_tree right)\nlet t: Tree = Node(Leaf, 1, Node(Leaf, 2, Leaf))\nprintfn \"%s\" (string (sum_tree t))\n",
+  "vars": [
+    {
+      "name": "t",
+      "expr": "Node(Leaf, 1, Node(Leaf, 2, Leaf))",
+      "mutable": false,
+      "type": "Tree",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "sum_tree",
+      "params": [
+        {
+          "name": "t",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "match t with",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (sum_tree t))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

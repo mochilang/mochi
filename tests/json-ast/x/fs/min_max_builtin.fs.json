@@ -1,0 +1,18 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet nums: int list = [3; 1; 4]\nprintfn \"%s\" (string (min nums))\nprintfn \"%s\" (string (max nums))\n",
+  "vars": [
+    {
+      "name": "nums",
+      "expr": "[3; 1; 4]",
+      "mutable": false,
+      "type": "int list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(string (min nums))",
+    "(string (max nums))"
+  ],
+  "stmts": null
+}

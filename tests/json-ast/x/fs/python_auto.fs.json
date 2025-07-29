@@ -1,0 +1,114 @@
+{
+  "source": "// Generated 2025-07-21 22:29 +0700\n\nopen System\n\nmodule math\nlet pi: float = System.Math.PI\nlet e: float = System.Math.E\nlet rec sqrt x =\n    System.Math.Sqrt x\nlet rec pow x y =\n    System.Math.Pow x y\nlet rec sin x =\n    System.Math.Sin x\nlet rec log x =\n    System.Math.Log x\n\nprintfn \"%s\" (string (math.sqrt(16.0)))\nprintfn \"%s\" (string (math.pi))\n",
+  "vars": [
+    {
+      "name": "pi",
+      "expr": "System.Math.PI",
+      "mutable": false,
+      "type": "float",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "e",
+      "expr": "System.Math.E",
+      "mutable": false,
+      "type": "float",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "sqrt",
+      "params": [
+        {
+          "name": "x",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "System.Math.Sqrt x",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "pow",
+      "params": [
+        {
+          "name": "x",
+          "type": ""
+        },
+        {
+          "name": "y",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "System.Math.Pow x y",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "sin",
+      "params": [
+        {
+          "name": "x",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "System.Math.Sin x",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "log",
+      "params": [
+        {
+          "name": "x",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "System.Math.Log x",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (math.sqrt(16.0)))",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (math.pi))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "source": "// Generated 2025-07-22 05:29 +0700\n\ntype Anon1 = {\n    name: string\n    age: int\n}\ntype Anon2 = {\n    name: string\n    age: int\n}\nopen System\n\nopen System.Text.Json\n\nlet people: Anon2 list = [{ name = \"Alice\"; age = 30 }; { name = \"Bob\"; age = 25 }]\n(List.iter (fun row -\u003e printfn \"%s\" (JsonSerializer.Serialize(row))) people)\n",
+  "vars": [
+    {
+      "name": "people",
+      "expr": "[{ name = \"Alice\"; age = 30 }; { name = \"Bob\"; age = 25 }]",
+      "mutable": false,
+      "type": "Anon2 list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": null
+}

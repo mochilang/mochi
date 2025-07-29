@@ -1,0 +1,18 @@
+{
+  "source": "// Generated 2025-07-22 09:07 +0700\n\nlet m = Map.ofList [(\"a\", 1); (\"b\", 2)]\nprintfn \"%d\" (if Map.containsKey \"a\" m then 1 else 0)\nprintfn \"%d\" (if Map.containsKey \"c\" m then 1 else 0)\n",
+  "vars": [
+    {
+      "name": "m",
+      "expr": "Map.ofList [(\"a\", 1); (\"b\", 2)]",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(if Map.containsKey \"a\" m then 1 else 0)",
+    "(if Map.containsKey \"c\" m then 1 else 0)"
+  ],
+  "stmts": null
+}

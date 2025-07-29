@@ -1,0 +1,47 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\ntype Anon1 = {\n    mutable n: obj\n    mutable l: obj\n}\ntype Anon2 = {\n    mutable n: obj\n    mutable l: obj\n}\nlet nums: int list = [1; 2; 3]\nlet letters: string list = [\"A\"; \"B\"]\nlet pairs: Anon2 list = [ for n in nums do for l in letters do if (n % 2) = 0 then yield { n = n; l = l } ]\nprintfn \"%s\" (string \"--- Even pairs ---\")\nfor p in pairs do\nprintfn \"%s\" (String.concat \" \" [string (p.n); string (p.l)])\n",
+  "vars": [
+    {
+      "name": "nums",
+      "expr": "[1; 2; 3]",
+      "mutable": false,
+      "type": "int list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "letters",
+      "expr": "[\"A\"; \"B\"]",
+      "mutable": false,
+      "type": "string list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "pairs",
+      "expr": "[ for n in nums do for l in letters do if (n % 2) = 0 then yield { n = n; l = l } ]",
+      "mutable": false,
+      "type": "Anon2 list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(string \"--- Even pairs ---\")"
+  ],
+  "stmts": [
+    {
+      "var": "p",
+      "expr": "pairs",
+      "body": [
+        {
+          "expr": "(String.concat \" \" [string (p.n); string (p.l)])",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

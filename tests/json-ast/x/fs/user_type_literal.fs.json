@@ -1,0 +1,17 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\ntype Person = {\n    mutable name: string\n    mutable age: int\n}\ntype Book = {\n    mutable title: string\n    mutable author: Person\n}\nlet book: Book = { title = \"Go\"; author = { name = \"Bob\"; age = 42 } }\nprintfn \"%s\" (string (book.author.name))\n",
+  "vars": [
+    {
+      "name": "book",
+      "expr": "{ title = \"Go\"; author = { name = \"Bob\"; age = 42 } }",
+      "mutable": false,
+      "type": "Book",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(string (book.author.name))"
+  ],
+  "stmts": null
+}

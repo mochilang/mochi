@@ -1,0 +1,17 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet a: int list = [1; 2]\nprintfn \"%s\" ((\"[\" + (String.concat \", \" (List.map string (a @ [3])))) + \"]\")\n",
+  "vars": [
+    {
+      "name": "a",
+      "expr": "[1; 2]",
+      "mutable": false,
+      "type": "int list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "((\"[\" + (String.concat \", \" (List.map string (a @ [3])))) + \"]\")"
+  ],
+  "stmts": null
+}

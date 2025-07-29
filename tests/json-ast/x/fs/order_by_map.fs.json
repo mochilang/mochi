@@ -1,0 +1,25 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\ntype Anon1 = {\n    mutable a: int\n    mutable b: int\n}\ntype Anon2 = {\n    mutable a: int\n    mutable b: int\n}\ntype Anon3 = {\n    mutable a: obj\n    mutable b: obj\n}\nlet data: Anon2 list = [{ a = 1; b = 2 }; { a = 1; b = 1 }; { a = 0; b = 5 }]\nlet sorted = [ for x in List.sortBy (fun x -\u003e { a = x.a; b = x.b }) data do yield x ]\nprintfn \"%s\" ((\"[\" + (String.concat \", \" (List.map string sorted))) + \"]\")\n",
+  "vars": [
+    {
+      "name": "data",
+      "expr": "[{ a = 1; b = 2 }; { a = 1; b = 1 }; { a = 0; b = 5 }]",
+      "mutable": false,
+      "type": "Anon2 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "sorted",
+      "expr": "[ for x in List.sortBy (fun x -\u003e { a = x.a; b = x.b }) data do yield x ]",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "((\"[\" + (String.concat \", \" (List.map string sorted))) + \"]\")"
+  ],
+  "stmts": null
+}

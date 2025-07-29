@@ -1,0 +1,47 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\ntype Anon1 = {\n    mutable id: int\n    mutable name: string\n}\ntype Anon2 = {\n    mutable id: int\n    mutable name: string\n}\ntype Anon3 = {\n    mutable id: int\n    mutable customerId: int\n    mutable total: int\n}\ntype Anon4 = {\n    mutable id: int\n    mutable customerId: int\n    mutable total: int\n}\ntype Anon5 = {\n    mutable orderId: obj\n    mutable orderCustomerId: obj\n    mutable pairedCustomerName: obj\n    mutable orderTotal: obj\n}\ntype Anon6 = {\n    mutable orderId: obj\n    mutable orderCustomerId: obj\n    mutable pairedCustomerName: obj\n    mutable orderTotal: obj\n}\nlet customers: Anon2 list = [{ id = 1; name = \"Alice\" }; { id = 2; name = \"Bob\" }; { id = 3; name = \"Charlie\" }]\nlet orders: Anon4 list = [{ id = 100; customerId = 1; total = 250 }; { id = 101; customerId = 2; total = 125 }; { id = 102; customerId = 1; total = 300 }]\nlet result: Anon6 list = [ for o in orders do for c in customers do yield { orderId = o.id; orderCustomerId = o.customerId; pairedCustomerName = c.name; orderTotal = o.total } ]\nprintfn \"%s\" (string \"--- Cross Join: All order-customer pairs ---\")\nfor entry in result do\nprintfn \"%s\" (String.concat \" \" [string \"Order\"; string (entry.orderId); string \"(customerId:\"; string (entry.orderCustomerId); string \", total: $\"; string (entry.orderTotal); string \") paired with\"; string (entry.pairedCustomerName)])\n",
+  "vars": [
+    {
+      "name": "customers",
+      "expr": "[{ id = 1; name = \"Alice\" }; { id = 2; name = \"Bob\" }; { id = 3; name = \"Charlie\" }]",
+      "mutable": false,
+      "type": "Anon2 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "orders",
+      "expr": "[{ id = 100; customerId = 1; total = 250 }; { id = 101; customerId = 2; total = 125 }; { id = 102; customerId = 1; total = 300 }]",
+      "mutable": false,
+      "type": "Anon4 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "result",
+      "expr": "[ for o in orders do for c in customers do yield { orderId = o.id; orderCustomerId = o.customerId; pairedCustomerName = c.name; orderTotal = o.total } ]",
+      "mutable": false,
+      "type": "Anon6 list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(string \"--- Cross Join: All order-customer pairs ---\")"
+  ],
+  "stmts": [
+    {
+      "var": "entry",
+      "expr": "result",
+      "body": [
+        {
+          "expr": "(String.concat \" \" [string \"Order\"; string (entry.orderId); string \"(customerId:\"; string (entry.orderCustomerId); string \", total: $\"; string (entry.orderTotal); string \") paired with\"; string (entry.pairedCustomerName)])",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

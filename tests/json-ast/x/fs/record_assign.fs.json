@@ -1,0 +1,40 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\ntype Counter = {\n    mutable n: int\n}\nlet rec inc c =\n    { c with n = (c.n) + 1 }\nlet mutable c: Counter = { n = 0 }\ninc c\nprintfn \"%s\" (string (c.n))\n",
+  "vars": [
+    {
+      "name": "c",
+      "expr": "{ n = 0 }",
+      "mutable": true,
+      "type": "Counter",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "inc",
+      "params": [
+        {
+          "name": "c",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "{ c with n = (c.n) + 1 }",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (c.n))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

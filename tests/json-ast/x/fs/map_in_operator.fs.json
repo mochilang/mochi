@@ -1,0 +1,18 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet m = Map.ofList [(1, \"a\"); (2, \"b\")]\nprintfn \"%b\" (Map.containsKey 1 m)\nprintfn \"%b\" (Map.containsKey 3 m)\n",
+  "vars": [
+    {
+      "name": "m",
+      "expr": "Map.ofList [(1, \"a\"); (2, \"b\")]",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(Map.containsKey 1 m)",
+    "(Map.containsKey 3 m)"
+  ],
+  "stmts": null
+}

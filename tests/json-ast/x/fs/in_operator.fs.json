@@ -1,0 +1,18 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet xs: int list = [1; 2; 3]\nprintfn \"%b\" (List.contains 2 xs)\nprintfn \"%b\" (not (List.contains 5 xs))\n",
+  "vars": [
+    {
+      "name": "xs",
+      "expr": "[1; 2; 3]",
+      "mutable": false,
+      "type": "int list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(List.contains 2 xs)",
+    "(not (List.contains 5 xs))"
+  ],
+  "stmts": null
+}

@@ -1,0 +1,35 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet x: int = 5\nif x \u003e 3 then\nprintfn \"%s\" (string \"big\")\nelse\nprintfn \"%s\" (string \"small\")\n",
+  "vars": [
+    {
+      "name": "x",
+      "expr": "5",
+      "mutable": false,
+      "type": "int",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "cond": "x \u003e 3",
+      "then": [
+        {
+          "expr": "(string \"big\")",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "else": [
+        {
+          "expr": "(string \"small\")",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

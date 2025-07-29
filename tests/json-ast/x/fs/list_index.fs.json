@@ -1,0 +1,17 @@
+{
+  "source": "// Generated 2025-07-21 18:37 +0700\n\nlet xs: int list = [10; 20; 30]\nprintfn \"%s\" (string (xs.[1]))\n",
+  "vars": [
+    {
+      "name": "xs",
+      "expr": "[10; 20; 30]",
+      "mutable": false,
+      "type": "int list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(string (xs.[1]))"
+  ],
+  "stmts": null
+}
