@@ -203,6 +203,8 @@ func mapType(t string) string {
 		return "int"
 	case "Float", "Double":
 		return "float"
+	case "Number":
+		return "float"
 	case "Boolean":
 		return "bool"
 	case "String", "Char":

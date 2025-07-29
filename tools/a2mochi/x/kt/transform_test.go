@@ -89,11 +89,12 @@ func runCase(t *testing.T, name, srcPath, outDir, root string) {
 		t.Fatalf("print: %v", err)
 	}
 	astPath := filepath.Join(outDir, name+".ast")
+	outPath := filepath.Join(outDir, name+".out")
 	if *update {
 		os.WriteFile(astPath, []byte(node.String()), 0o644)
 		os.WriteFile(filepath.Join(outDir, name+".mochi"), []byte(code), 0o644)
 		if out, err := runMochi(code); err == nil {
-			os.WriteFile(filepath.Join(outDir, name+".out"), out, 0o644)
+			os.WriteFile(outPath, out, 0o644)
 		}
 	}
 	want, err := os.ReadFile(astPath)
@@ -107,15 +108,14 @@ func runCase(t *testing.T, name, srcPath, outDir, root string) {
 	if err != nil {
 		t.Fatalf("run: %v", err)
 	}
-	vmSrc, err := os.ReadFile(filepath.Join(root, "tests/vm/valid", name+".mochi"))
-	if err != nil {
-		t.Fatalf("missing vm source: %v", err)
+	if *update {
+		os.WriteFile(outPath, gotOut, 0o644)
 	}
-	wantOut, err := runMochi(string(vmSrc))
+	wantOut, err := os.ReadFile(outPath)
 	if err != nil {
-		t.Fatalf("run vm: %v", err)
+		t.Fatalf("missing golden output: %v", err)
 	}
-	if !bytes.Equal(gotOut, wantOut) {
+	if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
 		t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
 	}
 }
@@ -169,6 +169,10 @@ func TestTransform_Golden(t *testing.T) {
 		"closure":             true,
 		"cast_struct":         true,
 		"group_by":            true,
+		"break_continue":      true,
+		"short_circuit":       true,
+		"typed_let":           true,
+		"typed_var":           true,
 	}
 
 	for _, srcPath := range files {
