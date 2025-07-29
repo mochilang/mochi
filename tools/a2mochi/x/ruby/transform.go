@@ -11,6 +11,18 @@ import (
 	"mochi/parser"
 )
 
+func typedParams(n Node) string {
+	ps := params(n)
+	if ps == "" {
+		return ""
+	}
+	parts := strings.Split(ps, ", ")
+	for i, p := range parts {
+		parts[i] = p + ": any"
+	}
+	return strings.Join(parts, ", ")
+}
+
 // convertNode traverses the Ruby AST and emits Mochi source lines.
 func convertNode(n Node, level int, out *[]string) {
 	idt := strings.Repeat("  ", level)
@@ -314,8 +326,8 @@ func convertNode(n Node, level int, out *[]string) {
 			return
 		}
 		name := exprString(n.Children[0])
-		params := params(n.Children[1])
-		*out = append(*out, idt+"fun "+name+"("+params+") {")
+		params := typedParams(n.Children[1])
+		*out = append(*out, idt+"fun "+name+"("+params+"): any {")
 		convertNode(n.Children[2], level+1, out)
 		*out = append(*out, idt+"}")
 	case "class":
