@@ -249,12 +249,18 @@ func fixIndex(expr string) string {
 	expr = convertRecordFields(expr)
 	expr = convertContains(expr)
 	expr = convertListPrint(expr)
+	expr = convertFunExpr(expr)
 	expr = stripStringCall(expr)
 	expr = convertBuiltins(expr)
 	expr = stripStringCall(expr)
 	expr = convertEquality(expr)
 	expr = strings.ReplaceAll(expr, ";", ",")
 	return expr
+}
+
+// DebugFix exposes fixIndex for tests.
+func DebugFix(expr string) string {
+	return fixIndex(expr)
 }
 
 func convertRecordFields(expr string) string {
@@ -315,6 +321,19 @@ func convertListPrint(expr string) string {
 	if strings.HasPrefix(expr, prefix) && strings.HasSuffix(expr, suffix) {
 		inner := strings.TrimSuffix(strings.TrimPrefix(expr, prefix), suffix)
 		return strings.TrimSpace(inner)
+	}
+	return expr
+}
+
+func convertFunExpr(expr string) string {
+	trimmed := strings.TrimSpace(expr)
+	if strings.HasPrefix(trimmed, "fun ") {
+		rest := strings.TrimSpace(trimmed[4:])
+		if idx := strings.Index(rest, "->"); idx != -1 {
+			params := strings.Fields(strings.TrimSpace(rest[:idx]))
+			body := strings.TrimSpace(rest[idx+2:])
+			return "fun (" + strings.Join(params, ", ") + ") { " + body + " }"
+		}
 	}
 	return expr
 }
