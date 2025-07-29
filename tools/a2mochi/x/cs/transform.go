@@ -4,27 +4,31 @@ package cs
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"mochi/ast"
 	"mochi/parser"
 )
 
-func stripLong(s string) string { return strings.ReplaceAll(s, "L", "") }
+var (
+	longLit     = regexp.MustCompile(`(\d+)L\b`)
+	appendRegex = regexp.MustCompile(`(\w+)\.Append\(([^\)]*)\)\.ToArray\(\)`)
+	joinRegex   = regexp.MustCompile(`string\.Join\([^,]+,\s*(.+)\)`)
+)
+
+func stripLong(s string) string { return longLit.ReplaceAllString(s, "$1") }
 
 func rewriteExpr(s string) string {
 	s = strings.TrimSpace(s)
-	if strings.Contains(s, "string.Join(") {
-		s = strings.Replace(s, "string.Join", "join", 1)
-	}
-	if idx := strings.Index(s, ".Append("); idx != -1 {
-		end := strings.Index(s[idx:], ")")
-		if end != -1 && strings.HasSuffix(s, ").ToArray()") {
-			arg := s[idx+len(".Append(") : idx+end]
-			target := s[:idx]
-			s = fmt.Sprintf("append(%s, %s)", target, arg)
+	s = joinRegex.ReplaceAllString(s, "str($1)")
+	s = appendRegex.ReplaceAllStringFunc(s, func(m string) string {
+		parts := appendRegex.FindStringSubmatch(m)
+		if len(parts) == 3 {
+			return fmt.Sprintf("append(%s, %s)", parts[1], parts[2])
 		}
-	}
+		return m
+	})
 	if q := strings.Index(s, "?"); q != -1 {
 		if c := strings.Index(s[q+1:], ":"); c != -1 {
 			cond := strings.TrimSpace(s[:q])
@@ -47,6 +51,25 @@ func programToNode(p *Program) (*ast.Node, error) {
 	}
 	root := &ast.Node{Kind: "program"}
 	for _, t := range p.Types {
+		if strings.EqualFold(t.Name, "Program") {
+			var otherMethods []Func
+			for _, m := range t.Methods {
+				if strings.EqualFold(m.Name, "Main") && m.Static {
+					stmts, err := bodyToNodes(m.Body)
+					if err != nil {
+						return nil, err
+					}
+					root.Children = append(root.Children, stmts...)
+				} else {
+					otherMethods = append(otherMethods, m)
+				}
+			}
+			if len(t.Fields) > 0 || len(otherMethods) > 0 {
+				t.Methods = otherMethods
+				root.Children = append(root.Children, typeToNode(&t))
+			}
+			continue
+		}
 		root.Children = append(root.Children, typeToNode(&t))
 	}
 	if len(root.Children) == 0 {

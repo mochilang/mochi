@@ -79,28 +79,37 @@ public static class AstJson
 
     static Field ParseField(MemberDeclarationSyntax m)
     {
-        BaseFieldDeclarationSyntax bf = m as BaseFieldDeclarationSyntax;
-        if (bf == null) return null;
         var name = "";
         TypeSyntax typ = null;
-        if (bf is FieldDeclarationSyntax fd)
+        SyntaxTokenList modifiers = default;
+        FileLinePositionSpan span = default;
+
+        if (m is FieldDeclarationSyntax fd)
         {
             name = fd.Declaration.Variables.First().Identifier.Text;
             typ = fd.Declaration.Type;
+            modifiers = fd.Modifiers;
+            span = fd.GetLocation().GetLineSpan();
         }
-        else if (bf is PropertyDeclarationSyntax pd)
+        else if (m is PropertyDeclarationSyntax pd)
         {
             name = pd.Identifier.Text;
             typ = pd.Type;
+            modifiers = pd.Modifiers;
+            span = pd.GetLocation().GetLineSpan();
         }
-        var span = bf.GetLocation().GetLineSpan();
+        else
+        {
+            return null;
+        }
+
         return new Field
         {
             Name = name,
             Type = typ?.ToString() ?? "",
-            Access = GetAccess(bf.Modifiers),
+            Access = GetAccess(modifiers),
             Line = span.StartLinePosition.Line + 1,
-            Doc = GetDoc(bf)
+            Doc = GetDoc(m)
         };
     }
 
@@ -110,6 +119,8 @@ public static class AstJson
         var lines = m.Body?.ToFullString().Split('\n').ToList() ?? new List<string>();
         if (lines.Count > 0) lines.RemoveAt(0);
         if (lines.Count > 0) lines.RemoveAt(lines.Count - 1);
+        if (lines.Count > 0 && lines[lines.Count - 1].Trim() == "}")
+            lines.RemoveAt(lines.Count - 1);
         for (int i=0;i<lines.Count;i++) lines[i] = lines[i].TrimEnd('\r');
         return new Method
         {
