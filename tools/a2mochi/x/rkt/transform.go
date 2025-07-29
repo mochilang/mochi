@@ -4,11 +4,28 @@ package rkt
 
 import (
 	"fmt"
-	"strconv"
-	"strings"
 
 	"mochi/ast"
 )
+
+func symString(v any) (string, bool) {
+	if s, ok := v.(string); ok {
+		return s, true
+	}
+	if m, ok := v.(map[string]any); ok {
+		if sym, ok := m["sym"].(string); ok {
+			return sym, true
+		}
+	}
+	return "", false
+}
+
+func groupIfUnary(n *ast.Node) *ast.Node {
+	if n != nil && n.Kind == "unary" {
+		return &ast.Node{Kind: "group", Children: []*ast.Node{n}}
+	}
+	return n
+}
 
 // Transform converts a parsed Program into a Mochi AST node.
 func Transform(p *Program) (*ast.Node, error) {
@@ -18,8 +35,8 @@ func Transform(p *Program) (*ast.Node, error) {
 	mutated := map[string]bool{}
 	for _, f := range p.Forms {
 		if list, ok := f.Datum.([]any); ok && len(list) >= 2 {
-			if head, _ := list[0].(string); head == "set!" {
-				if name, ok := list[1].(string); ok {
+			if head, _ := symString(list[0]); head == "set!" {
+				if name, ok := symString(list[1]); ok {
 					mutated[name] = true
 				}
 			}
@@ -40,14 +57,23 @@ func formNodeWithMut(d any, mutated map[string]bool) *ast.Node {
 	if !ok || len(list) == 0 {
 		return nil
 	}
-	head, _ := list[0].(string)
+	head, _ := symString(list[0])
 	switch head {
+	case "require", "struct":
+		return nil
 	case "define":
 		if fn, ok := list[1].([]any); ok {
-			name, _ := fn[0].(string)
+			var name string
+			params := fn[1:]
+			if n, ok := symString(fn[0]); ok {
+				name = n
+			} else if firstList, ok := fn[0].([]any); ok {
+				name, _ = symString(firstList[0])
+				params = firstList[1:]
+			}
 			n := &ast.Node{Kind: "fun", Value: name}
-			for _, p := range fn[1:] {
-				if s, ok := p.(string); ok {
+			for _, p := range params {
+				if s, ok := symString(p); ok {
 					n.Children = append(n.Children, &ast.Node{
 						Kind:     "param",
 						Value:    s,
@@ -55,16 +81,27 @@ func formNodeWithMut(d any, mutated map[string]bool) *ast.Node {
 					})
 				}
 			}
-			n.Children = append(n.Children, &ast.Node{Kind: "type", Value: "int"})
-			for _, body := range list[2:] {
-				n.Children = append(n.Children, &ast.Node{
-					Kind:     "return",
-					Children: []*ast.Node{exprNode(body)},
-				})
+			retType := "int"
+			if len(list) > 2 {
+				if _, ok := list[len(list)-1].(bool); ok {
+					retType = "bool"
+				}
+			}
+			n.Children = append(n.Children, &ast.Node{Kind: "type", Value: retType})
+			bodies := list[2:]
+			for i, body := range bodies {
+				if i == len(bodies)-1 {
+					n.Children = append(n.Children, &ast.Node{
+						Kind:     "return",
+						Children: []*ast.Node{exprNode(body)},
+					})
+				} else if stmt := formNodeWithMut(body, mutated); stmt != nil {
+					n.Children = append(n.Children, stmt)
+				}
 			}
 			return n
 		}
-		if name, ok := list[1].(string); ok && len(list) >= 3 {
+		if name, ok := symString(list[1]); ok && len(list) >= 3 {
 			kind := "let"
 			if mutated[name] {
 				kind = "var"
@@ -74,13 +111,13 @@ func formNodeWithMut(d any, mutated map[string]bool) *ast.Node {
 	case "set!":
 		if len(list) == 3 {
 			if call, ok := list[2].([]any); ok && len(call) >= 4 {
-				ch, _ := call[0].(string)
+				ch, _ := symString(call[0])
 				if ch == "list-set" || ch == "hash-set" {
 					idx := &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(call[1]), exprNode(call[2])}}
 					return &ast.Node{Kind: "assign", Children: []*ast.Node{idx, exprNode(call[3])}}
 				}
 			}
-			if name, ok := list[1].(string); ok {
+			if name, ok := symString(list[1]); ok {
 				lhs := &ast.Node{Kind: "selector", Value: name}
 				return &ast.Node{Kind: "assign", Children: []*ast.Node{lhs, exprNode(list[2])}}
 			}
@@ -95,10 +132,10 @@ func formNodeWithMut(d any, mutated map[string]bool) *ast.Node {
 		if len(list) >= 3 {
 			if binds, ok := list[1].([]any); ok && len(binds) > 0 {
 				if bind, ok := binds[0].([]any); ok && len(bind) == 2 {
-					varName, _ := bind[0].(string)
+					varName, _ := symString(bind[0])
 					n := &ast.Node{Kind: "for", Value: varName}
 					if bexpr, ok := bind[1].([]any); ok && len(bexpr) >= 1 {
-						if h, _ := bexpr[0].(string); h == "in-range" && len(bexpr) >= 3 {
+						if h, _ := symString(bexpr[0]); h == "in-range" && len(bexpr) >= 3 {
 							n.Children = append(n.Children, &ast.Node{Kind: "range", Children: []*ast.Node{exprNode(bexpr[1]), exprNode(bexpr[2])}})
 						} else {
 							n.Children = append(n.Children, &ast.Node{Kind: "in", Children: []*ast.Node{exprNode(bind[1])}})
@@ -132,14 +169,14 @@ func exprNode(d any) *ast.Node {
 		if v == "#f" {
 			return &ast.Node{Kind: "bool", Value: false}
 		}
-		if strings.HasPrefix(v, "\"") && strings.HasSuffix(v, "\"") {
-			unq, err := strconv.Unquote(v)
-			if err != nil {
-				unq = strings.Trim(v, "\"")
-			}
-			return &ast.Node{Kind: "string", Value: unq}
+		return &ast.Node{Kind: "string", Value: v}
+	case bool:
+		return &ast.Node{Kind: "bool", Value: v}
+	case map[string]any:
+		if sym, ok := v["sym"].(string); ok {
+			return &ast.Node{Kind: "selector", Value: sym}
 		}
-		return &ast.Node{Kind: "selector", Value: v}
+		return &ast.Node{Kind: "unknown"}
 	case float64:
 		if v == float64(int(v)) {
 			return &ast.Node{Kind: "int", Value: int(v)}
@@ -149,7 +186,7 @@ func exprNode(d any) *ast.Node {
 		if len(v) == 0 {
 			return &ast.Node{Kind: "list"}
 		}
-		head, _ := v[0].(string)
+		head, _ := symString(v[0])
 		args := v[1:]
 		switch head {
 		case "list":
@@ -164,6 +201,10 @@ func exprNode(d any) *ast.Node {
 				n.Children = append(n.Children, &ast.Node{Kind: "entry", Children: []*ast.Node{exprNode(args[i]), exprNode(args[i+1])}})
 			}
 			return n
+		case "string-append":
+			if len(args) == 2 {
+				return &ast.Node{Kind: "binary", Value: "+", Children: []*ast.Node{exprNode(args[0]), exprNode(args[1])}}
+			}
 		case "string-ref", "list-ref", "hash-ref":
 			return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(v[1]), exprNode(v[2])}}
 		case "substring":
@@ -173,13 +214,50 @@ func exprNode(d any) *ast.Node {
 				n.Children = append(n.Children, exprNode(v[3]))
 			}
 			return n
+		case "string<?", "string>?", "string<=?", "string>=?":
+			op := map[string]string{"string<?": "<", "string>?": ">", "string<=?": "<=", "string>=?": ">="}[head]
+			return &ast.Node{Kind: "binary", Value: op, Children: []*ast.Node{exprNode(v[1]), exprNode(v[2])}}
+		case "not":
+			if len(v) == 2 {
+				return &ast.Node{Kind: "unary", Value: "!", Children: []*ast.Node{exprNode(v[1])}}
+			}
+		case "member":
+			if len(v) == 3 {
+				return &ast.Node{Kind: "binary", Value: "in", Children: []*ast.Node{exprNode(v[1]), exprNode(v[2])}}
+			}
 		case "if":
 			if len(args) >= 2 {
+				// special case: (if (null? xs) 0 (apply min xs)) -> min(xs)
+				if cond, ok := args[0].([]any); ok && len(cond) == 2 {
+					if h, _ := symString(cond[0]); h == "null?" {
+						if zero, ok := args[1].(float64); ok && zero == 0 && len(args) == 3 {
+							if apply, ok := args[2].([]any); ok && len(apply) == 3 {
+								if ah, _ := symString(apply[0]); ah == "apply" {
+									if op, _ := symString(apply[1]); op == "min" || op == "max" {
+										return &ast.Node{Kind: "call", Value: op, Children: []*ast.Node{exprNode(apply[2])}}
+									}
+								}
+							}
+						}
+					}
+				}
 				n := &ast.Node{Kind: "if_expr", Children: []*ast.Node{exprNode(args[0]), exprNode(args[1])}}
 				if len(args) > 2 {
 					n.Children = append(n.Children, exprNode(args[2]))
 				}
 				return n
+			}
+		case "apply":
+			if len(v) == 3 {
+				if op, _ := symString(v[1]); op == "+" {
+					return &ast.Node{Kind: "call", Value: "sum", Children: []*ast.Node{exprNode(v[2])}}
+				}
+			}
+		case "format":
+			if len(v) == 3 {
+				if fmtStr, ok := v[1].(string); ok && fmtStr == "~a" {
+					return &ast.Node{Kind: "call", Value: "str", Children: []*ast.Node{exprNode(v[2])}}
+				}
 			}
 		case "+", "-", "*", "/", "<", ">", "<=", ">=", "=", "and", "or":
 			op := head
@@ -194,9 +272,9 @@ func exprNode(d any) *ast.Node {
 			if head == "-" && len(args) == 1 {
 				return &ast.Node{Kind: "unary", Value: "-", Children: []*ast.Node{exprNode(args[0])}}
 			}
-			node := &ast.Node{Kind: "binary", Value: op, Children: []*ast.Node{exprNode(args[0]), exprNode(args[1])}}
+			node := &ast.Node{Kind: "binary", Value: op, Children: []*ast.Node{exprNode(args[0]), groupIfUnary(exprNode(args[1]))}}
 			for _, a := range args[2:] {
-				node = &ast.Node{Kind: "binary", Value: op, Children: []*ast.Node{node, exprNode(a)}}
+				node = &ast.Node{Kind: "binary", Value: op, Children: []*ast.Node{node, groupIfUnary(exprNode(a))}}
 			}
 			return node
 		default:
