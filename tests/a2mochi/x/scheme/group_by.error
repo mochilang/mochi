@@ -1,0 +1,1 @@
+parse mochi: parse error: 2:45: unexpected token "let" (expected PostfixExpr)

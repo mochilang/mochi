@@ -1,5 +1,4 @@
 fun makeAdder(n: any) {
 }
 let add10 = makeAdder(10)
-print to_str(add10(7))
-print ""
+print(add10(7))

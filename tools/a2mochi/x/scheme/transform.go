@@ -31,7 +31,8 @@ func Transform(p *Program) (*ast.Node, error) {
 		case "assign":
 			prog.Children = append(prog.Children, newAssign(it.Name, it.Value))
 		case "print":
-			prog.Children = append(prog.Children, newPrint(it.Value))
+			nodes := printNodes(it.Value)
+			prog.Children = append(prog.Children, nodes...)
 		}
 	}
 
@@ -76,11 +77,53 @@ func newAssign(name string, val interface{}) *ast.Node {
 }
 
 func newPrint(val interface{}) *ast.Node {
-	n := &ast.Node{Kind: "print"}
+	n := &ast.Node{Kind: "call", Value: "print"}
 	if c := exprNode(val); c != nil {
 		n.Children = append(n.Children, c)
 	}
 	return n
+}
+
+type binding struct {
+	name  string
+	value interface{}
+}
+
+func parseLet(v map[string]interface{}) ([]binding, []interface{}, bool) {
+	binds, ok := v["let"].([]interface{})
+	if !ok {
+		return nil, nil, false
+	}
+	var res []binding
+	for _, b := range binds {
+		m, ok := b.(map[string]interface{})
+		if !ok {
+			continue
+		}
+		name, _ := m["name"].(string)
+		val := m["value"]
+		res = append(res, binding{name: name, value: val})
+	}
+	body, _ := v["body"].([]interface{})
+	return res, body, true
+}
+
+func printNodes(val interface{}) []*ast.Node {
+	if m, ok := val.(map[string]interface{}); ok {
+		if binds, body, ok := parseLet(m); ok {
+			var nodes []*ast.Node
+			for _, b := range binds {
+				nodes = append(nodes, newLet(b.name, b.value))
+			}
+			if len(body) > 0 {
+				nodes = append(nodes, newPrint(body[len(body)-1]))
+			} else {
+				nodes = append(nodes, newPrint(nil))
+			}
+			return nodes
+		}
+	}
+	return []*ast.Node{newPrint(val)}
 }
 
 func constNode(v interface{}) *ast.Node {
@@ -107,6 +150,13 @@ func exprNode(v interface{}) *ast.Node {
 	if !ok {
 		return nil
 	}
+	if _, ok := m["let"]; ok {
+		_, body, ok2 := parseLet(m)
+		if ok2 && len(body) > 0 {
+			return exprNode(body[len(body)-1])
+		}
+		return nil
+	}
 	if name, ok := m["var"].(string); ok {
 		return &ast.Node{Kind: sanitizeName(name)}
 	}
@@ -122,12 +172,41 @@ func exprNode(v interface{}) *ast.Node {
 	if call, ok := m["call"].(string); ok {
 		argsVal, _ := m["args"].([]interface{})
 		switch call {
+		case "to-str":
+			if len(argsVal) == 1 {
+				return exprNode(argsVal[0])
+			}
+			return nil
 		case "+", "-", "*", "/", "<", ">", "<=", ">=", "=", "equal?":
 			if call == "=" || call == "equal?" {
 				call = "=="
 			}
 			n := &ast.Node{Kind: "binary", Value: call}
 			for _, a := range argsVal {
+				if c := exprNode(a); c != nil {
+					n.Children = append(n.Children, c)
+				}
+			}
+			return n
+		case "append":
+			n := &ast.Node{Kind: "call", Value: "append"}
+			if len(argsVal) > 0 {
+				if c := exprNode(argsVal[0]); c != nil {
+					n.Children = append(n.Children, c)
+				}
+				argsVal = argsVal[1:]
+			}
+			for _, a := range argsVal {
+				if m2, ok2 := a.(map[string]interface{}); ok2 {
+					if lst, ok3 := m2["list"].([]interface{}); ok3 {
+						for _, elem := range lst {
+							if c := exprNode(elem); c != nil {
+								n.Children = append(n.Children, c)
+							}
+						}
+						continue
+					}
+				}
 				if c := exprNode(a); c != nil {
 					n.Children = append(n.Children, c)
 				}

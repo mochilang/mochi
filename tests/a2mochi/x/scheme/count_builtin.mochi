@@ -1,2 +1,1 @@
-print to_str(cond(else(length([1, 2, 3]))))
-print ""
+print(cond(else(length([1, 2, 3]))))

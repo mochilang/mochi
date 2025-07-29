@@ -1,3 +1,2 @@
 let a = [1, 2]
-print to_str(append(a, [3]))
-print ""
+print(append(a, 3))

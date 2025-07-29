@@ -76,6 +76,12 @@ func Parse(src string) (*Program, error) {
     [(symbol? e) (hash 'var (symbol->string e))]
     [(and (pair? e) (eq? (car e) 'list))
      (hash 'list (map expr->json (cdr e)))]
+    [(and (pair? e) (eq? (car e) 'let))
+     (hash 'let (map (lambda (b)
+                      (hash 'name (symbol->string (car b))
+                            'value (expr->json (cadr b))))
+                    (cadr e))
+           'body (map expr->json (cddr e)))]
     [(pair? e)
      (if (symbol? (car e))
          (hash 'call (symbol->string (car e))
@@ -128,7 +134,7 @@ func Parse(src string) (*Program, error) {
        (hash 'kind "print"
              'value (expr->json val)))]
     [(and (pair? f) (eq? (car f) 'newline))
-     (hash 'kind "print" 'value "")]
+     #f]
     [else #f]))
 (define forms (read-all in))
 (close-input-port in)

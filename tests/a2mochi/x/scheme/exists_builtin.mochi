@@ -1,4 +1,3 @@
 let data = [1, 2]
-let flag = if(null_p(let(begin(for_each(lambda(x(), if((x == 1), set_bang(res6, append(res6, [x])), quote(nil))), data), res6))), "false", "true")
-print if(flag, 1, 0)
-print ""
+let flag = if(null_p(begin(for_each(lambda(x(), if((x == 1), set_bang(res6, append(res6, x)), quote(nil))), data), res6)), "false", "true")
+print(if(flag, 1, 0))
