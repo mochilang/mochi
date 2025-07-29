@@ -1,32 +1,102 @@
 # a2mochi Haskell Converter
 
-This package provides a small Haskell frontend for the `a2mochi` tool. It parses
-very simple Haskell programs and converts them into Mochi AST form. Only a tiny
-subset of the language is recognised – single line function declarations,
-variable bindings and trivial `main` blocks built from `putStrLn`, `print` and
-`mapM_` loops.
+This package provides a small Haskell frontend for the `a2mochi` tool. It parses very simple Haskell programs and converts them into Mochi AST form. Only a tiny subset of the language is recognised – single line function declarations, variable bindings and trivial `main` blocks built from `putStrLn`, `print` and `mapM_` loops.
 
-Completed programs: 22/104
+Completed programs: 22/96
 
-- append_builtin
-- avg_builtin
-- basic_compare
-- binary_precedence
-- cast_string_to_int
-- print_hello
-- fun_call
-- fun_three_args
-- if_then_else
-- unary_neg
-- for_loop
-- for_list_collection
-- for_map_collection
-- var_assignment
-- len_builtin
-- len_string
-- sum_builtin
-- bool_chain
-- closure
-- let_and_print
-- typed_var
-- typed_let
+- [x] append_builtin
+- [x] avg_builtin
+- [x] basic_compare
+- [x] binary_precedence
+- [x] bool_chain
+- [ ] break_continue
+- [x] cast_string_to_int
+- [ ] cast_struct
+- [x] closure
+- [ ] count_builtin
+- [ ] cross_join
+- [ ] cross_join_filter
+- [ ] cross_join_triple
+- [ ] dataset_sort_take_limit
+- [ ] dataset_where_filter
+- [ ] exists_builtin
+- [x] for_list_collection
+- [x] for_loop
+- [x] for_map_collection
+- [x] fun_call
+- [ ] fun_expr_in_let
+- [x] fun_three_args
+- [ ] go_auto
+- [ ] group_by
+- [ ] group_by_conditional_sum
+- [ ] group_by_having
+- [ ] group_by_join
+- [ ] group_by_left_join
+- [ ] group_by_multi_join
+- [ ] group_by_multi_join_sort
+- [ ] group_by_multi_sort
+- [ ] group_by_sort
+- [ ] group_items_iteration
+- [ ] if_else
+- [x] if_then_else
+- [ ] if_then_else_nested
+- [ ] in_operator
+- [ ] in_operator_extended
+- [ ] inner_join
+- [ ] join_multi
+- [ ] json_builtin
+- [ ] left_join
+- [ ] left_join_multi
+- [x] len_builtin
+- [ ] len_map
+- [x] len_string
+- [x] let_and_print
+- [ ] list_assign
+- [ ] list_index
+- [ ] list_nested_assign
+- [ ] list_set_ops
+- [ ] load_jsonl
+- [ ] load_yaml
+- [ ] map_assign
+- [ ] map_in_operator
+- [ ] map_index
+- [ ] map_int_key
+- [ ] map_literal_dynamic
+- [ ] map_membership
+- [ ] map_nested_assign
+- [ ] match_expr
+- [ ] match_full
+- [ ] math_ops
+- [ ] membership
+- [ ] min_max_builtin
+- [ ] nested_function
+- [ ] order_by_map
+- [ ] outer_join
+- [ ] partial_application
+- [x] print_hello
+- [ ] pure_fold
+- [ ] pure_global_fold
+- [ ] python_auto
+- [ ] query_sum_select
+- [ ] record_assign
+- [ ] right_join
+- [ ] short_circuit
+- [ ] slice
+- [ ] sort_stable
+- [ ] str_builtin
+- [ ] string_compare
+- [ ] string_concat
+- [ ] string_contains
+- [ ] string_in_operator
+- [ ] string_index
+- [ ] substring_builtin
+- [x] sum_builtin
+- [ ] tail_recursion
+- [ ] test_block
+- [ ] two-sum
+- [x] typed_let
+- [x] typed_var
+- [x] unary_neg
+- [ ] values_builtin
+- [x] var_assignment
+- [ ] while_loop

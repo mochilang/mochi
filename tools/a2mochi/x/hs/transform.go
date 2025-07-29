@@ -312,7 +312,39 @@ func convertExpr(expr string) string {
 				val := strings.TrimSuffix(strings.TrimPrefix(right, "["), "]")
 				return "append(" + left + ", " + strings.TrimSpace(val) + ")"
 			}
+			if (strings.HasPrefix(left, "\"") && strings.HasSuffix(left, "\"")) ||
+				(strings.HasPrefix(right, "\"") && strings.HasSuffix(right, "\"")) {
+				return convertExpr(left) + " + " + convertExpr(right)
+			}
 		}
+	}
+	if strings.Contains(expr, "!!") {
+		parts := strings.Split(expr, "!!")
+		if len(parts) == 2 {
+			left := strings.TrimSpace(parts[0])
+			idx := strings.TrimSpace(parts[1])
+			idx = strings.TrimPrefix(idx, "(")
+			idx = strings.TrimSuffix(idx, ")")
+			return convertExpr(left) + "[" + convertExpr(idx) + "]"
+		}
+	}
+	if strings.HasPrefix(expr, "isInfixOf ") {
+		rest := strings.TrimSpace(strings.TrimPrefix(expr, "isInfixOf "))
+		fields := strings.Fields(rest)
+		if len(fields) >= 2 {
+			pat := convertExpr(fields[0])
+			obj := convertExpr(strings.Join(fields[1:], " "))
+			return pat + " in " + obj
+		}
+	}
+	if strings.HasPrefix(expr, "Map.elems ") {
+		m := strings.TrimSpace(strings.TrimPrefix(expr, "Map.elems "))
+		m = strings.TrimSuffix(strings.TrimPrefix(m, "("), ")")
+		return "values(" + m + ")"
+	}
+	if strings.HasPrefix(expr, "Map.elems(") && strings.HasSuffix(expr, ")") {
+		m := strings.TrimSuffix(strings.TrimPrefix(expr, "Map.elems("), ")")
+		return "values(" + m + ")"
 	}
 	if strings.HasPrefix(expr, "div ") {
 		parts := strings.Fields(expr)

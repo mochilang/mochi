@@ -5,8 +5,10 @@ package hs_test
 import (
 	"bytes"
 	"flag"
+	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
 
@@ -156,6 +158,10 @@ func TestTransform_Golden(t *testing.T) {
 		"typed_var":           true,
 		"typed_let":           true,
 		"len_string":          true,
+		"string_compare":      true,
+		"string_concat":       true,
+		"string_contains":     true,
+		"list_index":          true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "hs")
 	os.MkdirAll(outDir, 0o755)
@@ -168,4 +174,38 @@ func TestTransform_Golden(t *testing.T) {
 			processFile(t, root, outDir, srcPath)
 		})
 	}
+}
+
+func updateReadme() {
+	root := repoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "transpiler", "x", "hs")
+	outDir := filepath.Join(root, "tests", "a2mochi", "x", "hs")
+	pattern := filepath.Join(srcDir, "*.hs")
+	files, _ := filepath.Glob(pattern)
+	sort.Strings(files)
+	total := len(files)
+	compiled := 0
+	var lines []string
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".hs")
+		mark := "[ ]"
+		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
+			compiled++
+			mark = "[x]"
+		}
+		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+	}
+	var buf bytes.Buffer
+	buf.WriteString("# a2mochi Haskell Converter\n\n")
+	buf.WriteString("This package provides a small Haskell frontend for the `a2mochi` tool. It parses very simple Haskell programs and converts them into Mochi AST form. Only a tiny subset of the language is recognised – single line function declarations, variable bindings and trivial `main` blocks built from `putStrLn`, `print` and `mapM_` loops.\n\n")
+	fmt.Fprintf(&buf, "Completed programs: %d/%d\n\n", compiled, total)
+	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteByte('\n')
+	_ = os.WriteFile(filepath.Join(root, "tools", "a2mochi", "x", "hs", "README.md"), buf.Bytes(), 0o644)
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	os.Exit(code)
 }
