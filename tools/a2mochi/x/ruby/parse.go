@@ -231,6 +231,13 @@ func exprString(n Node) string {
 				}
 			}
 		}
+	case "ifop":
+		if len(n.Children) >= 3 {
+			cond := exprString(n.Children[0])
+			t := exprString(n.Children[1])
+			e := exprString(n.Children[2])
+			return fmt.Sprintf("if %s then %s else %s", cond, t, e)
+		}
 	}
 	if n.Type == "paren" && len(n.Children) == 1 {
 		return "(" + exprString(n.Children[0]) + ")"

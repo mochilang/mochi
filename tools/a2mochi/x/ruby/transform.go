@@ -34,6 +34,13 @@ func convertNode(n Node, level int, out *[]string) {
 					*out = append(*out, idt+"print(len("+expr+"))")
 					return
 				}
+				if argNode.Type == "ifop" {
+					cond := exprString(argNode.Children[0])
+					t := exprString(argNode.Children[1])
+					e := exprString(argNode.Children[2])
+					*out = append(*out, idt+"print(if "+cond+" then "+t+" else "+e+")")
+					return
+				}
 				arg := exprString(argNode)
 				if idx := strings.Index(arg, ".join"); idx != -1 {
 					pre := strings.TrimSpace(arg[:idx])

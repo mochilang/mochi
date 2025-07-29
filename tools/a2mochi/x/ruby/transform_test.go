@@ -128,6 +128,7 @@ func TestTransformGolden(t *testing.T) {
 		"str_builtin":         true,
 		"string_concat":       true,
 		"string_contains":     true,
+		"string_compare":      true,
 		"string_in_operator":  true,
 		"string_index":        true,
 		"var_assignment":      true,
