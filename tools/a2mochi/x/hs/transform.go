@@ -320,6 +320,10 @@ func convertExpr(expr string) string {
 			return parts[1] + " / " + parts[2]
 		}
 	}
+	if strings.HasPrefix(expr, "length ") {
+		arg := strings.TrimSpace(expr[len("length "):])
+		return "len(" + convertExpr(arg) + ")"
+	}
 	if strings.HasPrefix(expr, "length(") && strings.HasSuffix(expr, ")") {
 		inner := strings.TrimSuffix(strings.TrimPrefix(expr, "length("), ")")
 		return "len(" + inner + ")"
