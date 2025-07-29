@@ -5,11 +5,14 @@ package erl_test
 import (
 	"bytes"
 	"flag"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	"mochi/ast"
 	"mochi/parser"
@@ -165,6 +168,8 @@ func TestTransform_Golden(t *testing.T) {
 		"list_assign":         true,
 		"in_operator":         true,
 		"string_in_operator":  true,
+		"membership":          true,
+		"map_in_operator":     true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "erl")
 	os.MkdirAll(outDir, 0o755)
@@ -177,4 +182,42 @@ func TestTransform_Golden(t *testing.T) {
 			transformFile(t, root, outDir, srcPath)
 		})
 	}
+}
+
+func updateReadme() {
+	root := repoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "transpiler", "x", "erl")
+	outDir := filepath.Join(root, "tests", "a2mochi", "x", "erl")
+	pattern := filepath.Join(srcDir, "*.erl")
+	files, _ := filepath.Glob(pattern)
+	sort.Strings(files)
+	total := len(files)
+	compiled := 0
+	var lines []string
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".erl")
+		mark := "[ ]"
+		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
+			compiled++
+			mark = "[x]"
+		}
+		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+	}
+	loc := time.FixedZone("GMT+7", 7*3600)
+	now := time.Now().In(loc).Format("2006-01-02 15:04 MST")
+	var buf bytes.Buffer
+	buf.WriteString("# a2mochi Erlang Converter\n\n")
+	fmt.Fprintf(&buf, "Completed programs: %d/%d\n", compiled, total)
+	fmt.Fprintf(&buf, "Date: %s\n\n", now)
+	buf.WriteString("This directory stores golden files for the Erlang to Mochi converter.\n\n")
+	buf.WriteString("## Checklist\n")
+	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteByte('\n')
+	_ = os.WriteFile(filepath.Join(root, "tools", "a2mochi", "x", "erl", "README.md"), buf.Bytes(), 0o644)
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	os.Exit(code)
 }

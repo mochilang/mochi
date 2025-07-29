@@ -21,9 +21,8 @@ func Print(node *ast.Node) (string, error) {
 	}
 	var out strings.Builder
 	out.Write(meta.Header("//"))
-	out.WriteString(code.String())
-	if !strings.HasSuffix(code.String(), "\n") {
-		out.WriteByte('\n')
-	}
+	trimmed := strings.TrimRight(code.String(), " \t\n")
+	out.WriteString(trimmed)
+	out.WriteByte('\n')
 	return out.String(), nil
 }

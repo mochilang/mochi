@@ -1,50 +1,111 @@
 # a2mochi Erlang Converter
 
-Completed programs: 42/103
-Date: 2025-07-29
+Completed programs: 44/103
+Date: 2025-07-29 15:21 GMT+7
 
 This directory stores golden files for the Erlang to Mochi converter.
-Supported programs:
 
+## Checklist
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
+- [ ] bench_block
 - [x] binary_precedence
-- [x] print_hello
-- [x] count_builtin
-- [x] len_builtin
-- [x] len_string
-- [x] len_map
-- [x] map_index
-- [x] cast_string_to_int
-- [x] map_int_key
-- [x] map_membership
-- [x] min_max_builtin
-- [x] values_builtin
-- [x] string_concat
-- [x] string_contains
-- [x] string_compare
-- [x] string_index
-- [x] string_prefix_slice
-- [x] substring_builtin
-- [x] sum_builtin
 - [x] bool_chain
-- [x] short_circuit
-- [x] unary_neg
-- [x] if_else
-- [x] if_then_else
-- [x] if_then_else_nested
+- [ ] break_continue
+- [x] cast_string_to_int
+- [ ] cast_struct
 - [x] closure
+- [x] count_builtin
+- [ ] cross_join
+- [ ] cross_join_filter
+- [ ] cross_join_triple
+- [ ] dataset_sort_take_limit
+- [ ] dataset_where_filter
+- [ ] exists_builtin
 - [x] for_list_collection
 - [x] for_loop
 - [x] for_map_collection
 - [x] fun_call
+- [ ] fun_expr_in_let
 - [x] fun_three_args
-- [x] let_and_print
-- [x] list_index
-- [x] var_assignment
-- [x] map_assign
-- [x] map_literal_dynamic
-- [x] list_assign
+- [ ] go_auto
+- [ ] group_by
+- [ ] group_by_conditional_sum
+- [ ] group_by_having
+- [ ] group_by_join
+- [ ] group_by_left_join
+- [ ] group_by_multi_join
+- [ ] group_by_multi_join_sort
+- [ ] group_by_multi_sort
+- [ ] group_by_sort
+- [ ] group_items_iteration
+- [x] if_else
+- [x] if_then_else
+- [x] if_then_else_nested
 - [x] in_operator
+- [ ] in_operator_extended
+- [ ] inner_join
+- [ ] join_multi
+- [ ] json_builtin
+- [ ] left_join
+- [ ] left_join_multi
+- [x] len_builtin
+- [x] len_map
+- [x] len_string
+- [x] let_and_print
+- [x] list_assign
+- [x] list_index
+- [ ] list_nested_assign
+- [ ] list_set_ops
+- [ ] load_jsonl
+- [ ] load_yaml
+- [x] map_assign
+- [x] map_in_operator
+- [x] map_index
+- [x] map_int_key
+- [x] map_literal_dynamic
+- [x] map_membership
+- [ ] map_nested_assign
+- [ ] match_expr
+- [ ] match_full
+- [ ] math_ops
+- [x] membership
+- [x] min_max_builtin
+- [ ] nested_function
+- [ ] order_by_map
+- [ ] outer_join
+- [ ] partial_application
+- [x] print_hello
+- [ ] pure_fold
+- [ ] pure_global_fold
+- [ ] python_auto
+- [ ] python_math
+- [ ] query_sum_select
+- [ ] record_assign
+- [ ] right_join
+- [ ] save_jsonl_stdout
+- [x] short_circuit
+- [ ] slice
+- [ ] sort_stable
+- [ ] str_builtin
+- [x] string_compare
+- [x] string_concat
+- [x] string_contains
 - [x] string_in_operator
+- [x] string_index
+- [x] string_prefix_slice
+- [x] substring_builtin
+- [x] sum_builtin
+- [ ] tail_recursion
+- [ ] test_block
+- [ ] tree_sum
+- [ ] two-sum
+- [ ] typed_let
+- [ ] typed_var
+- [x] unary_neg
+- [ ] update_stmt
+- [ ] user_type_literal
+- [x] values_builtin
+- [x] var_assignment
+- [ ] while_loop
