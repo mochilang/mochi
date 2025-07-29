@@ -56,5 +56,9 @@ func Print(node *mochiast.Node) (string, error) {
 	if err := mochiast.Fprint(&buf, node); err != nil {
 		return "", err
 	}
-	return buf.String(), nil
+	out := buf.String()
+	if !strings.HasSuffix(out, "\n") {
+		out += "\n"
+	}
+	return out, nil
 }
