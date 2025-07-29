@@ -1,0 +1,345 @@
+//go:build slow
+
+package prolog
+
+import (
+	"fmt"
+	"os"
+	"strings"
+
+	"mochi/ast"
+	"mochi/parser"
+)
+
+func node(kind string, value any, children ...*ast.Node) *ast.Node {
+	return &ast.Node{Kind: kind, Value: value, Children: children}
+}
+
+// Transform parses Prolog source code and returns a Mochi AST node.
+func Transform(src string) (*ast.Node, error) {
+	p, err := Parse(src)
+	if err != nil {
+		return nil, err
+	}
+	return TransformProgram(p)
+}
+
+// TransformFile reads a Prolog file and converts it to a Mochi AST.
+func TransformFile(path string) (*ast.Node, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	return Transform(string(data))
+}
+
+// parseExpr converts a Mochi expression string into an AST node using the
+// Mochi parser.
+func parseExpr(expr string) (*ast.Node, error) {
+	src := fmt.Sprintf("fun _(){ return %s }", expr)
+	prog, err := parser.ParseString(src)
+	if err != nil {
+		return nil, err
+	}
+	ret := prog.Statements[0].Fun.Body[0].Return.Value
+	return ast.FromExpr(ret), nil
+}
+
+// parseBodyNodes converts a Prolog clause body into Mochi AST statements.
+func parseBodyNodes(body string) ([]*ast.Node, error) {
+	clauses := splitClauses(body)
+	var out []*ast.Node
+	for _, c := range clauses {
+		c = strings.TrimSpace(c)
+		switch {
+		case c == "" || c == "true":
+			continue
+		case strings.HasPrefix(c, "write("):
+			arg := strings.TrimSuffix(strings.TrimPrefix(c, "write("), ")")
+			arg = strings.ReplaceAll(arg, "'", "\"")
+			expr, err := parseExpr(arg)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, node("call", "print", expr))
+		case strings.HasPrefix(c, "writeln("):
+			arg := strings.TrimSuffix(strings.TrimPrefix(c, "writeln("), ")")
+			arg = strings.ReplaceAll(arg, "'", "\"")
+			expr, err := parseExpr(arg)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, node("call", "print", expr))
+		case c == "nl":
+			continue
+		case strings.HasPrefix(c, "(") && strings.Contains(c, "->") && strings.Contains(c, ";"):
+			expr := strings.TrimSuffix(strings.TrimPrefix(c, "("), ")")
+			parts := strings.SplitN(expr, "->", 2)
+			condStr := convertExpr(strings.TrimSpace(parts[0]))
+			rest := strings.TrimSpace(parts[1])
+			parts = strings.SplitN(rest, ";", 2)
+			thenPart := strings.TrimSpace(parts[0])
+			elsePart := strings.TrimSpace(parts[1])
+			condNode, err := parseExpr(condStr)
+			if err != nil {
+				return nil, err
+			}
+			thenNodes, err := parseBodyNodes(thenPart)
+			if err != nil {
+				return nil, err
+			}
+			elseNodes, err := parseBodyNodes(elsePart)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, node("if", nil,
+				condNode,
+				node("block", nil, thenNodes...),
+				node("block", nil, elseNodes...),
+			))
+		case strings.Contains(c, " is "):
+			parts := strings.SplitN(c, " is ", 2)
+			name := strings.TrimSpace(parts[0])
+			exprStr := convertExpr(strings.TrimSpace(parts[1]))
+			exprNode, err := parseExpr(exprStr)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, node("let", name, exprNode))
+		case func() bool { _, _, _, _, ok := parseSubStringAssign(c); return ok }():
+			src, start, length, outVar, _ := parseSubStringAssign(c)
+			n1, err := parseExpr(src)
+			if err != nil {
+				return nil, err
+			}
+			n2, err := parseExpr(start)
+			if err != nil {
+				return nil, err
+			}
+			n3, err := parseExpr(length)
+			if err != nil {
+				return nil, err
+			}
+			call := node("call", "substr", n1, n2, n3)
+			out = append(out, node("let", outVar, call))
+		case func() bool { _, _, ok := parseSubStringContains(c); return ok }():
+			src, sub, _ := parseSubStringContains(c)
+			n1, err := parseExpr(src)
+			if err != nil {
+				return nil, err
+			}
+			n2, err := parseExpr("\"" + sub + "\"")
+			if err != nil {
+				return nil, err
+			}
+			call := node("call", "contains", n1, n2)
+			out = append(out, node("call", "print", call))
+		case func() bool { _, _, _, ok := parseNth0(c); return ok }():
+			idx, list, outVar, _ := parseNth0(c)
+			n1, err := parseExpr(list)
+			if err != nil {
+				return nil, err
+			}
+			n2, err := parseExpr(idx)
+			if err != nil {
+				return nil, err
+			}
+			index := node("index", n1, n2)
+			out = append(out, node("let", outVar, index))
+		case func() bool { _, _, _, ok := parseCallAssign(c); return ok }():
+			name, args, outVar, _ := parseCallAssign(c)
+			var argNodes []*ast.Node
+			for _, a := range args {
+				n, err := parseExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				argNodes = append(argNodes, n)
+			}
+			call := node("call", name, argNodes...)
+			out = append(out, node("let", outVar, call))
+		case strings.Contains(c, " = "):
+			parts := strings.SplitN(c, " = ", 2)
+			name := strings.TrimSpace(parts[0])
+			exprStr := convertExpr(strings.TrimSpace(parts[1]))
+			exprNode, err := parseExpr(exprStr)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, node("let", name, exprNode))
+		default:
+			// unsupported clause -> ignore
+		}
+	}
+	return out, nil
+}
+
+func TransformProgram(p *Program) (*ast.Node, error) {
+	if p == nil {
+		return nil, fmt.Errorf("nil program")
+	}
+	if len(p.Clauses) == 0 {
+		return nil, fmt.Errorf("no convertible symbols found")
+	}
+	root := node("program", nil)
+	for _, c := range p.Clauses {
+		if c.Name == ":-" {
+			continue
+		}
+		fn := node("fun", c.Name)
+		for _, param := range c.Params {
+			fn.Children = append(fn.Children, node("param", param))
+		}
+		body, err := parseBodyNodes(c.Body)
+		if err != nil {
+			return nil, err
+		}
+		fn.Children = append(fn.Children, body...)
+		root.Children = append(root.Children, fn)
+	}
+	if len(root.Children) == 0 {
+		return nil, fmt.Errorf("no convertible symbols found")
+	}
+	return root, nil
+}
+
+// splitClauses splits a Prolog body into top-level comma-separated clauses.
+func splitClauses(body string) []string {
+	var clauses []string
+	depth := 0
+	brack := 0
+	start := 0
+	for i, r := range body {
+		switch r {
+		case '(':
+			depth++
+		case ')':
+			if depth > 0 {
+				depth--
+			}
+		case '[':
+			brack++
+		case ']':
+			if brack > 0 {
+				brack--
+			}
+		case ',':
+			if depth == 0 && brack == 0 {
+				clauses = append(clauses, strings.TrimSpace(body[start:i]))
+				start = i + 1
+			}
+		}
+	}
+	if start < len(body) {
+		clauses = append(clauses, strings.TrimSpace(body[start:]))
+	}
+	return clauses
+}
+
+func convertExpr(expr string) string {
+	if src, sub, ok := parseSubStringContains(expr); ok {
+		return "contains(" + src + ", \"" + sub + "\")"
+	}
+	expr = strings.ReplaceAll(expr, "=:=", "==")
+	expr = strings.ReplaceAll(expr, "=\\=", "!=")
+	expr = strings.ReplaceAll(expr, "@>=", ">=")
+	expr = strings.ReplaceAll(expr, "@=<", "<=")
+	expr = strings.ReplaceAll(expr, "@>", ">")
+	expr = strings.ReplaceAll(expr, "@<", "<")
+	return expr
+}
+
+func parseArgs(s string) []string {
+	var args []string
+	depth := 0
+	start := 0
+	for i, r := range s {
+		switch r {
+		case '(':
+			depth++
+		case ')':
+			if depth > 0 {
+				depth--
+			}
+		case ',':
+			if depth == 0 {
+				args = append(args, strings.TrimSpace(s[start:i]))
+				start = i + 1
+			}
+		}
+	}
+	if start < len(s) {
+		args = append(args, strings.TrimSpace(s[start:]))
+	}
+	return args
+}
+
+func parseSubStringAssign(s string) (src, start, length, outVar string, ok bool) {
+	s = strings.TrimSpace(s)
+	if !strings.HasPrefix(s, "sub_string(") {
+		return
+	}
+	inner := strings.TrimSuffix(strings.TrimPrefix(s, "sub_string("), ")")
+	parts := parseArgs(inner)
+	if len(parts) != 5 {
+		return
+	}
+	src = parts[0]
+	start = parts[1]
+	length = parts[2]
+	outVar = parts[4]
+	ok = true
+	return
+}
+
+func parseSubStringContains(s string) (src, sub string, ok bool) {
+	s = strings.TrimSpace(s)
+	if !strings.HasPrefix(s, "sub_string(") {
+		return
+	}
+	inner := strings.TrimSuffix(strings.TrimPrefix(s, "sub_string("), ")")
+	parts := parseArgs(inner)
+	if len(parts) != 5 {
+		return
+	}
+	src = parts[0]
+	sub = strings.Trim(parts[4], "'\"")
+	ok = true
+	return
+}
+
+func parseNth0(s string) (index, list, outVar string, ok bool) {
+	s = strings.TrimSpace(s)
+	if !strings.HasPrefix(s, "nth0(") {
+		return
+	}
+	inner := strings.TrimSuffix(strings.TrimPrefix(s, "nth0("), ")")
+	parts := parseArgs(inner)
+	if len(parts) != 3 {
+		return
+	}
+	index = parts[0]
+	list = parts[1]
+	outVar = parts[2]
+	ok = true
+	return
+}
+
+func parseCallAssign(s string) (name string, args []string, outVar string, ok bool) {
+	s = strings.TrimSpace(s)
+	open := strings.Index(s, "(")
+	close := strings.LastIndex(s, ")")
+	if open == -1 || close == -1 || close <= open {
+		return
+	}
+	name = strings.TrimSpace(s[:open])
+	inner := s[open+1 : close]
+	parts := parseArgs(inner)
+	if len(parts) < 2 {
+		return
+	}
+	args = parts[:len(parts)-1]
+	outVar = parts[len(parts)-1]
+	ok = name != "" && outVar != ""
+	return
+}
