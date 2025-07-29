@@ -3,15 +3,17 @@
     (list (int 1) (int 2) (int 3))
   )
   (call print
-    (call
-      (selector contains (selector nums))
-      (int 2)
+    (if_expr
+      (binary in (int 2) (selector nums))
+      (int 1)
+      (int 0)
     )
   )
   (call print
-    (call
-      (selector contains (selector nums))
-      (int 4)
+    (if_expr
+      (binary in (int 4) (selector nums))
+      (int 1)
+      (int 0)
     )
   )
 )
