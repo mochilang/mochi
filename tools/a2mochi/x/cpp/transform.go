@@ -11,6 +11,8 @@ import (
 	"mochi/parser"
 )
 
+var negRe = regexp.MustCompile(`([+\-*/])\s*-([A-Za-z0-9_]+)`) // reuse across transforms
+
 // Transform parses C++ source and returns the corresponding Mochi AST node.
 func Transform(p *Program) (*ast.Node, error) {
 	if p == nil {
@@ -102,6 +104,12 @@ func transformBody(body string) ([]*ast.Node, error) {
 	for _, l := range lines {
 		l = strings.TrimSpace(l)
 		l = strings.TrimSuffix(l, ";")
+		if strings.HasPrefix(l, "}") {
+			l = strings.TrimSpace(strings.TrimPrefix(l, "}"))
+			if l == "" {
+				continue
+			}
+		}
 		if l == "" {
 			continue
 		}
@@ -110,7 +118,6 @@ func transformBody(body string) ([]*ast.Node, error) {
 			expr := strings.TrimSpace(strings.TrimPrefix(l, "return"))
 			if expr != "" {
 				expr = convertExpression(expr)
-				negRe := regexp.MustCompile(`([+\-*/])\s*-([A-Za-z0-9_]+)`)
 				expr = negRe.ReplaceAllString(expr, `$1 (-$2)`)
 				stmt, err := parseSingle("return " + expr)
 				if err != nil {
@@ -158,7 +165,6 @@ func transformBody(body string) ([]*ast.Node, error) {
 			}
 			l = strings.Join(parts, " + ")
 
-			negRe := regexp.MustCompile(`([+\-*/])\s*-([A-Za-z0-9_]+)`)
 			l = negRe.ReplaceAllString(l, `$1 (-$2)`)
 			stmt, err := parseSingle("print(" + l + ")")
 			if err != nil {
@@ -230,6 +236,27 @@ func transformBody(body string) ([]*ast.Node, error) {
 				}
 				out = append(out, stmt)
 			}
+		case strings.HasPrefix(l, "else if ("):
+			if m := regexp.MustCompile(`^else if \((.*)\)\s*\{?$`).FindStringSubmatch(l); m != nil {
+				cond := strings.TrimSpace(m[1])
+				stmt, err := parseSingle(fmt.Sprintf("else if %s {", cond))
+				if err != nil {
+					return nil, err
+				}
+				out = append(out, stmt)
+			} else {
+				stmt, err := parseSingle(l)
+				if err != nil {
+					return nil, err
+				}
+				out = append(out, stmt)
+			}
+		case strings.HasPrefix(l, "else"):
+			stmt, err := parseSingle("else {")
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, stmt)
 		default:
 			decl := false
 			if strings.HasPrefix(l, "const ") {
@@ -257,7 +284,6 @@ func transformBody(body string) ([]*ast.Node, error) {
 				l = "let " + l
 			}
 			l = convertExpression(l)
-			negRe := regexp.MustCompile(`([+\-*/])\s*-([A-Za-z0-9_]+)`)
 			l = negRe.ReplaceAllString(l, `$1 (-$2)`)
 			stmt, err := parseSingle(l)
 			if err != nil {
