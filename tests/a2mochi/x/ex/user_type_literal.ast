@@ -1,0 +1,22 @@
+(program
+  (fun main
+    (var book
+      (map
+        (entry (selector title) (string Go))
+        (entry
+          (selector author)
+          (map
+            (entry (selector name) (string Bob))
+            (entry (selector age) (int 42))
+          )
+        )
+      )
+    )
+    (call print
+      (selector name
+        (selector author (selector book))
+      )
+    )
+  )
+  (call main)
+)
