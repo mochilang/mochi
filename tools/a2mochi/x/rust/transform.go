@@ -419,8 +419,69 @@ func convertFormatMacro(code string) (string, bool) {
 	return "", false
 }
 
+func findMatch(s string, openIdx int, open, close rune) int {
+	depth := 0
+	for i, r := range s[openIdx:] {
+		if r == open {
+			depth++
+		} else if r == close {
+			depth--
+			if depth == 0 {
+				return openIdx + i
+			}
+		}
+	}
+	return len(s)
+}
+
+func convertIfExpr(code string) (string, bool) {
+	c := strings.TrimSpace(code)
+	if !strings.HasPrefix(c, "if") {
+		return "", false
+	}
+	// locate first '{'
+	brace1 := strings.Index(c, "{")
+	if brace1 < 0 {
+		return "", false
+	}
+	cond := strings.TrimSpace(c[len("if"):brace1])
+	if strings.HasPrefix(cond, "(") && strings.HasSuffix(cond, ")") {
+		cond = strings.TrimSpace(cond[1 : len(cond)-1])
+	}
+	end1 := findMatch(c, brace1, '{', '}')
+	if end1 <= brace1 {
+		return "", false
+	}
+	thenPart := strings.TrimSpace(c[brace1+1 : end1])
+	rest := strings.TrimSpace(c[end1+1:])
+	if !strings.HasPrefix(rest, "else") {
+		return "", false
+	}
+	rest = strings.TrimSpace(rest[len("else"):])
+	if !strings.HasPrefix(rest, "{") {
+		return "", false
+	}
+	brace2 := 0
+	end2 := findMatch(rest, brace2, '{', '}')
+	if end2 <= brace2 {
+		return "", false
+	}
+	elsePart := strings.TrimSpace(rest[brace2+1 : end2])
+	trailing := strings.TrimSpace(rest[end2+1:])
+	if trailing != "" && trailing != ";" {
+		return "", false
+	}
+	thenPart = sanitizeExpr(thenPart)
+	elsePart = sanitizeExpr(elsePart)
+	return fmt.Sprintf("if %s then %s else %s", cond, thenPart, elsePart), true
+}
+
 func sanitizeExpr(code string) string {
 	code = strings.TrimSpace(code)
+
+	if v, ok := convertIfExpr(code); ok {
+		return v
+	}
 
 	// drop reference/deref prefixes often produced by the compiler
 	for {
