@@ -259,17 +259,21 @@ func repoRoot() (string, error) {
 }
 
 func metaHeader() string {
-	root, err := repoRoot()
-	if err != nil {
-		return ""
+	version := os.Getenv("MOCHI_VERSION")
+	if version == "" {
+		root, err := repoRoot()
+		if err == nil {
+			if data, err := os.ReadFile(filepath.Join(root, "VERSION")); err == nil {
+				version = strings.TrimSpace(string(data))
+			}
+		}
 	}
-	ver, err := os.ReadFile(filepath.Join(root, "VERSION"))
-	if err != nil {
+	if version == "" {
 		return ""
 	}
 	tz := time.FixedZone("GMT+7", 7*3600)
 	now := time.Now().In(tz).Format("2006-01-02 15:04:05 MST")
-	return fmt.Sprintf("// Mochi %s %s\n", strings.TrimSpace(string(ver)), now)
+	return fmt.Sprintf("// Mochi %s %s\n", version, now)
 }
 
 func blockComment(src string) string {
