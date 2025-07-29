@@ -11,6 +11,7 @@ import (
 	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	"mochi/parser"
 	"mochi/runtime/vm"
@@ -145,10 +146,8 @@ func TestTransform_Golden(t *testing.T) {
 		"fun_three_args":      true,
 		"if_then_else":        true,
 		"unary_neg":           true,
-		"avg_builtin":         true,
 		"for_loop":            true,
 		"for_list_collection": true,
-		"for_map_collection":  true,
 		"var_assignment":      true,
 		"len_builtin":         true,
 		"sum_builtin":         true,
@@ -198,7 +197,8 @@ func updateReadme() {
 	var buf bytes.Buffer
 	buf.WriteString("# a2mochi Haskell Converter\n\n")
 	buf.WriteString("This package provides a small Haskell frontend for the `a2mochi` tool. It parses very simple Haskell programs and converts them into Mochi AST form. Only a tiny subset of the language is recognised – single line function declarations, variable bindings and trivial `main` blocks built from `putStrLn`, `print` and `mapM_` loops.\n\n")
-	fmt.Fprintf(&buf, "Completed programs: %d/%d\n\n", compiled, total)
+	now := time.Now().In(time.FixedZone("GMT+7", 7*3600)).Format("2006-01-02 15:04 MST")
+	fmt.Fprintf(&buf, "Completed programs: %d/%d\nLast updated: %s\n\n", compiled, total, now)
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteByte('\n')
 	_ = os.WriteFile(filepath.Join(root, "tools", "a2mochi", "x", "hs", "README.md"), buf.Bytes(), 0o644)

@@ -1,16 +1,6 @@
 (program
-  (fun __trace
-    (param msg (type string))
-    (param v (type bool))
-    (type bool)
-    (call print (selector msg))
-    (return (selector v))
-  )
-  (fun boom
-    (type bool)
-    (return
-      (call __trace (string boom) (bool true))
-    )
+  (let boom
+    (call __trace (string boom) (bool true))
   )
   (call print
     (binary &&
@@ -37,7 +27,7 @@
           (binary > (int 2) (int 3))
         )
       )
-      (call boom)
+      (selector boom)
     )
   )
   (call print
@@ -55,7 +45,7 @@
           (binary > (int 3) (int 4))
         )
       )
-      (call boom)
+      (selector boom)
     )
   )
 )

@@ -2,7 +2,8 @@
 
 This package provides a small Haskell frontend for the `a2mochi` tool. It parses very simple Haskell programs and converts them into Mochi AST form. Only a tiny subset of the language is recognised – single line function declarations, variable bindings and trivial `main` blocks built from `putStrLn`, `print` and `mapM_` loops.
 
-Completed programs: 23/96
+Completed programs: 25/96
+Last updated: 2025-07-29 18:52 GMT+7
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -84,9 +85,9 @@ Completed programs: 23/96
 - [ ] slice
 - [ ] sort_stable
 - [ ] str_builtin
-- [ ] string_compare
+- [x] string_compare
 - [ ] string_concat
-- [ ] string_contains
+- [x] string_contains
 - [ ] string_in_operator
 - [ ] string_index
 - [ ] substring_builtin
