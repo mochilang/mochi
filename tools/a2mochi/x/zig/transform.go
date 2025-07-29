@@ -500,8 +500,8 @@ func extractPrint(line string) string {
 		return ""
 	}
 	start += idx + 2
-	expr := strings.TrimSpace(line[start:end])
-	return transformExpr(expr)
+	expr := transformExpr(strings.TrimSpace(line[start:end]))
+	return expr
 }
 
 type stmt struct {
