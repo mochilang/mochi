@@ -1,0 +1,23 @@
+(program
+  (call print
+    (call str
+      (index
+        (list (int 1) (int 2) (int 3))
+        (start (int 1))
+        (end (int 3))
+      )
+    )
+  )
+  (call print
+    (call str
+      (index
+        (list (int 1) (int 2) (int 3))
+        (start (int 0))
+        (end (int 2))
+      )
+    )
+  )
+  (call print
+    (call substring (string hello) (int 1) (int 4))
+  )
+)

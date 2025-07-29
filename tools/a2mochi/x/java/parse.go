@@ -40,6 +40,7 @@ type Expr struct {
 	Target *Expr  `json:"target,omitempty"`
 	Args   []Expr `json:"args,omitempty"`
 	Expr   *Expr  `json:"expr,omitempty"`
+	Index  *Expr  `json:"index,omitempty"`
 	Cond   *Expr  `json:"cond,omitempty"`
 	Then   *Expr  `json:"then,omitempty"`
 	Else   *Expr  `json:"else,omitempty"`
