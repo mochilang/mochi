@@ -5,6 +5,7 @@ import (
 	"go/ast"
 	goparser "go/parser"
 	"go/token"
+	"os"
 	"strings"
 )
 
@@ -26,4 +27,13 @@ func Parse(src string) (*Program, error) {
 		return nil, err
 	}
 	return &Program{File: file, Fset: fset, Lines: strings.Split(src, "\n")}, nil
+}
+
+// ParseFile reads a Go source file from disk and parses it.
+func ParseFile(path string) (*Program, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	return Parse(string(data))
 }
