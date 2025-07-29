@@ -39,8 +39,9 @@ object ParserJson {
           "body" -> d.rhs.toString
         ))
       case v: ValDef =>
+        val kind = if (v.mods.isMutable) "var" else "val"
         JSONObject(Map(
-          "kind" -> "val",
+          "kind" -> kind,
           "name" -> v.name.toString,
           "ret" -> v.tpt.toString,
           "rhs" -> v.rhs.toString

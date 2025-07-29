@@ -38,6 +38,12 @@ func Transform(p *Program) (*ast.Node, error) {
 			} else {
 				fmt.Fprintf(&b, "let %s\n", d.Name)
 			}
+		case "var":
+			if d.RHS != "" {
+				fmt.Fprintf(&b, "var %s = %s\n", d.Name, d.RHS)
+			} else {
+				fmt.Fprintf(&b, "var %s\n", d.Name)
+			}
 		case "def":
 			fmt.Fprintf(&b, "fun %s(", d.Name)
 			for i, prm := range d.Params {
