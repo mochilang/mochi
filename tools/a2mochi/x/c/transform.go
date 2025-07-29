@@ -14,7 +14,27 @@ func Transform(p *Program) (*ast.Node, error) {
 		return nil, fmt.Errorf("nil program")
 	}
 	prints := findPrints(p.Root)
-	prints = append(prints, parseArrayLoops(p)...)
+	arrPrints := parseArrayLoops(p)
+	if len(arrPrints) > 0 {
+		skip := make(map[string]bool)
+		for _, ap := range arrPrints {
+			if unq, err := strconv.Unquote(ap); err == nil {
+				if i := strings.Index(unq, " costs $"); i > 0 {
+					key := unq[:i]
+					skip[key] = true
+					skip[strconv.Quote(key)] = true
+				}
+			}
+		}
+		filtered := make([]string, 0, len(prints))
+		for _, pr := range prints {
+			if skip[pr] {
+				continue
+			}
+			filtered = append(filtered, pr)
+		}
+		prints = append(filtered, arrPrints...)
+	}
 	root := &ast.Node{Kind: "program"}
 	for _, pr := range prints {
 		arg := valueNode(pr)
@@ -195,10 +215,17 @@ func parseArrayLoops(p *Program) []string {
 			if len(n.Inner) > 0 && n.Inner[0].Kind == "InitListExpr" {
 				vals := make([]string, 0, len(n.Inner[0].Inner))
 				for i := range n.Inner[0].Inner {
-					v := n.Inner[0].Inner[i]
+					v := &n.Inner[0].Inner[i]
 					switch v.Kind {
 					case "IntegerLiteral", "FloatingLiteral", "StringLiteral":
 						vals = append(vals, strings.TrimSpace(v.Value))
+					default:
+						s := firstLiteral(v, "StringLiteral")
+						nval := firstLiteral(v, "IntegerLiteral")
+						if s != "" && nval != "" {
+							line := fmt.Sprintf("%s costs $ %s", s, nval)
+							vals = append(vals, strconv.Quote(line))
+						}
 					}
 				}
 				if len(vals) > 0 {
@@ -258,4 +285,16 @@ func containsPrint(n *Node) bool {
 		}
 	}
 	return false
+}
+
+func firstLiteral(n *Node, kind string) string {
+	if n.Kind == kind {
+		return strings.Trim(n.Value, "\"")
+	}
+	for i := range n.Inner {
+		if v := firstLiteral(&n.Inner[i], kind); v != "" {
+			return v
+		}
+	}
+	return ""
 }
