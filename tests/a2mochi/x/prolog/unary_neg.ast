@@ -3,7 +3,7 @@
     (call print
       (unary - (int 3))
     )
-    (let R1
+    (let _11178
       (binary +
         (int 5)
         (group
@@ -11,6 +11,7 @@
         )
       )
     )
-    (call print (selector R1))
+    (call print (selector _11178))
   )
+  (call main)
 )

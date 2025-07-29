@@ -244,6 +244,17 @@ func parseBodyNodes(body string) ([]*ast.Node, error) {
 			}
 			call := node("call", name, argNodes...)
 			out = append(out, node("let", outVar, call))
+		case func() bool { _, _, ok := parseSimpleCall(c); return ok }():
+			name, args, _ := parseSimpleCall(c)
+			var argNodes []*ast.Node
+			for _, a := range args {
+				n, err := parseExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				argNodes = append(argNodes, n)
+			}
+			out = append(out, node("call", name, argNodes...))
 		case strings.Contains(c, " = ") || (strings.Contains(c, "=") && !strings.Contains(c, "==") && !strings.Contains(c, "=:=") && !strings.Contains(c, "=\\")):
 			parts := strings.SplitN(c, "=", 2)
 			name := strings.TrimSpace(parts[0])
@@ -369,6 +380,9 @@ func convertExpr(expr string) string {
 		}
 		return s
 	})
+	// handle unary minus following an operator
+	unaryRe := regexp.MustCompile(`([+\-*/])\s*-\s*([0-9]+(?:\.[0-9]+)?)`)
+	expr = unaryRe.ReplaceAllString(expr, `$1(-$2)`)
 	expr = replaceTopLevelCommas(expr)
 	expr = quoteMapKeys(expr)
 	return expr
@@ -484,6 +498,25 @@ func parseCallAssign(s string) (name string, args []string, outVar string, ok bo
 	args = parts[:len(parts)-1]
 	outVar = parts[len(parts)-1]
 	ok = name != "" && outVar != ""
+	return
+}
+
+func parseSimpleCall(s string) (name string, args []string, ok bool) {
+	s = strings.TrimSpace(s)
+	if !strings.Contains(s, "(") || !strings.HasSuffix(s, ")") {
+		return
+	}
+	open := strings.Index(s, "(")
+	if open == -1 {
+		return
+	}
+	name = strings.TrimSpace(s[:open])
+	if name == "" || strings.ContainsAny(name, " :=<>") {
+		return
+	}
+	inner := s[open+1 : len(s)-1]
+	args = parseArgs(inner)
+	ok = true
 	return
 }
 

@@ -1,0 +1,12 @@
+(program
+  (fun main
+    (let _11242
+      (list (int 1) (int 2))
+    )
+    (let _11250
+      (call exists (list))
+    )
+    (call print (selector _11250))
+  )
+  (call main)
+)

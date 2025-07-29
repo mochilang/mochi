@@ -2,7 +2,7 @@
   (fun main
     (let _11828 (string catch))
     (if
-      (call contains (selector _11828) (string cat))
+      (binary in (string cat) (selector _11828))
       (block
         (call print (bool true))
       )
@@ -11,7 +11,7 @@
       )
     )
     (if
-      (call contains (selector _11828) (string dog))
+      (binary in (string dog) (selector _11828))
       (block
         (call print (bool true))
       )

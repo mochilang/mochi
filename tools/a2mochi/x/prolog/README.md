@@ -1,52 +1,105 @@
 # a2mochi Prolog Converter
 
-This directory contains golden outputs for converting Prolog programs under `tests/transpiler/x/pl` into Mochi AST form. Only a tiny subset of programs is currently supported.
+This directory contains golden outputs for converting Prolog programs under `tests/transpiler/x/pl` into Mochi AST form.
 
-Completed programs: 46/104
+Completed programs: 48/97
+Last updated: 2025-07-29 15:15 +0700
 
-- [x] avg_builtin
-- [x] print_hello
-- [x] unary_neg
-- [x] for_loop
-- [x] len_builtin
-- [x] sum_builtin
-- [x] let_and_print
-- [x] math_ops
-- [x] fun_call
-- [x] fun_three_args
-- [x] basic_compare
-- [x] if_then_else
-- [x] if_else
-- [x] while_loop
+## Checklist
 - [x] append_builtin
+- [x] avg_builtin
+- [x] basic_compare
+- [ ] bench_block
 - [x] binary_precedence
-- [x] cast_string_to_int
-- [x] len_string
-- [x] string_concat
-- [x] string_index
-- [x] slice
-- [x] string_compare
-- [x] list_index
-- [x] string_contains
 - [x] bool_chain
-- [x] in_operator
-- [x] string_in_operator
-- [x] str_builtin
-- [x] substring_builtin
-- [x] var_assignment
-- [x] len_map
-- [x] map_int_key
-- [x] map_index
-- [x] map_literal_dynamic
-- [x] membership
-- [x] list_assign
-- [x] map_assign
-- [x] list_nested_assign
-- [x] count_builtin
+- [ ] break_continue
+- [x] cast_string_to_int
 - [x] cast_struct
-- [x] map_nested_assign
-- [x] values_builtin
+- [ ] closure
+- [x] count_builtin
+- [ ] cross_join
+- [ ] cross_join_filter
+- [ ] cross_join_triple
+- [ ] dataset_sort_take_limit
+- [ ] dataset_where_filter
+- [x] exists_builtin
 - [x] for_list_collection
+- [x] for_loop
 - [x] for_map_collection
+- [x] fun_call
+- [ ] fun_expr_in_let
+- [x] fun_three_args
+- [ ] go_auto
+- [ ] group_by
+- [ ] group_by_conditional_sum
+- [ ] group_by_having
+- [ ] group_by_join
+- [ ] group_by_left_join
+- [ ] group_by_multi_join
+- [ ] group_by_multi_join_sort
+- [ ] group_by_sort
+- [x] if_else
+- [x] if_then_else
+- [ ] if_then_else_nested
+- [x] in_operator
+- [ ] in_operator_extended
+- [ ] inner_join
+- [ ] join_multi
+- [ ] json_builtin
+- [ ] left_join
+- [x] len_builtin
+- [x] len_map
+- [x] len_string
+- [x] let_and_print
+- [x] list_assign
+- [x] list_index
+- [x] list_nested_assign
+- [ ] list_set_ops
+- [ ] load_jsonl
+- [ ] load_yaml
+- [x] map_assign
 - [x] map_in_operator
+- [x] map_index
+- [x] map_int_key
+- [x] map_literal_dynamic
 - [x] map_membership
+- [x] map_nested_assign
+- [ ] match_expr
+- [ ] match_full
+- [x] math_ops
+- [x] membership
+- [x] min_max_builtin
+- [ ] mix_go_python
+- [ ] nested_function
+- [ ] order_by_map
+- [ ] partial_application
+- [x] print_hello
+- [ ] pure_fold
+- [ ] pure_global_fold
+- [ ] python_auto
+- [ ] python_math
+- [ ] query_sum_select
+- [ ] record_assign
+- [ ] right_join
+- [ ] short_circuit
+- [x] slice
+- [ ] sort_stable
+- [x] str_builtin
+- [x] string_compare
+- [x] string_concat
+- [x] string_contains
+- [x] string_in_operator
+- [x] string_index
+- [ ] string_prefix_slice
+- [x] substring_builtin
+- [x] sum_builtin
+- [ ] tail_recursion
+- [ ] test_block
+- [ ] tree_sum
+- [ ] typed_let
+- [ ] typed_var
+- [x] unary_neg
+- [ ] user_type_literal
+- [x] values_builtin
+- [x] var_assignment
+- [x] while_loop

@@ -1,12 +1,12 @@
 (program
   (fun add
     (param A)
-    (param A)
-    (param A)
+    (param B)
+    (param R)
     (let _11410
-      (binary + (selector _11396) (selector _11396))
+      (binary + (selector _11396) (selector _11398))
     )
-    (let _11396 (selector _11410))
+    (let _11400 (selector _11410))
   )
   (fun main
     (let _11942
