@@ -129,6 +129,8 @@ func TestTransform_Golden(t *testing.T) {
 		"append_builtin":    true,
 		"if_else":           true,
 		"string_compare":    true,
+		"list_assign":       true,
+		"list_index":        true,
 	}
 
 	if _, err := exec.LookPath("zig"); err != nil {
