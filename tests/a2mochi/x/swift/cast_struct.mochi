@@ -1,0 +1,6 @@
+// a2mochi-swift v0.10.48 on 2025-07-29 18:03 GMT+7
+type Todo {
+  title: string
+}
+let todo = Todo {title: "hi"}
+print(todo.title)

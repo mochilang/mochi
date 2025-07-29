@@ -79,9 +79,11 @@ func TestTransformGolden(t *testing.T) {
 		"fun_call":            true,
 		"if_else":             true,
 		"binary_precedence":   true,
+		"bool_chain":          true,
 		"basic_compare":       true,
 		"break_continue":      true,
 		"cast_string_to_int":  true,
+		"cast_struct":         true,
 		"len_builtin":         true,
 		"len_string":          true,
 		"map_index":           true,
@@ -121,6 +123,9 @@ func TestTransformGolden(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			testFile(t, root, outDir, src)
 		})
+	}
+	if *updateGolden {
+		swift.UpdateReadmeForTests()
 	}
 }
 

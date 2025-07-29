@@ -433,10 +433,17 @@ func rewriteStrBuiltin(expr string) string {
 	return strings.ReplaceAll(expr, "String(", "str(")
 }
 
-var ternaryBoolRE = regexp.MustCompile(`\(([^()]+)\)\s*\?\s*1\s*:\s*0`)
+var ternaryBoolRE = regexp.MustCompile(`\((.+)\)\s*\?\s*1\s*:\s*0`)
 
 func rewriteTernary(expr string) string {
-	return ternaryBoolRE.ReplaceAllString(expr, "if $1 then true else false")
+	for {
+		m := ternaryBoolRE.FindStringSubmatchIndex(expr)
+		if m == nil {
+			break
+		}
+		expr = expr[:m[0]] + expr[m[2]:m[3]] + expr[m[1]:]
+	}
+	return expr
 }
 
 func rewriteStringArrays(expr string) string {
