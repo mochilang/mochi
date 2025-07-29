@@ -4,6 +4,7 @@ package ex
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"mochi/ast"
@@ -29,4 +30,13 @@ func Print(n *ast.Node) (string, error) {
 		return "", fmt.Errorf("nil node")
 	}
 	return nodeSource(n), nil
+}
+
+// WriteFile writes the Mochi source for the AST to the given path.
+func WriteFile(n *ast.Node, path string) error {
+	src, err := Print(n)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(path, []byte(src), 0o644)
 }

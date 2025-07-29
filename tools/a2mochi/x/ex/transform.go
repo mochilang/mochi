@@ -70,20 +70,30 @@ func translateForBlock(expr string) string {
 	}
 	body := strings.TrimSpace(expr[idxDo+4:])
 	head := strings.TrimSpace(expr[:idxDo])
-	parts := strings.SplitN(head, "<-", 2)
-	if len(parts) != 2 {
+
+	segs := splitArgs(head)
+	var gens []string
+	var conds []string
+	for _, s := range segs {
+		s = strings.TrimSpace(s)
+		if s == "" {
+			continue
+		}
+		if strings.Contains(s, "<-") {
+			pv := strings.SplitN(s, "<-", 2)
+			v := strings.TrimSpace(pv[0])
+			src := translateExpr(strings.TrimSpace(pv[1]))
+			gens = append(gens, "from "+v+" in "+src)
+		} else {
+			conds = append(conds, translateExpr(s))
+		}
+	}
+	if len(gens) == 0 {
 		return ""
 	}
-	v := strings.TrimSpace(parts[0])
-	rest := strings.TrimSpace(parts[1])
-	cond := ""
-	if idx := strings.Index(rest, ","); idx >= 0 {
-		cond = strings.TrimSpace(rest[idx+1:])
-		rest = strings.TrimSpace(rest[:idx])
-	}
-	out := "from " + v + " in " + translateExpr(rest)
-	if cond != "" {
-		out += " where " + translateExpr(cond)
+	out := strings.Join(gens, " ")
+	if len(conds) > 0 {
+		out += " where " + strings.Join(conds, " and ")
 	}
 	out += " select " + translateExpr(body)
 	return out
