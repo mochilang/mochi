@@ -5,11 +5,14 @@ package py_test
 import (
 	"bytes"
 	"flag"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	"mochi/ast"
 	"mochi/parser"
@@ -127,6 +130,9 @@ func TestConvert_Golden(t *testing.T) {
 		"var_assignment":       true,
 		"for_list_collection":  true,
 		"for_map_collection":   true,
+		"cross_join":           true,
+		"cross_join_filter":    true,
+		"cross_join_triple":    true,
 		"in_operator":          true,
 		"in_operator_extended": true,
 		"match_expr":           true,
@@ -187,4 +193,56 @@ func TestConvert_Golden(t *testing.T) {
 			}
 		})
 	}
+}
+
+func updateReadme() {
+	root := findRepoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "transpiler", "x", "py")
+	outDir := filepath.Join(root, "tests", "a2mochi", "x", "py")
+	pattern := filepath.Join(srcDir, "*.py")
+	files, _ := filepath.Glob(pattern)
+	sort.Strings(files)
+	total := len(files)
+	compiled := 0
+	var lines []string
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".py")
+		mark := "[ ]"
+		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
+			compiled++
+			mark = "[x]"
+		}
+		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+	}
+	created := ""
+	readmePath := filepath.Join(root, "tools", "a2mochi", "x", "py", "README.md")
+	if data, err := os.ReadFile(readmePath); err == nil {
+		for _, line := range strings.Split(string(data), "\n") {
+			if strings.HasPrefix(line, "Created:") {
+				created = strings.TrimSpace(strings.TrimPrefix(line, "Created:"))
+				break
+			}
+		}
+	}
+	if created == "" {
+		created = time.Now().Format("2006-01-02")
+	}
+	tz := time.FixedZone("GMT+7", 7*3600)
+	now := time.Now().In(tz).Format("2006-01-02 15:04:05 MST")
+	var buf bytes.Buffer
+	buf.WriteString("# Python AST Conversion\n\n")
+	buf.WriteString("Created: " + created + "\n")
+	buf.WriteString("Date: " + now + "\n\n")
+	buf.WriteString("This directory contains the test helpers and golden files for converting Python programs under `tests/transpiler/x/py` into Mochi AST form.\n\n")
+	fmt.Fprintf(&buf, "Completed programs: %d/%d\n\n", compiled, total)
+	buf.WriteString("## Checklist\n")
+	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteByte('\n')
+	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	os.Exit(code)
 }
