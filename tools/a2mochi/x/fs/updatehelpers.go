@@ -12,9 +12,10 @@ import (
 
 // UpdateReadme regenerates README checklist from golden outputs.
 func UpdateReadme() {
-	root := repoRoot()
+	root := repoRootDir()
 	srcDir := filepath.Join(root, "tests", "transpiler", "x", "fs")
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "fs")
+	vmDir := filepath.Join(root, "tests", "vm", "valid")
 	readme := filepath.Join(root, "tools", "a2mochi", "x", "fs", "README.md")
 
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.fs"))
@@ -25,9 +26,15 @@ func UpdateReadme() {
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".fs")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
-			mark = "[x]"
-			done++
+		outPath := filepath.Join(outDir, name+".out")
+		vmOut := filepath.Join(vmDir, name+".out")
+		if got, err := os.ReadFile(outPath); err == nil {
+			if want, werr := os.ReadFile(vmOut); werr == nil {
+				if bytes.Equal(bytes.TrimSpace(got), bytes.TrimSpace(want)) {
+					mark = "[x]"
+					done++
+				}
+			}
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}
@@ -43,7 +50,7 @@ func UpdateReadme() {
 	_ = os.WriteFile(readme, buf.Bytes(), 0o644)
 }
 
-func repoRoot() string {
+func repoRootDir() string {
 	dir, _ := os.Getwd()
 	for i := 0; i < 10; i++ {
 		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
