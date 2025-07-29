@@ -45,6 +45,15 @@ func Parse(src string) (*Program, error) {
 	return parseProgram(src)
 }
 
+// ParseFile reads an Erlang file and returns its parsed representation.
+func ParseFile(path string) (*Program, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	return parseProgram(string(data))
+}
+
 func parseProgram(src string) (*Program, error) {
 	if _, err := exec.LookPath("escript"); err != nil {
 		return nil, fmt.Errorf("escript not found")

@@ -28,6 +28,7 @@ var foreachRe = regexp.MustCompile(`^lists:foreach\(fun\(([^)]*)\)\s*->\s*(.*?)\
 var lambdaRe = regexp.MustCompile(`^fun\(([^)]*)\)\s*->\s*(.+)\s*end$`)
 var seqRangeRe = regexp.MustCompile(`lists:seq\(1,\s*([^\)]+)\s*-\s*1\)`)
 var listAssignRe = regexp.MustCompile(`^lists:sublist\(([^,]+),\s*([^,\)]+)\)\s*\+\+\s*\[([^\]]+)\]\s*\+\+\s*lists:nthtail\(([^,]+),\s*([^\)]+)\)$`)
+var listsAnyRe = regexp.MustCompile(`lists:any\(fun\(([^)]*)\)\s*->\s*(.+?)\s*end,\s*([^\)]+)\)`)
 
 func node(kind string, value any, children ...*ast.Node) *ast.Node {
 	return &ast.Node{Kind: kind, Value: value, Children: children}
@@ -285,6 +286,24 @@ func rewriteLine(ln string, recs []Record) []string {
 			iter = "1.." + strings.TrimSpace(im[1])
 		}
 		ln = fmt.Sprintf("for %s in %s { %s }", strings.TrimSpace(m[1]), iter, body)
+	}
+	if listsAnyRe.MatchString(ln) {
+		m := listsAnyRe.FindStringSubmatch(ln)
+		param := strings.TrimSpace(m[1])
+		if param != "_" && !strings.Contains(param, ":") {
+			param += ": any"
+		}
+		blines := rewriteLine(strings.TrimSpace(m[2]), recs)
+		body := ""
+		if len(blines) > 0 {
+			body = blines[len(blines)-1]
+		}
+		iter := strings.TrimSpace(m[3])
+		if seqRangeRe.MatchString(iter) {
+			im := seqRangeRe.FindStringSubmatch(iter)
+			iter = "1.." + strings.TrimSpace(im[1])
+		}
+		ln = fmt.Sprintf("any(%s, fun(%s): any => %s)", iter, param, body)
 	}
 	if lambdaRe.MatchString(ln) {
 		m := lambdaRe.FindStringSubmatch(ln)
