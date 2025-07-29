@@ -14,7 +14,10 @@
           (selector xs)
         )
       )
-      (unknown)
+      (funexpr
+        (param x (type int))
+        (binary == (selector x) (int 2))
+      )
     )
   )
   (call print
@@ -30,7 +33,10 @@
             (selector xs)
           )
         )
-        (unknown)
+        (funexpr
+          (param x (type int))
+          (binary == (selector x) (int 5))
+        )
       )
     )
   )

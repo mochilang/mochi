@@ -1,9 +1,11 @@
 (program
-  (let square (unknown))
-  (call print
-    (call
-      (selector applyAsInt (selector square))
-      (int 6)
+  (let square
+    (funexpr
+      (param x (type int))
+      (binary * (selector x) (selector x))
     )
+  )
+  (call print
+    (call (selector square) (int 6))
   )
 )

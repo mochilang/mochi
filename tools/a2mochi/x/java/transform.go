@@ -203,6 +203,13 @@ func exprNode(e Expr) *mochias.Node {
 				if len(e.Args) == 0 {
 					return &mochias.Node{Kind: "call", Value: "len", Children: []*mochias.Node{exprNode(*e.Target.Expr)}}
 				}
+			case "applyAsInt":
+				if len(e.Args) == 1 {
+					call := &mochias.Node{Kind: "call"}
+					call.Children = append(call.Children, exprNode(*e.Target.Expr))
+					call.Children = append(call.Children, exprNode(e.Args[0]))
+					return call
+				}
 			case "charAt":
 				if len(e.Args) == 1 {
 					return &mochias.Node{Kind: "index", Children: []*mochias.Node{exprNode(*e.Target.Expr), exprNode(e.Args[0])}}
@@ -249,26 +256,41 @@ func exprNode(e Expr) *mochias.Node {
 			arr.Children = append(arr.Children, exprNode(el))
 		}
 		return arr
-       case "Index":
-               if e.Expr != nil && e.Index != nil {
-                       return &mochias.Node{Kind: "index", Children: []*mochias.Node{exprNode(*e.Expr), exprNode(*e.Index)}}
-               }
-               return &mochias.Node{Kind: "unknown"}
-       case "Unary":
-               if e.Expr != nil {
-                       return &mochias.Node{Kind: "unary", Value: unaryOp(e.Op), Children: []*mochias.Node{exprNode(*e.Expr)}}
-               }
-               return &mochias.Node{Kind: "unknown"}
-       case "Cast":
-               if e.Expr != nil {
-                       t := &mochias.Node{Kind: "type", Value: normalizeType(e.Value)}
-                       return &mochias.Node{Kind: "cast", Children: []*mochias.Node{exprNode(*e.Expr), t}}
-               }
-               return &mochias.Node{Kind: "unknown"}
-       case "Cond":
-               if n := trySumWrapper(e); n != nil {
-                       return n
-               }
+	case "Lambda":
+		fn := &mochias.Node{Kind: "funexpr"}
+		for _, p := range e.Params {
+			param := &mochias.Node{Kind: "param", Value: p.Name}
+			if p.Type != "" {
+				param.Children = append(param.Children, &mochias.Node{Kind: "type", Value: normalizeType(p.Type)})
+			}
+			fn.Children = append(fn.Children, param)
+		}
+		if len(e.Body) > 0 {
+			fn.Children = append(fn.Children, blockNode(e.Body, map[string]bool{}))
+		} else if e.Expr != nil {
+			fn.Children = append(fn.Children, exprNode(*e.Expr))
+		}
+		return fn
+	case "Index":
+		if e.Expr != nil && e.Index != nil {
+			return &mochias.Node{Kind: "index", Children: []*mochias.Node{exprNode(*e.Expr), exprNode(*e.Index)}}
+		}
+		return &mochias.Node{Kind: "unknown"}
+	case "Unary":
+		if e.Expr != nil {
+			return &mochias.Node{Kind: "unary", Value: unaryOp(e.Op), Children: []*mochias.Node{exprNode(*e.Expr)}}
+		}
+		return &mochias.Node{Kind: "unknown"}
+	case "Cast":
+		if e.Expr != nil {
+			t := &mochias.Node{Kind: "type", Value: normalizeType(e.Value)}
+			return &mochias.Node{Kind: "cast", Children: []*mochias.Node{exprNode(*e.Expr), t}}
+		}
+		return &mochias.Node{Kind: "unknown"}
+	case "Cond":
+		if n := trySumWrapper(e); n != nil {
+			return n
+		}
 		if e.Then != nil && e.Else != nil {
 			// special case for boolean expression encoded as 1/0
 			if e.Then.Kind == "Literal" && e.Then.Value == "1" &&
@@ -317,19 +339,19 @@ func op(k string) string {
 	case "CONDITIONAL_OR":
 		return "||"
 	}
-       return k
+	return k
 }
 
 func unaryOp(k string) string {
-       switch k {
-       case "UNARY_MINUS":
-               return "-"
-       case "UNARY_PLUS":
-               return "+"
-       case "LOGICAL_COMPLEMENT":
-               return "!"
-       }
-       return k
+	switch k {
+	case "UNARY_MINUS":
+		return "-"
+	case "UNARY_PLUS":
+		return "+"
+	case "LOGICAL_COMPLEMENT":
+		return "!"
+	}
+	return k
 }
 
 func normalizeType(t string) string {
@@ -342,6 +364,8 @@ func normalizeType(t string) string {
 		return "float"
 	case "string":
 		return "string"
+	case "java.util.function.intunaryoperator":
+		return "fun(int): int"
 	default:
 		return t
 	}

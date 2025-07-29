@@ -1,6 +1,7 @@
 package internal;
 
 import com.sun.source.tree.*;
+import com.sun.source.tree.LambdaExpressionTree;
 import com.sun.source.util.JavacTask;
 import javax.tools.*;
 import java.io.*;
@@ -358,6 +359,33 @@ public class AstJson {
                 printExpr(e2);
             }
             out.print("]}");
+            break;
+        case LAMBDA_EXPRESSION:
+            LambdaExpressionTree lt = (LambdaExpressionTree) expr;
+            out.print("{\"kind\":\"Lambda\",\"params\":[");
+            boolean fp = true;
+            for (VariableTree p : lt.getParameters()) {
+                if (!fp) out.print(',');
+                fp = false;
+                out.print("{\"name\":\"");
+                out.print(p.getName());
+                out.print("\"");
+                if (p.getType() != null) {
+                    out.print(",\"type\":\"");
+                    out.print(p.getType());
+                    out.print("\"");
+                }
+                out.print("}");
+            }
+            out.print("],");
+            if (lt.getBodyKind() == LambdaExpressionTree.BodyKind.EXPRESSION) {
+                out.print("\"expr\":");
+                printExpr((ExpressionTree) lt.getBody());
+            } else {
+                out.print("\"body\":");
+                printBlockStatements((StatementTree) lt.getBody());
+            }
+            out.print("}");
             break;
         default:
             out.print("{\"kind\":\"UnknownExpr\",\"type\":\"");

@@ -4,15 +4,17 @@
   )
   (fun makeAdder
     (param n (type int))
-    (type java.util.function.IntUnaryOperator)
+    (type "fun(int): int")
     (block
-      (return (unknown))
+      (return
+        (funexpr
+          (param x (type int))
+          (binary + (selector x) (selector n))
+        )
+      )
     )
   )
   (call print
-    (call
-      (selector applyAsInt (selector add10))
-      (int 7)
-    )
+    (call (selector add10) (int 7))
   )
 )

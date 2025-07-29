@@ -40,20 +40,22 @@ type Param struct {
 
 // Expr describes an expression in the simplified AST.
 type Expr struct {
-	Kind   string `json:"kind"`
-	Value  string `json:"value,omitempty"`
-	Name   string `json:"name,omitempty"`
-	Left   *Expr  `json:"left,omitempty"`
-	Right  *Expr  `json:"right,omitempty"`
-	Target *Expr  `json:"target,omitempty"`
-	Args   []Expr `json:"args,omitempty"`
-	Expr   *Expr  `json:"expr,omitempty"`
-	Index  *Expr  `json:"index,omitempty"`
-	Cond   *Expr  `json:"cond,omitempty"`
-	Then   *Expr  `json:"then,omitempty"`
-	Else   *Expr  `json:"else,omitempty"`
-	Elems  []Expr `json:"elems,omitempty"`
-	Op     string `json:"op,omitempty"`
+	Kind   string  `json:"kind"`
+	Value  string  `json:"value,omitempty"`
+	Name   string  `json:"name,omitempty"`
+	Left   *Expr   `json:"left,omitempty"`
+	Right  *Expr   `json:"right,omitempty"`
+	Target *Expr   `json:"target,omitempty"`
+	Args   []Expr  `json:"args,omitempty"`
+	Expr   *Expr   `json:"expr,omitempty"`
+	Index  *Expr   `json:"index,omitempty"`
+	Cond   *Expr   `json:"cond,omitempty"`
+	Then   *Expr   `json:"then,omitempty"`
+	Else   *Expr   `json:"else,omitempty"`
+	Elems  []Expr  `json:"elems,omitempty"`
+	Params []Param `json:"params,omitempty"`
+	Body   []Stmt  `json:"body,omitempty"`
+	Op     string  `json:"op,omitempty"`
 }
 
 //go:embed internal/AstJson.java
