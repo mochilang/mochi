@@ -167,6 +167,8 @@ func TestTransform_Golden(t *testing.T) {
 		"str_builtin":         true,
 		"string_prefix_slice": true,
 		"closure":             true,
+		"cast_struct":         true,
+		"group_by":            true,
 	}
 
 	for _, srcPath := range files {
