@@ -1,11 +1,7 @@
 (program
   (fun main
     (call print
-      (call
-        (selector substring (string mochi))
-        (int 1)
-        (int 4)
-      )
+      (call substring (string mochi) (int 1) (int 4))
     )
   )
   (call main)
