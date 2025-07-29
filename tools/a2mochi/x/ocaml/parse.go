@@ -3,71 +3,87 @@
 package ocaml
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 )
 
-// Program represents a parsed OCaml source file.
+// Program holds a simplified OCaml AST parsed via the helper Node script.
+// Only a few fields are required for the limited examples used in the tests.
+// Source retains the original OCaml code so the printer can include it.
 type Program struct {
-	Prints []Print
-	Source string
+	Funcs  []Func  `json:"funcs"`
+	Prints []Print `json:"prints"`
+	Types  []Type  `json:"types"`
+	Vars   []Var   `json:"vars"`
+	Source string  `json:"-"`
+}
+
+type Func struct {
+	Name   string   `json:"name"`
+	Params []string `json:"params"`
+	Body   string   `json:"body"`
+}
+
+type Var struct {
+	Name    string `json:"name"`
+	Expr    string `json:"expr"`
+	Mutable bool   `json:"mutable"`
 }
 
 type Print struct {
-	Expr string
+	Expr string `json:"expr"`
 }
 
-// Parse parses OCaml source code using the ocamlc compiler.
-// It relies on `ocamlc -dparsetree` and performs a very small extraction of
-// print_endline statements. Regular expressions are intentionally avoided.
+type Type struct {
+	Name   string  `json:"name"`
+	Fields []Field `json:"fields"`
+}
+
+type Field struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
+}
+
+// Parse invokes the helper Node script to obtain a small OCaml AST.
+// The script is implemented using tree-sitter and shipped with the repository,
+// so no external tools are required other than Node.js.
 func Parse(src string) (*Program, error) {
-	if _, err := exec.LookPath("ocamlc"); err != nil {
-		return nil, fmt.Errorf("ocamlc not installed")
-	}
-	tmp, err := os.CreateTemp("", "ocaml-src-*.ml")
+	tmp, err := os.CreateTemp("", "ocaml-*.ml")
 	if err != nil {
 		return nil, err
 	}
+	defer os.Remove(tmp.Name())
 	if _, err := tmp.WriteString(src); err != nil {
-		os.Remove(tmp.Name())
 		return nil, err
 	}
 	tmp.Close()
-	defer os.Remove(tmp.Name())
 
-	cmd := exec.Command("ocamlc", "-dparsetree", tmp.Name())
-	out, err := cmd.CombinedOutput()
+	root, err := repoRoot()
 	if err != nil {
-		return nil, fmt.Errorf("ocamlc error: %w\n%s", err, out)
+		return nil, err
 	}
-	prog := parseParsetree(string(out))
-	prog.Source = src
-	return prog, nil
-}
-
-// parseParsetree performs a minimal extraction from the textual parsetree
-// produced by `ocamlc -dparsetree`. Only constant string arguments of
-// print_endline calls are recognized.
-func parseParsetree(out string) *Program {
-	p := &Program{}
-	lines := strings.Split(out, "\n")
-	for i := 0; i < len(lines); i++ {
-		line := strings.TrimSpace(lines[i])
-		if strings.Contains(line, "Pexp_ident \"print_endline\"") {
-			for j := i + 1; j < len(lines); j++ {
-				arg := strings.TrimSpace(lines[j])
-				if strings.Contains(arg, "PConst_string(") {
-					start := strings.Index(arg, "\"")
-					end := strings.LastIndex(arg, "\"")
-					if start >= 0 && end > start {
-						p.Prints = append(p.Prints, Print{Expr: arg[start+1 : end]})
-					}
-					break
-				}
-			}
+	script := filepath.Join(root, "tools", "a2mochi", "x", "ocaml", "ocaml_ast.js")
+	cmd := exec.Command("node", script, tmp.Name())
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &stderr
+	if err := cmd.Run(); err != nil {
+		msg := strings.TrimSpace(stderr.String())
+		if msg == "" {
+			msg = err.Error()
 		}
+		return nil, fmt.Errorf("node: %s", msg)
 	}
-	return p
+	var prog Program
+	if err := json.Unmarshal(out.Bytes(), &prog); err != nil {
+		return nil, err
+	}
+	prog.Source = src
+	return &prog, nil
 }
