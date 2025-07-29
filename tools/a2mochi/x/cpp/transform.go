@@ -297,6 +297,11 @@ func transformBody(body string) ([]*ast.Node, error) {
 
 func convertExpression(s string) string {
 	s = strings.TrimSpace(s)
+	if m := regexp.MustCompile(`^\(?\s*\[&\]\s*\{\s*auto\s+(\w+)\s*=\s*([A-Za-z_][A-Za-z0-9_]*)\s*;\s*\w+\.push_back\(([^)]+)\);\s*return\s+\w+;\s*\}\(\)\s*\)?$`).FindStringSubmatch(s); m != nil {
+		list := convertExpression(strings.TrimSpace(m[2]))
+		val := convertExpression(strings.TrimSpace(m[3]))
+		return fmt.Sprintf("append(%s, %s)", list, val)
+	}
 	if strings.HasPrefix(s, "std::stoi(") && strings.HasSuffix(s, ")") {
 		inner := strings.TrimSuffix(strings.TrimPrefix(s, "std::stoi("), ")")
 		inner = convertExpression(inner)

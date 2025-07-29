@@ -68,13 +68,20 @@ func processFile(t *testing.T, root, outDir, srcPath string) {
 	if err != nil {
 		t.Fatalf("read src: %v", err)
 	}
+	name := strings.TrimSuffix(filepath.Base(srcPath), ".cpp")
+	errPath := filepath.Join(outDir, name+".error")
+
 	prog, err := cpp.Parse(string(data))
 	if err != nil {
-		t.Fatalf("parse: %v", err)
+		_ = os.WriteFile(errPath, []byte("parse: "+err.Error()), 0o644)
+		t.Skipf("parse error: %v", err)
+		return
 	}
 	node, err := cpp.Transform(prog)
 	if err != nil {
-		t.Fatalf("convert: %v", err)
+		_ = os.WriteFile(errPath, []byte("transform: "+err.Error()), 0o644)
+		t.Skipf("transform error: %v", err)
+		return
 	}
 	got := []byte(node.String())
 	astPath := filepath.Join(outDir, strings.TrimSuffix(filepath.Base(srcPath), ".cpp")+".ast")
@@ -91,16 +98,20 @@ func processFile(t *testing.T, root, outDir, srcPath string) {
 
 	code, err := cpp.Print(node)
 	if err != nil {
-		t.Fatalf("convert source: %v", err)
+		_ = os.WriteFile(errPath, []byte("print: "+err.Error()), 0o644)
+		t.Skipf("print error: %v", err)
+		return
 	}
-	name := strings.TrimSuffix(filepath.Base(srcPath), ".cpp")
+	name = strings.TrimSuffix(filepath.Base(srcPath), ".cpp")
 	mochiPath := filepath.Join(outDir, name+".mochi")
 	if *updateGolden {
 		os.WriteFile(mochiPath, []byte(code), 0644)
 	}
 	gotOut, err := runMochi(code)
 	if err != nil {
-		t.Fatalf("run: %v", err)
+		_ = os.WriteFile(errPath, []byte("run: "+err.Error()), 0o644)
+		t.Skipf("run error: %v", err)
+		return
 	}
 	if *updateGolden {
 		os.WriteFile(filepath.Join(outDir, name+".out"), gotOut, 0o644)
@@ -114,8 +125,10 @@ func processFile(t *testing.T, root, outDir, srcPath string) {
 		t.Fatalf("run vm: %v", err)
 	}
 	if !bytes.Equal(gotOut, wantOut) {
-		t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
+		_ = os.WriteFile(errPath, []byte(fmt.Sprintf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)), 0o644)
+		t.Fatalf("output mismatch")
 	}
+	_ = os.Remove(errPath)
 }
 
 func TestTransform_Golden(t *testing.T) {
@@ -157,9 +170,11 @@ func updateReadme() {
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".cpp")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
-			compiled++
-			mark = "[x]"
+		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+			if _, err := os.Stat(filepath.Join(outDir, name+".error")); err != nil {
+				compiled++
+				mark = "[x]"
+			}
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}

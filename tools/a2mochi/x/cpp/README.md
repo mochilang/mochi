@@ -3,11 +3,11 @@
 This directory contains helpers and golden files for converting C++ programs under
 `tests/transpiler/x/cpp` back into Mochi AST form using `clang++`.
 
-Completed programs: 29/103
-Date: 2025-07-29 18:13:55 GMT+7
+Completed programs: 31/103
+Date: 2025-07-29 19:03:57 GMT+7
 
 ## Checklist
-- [ ] append_builtin
+- [x] append_builtin
 - [ ] avg_builtin
 - [x] basic_compare
 - [ ] bench_block
@@ -29,7 +29,7 @@ Date: 2025-07-29 18:13:55 GMT+7
 - [x] for_map_collection
 - [x] fun_call
 - [ ] fun_expr_in_let
-- [ ] fun_three_args
+- [x] fun_three_args
 - [ ] go_auto
 - [ ] group_by
 - [ ] group_by_conditional_sum

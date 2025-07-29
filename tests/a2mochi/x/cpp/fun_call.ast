@@ -1,0 +1,20 @@
+(program
+  (fun add
+    (param a (type int))
+    (param b (type int))
+    (type int)
+    (return
+      (group
+        (binary + (selector a) (selector b))
+      )
+    )
+  )
+  (fun main
+    (type int)
+    (call print
+      (call add (int 2) (int 3))
+    )
+    (return (int 0))
+  )
+  (call main)
+)
