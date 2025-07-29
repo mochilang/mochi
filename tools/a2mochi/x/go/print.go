@@ -2,6 +2,7 @@ package gox
 
 import (
 	"fmt"
+	"strings"
 
 	mast "mochi/ast"
 )
@@ -14,5 +15,14 @@ func Print(node *mast.Node) (string, error) {
 	if node.Kind != "program" {
 		return "", fmt.Errorf("unexpected root kind: %s", node.Kind)
 	}
-	return node.Source(), nil
+	var b strings.Builder
+	if err := mast.Fprint(&b, node); err != nil {
+		return "", err
+	}
+	s := b.String()
+	if len(s) > 0 && s[len(s)-1] != '\n' {
+		b.WriteByte('\n')
+		s = b.String()
+	}
+	return s, nil
 }

@@ -5,6 +5,7 @@ import (
 	"go/ast"
 	"go/token"
 	"strconv"
+	"strings"
 
 	mast "mochi/ast"
 )
@@ -218,14 +219,14 @@ func transformCall(c *ast.CallExpr) *mast.Node {
 			}
 		}
 	case *ast.Ident:
-		if fn.Name == "len" {
-			n := &mast.Node{Kind: "call", Value: "len"}
+		switch fn.Name {
+		case "len", "append", "sum", "min", "max":
+			n := &mast.Node{Kind: "call", Value: fn.Name}
 			for _, arg := range c.Args {
 				n.Children = append(n.Children, transformExpr(arg))
 			}
 			return n
-		}
-		if fn.Name == "string" {
+		case "string":
 			return nil
 		}
 		n := &mast.Node{Kind: "call", Value: fn.Name}
@@ -244,6 +245,9 @@ func transformExpr(e ast.Expr) *mast.Node {
 		case token.INT:
 			iv, _ := strconv.Atoi(v.Value)
 			return &mast.Node{Kind: "int", Value: iv}
+		case token.FLOAT:
+			fv, _ := strconv.ParseFloat(v.Value, 64)
+			return &mast.Node{Kind: "float", Value: fv}
 		case token.STRING:
 			s, _ := strconv.Unquote(v.Value)
 			return &mast.Node{Kind: "string", Value: s}
@@ -360,6 +364,18 @@ func transformExpr(e ast.Expr) *mast.Node {
 		}
 	case *ast.IndexExpr:
 		return &mast.Node{Kind: "index", Children: []*mast.Node{transformExpr(v.X), transformExpr(v.Index)}}
+	case *ast.SliceExpr:
+		n := &mast.Node{Kind: "index", Children: []*mast.Node{transformExpr(v.X)}}
+		start := &mast.Node{Kind: "start"}
+		if v.Low != nil {
+			start.Children = []*mast.Node{transformExpr(v.Low)}
+		}
+		end := &mast.Node{Kind: "end"}
+		if v.High != nil {
+			end.Children = []*mast.Node{transformExpr(v.High)}
+		}
+		n.Children = append(n.Children, start, end)
+		return n
 	}
 	return &mast.Node{Kind: "unknown"}
 }
