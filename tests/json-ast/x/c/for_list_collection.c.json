@@ -1,0 +1,30 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    {\n        int n_arr[] = {1, 2, 3};\n        size_t n_len = sizeof(n_arr) / sizeof(n_arr[0]);\n        for (size_t i = 0; i \u003c n_len; i++) {\n            int n = n_arr[i];\n            printf(\"%d\\n\", n);\n        }\n    }\n    return 0;\n"
+    }
+  ],
+  "globals": [
+    {
+      "name": "n_arr[]",
+      "type": "int",
+      "value": "{1, 2, 3}"
+    },
+    {
+      "name": "n_len",
+      "type": "int",
+      "value": "sizeof(n_arr) / sizeof(n_arr[0]"
+    },
+    {
+      "name": "i",
+      "type": "int"
+    },
+    {
+      "name": "n",
+      "type": "int",
+      "value": "n_arr[i"
+    }
+  ]
+}

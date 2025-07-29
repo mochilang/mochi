@@ -1,0 +1,21 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    int flag = 0;\n    printf(\"%d\\n\", flag);\n    return 0;\n"
+    }
+  ],
+  "globals": [
+    {
+      "name": "data[]",
+      "type": "int",
+      "value": "{ 1, 2 }"
+    },
+    {
+      "name": "flag",
+      "type": "int",
+      "value": "0"
+    }
+  ]
+}

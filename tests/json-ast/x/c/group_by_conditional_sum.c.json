@@ -1,0 +1,70 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    puts(\"{\\\"cat\\\": \\\"a\\\", \\\"share\\\": 0} {\\\"cat\\\": \\\"b\\\", \\\"share\\\": 1}\");\n    return 0;\n"
+    }
+  ],
+  "structs": [
+    {
+      "name": "Anon3",
+      "fields": [
+        {
+          "name": "cat",
+          "type": "string"
+        },
+        {
+          "name": "share",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Data2",
+      "fields": [
+        {
+          "name": "cat",
+          "type": "string"
+        },
+        {
+          "name": "val",
+          "type": "int"
+        },
+        {
+          "name": "flag",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Items",
+      "fields": [
+        {
+          "name": "cat",
+          "type": "string"
+        },
+        {
+          "name": "val",
+          "type": "int"
+        },
+        {
+          "name": "flag",
+          "type": "int"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "name": "items[]",
+      "type": "Items",
+      "value": "{ (Items){.cat = \"a\", .val = 10, .flag = 1}, (Items){.cat = \"a\", .val = 5, .flag = 0}, (Items){.cat = \"b\", .val = 20, .flag = 1} }"
+    },
+    {
+      "name": "result[]",
+      "type": "Anon3",
+      "value": "{ (Anon3){.cat = \"a\", .share = 0}, (Anon3){.cat = \"b\", .share = 1} }"
+    }
+  ]
+}

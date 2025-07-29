@@ -1,0 +1,104 @@
+{
+  "funcs": [
+    {
+      "name": "_now",
+      "ret": "int",
+      "body": "{\n    if (!seeded_now) {\n        const char *s = getenv(\"MOCHI_NOW_SEED\");\n        if (s \u0026\u0026 *s) {\n            now_seed = atoll(s);\n            seeded_now = 1;\n        }\n    }\n    if (seeded_now) {\n        now_seed = (now_seed * 1664525 + 1013904223) % 2147483647;\n        return now_seed;\n    }\n    struct timespec ts;\n    clock_gettime(CLOCK_REALTIME, \u0026ts);\n    return (long long)(ts.tv_sec * 1000000000LL + ts.tv_nsec);\n"
+    },
+    {
+      "name": "_mem",
+      "ret": "int",
+      "body": "{\n    struct mallinfo mi = mallinfo();\n    return (long long)mi.uordblks;\n"
+    },
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    {\n        long long __start = _now();\n        long long __mem_start = _mem();\n        int n = 1000;\n        int s = 0;\n        for (int i = 1; i \u003c n; i++) {\n            s = s + i;\n        }\n        long long __end = _now();\n        long long __mem_end = _mem();\n        long long __dur_us = (__end - __start) / 1000;\n        long long __mem_bytes = __mem_end - __mem_start;\n        printf(\"{\\n  \\\"duration_us\\\": %-lld,\\n  \\\"memory_bytes\\\": %-lld,\\n  \\\"name\\\": \\\"simple\\\"\\n}\\n\", __dur_us, __mem_bytes);\n    }\n    return 0;\n"
+    }
+  ],
+  "structs": [
+    {
+      "name": "timespec",
+      "fields": [
+        {
+          "name": "tv_sec",
+          "type": "__time_t"
+        },
+        {
+          "name": "tv_nsec",
+          "type": "__syscall_slong_t"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "name": "seeded_now",
+      "type": "static int",
+      "value": "0"
+    },
+    {
+      "name": "now_seed",
+      "type": "static long long"
+    },
+    {
+      "name": "*s",
+      "type": "string",
+      "value": "getenv(\"MOCHI_NOW_SEED\""
+    },
+    {
+      "name": "timespec",
+      "type": "struct"
+    },
+    {
+      "name": "mi",
+      "type": "struct mallinfo",
+      "value": "mallinfo("
+    },
+    {
+      "name": "__start",
+      "type": "int",
+      "value": "_now("
+    },
+    {
+      "name": "__mem_start",
+      "type": "int",
+      "value": "_mem("
+    },
+    {
+      "name": "n",
+      "type": "int",
+      "value": "1000"
+    },
+    {
+      "name": "s",
+      "type": "int",
+      "value": "0"
+    },
+    {
+      "name": "i",
+      "type": "int",
+      "value": "1"
+    },
+    {
+      "name": "__end",
+      "type": "int",
+      "value": "_now("
+    },
+    {
+      "name": "__mem_end",
+      "type": "int",
+      "value": "_mem("
+    },
+    {
+      "name": "__dur_us",
+      "type": "int",
+      "value": "__end - __start) /"
+    },
+    {
+      "name": "__mem_bytes",
+      "type": "int",
+      "value": "__mem_end -"
+    }
+  ]
+}

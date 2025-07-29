@@ -1,0 +1,62 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    puts(\"{\\\"cat\\\": \\\"b\\\", \\\"total\\\": 7} {\\\"cat\\\": \\\"a\\\", \\\"total\\\": 4}\");\n    return 0;\n"
+    }
+  ],
+  "structs": [
+    {
+      "name": "Anon3",
+      "fields": [
+        {
+          "name": "cat",
+          "type": "string"
+        },
+        {
+          "name": "total",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Data2",
+      "fields": [
+        {
+          "name": "cat",
+          "type": "string"
+        },
+        {
+          "name": "val",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Items",
+      "fields": [
+        {
+          "name": "cat",
+          "type": "string"
+        },
+        {
+          "name": "val",
+          "type": "int"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "name": "items[]",
+      "type": "Items",
+      "value": "{ (Items){.cat = \"a\", .val = 3}, (Items){.cat = \"a\", .val = 1}, (Items){.cat = \"b\", .val = 5}, (Items){.cat = \"b\", .val = 2} }"
+    },
+    {
+      "name": "grouped[]",
+      "type": "Anon3",
+      "value": "{ (Anon3){.cat = \"b\", .total = 7}, (Anon3){.cat = \"a\", .total = 4} }"
+    }
+  ]
+}

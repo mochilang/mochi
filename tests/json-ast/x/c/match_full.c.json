@@ -1,0 +1,51 @@
+{
+  "funcs": [
+    {
+      "name": "classify",
+      "params": [
+        {
+          "name": "n",
+          "type": "int"
+        }
+      ],
+      "ret": "string",
+      "body": "{\n    return (n == 0 ? \"zero\" : (n == 1 ? \"one\" : \"many\"));\n"
+    },
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    const char* label = (x == 1 ? \"one\" : (x == 2 ? \"two\" : (x == 3 ? \"three\" : \"unknown\")));\n    puts(label);\n    const char* mood = (strcmp(day, \"mon\") == 0 ? \"tired\" : (strcmp(day, \"fri\") == 0 ? \"excited\" : (strcmp(day, \"sun\") == 0 ? \"relaxed\" : \"normal\")));\n    puts(mood);\n    const char* status = (ok == 1 ? \"confirmed\" : \"denied\");\n    puts(status);\n    puts(classify(0));\n    puts(classify(5));\n    return 0;\n"
+    }
+  ],
+  "globals": [
+    {
+      "name": "x",
+      "type": "int",
+      "value": "2"
+    },
+    {
+      "name": "day",
+      "type": "string"
+    },
+    {
+      "name": "ok",
+      "type": "int",
+      "value": "1"
+    },
+    {
+      "name": "label",
+      "type": "string",
+      "value": "x == 1 ? \"one\" : (x == 2 ? \"two\" : (x == 3 ? \"three\" : \"unknown\")"
+    },
+    {
+      "name": "mood",
+      "type": "string",
+      "value": "strcmp(day, \"mon\") == 0 ? \"tired\" : (strcmp(day, \"fri\") == 0 ? \"excited\" : (strcmp(day, \"sun\") == 0 ? \"relaxed\" : \"normal\")"
+    },
+    {
+      "name": "status",
+      "type": "string",
+      "value": "ok == 1 ? \"confirmed\" : \"denied\""
+    }
+  ]
+}

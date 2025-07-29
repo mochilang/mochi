@@ -1,0 +1,117 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    struct Adult {const char* name; int age; int is_senior;};\n    Adult adults[4]; size_t adults_len = 0;\n    for(size_t i=0;i\u003c4;i++){ People person=people[i]; if(person.age\u003e=18){ adults[adults_len++] = (Adult){person.name,person.age,person.age\u003e=60}; }}\n    puts(\"--- Adults ---\");\n    for(size_t i=0;i\u003cadults_len;i++){ Adult person=adults[i]; if(person.is_senior){ printf(\"%s is %d  (senior)\\n\", person.name, person.age); } else { printf(\"%s is %d\\n\", person.name, person.age); }}\n    return 0;\n"
+    }
+  ],
+  "structs": [
+    {
+      "name": "Adult",
+      "fields": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "age",
+          "type": "int"
+        },
+        {
+          "name": "is_senior",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Anon3",
+      "fields": [
+        {
+          "name": "age",
+          "type": "int"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Data2",
+      "fields": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "age",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "People",
+      "fields": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "age",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Adult",
+      "fields": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "age",
+          "type": "int"
+        },
+        {
+          "name": "is_senior",
+          "type": "int"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "name": "people[]",
+      "type": "People",
+      "value": "{ (People){.name = \"Alice\", .age = 30}, (People){.name = \"Bob\", .age = 15}, (People){.name = \"Charlie\", .age = 65}, (People){.name = \"Diana\", .age = 45} }"
+    },
+    {
+      "name": "adults[4",
+      "type": "Adult"
+    },
+    {
+      "name": "adults_len",
+      "type": "int"
+    },
+    {
+      "name": "i",
+      "type": "int"
+    },
+    {
+      "name": "person",
+      "type": "People",
+      "value": "people[i"
+    },
+    {
+      "name": "i",
+      "type": "int"
+    },
+    {
+      "name": "person",
+      "type": "Adult",
+      "value": "adults[i"
+    }
+  ]
+}

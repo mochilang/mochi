@@ -1,0 +1,16 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    if (x \u003e 3) {\n        puts(\"big\");\n    } else {\n        puts(\"small\");\n    }\n    return 0;\n"
+    }
+  ],
+  "globals": [
+    {
+      "name": "x",
+      "type": "int",
+      "value": "5"
+    }
+  ]
+}

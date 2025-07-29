@@ -1,0 +1,16 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    matrix[1][0] = 5;\n    printf(\"%d\\n\", matrix[1][0]);\n    return 0;\n"
+    }
+  ],
+  "globals": [
+    {
+      "name": "matrix[2][2]",
+      "type": "int",
+      "value": "{ { 1, 2 }, { 3, 4 } }"
+    }
+  ]
+}

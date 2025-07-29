@@ -1,0 +1,14 @@
+{
+  "funcs": [
+    {
+      "name": "boom",
+      "ret": "int",
+      "body": "{\n    puts(\"boom\");\n    return 1;\n"
+    },
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    printf(\"%d\\n\", (1 \u0026\u0026 1) \u0026\u0026 1);\n    printf(\"%d\\n\", (1 \u0026\u0026 0) \u0026\u0026 boom());\n    printf(\"%d\\n\", ((1 \u0026\u0026 1) \u0026\u0026 0) \u0026\u0026 boom());\n    return 0;\n"
+    }
+  ]
+}

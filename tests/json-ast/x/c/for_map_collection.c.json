@@ -1,0 +1,30 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    {\n        const char* k_arr[] = {\"a\", \"b\"};\n        size_t k_len = sizeof(k_arr) / sizeof(k_arr[0]);\n        for (size_t i = 0; i \u003c k_len; i++) {\n            const char* k = k_arr[i];\n            puts(k);\n        }\n    }\n    return 0;\n"
+    }
+  ],
+  "globals": [
+    {
+      "name": "k_arr[]",
+      "type": "string",
+      "value": "{\"a\", \"b\"}"
+    },
+    {
+      "name": "k_len",
+      "type": "int",
+      "value": "sizeof(k_arr) / sizeof(k_arr[0]"
+    },
+    {
+      "name": "i",
+      "type": "int"
+    },
+    {
+      "name": "k",
+      "type": "string",
+      "value": "k_arr[i"
+    }
+  ]
+}

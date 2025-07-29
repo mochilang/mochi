@@ -1,0 +1,9 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    puts(\"2.0\");\n    return 0;\n"
+    }
+  ]
+}

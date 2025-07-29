@@ -1,0 +1,15 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    printf(\"%d\\n\", strstr(s, \"cat\") != NULL);\n    printf(\"%d\\n\", strstr(s, \"dog\") != NULL);\n    return 0;\n"
+    }
+  ],
+  "globals": [
+    {
+      "name": "s",
+      "type": "string"
+    }
+  ]
+}

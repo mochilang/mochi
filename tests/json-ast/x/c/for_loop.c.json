@@ -1,0 +1,16 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    for (int i = 1; i \u003c 4; i++) {\n        printf(\"%d\\n\", i);\n    }\n    return 0;\n"
+    }
+  ],
+  "globals": [
+    {
+      "name": "i",
+      "type": "int",
+      "value": "1"
+    }
+  ]
+}

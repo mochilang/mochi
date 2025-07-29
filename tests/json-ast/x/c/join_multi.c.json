@@ -1,0 +1,163 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    ResultItem result[8]; size_t result_len = 0;\n    for(size_t i=0;i\u003c2;i++){ Orders o=orders[i];\n      for(size_t j=0;j\u003c2;j++){ Customers c=customers[j]; if(o.customerId==c.id){\n        for(size_t k=0;k\u003c2;k++){ Items it=items[k]; if(it.orderId==o.id){\n          result[result_len++] = (ResultItem){c.name,it.sku};\n        }}\n      }}\n    }\n    puts(\"--- Multi Join ---\");\n    for(size_t i=0;i\u003cresult_len;i++){ ResultItem r=result[i]; printf(\"%s bought item %s\\n\", r.name, r.sku); }\n    return 0;\n"
+    }
+  ],
+  "structs": [
+    {
+      "name": "Customers",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Data2",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Data4",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "customerId",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Data6",
+      "fields": [
+        {
+          "name": "orderId",
+          "type": "int"
+        },
+        {
+          "name": "sku",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Items",
+      "fields": [
+        {
+          "name": "orderId",
+          "type": "int"
+        },
+        {
+          "name": "sku",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "customerId",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "ResultItem",
+      "fields": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "sku",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "name": "customers[]",
+      "type": "Customers",
+      "value": "{ (Customers){.id = 1, .name = \"Alice\"}, (Customers){.id = 2, .name = \"Bob\"} }"
+    },
+    {
+      "name": "orders[]",
+      "type": "Orders",
+      "value": "{ (Orders){.id = 100, .customerId = 1}, (Orders){.id = 101, .customerId = 2} }"
+    },
+    {
+      "name": "items[]",
+      "type": "Items",
+      "value": "{ (Items){.orderId = 100, .sku = \"a\"}, (Items){.orderId = 101, .sku = \"b\"} }"
+    },
+    {
+      "name": "result[8",
+      "type": "ResultItem"
+    },
+    {
+      "name": "result_len",
+      "type": "int"
+    },
+    {
+      "name": "i",
+      "type": "int"
+    },
+    {
+      "name": "o",
+      "type": "Orders",
+      "value": "orders[i"
+    },
+    {
+      "name": "j",
+      "type": "int"
+    },
+    {
+      "name": "c",
+      "type": "Customers",
+      "value": "customers[j"
+    },
+    {
+      "name": "k",
+      "type": "int"
+    },
+    {
+      "name": "it",
+      "type": "Items",
+      "value": "items[k"
+    },
+    {
+      "name": "i",
+      "type": "int"
+    },
+    {
+      "name": "r",
+      "type": "ResultItem",
+      "value": "result[i"
+    }
+  ]
+}

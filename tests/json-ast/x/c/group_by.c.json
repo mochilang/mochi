@@ -1,0 +1,93 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    puts(\"--- People grouped by city ---\");\n    {\n        Anon3 s_arr[] = {(Anon3){.avg_age = 55, .city = \"Paris\", .count = 3}, (Anon3){.avg_age = 27.333333333333332, .city = \"Hanoi\", .count = 3}};\n        size_t s_len = sizeof(s_arr) / sizeof(s_arr[0]);\n        for (size_t i = 0; i \u003c s_len; i++) {\n            Anon3 s = s_arr[i];\n            printf(\"%s %s %d %s %g\\n\", s.city, \": count =\", s.count, \", avg_age =\", s.avg_age);\n        }\n    }\n    return 0;\n"
+    }
+  ],
+  "structs": [
+    {
+      "name": "Anon3",
+      "fields": [
+        {
+          "name": "avg_age",
+          "type": "float"
+        },
+        {
+          "name": "city",
+          "type": "string"
+        },
+        {
+          "name": "count",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Data2",
+      "fields": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "age",
+          "type": "int"
+        },
+        {
+          "name": "city",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "People",
+      "fields": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "age",
+          "type": "int"
+        },
+        {
+          "name": "city",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "name": "people[]",
+      "type": "People",
+      "value": "{ (People){.name = \"Alice\", .age = 30, .city = \"Paris\"}, (People){.name = \"Bob\", .age = 15, .city = \"Hanoi\"}, (People){.name = \"Charlie\", .age = 65, .city = \"Paris\"}, (People){.name = \"Diana\", .age = 45, .city = \"Hanoi\"}, (People){.name = \"Eve\", .age = 70, .city = \"Paris\"}, (People){.name = \"Frank\", .age = 22, .city = \"Hanoi\"} }"
+    },
+    {
+      "name": "stats[]",
+      "type": "Anon3",
+      "value": "{ (Anon3){.avg_age = 55, .city = \"Paris\", .count = 3}, (Anon3){.avg_age = 27.333333333333332, .city = \"Hanoi\", .count = 3} }"
+    },
+    {
+      "name": "s_arr[]",
+      "type": "Anon3",
+      "value": "{(Anon3){.avg_age = 55, .city = \"Paris\", .count = 3}, (Anon3){.avg_age = 27.333333333333332, .city = \"Hanoi\", .count = 3}}"
+    },
+    {
+      "name": "s_len",
+      "type": "int",
+      "value": "sizeof(s_arr) / sizeof(s_arr[0]"
+    },
+    {
+      "name": "i",
+      "type": "int"
+    },
+    {
+      "name": "s",
+      "type": "Anon3",
+      "value": "s_arr[i"
+    }
+  ]
+}

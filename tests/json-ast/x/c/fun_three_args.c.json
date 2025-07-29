@@ -1,0 +1,28 @@
+{
+  "funcs": [
+    {
+      "name": "sum3",
+      "params": [
+        {
+          "name": "a",
+          "type": "int"
+        },
+        {
+          "name": "b",
+          "type": "int"
+        },
+        {
+          "name": "c",
+          "type": "int"
+        }
+      ],
+      "ret": "int",
+      "body": "{\n    return (a + b) + c;\n"
+    },
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    printf(\"%d\\n\", sum3(1, 2, 3));\n    return 0;\n"
+    }
+  ]
+}

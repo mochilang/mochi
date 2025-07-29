@@ -1,0 +1,60 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    Pair pairs[] = { (Pair){.n = 2, .l = \"A\"}, (Pair){.n = 2, .l = \"B\"} };\n    puts(\"--- Even pairs ---\");\n    {\n        Pair p_arr[] = {(Pair){.n = 2, .l = \"A\"}, (Pair){.n = 2, .l = \"B\"}};\n        size_t p_len = sizeof(p_arr) / sizeof(p_arr[0]);\n        for (size_t i = 0; i \u003c p_len; i++) {\n            Pair p = p_arr[i];\n            printf(\"%d %s\\n\", p.n, p.l);\n        }\n    }\n    return 0;\n"
+    }
+  ],
+  "structs": [
+    {
+      "name": "Pair",
+      "fields": [
+        {
+          "name": "n",
+          "type": "int"
+        },
+        {
+          "name": "l",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "name": "nums[]",
+      "type": "int",
+      "value": "{ 1, 2, 3 }"
+    },
+    {
+      "name": "letters[]",
+      "type": "string",
+      "value": "{ \"A\", \"B\" }"
+    },
+    {
+      "name": "pairs[]",
+      "type": "Pair",
+      "value": "{ (Pair){.n = 2, .l = \"A\"}, (Pair){.n = 2, .l = \"B\"} }"
+    },
+    {
+      "name": "p_arr[]",
+      "type": "Pair",
+      "value": "{(Pair){.n = 2, .l = \"A\"}, (Pair){.n = 2, .l = \"B\"}}"
+    },
+    {
+      "name": "p_len",
+      "type": "int",
+      "value": "sizeof(p_arr) / sizeof(p_arr[0]"
+    },
+    {
+      "name": "i",
+      "type": "int"
+    },
+    {
+      "name": "p",
+      "type": "Pair",
+      "value": "p_arr[i"
+    }
+  ]
+}

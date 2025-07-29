@@ -1,0 +1,16 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    while (i \u003c 3) {\n        printf(\"%d\\n\", i);\n        i = i + 1;\n    }\n    return 0;\n"
+    }
+  ],
+  "globals": [
+    {
+      "name": "i",
+      "type": "int",
+      "value": "0"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "funcs": [
+    {
+      "name": "sum_rec",
+      "params": [
+        {
+          "name": "n",
+          "type": "int"
+        },
+        {
+          "name": "acc",
+          "type": "int"
+        }
+      ],
+      "ret": "int",
+      "body": "{\n    if (n == 0) {\n        return acc;\n    }\n    return sum_rec(n - 1, acc + n);\n"
+    },
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    printf(\"%d\\n\", sum_rec(10, 0));\n    return 0;\n"
+    }
+  ]
+}

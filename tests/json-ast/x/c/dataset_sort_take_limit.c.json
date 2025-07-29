@@ -1,0 +1,81 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    puts(\"--- Top products (excluding most expensive) ---\");\n    {\n        Anon3 item_arr[] = {(Anon3){.name = \"Smartphone\", .price = 900}, (Anon3){.name = \"Tablet\", .price = 600}, (Anon3){.name = \"Monitor\", .price = 300}};\n        size_t item_len = sizeof(item_arr) / sizeof(item_arr[0]);\n        for (size_t i = 0; i \u003c item_len; i++) {\n            Anon3 item = item_arr[i];\n            printf(\"%s %s %d\\n\", item.name, \"costs $\", item.price);\n        }\n    }\n    return 0;\n"
+    }
+  ],
+  "structs": [
+    {
+      "name": "Anon3",
+      "fields": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "price",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Data2",
+      "fields": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "price",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "fields": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "price",
+          "type": "int"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "name": "products[]",
+      "type": "Products",
+      "value": "{ (Products){.name = \"Laptop\", .price = 1500}, (Products){.name = \"Smartphone\", .price = 900}, (Products){.name = \"Tablet\", .price = 600}, (Products){.name = \"Monitor\", .price = 300}, (Products){.name = \"Keyboard\", .price = 100}, (Products){.name = \"Mouse\", .price = 50}, (Products){.name = \"Headphones\", .price = 200} }"
+    },
+    {
+      "name": "expensive[]",
+      "type": "Anon3",
+      "value": "{ (Anon3){.name = \"Smartphone\", .price = 900}, (Anon3){.name = \"Tablet\", .price = 600}, (Anon3){.name = \"Monitor\", .price = 300} }"
+    },
+    {
+      "name": "item_arr[]",
+      "type": "Anon3",
+      "value": "{(Anon3){.name = \"Smartphone\", .price = 900}, (Anon3){.name = \"Tablet\", .price = 600}, (Anon3){.name = \"Monitor\", .price = 300}}"
+    },
+    {
+      "name": "item_len",
+      "type": "int",
+      "value": "sizeof(item_arr) / sizeof(item_arr[0]"
+    },
+    {
+      "name": "i",
+      "type": "int"
+    },
+    {
+      "name": "item",
+      "type": "Anon3",
+      "value": "item_arr[i"
+    }
+  ]
+}

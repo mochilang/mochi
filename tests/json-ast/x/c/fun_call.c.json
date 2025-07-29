@@ -1,0 +1,24 @@
+{
+  "funcs": [
+    {
+      "name": "add",
+      "params": [
+        {
+          "name": "a",
+          "type": "int"
+        },
+        {
+          "name": "b",
+          "type": "int"
+        }
+      ],
+      "ret": "int",
+      "body": "{\n    return a + b;\n"
+    },
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    printf(\"%d\\n\", add(2, 3));\n    return 0;\n"
+    }
+  ]
+}

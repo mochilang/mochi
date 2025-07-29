@@ -1,0 +1,35 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    {\n        int n_arr[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};\n        size_t n_len = sizeof(n_arr) / sizeof(n_arr[0]);\n        for (size_t i = 0; i \u003c n_len; i++) {\n            int n = n_arr[i];\n            if ((n % 2) == 0) {\n                continue;\n            }\n            if (n \u003e 7) {\n                break;\n            }\n            printf(\"%s %d\\n\", \"odd number:\", n);\n        }\n    }\n    return 0;\n"
+    }
+  ],
+  "globals": [
+    {
+      "name": "numbers[]",
+      "type": "int",
+      "value": "{ 1, 2, 3, 4, 5, 6, 7, 8, 9 }"
+    },
+    {
+      "name": "n_arr[]",
+      "type": "int",
+      "value": "{1, 2, 3, 4, 5, 6, 7, 8, 9}"
+    },
+    {
+      "name": "n_len",
+      "type": "int",
+      "value": "sizeof(n_arr) / sizeof(n_arr[0]"
+    },
+    {
+      "name": "i",
+      "type": "int"
+    },
+    {
+      "name": "n",
+      "type": "int",
+      "value": "n_arr[i"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    x = 2;\n    printf(\"%d\\n\", x);\n    return 0;\n"
+    }
+  ],
+  "globals": [
+    {
+      "name": "x",
+      "type": "int",
+      "value": "1"
+    }
+  ]
+}

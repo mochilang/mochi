@@ -1,0 +1,447 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    struct ResultItem {int c_custkey; const char* c_name; double revenue; double c_acctbal; const char* n_name; const char* c_address; const char* c_phone; const char* c_comment;};\n    ResultItem result[4]; size_t result_len = 0;\n    for(size_t i=0;i\u003c1;i++){ Customer c=customer[i];\n      for(size_t j=0;j\u003c2;j++){ Orders o=orders[j]; if(o.o_custkey==c.c_custkey){\n        for(size_t k=0;k\u003c2;k++){ Lineitem l=lineitem[k]; if(l.l_orderkey==o.o_orderkey){\n          for(size_t m=0;m\u003c1;m++){ Nation n=nation[m]; if(n.n_nationkey==c.c_nationkey){\n            if(strcmp(o.o_orderdate,start_date)\u003e=0 \u0026\u0026 strcmp(o.o_orderdate,end_date)\u003c0 \u0026\u0026 strcmp(l.l_returnflag,\"R\")==0){\n              double rev=l.l_extendedprice*(1-l.l_discount);\n              size_t idx=0; int found=0;\n              for(; idx\u003cresult_len; idx++){ if(result[idx].c_custkey==c.c_custkey){ found=1; break; } }\n              if(found){ result[idx].revenue += rev; } else { result[result_len++] = (ResultItem){c.c_custkey,c.c_name,rev,c.c_acctbal,n.n_name,c.c_address,c.c_phone,c.c_comment}; }\n            }\n          }}\n        }}\n      }\n    }\n    }\n    for(size_t a=0;a\u003cresult_len;a++){ for(size_t b=a+1;b\u003cresult_len;b++){ if(result[a].revenue \u003c result[b].revenue){ ResultItem tmp=result[a]; result[a]=result[b]; result[b]=tmp; } }}\n    "
+    }
+  ],
+  "structs": [
+    {
+      "name": "Anon10",
+      "fields": [
+        {
+          "name": "o_custkey",
+          "type": "int"
+        },
+        {
+          "name": "o_orderdate",
+          "type": "string"
+        },
+        {
+          "name": "o_orderkey",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Anon11",
+      "fields": [
+        {
+          "name": "l_discount",
+          "type": "int"
+        },
+        {
+          "name": "l_extendedprice",
+          "type": "float"
+        },
+        {
+          "name": "l_orderkey",
+          "type": "int"
+        },
+        {
+          "name": "l_returnflag",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Anon12",
+      "fields": [
+        {
+          "name": "n_name",
+          "type": "string"
+        },
+        {
+          "name": "n_nationkey",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Anon9",
+      "fields": [
+        {
+          "name": "c_acctbal",
+          "type": "float"
+        },
+        {
+          "name": "c_address",
+          "type": "string"
+        },
+        {
+          "name": "c_comment",
+          "type": "string"
+        },
+        {
+          "name": "c_custkey",
+          "type": "int"
+        },
+        {
+          "name": "c_name",
+          "type": "string"
+        },
+        {
+          "name": "c_nationkey",
+          "type": "int"
+        },
+        {
+          "name": "c_phone",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Customer",
+      "fields": [
+        {
+          "name": "c_custkey",
+          "type": "int"
+        },
+        {
+          "name": "c_name",
+          "type": "string"
+        },
+        {
+          "name": "c_acctbal",
+          "type": "float"
+        },
+        {
+          "name": "c_nationkey",
+          "type": "int"
+        },
+        {
+          "name": "c_address",
+          "type": "string"
+        },
+        {
+          "name": "c_phone",
+          "type": "string"
+        },
+        {
+          "name": "c_comment",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Data2",
+      "fields": [
+        {
+          "name": "n_nationkey",
+          "type": "int"
+        },
+        {
+          "name": "n_name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Data4",
+      "fields": [
+        {
+          "name": "c_custkey",
+          "type": "int"
+        },
+        {
+          "name": "c_name",
+          "type": "string"
+        },
+        {
+          "name": "c_acctbal",
+          "type": "float"
+        },
+        {
+          "name": "c_nationkey",
+          "type": "int"
+        },
+        {
+          "name": "c_address",
+          "type": "string"
+        },
+        {
+          "name": "c_phone",
+          "type": "string"
+        },
+        {
+          "name": "c_comment",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Data6",
+      "fields": [
+        {
+          "name": "o_orderkey",
+          "type": "int"
+        },
+        {
+          "name": "o_custkey",
+          "type": "int"
+        },
+        {
+          "name": "o_orderdate",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Data8",
+      "fields": [
+        {
+          "name": "l_orderkey",
+          "type": "int"
+        },
+        {
+          "name": "l_returnflag",
+          "type": "string"
+        },
+        {
+          "name": "l_extendedprice",
+          "type": "float"
+        },
+        {
+          "name": "l_discount",
+          "type": "float"
+        }
+      ]
+    },
+    {
+      "name": "Lineitem",
+      "fields": [
+        {
+          "name": "l_orderkey",
+          "type": "int"
+        },
+        {
+          "name": "l_returnflag",
+          "type": "string"
+        },
+        {
+          "name": "l_extendedprice",
+          "type": "float"
+        },
+        {
+          "name": "l_discount",
+          "type": "float"
+        }
+      ]
+    },
+    {
+      "name": "Nation",
+      "fields": [
+        {
+          "name": "n_nationkey",
+          "type": "int"
+        },
+        {
+          "name": "n_name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "fields": [
+        {
+          "name": "o_orderkey",
+          "type": "int"
+        },
+        {
+          "name": "o_custkey",
+          "type": "int"
+        },
+        {
+          "name": "o_orderdate",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "ResultItem",
+      "fields": [
+        {
+          "name": "c_custkey",
+          "type": "int"
+        },
+        {
+          "name": "c_name",
+          "type": "string"
+        },
+        {
+          "name": "revenue",
+          "type": "float"
+        },
+        {
+          "name": "c_acctbal",
+          "type": "float"
+        },
+        {
+          "name": "n_name",
+          "type": "string"
+        },
+        {
+          "name": "c_address",
+          "type": "string"
+        },
+        {
+          "name": "c_phone",
+          "type": "string"
+        },
+        {
+          "name": "c_comment",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "ResultItem",
+      "fields": [
+        {
+          "name": "c_custkey",
+          "type": "int"
+        },
+        {
+          "name": "c_name",
+          "type": "string"
+        },
+        {
+          "name": "revenue",
+          "type": "float"
+        },
+        {
+          "name": "c_acctbal",
+          "type": "float"
+        },
+        {
+          "name": "n_name",
+          "type": "string"
+        },
+        {
+          "name": "c_address",
+          "type": "string"
+        },
+        {
+          "name": "c_phone",
+          "type": "string"
+        },
+        {
+          "name": "c_comment",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "name": "(result[idx].",
+      "type": ""
+    },
+    {
+      "name": "}",
+      "type": "k; }"
+    },
+    {
+      "name": "nation[]",
+      "type": "Nation",
+      "value": "{ (Nation){.n_nationkey = 1, .n_name = \"BRAZIL\"} }"
+    },
+    {
+      "name": "customer[]",
+      "type": "Customer",
+      "value": "{ (Customer){.c_custkey = 1, .c_name = \"Alice\", .c_acctbal = 100, .c_nationkey = 1, .c_address = \"123 St\", .c_phone = \"123-456\", .c_comment = \"Loyal\"} }"
+    },
+    {
+      "name": "orders[]",
+      "type": "Orders",
+      "value": "{ (Orders){.o_orderkey = 1000, .o_custkey = 1, .o_orderdate = \"1993-10-15\"}, (Orders){.o_orderkey = 2000, .o_custkey = 1, .o_orderdate = \"1994-01-02\"} }"
+    },
+    {
+      "name": "lineitem[]",
+      "type": "Lineitem",
+      "value": "{ (Lineitem){.l_orderkey = 1000, .l_returnflag = \"R\", .l_extendedprice = 1000, .l_discount = 0.1}, (Lineitem){.l_orderkey = 2000, .l_returnflag = \"N\", .l_extendedprice = 500, .l_discount = 0} }"
+    },
+    {
+      "name": "start_date",
+      "type": "string"
+    },
+    {
+      "name": "end_date",
+      "type": "string"
+    },
+    {
+      "name": "result[4",
+      "type": "ResultItem"
+    },
+    {
+      "name": "result_len",
+      "type": "int"
+    },
+    {
+      "name": "i",
+      "type": "int"
+    },
+    {
+      "name": "c",
+      "type": "Customer",
+      "value": "customer[i"
+    },
+    {
+      "name": "j",
+      "type": "int"
+    },
+    {
+      "name": "o",
+      "type": "Orders",
+      "value": "orders[j"
+    },
+    {
+      "name": "k",
+      "type": "int"
+    },
+    {
+      "name": "l",
+      "type": "Lineitem",
+      "value": "lineitem[k"
+    },
+    {
+      "name": "m",
+      "type": "int"
+    },
+    {
+      "name": "n",
+      "type": "Nation",
+      "value": "nation[m"
+    },
+    {
+      "name": "rev",
+      "type": "float",
+      "value": "l.l_extendedprice*(1-l.l_discount"
+    },
+    {
+      "name": "idx",
+      "type": "int"
+    },
+    {
+      "name": "found",
+      "type": "int",
+      "value": "0"
+    },
+    {
+      "name": "a",
+      "type": "int"
+    },
+    {
+      "name": "b",
+      "type": "int",
+      "value": "a+"
+    },
+    {
+      "name": "tmp",
+      "type": "ResultItem",
+      "value": "result[a"
+    }
+  ]
+}
