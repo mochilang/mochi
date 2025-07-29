@@ -21,7 +21,7 @@ import (
 
 var update = flag.Bool("update", false, "update golden files")
 
-func findRepoRoot(t *testing.T) string {
+func repoRoot(t *testing.T) string {
 	dir, err := os.Getwd()
 	if err != nil {
 		t.Fatal(err)
@@ -61,12 +61,74 @@ func runMochi(src string) ([]byte, error) {
 	return bytes.TrimSpace(out.Bytes()), nil
 }
 
-func TestConvert_Golden(t *testing.T) {
+func runTransformFile(t *testing.T, root, outDir, srcPath string) {
+	name := strings.TrimSuffix(filepath.Base(srcPath), ".dart")
+	data, err := os.ReadFile(srcPath)
+	if err != nil {
+		t.Fatalf("read src: %v", err)
+	}
+	prog, err := dart.Parse(string(data))
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	astNode, err := dart.Transform(prog)
+	if err != nil {
+		t.Fatalf("transform: %v", err)
+	}
+	src, err := dart.Print(astNode)
+	if err != nil {
+		t.Fatalf("print source: %v", err)
+	}
+	got := []byte(astNode.String())
+	astPath := filepath.Join(outDir, name+".ast")
+	if *update {
+		os.WriteFile(astPath, got, 0o644)
+		os.WriteFile(filepath.Join(outDir, name+".mochi"), []byte(src), 0o644)
+	}
+	want, err := os.ReadFile(astPath)
+	if err != nil {
+		t.Fatalf("missing golden: %v", err)
+	}
+	if string(got) != string(want) {
+		t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", got, want)
+	}
+
+	var buf bytes.Buffer
+	if err := ast.Fprint(&buf, astNode); err != nil {
+		t.Fatalf("print: %v", err)
+	}
+	_ = buf.String()
+
+	mochiPath := filepath.Join(outDir, name+".mochi")
+	if *update {
+		os.WriteFile(mochiPath, []byte(src), 0o644)
+	}
+	gotOut, err := runMochi(src)
+	if err != nil {
+		t.Fatalf("run: %v", err)
+	}
+	vmSrc, err := os.ReadFile(filepath.Join(root, "tests/vm/valid", name+".mochi"))
+	if err != nil {
+		t.Fatalf("missing vm source: %v", err)
+	}
+	wantOut, err := runMochi(string(vmSrc))
+	if err != nil {
+		t.Fatalf("run vm: %v", err)
+	}
+	if *update {
+		os.WriteFile(filepath.Join(outDir, name+".out"), gotOut, 0o644)
+	}
+	if !bytes.Equal(gotOut, wantOut) {
+		t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
+	}
+}
+
+func TestTransform_Golden(t *testing.T) {
 	if _, err := exec.LookPath("go"); err != nil {
 		t.Skipf("go not installed: %v", err)
 	}
 
-	root := findRepoRoot(t)
+	root := repoRoot(t)
 	pattern := filepath.Join(root, "tests/transpiler/x/dart", "*.dart")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
@@ -131,63 +193,7 @@ func TestConvert_Golden(t *testing.T) {
 			continue
 		}
 		t.Run(name, func(t *testing.T) {
-			data, err := os.ReadFile(srcPath)
-			if err != nil {
-				t.Fatalf("read src: %v", err)
-			}
-			node, err := dart.Parse(string(data))
-			if err != nil {
-				t.Fatalf("parse: %v", err)
-			}
-			src, err := dart.ConvertSource(node)
-			if err != nil {
-				t.Fatalf("convert source: %v", err)
-			}
-			astNode, err := dart.Convert(node)
-			if err != nil {
-				t.Fatalf("convert: %v", err)
-			}
-			got := []byte(astNode.String())
-			outPath := filepath.Join(outDir, name+".ast")
-			if *update {
-				os.WriteFile(outPath, got, 0644)
-				os.WriteFile(filepath.Join(outDir, name+".mochi"), []byte(src), 0644)
-			}
-			want, err := os.ReadFile(outPath)
-			if err != nil {
-				t.Fatalf("missing golden: %v", err)
-			}
-			if string(got) != string(want) {
-				t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", got, want)
-			}
-
-			var buf bytes.Buffer
-			if err := ast.Fprint(&buf, astNode); err != nil {
-				t.Fatalf("print: %v", err)
-			}
-			code := buf.String()
-			mochiPath := filepath.Join(outDir, name+".mochi")
-			if *update {
-				os.WriteFile(mochiPath, []byte(code), 0644)
-			}
-			gotOut, err := runMochi(code)
-			if err != nil {
-				t.Fatalf("run: %v", err)
-			}
-			vmSrc, err := os.ReadFile(filepath.Join(root, "tests/vm/valid", name+".mochi"))
-			if err != nil {
-				t.Fatalf("missing vm source: %v", err)
-			}
-			wantOut, err := runMochi(string(vmSrc))
-			if err != nil {
-				t.Fatalf("run vm: %v", err)
-			}
-			if *update {
-				os.WriteFile(filepath.Join(outDir, name+".out"), gotOut, 0644)
-			}
-			if !bytes.Equal(gotOut, wantOut) {
-				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
-			}
+			runTransformFile(t, root, outDir, srcPath)
 		})
 	}
 }
