@@ -2,13 +2,19 @@
   (var i (int 0))
   (while
     (group
-      (binary < (selector i) (int 3))
+      (binary <
+        (group (selector i))
+        (int 3)
+      )
     )
     (block
       (call print (selector i))
       (assign i
         (group
-          (binary + (selector i) (int 1))
+          (binary +
+            (group (selector i))
+            (int 1)
+          )
         )
       )
     )

@@ -1,0 +1,24 @@
+(program
+  (var x (int 3))
+  (var y (int 4))
+  (var m
+    (map
+      (entry
+        (string a)
+        (group (selector x))
+      )
+      (entry
+        (string b)
+        (group (selector y))
+      )
+    )
+  )
+  (call print
+    (group
+      (index (selector m) (string a))
+    )
+    (group
+      (index (selector m) (string b))
+    )
+  )
+)

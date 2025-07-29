@@ -288,6 +288,8 @@ func parseStatementsIndent(body string, indent int) []string {
 				expr = rewriteStringArrays(expr)
 				expr = rewriteContains(expr)
 				expr = rewriteMapContains(expr)
+				expr = trimOuterParens(expr)
+				expr = balanceParens(expr)
 				out = append(out, strings.Repeat("  ", indent)+"return "+expr)
 			case strings.HasPrefix(l, "print(") && strings.HasSuffix(l, ")"):
 				expr := strings.TrimSpace(l[len("print(") : len(l)-1])
@@ -306,6 +308,8 @@ func parseStatementsIndent(body string, indent int) []string {
 				expr = rewriteStringArrays(expr)
 				expr = rewriteContains(expr)
 				expr = rewriteMapContains(expr)
+				expr = trimOuterParens(expr)
+				expr = balanceParens(expr)
 				out = append(out, strings.Repeat("  ", indent)+"print("+expr+")")
 			case strings.HasPrefix(l, "let ") || strings.HasPrefix(l, "var "):
 				keyword := "let"
@@ -335,6 +339,8 @@ func parseStatementsIndent(body string, indent int) []string {
 					expr = rewriteStringArrays(expr)
 					expr = rewriteContains(expr)
 					expr = rewriteMapContains(expr)
+					expr = trimOuterParens(expr)
+					expr = balanceParens(expr)
 					out = append(out, strings.Repeat("  ", indent)+keyword+" "+name+" = "+expr)
 				}
 			case l == "break":
@@ -357,11 +363,47 @@ var parenMinRE = regexp.MustCompile(`\(([^()]+)\)\.min\(\)`)
 var identMinRE = regexp.MustCompile(`([A-Za-z0-9_]+)\.min\(\)`)
 var parenMaxRE = regexp.MustCompile(`\(([^()]+)\)\.max\(\)`)
 var identMaxRE = regexp.MustCompile(`([A-Za-z0-9_]+)\.max\(\)`)
-var castRE = regexp.MustCompile(`\((.+?)\s+as!\s+[A-Za-z0-9_<>.]+\)`)
+var castRE = regexp.MustCompile(`\s+as!\s+[A-Za-z0-9_<>.]+`)
 var stringSliceRE = regexp.MustCompile(`^\(?\s*(?:str|String)\(Array\((.+?)\)\[\s*([^\]]+?)\s*\.\.\s*([^\]]+?)\s*\]\)\s*\)?$`)
 var stringIndexRE = regexp.MustCompile(`^\(?\s*(?:str|String)\(Array\((.+?)\)\[\s*([^\]]+?)\s*\]\)\s*\)?$`)
-var containsRE = regexp.MustCompile(`([A-Za-z0-9_]+)\.contains\(([^()]+)\)`)
+var containsRE = regexp.MustCompile(`\(?\s*([A-Za-z0-9_]+)\s*\)?\.contains\(([^()]+)\)`)
 var mapContainsRE = regexp.MustCompile(`([A-Za-z0-9_]+)\[([^\]]+)\]\s*!=\s*nil`)
+
+func trimOuterParens(expr string) string {
+	for {
+		expr = strings.TrimSpace(expr)
+		if len(expr) >= 2 && expr[0] == '(' && expr[len(expr)-1] == ')' {
+			if balanced(expr[1 : len(expr)-1]) {
+				expr = expr[1 : len(expr)-1]
+				continue
+			}
+		}
+		return expr
+	}
+}
+
+func balanceParens(expr string) string {
+	for strings.HasSuffix(expr, ")") && !balanced(expr) {
+		expr = strings.TrimSuffix(expr, ")")
+	}
+	return expr
+}
+
+func balanced(s string) bool {
+	depth := 0
+	for i := 0; i < len(s); i++ {
+		switch s[i] {
+		case '(':
+			depth++
+		case ')':
+			if depth == 0 {
+				return false
+			}
+			depth--
+		}
+	}
+	return depth == 0
+}
 
 func rewriteMapLiteral(expr string) string {
 	m := mapLitRE.FindStringSubmatch(expr)
@@ -392,11 +434,11 @@ func rewriteStructLiteral(expr string) string {
 
 func rewriteCasts(expr string) string {
 	for {
-		m := castRE.FindStringSubmatchIndex(expr)
+		m := castRE.FindStringIndex(expr)
 		if m == nil {
 			break
 		}
-		expr = expr[:m[0]] + expr[m[2]:m[3]] + expr[m[1]:]
+		expr = expr[:m[0]] + expr[m[1]:]
 	}
 	return expr
 }

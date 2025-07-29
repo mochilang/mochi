@@ -1,6 +1,6 @@
-// a2mochi-swift v0.10.48 on 2025-07-29 23:54 GMT+7
+// a2mochi-swift v0.10.48 on 2025-07-30 00:24 GMT+7
 var i = 0
-while ((i < 3)) {
+while (((i) < 3)) {
   print(i)
-  i = ((i + 1))
+  i = (((i) + 1))
 }

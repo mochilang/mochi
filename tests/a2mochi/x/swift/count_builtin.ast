@@ -1,9 +1,7 @@
 (program
   (call print
-    (group
-      (call count
-        (list (int 1) (int 2) (int 3))
-      )
+    (call count
+      (list (int 1) (int 2) (int 3))
     )
   )
 )

@@ -3,7 +3,7 @@
   (let b (int 20))
   (call print
     (binary +
-      (selector a)
+      (group (selector a))
       (group (selector b))
     )
   )
