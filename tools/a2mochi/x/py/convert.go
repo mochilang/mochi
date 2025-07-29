@@ -360,11 +360,17 @@ func emitAST(b *strings.Builder, n *Node, indent string, lines []string, seen ma
 		return emitIfStmt(b, n, indent, lines, seen)
 	case "Continue":
 		b.WriteString("continue\n")
-	case "Break":
-		b.WriteString("break\n")
-	default:
-		return newConvertError(n.Line, lines, "unhandled statement")
-	}
+        case "Break":
+                b.WriteString("break\n")
+       case "Assert":
+               b.WriteString("expect ")
+               if err := emitExpr(b, n.Test, lines); err != nil {
+                       return err
+               }
+               b.WriteByte('\n')
+        default:
+                return newConvertError(n.Line, lines, "unhandled statement")
+        }
 	return nil
 }
 
