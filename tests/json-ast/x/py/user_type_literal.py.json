@@ -1,0 +1,335 @@
+{
+  "module": {
+    "_type": "Module",
+    "body": [
+      {
+        "_type": "ImportFrom",
+        "lineno": 3,
+        "end_lineno": 3,
+        "end_col_offset": 34
+      },
+      {
+        "_type": "ImportFrom",
+        "lineno": 4,
+        "end_lineno": 4,
+        "end_col_offset": 33
+      },
+      {
+        "_type": "ImportFrom",
+        "lineno": 5,
+        "end_lineno": 5,
+        "end_col_offset": 29
+      },
+      {
+        "_type": "ClassDef",
+        "name": "Person",
+        "body": [
+          {
+            "_type": "AnnAssign",
+            "value": null,
+            "annotation": {
+              "_type": "Name",
+              "id": "str",
+              "lineno": 9,
+              "end_lineno": 9,
+              "col_offset": 10,
+              "end_col_offset": 13
+            },
+            "target": {
+              "_type": "Name",
+              "id": "name",
+              "lineno": 9,
+              "end_lineno": 9,
+              "col_offset": 4,
+              "end_col_offset": 8
+            },
+            "lineno": 9,
+            "end_lineno": 9,
+            "col_offset": 4,
+            "end_col_offset": 13
+          },
+          {
+            "_type": "AnnAssign",
+            "value": null,
+            "annotation": {
+              "_type": "Name",
+              "id": "int",
+              "lineno": 10,
+              "end_lineno": 10,
+              "col_offset": 9,
+              "end_col_offset": 12
+            },
+            "target": {
+              "_type": "Name",
+              "id": "age",
+              "lineno": 10,
+              "end_lineno": 10,
+              "col_offset": 4,
+              "end_col_offset": 7
+            },
+            "lineno": 10,
+            "end_lineno": 10,
+            "col_offset": 4,
+            "end_col_offset": 12
+          }
+        ],
+        "decorator_list": [
+          {
+            "_type": "Name",
+            "id": "dataclass",
+            "lineno": 7,
+            "end_lineno": 7,
+            "col_offset": 1,
+            "end_col_offset": 10
+          }
+        ],
+        "lineno": 8,
+        "end_lineno": 10,
+        "end_col_offset": 12
+      },
+      {
+        "_type": "ClassDef",
+        "name": "Book",
+        "body": [
+          {
+            "_type": "AnnAssign",
+            "value": null,
+            "annotation": {
+              "_type": "Name",
+              "id": "str",
+              "lineno": 14,
+              "end_lineno": 14,
+              "col_offset": 11,
+              "end_col_offset": 14
+            },
+            "target": {
+              "_type": "Name",
+              "id": "title",
+              "lineno": 14,
+              "end_lineno": 14,
+              "col_offset": 4,
+              "end_col_offset": 9
+            },
+            "lineno": 14,
+            "end_lineno": 14,
+            "col_offset": 4,
+            "end_col_offset": 14
+          },
+          {
+            "_type": "AnnAssign",
+            "value": null,
+            "annotation": {
+              "_type": "Name",
+              "id": "Person",
+              "lineno": 15,
+              "end_lineno": 15,
+              "col_offset": 12,
+              "end_col_offset": 18
+            },
+            "target": {
+              "_type": "Name",
+              "id": "author",
+              "lineno": 15,
+              "end_lineno": 15,
+              "col_offset": 4,
+              "end_col_offset": 10
+            },
+            "lineno": 15,
+            "end_lineno": 15,
+            "col_offset": 4,
+            "end_col_offset": 18
+          }
+        ],
+        "decorator_list": [
+          {
+            "_type": "Name",
+            "id": "dataclass",
+            "lineno": 12,
+            "end_lineno": 12,
+            "col_offset": 1,
+            "end_col_offset": 10
+          }
+        ],
+        "lineno": 13,
+        "end_lineno": 15,
+        "end_col_offset": 18
+      },
+      {
+        "_type": "Assign",
+        "targets": [
+          {
+            "_type": "Name",
+            "id": "book",
+            "lineno": 17,
+            "end_lineno": 17,
+            "end_col_offset": 4
+          }
+        ],
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "Book",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 17,
+            "end_lineno": 17,
+            "col_offset": 7,
+            "end_col_offset": 11
+          },
+          "args": [],
+          "keywords": [
+            {
+              "_type": "keyword",
+              "arg": "title",
+              "value": {
+                "_type": "Constant",
+                "value": "Go",
+                "kind": null,
+                "lineno": 17,
+                "end_lineno": 17,
+                "col_offset": 18,
+                "end_col_offset": 22
+              },
+              "lineno": 17,
+              "end_lineno": 17,
+              "col_offset": 12,
+              "end_col_offset": 22
+            },
+            {
+              "_type": "keyword",
+              "arg": "author",
+              "value": {
+                "_type": "Call",
+                "func": {
+                  "_type": "Name",
+                  "id": "Person",
+                  "ctx": {
+                    "_type": "Load"
+                  },
+                  "lineno": 17,
+                  "end_lineno": 17,
+                  "col_offset": 31,
+                  "end_col_offset": 37
+                },
+                "args": [],
+                "keywords": [
+                  {
+                    "_type": "keyword",
+                    "arg": "name",
+                    "value": {
+                      "_type": "Constant",
+                      "value": "Bob",
+                      "kind": null,
+                      "lineno": 17,
+                      "end_lineno": 17,
+                      "col_offset": 43,
+                      "end_col_offset": 48
+                    },
+                    "lineno": 17,
+                    "end_lineno": 17,
+                    "col_offset": 38,
+                    "end_col_offset": 48
+                  },
+                  {
+                    "_type": "keyword",
+                    "arg": "age",
+                    "value": {
+                      "_type": "Constant",
+                      "value": 42,
+                      "kind": null,
+                      "lineno": 17,
+                      "end_lineno": 17,
+                      "col_offset": 54,
+                      "end_col_offset": 56
+                    },
+                    "lineno": 17,
+                    "end_lineno": 17,
+                    "col_offset": 50,
+                    "end_col_offset": 56
+                  }
+                ],
+                "lineno": 17,
+                "end_lineno": 17,
+                "col_offset": 31,
+                "end_col_offset": 57
+              },
+              "lineno": 17,
+              "end_lineno": 17,
+              "col_offset": 24,
+              "end_col_offset": 57
+            }
+          ],
+          "lineno": 17,
+          "end_lineno": 17,
+          "col_offset": 7,
+          "end_col_offset": 58
+        },
+        "lineno": 17,
+        "end_lineno": 17,
+        "end_col_offset": 58
+      },
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 18,
+            "end_lineno": 18,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "Attribute",
+              "value": {
+                "_type": "Attribute",
+                "value": {
+                  "_type": "Name",
+                  "id": "book",
+                  "ctx": {
+                    "_type": "Load"
+                  },
+                  "lineno": 18,
+                  "end_lineno": 18,
+                  "col_offset": 6,
+                  "end_col_offset": 10
+                },
+                "attr": "author",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 18,
+                "end_lineno": 18,
+                "col_offset": 6,
+                "end_col_offset": 17
+              },
+              "attr": "name",
+              "ctx": {
+                "_type": "Load"
+              },
+              "lineno": 18,
+              "end_lineno": 18,
+              "col_offset": 6,
+              "end_col_offset": 22
+            }
+          ],
+          "keywords": [],
+          "lineno": 18,
+          "end_lineno": 18,
+          "col_offset": 0,
+          "end_col_offset": 23
+        },
+        "lineno": 18,
+        "end_lineno": 18,
+        "end_col_offset": 23
+      }
+    ]
+  }
+}

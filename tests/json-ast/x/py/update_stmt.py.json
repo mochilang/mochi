@@ -1,0 +1,1096 @@
+{
+  "module": {
+    "_type": "Module",
+    "body": [
+      {
+        "_type": "ImportFrom",
+        "lineno": 3,
+        "end_lineno": 3,
+        "end_col_offset": 34
+      },
+      {
+        "_type": "ImportFrom",
+        "lineno": 4,
+        "end_lineno": 4,
+        "end_col_offset": 33
+      },
+      {
+        "_type": "ImportFrom",
+        "lineno": 5,
+        "end_lineno": 5,
+        "end_col_offset": 29
+      },
+      {
+        "_type": "Import",
+        "lineno": 7,
+        "end_lineno": 7,
+        "end_col_offset": 10
+      },
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Attribute",
+            "value": {
+              "_type": "Name",
+              "id": "sys",
+              "ctx": {
+                "_type": "Load"
+              },
+              "lineno": 8,
+              "end_lineno": 8,
+              "col_offset": 0,
+              "end_col_offset": 3
+            },
+            "attr": "set_int_max_str_digits",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 8,
+            "end_lineno": 8,
+            "col_offset": 0,
+            "end_col_offset": 26
+          },
+          "args": [
+            {
+              "_type": "Constant",
+              "value": 0,
+              "kind": null,
+              "lineno": 8,
+              "end_lineno": 8,
+              "col_offset": 27,
+              "end_col_offset": 28
+            }
+          ],
+          "keywords": [],
+          "lineno": 8,
+          "end_lineno": 8,
+          "col_offset": 0,
+          "end_col_offset": 29
+        },
+        "lineno": 8,
+        "end_lineno": 8,
+        "end_col_offset": 29
+      },
+      {
+        "_type": "ClassDef",
+        "name": "Person",
+        "body": [
+          {
+            "_type": "AnnAssign",
+            "value": null,
+            "annotation": {
+              "_type": "Name",
+              "id": "str",
+              "lineno": 12,
+              "end_lineno": 12,
+              "col_offset": 10,
+              "end_col_offset": 13
+            },
+            "target": {
+              "_type": "Name",
+              "id": "name",
+              "lineno": 12,
+              "end_lineno": 12,
+              "col_offset": 4,
+              "end_col_offset": 8
+            },
+            "lineno": 12,
+            "end_lineno": 12,
+            "col_offset": 4,
+            "end_col_offset": 13
+          },
+          {
+            "_type": "AnnAssign",
+            "value": null,
+            "annotation": {
+              "_type": "Name",
+              "id": "int",
+              "lineno": 13,
+              "end_lineno": 13,
+              "col_offset": 9,
+              "end_col_offset": 12
+            },
+            "target": {
+              "_type": "Name",
+              "id": "age",
+              "lineno": 13,
+              "end_lineno": 13,
+              "col_offset": 4,
+              "end_col_offset": 7
+            },
+            "lineno": 13,
+            "end_lineno": 13,
+            "col_offset": 4,
+            "end_col_offset": 12
+          },
+          {
+            "_type": "AnnAssign",
+            "value": null,
+            "annotation": {
+              "_type": "Name",
+              "id": "str",
+              "lineno": 14,
+              "end_lineno": 14,
+              "col_offset": 12,
+              "end_col_offset": 15
+            },
+            "target": {
+              "_type": "Name",
+              "id": "status",
+              "lineno": 14,
+              "end_lineno": 14,
+              "col_offset": 4,
+              "end_col_offset": 10
+            },
+            "lineno": 14,
+            "end_lineno": 14,
+            "col_offset": 4,
+            "end_col_offset": 15
+          }
+        ],
+        "decorator_list": [
+          {
+            "_type": "Name",
+            "id": "dataclass",
+            "lineno": 10,
+            "end_lineno": 10,
+            "col_offset": 1,
+            "end_col_offset": 10
+          }
+        ],
+        "lineno": 11,
+        "end_lineno": 14,
+        "end_col_offset": 15
+      },
+      {
+        "_type": "Assign",
+        "targets": [
+          {
+            "_type": "Name",
+            "id": "people",
+            "lineno": 16,
+            "end_lineno": 16,
+            "end_col_offset": 6
+          }
+        ],
+        "value": {
+          "_type": "List",
+          "elts": [
+            {
+              "_type": "Call",
+              "func": {
+                "_type": "Name",
+                "id": "Person",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 16,
+                "end_lineno": 16,
+                "col_offset": 10,
+                "end_col_offset": 16
+              },
+              "args": [],
+              "keywords": [
+                {
+                  "_type": "keyword",
+                  "arg": "name",
+                  "value": {
+                    "_type": "Constant",
+                    "value": "Alice",
+                    "kind": null,
+                    "lineno": 16,
+                    "end_lineno": 16,
+                    "col_offset": 22,
+                    "end_col_offset": 29
+                  },
+                  "lineno": 16,
+                  "end_lineno": 16,
+                  "col_offset": 17,
+                  "end_col_offset": 29
+                },
+                {
+                  "_type": "keyword",
+                  "arg": "age",
+                  "value": {
+                    "_type": "Constant",
+                    "value": 17,
+                    "kind": null,
+                    "lineno": 16,
+                    "end_lineno": 16,
+                    "col_offset": 35,
+                    "end_col_offset": 37
+                  },
+                  "lineno": 16,
+                  "end_lineno": 16,
+                  "col_offset": 31,
+                  "end_col_offset": 37
+                },
+                {
+                  "_type": "keyword",
+                  "arg": "status",
+                  "value": {
+                    "_type": "Constant",
+                    "value": "minor",
+                    "kind": null,
+                    "lineno": 16,
+                    "end_lineno": 16,
+                    "col_offset": 46,
+                    "end_col_offset": 53
+                  },
+                  "lineno": 16,
+                  "end_lineno": 16,
+                  "col_offset": 39,
+                  "end_col_offset": 53
+                }
+              ],
+              "lineno": 16,
+              "end_lineno": 16,
+              "col_offset": 10,
+              "end_col_offset": 54
+            },
+            {
+              "_type": "Call",
+              "func": {
+                "_type": "Name",
+                "id": "Person",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 16,
+                "end_lineno": 16,
+                "col_offset": 56,
+                "end_col_offset": 62
+              },
+              "args": [],
+              "keywords": [
+                {
+                  "_type": "keyword",
+                  "arg": "name",
+                  "value": {
+                    "_type": "Constant",
+                    "value": "Bob",
+                    "kind": null,
+                    "lineno": 16,
+                    "end_lineno": 16,
+                    "col_offset": 68,
+                    "end_col_offset": 73
+                  },
+                  "lineno": 16,
+                  "end_lineno": 16,
+                  "col_offset": 63,
+                  "end_col_offset": 73
+                },
+                {
+                  "_type": "keyword",
+                  "arg": "age",
+                  "value": {
+                    "_type": "Constant",
+                    "value": 25,
+                    "kind": null,
+                    "lineno": 16,
+                    "end_lineno": 16,
+                    "col_offset": 79,
+                    "end_col_offset": 81
+                  },
+                  "lineno": 16,
+                  "end_lineno": 16,
+                  "col_offset": 75,
+                  "end_col_offset": 81
+                },
+                {
+                  "_type": "keyword",
+                  "arg": "status",
+                  "value": {
+                    "_type": "Constant",
+                    "value": "unknown",
+                    "kind": null,
+                    "lineno": 16,
+                    "end_lineno": 16,
+                    "col_offset": 90,
+                    "end_col_offset": 99
+                  },
+                  "lineno": 16,
+                  "end_lineno": 16,
+                  "col_offset": 83,
+                  "end_col_offset": 99
+                }
+              ],
+              "lineno": 16,
+              "end_lineno": 16,
+              "col_offset": 56,
+              "end_col_offset": 100
+            },
+            {
+              "_type": "Call",
+              "func": {
+                "_type": "Name",
+                "id": "Person",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 16,
+                "end_lineno": 16,
+                "col_offset": 102,
+                "end_col_offset": 108
+              },
+              "args": [],
+              "keywords": [
+                {
+                  "_type": "keyword",
+                  "arg": "name",
+                  "value": {
+                    "_type": "Constant",
+                    "value": "Charlie",
+                    "kind": null,
+                    "lineno": 16,
+                    "end_lineno": 16,
+                    "col_offset": 114,
+                    "end_col_offset": 123
+                  },
+                  "lineno": 16,
+                  "end_lineno": 16,
+                  "col_offset": 109,
+                  "end_col_offset": 123
+                },
+                {
+                  "_type": "keyword",
+                  "arg": "age",
+                  "value": {
+                    "_type": "Constant",
+                    "value": 18,
+                    "kind": null,
+                    "lineno": 16,
+                    "end_lineno": 16,
+                    "col_offset": 129,
+                    "end_col_offset": 131
+                  },
+                  "lineno": 16,
+                  "end_lineno": 16,
+                  "col_offset": 125,
+                  "end_col_offset": 131
+                },
+                {
+                  "_type": "keyword",
+                  "arg": "status",
+                  "value": {
+                    "_type": "Constant",
+                    "value": "unknown",
+                    "kind": null,
+                    "lineno": 16,
+                    "end_lineno": 16,
+                    "col_offset": 140,
+                    "end_col_offset": 149
+                  },
+                  "lineno": 16,
+                  "end_lineno": 16,
+                  "col_offset": 133,
+                  "end_col_offset": 149
+                }
+              ],
+              "lineno": 16,
+              "end_lineno": 16,
+              "col_offset": 102,
+              "end_col_offset": 150
+            },
+            {
+              "_type": "Call",
+              "func": {
+                "_type": "Name",
+                "id": "Person",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 16,
+                "end_lineno": 16,
+                "col_offset": 152,
+                "end_col_offset": 158
+              },
+              "args": [],
+              "keywords": [
+                {
+                  "_type": "keyword",
+                  "arg": "name",
+                  "value": {
+                    "_type": "Constant",
+                    "value": "Diana",
+                    "kind": null,
+                    "lineno": 16,
+                    "end_lineno": 16,
+                    "col_offset": 164,
+                    "end_col_offset": 171
+                  },
+                  "lineno": 16,
+                  "end_lineno": 16,
+                  "col_offset": 159,
+                  "end_col_offset": 171
+                },
+                {
+                  "_type": "keyword",
+                  "arg": "age",
+                  "value": {
+                    "_type": "Constant",
+                    "value": 16,
+                    "kind": null,
+                    "lineno": 16,
+                    "end_lineno": 16,
+                    "col_offset": 177,
+                    "end_col_offset": 179
+                  },
+                  "lineno": 16,
+                  "end_lineno": 16,
+                  "col_offset": 173,
+                  "end_col_offset": 179
+                },
+                {
+                  "_type": "keyword",
+                  "arg": "status",
+                  "value": {
+                    "_type": "Constant",
+                    "value": "minor",
+                    "kind": null,
+                    "lineno": 16,
+                    "end_lineno": 16,
+                    "col_offset": 188,
+                    "end_col_offset": 195
+                  },
+                  "lineno": 16,
+                  "end_lineno": 16,
+                  "col_offset": 181,
+                  "end_col_offset": 195
+                }
+              ],
+              "lineno": 16,
+              "end_lineno": 16,
+              "col_offset": 152,
+              "end_col_offset": 196
+            }
+          ],
+          "ctx": {
+            "_type": "Load"
+          },
+          "lineno": 16,
+          "end_lineno": 16,
+          "col_offset": 9,
+          "end_col_offset": 197
+        },
+        "lineno": 16,
+        "end_lineno": 16,
+        "end_col_offset": 197
+      },
+      {
+        "_type": "For",
+        "body": [
+          {
+            "_type": "If",
+            "body": [
+              {
+                "_type": "Assign",
+                "targets": [
+                  {
+                    "_type": "Attribute",
+                    "value": {
+                      "_type": "Name",
+                      "id": "item",
+                      "ctx": {
+                        "_type": "Load"
+                      },
+                      "lineno": 19,
+                      "end_lineno": 19,
+                      "col_offset": 8,
+                      "end_col_offset": 12
+                    },
+                    "attr": "status",
+                    "lineno": 19,
+                    "end_lineno": 19,
+                    "col_offset": 8,
+                    "end_col_offset": 19
+                  }
+                ],
+                "value": {
+                  "_type": "Constant",
+                  "value": "adult",
+                  "kind": null,
+                  "lineno": 19,
+                  "end_lineno": 19,
+                  "col_offset": 22,
+                  "end_col_offset": 29
+                },
+                "lineno": 19,
+                "end_lineno": 19,
+                "col_offset": 8,
+                "end_col_offset": 29
+              },
+              {
+                "_type": "Assign",
+                "targets": [
+                  {
+                    "_type": "Attribute",
+                    "value": {
+                      "_type": "Name",
+                      "id": "item",
+                      "ctx": {
+                        "_type": "Load"
+                      },
+                      "lineno": 20,
+                      "end_lineno": 20,
+                      "col_offset": 8,
+                      "end_col_offset": 12
+                    },
+                    "attr": "age",
+                    "lineno": 20,
+                    "end_lineno": 20,
+                    "col_offset": 8,
+                    "end_col_offset": 16
+                  }
+                ],
+                "value": {
+                  "_type": "BinOp",
+                  "left": {
+                    "_type": "Attribute",
+                    "value": {
+                      "_type": "Name",
+                      "id": "item",
+                      "ctx": {
+                        "_type": "Load"
+                      },
+                      "lineno": 20,
+                      "end_lineno": 20,
+                      "col_offset": 19,
+                      "end_col_offset": 23
+                    },
+                    "attr": "age",
+                    "ctx": {
+                      "_type": "Load"
+                    },
+                    "lineno": 20,
+                    "end_lineno": 20,
+                    "col_offset": 19,
+                    "end_col_offset": 27
+                  },
+                  "op": {
+                    "_type": "Add"
+                  },
+                  "right": {
+                    "_type": "Constant",
+                    "value": 1,
+                    "kind": null,
+                    "lineno": 20,
+                    "end_lineno": 20,
+                    "col_offset": 30,
+                    "end_col_offset": 31
+                  },
+                  "lineno": 20,
+                  "end_lineno": 20,
+                  "col_offset": 19,
+                  "end_col_offset": 31
+                },
+                "lineno": 20,
+                "end_lineno": 20,
+                "col_offset": 8,
+                "end_col_offset": 31
+              }
+            ],
+            "test": {
+              "_type": "Compare",
+              "left": {
+                "_type": "Attribute",
+                "value": {
+                  "_type": "Name",
+                  "id": "item",
+                  "ctx": {
+                    "_type": "Load"
+                  },
+                  "lineno": 18,
+                  "end_lineno": 18,
+                  "col_offset": 7,
+                  "end_col_offset": 11
+                },
+                "attr": "age",
+                "lineno": 18,
+                "end_lineno": 18,
+                "col_offset": 7,
+                "end_col_offset": 15
+              },
+              "ops": [
+                {
+                  "_type": "GtE"
+                }
+              ],
+              "comparators": [
+                {
+                  "_type": "Constant",
+                  "value": 18,
+                  "lineno": 18,
+                  "end_lineno": 18,
+                  "col_offset": 19,
+                  "end_col_offset": 21
+                }
+              ],
+              "lineno": 18,
+              "end_lineno": 18,
+              "col_offset": 7,
+              "end_col_offset": 21
+            },
+            "lineno": 18,
+            "end_lineno": 20,
+            "col_offset": 4,
+            "end_col_offset": 31
+          },
+          {
+            "_type": "Assign",
+            "targets": [
+              {
+                "_type": "Subscript",
+                "value": {
+                  "_type": "Name",
+                  "id": "people",
+                  "ctx": {
+                    "_type": "Load"
+                  },
+                  "lineno": 21,
+                  "end_lineno": 21,
+                  "col_offset": 4,
+                  "end_col_offset": 10
+                },
+                "slice": {
+                  "_type": "Name",
+                  "id": "idx",
+                  "lineno": 21,
+                  "end_lineno": 21,
+                  "col_offset": 11,
+                  "end_col_offset": 14
+                },
+                "lineno": 21,
+                "end_lineno": 21,
+                "col_offset": 4,
+                "end_col_offset": 15
+              }
+            ],
+            "value": {
+              "_type": "Name",
+              "id": "item",
+              "ctx": {
+                "_type": "Load"
+              },
+              "lineno": 21,
+              "end_lineno": 21,
+              "col_offset": 18,
+              "end_col_offset": 22
+            },
+            "lineno": 21,
+            "end_lineno": 21,
+            "col_offset": 4,
+            "end_col_offset": 22
+          }
+        ],
+        "target": {
+          "_type": "Tuple",
+          "elts": [
+            {
+              "_type": "Name",
+              "id": "idx",
+              "lineno": 17,
+              "end_lineno": 17,
+              "col_offset": 4,
+              "end_col_offset": 7
+            },
+            {
+              "_type": "Name",
+              "id": "item",
+              "lineno": 17,
+              "end_lineno": 17,
+              "col_offset": 9,
+              "end_col_offset": 13
+            }
+          ],
+          "lineno": 17,
+          "end_lineno": 17,
+          "col_offset": 4,
+          "end_col_offset": 13
+        },
+        "iter": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "enumerate",
+            "lineno": 17,
+            "end_lineno": 17,
+            "col_offset": 17,
+            "end_col_offset": 26
+          },
+          "args": [
+            {
+              "_type": "Name",
+              "id": "people",
+              "ctx": {
+                "_type": "Load"
+              },
+              "lineno": 17,
+              "end_lineno": 17,
+              "col_offset": 27,
+              "end_col_offset": 33
+            }
+          ],
+          "lineno": 17,
+          "end_lineno": 17,
+          "col_offset": 17,
+          "end_col_offset": 34
+        },
+        "lineno": 17,
+        "end_lineno": 21,
+        "end_col_offset": 22
+      },
+      {
+        "_type": "Assert",
+        "test": {
+          "_type": "Compare",
+          "left": {
+            "_type": "Name",
+            "id": "people",
+            "lineno": 23,
+            "end_lineno": 23,
+            "col_offset": 7,
+            "end_col_offset": 13
+          },
+          "ops": [
+            {
+              "_type": "Eq"
+            }
+          ],
+          "comparators": [
+            {
+              "_type": "List",
+              "elts": [
+                {
+                  "_type": "Call",
+                  "func": {
+                    "_type": "Name",
+                    "id": "Person",
+                    "lineno": 23,
+                    "end_lineno": 23,
+                    "col_offset": 18,
+                    "end_col_offset": 24
+                  },
+                  "args": [],
+                  "keywords": [
+                    {
+                      "_type": "keyword",
+                      "arg": "name",
+                      "value": {
+                        "_type": "Constant",
+                        "value": "Alice",
+                        "kind": null,
+                        "lineno": 23,
+                        "end_lineno": 23,
+                        "col_offset": 30,
+                        "end_col_offset": 37
+                      },
+                      "lineno": 23,
+                      "end_lineno": 23,
+                      "col_offset": 25,
+                      "end_col_offset": 37
+                    },
+                    {
+                      "_type": "keyword",
+                      "arg": "age",
+                      "value": {
+                        "_type": "Constant",
+                        "value": 17,
+                        "kind": null,
+                        "lineno": 23,
+                        "end_lineno": 23,
+                        "col_offset": 43,
+                        "end_col_offset": 45
+                      },
+                      "lineno": 23,
+                      "end_lineno": 23,
+                      "col_offset": 39,
+                      "end_col_offset": 45
+                    },
+                    {
+                      "_type": "keyword",
+                      "arg": "status",
+                      "value": {
+                        "_type": "Constant",
+                        "value": "minor",
+                        "kind": null,
+                        "lineno": 23,
+                        "end_lineno": 23,
+                        "col_offset": 54,
+                        "end_col_offset": 61
+                      },
+                      "lineno": 23,
+                      "end_lineno": 23,
+                      "col_offset": 47,
+                      "end_col_offset": 61
+                    }
+                  ],
+                  "lineno": 23,
+                  "end_lineno": 23,
+                  "col_offset": 18,
+                  "end_col_offset": 62
+                },
+                {
+                  "_type": "Call",
+                  "func": {
+                    "_type": "Name",
+                    "id": "Person",
+                    "lineno": 23,
+                    "end_lineno": 23,
+                    "col_offset": 64,
+                    "end_col_offset": 70
+                  },
+                  "args": [],
+                  "keywords": [
+                    {
+                      "_type": "keyword",
+                      "arg": "name",
+                      "value": {
+                        "_type": "Constant",
+                        "value": "Bob",
+                        "kind": null,
+                        "lineno": 23,
+                        "end_lineno": 23,
+                        "col_offset": 76,
+                        "end_col_offset": 81
+                      },
+                      "lineno": 23,
+                      "end_lineno": 23,
+                      "col_offset": 71,
+                      "end_col_offset": 81
+                    },
+                    {
+                      "_type": "keyword",
+                      "arg": "age",
+                      "value": {
+                        "_type": "Constant",
+                        "value": 26,
+                        "kind": null,
+                        "lineno": 23,
+                        "end_lineno": 23,
+                        "col_offset": 87,
+                        "end_col_offset": 89
+                      },
+                      "lineno": 23,
+                      "end_lineno": 23,
+                      "col_offset": 83,
+                      "end_col_offset": 89
+                    },
+                    {
+                      "_type": "keyword",
+                      "arg": "status",
+                      "value": {
+                        "_type": "Constant",
+                        "value": "adult",
+                        "kind": null,
+                        "lineno": 23,
+                        "end_lineno": 23,
+                        "col_offset": 98,
+                        "end_col_offset": 105
+                      },
+                      "lineno": 23,
+                      "end_lineno": 23,
+                      "col_offset": 91,
+                      "end_col_offset": 105
+                    }
+                  ],
+                  "lineno": 23,
+                  "end_lineno": 23,
+                  "col_offset": 64,
+                  "end_col_offset": 106
+                },
+                {
+                  "_type": "Call",
+                  "func": {
+                    "_type": "Name",
+                    "id": "Person",
+                    "lineno": 23,
+                    "end_lineno": 23,
+                    "col_offset": 108,
+                    "end_col_offset": 114
+                  },
+                  "args": [],
+                  "keywords": [
+                    {
+                      "_type": "keyword",
+                      "arg": "name",
+                      "value": {
+                        "_type": "Constant",
+                        "value": "Charlie",
+                        "kind": null,
+                        "lineno": 23,
+                        "end_lineno": 23,
+                        "col_offset": 120,
+                        "end_col_offset": 129
+                      },
+                      "lineno": 23,
+                      "end_lineno": 23,
+                      "col_offset": 115,
+                      "end_col_offset": 129
+                    },
+                    {
+                      "_type": "keyword",
+                      "arg": "age",
+                      "value": {
+                        "_type": "Constant",
+                        "value": 19,
+                        "kind": null,
+                        "lineno": 23,
+                        "end_lineno": 23,
+                        "col_offset": 135,
+                        "end_col_offset": 137
+                      },
+                      "lineno": 23,
+                      "end_lineno": 23,
+                      "col_offset": 131,
+                      "end_col_offset": 137
+                    },
+                    {
+                      "_type": "keyword",
+                      "arg": "status",
+                      "value": {
+                        "_type": "Constant",
+                        "value": "adult",
+                        "kind": null,
+                        "lineno": 23,
+                        "end_lineno": 23,
+                        "col_offset": 146,
+                        "end_col_offset": 153
+                      },
+                      "lineno": 23,
+                      "end_lineno": 23,
+                      "col_offset": 139,
+                      "end_col_offset": 153
+                    }
+                  ],
+                  "lineno": 23,
+                  "end_lineno": 23,
+                  "col_offset": 108,
+                  "end_col_offset": 154
+                },
+                {
+                  "_type": "Call",
+                  "func": {
+                    "_type": "Name",
+                    "id": "Person",
+                    "lineno": 23,
+                    "end_lineno": 23,
+                    "col_offset": 156,
+                    "end_col_offset": 162
+                  },
+                  "args": [],
+                  "keywords": [
+                    {
+                      "_type": "keyword",
+                      "arg": "name",
+                      "value": {
+                        "_type": "Constant",
+                        "value": "Diana",
+                        "kind": null,
+                        "lineno": 23,
+                        "end_lineno": 23,
+                        "col_offset": 168,
+                        "end_col_offset": 175
+                      },
+                      "lineno": 23,
+                      "end_lineno": 23,
+                      "col_offset": 163,
+                      "end_col_offset": 175
+                    },
+                    {
+                      "_type": "keyword",
+                      "arg": "age",
+                      "value": {
+                        "_type": "Constant",
+                        "value": 16,
+                        "kind": null,
+                        "lineno": 23,
+                        "end_lineno": 23,
+                        "col_offset": 181,
+                        "end_col_offset": 183
+                      },
+                      "lineno": 23,
+                      "end_lineno": 23,
+                      "col_offset": 177,
+                      "end_col_offset": 183
+                    },
+                    {
+                      "_type": "keyword",
+                      "arg": "status",
+                      "value": {
+                        "_type": "Constant",
+                        "value": "minor",
+                        "kind": null,
+                        "lineno": 23,
+                        "end_lineno": 23,
+                        "col_offset": 192,
+                        "end_col_offset": 199
+                      },
+                      "lineno": 23,
+                      "end_lineno": 23,
+                      "col_offset": 185,
+                      "end_col_offset": 199
+                    }
+                  ],
+                  "lineno": 23,
+                  "end_lineno": 23,
+                  "col_offset": 156,
+                  "end_col_offset": 200
+                }
+              ],
+              "lineno": 23,
+              "end_lineno": 23,
+              "col_offset": 17,
+              "end_col_offset": 201
+            }
+          ],
+          "lineno": 23,
+          "end_lineno": 23,
+          "col_offset": 7,
+          "end_col_offset": 201
+        },
+        "lineno": 23,
+        "end_lineno": 23,
+        "end_col_offset": 201
+      },
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 24,
+            "end_lineno": 24,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "Constant",
+              "value": "ok",
+              "kind": null,
+              "lineno": 24,
+              "end_lineno": 24,
+              "col_offset": 6,
+              "end_col_offset": 10
+            }
+          ],
+          "keywords": [],
+          "lineno": 24,
+          "end_lineno": 24,
+          "col_offset": 0,
+          "end_col_offset": 11
+        },
+        "lineno": 24,
+        "end_lineno": 24,
+        "end_col_offset": 11
+      }
+    ]
+  }
+}

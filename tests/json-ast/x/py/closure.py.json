@@ -1,0 +1,206 @@
+{
+  "module": {
+    "_type": "Module",
+    "body": [
+      {
+        "_type": "FunctionDef",
+        "name": "makeAdder",
+        "body": [
+          {
+            "_type": "Return",
+            "value": {
+              "_type": "Lambda",
+              "args": {
+                "_type": "arguments",
+                "posonlyargs": [],
+                "args": [
+                  {
+                    "_type": "arg",
+                    "arg": "x",
+                    "annotation": null,
+                    "type_comment": null,
+                    "lineno": 4,
+                    "end_lineno": 4,
+                    "col_offset": 18,
+                    "end_col_offset": 19
+                  }
+                ],
+                "vararg": null,
+                "kwonlyargs": [],
+                "kw_defaults": [],
+                "kwarg": null,
+                "defaults": []
+              },
+              "body": {
+                "_type": "BinOp",
+                "left": {
+                  "_type": "Name",
+                  "id": "x",
+                  "ctx": {
+                    "_type": "Load"
+                  },
+                  "lineno": 4,
+                  "end_lineno": 4,
+                  "col_offset": 21,
+                  "end_col_offset": 22
+                },
+                "op": {
+                  "_type": "Add"
+                },
+                "right": {
+                  "_type": "Name",
+                  "id": "n",
+                  "ctx": {
+                    "_type": "Load"
+                  },
+                  "lineno": 4,
+                  "end_lineno": 4,
+                  "col_offset": 25,
+                  "end_col_offset": 26
+                },
+                "lineno": 4,
+                "end_lineno": 4,
+                "col_offset": 21,
+                "end_col_offset": 26
+              },
+              "lineno": 4,
+              "end_lineno": 4,
+              "col_offset": 11,
+              "end_col_offset": 26
+            },
+            "lineno": 4,
+            "end_lineno": 4,
+            "col_offset": 4,
+            "end_col_offset": 26
+          }
+        ],
+        "args": {
+          "_type": "arguments",
+          "posonlyargs": [],
+          "args": [
+            {
+              "_type": "arg",
+              "arg": "n",
+              "annotation": null,
+              "type_comment": null,
+              "lineno": 3,
+              "end_lineno": 3,
+              "col_offset": 14,
+              "end_col_offset": 15
+            }
+          ],
+          "vararg": null,
+          "kwonlyargs": [],
+          "kw_defaults": [],
+          "kwarg": null,
+          "defaults": []
+        },
+        "lineno": 3,
+        "end_lineno": 4,
+        "end_col_offset": 26
+      },
+      {
+        "_type": "Assign",
+        "targets": [
+          {
+            "_type": "Name",
+            "id": "add10",
+            "lineno": 5,
+            "end_lineno": 5,
+            "end_col_offset": 5
+          }
+        ],
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "makeAdder",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 5,
+            "end_lineno": 5,
+            "col_offset": 8,
+            "end_col_offset": 17
+          },
+          "args": [
+            {
+              "_type": "Constant",
+              "value": 10,
+              "kind": null,
+              "lineno": 5,
+              "end_lineno": 5,
+              "col_offset": 18,
+              "end_col_offset": 20
+            }
+          ],
+          "keywords": [],
+          "lineno": 5,
+          "end_lineno": 5,
+          "col_offset": 8,
+          "end_col_offset": 21
+        },
+        "lineno": 5,
+        "end_lineno": 5,
+        "end_col_offset": 21
+      },
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 6,
+            "end_lineno": 6,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "Call",
+              "func": {
+                "_type": "Name",
+                "id": "add10",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 6,
+                "end_lineno": 6,
+                "col_offset": 6,
+                "end_col_offset": 11
+              },
+              "args": [
+                {
+                  "_type": "Constant",
+                  "value": 7,
+                  "kind": null,
+                  "lineno": 6,
+                  "end_lineno": 6,
+                  "col_offset": 12,
+                  "end_col_offset": 13
+                }
+              ],
+              "keywords": [],
+              "lineno": 6,
+              "end_lineno": 6,
+              "col_offset": 6,
+              "end_col_offset": 14
+            }
+          ],
+          "keywords": [],
+          "lineno": 6,
+          "end_lineno": 6,
+          "col_offset": 0,
+          "end_col_offset": 15
+        },
+        "lineno": 6,
+        "end_lineno": 6,
+        "end_col_offset": 15
+      }
+    ]
+  }
+}

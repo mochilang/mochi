@@ -1,0 +1,130 @@
+{
+  "module": {
+    "_type": "Module",
+    "body": [
+      {
+        "_type": "Import",
+        "lineno": 3,
+        "end_lineno": 3,
+        "end_col_offset": 11
+      },
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 5,
+            "end_lineno": 5,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "Call",
+              "func": {
+                "_type": "Attribute",
+                "value": {
+                  "_type": "Name",
+                  "id": "math",
+                  "ctx": {
+                    "_type": "Load"
+                  },
+                  "lineno": 5,
+                  "end_lineno": 5,
+                  "col_offset": 6,
+                  "end_col_offset": 10
+                },
+                "attr": "sqrt",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 5,
+                "end_lineno": 5,
+                "col_offset": 6,
+                "end_col_offset": 15
+              },
+              "args": [
+                {
+                  "_type": "Constant",
+                  "value": 16.0,
+                  "kind": null,
+                  "lineno": 5,
+                  "end_lineno": 5,
+                  "col_offset": 16,
+                  "end_col_offset": 20
+                }
+              ],
+              "keywords": [],
+              "lineno": 5,
+              "end_lineno": 5,
+              "col_offset": 6,
+              "end_col_offset": 21
+            }
+          ],
+          "keywords": [],
+          "lineno": 5,
+          "end_lineno": 5,
+          "col_offset": 0,
+          "end_col_offset": 22
+        },
+        "lineno": 5,
+        "end_lineno": 5,
+        "end_col_offset": 22
+      },
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 6,
+            "end_lineno": 6,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "Attribute",
+              "value": {
+                "_type": "Name",
+                "id": "math",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 6,
+                "end_lineno": 6,
+                "col_offset": 6,
+                "end_col_offset": 10
+              },
+              "attr": "pi",
+              "ctx": {
+                "_type": "Load"
+              },
+              "lineno": 6,
+              "end_lineno": 6,
+              "col_offset": 6,
+              "end_col_offset": 13
+            }
+          ],
+          "keywords": [],
+          "lineno": 6,
+          "end_lineno": 6,
+          "col_offset": 0,
+          "end_col_offset": 14
+        },
+        "lineno": 6,
+        "end_lineno": 6,
+        "end_col_offset": 14
+      }
+    ]
+  }
+}

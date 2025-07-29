@@ -1,0 +1,359 @@
+{
+  "module": {
+    "_type": "Module",
+    "body": [
+      {
+        "_type": "Import",
+        "lineno": 3,
+        "end_lineno": 3,
+        "end_col_offset": 11
+      },
+      {
+        "_type": "Assign",
+        "targets": [
+          {
+            "_type": "Name",
+            "id": "rawName",
+            "lineno": 5,
+            "end_lineno": 5,
+            "end_col_offset": 7
+          }
+        ],
+        "value": {
+          "_type": "Constant",
+          "value": "   alice  ",
+          "kind": null,
+          "lineno": 5,
+          "end_lineno": 5,
+          "col_offset": 10,
+          "end_col_offset": 22
+        },
+        "lineno": 5,
+        "end_lineno": 5,
+        "end_col_offset": 22
+      },
+      {
+        "_type": "Assign",
+        "targets": [
+          {
+            "_type": "Name",
+            "id": "radius",
+            "lineno": 6,
+            "end_lineno": 6,
+            "end_col_offset": 6
+          }
+        ],
+        "value": {
+          "_type": "Constant",
+          "value": 3.0,
+          "kind": null,
+          "lineno": 6,
+          "end_lineno": 6,
+          "col_offset": 9,
+          "end_col_offset": 12
+        },
+        "lineno": 6,
+        "end_lineno": 6,
+        "end_col_offset": 12
+      },
+      {
+        "_type": "Assign",
+        "targets": [
+          {
+            "_type": "Name",
+            "id": "name",
+            "lineno": 7,
+            "end_lineno": 7,
+            "end_col_offset": 4
+          }
+        ],
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Attribute",
+            "value": {
+              "_type": "Call",
+              "func": {
+                "_type": "Attribute",
+                "value": {
+                  "_type": "Name",
+                  "id": "rawName",
+                  "ctx": {
+                    "_type": "Load"
+                  },
+                  "lineno": 7,
+                  "end_lineno": 7,
+                  "col_offset": 7,
+                  "end_col_offset": 14
+                },
+                "attr": "strip",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 7,
+                "end_lineno": 7,
+                "col_offset": 7,
+                "end_col_offset": 20
+              },
+              "args": [],
+              "keywords": [],
+              "lineno": 7,
+              "end_lineno": 7,
+              "col_offset": 7,
+              "end_col_offset": 22
+            },
+            "attr": "upper",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 7,
+            "end_lineno": 7,
+            "col_offset": 7,
+            "end_col_offset": 28
+          },
+          "args": [],
+          "keywords": [],
+          "lineno": 7,
+          "end_lineno": 7,
+          "col_offset": 7,
+          "end_col_offset": 30
+        },
+        "lineno": 7,
+        "end_lineno": 7,
+        "end_col_offset": 30
+      },
+      {
+        "_type": "Assign",
+        "targets": [
+          {
+            "_type": "Name",
+            "id": "area",
+            "lineno": 8,
+            "end_lineno": 8,
+            "end_col_offset": 4
+          }
+        ],
+        "value": {
+          "_type": "BinOp",
+          "left": {
+            "_type": "Attribute",
+            "value": {
+              "_type": "Name",
+              "id": "math",
+              "ctx": {
+                "_type": "Load"
+              },
+              "lineno": 8,
+              "end_lineno": 8,
+              "col_offset": 7,
+              "end_col_offset": 11
+            },
+            "attr": "pi",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 8,
+            "end_lineno": 8,
+            "col_offset": 7,
+            "end_col_offset": 14
+          },
+          "op": {
+            "_type": "Mult"
+          },
+          "right": {
+            "_type": "Call",
+            "func": {
+              "_type": "Attribute",
+              "value": {
+                "_type": "Name",
+                "id": "math",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 8,
+                "end_lineno": 8,
+                "col_offset": 17,
+                "end_col_offset": 21
+              },
+              "attr": "pow",
+              "ctx": {
+                "_type": "Load"
+              },
+              "lineno": 8,
+              "end_lineno": 8,
+              "col_offset": 17,
+              "end_col_offset": 25
+            },
+            "args": [
+              {
+                "_type": "Name",
+                "id": "radius",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 8,
+                "end_lineno": 8,
+                "col_offset": 26,
+                "end_col_offset": 32
+              },
+              {
+                "_type": "Constant",
+                "value": 2.0,
+                "kind": null,
+                "lineno": 8,
+                "end_lineno": 8,
+                "col_offset": 34,
+                "end_col_offset": 37
+              }
+            ],
+            "keywords": [],
+            "lineno": 8,
+            "end_lineno": 8,
+            "col_offset": 17,
+            "end_col_offset": 38
+          },
+          "lineno": 8,
+          "end_lineno": 8,
+          "col_offset": 7,
+          "end_col_offset": 38
+        },
+        "lineno": 8,
+        "end_lineno": 8,
+        "end_col_offset": 38
+      },
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 9,
+            "end_lineno": 9,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "Constant",
+              "value": "Hello",
+              "kind": null,
+              "lineno": 9,
+              "end_lineno": 9,
+              "col_offset": 6,
+              "end_col_offset": 13
+            },
+            {
+              "_type": "BinOp",
+              "left": {
+                "_type": "Name",
+                "id": "name",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 9,
+                "end_lineno": 9,
+                "col_offset": 15,
+                "end_col_offset": 19
+              },
+              "op": {
+                "_type": "Add"
+              },
+              "right": {
+                "_type": "Constant",
+                "value": "!",
+                "kind": null,
+                "lineno": 9,
+                "end_lineno": 9,
+                "col_offset": 22,
+                "end_col_offset": 25
+              },
+              "lineno": 9,
+              "end_lineno": 9,
+              "col_offset": 15,
+              "end_col_offset": 25
+            }
+          ],
+          "keywords": [],
+          "lineno": 9,
+          "end_lineno": 9,
+          "col_offset": 0,
+          "end_col_offset": 26
+        },
+        "lineno": 9,
+        "end_lineno": 9,
+        "end_col_offset": 26
+      },
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 10,
+            "end_lineno": 10,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "Constant",
+              "value": "The area of a circle with radius",
+              "kind": null,
+              "lineno": 10,
+              "end_lineno": 10,
+              "col_offset": 6,
+              "end_col_offset": 40
+            },
+            {
+              "_type": "Name",
+              "id": "radius",
+              "ctx": {
+                "_type": "Load"
+              },
+              "lineno": 10,
+              "end_lineno": 10,
+              "col_offset": 42,
+              "end_col_offset": 48
+            },
+            {
+              "_type": "Constant",
+              "value": "is",
+              "kind": null,
+              "lineno": 10,
+              "end_lineno": 10,
+              "col_offset": 50,
+              "end_col_offset": 54
+            },
+            {
+              "_type": "Name",
+              "id": "area",
+              "ctx": {
+                "_type": "Load"
+              },
+              "lineno": 10,
+              "end_lineno": 10,
+              "col_offset": 56,
+              "end_col_offset": 60
+            }
+          ],
+          "keywords": [],
+          "lineno": 10,
+          "end_lineno": 10,
+          "col_offset": 0,
+          "end_col_offset": 61
+        },
+        "lineno": 10,
+        "end_lineno": 10,
+        "end_col_offset": 61
+      }
+    ]
+  }
+}

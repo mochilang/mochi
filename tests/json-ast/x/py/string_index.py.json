@@ -1,0 +1,88 @@
+{
+  "module": {
+    "_type": "Module",
+    "body": [
+      {
+        "_type": "Assign",
+        "targets": [
+          {
+            "_type": "Name",
+            "id": "s",
+            "lineno": 3,
+            "end_lineno": 3,
+            "end_col_offset": 1
+          }
+        ],
+        "value": {
+          "_type": "Constant",
+          "value": "mochi",
+          "kind": null,
+          "lineno": 3,
+          "end_lineno": 3,
+          "col_offset": 4,
+          "end_col_offset": 11
+        },
+        "lineno": 3,
+        "end_lineno": 3,
+        "end_col_offset": 11
+      },
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 4,
+            "end_lineno": 4,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "Subscript",
+              "value": {
+                "_type": "Name",
+                "id": "s",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 4,
+                "end_lineno": 4,
+                "col_offset": 6,
+                "end_col_offset": 7
+              },
+              "slice": {
+                "_type": "Constant",
+                "value": 1,
+                "kind": null,
+                "lineno": 4,
+                "end_lineno": 4,
+                "col_offset": 8,
+                "end_col_offset": 9
+              },
+              "ctx": {
+                "_type": "Load"
+              },
+              "lineno": 4,
+              "end_lineno": 4,
+              "col_offset": 6,
+              "end_col_offset": 10
+            }
+          ],
+          "keywords": [],
+          "lineno": 4,
+          "end_lineno": 4,
+          "col_offset": 0,
+          "end_col_offset": 11
+        },
+        "lineno": 4,
+        "end_lineno": 4,
+        "end_col_offset": 11
+      }
+    ]
+  }
+}

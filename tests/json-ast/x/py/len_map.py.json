@@ -1,0 +1,102 @@
+{
+  "module": {
+    "_type": "Module",
+    "body": [
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 3,
+            "end_lineno": 3,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "Call",
+              "func": {
+                "_type": "Name",
+                "id": "len",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 3,
+                "end_lineno": 3,
+                "col_offset": 6,
+                "end_col_offset": 9
+              },
+              "args": [
+                {
+                  "_type": "Dict",
+                  "keys": [
+                    {
+                      "_type": "Constant",
+                      "value": "a",
+                      "kind": null,
+                      "lineno": 3,
+                      "end_lineno": 3,
+                      "col_offset": 11,
+                      "end_col_offset": 14
+                    },
+                    {
+                      "_type": "Constant",
+                      "value": "b",
+                      "kind": null,
+                      "lineno": 3,
+                      "end_lineno": 3,
+                      "col_offset": 19,
+                      "end_col_offset": 22
+                    }
+                  ],
+                  "values": [
+                    {
+                      "_type": "Constant",
+                      "value": 1,
+                      "kind": null,
+                      "lineno": 3,
+                      "end_lineno": 3,
+                      "col_offset": 16,
+                      "end_col_offset": 17
+                    },
+                    {
+                      "_type": "Constant",
+                      "value": 2,
+                      "kind": null,
+                      "lineno": 3,
+                      "end_lineno": 3,
+                      "col_offset": 24,
+                      "end_col_offset": 25
+                    }
+                  ],
+                  "lineno": 3,
+                  "end_lineno": 3,
+                  "col_offset": 10,
+                  "end_col_offset": 26
+                }
+              ],
+              "keywords": [],
+              "lineno": 3,
+              "end_lineno": 3,
+              "col_offset": 6,
+              "end_col_offset": 27
+            }
+          ],
+          "keywords": [],
+          "lineno": 3,
+          "end_lineno": 3,
+          "col_offset": 0,
+          "end_col_offset": 28
+        },
+        "lineno": 3,
+        "end_lineno": 3,
+        "end_col_offset": 28
+      }
+    ]
+  }
+}

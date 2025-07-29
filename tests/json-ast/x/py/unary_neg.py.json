@@ -1,0 +1,118 @@
+{
+  "module": {
+    "_type": "Module",
+    "body": [
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 3,
+            "end_lineno": 3,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "UnaryOp",
+              "op": {
+                "_type": "USub"
+              },
+              "operand": {
+                "_type": "Constant",
+                "value": 3,
+                "kind": null,
+                "lineno": 3,
+                "end_lineno": 3,
+                "col_offset": 7,
+                "end_col_offset": 8
+              },
+              "lineno": 3,
+              "end_lineno": 3,
+              "col_offset": 6,
+              "end_col_offset": 8
+            }
+          ],
+          "keywords": [],
+          "lineno": 3,
+          "end_lineno": 3,
+          "col_offset": 0,
+          "end_col_offset": 9
+        },
+        "lineno": 3,
+        "end_lineno": 3,
+        "end_col_offset": 9
+      },
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 4,
+            "end_lineno": 4,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "BinOp",
+              "left": {
+                "_type": "Constant",
+                "value": 5,
+                "kind": null,
+                "lineno": 4,
+                "end_lineno": 4,
+                "col_offset": 6,
+                "end_col_offset": 7
+              },
+              "op": {
+                "_type": "Add"
+              },
+              "right": {
+                "_type": "UnaryOp",
+                "op": {
+                  "_type": "USub"
+                },
+                "operand": {
+                  "_type": "Constant",
+                  "value": 2,
+                  "kind": null,
+                  "lineno": 4,
+                  "end_lineno": 4,
+                  "col_offset": 11,
+                  "end_col_offset": 12
+                },
+                "lineno": 4,
+                "end_lineno": 4,
+                "col_offset": 10,
+                "end_col_offset": 12
+              },
+              "lineno": 4,
+              "end_lineno": 4,
+              "col_offset": 6,
+              "end_col_offset": 12
+            }
+          ],
+          "keywords": [],
+          "lineno": 4,
+          "end_lineno": 4,
+          "col_offset": 0,
+          "end_col_offset": 13
+        },
+        "lineno": 4,
+        "end_lineno": 4,
+        "end_col_offset": 13
+      }
+    ]
+  }
+}

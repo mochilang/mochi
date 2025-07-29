@@ -1,0 +1,69 @@
+{
+  "module": {
+    "_type": "Module",
+    "body": [
+      {
+        "_type": "Assign",
+        "targets": [
+          {
+            "_type": "Name",
+            "id": "x",
+            "lineno": 3,
+            "end_lineno": 3,
+            "end_col_offset": 1
+          }
+        ],
+        "value": {
+          "_type": "Constant",
+          "value": 0,
+          "kind": null,
+          "lineno": 3,
+          "end_lineno": 3,
+          "col_offset": 4,
+          "end_col_offset": 5
+        },
+        "lineno": 3,
+        "end_lineno": 3,
+        "end_col_offset": 5
+      },
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 4,
+            "end_lineno": 4,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "Name",
+              "id": "x",
+              "ctx": {
+                "_type": "Load"
+              },
+              "lineno": 4,
+              "end_lineno": 4,
+              "col_offset": 6,
+              "end_col_offset": 7
+            }
+          ],
+          "keywords": [],
+          "lineno": 4,
+          "end_lineno": 4,
+          "col_offset": 0,
+          "end_col_offset": 8
+        },
+        "lineno": 4,
+        "end_lineno": 4,
+        "end_col_offset": 8
+      }
+    ]
+  }
+}

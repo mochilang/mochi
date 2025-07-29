@@ -1,0 +1,343 @@
+{
+  "module": {
+    "_type": "Module",
+    "body": [
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 3,
+            "end_lineno": 3,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "IfExp",
+              "test": {
+                "_type": "Compare",
+                "left": {
+                  "_type": "Constant",
+                  "value": "a",
+                  "kind": null,
+                  "lineno": 3,
+                  "end_lineno": 3,
+                  "col_offset": 12,
+                  "end_col_offset": 15
+                },
+                "ops": [
+                  {
+                    "_type": "Lt"
+                  }
+                ],
+                "comparators": [
+                  {
+                    "_type": "Constant",
+                    "value": "b",
+                    "kind": null,
+                    "lineno": 3,
+                    "end_lineno": 3,
+                    "col_offset": 18,
+                    "end_col_offset": 21
+                  }
+                ],
+                "lineno": 3,
+                "end_lineno": 3,
+                "col_offset": 12,
+                "end_col_offset": 21
+              },
+              "body": {
+                "_type": "Constant",
+                "value": 1,
+                "kind": null,
+                "lineno": 3,
+                "end_lineno": 3,
+                "col_offset": 7,
+                "end_col_offset": 8
+              },
+              "orelse": {
+                "_type": "Constant",
+                "value": 0,
+                "kind": null,
+                "lineno": 3,
+                "end_lineno": 3,
+                "col_offset": 27,
+                "end_col_offset": 28
+              },
+              "lineno": 3,
+              "end_lineno": 3,
+              "col_offset": 7,
+              "end_col_offset": 28
+            }
+          ],
+          "keywords": [],
+          "lineno": 3,
+          "end_lineno": 3,
+          "col_offset": 0,
+          "end_col_offset": 30
+        },
+        "lineno": 3,
+        "end_lineno": 3,
+        "end_col_offset": 30
+      },
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 4,
+            "end_lineno": 4,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "IfExp",
+              "test": {
+                "_type": "Compare",
+                "left": {
+                  "_type": "Constant",
+                  "value": "a",
+                  "kind": null,
+                  "lineno": 4,
+                  "end_lineno": 4,
+                  "col_offset": 12,
+                  "end_col_offset": 15
+                },
+                "ops": [
+                  {
+                    "_type": "LtE"
+                  }
+                ],
+                "comparators": [
+                  {
+                    "_type": "Constant",
+                    "value": "a",
+                    "kind": null,
+                    "lineno": 4,
+                    "end_lineno": 4,
+                    "col_offset": 19,
+                    "end_col_offset": 22
+                  }
+                ],
+                "lineno": 4,
+                "end_lineno": 4,
+                "col_offset": 12,
+                "end_col_offset": 22
+              },
+              "body": {
+                "_type": "Constant",
+                "value": 1,
+                "kind": null,
+                "lineno": 4,
+                "end_lineno": 4,
+                "col_offset": 7,
+                "end_col_offset": 8
+              },
+              "orelse": {
+                "_type": "Constant",
+                "value": 0,
+                "kind": null,
+                "lineno": 4,
+                "end_lineno": 4,
+                "col_offset": 28,
+                "end_col_offset": 29
+              },
+              "lineno": 4,
+              "end_lineno": 4,
+              "col_offset": 7,
+              "end_col_offset": 29
+            }
+          ],
+          "keywords": [],
+          "lineno": 4,
+          "end_lineno": 4,
+          "col_offset": 0,
+          "end_col_offset": 31
+        },
+        "lineno": 4,
+        "end_lineno": 4,
+        "end_col_offset": 31
+      },
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 5,
+            "end_lineno": 5,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "IfExp",
+              "test": {
+                "_type": "Compare",
+                "left": {
+                  "_type": "Constant",
+                  "value": "b",
+                  "kind": null,
+                  "lineno": 5,
+                  "end_lineno": 5,
+                  "col_offset": 12,
+                  "end_col_offset": 15
+                },
+                "ops": [
+                  {
+                    "_type": "Gt"
+                  }
+                ],
+                "comparators": [
+                  {
+                    "_type": "Constant",
+                    "value": "a",
+                    "kind": null,
+                    "lineno": 5,
+                    "end_lineno": 5,
+                    "col_offset": 18,
+                    "end_col_offset": 21
+                  }
+                ],
+                "lineno": 5,
+                "end_lineno": 5,
+                "col_offset": 12,
+                "end_col_offset": 21
+              },
+              "body": {
+                "_type": "Constant",
+                "value": 1,
+                "kind": null,
+                "lineno": 5,
+                "end_lineno": 5,
+                "col_offset": 7,
+                "end_col_offset": 8
+              },
+              "orelse": {
+                "_type": "Constant",
+                "value": 0,
+                "kind": null,
+                "lineno": 5,
+                "end_lineno": 5,
+                "col_offset": 27,
+                "end_col_offset": 28
+              },
+              "lineno": 5,
+              "end_lineno": 5,
+              "col_offset": 7,
+              "end_col_offset": 28
+            }
+          ],
+          "keywords": [],
+          "lineno": 5,
+          "end_lineno": 5,
+          "col_offset": 0,
+          "end_col_offset": 30
+        },
+        "lineno": 5,
+        "end_lineno": 5,
+        "end_col_offset": 30
+      },
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 6,
+            "end_lineno": 6,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "IfExp",
+              "test": {
+                "_type": "Compare",
+                "left": {
+                  "_type": "Constant",
+                  "value": "b",
+                  "kind": null,
+                  "lineno": 6,
+                  "end_lineno": 6,
+                  "col_offset": 12,
+                  "end_col_offset": 15
+                },
+                "ops": [
+                  {
+                    "_type": "GtE"
+                  }
+                ],
+                "comparators": [
+                  {
+                    "_type": "Constant",
+                    "value": "b",
+                    "kind": null,
+                    "lineno": 6,
+                    "end_lineno": 6,
+                    "col_offset": 19,
+                    "end_col_offset": 22
+                  }
+                ],
+                "lineno": 6,
+                "end_lineno": 6,
+                "col_offset": 12,
+                "end_col_offset": 22
+              },
+              "body": {
+                "_type": "Constant",
+                "value": 1,
+                "kind": null,
+                "lineno": 6,
+                "end_lineno": 6,
+                "col_offset": 7,
+                "end_col_offset": 8
+              },
+              "orelse": {
+                "_type": "Constant",
+                "value": 0,
+                "kind": null,
+                "lineno": 6,
+                "end_lineno": 6,
+                "col_offset": 28,
+                "end_col_offset": 29
+              },
+              "lineno": 6,
+              "end_lineno": 6,
+              "col_offset": 7,
+              "end_col_offset": 29
+            }
+          ],
+          "keywords": [],
+          "lineno": 6,
+          "end_lineno": 6,
+          "col_offset": 0,
+          "end_col_offset": 31
+        },
+        "lineno": 6,
+        "end_lineno": 6,
+        "end_col_offset": 31
+      }
+    ]
+  }
+}

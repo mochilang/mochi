@@ -1,0 +1,94 @@
+{
+  "module": {
+    "_type": "Module",
+    "body": [
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 3,
+            "end_lineno": 3,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "Call",
+              "func": {
+                "_type": "Name",
+                "id": "sum",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 3,
+                "end_lineno": 3,
+                "col_offset": 6,
+                "end_col_offset": 9
+              },
+              "args": [
+                {
+                  "_type": "List",
+                  "elts": [
+                    {
+                      "_type": "Constant",
+                      "value": 1,
+                      "kind": null,
+                      "lineno": 3,
+                      "end_lineno": 3,
+                      "col_offset": 11,
+                      "end_col_offset": 12
+                    },
+                    {
+                      "_type": "Constant",
+                      "value": 2,
+                      "kind": null,
+                      "lineno": 3,
+                      "end_lineno": 3,
+                      "col_offset": 14,
+                      "end_col_offset": 15
+                    },
+                    {
+                      "_type": "Constant",
+                      "value": 3,
+                      "kind": null,
+                      "lineno": 3,
+                      "end_lineno": 3,
+                      "col_offset": 17,
+                      "end_col_offset": 18
+                    }
+                  ],
+                  "ctx": {
+                    "_type": "Load"
+                  },
+                  "lineno": 3,
+                  "end_lineno": 3,
+                  "col_offset": 10,
+                  "end_col_offset": 19
+                }
+              ],
+              "keywords": [],
+              "lineno": 3,
+              "end_lineno": 3,
+              "col_offset": 6,
+              "end_col_offset": 20
+            }
+          ],
+          "keywords": [],
+          "lineno": 3,
+          "end_lineno": 3,
+          "col_offset": 0,
+          "end_col_offset": 21
+        },
+        "lineno": 3,
+        "end_lineno": 3,
+        "end_col_offset": 21
+      }
+    ]
+  }
+}

@@ -1,0 +1,783 @@
+{
+  "module": {
+    "_type": "Module",
+    "body": [
+      {
+        "_type": "ImportFrom",
+        "lineno": 3,
+        "end_lineno": 3,
+        "end_col_offset": 34
+      },
+      {
+        "_type": "ImportFrom",
+        "lineno": 4,
+        "end_lineno": 4,
+        "end_col_offset": 33
+      },
+      {
+        "_type": "ImportFrom",
+        "lineno": 5,
+        "end_lineno": 5,
+        "end_col_offset": 29
+      },
+      {
+        "_type": "ClassDef",
+        "name": "Product",
+        "body": [
+          {
+            "_type": "AnnAssign",
+            "value": null,
+            "annotation": {
+              "_type": "Name",
+              "id": "str",
+              "lineno": 9,
+              "end_lineno": 9,
+              "col_offset": 10,
+              "end_col_offset": 13
+            },
+            "target": {
+              "_type": "Name",
+              "id": "name",
+              "lineno": 9,
+              "end_lineno": 9,
+              "col_offset": 4,
+              "end_col_offset": 8
+            },
+            "lineno": 9,
+            "end_lineno": 9,
+            "col_offset": 4,
+            "end_col_offset": 13
+          },
+          {
+            "_type": "AnnAssign",
+            "value": null,
+            "annotation": {
+              "_type": "Name",
+              "id": "int",
+              "lineno": 10,
+              "end_lineno": 10,
+              "col_offset": 11,
+              "end_col_offset": 14
+            },
+            "target": {
+              "_type": "Name",
+              "id": "price",
+              "lineno": 10,
+              "end_lineno": 10,
+              "col_offset": 4,
+              "end_col_offset": 9
+            },
+            "lineno": 10,
+            "end_lineno": 10,
+            "col_offset": 4,
+            "end_col_offset": 14
+          }
+        ],
+        "decorator_list": [
+          {
+            "_type": "Name",
+            "id": "dataclass",
+            "lineno": 7,
+            "end_lineno": 7,
+            "col_offset": 1,
+            "end_col_offset": 10
+          }
+        ],
+        "lineno": 8,
+        "end_lineno": 10,
+        "end_col_offset": 14
+      },
+      {
+        "_type": "Assign",
+        "targets": [
+          {
+            "_type": "Name",
+            "id": "products",
+            "lineno": 12,
+            "end_lineno": 12,
+            "end_col_offset": 8
+          }
+        ],
+        "value": {
+          "_type": "List",
+          "elts": [
+            {
+              "_type": "Call",
+              "func": {
+                "_type": "Name",
+                "id": "Product",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 12,
+                "end_lineno": 12,
+                "col_offset": 12,
+                "end_col_offset": 19
+              },
+              "args": [
+                {
+                  "_type": "Constant",
+                  "value": "Laptop",
+                  "kind": null,
+                  "lineno": 12,
+                  "end_lineno": 12,
+                  "col_offset": 20,
+                  "end_col_offset": 28
+                },
+                {
+                  "_type": "Constant",
+                  "value": 1500,
+                  "kind": null,
+                  "lineno": 12,
+                  "end_lineno": 12,
+                  "col_offset": 30,
+                  "end_col_offset": 34
+                }
+              ],
+              "keywords": [],
+              "lineno": 12,
+              "end_lineno": 12,
+              "col_offset": 12,
+              "end_col_offset": 35
+            },
+            {
+              "_type": "Call",
+              "func": {
+                "_type": "Name",
+                "id": "Product",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 12,
+                "end_lineno": 12,
+                "col_offset": 37,
+                "end_col_offset": 44
+              },
+              "args": [
+                {
+                  "_type": "Constant",
+                  "value": "Smartphone",
+                  "kind": null,
+                  "lineno": 12,
+                  "end_lineno": 12,
+                  "col_offset": 45,
+                  "end_col_offset": 57
+                },
+                {
+                  "_type": "Constant",
+                  "value": 900,
+                  "kind": null,
+                  "lineno": 12,
+                  "end_lineno": 12,
+                  "col_offset": 59,
+                  "end_col_offset": 62
+                }
+              ],
+              "keywords": [],
+              "lineno": 12,
+              "end_lineno": 12,
+              "col_offset": 37,
+              "end_col_offset": 63
+            },
+            {
+              "_type": "Call",
+              "func": {
+                "_type": "Name",
+                "id": "Product",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 12,
+                "end_lineno": 12,
+                "col_offset": 65,
+                "end_col_offset": 72
+              },
+              "args": [
+                {
+                  "_type": "Constant",
+                  "value": "Tablet",
+                  "kind": null,
+                  "lineno": 12,
+                  "end_lineno": 12,
+                  "col_offset": 73,
+                  "end_col_offset": 81
+                },
+                {
+                  "_type": "Constant",
+                  "value": 600,
+                  "kind": null,
+                  "lineno": 12,
+                  "end_lineno": 12,
+                  "col_offset": 83,
+                  "end_col_offset": 86
+                }
+              ],
+              "keywords": [],
+              "lineno": 12,
+              "end_lineno": 12,
+              "col_offset": 65,
+              "end_col_offset": 87
+            },
+            {
+              "_type": "Call",
+              "func": {
+                "_type": "Name",
+                "id": "Product",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 12,
+                "end_lineno": 12,
+                "col_offset": 89,
+                "end_col_offset": 96
+              },
+              "args": [
+                {
+                  "_type": "Constant",
+                  "value": "Monitor",
+                  "kind": null,
+                  "lineno": 12,
+                  "end_lineno": 12,
+                  "col_offset": 97,
+                  "end_col_offset": 106
+                },
+                {
+                  "_type": "Constant",
+                  "value": 300,
+                  "kind": null,
+                  "lineno": 12,
+                  "end_lineno": 12,
+                  "col_offset": 108,
+                  "end_col_offset": 111
+                }
+              ],
+              "keywords": [],
+              "lineno": 12,
+              "end_lineno": 12,
+              "col_offset": 89,
+              "end_col_offset": 112
+            },
+            {
+              "_type": "Call",
+              "func": {
+                "_type": "Name",
+                "id": "Product",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 12,
+                "end_lineno": 12,
+                "col_offset": 114,
+                "end_col_offset": 121
+              },
+              "args": [
+                {
+                  "_type": "Constant",
+                  "value": "Keyboard",
+                  "kind": null,
+                  "lineno": 12,
+                  "end_lineno": 12,
+                  "col_offset": 122,
+                  "end_col_offset": 132
+                },
+                {
+                  "_type": "Constant",
+                  "value": 100,
+                  "kind": null,
+                  "lineno": 12,
+                  "end_lineno": 12,
+                  "col_offset": 134,
+                  "end_col_offset": 137
+                }
+              ],
+              "keywords": [],
+              "lineno": 12,
+              "end_lineno": 12,
+              "col_offset": 114,
+              "end_col_offset": 138
+            },
+            {
+              "_type": "Call",
+              "func": {
+                "_type": "Name",
+                "id": "Product",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 12,
+                "end_lineno": 12,
+                "col_offset": 140,
+                "end_col_offset": 147
+              },
+              "args": [
+                {
+                  "_type": "Constant",
+                  "value": "Mouse",
+                  "kind": null,
+                  "lineno": 12,
+                  "end_lineno": 12,
+                  "col_offset": 148,
+                  "end_col_offset": 155
+                },
+                {
+                  "_type": "Constant",
+                  "value": 50,
+                  "kind": null,
+                  "lineno": 12,
+                  "end_lineno": 12,
+                  "col_offset": 157,
+                  "end_col_offset": 159
+                }
+              ],
+              "keywords": [],
+              "lineno": 12,
+              "end_lineno": 12,
+              "col_offset": 140,
+              "end_col_offset": 160
+            },
+            {
+              "_type": "Call",
+              "func": {
+                "_type": "Name",
+                "id": "Product",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 12,
+                "end_lineno": 12,
+                "col_offset": 162,
+                "end_col_offset": 169
+              },
+              "args": [
+                {
+                  "_type": "Constant",
+                  "value": "Headphones",
+                  "kind": null,
+                  "lineno": 12,
+                  "end_lineno": 12,
+                  "col_offset": 170,
+                  "end_col_offset": 182
+                },
+                {
+                  "_type": "Constant",
+                  "value": 200,
+                  "kind": null,
+                  "lineno": 12,
+                  "end_lineno": 12,
+                  "col_offset": 184,
+                  "end_col_offset": 187
+                }
+              ],
+              "keywords": [],
+              "lineno": 12,
+              "end_lineno": 12,
+              "col_offset": 162,
+              "end_col_offset": 188
+            }
+          ],
+          "ctx": {
+            "_type": "Load"
+          },
+          "lineno": 12,
+          "end_lineno": 12,
+          "col_offset": 11,
+          "end_col_offset": 189
+        },
+        "lineno": 12,
+        "end_lineno": 12,
+        "end_col_offset": 189
+      },
+      {
+        "_type": "Assign",
+        "targets": [
+          {
+            "_type": "Name",
+            "id": "expensive",
+            "lineno": 13,
+            "end_lineno": 13,
+            "end_col_offset": 9
+          }
+        ],
+        "value": {
+          "_type": "Subscript",
+          "value": {
+            "_type": "ListComp",
+            "elt": {
+              "_type": "Name",
+              "id": "p",
+              "ctx": {
+                "_type": "Load"
+              },
+              "lineno": 13,
+              "end_lineno": 13,
+              "col_offset": 13,
+              "end_col_offset": 14
+            },
+            "generators": [
+              {
+                "_type": "comprehension",
+                "target": {
+                  "_type": "Name",
+                  "id": "p",
+                  "ctx": {
+                    "_type": "Store"
+                  },
+                  "lineno": 13,
+                  "end_lineno": 13,
+                  "col_offset": 19,
+                  "end_col_offset": 20
+                },
+                "iter": {
+                  "_type": "Call",
+                  "func": {
+                    "_type": "Name",
+                    "id": "sorted",
+                    "ctx": {
+                      "_type": "Load"
+                    },
+                    "lineno": 13,
+                    "end_lineno": 13,
+                    "col_offset": 24,
+                    "end_col_offset": 30
+                  },
+                  "args": [
+                    {
+                      "_type": "ListComp",
+                      "elt": {
+                        "_type": "Name",
+                        "id": "p",
+                        "ctx": {
+                          "_type": "Load"
+                        },
+                        "lineno": 13,
+                        "end_lineno": 13,
+                        "col_offset": 32,
+                        "end_col_offset": 33
+                      },
+                      "generators": [
+                        {
+                          "_type": "comprehension",
+                          "target": {
+                            "_type": "Name",
+                            "id": "p",
+                            "ctx": {
+                              "_type": "Store"
+                            },
+                            "lineno": 13,
+                            "end_lineno": 13,
+                            "col_offset": 38,
+                            "end_col_offset": 39
+                          },
+                          "iter": {
+                            "_type": "Name",
+                            "id": "products",
+                            "ctx": {
+                              "_type": "Load"
+                            },
+                            "lineno": 13,
+                            "end_lineno": 13,
+                            "col_offset": 43,
+                            "end_col_offset": 51
+                          },
+                          "ifs": [],
+                          "is_async": 0
+                        }
+                      ],
+                      "lineno": 13,
+                      "end_lineno": 13,
+                      "col_offset": 31,
+                      "end_col_offset": 52
+                    }
+                  ],
+                  "keywords": [
+                    {
+                      "_type": "keyword",
+                      "arg": "key",
+                      "value": {
+                        "_type": "Lambda",
+                        "args": {
+                          "_type": "arguments",
+                          "posonlyargs": [],
+                          "args": [
+                            {
+                              "_type": "arg",
+                              "arg": "p",
+                              "annotation": null,
+                              "type_comment": null,
+                              "lineno": 13,
+                              "end_lineno": 13,
+                              "col_offset": 65,
+                              "end_col_offset": 66
+                            }
+                          ],
+                          "vararg": null,
+                          "kwonlyargs": [],
+                          "kw_defaults": [],
+                          "kwarg": null,
+                          "defaults": []
+                        },
+                        "body": {
+                          "_type": "Attribute",
+                          "value": {
+                            "_type": "Name",
+                            "id": "p",
+                            "ctx": {
+                              "_type": "Load"
+                            },
+                            "lineno": 13,
+                            "end_lineno": 13,
+                            "col_offset": 68,
+                            "end_col_offset": 69
+                          },
+                          "attr": "price",
+                          "ctx": {
+                            "_type": "Load"
+                          },
+                          "lineno": 13,
+                          "end_lineno": 13,
+                          "col_offset": 68,
+                          "end_col_offset": 75
+                        },
+                        "lineno": 13,
+                        "end_lineno": 13,
+                        "col_offset": 58,
+                        "end_col_offset": 75
+                      },
+                      "lineno": 13,
+                      "end_lineno": 13,
+                      "col_offset": 54,
+                      "end_col_offset": 75
+                    },
+                    {
+                      "_type": "keyword",
+                      "arg": "reverse",
+                      "value": {
+                        "_type": "Constant",
+                        "value": true,
+                        "kind": null,
+                        "lineno": 13,
+                        "end_lineno": 13,
+                        "col_offset": 85,
+                        "end_col_offset": 89
+                      },
+                      "lineno": 13,
+                      "end_lineno": 13,
+                      "col_offset": 77,
+                      "end_col_offset": 89
+                    }
+                  ],
+                  "lineno": 13,
+                  "end_lineno": 13,
+                  "col_offset": 24,
+                  "end_col_offset": 90
+                },
+                "ifs": [],
+                "is_async": 0
+              }
+            ],
+            "lineno": 13,
+            "end_lineno": 13,
+            "col_offset": 12,
+            "end_col_offset": 91
+          },
+          "slice": {
+            "_type": "Slice",
+            "lower": {
+              "_type": "Constant",
+              "value": 1,
+              "kind": null,
+              "lineno": 13,
+              "end_lineno": 13,
+              "col_offset": 92,
+              "end_col_offset": 93
+            },
+            "upper": {
+              "_type": "BinOp",
+              "left": {
+                "_type": "Constant",
+                "value": 1,
+                "kind": null,
+                "lineno": 13,
+                "end_lineno": 13,
+                "col_offset": 94,
+                "end_col_offset": 95
+              },
+              "op": {
+                "_type": "Add"
+              },
+              "right": {
+                "_type": "Constant",
+                "value": 3,
+                "kind": null,
+                "lineno": 13,
+                "end_lineno": 13,
+                "col_offset": 98,
+                "end_col_offset": 99
+              },
+              "lineno": 13,
+              "end_lineno": 13,
+              "col_offset": 94,
+              "end_col_offset": 99
+            },
+            "step": null,
+            "lineno": 13,
+            "end_lineno": 13,
+            "col_offset": 92,
+            "end_col_offset": 99
+          },
+          "ctx": {
+            "_type": "Load"
+          },
+          "lineno": 13,
+          "end_lineno": 13,
+          "col_offset": 12,
+          "end_col_offset": 100
+        },
+        "lineno": 13,
+        "end_lineno": 13,
+        "end_col_offset": 100
+      },
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 14,
+            "end_lineno": 14,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "Constant",
+              "value": "--- Top products (excluding most expensive) ---",
+              "kind": null,
+              "lineno": 14,
+              "end_lineno": 14,
+              "col_offset": 6,
+              "end_col_offset": 55
+            }
+          ],
+          "keywords": [],
+          "lineno": 14,
+          "end_lineno": 14,
+          "col_offset": 0,
+          "end_col_offset": 56
+        },
+        "lineno": 14,
+        "end_lineno": 14,
+        "end_col_offset": 56
+      },
+      {
+        "_type": "For",
+        "body": [
+          {
+            "_type": "Expr",
+            "value": {
+              "_type": "Call",
+              "func": {
+                "_type": "Name",
+                "id": "print",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 16,
+                "end_lineno": 16,
+                "col_offset": 4,
+                "end_col_offset": 9
+              },
+              "args": [
+                {
+                  "_type": "Attribute",
+                  "value": {
+                    "_type": "Name",
+                    "id": "item",
+                    "ctx": {
+                      "_type": "Load"
+                    },
+                    "lineno": 16,
+                    "end_lineno": 16,
+                    "col_offset": 10,
+                    "end_col_offset": 14
+                  },
+                  "attr": "name",
+                  "ctx": {
+                    "_type": "Load"
+                  },
+                  "lineno": 16,
+                  "end_lineno": 16,
+                  "col_offset": 10,
+                  "end_col_offset": 19
+                },
+                {
+                  "_type": "Constant",
+                  "value": "costs $",
+                  "kind": null,
+                  "lineno": 16,
+                  "end_lineno": 16,
+                  "col_offset": 21,
+                  "end_col_offset": 30
+                },
+                {
+                  "_type": "Attribute",
+                  "value": {
+                    "_type": "Name",
+                    "id": "item",
+                    "ctx": {
+                      "_type": "Load"
+                    },
+                    "lineno": 16,
+                    "end_lineno": 16,
+                    "col_offset": 32,
+                    "end_col_offset": 36
+                  },
+                  "attr": "price",
+                  "ctx": {
+                    "_type": "Load"
+                  },
+                  "lineno": 16,
+                  "end_lineno": 16,
+                  "col_offset": 32,
+                  "end_col_offset": 42
+                }
+              ],
+              "keywords": [],
+              "lineno": 16,
+              "end_lineno": 16,
+              "col_offset": 4,
+              "end_col_offset": 43
+            },
+            "lineno": 16,
+            "end_lineno": 16,
+            "col_offset": 4,
+            "end_col_offset": 43
+          }
+        ],
+        "target": {
+          "_type": "Name",
+          "id": "item",
+          "lineno": 15,
+          "end_lineno": 15,
+          "col_offset": 4,
+          "end_col_offset": 8
+        },
+        "iter": {
+          "_type": "Name",
+          "id": "expensive",
+          "lineno": 15,
+          "end_lineno": 15,
+          "col_offset": 12,
+          "end_col_offset": 21
+        },
+        "lineno": 15,
+        "end_lineno": 16,
+        "end_col_offset": 43
+      }
+    ]
+  }
+}
