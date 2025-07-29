@@ -2,20 +2,20 @@
 
 This directory contains a minimal converter that translates simple Ruby programs back into Mochi form. It uses Ruby's built in `ripper` library to obtain an s-expression AST which is then converted to Mochi code. The implementation mirrors the Python and TypeScript converters and is only powerful enough for the examples under `tests/transpiler/x/rb`.
 
-Completed programs: 41/104
-Date: 2025-07-29 18:16 +07
+Completed programs: 28/104
+Date: 2025-07-29 18:57 GMT+7
 
 ## Checklist
-- [x] append_builtin
-- [x] avg_builtin
-- [x] basic_compare
+- [ ] append_builtin
+- [ ] avg_builtin
+- [ ] basic_compare
 - [ ] bench_block
 - [x] binary_precedence
-- [x] bool_chain
+- [ ] bool_chain
 - [x] break_continue
 - [x] cast_string_to_int
 - [ ] cast_struct
-- [x] closure
+- [ ] closure
 - [x] count_builtin
 - [ ] cross_join
 - [ ] cross_join_filter
@@ -26,7 +26,7 @@ Date: 2025-07-29 18:16 +07
 - [x] for_list_collection
 - [x] for_loop
 - [x] for_map_collection
-- [x] fun_call
+- [ ] fun_call
 - [ ] fun_expr_in_let
 - [ ] fun_three_args
 - [ ] go_auto
@@ -61,16 +61,16 @@ Date: 2025-07-29 18:16 +07
 - [ ] load_jsonl
 - [ ] load_yaml
 - [x] map_assign
-- [x] map_in_operator
+- [ ] map_in_operator
 - [x] map_index
 - [x] map_int_key
 - [x] map_literal_dynamic
-- [x] map_membership
+- [ ] map_membership
 - [x] map_nested_assign
 - [ ] match_expr
 - [ ] match_full
 - [ ] math_ops
-- [x] membership
+- [ ] membership
 - [ ] min_max_builtin
 - [ ] mix_go_python
 - [ ] nested_function
@@ -90,12 +90,12 @@ Date: 2025-07-29 18:16 +07
 - [ ] slice
 - [ ] sort_stable
 - [x] str_builtin
-- [x] string_compare
+- [ ] string_compare
 - [x] string_concat
-- [x] string_contains
-- [x] string_in_operator
+- [ ] string_contains
+- [ ] string_in_operator
 - [x] string_index
-- [x] string_prefix_slice
+- [ ] string_prefix_slice
 - [x] substring_builtin
 - [x] sum_builtin
 - [ ] tail_recursion

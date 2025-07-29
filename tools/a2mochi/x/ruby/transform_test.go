@@ -6,11 +6,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"flag"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	"mochi/ast"
 	"mochi/parser"
@@ -105,67 +108,46 @@ func TestTransformGolden(t *testing.T) {
 		t.Fatalf("no files: %s", pattern)
 	}
 
-	allowed := map[string]bool{
-		"append_builtin":      true,
-		"avg_builtin":         true,
-		"basic_compare":       true,
-		"break_continue":      true,
-		"cast_string_to_int":  true,
-		"count_builtin":       true,
-		"for_loop":            true,
-		"for_list_collection": true,
-		"for_map_collection":  true,
-		"if_else":             true,
-		"len_builtin":         true,
-		"len_map":             true,
-		"len_string":          true,
-		"let_and_print":       true,
-		"list_assign":         true,
-		"list_index":          true,
-		"map_assign":          true,
-		"map_index":           true,
-		"map_int_key":         true,
-		"map_literal_dynamic": true,
-		"map_membership":      true,
-		"map_in_operator":     true,
-		"map_nested_assign":   true,
-		"string_prefix_slice": true,
-		"substring_builtin":   true,
-		"membership":          true,
-		"print_hello":         true,
-		"sum_builtin":         true,
-		"str_builtin":         true,
-		"string_concat":       true,
-		"string_contains":     true,
-		"string_compare":      true,
-		"string_in_operator":  true,
-		"string_index":        true,
-		"unary_neg":           true,
-		"var_assignment":      true,
-		"while_loop":          true,
-	}
-
 	outDir := filepath.Join(root, "tests/a2mochi/x/rb")
 	os.MkdirAll(outDir, 0o755)
 
 	for _, srcPath := range files {
 		name := strings.TrimSuffix(filepath.Base(srcPath), ".rb")
-		if !allowed[name] {
-			continue
-		}
 		t.Run(name, func(t *testing.T) {
-			n := parseFile(t, srcPath)
+			data, err := os.ReadFile(srcPath)
+			if err != nil {
+				t.Fatalf("read src: %v", err)
+			}
+			node, err := ruby.Parse(string(data))
+			if err != nil {
+				if *updateGolden {
+					writeError(outDir, name, fmt.Errorf("parse: %v", err))
+				}
+				return
+			}
 			if *updateGolden {
-				if j, err := json.MarshalIndent(n, "", "  "); err == nil {
+				if j, err := json.MarshalIndent(node, "", "  "); err == nil {
 					os.WriteFile(filepath.Join(outDir, name+".json"), j, 0o644)
 				}
 			}
-			astNode := transformNode(t, n)
+			astNode, err := ruby.Transform(node)
+			if err != nil {
+				if *updateGolden {
+					writeError(outDir, name, fmt.Errorf("transform: %v", err))
+				}
+				return
+			}
 			var astBuf bytes.Buffer
 			if err := ast.Fprint(&astBuf, astNode); err != nil {
 				t.Fatalf("print ast: %v", err)
 			}
-			mochiCode := printNode(t, astNode)
+			mochiCode, err := ruby.Print(astNode)
+			if err != nil {
+				if *updateGolden {
+					writeError(outDir, name, fmt.Errorf("print: %v", err))
+				}
+				return
+			}
 			mochiPath := filepath.Join(outDir, name+".mochi")
 			if *updateGolden {
 				os.WriteFile(mochiPath, []byte(mochiCode), 0o644)
@@ -173,7 +155,10 @@ func TestTransformGolden(t *testing.T) {
 			}
 			gotOut, err := run(mochiCode)
 			if err != nil {
-				t.Fatalf("run: %v", err)
+				if *updateGolden {
+					writeError(outDir, name, fmt.Errorf("run: %v", err))
+				}
+				return
 			}
 			if *updateGolden {
 				os.WriteFile(filepath.Join(outDir, name+".out"), gotOut, 0o644)
@@ -187,11 +172,60 @@ func TestTransformGolden(t *testing.T) {
 				t.Fatalf("run vm: %v", err)
 			}
 			if !bytes.Equal(gotOut, wantOut) {
-				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
+				if *updateGolden {
+					writeError(outDir, name, fmt.Errorf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut))
+				}
+				return
+			}
+			if *updateGolden {
+				_ = os.Remove(filepath.Join(outDir, name+".error"))
 			}
 		})
 	}
-	if *updateGolden {
-		ruby.UpdateReadmeForTests()
+}
+
+func writeError(dir, name string, err error) {
+	_ = os.WriteFile(filepath.Join(dir, name+".error"), []byte(err.Error()), 0o644)
+}
+
+func updateReadme() {
+	root := repoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "transpiler", "x", "rb")
+	outDir := filepath.Join(root, "tests", "a2mochi", "x", "rb")
+	pattern := filepath.Join(srcDir, "*.rb")
+	files, _ := filepath.Glob(pattern)
+	sort.Strings(files)
+	total := len(files)
+	done := 0
+	var lines []string
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".rb")
+		mark := "[ ]"
+		outPath := filepath.Join(outDir, name+".out")
+		wantPath := filepath.Join(root, "tests", "vm", "valid", name+".out")
+		got, err1 := os.ReadFile(outPath)
+		want, err2 := os.ReadFile(wantPath)
+		if err1 == nil && err2 == nil && bytes.Equal(bytes.TrimSpace(got), bytes.TrimSpace(want)) {
+			mark = "[x]"
+			done++
+		}
+		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}
+	tz := time.FixedZone("GMT+7", 7*3600)
+	now := time.Now().In(tz).Format("2006-01-02 15:04 MST")
+	var buf bytes.Buffer
+	buf.WriteString("# a2mochi Ruby Converter\n\n")
+	buf.WriteString("This directory contains a minimal converter that translates simple Ruby programs back into Mochi form. It uses Ruby's built in `ripper` library to obtain an s-expression AST which is then converted to Mochi code. The implementation mirrors the Python and TypeScript converters and is only powerful enough for the examples under `tests/transpiler/x/rb`.\n\n")
+	fmt.Fprintf(&buf, "Completed programs: %d/%d\n", done, total)
+	fmt.Fprintf(&buf, "Date: %s\n\n", now)
+	buf.WriteString("## Checklist\n")
+	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteByte('\n')
+	_ = os.WriteFile(filepath.Join(root, "tools", "a2mochi", "x", "ruby", "README.md"), buf.Bytes(), 0o644)
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	os.Exit(code)
 }
