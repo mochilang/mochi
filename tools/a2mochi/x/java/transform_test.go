@@ -87,6 +87,9 @@ func TestTransform_Golden(t *testing.T) {
 		"string_concat":       true,
 		"basic_compare":       true,
 		"for_list_collection": true,
+		"len_builtin":         true,
+		"len_string":          true,
+		"break_continue":      true,
 	}
 
 	outDir := filepath.Join(rootDir, "tests/a2mochi/x/java")
