@@ -245,7 +245,12 @@ func convertExpr(expr string) []string {
 			fs := strings.SplitN(p, ":=", 2)
 			left := strings.TrimSpace(fs[0])
 			right := simplify(strings.TrimSpace(fs[1]))
-			lines = append(lines, fmt.Sprintf("%s = %s", left, right))
+			reMapi := regexp.MustCompile(`^List\.mapi\(fun i x -> if i = ([0-9]+) then ([^ ]+) else x,\s*([A-Za-z0-9_]+)\)$`)
+			if m := reMapi.FindStringSubmatch(right); m != nil && m[3] == left {
+				lines = append(lines, fmt.Sprintf("%s[%s] = %s", left, m[1], m[2]))
+			} else {
+				lines = append(lines, fmt.Sprintf("%s = %s", left, right))
+			}
 			continue
 		}
 		if strings.HasPrefix(p, "print_endline") {
