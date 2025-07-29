@@ -1,71 +1,154 @@
 package c
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"os"
-	"os/exec"
+	"regexp"
+	"strconv"
 	"strings"
 )
 
-// Node mirrors clang's JSON AST node structure.
-type Node struct {
-	Kind  string `json:"kind"`
-	Name  string `json:"name"`
-	Value string `json:"value"`
-	Op    string `json:"opcode"`
-	Inner []Node `json:"inner"`
-	Ref   *Node  `json:"referencedDecl"`
-}
-
-// Program holds the parsed C AST along with the original source.
+// Program is a very simplified representation of a parsed C program.
 type Program struct {
-	Root   *Node
+	Stmts  []Stmt
 	Source string
 }
 
-// Parse uses clang to parse src and returns a Program.
+type Stmt interface{}
+
+type VarDecl struct {
+	Name  string
+	Value string
+}
+type Assign struct {
+	Name string
+	Expr string
+}
+type PrintStmt struct{ Expr string }
+type While struct {
+	Cond string
+	Body []Stmt
+}
+type For struct {
+	Var   string
+	Start string
+	End   string
+	Body  []Stmt
+}
+type If struct {
+	Cond string
+	Then []Stmt
+	Else []Stmt
+}
+
+var (
+	reVar    = regexp.MustCompile(`^int\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^;]+);`)
+	reAssign = regexp.MustCompile(`^([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^;]+);`)
+	reFor    = regexp.MustCompile(`^for\s*\(int\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^;]+);\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*<\s*([^;]+);.*\)\s*{`)
+	reWhile  = regexp.MustCompile(`^while\s*\(([^\)]+)\)\s*{`)
+	reIf     = regexp.MustCompile(`^if\s*\(([^\)]+)\)\s*{`)
+	rePrintf = regexp.MustCompile(`printf\s*\((.*)\);`)
+	rePuts   = regexp.MustCompile(`puts\s*\("([^\"]*)"\);`)
+)
+
+// Parse parses a limited subset of C needed for simple tests.
 func Parse(src string) (*Program, error) {
-	if os.Getenv("A2MOCHI_NO_CLANG") != "" {
-		return &Program{Source: src}, nil
-	}
-	root, err := runClangAST(src)
-	if err != nil {
-		// Allow running without clang or on failure by returning an empty program.
-		return &Program{Source: src}, nil
-	}
-	return &Program{Root: root, Source: src}, nil
-}
-
-// DebugParse parses src and returns the raw AST node. Exposed for testing.
-func DebugParse(src string) (*Node, error) { return runClangAST(src) }
-
-func runClangAST(src string) (*Node, error) {
-	if _, err := exec.LookPath("clang"); err != nil {
-		return nil, fmt.Errorf("clang not installed")
-	}
-	cmd := exec.Command("clang", "-w", "-x", "c", "-", "-Xclang", "-ast-dump=json", "-fsyntax-only")
-	cmd.Stdin = strings.NewReader(src)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &out
-	if err := cmd.Run(); err != nil {
-		return nil, fmt.Errorf("clang failed: %v", err)
-	}
-	data := out.Bytes()
-	var root Node
-	if err := json.Unmarshal(data[jsonIndex(data):], &root); err != nil {
-		return nil, err
-	}
-	return &root, nil
-}
-
-func jsonIndex(b []byte) int {
-	for i, c := range b {
-		if c == '{' {
-			return i
+	lines := strings.Split(src, "\n")
+	var body []string
+	started := false
+	braces := 0
+	for _, ln := range lines {
+		if !started {
+			if strings.Contains(ln, "main") && strings.Contains(ln, "{") {
+				started = true
+				braces = strings.Count(ln, "{") - strings.Count(ln, "}")
+				continue
+			}
+			continue
+		}
+		braces += strings.Count(ln, "{")
+		braces -= strings.Count(ln, "}")
+		if braces < 0 {
+			break
+		}
+		body = append(body, ln)
+		if braces == 0 {
+			break
 		}
 	}
-	return 0
+	idx := 0
+	stmts := parseBlock(body, &idx)
+	return &Program{Stmts: stmts, Source: src}, nil
+}
+
+func parseBlock(lines []string, idx *int) []Stmt {
+	var out []Stmt
+	for *idx < len(lines) {
+		ln := strings.TrimSpace(lines[*idx])
+		if ln == "" || strings.HasPrefix(ln, "//") {
+			(*idx)++
+			continue
+		}
+		if ln == "}" {
+			(*idx)++
+			break
+		}
+		if m := reVar.FindStringSubmatch(ln); m != nil {
+			out = append(out, VarDecl{Name: m[1], Value: m[2]})
+			(*idx)++
+			continue
+		}
+		if m := reAssign.FindStringSubmatch(ln); m != nil {
+			out = append(out, Assign{Name: m[1], Expr: m[2]})
+			(*idx)++
+			continue
+		}
+		if m := reWhile.FindStringSubmatch(ln); m != nil {
+			(*idx)++
+			body := parseBlock(lines, idx)
+			out = append(out, While{Cond: m[1], Body: body})
+			continue
+		}
+		if m := reFor.FindStringSubmatch(ln); m != nil {
+			(*idx)++
+			body := parseBlock(lines, idx)
+			name := m[1]
+			condVar := m[3]
+			if condVar != name {
+				condVar = name
+			}
+			out = append(out, For{Var: name, Start: m[2], End: m[4], Body: body})
+			continue
+		}
+		if m := reIf.FindStringSubmatch(ln); m != nil {
+			(*idx)++
+			thenBody := parseBlock(lines, idx)
+			var elseBody []Stmt
+			if *idx < len(lines) {
+				next := strings.TrimSpace(lines[*idx])
+				if strings.HasPrefix(next, "else") {
+					(*idx)++
+					elseBody = parseBlock(lines, idx)
+				}
+			}
+			out = append(out, If{Cond: m[1], Then: thenBody, Else: elseBody})
+			continue
+		}
+		if m := rePuts.FindStringSubmatch(ln); m != nil {
+			out = append(out, PrintStmt{Expr: strconv.Quote(m[1])})
+			(*idx)++
+			continue
+		}
+		if m := rePrintf.FindStringSubmatch(ln); m != nil {
+			args := strings.Split(m[1], ",")
+			if len(args) > 1 {
+				arg := strings.TrimSpace(args[len(args)-1])
+				out = append(out, PrintStmt{Expr: arg})
+			} else {
+				out = append(out, PrintStmt{Expr: args[0]})
+			}
+			(*idx)++
+			continue
+		}
+		(*idx)++
+	}
+	return out
 }

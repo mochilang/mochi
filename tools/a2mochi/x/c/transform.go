@@ -2,494 +2,81 @@ package c
 
 import (
 	"fmt"
-	"os"
-	"os/exec"
-	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 
 	"mochi/ast"
 )
 
-// Transform converts a parsed Program into a Mochi AST.
 func Transform(p *Program) (*ast.Node, error) {
 	if p == nil {
 		return nil, fmt.Errorf("nil program")
 	}
-	if p.Root == nil {
-		lines, err := runCProgram(p.Source)
-		if err != nil {
-			return nil, fmt.Errorf("parse failed: %v", err)
-		}
-		root := &ast.Node{Kind: "program"}
-		for _, ln := range lines {
-			arg := valueNode(strconv.Quote(ln))
-			root.Children = append(root.Children, &ast.Node{Kind: "call", Value: "print", Children: []*ast.Node{arg}})
-		}
-		return root, nil
-	}
-	prints := findPrints(p.Root)
-	arrPrints := parseArrayLoops(p)
-	if len(arrPrints) > 0 {
-		skip := make(map[string]bool)
-		for _, ap := range arrPrints {
-			if unq, err := strconv.Unquote(ap); err == nil {
-				if i := strings.Index(unq, " costs $"); i > 0 {
-					key := unq[:i]
-					skip[key] = true
-					skip[strconv.Quote(key)] = true
-				}
-			}
-		}
-		filtered := make([]string, 0, len(prints))
-		for _, pr := range prints {
-			if skip[pr] {
-				continue
-			}
-			filtered = append(filtered, pr)
-		}
-		prints = append(filtered, arrPrints...)
-	}
 	root := &ast.Node{Kind: "program"}
-	for _, pr := range mergePrints(prints) {
-		arg := valueNode(pr)
-		root.Children = append(root.Children, &ast.Node{
-			Kind:     "call",
-			Value:    "print",
-			Children: []*ast.Node{arg},
-		})
+	for _, st := range p.Stmts {
+		n := stmtNode(st)
+		if n != nil {
+			root.Children = append(root.Children, n)
+		}
 	}
 	return root, nil
 }
 
-func findPrints(n *Node) []string {
-	prints := make([]string, 0)
-	vars := make(map[string]string)
-	walkPrints(n, vars, &prints)
-	return prints
-}
-
-func walkPrints(n *Node, vars map[string]string, prints *[]string) {
-	switch n.Kind {
-	case "VarDecl":
-		if n.Name != "" {
-			if v := valueWithVars(n, vars); v != "" {
-				vars[n.Name] = v
-			}
-		}
-	case "BinaryOperator":
-		if len(n.Inner) >= 2 && n.Inner[0].Kind == "DeclRefExpr" {
-			name := walkName(&n.Inner[0])
-			if name != "" {
-				if v := valueWithVars(&n.Inner[1], vars); v != "" {
-					vars[name] = v
-				}
-			}
-		}
-	case "CallExpr":
-		if callee := calleeName(n); callee == "printf" || callee == "puts" {
-			if callee == "printf" && len(n.Inner) >= 3 {
-				format := valueWithVars(&n.Inner[1], vars)
-				val := valueWithVars(&n.Inner[2], vars)
-				switch format {
-				case "\"%d\\n\"", "\"%d\"":
-					switch val {
-					case "1":
-						*prints = append(*prints, "true")
-						return
-					case "0":
-						*prints = append(*prints, "false")
-						return
-					}
-				case "\"%d \"", "\"%s \"":
-					if strings.HasPrefix(val, "\"") && strings.HasSuffix(val, "\"") {
-						if unq, err := strconv.Unquote(val); err == nil {
-							*prints = append(*prints, strconv.Quote(unq+" "))
-							return
-						}
-					}
-					if i, err := strconv.Atoi(val); err == nil {
-						*prints = append(*prints, strconv.Quote(fmt.Sprintf("%d ", i)))
-						return
-					}
-				}
-			}
-			if arg := firstValueWithVars(n, vars); arg != "" {
-				*prints = append(*prints, arg)
-			}
-		}
-	case "WhileStmt":
-		if len(n.Inner) >= 2 {
-			cond := &n.Inner[0]
-			body := &n.Inner[1]
-			if len(cond.Inner) == 2 {
-				name := walkName(&cond.Inner[0])
-				limit := valueWithVars(&cond.Inner[1], vars)
-				if name != "" && limit != "" {
-					start, err1 := strconv.Atoi(vars[name])
-					end, err2 := strconv.Atoi(limit)
-					if err1 == nil && err2 == nil {
-						for start < end {
-							vars[name] = strconv.Itoa(start)
-							walkPrints(body, vars, prints)
-							val, ok := vars[name]
-							if !ok {
-								break
-							}
-							iv, err := strconv.Atoi(val)
-							if err != nil {
-								break
-							}
-							start = iv
-						}
-						return
-					}
-				}
-			}
-		}
-	}
-	for i := range n.Inner {
-		walkPrints(&n.Inner[i], vars, prints)
+func stmtNode(s Stmt) *ast.Node {
+	switch v := s.(type) {
+	case VarDecl:
+		return &ast.Node{Kind: "assign", Value: v.Name, Children: []*ast.Node{exprNode(v.Value)}}
+	case Assign:
+		return &ast.Node{Kind: "assign", Value: v.Name, Children: []*ast.Node{exprNode(v.Expr)}}
+	case PrintStmt:
+		return &ast.Node{Kind: "call", Value: "print", Children: []*ast.Node{exprNode(v.Expr)}}
+	case While:
+		cond := exprNode(v.Cond)
+		body := blockNode(v.Body)
+		return &ast.Node{Kind: "while", Children: []*ast.Node{cond, body}}
+	case For:
+		start := exprNode(v.Start)
+		end := exprNode(v.End)
+		rangeCall := &ast.Node{Kind: "call", Value: "range", Children: []*ast.Node{start, end}}
+		inNode := &ast.Node{Kind: "in", Children: []*ast.Node{rangeCall}}
+		body := blockNode(v.Body)
+		n := &ast.Node{Kind: "for", Value: v.Var, Children: []*ast.Node{inNode, body}}
+		return n
+	case If:
+		cond := exprNode(v.Cond)
+		thenBlock := blockNode(v.Then)
+		elseBlock := blockNode(v.Else)
+		return &ast.Node{Kind: "if", Children: []*ast.Node{cond, thenBlock, elseBlock}}
+	default:
+		return nil
 	}
 }
 
-func calleeName(n *Node) string {
-	if len(n.Inner) == 0 {
-		return ""
+func blockNode(stmts []Stmt) *ast.Node {
+	blk := &ast.Node{Kind: "block"}
+	for _, s := range stmts {
+		if n := stmtNode(s); n != nil {
+			blk.Children = append(blk.Children, n)
+		}
 	}
-	return walkName(&n.Inner[0])
+	return blk
 }
 
-func walkName(n *Node) string {
-	if n.Kind == "DeclRefExpr" {
-		if n.Name != "" {
-			return n.Name
-		}
-		if n.Ref != nil && n.Ref.Name != "" {
-			return n.Ref.Name
-		}
-	}
-	if len(n.Inner) > 0 {
-		return walkName(&n.Inner[0])
-	}
-	return ""
-}
+var reBinary = regexp.MustCompile(`^(.+)\s*(==|!=|<=|>=|<|>|\+|\-|\*|/)\s*(.+)$`)
 
-func firstValueWithVars(n *Node, vars map[string]string) string {
-	start := 1
-	if len(n.Inner) > 2 {
-		start = 2
+func exprNode(expr string) *ast.Node {
+	expr = strings.TrimSpace(expr)
+	if m := reBinary.FindStringSubmatch(expr); m != nil {
+		return &ast.Node{Kind: "binary", Value: m[2], Children: []*ast.Node{exprNode(m[1]), exprNode(m[3])}}
 	}
-	for i := start; i < len(n.Inner); i++ {
-		if v := valueWithVars(&n.Inner[i], vars); v != "" {
-			return v
-		}
-	}
-	return ""
-}
-
-func valueWithVars(n *Node, vars map[string]string) string {
-	switch n.Kind {
-	case "IntegerLiteral", "FloatingLiteral":
-		return n.Value
-	case "StringLiteral":
-		return strconv.Quote(strings.Trim(n.Value, "\""))
-	case "CharacterLiteral":
-		if v, err := strconv.Atoi(n.Value); err == nil {
-			return strconv.QuoteRune(rune(v))
-		}
-	case "DeclRefExpr":
-		if n.Name != "" {
-			if v, ok := vars[n.Name]; ok {
-				return v
-			}
-		}
-		if n.Ref != nil && n.Ref.Name != "" {
-			if v, ok := vars[n.Ref.Name]; ok {
-				return v
-			}
-		}
-		return ""
-	case "UnaryOperator":
-		if len(n.Inner) == 1 {
-			val := valueWithVars(&n.Inner[0], vars)
-			if val != "" {
-				switch n.Op {
-				case "-":
-					if i, err := strconv.Atoi(val); err == nil {
-						return strconv.Itoa(-i)
-					}
-				case "+":
-					return val
-				}
-			}
-		}
-	case "ConditionalOperator":
-		if len(n.Inner) == 3 {
-			cond := valueWithVars(&n.Inner[0], vars)
-			if cond != "" {
-				if isTrue(cond) {
-					return valueWithVars(&n.Inner[1], vars)
-				}
-				return valueWithVars(&n.Inner[2], vars)
-			}
-		}
-	case "BinaryOperator":
-		if len(n.Inner) == 2 {
-			a := valueWithVars(&n.Inner[0], vars)
-			b := valueWithVars(&n.Inner[1], vars)
-			if a != "" && b != "" {
-				switch n.Op {
-				case "+", "-", "*", "/":
-					ai, err1 := strconv.Atoi(a)
-					bi, err2 := strconv.Atoi(b)
-					if err1 == nil && err2 == nil {
-						switch n.Op {
-						case "+":
-							return strconv.Itoa(ai + bi)
-						case "-":
-							return strconv.Itoa(ai - bi)
-						case "*":
-							return strconv.Itoa(ai * bi)
-						case "/":
-							if bi != 0 {
-								return strconv.Itoa(ai / bi)
-							}
-						}
-					}
-				case "&&":
-					return strconv.FormatBool(isTrue(a) && isTrue(b))
-				case "||":
-					return strconv.FormatBool(isTrue(a) || isTrue(b))
-				case "==":
-					return strconv.FormatBool(a == b)
-				case "!=":
-					return strconv.FormatBool(a != b)
-				case "<", "<=", ">", ">=":
-					ai, err1 := strconv.Atoi(a)
-					bi, err2 := strconv.Atoi(b)
-					if err1 == nil && err2 == nil {
-						switch n.Op {
-						case "<":
-							return strconv.FormatBool(ai < bi)
-						case "<=":
-							return strconv.FormatBool(ai <= bi)
-						case ">":
-							return strconv.FormatBool(ai > bi)
-						case ">=":
-							return strconv.FormatBool(ai >= bi)
-						}
-					}
-				}
-			}
-		}
-	}
-	for i := range n.Inner {
-		if v := valueWithVars(&n.Inner[i], vars); v != "" {
-			return v
-		}
-	}
-	return ""
-}
-
-func valueNode(v string) *ast.Node {
-	if strings.HasPrefix(v, "\"") && strings.HasSuffix(v, "\"") {
-		s, err := strconv.Unquote(v)
-		if err == nil {
+	if strings.HasPrefix(expr, "\"") && strings.HasSuffix(expr, "\"") {
+		if s, err := strconv.Unquote(expr); err == nil {
 			return &ast.Node{Kind: "string", Value: s}
 		}
 	}
-	if i, err := strconv.Atoi(v); err == nil {
+	if i, err := strconv.Atoi(expr); err == nil {
 		return &ast.Node{Kind: "int", Value: i}
 	}
-	if f, err := strconv.ParseFloat(v, 64); err == nil {
-		return &ast.Node{Kind: "float", Value: f}
-	}
-	switch v {
-	case "true", "false":
-		return &ast.Node{Kind: "bool", Value: v == "true"}
-	}
-	return &ast.Node{Kind: "unknown", Value: v}
-}
-
-func isTrue(v string) bool {
-	switch v {
-	case "true", "1":
-		return true
-	case "false", "0", "":
-		return false
-	}
-	// fallback for numeric strings
-	if i, err := strconv.Atoi(v); err == nil {
-		return i != 0
-	}
-	return v != ""
-}
-
-func parseArrayLoops(p *Program) []string {
-	arrays := make(map[string][]string)
-
-	var walkArrays func(*Node)
-	walkArrays = func(n *Node) {
-		if n.Kind == "VarDecl" && len(n.Inner) > 0 && n.Inner[0].Kind == "InitListExpr" {
-			vals := make([]string, 0, len(n.Inner[0].Inner))
-			for i := range n.Inner[0].Inner {
-				v := &n.Inner[0].Inner[i]
-				lits := make([]string, 0)
-				collectLiterals(v, &lits)
-				if len(lits) > 0 {
-					vals = append(vals, strconv.Quote(strings.Join(lits, " ")))
-				}
-			}
-			if len(vals) > 0 {
-				arrays[n.Name] = vals
-			}
-		}
-		for i := range n.Inner {
-			walkArrays(&n.Inner[i])
-		}
-	}
-	walkArrays(p.Root)
-
-	var prints []string
-
-	var walkLoops func(*Node)
-	walkLoops = func(n *Node) {
-		if n.Kind == "ForStmt" && len(n.Inner) >= 5 {
-			init := &n.Inner[0]
-			cond := &n.Inner[2]
-			body := &n.Inner[len(n.Inner)-1]
-			if len(init.Inner) > 0 {
-				vd := init.Inner[0]
-				if vd.Kind == "VarDecl" && len(vd.Inner) > 0 {
-					if cond.Kind == "BinaryOperator" && len(cond.Inner) == 2 {
-						right := walkName(&cond.Inner[1])
-						if strings.HasSuffix(right, "_len") {
-							base := strings.TrimSuffix(right, "_len")
-							arrName := base
-							arr, ok := arrays[arrName]
-							if !ok {
-								arr, ok = arrays[base+"_arr"]
-								if !ok {
-									arr, ok = arrays[base+"Arr"]
-								}
-							}
-							if ok {
-								if containsPrint(body) {
-									prints = append(prints, arr...)
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		for i := range n.Inner {
-			walkLoops(&n.Inner[i])
-		}
-	}
-	walkLoops(p.Root)
-	return prints
-}
-
-func containsPrint(n *Node) bool {
-	if n.Kind == "CallExpr" {
-		if callee := calleeName(n); callee == "printf" || callee == "puts" {
-			return true
-		}
-	}
-	for i := range n.Inner {
-		if containsPrint(&n.Inner[i]) {
-			return true
-		}
-	}
-	return false
-}
-
-func mergePrints(in []string) []string {
-	if len(in) < 2 {
-		return in
-	}
-	join := true
-	for i := 0; i < len(in)-1; i++ {
-		v := in[i]
-		if s, err := strconv.Unquote(v); err == nil {
-			if !strings.HasSuffix(s, " ") {
-				join = false
-				break
-			}
-		} else {
-			join = false
-			break
-		}
-	}
-	if join {
-		var b strings.Builder
-		for i, v := range in {
-			if s, err := strconv.Unquote(v); err == nil {
-				b.WriteString(s)
-			} else if n, err2 := strconv.Atoi(v); err2 == nil {
-				if i < len(in)-1 {
-					fmt.Fprintf(&b, "%d ", n)
-				} else {
-					fmt.Fprintf(&b, "%d", n)
-				}
-			} else {
-				return in
-			}
-		}
-		return []string{strconv.Quote(b.String())}
-	}
-	return in
-}
-
-func firstLiteral(n *Node, kind string) string {
-	if n.Kind == kind {
-		return strings.Trim(n.Value, "\"")
-	}
-	for i := range n.Inner {
-		if v := firstLiteral(&n.Inner[i], kind); v != "" {
-			return v
-		}
-	}
-	return ""
-}
-
-func collectLiterals(n *Node, out *[]string) {
-	switch n.Kind {
-	case "StringLiteral":
-		*out = append(*out, strings.Trim(n.Value, "\""))
-	case "CharacterLiteral":
-		if v, err := strconv.Atoi(n.Value); err == nil {
-			*out = append(*out, string(rune(v)))
-		}
-	case "IntegerLiteral", "FloatingLiteral":
-		*out = append(*out, strings.TrimSpace(n.Value))
-	}
-	for i := range n.Inner {
-		collectLiterals(&n.Inner[i], out)
-	}
-}
-
-func runCProgram(src string) ([]string, error) {
-	tmp, err := os.MkdirTemp("", "cprog")
-	if err != nil {
-		return nil, err
-	}
-	defer os.RemoveAll(tmp)
-
-	srcPath := filepath.Join(tmp, "prog.c")
-	if err := os.WriteFile(srcPath, []byte(src), 0644); err != nil {
-		return nil, err
-	}
-	exe := filepath.Join(tmp, "prog")
-	if err := exec.Command("cc", srcPath, "-o", exe).Run(); err != nil {
-		return nil, err
-	}
-	out, err := exec.Command(exe).Output()
-	if err != nil {
-		return nil, err
-	}
-	lines := strings.Split(strings.TrimSpace(string(out)), "\n")
-	return lines, nil
+	return &ast.Node{Kind: "selector", Value: expr}
 }
