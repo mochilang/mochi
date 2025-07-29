@@ -1,7 +1,7 @@
 # a2mochi Dart Converter
 
-Completed programs: 31/103
-Date: 2025-07-30 00:07:58 GMT+7
+Completed programs: 33/103
+Date: 2025-07-30 00:30:42 GMT+7
 
 This directory holds golden outputs for the Dart to Mochi converter.
 Each `.dart` source in `tests/transpiler/x/dart` has a matching `.mochi` and `.ast`
@@ -64,7 +64,7 @@ programs.
 - [ ] list_set_ops
 - [ ] load_yaml
 - [ ] map_assign
-- [ ] map_in_operator
+- [x] map_in_operator
 - [ ] map_index
 - [x] map_int_key
 - [ ] map_literal_dynamic
@@ -90,7 +90,7 @@ programs.
 - [ ] save_jsonl_stdout
 - [ ] short_circuit
 - [ ] simple_loop
-- [ ] slice
+- [x] slice
 - [ ] sort_stable
 - [x] str_builtin
 - [ ] string_compare

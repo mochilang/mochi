@@ -263,6 +263,7 @@ func convertBodyLine(s string) string {
 	s = convertAny(s)
 	s = convertJoinPrint(s)
 	s = convertSlice(s)
+	s = convertSlicePrint(s)
 	s = convertSubstring(s)
 	s = convertToString(s)
 	return convertQuotes(s)
@@ -273,7 +274,7 @@ func TestConvert(s string) string {
 	return convertBodyLine(s)
 }
 
-var arrowRe = regexp.MustCompile(`\(([^()]*)\)\s*=>`)
+var arrowRe = regexp.MustCompile(`\(\(?([^()]*)\)?\)\s*=>`)
 
 func convertArrowFunc(s string) string {
 	return arrowRe.ReplaceAllString(s, "fun($1) =>")
@@ -388,6 +389,15 @@ func convertSlice(s string) string {
 	return sublistRe.ReplaceAllString(s, "$1[$2:$3]")
 }
 
+var slicePrintRe = regexp.MustCompile(`^\s*print\("\[" \+ ([^+]+)\.join\([^)]*\) \+ "\]"\)\s*$`)
+
+func convertSlicePrint(s string) string {
+	if m := slicePrintRe.FindStringSubmatch(strings.TrimSpace(s)); m != nil {
+		return fmt.Sprintf("print(%s)", strings.TrimSpace(m[1]))
+	}
+	return s
+}
+
 var substringRe = regexp.MustCompile(`([A-Za-z_][A-Za-z0-9_]*|\"[^\"]*\")\.substring\(([^,]+),\s*([^)]+)\)`)
 
 func convertSubstring(s string) string {
@@ -414,10 +424,15 @@ func convertIf(s string) string {
 
 var notContainsRe = regexp.MustCompile(`!\s*([A-Za-z_][A-Za-z0-9_]*)\.contains\(([^)]+)\)`)
 var containsRe = regexp.MustCompile(`([A-Za-z_][A-Za-z0-9_]*)\.contains\(([^)]+)\)`)
+var notContainsKeyRe = regexp.MustCompile(`!\s*([A-Za-z_][A-Za-z0-9_]*)\.containsKey\(([^)]+)\)`)
+var containsKeyRe = regexp.MustCompile(`([A-Za-z_][A-Za-z0-9_]*)\.containsKey\(([^)]+)\)`)
 
 func convertContains(s string) string {
 	s = notContainsRe.ReplaceAllString(s, "!($2 in $1)")
-	return containsRe.ReplaceAllString(s, "$2 in $1")
+	s = containsRe.ReplaceAllString(s, "$2 in $1")
+	s = notContainsKeyRe.ReplaceAllString(s, "!($2 in $1)")
+	s = containsKeyRe.ReplaceAllString(s, "$2 in $1")
+	return s
 }
 
 func splitArgs(s string) []string {
