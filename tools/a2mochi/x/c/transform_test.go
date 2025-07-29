@@ -5,11 +5,14 @@ package c_test
 import (
 	"bytes"
 	"flag"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	"mochi/parser"
 	"mochi/runtime/vm"
@@ -100,7 +103,9 @@ func TestTransform_Golden(t *testing.T) {
 		// match expressions now handled
 		// "match_expr":               true,
 		// "match_full":               true,
-		"membership": false,
+		"membership":        false,
+		"typed_var":         true,
+		"user_type_literal": true,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/c")
@@ -153,4 +158,42 @@ func TestTransform_Golden(t *testing.T) {
 			}
 		})
 	}
+}
+
+func updateReadme() {
+	root := repoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "transpiler", "x", "c")
+	outDir := filepath.Join(root, "tests", "a2mochi", "x", "c")
+	pattern := filepath.Join(srcDir, "*.c")
+	files, _ := filepath.Glob(pattern)
+	sort.Strings(files)
+	total := len(files)
+	compiled := 0
+	var lines []string
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".c")
+		mark := "[ ]"
+		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
+			compiled++
+			mark = "[x]"
+		}
+		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+	}
+	loc, _ := time.LoadLocation("Asia/Bangkok")
+	ts := time.Now().In(loc).Format("2006-01-02 15:04:05 GMT")
+	var buf bytes.Buffer
+	buf.WriteString("# a2mochi C Converter\n\n")
+	buf.WriteString("This directory holds golden outputs for converting C source files located in `tests/transpiler/x/c` into Mochi AST form. Each `.c` source has a matching `.mochi` and `.ast` file in this directory.\n\n")
+	fmt.Fprintf(&buf, "Completed programs: %d/%d\n", compiled, total)
+	fmt.Fprintf(&buf, "Date: %s\n\n", ts)
+	buf.WriteString("## Checklist\n\n")
+	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteByte('\n')
+	_ = os.WriteFile(filepath.Join(root, "tools", "a2mochi", "x", "c", "README.md"), buf.Bytes(), 0o644)
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	os.Exit(code)
 }

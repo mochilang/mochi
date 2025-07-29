@@ -51,7 +51,7 @@ func Transform(p *Program) (*ast.Node, error) {
 		prints = append(filtered, arrPrints...)
 	}
 	root := &ast.Node{Kind: "program"}
-	for _, pr := range prints {
+	for _, pr := range mergePrints(prints) {
 		arg := valueNode(pr)
 		root.Children = append(root.Children, &ast.Node{
 			Kind:     "call",
@@ -90,14 +90,26 @@ func walkPrints(n *Node, vars map[string]string, prints *[]string) {
 		if callee := calleeName(n); callee == "printf" || callee == "puts" {
 			if callee == "printf" && len(n.Inner) >= 3 {
 				format := valueWithVars(&n.Inner[1], vars)
-				if format == "\"%d\\n\"" || format == "\"%d\"" {
-					val := valueWithVars(&n.Inner[2], vars)
+				val := valueWithVars(&n.Inner[2], vars)
+				switch format {
+				case "\"%d\\n\"", "\"%d\"":
 					switch val {
 					case "1":
 						*prints = append(*prints, "true")
 						return
 					case "0":
 						*prints = append(*prints, "false")
+						return
+					}
+				case "\"%d \"", "\"%s \"":
+					if strings.HasPrefix(val, "\"") && strings.HasSuffix(val, "\"") {
+						if unq, err := strconv.Unquote(val); err == nil {
+							*prints = append(*prints, strconv.Quote(unq+" "))
+							return
+						}
+					}
+					if i, err := strconv.Atoi(val); err == nil {
+						*prints = append(*prints, strconv.Quote(fmt.Sprintf("%d ", i)))
 						return
 					}
 				}
@@ -198,6 +210,20 @@ func valueWithVars(n *Node, vars map[string]string) string {
 			}
 		}
 		return ""
+	case "UnaryOperator":
+		if len(n.Inner) == 1 {
+			val := valueWithVars(&n.Inner[0], vars)
+			if val != "" {
+				switch n.Op {
+				case "-":
+					if i, err := strconv.Atoi(val); err == nil {
+						return strconv.Itoa(-i)
+					}
+				case "+":
+					return val
+				}
+			}
+		}
 	case "ConditionalOperator":
 		if len(n.Inner) == 3 {
 			cond := valueWithVars(&n.Inner[0], vars)
@@ -339,8 +365,16 @@ func parseArrayLoops(p *Program) []string {
 					if cond.Kind == "BinaryOperator" && len(cond.Inner) == 2 {
 						right := walkName(&cond.Inner[1])
 						if strings.HasSuffix(right, "_len") {
-							arrName := strings.TrimSuffix(right, "_len")
-							if arr, ok := arrays[arrName]; ok {
+							base := strings.TrimSuffix(right, "_len")
+							arrName := base
+							arr, ok := arrays[arrName]
+							if !ok {
+								arr, ok = arrays[base+"_arr"]
+								if !ok {
+									arr, ok = arrays[base+"Arr"]
+								}
+							}
+							if ok {
 								if containsPrint(body) {
 									prints = append(prints, arr...)
 								}
@@ -370,6 +404,43 @@ func containsPrint(n *Node) bool {
 		}
 	}
 	return false
+}
+
+func mergePrints(in []string) []string {
+	if len(in) < 2 {
+		return in
+	}
+	join := true
+	for i := 0; i < len(in)-1; i++ {
+		v := in[i]
+		if s, err := strconv.Unquote(v); err == nil {
+			if !strings.HasSuffix(s, " ") {
+				join = false
+				break
+			}
+		} else {
+			join = false
+			break
+		}
+	}
+	if join {
+		var b strings.Builder
+		for i, v := range in {
+			if s, err := strconv.Unquote(v); err == nil {
+				b.WriteString(s)
+			} else if n, err2 := strconv.Atoi(v); err2 == nil {
+				if i < len(in)-1 {
+					fmt.Fprintf(&b, "%d ", n)
+				} else {
+					fmt.Fprintf(&b, "%d", n)
+				}
+			} else {
+				return in
+			}
+		}
+		return []string{strconv.Quote(b.String())}
+	}
+	return in
 }
 
 func firstLiteral(n *Node, kind string) string {
