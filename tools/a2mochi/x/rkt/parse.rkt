@@ -11,6 +11,7 @@
 (define in (open-input-string body))
 (define (datum->json d)
   (cond [(symbol? d) (hash 'sym (symbol->string d))]
+        [(keyword? d) (hash 'sym (keyword->string d))]
         [(pair? d) (map datum->json d)]
         [(vector? d) (map datum->json (vector->list d))]
         [(hash? d) (for/hash ([(k v) (in-hash d)])

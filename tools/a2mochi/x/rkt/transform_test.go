@@ -5,11 +5,14 @@ package rkt_test
 import (
 	"bytes"
 	"flag"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	"mochi/parser"
 	"mochi/runtime/vm"
@@ -97,15 +100,16 @@ func TestTransformGolden(t *testing.T) {
 		"str_builtin":         true,
 		"math_ops":            true,
 		"string_contains":     true,
+		"string_prefix_slice": true,
 		"for_map_collection":  true,
 		"len_builtin":         true,
 		"len_map":             true,
-               "len_string":          true,
-               "count_builtin":       true,
-               "typed_var":           true,
-               "typed_let":           true,
-               "while_loop":          true,
-       }
+		"len_string":          true,
+		"count_builtin":       true,
+		"typed_var":           true,
+		"typed_let":           true,
+		"while_loop":          true,
+	}
 
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "rkt")
 	os.MkdirAll(outDir, 0o755)
@@ -166,4 +170,43 @@ func TestTransformGolden(t *testing.T) {
 			}
 		})
 	}
+}
+
+func updateReadme() {
+	root := repoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "transpiler", "x", "rkt")
+	outDir := filepath.Join(root, "tests", "a2mochi", "x", "rkt")
+	pattern := filepath.Join(srcDir, "*.rkt")
+	files, _ := filepath.Glob(pattern)
+	sort.Strings(files)
+	total := len(files)
+	compiled := 0
+	var lines []string
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".rkt")
+		mark := "[ ]"
+		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
+			compiled++
+			mark = "[x]"
+		}
+		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+	}
+	tz := time.FixedZone("GMT+7", 7*3600)
+	now := time.Now().In(tz)
+	var buf bytes.Buffer
+	buf.WriteString("# a2mochi Racket Converter\n\n")
+	buf.WriteString("This directory contains a very small converter that translates simple Racket programs back into Mochi form. It is inspired by the Python and TypeScript converters and is only powerful enough for the examples used in the repository tests.\n\n")
+	buf.WriteString("The converter does not rely on a language server. It tokenises the input and recognises basic forms such as `define`, `struct` and `for`. Only a subset of expressions and statements are supported.\n\n")
+	fmt.Fprintf(&buf, "Completed programs: %d/%d\n", compiled, total)
+	fmt.Fprintf(&buf, "Date: %s\n\n", now.Format("2006-01-02 15:04 GMT+7"))
+	buf.WriteString("## Checklist\n")
+	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteByte('\n')
+	os.WriteFile(filepath.Join(root, "tools", "a2mochi", "x", "rkt", "README.md"), buf.Bytes(), 0o644)
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	os.Exit(code)
 }
