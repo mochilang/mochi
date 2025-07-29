@@ -182,6 +182,10 @@ func convertStmt(src string, n *node, level int) []string {
 			code = strings.TrimSuffix(code, ";")
 			code = sanitizeExpr(code)
 			return []string{idt + code}
+		case "BREAK_EXPR":
+			return []string{idt + "break"}
+		case "CONTINUE_EXPR":
+			return []string{idt + "continue"}
 		case "FOR_EXPR":
 			return convertFor(src, c, level)
 		case "WHILE_EXPR":
@@ -206,6 +210,10 @@ func convertStmt(src string, n *node, level int) []string {
 		return convertIf(src, n, level)
 	case "MATCH_EXPR":
 		return convertMatch(src, n, level)
+	case "BREAK_EXPR":
+		return []string{idt + "break"}
+	case "CONTINUE_EXPR":
+		return []string{idt + "continue"}
 	case "RETURN_EXPR":
 		code := strings.TrimSuffix(strings.TrimSpace(src[n.start:n.end]), ";")
 		return []string{idt + code}
@@ -218,7 +226,7 @@ func convertFor(src string, n *node, level int) []string {
 	if block == nil {
 		return nil
 	}
-	header := strings.TrimSpace(src[n.start:block.start])
+	header := sanitizeExpr(strings.TrimSpace(src[n.start:block.start]))
 	lines := convertStmts(src, findChild(block, "STMT_LIST"), level+1)
 	out := []string{indent(level) + header + " {"}
 	out = append(out, lines...)
@@ -231,7 +239,7 @@ func convertWhile(src string, n *node, level int) []string {
 	if block == nil {
 		return nil
 	}
-	header := strings.TrimSpace(src[n.start:block.start])
+	header := sanitizeExpr(strings.TrimSpace(src[n.start:block.start]))
 	lines := convertStmts(src, findChild(block, "STMT_LIST"), level+1)
 	out := []string{indent(level) + header + " {"}
 	out = append(out, lines...)
@@ -250,7 +258,7 @@ func convertIf(src string, n *node, level int) []string {
 	if len(blocks) == 0 {
 		return nil
 	}
-	cond := strings.TrimSpace(src[n.children[2].start:blocks[0].start])
+	cond := sanitizeExpr(strings.TrimSpace(src[n.children[2].start:blocks[0].start]))
 	out = append(out, indent(level)+"if "+cond+" {")
 	out = append(out, convertStmts(src, findChild(blocks[0], "STMT_LIST"), level+1)...)
 	out = append(out, indent(level)+"}")
@@ -267,7 +275,7 @@ func convertMatch(src string, n *node, level int) []string {
 	if arms == nil {
 		return nil
 	}
-	header := strings.TrimSpace(src[n.start:arms.start])
+	header := sanitizeExpr(strings.TrimSpace(src[n.start:arms.start]))
 	var out []string
 	out = append(out, indent(level)+header+" {")
 	for _, arm := range arms.children {
@@ -377,6 +385,40 @@ func convertBoxNew(code string) (string, bool) {
 	return "", false
 }
 
+func convertFormatMacro(code string) (string, bool) {
+	c := strings.TrimSpace(code)
+	if strings.HasSuffix(c, ".trim_end()") {
+		c = strings.TrimSuffix(c, ".trim_end()")
+	}
+	if strings.HasPrefix(c, "format!(") && strings.HasSuffix(c, ")") {
+		inner := c[len("format!(") : len(c)-1]
+		parts := splitRustArgs(inner)
+		if len(parts) == 0 {
+			return "", false
+		}
+		fmtStr := strings.Trim(parts[0], "\"")
+		args := parts[1:]
+		segments := strings.Split(fmtStr, "{}")
+		var b strings.Builder
+		for i, seg := range segments {
+			if seg != "" {
+				if b.Len() > 0 {
+					b.WriteString(" + ")
+				}
+				b.WriteString(fmt.Sprintf("\"%s\"", seg))
+			}
+			if i < len(args) {
+				if b.Len() > 0 {
+					b.WriteString(" + ")
+				}
+				b.WriteString(sanitizeExpr(args[i]))
+			}
+		}
+		return b.String(), true
+	}
+	return "", false
+}
+
 func sanitizeExpr(code string) string {
 	code = strings.TrimSpace(code)
 
@@ -407,6 +449,8 @@ func sanitizeExpr(code string) string {
 	if v, ok := convertVecMacro(code); ok {
 		code = v
 	} else if v, ok := convertBoxNew(code); ok {
+		code = v
+	} else if v, ok := convertFormatMacro(code); ok {
 		code = v
 	}
 	code = strings.ReplaceAll(code, "let ", "var ")
