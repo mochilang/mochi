@@ -136,6 +136,10 @@ func exprNode(e Expr) *mochias.Node {
 		}
 		l := exprNode(*e.Left)
 		r := exprNode(*e.Right)
+		if e.Op == "DIVIDE" && e.Left.Kind == "Literal" && e.Right.Kind == "Literal" &&
+			!strings.Contains(e.Left.Value, ".") && !strings.Contains(e.Right.Value, ".") {
+			return &mochias.Node{Kind: "binary", Value: "//", Children: []*mochias.Node{l, r}}
+		}
 		// avoid constant folding to preserve original operation
 		return &mochias.Node{Kind: "binary", Value: op(e.Op), Children: []*mochias.Node{l, r}}
 	case "Call":
@@ -149,7 +153,11 @@ func exprNode(e Expr) *mochias.Node {
 				}}
 			}
 			if p := memberPath(e.Target); p == "java.util.Arrays.toString" && len(e.Args) == 1 {
-				return &mochias.Node{Kind: "call", Value: "str", Children: []*mochias.Node{exprNode(e.Args[0])}}
+				arg := exprNode(e.Args[0])
+				if arg.Kind == "index" {
+					return arg
+				}
+				return &mochias.Node{Kind: "call", Value: "str", Children: []*mochias.Node{arg}}
 			}
 			switch e.Target.Name {
 			case "length":
