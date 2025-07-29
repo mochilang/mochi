@@ -1,6 +1,7 @@
 package gox
 
 import (
+	"fmt"
 	"go/ast"
 	goparser "go/parser"
 	"go/token"
@@ -16,6 +17,9 @@ type Program struct {
 
 // Parse parses Go source code into a Program.
 func Parse(src string) (*Program, error) {
+	if strings.TrimSpace(src) == "" {
+		return nil, fmt.Errorf("empty source")
+	}
 	fset := token.NewFileSet()
 	file, err := goparser.ParseFile(fset, "", src, goparser.ParseComments)
 	if err != nil {
