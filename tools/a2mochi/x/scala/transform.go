@@ -98,7 +98,7 @@ var (
 	listMkStrRE    = regexp.MustCompile(`List\(([^)]*)\)\.mkString\(([^)]*)\)`)
 	appendOpRE     = regexp.MustCompile(`([A-Za-z0-9_]+) :\+ (.+)`)   // a :+ b
 	sumCallRE      = regexp.MustCompile(`([A-Za-z0-9_\[\], ]+)\.sum`) // x.sum
-	sizeCallRE     = regexp.MustCompile(`(.+)\.size`)
+	sizeCallRE     = regexp.MustCompile(`(\[[^\]]+\]|[A-Za-z0-9_\.]+)\.size`)
 	mapCallRE      = regexp.MustCompile(`([A-Za-z0-9_\[\].]+)\.map\(([^)]+)\)`) // x.map(f)
 	mapLitRE       = regexp.MustCompile(`Map\(([^)]*)\)`)
 	nonEmptyRE     = regexp.MustCompile(`(.+)\.nonEmpty$`)
@@ -136,7 +136,10 @@ func convertExpr(expr string) string {
 	expr = listMkStrRE.ReplaceAllString(expr, "join([$1], $2)")
 	expr = appendOpRE.ReplaceAllString(expr, "append($1, $2)")
 	expr = sumCallRE.ReplaceAllString(expr, "sum($1)")
-	expr = sizeCallRE.ReplaceAllString(expr, "len($1)")
+	expr = sizeCallRE.ReplaceAllStringFunc(expr, func(s string) string {
+		m := sizeCallRE.FindStringSubmatch(s)
+		return "len(" + strings.TrimSpace(m[1]) + ")"
+	})
 	expr = mapCallRE.ReplaceAllString(expr, "map($1, $2)")
 	expr = mapLitRE.ReplaceAllStringFunc(expr, func(s string) string {
 		inner := mapLitRE.FindStringSubmatch(s)[1]
