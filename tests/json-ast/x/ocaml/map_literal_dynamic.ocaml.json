@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let x = ref 3 in\n  let y = ref 4 in\n  let m = ref [(\"a\", !x); (\"b\", !y)] in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (List.assoc \"a\" !m)); string_of_int (List.assoc \"b\" !m))]))",
+      "line": 3,
+      "col": 1,
+      "endLine": 7,
+      "endCol": 143,
+      "snippet": "let () =\n  let x = ref 3 in\n  let y = ref 4 in\n  let m = ref [(\"a\", !x); (\"b\", !y)] in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (List.assoc \"a\" !m)); string_of_int (List.assoc \"b\" !m))]));"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

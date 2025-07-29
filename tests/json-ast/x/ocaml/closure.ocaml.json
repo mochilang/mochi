@@ -1,0 +1,28 @@
+{
+  "funcs": [
+    {
+      "name": "makeAdder",
+      "params": [
+        "n"
+      ],
+      "body": "(fun x -\u003e\n  (x + n))",
+      "line": 3,
+      "col": 1,
+      "endLine": 5,
+      "endCol": 11,
+      "snippet": "let rec makeAdder n =\n  (fun x -\u003e\n  (x + n))"
+    }
+  ],
+  "prints": [
+    {
+      "expr": "let add10 = makeAdder 10 in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (add10 7)]))",
+      "line": 7,
+      "col": 1,
+      "endLine": 9,
+      "endCol": 96,
+      "snippet": "let () =\n  let add10 = makeAdder 10 in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (add10 7)]));"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

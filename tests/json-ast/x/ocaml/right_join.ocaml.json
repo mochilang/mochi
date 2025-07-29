@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let customers = [[(\"id\", 1); (\"name\", \"Alice\")]; [(\"id\", 2); (\"name\", \"Bob\")]; [(\"id\", 3); (\"name\", \"Charlie\")]; [(\"id\", 4); (\"name\", \"Diana\")]] in\n  let orders = [[(\"id\", 100); (\"customerId\", 1); (\"total\", 250)]; [(\"id\", 101); (\"customerId\", 2); (\"total\", 125)]; [(\"id\", 102); (\"customerId\", 1); (\"total\", 300)]] in\n  let result = (List.concat (List.map (fun c -\u003e (List.filter_map (fun o -\u003e if ((List.assoc \"customerId\" o) == (List.assoc \"id\" c)) then Some ([(\"customerName\", (List.assoc \"name\" c)); (\"order\", o)]) else None) orders)) customers)) in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [\"--- Right Join using syntax ---\"]));\n  (try List.iter (fun entry -\u003e\n    try\n  if (List.assoc \"order\" entry) then (\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [\"Customer\"; (List.assoc \"customerName\" entry); \"has order\"; string_of_int (List.assoc \"id\" (List.assoc \"order\" entry))); \"- $\"; string_of_int (List.assoc \"total\" (List.assoc \"order\" entry)))]));\n  ) else (\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [\"Customer\"; (List.assoc \"customerName\" entry); \"has no orders\"]));\n  );\n    with Continue -\u003e ()) result with Break -\u003e ())",
+      "line": 3,
+      "col": 1,
+      "endLine": 15,
+      "endCol": 50,
+      "snippet": "let () =\n  let customers = [[(\"id\", 1); (\"name\", \"Alice\")]; [(\"id\", 2); (\"name\", \"Bob\")]; [(\"id\", 3); (\"name\", \"Charlie\")]; [(\"id\", 4); (\"name\", \"Diana\")]] in\n  let orders = [[(\"id\", 100); (\"customerId\", 1); (\"total\", 250)]; [(\"id\", 101); (\"customerId\", 2); (\"total\", 125)]; [(\"id\", 102); (\"customerId\", 1); (\"total\", 300)]] in\n  let result = (List.concat (List.map (fun c -\u003e (List.filter_map (fun o -\u003e if ((List.assoc \"customerId\" o) == (List.assoc \"id\" c)) then Some ([(\"customerName\", (List.assoc \"name\" c)); (\"order\", o)]) else None) orders)) customers)) in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [\"--- Right Join using syntax ---\"]));\n  (try List.iter (fun entry -\u003e\n    try\n  if (List.assoc \"order\" entry) then (\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [\"Customer\"; (List.assoc \"customerName\" entry); \"has order\"; string_of_int (List.assoc \"id\" (List.assoc \"order\" entry))); \"- $\"; string_of_int (List.assoc \"total\" (List.assoc \"order\" entry)))]));\n  ) else (\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [\"Customer\"; (List.assoc \"customerName\" entry); \"has no orders\"]));\n  );\n    with Continue -\u003e ()) result with Break -\u003e ())"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [String.sub [1; 2; 3] 1 (3 - 1)]));\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [String.sub [1; 2; 3] 0 (2 - 0)]));\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [String.sub \"hello\" 1 (4 - 1)]))",
+      "line": 3,
+      "col": 1,
+      "endLine": 6,
+      "endCol": 101,
+      "snippet": "let () =\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [String.sub [1; 2; 3] 1 (3 - 1)]));\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [String.sub [1; 2; 3] 0 (2 - 0)]));\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [String.sub \"hello\" 1 (4 - 1)]));"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

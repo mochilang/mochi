@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "print_endline (String.concat \" \" [(\"[\" ^ String.concat \", \" (List.map string_of_int ((List.sort_uniq compare ([1; 2] @ [2; 3])))) ^ \"]\")]);\n  print_endline (String.concat \" \" [(\"[\" ^ String.concat \", \" (List.map string_of_int ((List.filter (fun x -\u003e not (List.mem x [2])) [1; 2; 3]))) ^ \"]\")]);\n  print_endline (String.concat \" \" [(\"[\" ^ String.concat \", \" (List.map string_of_int ((List.filter (fun x -\u003e List.mem x [2; 4]) [1; 2; 3]))) ^ \"]\")]);\n  print_endline (String.concat \" \" [string_of_int (List.length (List.sort_uniq compare ([1; 2] @ [2; 3])))])",
+      "line": 3,
+      "col": 1,
+      "endLine": 7,
+      "endCol": 110,
+      "snippet": "let () =\n  print_endline (String.concat \" \" [(\"[\" ^ String.concat \", \" (List.map string_of_int ((List.sort_uniq compare ([1; 2] @ [2; 3])))) ^ \"]\")]);\n  print_endline (String.concat \" \" [(\"[\" ^ String.concat \", \" (List.map string_of_int ((List.filter (fun x -\u003e not (List.mem x [2])) [1; 2; 3]))) ^ \"]\")]);\n  print_endline (String.concat \" \" [(\"[\" ^ String.concat \", \" (List.map string_of_int ((List.filter (fun x -\u003e List.mem x [2; 4]) [1; 2; 3]))) ^ \"]\")]);\n  print_endline (String.concat \" \" [string_of_int (List.length (List.sort_uniq compare ([1; 2] @ [2; 3])))]);"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

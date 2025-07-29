@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "(try List.iter (fun n -\u003e\n    try\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int n]));\n    with Continue -\u003e ()) [1; 2; 3] with Break -\u003e ())",
+      "line": 3,
+      "col": 1,
+      "endLine": 7,
+      "endCol": 53,
+      "snippet": "let () =\n  (try List.iter (fun n -\u003e\n    try\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int n]));\n    with Continue -\u003e ()) [1; 2; 3] with Break -\u003e ())"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

@@ -1,0 +1,28 @@
+{
+  "funcs": [
+    {
+      "name": "__to_json",
+      "params": [
+        "v"
+      ],
+      "body": "let open Obj in\n  let rec list_aux o =\n    if is_int o \u0026\u0026 (magic (obj o) : int) = 0 then \"\" else\n     let hd = field o 0 in\n     let tl = field o 1 in\n     let rest = list_aux tl in\n     let cur = __to_json (obj hd) in\n     if rest = \"\" then cur else cur ^ \",\" ^ rest\n  and map_aux o =\n    if is_int o \u0026\u0026 (magic (obj o) : int) = 0 then \"\" else\n     let hd = field o 0 in\n     let tl = field o 1 in\n     let k = (magic (field hd 0) : string) in\n     let v = __to_json (obj (field hd 1)) in\n     let rest = map_aux tl in\n     let cur = Printf.sprintf \"\\\"%s\\\": %s\" k v in\n     if rest = \"\" then cur else cur ^ \",\" ^ rest\n  in\n  let r = repr v in\n  if is_int r then string_of_int (magic v) else\n  match tag r with\n    | 0 -\u003e if size r = 0 then \"[]\" else (\n        let hd = field r 0 in\n        if tag hd = 0 \u0026\u0026 size hd = 2 \u0026\u0026 tag (field hd 0) = 252 then\n          \"{\" ^ map_aux r ^ \"}\"\n        else\n          \"[\" ^ list_aux r ^ \"]\")\n    | 252 -\u003e Printf.sprintf \"%S\" (magic v : string)\n    | 253 -\u003e string_of_float (magic v)\n    | _ -\u003e \"null\"",
+      "line": 3,
+      "col": 1,
+      "endLine": 33,
+      "endCol": 18,
+      "snippet": "let rec __to_json v =\n  let open Obj in\n  let rec list_aux o =\n    if is_int o \u0026\u0026 (magic (obj o) : int) = 0 then \"\" else\n     let hd = field o 0 in\n     let tl = field o 1 in\n     let rest = list_aux tl in\n     let cur = __to_json (obj hd) in\n     if rest = \"\" then cur else cur ^ \",\" ^ rest\n  and map_aux o =\n    if is_int o \u0026\u0026 (magic (obj o) : int) = 0 then \"\" else\n     let hd = field o 0 in\n     let tl = field o 1 in\n     let k = (magic (field hd 0) : string) in\n     let v = __to_json (obj (field hd 1)) in\n     let rest = map_aux tl in\n     let cur = Printf.sprintf \"\\\"%s\\\": %s\" k v in\n     if rest = \"\" then cur else cur ^ \",\" ^ rest\n  in\n  let r = repr v in\n  if is_int r then string_of_int (magic v) else\n  match tag r with\n    | 0 -\u003e if size r = 0 then \"[]\" else (\n        let hd = field r 0 in\n        if tag hd = 0 \u0026\u0026 size hd = 2 \u0026\u0026 tag (field hd 0) = 252 then\n          \"{\" ^ map_aux r ^ \"}\"\n        else\n          \"[\" ^ list_aux r ^ \"]\")\n    | 252 -\u003e Printf.sprintf \"%S\" (magic v : string)\n    | 253 -\u003e string_of_float (magic v)\n    | _ -\u003e \"null\""
+    }
+  ],
+  "prints": [
+    {
+      "expr": "let items = [[(\"a\", Obj.repr \"x\"); (\"b\", Obj.repr 1); (\"val\", Obj.repr 2)]; [(\"a\", Obj.repr \"x\"); (\"b\", Obj.repr 2); (\"val\", Obj.repr 3)]; [(\"a\", Obj.repr \"y\"); (\"b\", Obj.repr 1); (\"val\", Obj.repr 4)]; [(\"a\", Obj.repr \"y\"); (\"b\", Obj.repr 2); (\"val\", Obj.repr 1)]] in\n  let grouped = (let __groups0 = ref [] in\n  List.iter (fun i -\u003e\n    let key = [(\"a\", Obj.repr (Obj.obj (List.assoc \"a\" i) : string)); (\"b\", Obj.repr (Obj.obj (List.assoc \"b\" i) : int))] in\n    let cur = try List.assoc key !__groups0 with Not_found -\u003e [] in\n    __groups0 := (key, i :: cur) :: List.remove_assoc key !__groups0;\n  ) items;\n  let __res0 = ref [] in\n  List.iter (fun (g_key, g_items) -\u003e\n    let g = List.rev g_items in\n    __res0 := ((List.fold_left (fun acc x -\u003e acc + x) 0 (List.map (fun x -\u003e (Obj.obj (List.assoc \"val\" x) : int)) g)), [(\"a\", Obj.repr (Obj.obj (List.assoc \"a\" g_key) : string)); (\"b\", Obj.repr (Obj.obj (List.assoc \"b\" g_key) : int)); (\"total\", Obj.repr (List.fold_left (fun acc x -\u003e acc + x) 0 (List.map (fun x -\u003e (Obj.obj (List.assoc \"val\" x) : int)) g)))]) :: !__res0\n  ) !__groups0;\n  let __sorted = List.sort (fun a b -\u003e compare (fst b) (fst a)) !__res0 in\n  List.map snd __sorted) in\n  print_endline (String.concat \" \" [__to_json grouped])",
+      "line": 35,
+      "col": 1,
+      "endLine": 50,
+      "endCol": 57,
+      "snippet": "let () =\n  let items = [[(\"a\", Obj.repr \"x\"); (\"b\", Obj.repr 1); (\"val\", Obj.repr 2)]; [(\"a\", Obj.repr \"x\"); (\"b\", Obj.repr 2); (\"val\", Obj.repr 3)]; [(\"a\", Obj.repr \"y\"); (\"b\", Obj.repr 1); (\"val\", Obj.repr 4)]; [(\"a\", Obj.repr \"y\"); (\"b\", Obj.repr 2); (\"val\", Obj.repr 1)]] in\n  let grouped = (let __groups0 = ref [] in\n  List.iter (fun i -\u003e\n    let key = [(\"a\", Obj.repr (Obj.obj (List.assoc \"a\" i) : string)); (\"b\", Obj.repr (Obj.obj (List.assoc \"b\" i) : int))] in\n    let cur = try List.assoc key !__groups0 with Not_found -\u003e [] in\n    __groups0 := (key, i :: cur) :: List.remove_assoc key !__groups0;\n  ) items;\n  let __res0 = ref [] in\n  List.iter (fun (g_key, g_items) -\u003e\n    let g = List.rev g_items in\n    __res0 := ((List.fold_left (fun acc x -\u003e acc + x) 0 (List.map (fun x -\u003e (Obj.obj (List.assoc \"val\" x) : int)) g)), [(\"a\", Obj.repr (Obj.obj (List.assoc \"a\" g_key) : string)); (\"b\", Obj.repr (Obj.obj (List.assoc \"b\" g_key) : int)); (\"total\", Obj.repr (List.fold_left (fun acc x -\u003e acc + x) 0 (List.map (fun x -\u003e (Obj.obj (List.assoc \"val\" x) : int)) g)))]) :: !__res0\n  ) !__groups0;\n  let __sorted = List.sort (fun a b -\u003e compare (fst b) (fst a)) !__res0 in\n  List.map snd __sorted) in\n  print_endline (String.concat \" \" [__to_json grouped]);"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

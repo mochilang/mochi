@@ -1,0 +1,28 @@
+{
+  "funcs": [
+    {
+      "name": "classify",
+      "params": [
+        "n"
+      ],
+      "body": "(match n with | 0 -\u003e \"zero\" | 1 -\u003e \"one\" | _ -\u003e \"many\")",
+      "line": 3,
+      "col": 1,
+      "endLine": 4,
+      "endCol": 58,
+      "snippet": "let rec classify n =\n  (match n with | 0 -\u003e \"zero\" | 1 -\u003e \"one\" | _ -\u003e \"many\")"
+    }
+  ],
+  "prints": [
+    {
+      "expr": "let x = 2 in\n  let label = (match x with | 1 -\u003e \"one\" | 2 -\u003e \"two\" | 3 -\u003e \"three\" | _ -\u003e \"unknown\") in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [label]));\n  let day = \"sun\" in\n  let mood = (match day with | \"mon\" -\u003e \"tired\" | \"fri\" -\u003e \"excited\" | \"sun\" -\u003e \"relaxed\" | _ -\u003e \"normal\") in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [mood]));\n  let ok = true in\n  let status = (match ok with | true -\u003e \"confirmed\" | false -\u003e \"denied\") in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [status]));\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [classify 0]));\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [classify 5]))",
+      "line": 6,
+      "col": 1,
+      "endLine": 17,
+      "endCol": 83,
+      "snippet": "let () =\n  let x = 2 in\n  let label = (match x with | 1 -\u003e \"one\" | 2 -\u003e \"two\" | 3 -\u003e \"three\" | _ -\u003e \"unknown\") in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [label]));\n  let day = \"sun\" in\n  let mood = (match day with | \"mon\" -\u003e \"tired\" | \"fri\" -\u003e \"excited\" | \"sun\" -\u003e \"relaxed\" | _ -\u003e \"normal\") in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [mood]));\n  let ok = true in\n  let status = (match ok with | true -\u003e \"confirmed\" | false -\u003e \"denied\") in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [status]));\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [classify 0]));\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [classify 5]));"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

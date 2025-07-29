@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let m = [(\"a\", 1); (\"b\", 2)] in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (List.assoc \"b\" m))]))",
+      "line": 3,
+      "col": 1,
+      "endLine": 5,
+      "endCol": 106,
+      "snippet": "let () =\n  let m = [(\"a\", 1); (\"b\", 2)] in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (List.assoc \"b\" m))]));"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

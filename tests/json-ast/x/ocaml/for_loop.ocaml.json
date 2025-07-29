@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "(try for i = 1 to (4 - 1) do\n    try\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int i]));\n    with Continue -\u003e ()\n  done with Break -\u003e ())",
+      "line": 3,
+      "col": 1,
+      "endLine": 8,
+      "endCol": 25,
+      "snippet": "let () =\n  (try for i = 1 to (4 - 1) do\n    try\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int i]));\n    with Continue -\u003e ()\n  done with Break -\u003e ())"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

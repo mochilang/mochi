@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let data = ref [(\"outer\", [(\"inner\", 1)])] in\n  data := ((\"outer\", ((\"inner\", 2) :: List.remove_assoc \"inner\" (List.assoc \"outer\" !data))) :: List.remove_assoc \"outer\" !data);\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (List.assoc \"inner\" (List.assoc \"outer\" !data)))]))",
+      "line": 3,
+      "col": 1,
+      "endLine": 6,
+      "endCol": 135,
+      "snippet": "let () =\n  let data = ref [(\"outer\", [(\"inner\", 1)])] in\n  data := ((\"outer\", ((\"inner\", 2) :: List.remove_assoc \"inner\" (List.assoc \"outer\" !data))) :: List.remove_assoc \"outer\" !data);\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (List.assoc \"inner\" (List.assoc \"outer\" !data)))]));"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

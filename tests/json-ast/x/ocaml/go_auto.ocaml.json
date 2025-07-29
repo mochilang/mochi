@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "print_endline (String.concat \" \" [string_of_int (2 + 3)]);\n  print_endline (String.concat \" \" [string_of_float 3.14]);\n  print_endline (String.concat \" \" [string_of_int 42])",
+      "line": 3,
+      "col": 1,
+      "endLine": 6,
+      "endCol": 56,
+      "snippet": "let () =\n  print_endline (String.concat \" \" [string_of_int (2 + 3)]);\n  print_endline (String.concat \" \" [string_of_float 3.14]);\n  print_endline (String.concat \" \" [string_of_int 42]);"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

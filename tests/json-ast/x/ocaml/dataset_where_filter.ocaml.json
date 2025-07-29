@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let people = [[(\"name\", \"Alice\"); (\"age\", 30)]; [(\"name\", \"Bob\"); (\"age\", 15)]; [(\"name\", \"Charlie\"); (\"age\", 65)]; [(\"name\", \"Diana\"); (\"age\", 45)]] in\n  let adults = (List.filter_map (fun person -\u003e if ((List.assoc \"age\" person) \u003e= 18) then Some ([(\"name\", (List.assoc \"name\" person)); (\"age\", (List.assoc \"age\" person)); (\"is_senior\", ((List.assoc \"age\" person) \u003e= 60))]) else None) people) in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [\"--- Adults ---\"]));\n  (try List.iter (fun person -\u003e\n    try\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [(List.assoc \"name\" person); \"is\"; string_of_int (List.assoc \"age\" person)); if (List.assoc \"is_senior\" person) then \" (senior)\" else \"\"]));\n    with Continue -\u003e ()) adults with Break -\u003e ())",
+      "line": 3,
+      "col": 1,
+      "endLine": 10,
+      "endCol": 50,
+      "snippet": "let () =\n  let people = [[(\"name\", \"Alice\"); (\"age\", 30)]; [(\"name\", \"Bob\"); (\"age\", 15)]; [(\"name\", \"Charlie\"); (\"age\", 65)]; [(\"name\", \"Diana\"); (\"age\", 45)]] in\n  let adults = (List.filter_map (fun person -\u003e if ((List.assoc \"age\" person) \u003e= 18) then Some ([(\"name\", (List.assoc \"name\" person)); (\"age\", (List.assoc \"age\" person)); (\"is_senior\", ((List.assoc \"age\" person) \u003e= 60))]) else None) people) in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [\"--- Adults ---\"]));\n  (try List.iter (fun person -\u003e\n    try\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [(List.assoc \"name\" person); \"is\"; string_of_int (List.assoc \"age\" person)); if (List.assoc \"is_senior\" person) then \" (senior)\" else \"\"]));\n    with Continue -\u003e ()) adults with Break -\u003e ())"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let s = \"catch\" in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool (if (let len_s = String.length s and len_sub = String.length \"cat\" in let rec aux i = if i + len_sub \u003e len_s then false else if String.sub s i len_sub = \"cat\" then true else aux (i + 1) in aux 0) then true else false)]));\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool (if (let len_s = String.length s and len_sub = String.length \"dog\" in let rec aux i = if i + len_sub \u003e len_s then false else if String.sub s i len_sub = \"dog\" then true else aux (i + 1) in aux 0) then true else false)]))",
+      "line": 5,
+      "col": 1,
+      "endLine": 8,
+      "endCol": 305,
+      "snippet": "let () =\n  let s = \"catch\" in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool (if (let len_s = String.length s and len_sub = String.length \"cat\" in let rec aux i = if i + len_sub \u003e len_s then false else if String.sub s i len_sub = \"cat\" then true else aux (i + 1) in aux 0) then true else false)]));\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_bool (if (let len_s = String.length s and len_sub = String.length \"dog\" in let rec aux i = if i + len_sub \u003e len_s then false else if String.sub s i len_sub = \"dog\" then true else aux (i + 1) in aux 0) then true else false)]));"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let square = (fun x -\u003e\n  (x * x)) in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (square 6)]))",
+      "line": 3,
+      "col": 1,
+      "endLine": 6,
+      "endCol": 97,
+      "snippet": "let () =\n  let square = (fun x -\u003e\n  (x * x)) in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (square 6)]));"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

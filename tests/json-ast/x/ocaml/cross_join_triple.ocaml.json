@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let nums = [1; 2] in\n  let letters = [\"A\"; \"B\"] in\n  let bools = [true; false] in\n  let combos = (List.concat (List.map (fun n -\u003e (List.concat (List.map (fun l -\u003e (List.map (fun b -\u003e [(\"n\", n); (\"l\", l); (\"b\", b)]) bools)) letters))) nums)) in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [\"--- Cross Join of three lists ---\"]));\n  (try List.iter (fun c -\u003e\n    try\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (List.assoc \"n\" c)); (List.assoc \"l\" c); (List.assoc \"b\" c)]));\n    with Continue -\u003e ()) combos with Break -\u003e ())",
+      "line": 3,
+      "col": 1,
+      "endLine": 12,
+      "endCol": 50,
+      "snippet": "let () =\n  let nums = [1; 2] in\n  let letters = [\"A\"; \"B\"] in\n  let bools = [true; false] in\n  let combos = (List.concat (List.map (fun n -\u003e (List.concat (List.map (fun l -\u003e (List.map (fun b -\u003e [(\"n\", n); (\"l\", l); (\"b\", b)]) bools)) letters))) nums)) in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [\"--- Cross Join of three lists ---\"]));\n  (try List.iter (fun c -\u003e\n    try\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (List.assoc \"n\" c)); (List.assoc \"l\" c); (List.assoc \"b\" c)]));\n    with Continue -\u003e ()) combos with Break -\u003e ())"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

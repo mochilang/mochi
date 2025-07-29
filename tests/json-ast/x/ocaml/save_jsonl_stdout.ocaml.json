@@ -1,0 +1,28 @@
+{
+  "funcs": [
+    {
+      "name": "__show",
+      "params": [
+        "v"
+      ],
+      "body": "let open Obj in\n  let rec list_aux o =\n    if is_int o \u0026\u0026 (magic (obj o) : int) = 0 then \"\" else\n     let hd = field o 0 in\n     let tl = field o 1 in\n     let rest = list_aux tl in\n     if rest = \"\" then __show (obj hd) else __show (obj hd) ^ \"; \" ^ rest\n  in\n  let r = repr v in\n  if is_int r then string_of_int (magic v) else\n  match tag r with\n    | 0 -\u003e if size r = 0 then \"[]\" else \"[\" ^ list_aux r ^ \"]\"\n    | 252 -\u003e (magic v : string)\n    | 253 -\u003e string_of_float (magic v)\n    | _ -\u003e \"\u003cvalue\u003e\"",
+      "line": 3,
+      "col": 1,
+      "endLine": 18,
+      "endCol": 21,
+      "snippet": "let rec __show v =\n  let open Obj in\n  let rec list_aux o =\n    if is_int o \u0026\u0026 (magic (obj o) : int) = 0 then \"\" else\n     let hd = field o 0 in\n     let tl = field o 1 in\n     let rest = list_aux tl in\n     if rest = \"\" then __show (obj hd) else __show (obj hd) ^ \"; \" ^ rest\n  in\n  let r = repr v in\n  if is_int r then string_of_int (magic v) else\n  match tag r with\n    | 0 -\u003e if size r = 0 then \"[]\" else \"[\" ^ list_aux r ^ \"]\"\n    | 252 -\u003e (magic v : string)\n    | 253 -\u003e string_of_float (magic v)\n    | _ -\u003e \"\u003cvalue\u003e\""
+    }
+  ],
+  "prints": [
+    {
+      "expr": "let people = [[(\"name\", Obj.repr \"Alice\"); (\"age\", Obj.repr 30)]; [(\"name\", Obj.repr \"Bob\"); (\"age\", Obj.repr 25)]] in\n  List.iter (fun m -\u003e\n    let parts = List.map (fun (k,v) -\u003e Printf.sprintf \"\\\"%s\\\": %s\" k (__show (Obj.obj v))) m in\n    print_endline (\"{\" ^ String.concat \", \" parts ^ \"}\")\n  ) people",
+      "line": 20,
+      "col": 1,
+      "endLine": 25,
+      "endCol": 11,
+      "snippet": "let () =\n  let people = [[(\"name\", Obj.repr \"Alice\"); (\"age\", Obj.repr 30)]; [(\"name\", Obj.repr \"Bob\"); (\"age\", Obj.repr 25)]] in\n  List.iter (fun m -\u003e\n    let parts = List.map (fun (k,v) -\u003e Printf.sprintf \"\\\"%s\\\": %s\" k (__show (Obj.obj v))) m in\n    print_endline (\"{\" ^ String.concat \", \" parts ^ \"}\")\n  ) people"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

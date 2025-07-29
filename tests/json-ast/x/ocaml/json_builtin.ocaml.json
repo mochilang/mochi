@@ -1,0 +1,28 @@
+{
+  "funcs": [
+    {
+      "name": "__to_json",
+      "params": [
+        "v"
+      ],
+      "body": "let open Obj in\n  let rec list_aux o =\n    if is_int o \u0026\u0026 (magic (obj o) : int) = 0 then \"\" else\n     let hd = field o 0 in\n     let tl = field o 1 in\n     let rest = list_aux tl in\n     let cur = __to_json (obj hd) in\n     if rest = \"\" then cur else cur ^ \",\" ^ rest\n  and map_aux o =\n    if is_int o \u0026\u0026 (magic (obj o) : int) = 0 then \"\" else\n     let hd = field o 0 in\n     let tl = field o 1 in\n     let k = (magic (field hd 0) : string) in\n     let v = __to_json (obj (field hd 1)) in\n     let rest = map_aux tl in\n     let cur = Printf.sprintf \"\\\"%s\\\": %s\" k v in\n     if rest = \"\" then cur else cur ^ \",\" ^ rest\n  in\n  let r = repr v in\n  if is_int r then string_of_int (magic v) else\n  match tag r with\n    | 0 -\u003e if size r = 0 then \"[]\" else (\n        let hd = field r 0 in\n        if tag hd = 0 \u0026\u0026 size hd = 2 \u0026\u0026 tag (field hd 0) = 252 then\n          \"{\" ^ map_aux r ^ \"}\"\n        else\n          \"[\" ^ list_aux r ^ \"]\")\n    | 252 -\u003e Printf.sprintf \"%S\" (magic v : string)\n    | 253 -\u003e string_of_float (magic v)\n    | _ -\u003e \"null\"",
+      "line": 3,
+      "col": 1,
+      "endLine": 33,
+      "endCol": 18,
+      "snippet": "let rec __to_json v =\n  let open Obj in\n  let rec list_aux o =\n    if is_int o \u0026\u0026 (magic (obj o) : int) = 0 then \"\" else\n     let hd = field o 0 in\n     let tl = field o 1 in\n     let rest = list_aux tl in\n     let cur = __to_json (obj hd) in\n     if rest = \"\" then cur else cur ^ \",\" ^ rest\n  and map_aux o =\n    if is_int o \u0026\u0026 (magic (obj o) : int) = 0 then \"\" else\n     let hd = field o 0 in\n     let tl = field o 1 in\n     let k = (magic (field hd 0) : string) in\n     let v = __to_json (obj (field hd 1)) in\n     let rest = map_aux tl in\n     let cur = Printf.sprintf \"\\\"%s\\\": %s\" k v in\n     if rest = \"\" then cur else cur ^ \",\" ^ rest\n  in\n  let r = repr v in\n  if is_int r then string_of_int (magic v) else\n  match tag r with\n    | 0 -\u003e if size r = 0 then \"[]\" else (\n        let hd = field r 0 in\n        if tag hd = 0 \u0026\u0026 size hd = 2 \u0026\u0026 tag (field hd 0) = 252 then\n          \"{\" ^ map_aux r ^ \"}\"\n        else\n          \"[\" ^ list_aux r ^ \"]\")\n    | 252 -\u003e Printf.sprintf \"%S\" (magic v : string)\n    | 253 -\u003e string_of_float (magic v)\n    | _ -\u003e \"null\""
+    }
+  ],
+  "prints": [
+    {
+      "expr": "let m = [(\"a\", 1); (\"b\", 2)] in\n  print_endline (__to_json m)",
+      "line": 35,
+      "col": 1,
+      "endLine": 37,
+      "endCol": 31,
+      "snippet": "let () =\n  let m = [(\"a\", 1); (\"b\", 2)] in\n  print_endline (__to_json m);"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

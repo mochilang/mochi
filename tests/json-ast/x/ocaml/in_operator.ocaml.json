@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let xs = [1; 2; 3] in\n  print_endline (String.concat \" \" [string_of_bool ((List.mem 2 xs))]);\n  print_endline (String.concat \" \" [string_of_bool (not (List.mem 5 xs))])",
+      "line": 3,
+      "col": 1,
+      "endLine": 6,
+      "endCol": 76,
+      "snippet": "let () =\n  let xs = [1; 2; 3] in\n  print_endline (String.concat \" \" [string_of_bool ((List.mem 2 xs))]);\n  print_endline (String.concat \" \" [string_of_bool (not (List.mem 5 xs))]);"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

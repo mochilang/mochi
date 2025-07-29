@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let scores = ref [(\"alice\", 1)] in\n  scores := ((\"bob\", 2) :: List.remove_assoc \"bob\" !scores);\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (List.assoc \"bob\" !scores))]))",
+      "line": 3,
+      "col": 1,
+      "endLine": 6,
+      "endCol": 114,
+      "snippet": "let () =\n  let scores = ref [(\"alice\", 1)] in\n  scores := ((\"bob\", 2) :: List.remove_assoc \"bob\" !scores);\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [string_of_int (List.assoc \"bob\" !scores))]));"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

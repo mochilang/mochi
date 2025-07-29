@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let rawName = \"   alice  \" in\n  let radius = 3.0 in\n  let name = String.uppercase_ascii (String.trim (rawName)) in\n  let area = (3.141592653589793 *. Float.pow (radius) (2.0)) in\n  print_endline (String.concat \" \" [\"Hello\"; (name ^ \"!\")]);\n  print_endline (String.concat \" \" [\"The area of a circle with radius\"; Printf.sprintf \"%.15f\" (radius); \"is\"; Printf.sprintf \"%.15f\" (area)])",
+      "line": 3,
+      "col": 1,
+      "endLine": 9,
+      "endCol": 144,
+      "snippet": "let () =\n  let rawName = \"   alice  \" in\n  let radius = 3.0 in\n  let name = String.uppercase_ascii (String.trim (rawName)) in\n  let area = (3.141592653589793 *. Float.pow (radius) (2.0)) in\n  print_endline (String.concat \" \" [\"Hello\"; (name ^ \"!\")]);\n  print_endline (String.concat \" \" [\"The area of a circle with radius\"; Printf.sprintf \"%.15f\" (radius); \"is\"; Printf.sprintf \"%.15f\" (area)]);"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

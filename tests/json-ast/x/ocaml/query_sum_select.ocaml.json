@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let nums = [1; 2; 3] in\n  let result = (List.fold_left (fun acc x -\u003e acc + x) 0 (List.filter_map (fun n -\u003e if (n \u003e 1) then Some (n) else None) nums)) in\n  print_endline (String.concat \" \" [string_of_int result])",
+      "line": 3,
+      "col": 1,
+      "endLine": 6,
+      "endCol": 60,
+      "snippet": "let () =\n  let nums = [1; 2; 3] in\n  let result = (List.fold_left (fun acc x -\u003e acc + x) 0 (List.filter_map (fun n -\u003e if (n \u003e 1) then Some (n) else None) nums)) in\n  print_endline (String.concat \" \" [string_of_int result]);"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

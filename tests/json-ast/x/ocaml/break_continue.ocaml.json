@@ -1,0 +1,15 @@
+{
+  "funcs": [],
+  "prints": [
+    {
+      "expr": "let numbers = [1; 2; 3; 4; 5; 6; 7; 8; 9] in\n  (try List.iter (fun n -\u003e\n    try\n  if ((n mod 2) == 0) then (\n  raise Continue;\n  );\n  if (n \u003e 7) then (\n  raise Break;\n  );\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [\"odd number:\"; string_of_int n]));\n    with Continue -\u003e ()) numbers with Break -\u003e ())",
+      "line": 6,
+      "col": 1,
+      "endLine": 17,
+      "endCol": 51,
+      "snippet": "let () =\n  let numbers = [1; 2; 3; 4; 5; 6; 7; 8; 9] in\n  (try List.iter (fun n -\u003e\n    try\n  if ((n mod 2) == 0) then (\n  raise Continue;\n  );\n  if (n \u003e 7) then (\n  raise Break;\n  );\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [\"odd number:\"; string_of_int n]));\n    with Continue -\u003e ()) numbers with Break -\u003e ())"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

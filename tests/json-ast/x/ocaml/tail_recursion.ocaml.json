@@ -1,0 +1,29 @@
+{
+  "funcs": [
+    {
+      "name": "sum_rec",
+      "params": [
+        "n",
+        "acc"
+      ],
+      "body": "if n = 0 then acc\n  else sum_rec (n - 1) (acc + n)",
+      "line": 3,
+      "col": 1,
+      "endLine": 5,
+      "endCol": 33,
+      "snippet": "let rec sum_rec n acc =\n  if n = 0 then acc\n  else sum_rec (n - 1) (acc + n)"
+    }
+  ],
+  "prints": [
+    {
+      "expr": "print_endline (string_of_int (sum_rec 10 0))",
+      "line": 7,
+      "col": 1,
+      "endLine": 8,
+      "endCol": 47,
+      "snippet": "let () =\n  print_endline (string_of_int (sum_rec 10 0))"
+    }
+  ],
+  "types": [],
+  "vars": []
+}

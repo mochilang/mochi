@@ -1,0 +1,17 @@
+{
+  "funcs": [],
+  "prints": [],
+  "types": [],
+  "vars": [
+    {
+      "name": "outer",
+      "expr": "",
+      "mutable": false,
+      "line": 3,
+      "col": 1,
+      "endLine": 3,
+      "endCol": 14,
+      "snippet": "let rec outer"
+    }
+  ]
+}
