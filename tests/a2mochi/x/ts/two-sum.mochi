@@ -1,3 +1,0 @@
-fun twoSum(nums: list<int>, target: int): list<int> {
-}
-let result: list<int>

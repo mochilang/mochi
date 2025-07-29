@@ -1,1 +1,53 @@
-(program)
+(program
+  (call print
+    (binary +
+      (binary +
+        (string "[")
+        (call
+          (selector join
+            (group
+              (call
+                (selector slice
+                  (list (int 1) (int 2) (int 3))
+                )
+                (int 1)
+                (int 3)
+              )
+            )
+          )
+          (string ", ")
+        )
+      )
+      (string "]")
+    )
+  )
+  (call print
+    (binary +
+      (binary +
+        (string "[")
+        (call
+          (selector join
+            (group
+              (call
+                (selector slice
+                  (list (int 1) (int 2) (int 3))
+                )
+                (int 0)
+                (int 2)
+              )
+            )
+          )
+          (string ", ")
+        )
+      )
+      (string "]")
+    )
+  )
+  (call print
+    (call
+      (selector slice (string hello))
+      (int 1)
+      (int 4)
+    )
+  )
+)

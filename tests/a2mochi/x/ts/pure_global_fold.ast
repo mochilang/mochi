@@ -1,7 +1,15 @@
 (program
-  (let k (type int))
+  (let k (type int) (int 2))
   (fun inc
     (param x (type int))
     (type int)
+    (return
+      (group
+        (binary + (selector x) (selector k))
+      )
+    )
+  )
+  (call print
+    (call inc (int 3))
   )
 )

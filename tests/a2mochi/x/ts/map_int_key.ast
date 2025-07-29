@@ -1,5 +1,18 @@
 (program
   (let m
     (type map (type int) (type string))
+    (map
+      (entry
+        (list (int 1))
+        (string a)
+      )
+      (entry
+        (list (int 2))
+        (string b)
+      )
+    )
+  )
+  (call print
+    (index (selector m) (int 1))
   )
 )

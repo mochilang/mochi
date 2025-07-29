@@ -2,5 +2,17 @@
   (fun triple
     (param x (type int))
     (type int)
+    (return
+      (group
+        (binary * (selector x) (int 3))
+      )
+    )
+  )
+  (call print
+    (call triple
+      (group
+        (binary + (int 1) (int 2))
+      )
+    )
   )
 )

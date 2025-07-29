@@ -9,5 +9,31 @@
     (field b (type int))
     (field c (type int))
   )
-  (let m (type M))
+  (let m
+    (type M)
+    (map
+      (entry (string a) (int 1))
+      (entry (string b) (int 2))
+      (entry (string c) (int 3))
+    )
+  )
+  (call print
+    (binary +
+      (binary +
+        (string "[")
+        (call
+          (selector join
+            (group
+              (call
+                (selector values (selector Object))
+                (selector m)
+              )
+            )
+          )
+          (string ", ")
+        )
+      )
+      (string "]")
+    )
+  )
 )

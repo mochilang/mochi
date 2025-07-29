@@ -1,7 +1,7 @@
-for v in [10,20] {
+for v in [10, 20] {
   print(v)
 }
-var m = {"a":1, "b":2}
+let m: map<string, int> = {"a": 1, "b": 2}
 for v in values(m) {
   print(v)
 }

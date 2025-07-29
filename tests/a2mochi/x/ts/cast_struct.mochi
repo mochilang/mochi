@@ -7,4 +7,5 @@ type Todo1 {
 type Todo {
   title: string
 }
-let todo: Todo1
+let todo: Todo1 = {"title": "hi"}
+print(todo["title"])

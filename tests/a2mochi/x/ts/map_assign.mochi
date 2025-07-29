@@ -4,4 +4,6 @@ type Result {
 type Scores {
   alice: int
 }
-let scores: Scores
+let scores: Scores = {"alice": 1}
+scores["bob"] = 2
+print(scores["bob"])

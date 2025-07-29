@@ -8,5 +8,13 @@
   (type Todo
     (field title (type string))
   )
-  (let todo (type Todo1))
+  (let todo
+    (type Todo1)
+    (map
+      (entry (string title) (string hi))
+    )
+  )
+  (call print
+    (index (selector todo) (string title))
+  )
 )

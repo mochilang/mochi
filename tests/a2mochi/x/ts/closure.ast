@@ -1,6 +1,0 @@
-(program
-  (fun makeAdder
-    (param n (type int))
-  )
-  (let add10)
-)

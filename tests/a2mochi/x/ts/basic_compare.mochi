@@ -1,5 +1,0 @@
-let a: int = 10 - 3
-let b: int = 2 + 2
-print(a)
-print(match a == 7 { true -> 1 false -> 0 })
-print(match b < 5 { true -> 1 false -> 0 })

@@ -1,1 +1,3 @@
-(program)
+(program
+  (call print (string ok))
+)

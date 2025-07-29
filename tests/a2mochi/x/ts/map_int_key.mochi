@@ -1,1 +1,2 @@
-let m: map<int,string>
+let m: map<int, string> = {[1]: "a", [2]: "b"}
+print(m[1])

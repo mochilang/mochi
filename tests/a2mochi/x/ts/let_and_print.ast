@@ -1,4 +1,9 @@
 (program
-  (let a (type int))
-  (let b (type int))
+  (let a (type int) (int 10))
+  (let b (type int) (int 20))
+  (call print
+    (group
+      (binary + (selector a) (selector b))
+    )
+  )
 )

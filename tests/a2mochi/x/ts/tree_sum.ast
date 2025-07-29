@@ -1,8 +1,0 @@
-(program
-  (type Tree)
-  (fun sum_tree
-    (param t (type Tree))
-    (type int)
-  )
-  (let t (type Tree))
-)

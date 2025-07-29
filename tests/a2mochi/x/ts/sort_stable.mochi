@@ -1,6 +1,0 @@
-type Item {
-  n: int
-  v: string
-}
-let items: list<Item>
-let result: list<any>

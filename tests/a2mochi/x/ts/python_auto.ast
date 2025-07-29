@@ -1,1 +1,12 @@
-(program (let math))
+(program
+  (let math (selector Math))
+  (call print
+    (call
+      (selector sqrt (selector math))
+      (float 16)
+    )
+  )
+  (call print
+    (selector PI (selector math))
+  )
+)

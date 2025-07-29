@@ -1,7 +1,0 @@
-type Result {
-  n: int
-  l: string
-}
-let nums: list<int>
-let letters: list<string>
-let pairs: list<Result>

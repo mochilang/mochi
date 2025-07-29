@@ -1,4 +1,0 @@
-(program
-  (let x (type int))
-  (let msg (type string))
-)

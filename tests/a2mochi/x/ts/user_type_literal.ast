@@ -7,5 +7,23 @@
     (field title (type string))
     (field author (type Person))
   )
-  (let book (type Book))
+  (let book
+    (type Book)
+    (map
+      (entry (string title) (string Go))
+      (entry
+        (string author)
+        (map
+          (entry (string name) (string Bob))
+          (entry (string age) (int 42))
+        )
+      )
+    )
+  )
+  (call print
+    (index
+      (index (selector book) (string author))
+      (string name)
+    )
+  )
 )

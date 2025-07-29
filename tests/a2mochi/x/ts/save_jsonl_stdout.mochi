@@ -6,4 +6,12 @@ type People {
   name: string
   age: int
 }
-let people: list<People>
+let people: list<People> = [{name: "Alice", age: 30}, {name: "Bob", age: 25}]
+for _row in people {
+  let _keys = Object.keys(_row).sort()
+  let _tmp: any = {}
+  for k in _keys {
+    _tmp[k] = _row[k]
+  }
+  print(JSON.stringify(_tmp))
+}

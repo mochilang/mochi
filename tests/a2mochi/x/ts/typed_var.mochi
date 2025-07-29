@@ -1,2 +1,2 @@
 let x: int = 0
-print(String(x))
+print(x)

@@ -6,5 +6,28 @@
   )
   (let people
     (type list (type Person))
+    (list
+      (map
+        (entry (string name) (string Alice))
+        (entry (string age) (int 17))
+        (entry (string status) (string minor))
+      )
+      (map
+        (entry (string name) (string Bob))
+        (entry (string age) (int 25))
+        (entry (string status) (string unknown))
+      )
+      (map
+        (entry (string name) (string Charlie))
+        (entry (string age) (int 18))
+        (entry (string status) (string unknown))
+      )
+      (map
+        (entry (string name) (string Diana))
+        (entry (string age) (int 16))
+        (entry (string status) (string minor))
+      )
+    )
   )
+  (call print (string ok))
 )
