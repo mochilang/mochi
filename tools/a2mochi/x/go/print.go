@@ -11,5 +11,8 @@ func Print(node *mast.Node) (string, error) {
 	if node == nil {
 		return "", fmt.Errorf("nil node")
 	}
+	if node.Kind != "program" {
+		return "", fmt.Errorf("unexpected root kind: %s", node.Kind)
+	}
 	return node.Source(), nil
 }

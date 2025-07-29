@@ -154,9 +154,11 @@ func TestTransform_Golden(t *testing.T) {
 		"list_nested_assign":  true,
 		"string_compare":      true,
 		"string_contains":     true,
-		"string_index":        true,
-		"string_prefix_slice": true,
-	}
+                "string_index":        true,
+                "string_prefix_slice": true,
+                "string_in_operator":  true,
+                "substring_builtin":   true,
+        }
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/go")
 	os.MkdirAll(outDir, 0o755)

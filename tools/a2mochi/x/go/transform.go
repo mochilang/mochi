@@ -270,13 +270,12 @@ func transformExpr(e ast.Expr) *mast.Node {
 				if sel, ok := a.X.(*ast.CallExpr); ok {
 					if arr, ok := sel.Fun.(*ast.ArrayType); ok {
 						if elt, ok := arr.Elt.(*ast.Ident); ok && elt.Name == "rune" && len(sel.Args) == 1 {
-							if s, ok := sel.Args[0].(*ast.Ident); ok {
+							src := transformExpr(sel.Args[0])
+							if src != nil {
 								idx := transformExpr(a.Index)
 								one := &mast.Node{Kind: "int", Value: 1}
 								end := &mast.Node{Kind: "binary", Value: "+", Children: []*mast.Node{idx, one}}
-								return &mast.Node{Kind: "call", Value: "substring", Children: []*mast.Node{
-									{Kind: "selector", Value: s.Name}, idx, end,
-								}}
+								return &mast.Node{Kind: "call", Value: "substring", Children: []*mast.Node{src, idx, end}}
 							}
 						}
 					}
@@ -285,12 +284,11 @@ func transformExpr(e ast.Expr) *mast.Node {
 				if sel, ok := a.X.(*ast.CallExpr); ok {
 					if arr, ok := sel.Fun.(*ast.ArrayType); ok {
 						if elt, ok := arr.Elt.(*ast.Ident); ok && elt.Name == "rune" && len(sel.Args) == 1 {
-							if s, ok := sel.Args[0].(*ast.Ident); ok {
+							src := transformExpr(sel.Args[0])
+							if src != nil {
 								start := transformExpr(a.Low)
 								end := transformExpr(a.High)
-								return &mast.Node{Kind: "call", Value: "substring", Children: []*mast.Node{
-									{Kind: "selector", Value: s.Name}, start, end,
-								}}
+								return &mast.Node{Kind: "call", Value: "substring", Children: []*mast.Node{src, start, end}}
 							}
 						}
 					}
