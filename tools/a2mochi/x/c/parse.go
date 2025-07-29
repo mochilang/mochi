@@ -24,7 +24,10 @@ type Assign struct {
 	Name string
 	Expr string
 }
-type PrintStmt struct{ Expr string }
+type PrintStmt struct {
+	Expr    string
+	Newline bool
+}
 type While struct {
 	Cond string
 	Body []Stmt
@@ -40,11 +43,13 @@ type If struct {
 	Then []Stmt
 	Else []Stmt
 }
+type Break struct{}
+type Continue struct{}
 
 var (
-	reVar    = regexp.MustCompile(`^(?:int|long\s+long)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^;]+);`)
+	reVar    = regexp.MustCompile(`^(?:int|long\s+long)\s+([a-zA-Z_][a-zA-Z0-9_]*)(?:\[\])?\s*=\s*([^;]+);`)
 	reAssign = regexp.MustCompile(`^([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^;]+);`)
-	reFor    = regexp.MustCompile(`^for\s*\(int\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^;]+);\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*<\s*([^;]+);.*\)\s*{`)
+	reFor    = regexp.MustCompile(`^for\s*\((?:int|size_t)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^;]+);\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*<\s*([^;]+);.*\)\s*{`)
 	reWhile  = regexp.MustCompile(`^while\s*\(([^\)]+)\)\s*{`)
 	reIf     = regexp.MustCompile(`^if\s*\(([^\)]+)\)\s*{`)
 	rePrintf = regexp.MustCompile(`printf\s*\((.*)\);`)
@@ -140,19 +145,32 @@ func parseBlock(lines []string, idx *int) []Stmt {
 			out = append(out, If{Cond: m[1], Then: thenBody, Else: elseBody})
 			continue
 		}
+		if ln == "break;" {
+			out = append(out, Break{})
+			(*idx)++
+			continue
+		}
+		if ln == "continue;" {
+			out = append(out, Continue{})
+			(*idx)++
+			continue
+		}
 		if m := rePuts.FindStringSubmatch(ln); m != nil {
-			out = append(out, PrintStmt{Expr: strconv.Quote(m[1])})
+			out = append(out, PrintStmt{Expr: strconv.Quote(m[1]), Newline: true})
 			(*idx)++
 			continue
 		}
 		if m := rePrintf.FindStringSubmatch(ln); m != nil {
 			args := strings.Split(m[1], ",")
-			if len(args) > 1 {
-				arg := strings.TrimSpace(args[len(args)-1])
-				out = append(out, PrintStmt{Expr: arg})
-			} else {
-				out = append(out, PrintStmt{Expr: args[0]})
+			newline := false
+			if len(args) > 0 {
+				fmt := strings.TrimSpace(args[0])
+				if strings.HasSuffix(fmt, `\n"`) {
+					newline = true
+				}
 			}
+			arg := strings.TrimSpace(args[len(args)-1])
+			out = append(out, PrintStmt{Expr: arg, Newline: newline})
 			(*idx)++
 			continue
 		}
