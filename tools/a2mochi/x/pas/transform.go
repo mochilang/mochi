@@ -106,7 +106,8 @@ var (
 	posRe        = regexp.MustCompile(`Pos\(([^,]+),\s*([^\)]+)\)`)
 	posCmpRe     = regexp.MustCompile(`Pos\(([^,]+),\s*([^\)]+)\)\s*(<>|=)\s*0`)
 	strToIntRe   = regexp.MustCompile(`StrToInt\(([^\)]+)\)`)
-	recordLitRe  = regexp.MustCompile(`\(([^()]+:[^()]+)\)`)
+	recordLitRe  = regexp.MustCompile(`([=,\[]\s*)\(([^()]*:[^()]*?)\)`)
+	ifThenRe     = regexp.MustCompile(`IfThen\(([^,]+),\s*([^,]+),\s*([^\)]+)\)`)
 	formatSpecRe = regexp.MustCompile(`:[0-9]+(?::[0-9]+)?`)
 )
 
@@ -152,6 +153,16 @@ func convertBuiltins(s string) string {
 		str := strings.TrimSpace(parts[2])
 		return fmt.Sprintf("%s.contains(%s)", str, sub)
 	})
+	s = ifThenRe.ReplaceAllStringFunc(s, func(m string) string {
+		parts := ifThenRe.FindStringSubmatch(m)
+		if len(parts) < 4 {
+			return m
+		}
+		cond := strings.TrimSpace(parts[1])
+		yes := strings.TrimSpace(parts[2])
+		no := strings.TrimSpace(parts[3])
+		return fmt.Sprintf("if %s { %s } else { %s }", cond, yes, no)
+	})
 	return s
 }
 
@@ -170,9 +181,11 @@ func convertRecordLit(s string) string {
 			break
 		}
 		s = recordLitRe.ReplaceAllStringFunc(s, func(m string) string {
-			inner := strings.TrimSpace(recordLitRe.FindStringSubmatch(m)[1])
+			parts := recordLitRe.FindStringSubmatch(m)
+			prefix := parts[1]
+			inner := strings.TrimSpace(parts[2])
 			inner = strings.ReplaceAll(inner, ";", ",")
-			return "{" + inner + "}"
+			return prefix + "{" + inner + "}"
 		})
 	}
 	return s
@@ -445,9 +458,7 @@ func convertFallback(src string) ([]byte, error) {
 									stringVars[name] = true
 								}
 							}
-							if typ != "" {
-								line += " = " + zeroValue(typ)
-							}
+							// leave uninitialised to match VM behaviour
 							appendLine(line)
 						}
 					}
@@ -472,9 +483,7 @@ func convertFallback(src string) ([]byte, error) {
 								stringVars[nm] = true
 							}
 						}
-						if typ != "" {
-							line += " = " + zeroValue(typ)
-						}
+						// leave uninitialised to match VM behaviour
 						appendLine(line)
 					}
 				}

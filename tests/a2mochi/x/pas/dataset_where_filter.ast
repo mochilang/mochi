@@ -1,0 +1,92 @@
+(program
+  (type Anon7
+    (field name (type string))
+    (field age (type int))
+  )
+  (type Anon8
+    (field name (type string))
+    (field age (type int))
+    (field is_senior (type bool))
+  )
+  (var people
+    (type list (type anon7))
+  )
+  (var adults
+    (type list (type anon8))
+  )
+  (var person (type Anon7))
+  (assign people
+    (list
+      (map
+        (entry (selector name) (string Alice))
+        (entry (selector age) (int 30))
+      )
+      (map
+        (entry (selector name) (string Bob))
+        (entry (selector age) (int 15))
+      )
+      (map
+        (entry (selector name) (string Charlie))
+        (entry (selector age) (int 65))
+      )
+      (map
+        (entry (selector name) (string Diana))
+        (entry (selector age) (int 45))
+      )
+    )
+  )
+  (assign adults (list))
+  (for person
+    (in (selector people))
+    (block
+      (if
+        (binary >=
+          (selector age (selector person))
+          (int 18)
+        )
+        (block
+          (assign adults
+            (call concat
+              (selector adults)
+              (list
+                (map
+                  (entry
+                    (selector name)
+                    (selector name (selector person))
+                  )
+                  (entry
+                    (selector age)
+                    (selector age (selector person))
+                  )
+                  (entry
+                    (selector is_senior)
+                    (binary >=
+                      (selector age (selector person))
+                      (int 60)
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (call print (string "--- Adults ---"))
+  (for person
+    (in (selector adults))
+    (block
+      (call print
+        (selector name (selector person))
+        (string is)
+        (selector age (selector person))
+        (if_expr
+          (selector is_senior (selector person))
+          (string " (senior)")
+          (string "")
+        )
+      )
+    )
+  )
+)
