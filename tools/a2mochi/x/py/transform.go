@@ -320,6 +320,25 @@ func Print(n *Node) (string, error) {
 			_ = i
 		}
 	}
+	hasStringsImport := false
+	for _, line := range final {
+		if strings.HasPrefix(line, "import go \"strings\" as strings") {
+			hasStringsImport = true
+			break
+		}
+	}
+	if !hasStringsImport {
+		uses := false
+		for _, line := range final {
+			if strings.Contains(line, "strings.ToUpper(") || strings.Contains(line, "strings.TrimSpace(") {
+				uses = true
+				break
+			}
+		}
+		if uses {
+			final = append([]string{"import go \"strings\" as strings auto"}, final...)
+		}
+	}
 	var out strings.Builder
 	out.WriteString(metaHeader())
 	out.WriteString(blockComment(strings.Join(n.Lines, "\n")))
@@ -931,6 +950,24 @@ func emitExpr(b *strings.Builder, n *Node, lines []string, structs map[string][]
 			}
 			b.WriteString(")")
 			return nil
+		}
+		if fn != nil && fn.Type == "Attribute" && len(n.callArgs()) == 0 {
+			switch fn.Attr {
+			case "strip":
+				b.WriteString("strings.TrimSpace(")
+				if err := emitExpr(b, fn.valueNode(), lines, structs); err != nil {
+					return err
+				}
+				b.WriteByte(')')
+				return nil
+			case "upper":
+				b.WriteString("strings.ToUpper(")
+				if err := emitExpr(b, fn.valueNode(), lines, structs); err != nil {
+					return err
+				}
+				b.WriteByte(')')
+				return nil
+			}
 		}
 		if fn != nil && fn.Type == "Attribute" && fn.Attr == "dumps" {
 			if v := fn.valueNode(); v != nil && v.Type == "Name" && v.ID == "json" {
