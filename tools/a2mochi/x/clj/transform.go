@@ -197,6 +197,37 @@ func sexprToNode(x any) *ast.Node {
 				call.Children = append(call.Children, sexprToNode(v[2]))
 				return call
 			}
+		case "get", "nth":
+			if len(v) == 3 {
+				return newNode("index", sexprToNode(v[1]), sexprToNode(v[2]))
+			}
+		case "assoc":
+			if len(v) == 4 {
+				idx := newNode("index", sexprToNode(v[1]), sexprToNode(v[2]))
+				return newNode("assign", nil, idx, sexprToNode(v[3]))
+			}
+		case "subvec":
+			if len(v) == 4 {
+				start := newNode("start", sexprToNode(v[2]))
+				end := newNode("end", sexprToNode(v[3]))
+				return newNode("index", sexprToNode(v[1]), start, end)
+			}
+		case "subs":
+			if len(v) == 4 {
+				return newNode("call", "substring", sexprToNode(v[1]), sexprToNode(v[2]), sexprToNode(v[3]))
+			}
+		case "contains?":
+			if len(v) == 3 {
+				return newNode("binary", "in", sexprToNode(v[2]), sexprToNode(v[1]))
+			}
+		case "str":
+			call := newNode("call", "str")
+			for _, a := range v[1:] {
+				if n := sexprToNode(a); n != nil {
+					call.Children = append(call.Children, n)
+				}
+			}
+			return call
 		case "reduce":
 			if len(v) == 4 {
 				if op, ok := v[1].(string); ok && op == "+" {

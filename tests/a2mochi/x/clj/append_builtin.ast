@@ -1,0 +1,13 @@
+(program
+  (let a
+    (list (int 1) (int 2))
+  )
+  (fun main
+    (block
+      (call print
+        (call append (selector a) (int 3))
+      )
+    )
+  )
+  (call main)
+)

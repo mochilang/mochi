@@ -46,7 +46,7 @@
                  :end-line (:end-line m) :end-col (:end-column m)}))
       {:type "expr" :body [(node expr)]
        :line (:line m) :col (:column m)
-       :end-line (:end-line m) :end-col (:end-column m)}))
+       :end-line (:end-line m) :end-col (:end-column m)})))
 
 (defn parse-file [f]
   (with-open [r (rt/indexing-push-back-reader (java.io.FileReader. f))]
@@ -56,7 +56,7 @@
                                :track-position? true} r)]
           (if (nil? form)
             {:forms forms}
-            (recur (conj forms (build-form form))))))))
+            (recur (conj forms (build-form form)))))))))
 
 (defn -main [& [file]]
   (-> (parse-file file)
