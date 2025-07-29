@@ -15,7 +15,15 @@
     (index
       (group
         (cast
-          (index (selector book) (string author))
+          (index
+            (group
+              (cast
+                (selector book)
+                (type map (type string) (type any))
+              )
+            )
+            (string author)
+          )
           (type map (type string) (type any))
         )
       )

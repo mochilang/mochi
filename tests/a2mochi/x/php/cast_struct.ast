@@ -5,6 +5,14 @@
     )
   )
   (call print
-    (index (selector todo) (string title))
+    (index
+      (group
+        (cast
+          (selector todo)
+          (type map (type string) (type any))
+        )
+      )
+      (string title)
+    )
   )
 )

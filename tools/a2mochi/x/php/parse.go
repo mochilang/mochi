@@ -745,6 +745,12 @@ func simpleExpr(n pnode.Node) (string, bool) {
 		if !ok2 {
 			return "", false
 		}
+		if _, ok := v.Left.(*expr.ArrayDimFetch); ok {
+			left = fmt.Sprintf("(%s as int)", left)
+		}
+		if _, ok := v.Right.(*expr.ArrayDimFetch); ok {
+			right = fmt.Sprintf("(%s as int)", right)
+		}
 		if strings.HasPrefix(right, "-") {
 			right = "(" + right + ")"
 		}
@@ -800,6 +806,10 @@ func simpleExpr(n pnode.Node) (string, bool) {
 		}
 		if _, nested := v.Variable.(*expr.ArrayDimFetch); nested {
 			if _, ok := v.Dim.(*scalar.Lnumber); !ok {
+				base = fmt.Sprintf("(%s as map<string, any>)", base)
+			}
+		} else if _, ok := v.Variable.(*expr.Variable); ok {
+			if _, isNum := v.Dim.(*scalar.Lnumber); !isNum {
 				base = fmt.Sprintf("(%s as map<string, any>)", base)
 			}
 		}
@@ -1012,6 +1022,11 @@ func parseStatement(n pnode.Node, p *Program) []*ast.Node {
 	case *stmt.Return:
 		if s.Expr == nil {
 			return []*ast.Node{{Kind: "return"}}
+		}
+		// allow returning closures directly
+		if cl, ok := s.Expr.(*expr.Closure); ok {
+			node := closureNode(cl, p)
+			return []*ast.Node{{Kind: "return", Children: []*ast.Node{node}}}
 		}
 		val, ok := simpleExpr(s.Expr)
 		if !ok {
