@@ -1,6 +1,6 @@
 # a2mochi Go Converter
 
-Completed programs: 43/104
+Completed programs: 48/104
 Date: 2025-07-29 04:00:29 GMT
 
 This directory holds golden outputs for the Go to Mochi converter.
@@ -48,3 +48,8 @@ Each `.go` source in `tests/transpiler/x/go` has a matching `.mochi` and `.ast` 
 - [x] fun_three_args
 - [x] nested_function
 - [x] partial_application
+- [x] if_then_else
+- [x] if_then_else_nested
+- [x] match_expr
+- [x] match_full
+- [x] cast_string_to_int

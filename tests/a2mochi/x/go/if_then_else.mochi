@@ -1,0 +1,3 @@
+var x = 12
+var msg = if (x > 10) then "yes" else "no"
+print(msg)

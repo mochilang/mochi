@@ -168,6 +168,11 @@ func TestTransform_Golden(t *testing.T) {
 		"fun_three_args":      true,
 		"nested_function":     true,
 		"partial_application": true,
+		"if_then_else":        true,
+		"if_then_else_nested": true,
+		"match_expr":          true,
+		"match_full":          true,
+		"cast_string_to_int":  true,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/go")
