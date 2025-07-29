@@ -221,6 +221,23 @@ func parseExprStmtRec(p *Program, st *stmt.Expression, record bool) *ast.Node {
 	case *assign.Assign:
 		switch v := e.Variable.(type) {
 		case *expr.Variable:
+			// handle closures assigned to variables
+			if cl, ok := e.Expression.(*expr.Closure); ok {
+				pos := e.GetPosition()
+				node := closureNode(cl, p)
+				var buf strings.Builder
+				_ = ast.Fprint(&buf, node)
+				if record {
+					p.Vars = append(p.Vars, Var{
+						Name:      identString(v.VarName),
+						Value:     buf.String(),
+						StartLine: pos.StartLine,
+						EndLine:   pos.EndLine,
+					})
+				}
+				return &ast.Node{Kind: "let", Value: identString(v.VarName), Children: []*ast.Node{node}}
+			}
+
 			val, ok := simpleExpr(e.Expression)
 			if !ok {
 				return nil
@@ -424,6 +441,17 @@ func simpleExpr(n pnode.Node) (string, bool) {
 		case "array_sum":
 			name = "sum"
 		case "count":
+			if len(v.ArgumentList.Arguments) == 1 {
+				if a0, ok := v.ArgumentList.Arguments[0].(*pnode.Argument); ok {
+					if mergeCall, ok := a0.Expr.(*expr.FunctionCall); ok && nameString(mergeCall.Function) == "array_merge" && mergeCall.ArgumentList != nil && len(mergeCall.ArgumentList.Arguments) == 2 {
+						left, lok := simpleExpr(mergeCall.ArgumentList.Arguments[0].(*pnode.Argument).Expr)
+						right, rok := simpleExpr(mergeCall.ArgumentList.Arguments[1].(*pnode.Argument).Expr)
+						if lok && rok {
+							return fmt.Sprintf("len(%s union all %s)", left, right), true
+						}
+					}
+				}
+			}
 			name = "len"
 		case "strlen":
 			name = "len"
@@ -450,6 +478,47 @@ func simpleExpr(n pnode.Node) (string, bool) {
 				return fmt.Sprintf("%s[%s:%s]", args[0], args[1], end), true
 			}
 		case "array_values":
+			if len(v.ArgumentList.Arguments) == 1 {
+				if arg0, ok := v.ArgumentList.Arguments[0].(*pnode.Argument); ok {
+					if innerCall, ok := arg0.Expr.(*expr.FunctionCall); ok {
+						innerName := nameString(innerCall.Function)
+						switch innerName {
+						case "array_diff":
+							if len(innerCall.ArgumentList.Arguments) == 2 {
+								left := innerCall.ArgumentList.Arguments[0].(*pnode.Argument)
+								right := innerCall.ArgumentList.Arguments[1].(*pnode.Argument)
+								l, ok1 := simpleExpr(left.Expr)
+								r, ok2 := simpleExpr(right.Expr)
+								if ok1 && ok2 {
+									return fmt.Sprintf("(%s except %s)", l, r), true
+								}
+							}
+						case "array_intersect":
+							if len(innerCall.ArgumentList.Arguments) == 2 {
+								left := innerCall.ArgumentList.Arguments[0].(*pnode.Argument)
+								right := innerCall.ArgumentList.Arguments[1].(*pnode.Argument)
+								l, ok1 := simpleExpr(left.Expr)
+								r, ok2 := simpleExpr(right.Expr)
+								if ok1 && ok2 {
+									return fmt.Sprintf("(%s intersect %s)", l, r), true
+								}
+							}
+						case "array_unique":
+							if len(innerCall.ArgumentList.Arguments) >= 1 {
+								if a0, ok := innerCall.ArgumentList.Arguments[0].(*pnode.Argument); ok {
+									if mergeCall, ok := a0.Expr.(*expr.FunctionCall); ok && nameString(mergeCall.Function) == "array_merge" && mergeCall.ArgumentList != nil && len(mergeCall.ArgumentList.Arguments) == 2 {
+										leftArg, lok := simpleExpr(mergeCall.ArgumentList.Arguments[0].(*pnode.Argument).Expr)
+										rightArg, rok := simpleExpr(mergeCall.ArgumentList.Arguments[1].(*pnode.Argument).Expr)
+										if lok && rok {
+											return fmt.Sprintf("(%s union %s)", leftArg, rightArg), true
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 			name = "values"
 		case "min":
 			if len(args) == 1 {
@@ -470,6 +539,38 @@ func simpleExpr(n pnode.Node) (string, bool) {
 		case "array_key_exists":
 			if len(args) == 2 {
 				return fmt.Sprintf("(%s in %s)", args[0], args[1]), true
+			}
+		case "array_unique":
+			if len(v.ArgumentList.Arguments) >= 1 {
+				if a0, ok := v.ArgumentList.Arguments[0].(*pnode.Argument); ok {
+					if mergeCall, ok := a0.Expr.(*expr.FunctionCall); ok && nameString(mergeCall.Function) == "array_merge" && mergeCall.ArgumentList != nil && len(mergeCall.ArgumentList.Arguments) == 2 {
+						leftArg, lok := simpleExpr(mergeCall.ArgumentList.Arguments[0].(*pnode.Argument).Expr)
+						rightArg, rok := simpleExpr(mergeCall.ArgumentList.Arguments[1].(*pnode.Argument).Expr)
+						if lok && rok {
+							return fmt.Sprintf("(%s union %s)", leftArg, rightArg), true
+						}
+					}
+				}
+			}
+		case "array_diff":
+			if len(v.ArgumentList.Arguments) == 2 {
+				a0 := v.ArgumentList.Arguments[0].(*pnode.Argument)
+				a1 := v.ArgumentList.Arguments[1].(*pnode.Argument)
+				left, lok := simpleExpr(a0.Expr)
+				right, rok := simpleExpr(a1.Expr)
+				if lok && rok {
+					return fmt.Sprintf("(%s except %s)", left, right), true
+				}
+			}
+		case "array_intersect":
+			if len(v.ArgumentList.Arguments) == 2 {
+				a0 := v.ArgumentList.Arguments[0].(*pnode.Argument)
+				a1 := v.ArgumentList.Arguments[1].(*pnode.Argument)
+				left, lok := simpleExpr(a0.Expr)
+				right, rok := simpleExpr(a1.Expr)
+				if lok && rok {
+					return fmt.Sprintf("(%s intersect %s)", left, right), true
+				}
 			}
 		}
 		return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), true
@@ -767,6 +868,38 @@ func baseVarName(n pnode.Node) string {
 		return identString(v.VarName)
 	}
 	return ""
+}
+
+func closureNode(c *expr.Closure, p *Program) *ast.Node {
+	fn := &ast.Node{Kind: "funexpr"}
+	for _, pr := range c.Params {
+		if param, ok := pr.(*pnode.Parameter); ok {
+			name := ""
+			if v, ok := param.Variable.(*expr.Variable); ok {
+				name = identString(v.VarName)
+			}
+			pn := &ast.Node{Kind: "param", Value: name}
+			pn.Children = append(pn.Children, typeNode("int"))
+			fn.Children = append(fn.Children, pn)
+		}
+	}
+	fn.Children = append(fn.Children, typeNode("int"))
+	if len(c.Stmts) == 1 {
+		if r, ok := c.Stmts[0].(*stmt.Return); ok && r.Expr != nil {
+			if val, ok := simpleExpr(r.Expr); ok {
+				if n, err := parseExpr(val); err == nil {
+					fn.Children = append(fn.Children, n)
+					return fn
+				}
+			}
+		}
+	}
+	// convert body statements
+	var stmtList stmt.StmtList
+	stmtList.Stmts = c.Stmts
+	block := &ast.Node{Kind: "block", Children: parseStmtList(&stmtList, p)}
+	fn.Children = append(fn.Children, block)
+	return fn
 }
 
 func paramInfo(p *pnode.Parameter) Param {

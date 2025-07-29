@@ -26,9 +26,18 @@ func UpdateReadmeForTests() {
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".php")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
-			mark = "[x]"
-			done++
+		outPath := filepath.Join(outDir, name+".out")
+		vmPath := filepath.Join(root, "tests", "vm", "valid", name+".out")
+		if _, err := os.Stat(vmPath); err != nil {
+			vmPath = filepath.Join(root, "tests", "vm_extended", "valid", name+".out")
+		}
+		outData, err1 := os.ReadFile(outPath)
+		wantData, err2 := os.ReadFile(vmPath)
+		if err1 == nil && err2 == nil {
+			if bytes.Equal(bytes.TrimSpace(outData), bytes.TrimSpace(wantData)) {
+				mark = "[x]"
+				done++
+			}
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}

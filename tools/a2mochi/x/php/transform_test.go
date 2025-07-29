@@ -5,6 +5,7 @@ package php_test
 import (
 	"bytes"
 	"flag"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -39,48 +40,45 @@ func repoRoot(t *testing.T) string {
 	return ""
 }
 
-func runMochi(t *testing.T, src string) []byte {
-	t.Helper()
+func runMochi(src string) ([]byte, error) {
 	prog, err := parser.ParseString(src)
 	if err != nil {
-		t.Fatal(err)
+		return nil, err
 	}
 	env := types.NewEnv(nil)
 	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatal(errs[0])
+		return nil, errs[0]
 	}
 	p, err := vm.Compile(prog, env)
 	if err != nil {
-		t.Fatal(err)
+		return nil, err
 	}
 	var out bytes.Buffer
 	m := vm.New(p, &out)
 	if err := m.Run(); err != nil {
-		t.Fatal(err)
+		return nil, err
 	}
-	return bytes.TrimSpace(out.Bytes())
+	return bytes.TrimSpace(out.Bytes()), nil
 }
 
-func parseProgram(t *testing.T, path string) *php.Program {
-	t.Helper()
+func parseProgram(path string) (*php.Program, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		t.Fatalf("read %s: %v", path, err)
+		return nil, fmt.Errorf("read %s: %w", path, err)
 	}
 	prog, err := php.Parse(string(data))
 	if err != nil {
-		t.Fatalf("parse %s: %v", path, err)
+		return nil, fmt.Errorf("parse %s: %w", path, err)
 	}
-	return prog
+	return prog, nil
 }
 
-func transformProg(t *testing.T, p *php.Program) *ast.Node {
-	t.Helper()
+func transformProg(p *php.Program) (*ast.Node, error) {
 	node, err := php.Transform(p)
 	if err != nil {
-		t.Fatalf("transform: %v", err)
+		return nil, err
 	}
-	return node
+	return node, nil
 }
 
 func TestTransform_Golden(t *testing.T) {
@@ -146,6 +144,7 @@ func TestTransform_Golden(t *testing.T) {
 		"for_map_collection":  true,
 		"fun_call":            true,
 		"fun_three_args":      true,
+		"fun_expr_in_let":     true,
 	}
 
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "php")
@@ -156,8 +155,26 @@ func TestTransform_Golden(t *testing.T) {
 			continue
 		}
 		t.Run(name, func(t *testing.T) {
-			prog := parseProgram(t, path)
-			node := transformProg(t, prog)
+			if *update {
+				os.Remove(filepath.Join(outDir, name+".error"))
+			}
+
+			prog, err := parseProgram(path)
+			if err != nil {
+				if *update {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0o644)
+				}
+				t.Errorf("%v", err)
+				return
+			}
+			node, err := transformProg(prog)
+			if err != nil {
+				if *update {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0o644)
+				}
+				t.Errorf("transform: %v", err)
+				return
+			}
 			astPath := filepath.Join(outDir, name+".ast")
 			if *update {
 				os.WriteFile(astPath, []byte(node.String()), 0o644)
@@ -174,12 +191,22 @@ func TestTransform_Golden(t *testing.T) {
 			if strings.TrimSpace(string(want)) != strings.TrimSpace(got) {
 				t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", got, want)
 			}
-			var buf bytes.Buffer
-			if err := ast.Fprint(&buf, node); err != nil {
-				t.Fatalf("print: %v", err)
+			code, err := php.Print(node)
+			if err != nil {
+				if *update {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0o644)
+				}
+				t.Errorf("print: %v", err)
+				return
 			}
-			code := buf.String()
-			gotOut := runMochi(t, code)
+			gotOut, err := runMochi(code)
+			if err != nil {
+				if *update {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0o644)
+				}
+				t.Errorf("run: %v", err)
+				return
+			}
 			if *update {
 				os.WriteFile(filepath.Join(outDir, name+".out"), gotOut, 0o644)
 			}
@@ -190,13 +217,26 @@ func TestTransform_Golden(t *testing.T) {
 					t.Fatalf("missing vm source: %v", err)
 				}
 			}
-			wantOut := runMochi(t, string(vmSrc))
+			wantOut, err := runMochi(string(vmSrc))
+			if err != nil {
+				t.Fatalf("run vm: %v", err)
+			}
 			if !bytes.Equal(gotOut, wantOut) {
 				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
 			}
 		})
 	}
 	if *update {
-		php.UpdateReadmeForTests()
+		updateReadme()
 	}
+}
+
+func updateReadme() {
+	php.UpdateReadmeForTests()
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	os.Exit(code)
 }
