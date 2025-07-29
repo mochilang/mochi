@@ -64,7 +64,7 @@ func runMochi(src string) ([]byte, error) {
 	return bytes.TrimSpace(out.Bytes()), nil
 }
 
-func TestConvert_Golden(t *testing.T) {
+func TestTransform_Golden(t *testing.T) {
 	if _, err := exec.LookPath("python3"); err != nil {
 		t.Skip("python3 not installed")
 	}
@@ -157,9 +157,9 @@ func TestConvert_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("parse: %v", err)
 			}
-			node, err := py.Convert(n)
+			node, err := py.Transform(n)
 			if err != nil {
-				t.Fatalf("convert: %v", err)
+				t.Fatalf("transform: %v", err)
 			}
 			var buf bytes.Buffer
 			if err := ast.Fprint(&buf, node); err != nil {
@@ -167,9 +167,9 @@ func TestConvert_Golden(t *testing.T) {
 			}
 			t.Log(buf.String())
 
-			code, err := py.ConvertSource(n)
+			code, err := py.Print(n)
 			if err != nil {
-				t.Fatalf("convert source: %v", err)
+				t.Fatalf("print source: %v", err)
 			}
 			mochiPath := filepath.Join(outDir, name+".mochi")
 			if *update {
