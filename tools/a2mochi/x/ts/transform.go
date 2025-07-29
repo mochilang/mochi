@@ -269,7 +269,7 @@ func replaceObjectValues(s string) string {
 }
 
 func replaceConsoleLogs(body string) string {
-	prefix := "console.log(String("
+	prefix := "console.log("
 	for {
 		idx := strings.Index(body, prefix)
 		if idx == -1 {
@@ -279,26 +279,49 @@ func replaceConsoleLogs(body string) string {
 		if end == len(body) {
 			break
 		}
-		expr := body[idx+len(prefix) : end]
+		expr := body[idx : end+1]
 		tail := end + 1
+		if strings.HasPrefix(body[tail:], ".trim()") {
+			expr += ".trim()"
+			tail += len(".trim()")
+		}
 		if strings.HasPrefix(body[tail:], ");") {
 			tail += 2
 		}
 		if tail < len(body) && body[tail] == ';' {
 			tail++
 		}
-		body = body[:idx] + "print(" + expr + ")" + body[tail:]
+		body = body[:idx] + convertConsole(expr) + body[tail:]
 	}
 	return body
 }
 
+func convertConsole(expr string) string {
+	if !strings.HasPrefix(expr, "console.log(") {
+		return expr
+	}
+	inner := strings.TrimSuffix(strings.TrimPrefix(expr, "console.log("), ")")
+	postfix := ""
+	if strings.HasSuffix(inner, ".trim()") {
+		inner = strings.TrimSuffix(inner, ".trim()")
+		postfix = ".trim()"
+	}
+	inner = strings.TrimSpace(inner)
+	if strings.HasPrefix(inner, "(") && strings.HasSuffix(inner, ")") {
+		inner = strings.TrimSuffix(strings.TrimPrefix(inner, "("), ")")
+	}
+	if strings.HasPrefix(inner, "String(") && strings.HasSuffix(inner, ")") {
+		inner = inner[len("String(") : len(inner)-1]
+	}
+	if postfix != "" {
+		return "print((" + inner + ")" + postfix + ")"
+	}
+	return "print(" + inner + ")"
+}
+
 func convertExpr(expr string) string {
 	if strings.HasPrefix(expr, "console.log(") {
-		inner := strings.TrimSuffix(strings.TrimPrefix(expr, "console.log("), ")")
-		if strings.HasPrefix(inner, "String(") && strings.HasSuffix(inner, ")") {
-			inner = inner[len("String(") : len(inner)-1]
-		}
-		return "print(" + inner + ")"
+		return convertConsole(expr)
 	}
 	if assignIdx := strings.Index(expr, "="); assignIdx > 0 {
 		lhs := strings.TrimSpace(expr[:assignIdx])
