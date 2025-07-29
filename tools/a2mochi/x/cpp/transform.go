@@ -137,6 +137,7 @@ func transformBody(body string) ([]*ast.Node, error) {
 			}
 			out = append(out, stmt)
 		case strings.Contains(l, "std::cout") || strings.HasPrefix(l, "cout <<"):
+			_ = strings.Contains(l, "std::boolalpha") || strings.Contains(l, "boolalpha <<")
 			l = strings.TrimPrefix(l, "std::cout <<")
 			l = strings.TrimPrefix(l, "cout <<")
 			l = strings.TrimSpace(l)
@@ -145,8 +146,18 @@ func transformBody(body string) ([]*ast.Node, error) {
 			l = strings.TrimSuffix(l, "<< std::endl")
 			l = strings.TrimSuffix(l, "<< endl")
 			l = strings.TrimSpace(l)
-			// built-in conversions handled in convertExpression
-			l = convertExpression(l)
+
+			parts := strings.Split(l, "<<")
+			for i := range parts {
+				p := strings.TrimSpace(parts[i])
+				if p == "' '" {
+					p = "\" \""
+				}
+				p = convertExpression(p)
+				parts[i] = strings.TrimSpace(p)
+			}
+			l = strings.Join(parts, " + ")
+
 			negRe := regexp.MustCompile(`([+\-*/])\s*-([A-Za-z0-9_]+)`)
 			l = negRe.ReplaceAllString(l, `$1 (-$2)`)
 			stmt, err := parseSingle("print(" + l + ")")
@@ -296,6 +307,7 @@ func convertExpression(s string) string {
 	}
 	return s
 }
+
 func parseSingle(src string) (*ast.Node, error) {
 
 	prog, err := parser.ParseString(src)
