@@ -22,6 +22,11 @@ type Form struct {
 	Col   int `json:"col"`
 }
 
+// Program represents a parsed Racket source file.
+type Program struct {
+	Forms []Form
+}
+
 // ParseForms parses Racket source using the embedded parse.rkt script.
 func ParseForms(src string) ([]Form, error) {
 	if _, err := exec.LookPath("racket"); err != nil {
@@ -54,4 +59,13 @@ func ParseForms(src string) ([]Form, error) {
 		return nil, err
 	}
 	return forms, nil
+}
+
+// Parse parses Racket source code into a Program using the official parser.
+func Parse(src string) (*Program, error) {
+	forms, err := ParseForms(src)
+	if err != nil {
+		return nil, err
+	}
+	return &Program{Forms: forms}, nil
 }
