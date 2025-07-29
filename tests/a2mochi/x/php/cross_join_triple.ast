@@ -5,7 +5,7 @@
   (let letters
     (list (string A) (string B))
   )
-  (let combos (list))
+  (var combos (list))
   (for n
     (in (selector nums))
     (block
@@ -14,7 +14,19 @@
         (block
           (for b
             (in (selector bools))
-            (block)
+            (block
+              (assign
+                (selector combos)
+                (call append
+                  (selector combos)
+                  (map
+                    (entry (string n) (selector n))
+                    (entry (string l) (selector l))
+                    (entry (string b) (selector b))
+                  )
+                )
+              )
+            )
           )
         )
       )

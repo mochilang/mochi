@@ -1,1 +1,5 @@
 --- Left Join Multi ---
+100 Alice {"orderId": 100, "sku": "a"}
+100 Alice {"orderId": 100, "sku": "a"}
+101 Bob {"orderId": 100, "sku": "a"}
+101 Bob {"orderId": 100, "sku": "a"}

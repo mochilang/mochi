@@ -113,7 +113,7 @@ func parseExpr(expr string) (*ast.Node, error) {
 	expr = strings.TrimSpace(expr)
 	prog, err := parser.ParseString("let _ = " + expr)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("parse expression %q: %w", expr, err)
 	}
 	if len(prog.Statements) == 0 || prog.Statements[0].Let == nil {
 		return nil, fmt.Errorf("invalid expression")

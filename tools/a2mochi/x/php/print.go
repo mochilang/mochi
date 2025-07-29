@@ -18,7 +18,11 @@ func Print(node *ast.Node) (string, error) {
 		return "", err
 	}
 	out := strings.ReplaceAll(b.String(), "union_all", "union all")
-	return strings.TrimSpace(out), nil
+	out = strings.TrimSpace(out)
+	if !strings.HasSuffix(out, "\n") {
+		out += "\n"
+	}
+	return out, nil
 }
 
 // ConvertFile reads a PHP file and converts it to Mochi code with a header.

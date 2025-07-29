@@ -1,5 +1,5 @@
 (program
-  (let people
+  (var people
     (list
       (map
         (entry (string name) (string Alice))

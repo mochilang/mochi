@@ -35,7 +35,7 @@
       )
     )
   )
-  (let result (list))
+  (var result (list))
   (for o
     (in (selector orders))
     (block
@@ -92,7 +92,40 @@
                     )
                   )
                 )
-                (block)
+                (block
+                  (assign
+                    (selector result)
+                    (call append
+                      (selector result)
+                      (map
+                        (entry
+                          (string name)
+                          (index
+                            (group
+                              (cast
+                                (selector c)
+                                (type map (type string) (type any))
+                              )
+                            )
+                            (string name)
+                          )
+                        )
+                        (entry
+                          (string sku)
+                          (index
+                            (group
+                              (cast
+                                (selector i)
+                                (type map (type string) (type any))
+                              )
+                            )
+                            (string sku)
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
               )
             )
           )

@@ -5,7 +5,7 @@
   (let letters
     (list (string A) (string B))
   )
-  (let pairs (list))
+  (var pairs (list))
   (for n
     (in (selector nums))
     (block
@@ -19,7 +19,18 @@
               )
               (int 0)
             )
-            (block)
+            (block
+              (assign
+                (selector pairs)
+                (call append
+                  (selector pairs)
+                  (map
+                    (entry (string n) (selector n))
+                    (entry (string l) (selector l))
+                  )
+                )
+              )
+            )
           )
         )
       )
