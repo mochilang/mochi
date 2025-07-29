@@ -27,23 +27,25 @@ type Field struct {
 
 // Node is a single top-level statement from the TypeScript AST.
 type Node struct {
-	Kind     string   `json:"kind"`
-	Name     string   `json:"name"`
-	Node     string   `json:"node,omitempty"`
-	Params   []Param  `json:"params,omitempty"`
-	Ret      string   `json:"ret,omitempty"`
-	Body     string   `json:"body,omitempty"`
-	Value    string   `json:"value,omitempty"`
-	Fields   []Field  `json:"fields,omitempty"`
-	Alias    string   `json:"alias,omitempty"`
-	Variants []string `json:"variants,omitempty"`
-	Expr     string   `json:"expr,omitempty"`
-	Iter     string   `json:"iter,omitempty"`
-	List     string   `json:"list,omitempty"`
-	StartVal string   `json:"startVal,omitempty"`
-	EndVal   string   `json:"endVal,omitempty"`
-	Cond     string   `json:"cond,omitempty"`
-	Else     string   `json:"else,omitempty"`
+	Kind      string   `json:"kind"`
+	Name      string   `json:"name"`
+	Node      string   `json:"node,omitempty"`
+	Params    []Param  `json:"params,omitempty"`
+	Ret       string   `json:"ret,omitempty"`
+	Body      string   `json:"body,omitempty"`
+	Value     string   `json:"value,omitempty"`
+	Fields    []Field  `json:"fields,omitempty"`
+	Alias     string   `json:"alias,omitempty"`
+	Variants  []string `json:"variants,omitempty"`
+	Expr      string   `json:"expr,omitempty"`
+	Iter      string   `json:"iter,omitempty"`
+	List      string   `json:"list,omitempty"`
+	StartVal  string   `json:"startVal,omitempty"`
+	EndVal    string   `json:"endVal,omitempty"`
+	Cond      string   `json:"cond,omitempty"`
+	Else      string   `json:"else,omitempty"`
+	BodyNodes []Node   `json:"bodyNodes,omitempty"`
+	ElseNodes []Node   `json:"elseNodes,omitempty"`
 }
 
 // Program is the result of parsing a TypeScript source file.

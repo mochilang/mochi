@@ -118,7 +118,11 @@ func emitFuncSignature(b *strings.Builder, d Node) {
 		b.WriteString(": ")
 		b.WriteString(toMochiType(d.Ret))
 	}
-	b.WriteString(" {\n}")
+	b.WriteString(" {\n")
+	if len(d.BodyNodes) > 0 {
+		b.WriteString(emitNodes(d.BodyNodes))
+	}
+	b.WriteString("}\n")
 	b.WriteByte('\n')
 }
 
@@ -173,33 +177,102 @@ func emitExpr(d Node) string {
 }
 
 func emitForOf(d Node) string {
-	body := replaceConsoleLogs(d.Body)
+	var body string
+	if len(d.BodyNodes) > 0 {
+		body = emitNodes(d.BodyNodes)
+	} else {
+		body = replaceConsoleLogs(d.Body)
+	}
 	list := replaceObjectValues(d.List)
 	return fmt.Sprintf("for %s in %s {%s}\n", d.Iter, list, body)
 }
 
 func emitForIn(d Node) string {
-	body := replaceConsoleLogs(d.Body)
+	var body string
+	if len(d.BodyNodes) > 0 {
+		body = emitNodes(d.BodyNodes)
+	} else {
+		body = replaceConsoleLogs(d.Body)
+	}
 	return fmt.Sprintf("for %s in %s {%s}\n", d.Iter, d.List, body)
 }
 
 func emitForRange(d Node) string {
-	body := replaceConsoleLogs(d.Body)
+	var body string
+	if len(d.BodyNodes) > 0 {
+		body = emitNodes(d.BodyNodes)
+	} else {
+		body = replaceConsoleLogs(d.Body)
+	}
 	return fmt.Sprintf("for %s in %s..%s {%s}\n", d.Iter, d.StartVal, d.EndVal, body)
 }
 
 func emitWhile(d Node) string {
-	body := replaceConsoleLogs(d.Body)
+	var body string
+	if len(d.BodyNodes) > 0 {
+		body = emitNodes(d.BodyNodes)
+	} else {
+		body = replaceConsoleLogs(d.Body)
+	}
 	return fmt.Sprintf("while %s {%s}\n", d.Cond, body)
 }
 
 func emitIf(d Node) string {
-	thenBody := replaceConsoleLogs(d.Body)
-	elseBody := replaceConsoleLogs(d.Else)
+	var thenBody, elseBody string
+	if len(d.BodyNodes) > 0 {
+		thenBody = emitNodes(d.BodyNodes)
+	} else {
+		thenBody = replaceConsoleLogs(d.Body)
+	}
+	if len(d.ElseNodes) > 0 {
+		elseBody = emitNodes(d.ElseNodes)
+	} else {
+		elseBody = replaceConsoleLogs(d.Else)
+	}
 	if d.Else != "" {
 		return fmt.Sprintf("if %s {%s} else {%s}\n", d.Cond, thenBody, elseBody)
 	}
 	return fmt.Sprintf("if %s {%s}\n", d.Cond, thenBody)
+}
+
+func emitNode(d Node) string {
+	switch d.Kind {
+	case "var":
+		return emitVar(d)
+	case "funcvar":
+		return emitFuncVar(d)
+	case "func":
+		return emitFunc(d)
+	case "enum":
+		return emitEnum(d)
+	case "type":
+		return emitType(d)
+	case "alias":
+		return emitAlias(d)
+	case "print":
+		return emitPrint(d)
+	case "expr":
+		return emitExpr(d)
+	case "forof":
+		return emitForOf(d)
+	case "forin":
+		return emitForIn(d)
+	case "for":
+		return emitForRange(d)
+	case "while":
+		return emitWhile(d)
+	case "if":
+		return emitIf(d)
+	}
+	return ""
+}
+
+func emitNodes(nodes []Node) string {
+	var sb strings.Builder
+	for _, n := range nodes {
+		sb.WriteString(emitNode(n))
+	}
+	return sb.String()
 }
 
 // --- Helpers copied from archived any2mochi ---
