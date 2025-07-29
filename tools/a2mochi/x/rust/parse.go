@@ -97,13 +97,17 @@ func fromASTNode(r *ASTNode) *node {
 // ParseAST parses the given Rust source code using rust-analyzer and returns
 // the syntax tree as an ASTNode.
 func ParseAST(src string) (*ASTNode, error) {
-	if _, err := exec.LookPath("rust-analyzer"); err != nil {
+	cmd := os.Getenv("RUST_ANALYZER")
+	if cmd == "" {
+		cmd = "rust-analyzer"
+	}
+	if _, err := exec.LookPath(cmd); err != nil {
 		return nil, fmt.Errorf("rust-analyzer not installed")
 	}
-	if err := exec.Command("rust-analyzer", "--version").Run(); err != nil {
+	if err := exec.Command(cmd, "--version").Run(); err != nil {
 		return nil, fmt.Errorf("rust-analyzer not installed")
 	}
-	ast, err := runRustAnalyzerParse("rust-analyzer", src)
+	ast, err := runRustAnalyzerParse(cmd, src)
 	if err != nil {
 		return nil, err
 	}
