@@ -21,6 +21,7 @@ func Parse(src string) (*Program, error) {
 	if strings.TrimSpace(src) == "" {
 		return nil, fmt.Errorf("empty source")
 	}
+	src = stripBuildTag(src)
 	fset := token.NewFileSet()
 	file, err := goparser.ParseFile(fset, "", src, goparser.ParseComments)
 	if err != nil {
@@ -36,4 +37,17 @@ func ParseFile(path string) (*Program, error) {
 		return nil, err
 	}
 	return Parse(string(data))
+}
+
+// stripBuildTag removes the //go:build line so tests don't depend on it.
+func stripBuildTag(src string) string {
+	lines := strings.Split(src, "\n")
+	if len(lines) > 0 && strings.HasPrefix(lines[0], "//go:build") {
+		i := 1
+		for i < len(lines) && strings.TrimSpace(lines[i]) == "" {
+			i++
+		}
+		lines = lines[i:]
+	}
+	return strings.Join(lines, "\n")
 }
