@@ -8,14 +8,42 @@ import (
 	"go/token"
 	"strconv"
 	"strings"
+	"unicode"
 
 	mast "mochi/ast"
 )
+
+var structTags map[string]map[string]string
 
 // Transform converts a parsed Go Program into a Mochi AST node.
 func Transform(p *Program) (*mast.Node, error) {
 	if p == nil {
 		return nil, fmt.Errorf("nil program")
+	}
+
+	structTags = make(map[string]map[string]string)
+	for _, decl := range p.File.Decls {
+		gd, ok := decl.(*ast.GenDecl)
+		if !ok || gd.Tok != token.TYPE {
+			continue
+		}
+		for _, sp := range gd.Specs {
+			ts, ok := sp.(*ast.TypeSpec)
+			if !ok {
+				continue
+			}
+			st, ok := ts.Type.(*ast.StructType)
+			if !ok {
+				continue
+			}
+			m := make(map[string]string)
+			for _, f := range st.Fields.List {
+				for _, n := range f.Names {
+					m[n.Name] = fieldName(n.Name, f)
+				}
+			}
+			structTags[ts.Name.Name] = m
+		}
 	}
 
 	root := &mast.Node{Kind: "program"}
@@ -409,6 +437,9 @@ func tryIIFE(c *ast.CallExpr) *mast.Node {
 		return n
 	}
 	if n := tryAvg(fn); n != nil {
+		return n
+	}
+	if n := tryQuery(fn); n != nil {
 		return n
 	}
 	return nil
@@ -834,6 +865,110 @@ func tryAvg(fn *ast.FuncLit) *mast.Node {
 	return &mast.Node{Kind: "call", Value: "avg", Children: []*mast.Node{expr}}
 }
 
+// tryQuery matches patterns that build a slice using nested range loops and
+// append calls, returning the resulting slice. It converts the loops into a
+// Mochi query expression.
+func tryQuery(fn *ast.FuncLit) *mast.Node {
+	if len(fn.Body.List) < 2 {
+		return nil
+	}
+	init, ok := fn.Body.List[0].(*ast.AssignStmt)
+	if !ok || init.Tok != token.DEFINE || len(init.Lhs) != 1 || len(init.Rhs) != 1 {
+		return nil
+	}
+	resIdent, ok := init.Lhs[0].(*ast.Ident)
+	if !ok {
+		return nil
+	}
+	if _, ok := init.Rhs[0].(*ast.CompositeLit); !ok {
+		return nil
+	}
+	ret, ok := fn.Body.List[len(fn.Body.List)-1].(*ast.ReturnStmt)
+	if !ok || len(ret.Results) != 1 {
+		return nil
+	}
+	if rid, ok := ret.Results[0].(*ast.Ident); !ok || rid.Name != resIdent.Name {
+		return nil
+	}
+
+	body := fn.Body.List[1 : len(fn.Body.List)-1]
+	expr, ok := parseQueryBody(body, resIdent.Name, nil, nil)
+	if !ok {
+		return nil
+	}
+	return expr
+}
+
+type queryLoop struct {
+	Var string
+	Src ast.Expr
+}
+
+func parseQueryBody(stmts []ast.Stmt, res string, loops []queryLoop, where ast.Expr) (*mast.Node, bool) {
+	if len(stmts) != 1 {
+		return nil, false
+	}
+	switch s := stmts[0].(type) {
+	case *ast.RangeStmt:
+		varName := "_"
+		if id, ok := s.Value.(*ast.Ident); ok {
+			varName = id.Name
+		}
+		loops = append(loops, queryLoop{Var: varName, Src: s.X})
+		return parseQueryBody(s.Body.List, res, loops, where)
+	case *ast.IfStmt:
+		return parseQueryBody(s.Body.List, res, loops, s.Cond)
+	case *ast.AssignStmt:
+		expr := appendExpr(s, res)
+		if expr == nil {
+			return nil, false
+		}
+		return buildQuery(loops, where, expr), true
+	default:
+		return nil, false
+	}
+}
+
+func appendExpr(as *ast.AssignStmt, res string) ast.Expr {
+	if len(as.Lhs) != 1 || len(as.Rhs) != 1 || as.Tok != token.ASSIGN {
+		return nil
+	}
+	id, ok := as.Lhs[0].(*ast.Ident)
+	if !ok || id.Name != res {
+		return nil
+	}
+	call, ok := as.Rhs[0].(*ast.CallExpr)
+	if !ok || len(call.Args) != 2 {
+		return nil
+	}
+	fid, ok := call.Fun.(*ast.Ident)
+	if !ok || fid.Name != "append" {
+		return nil
+	}
+	if a1, ok := call.Args[0].(*ast.Ident); !ok || a1.Name != res {
+		return nil
+	}
+	return call.Args[1]
+}
+
+func buildQuery(loops []queryLoop, where ast.Expr, val ast.Expr) *mast.Node {
+	if len(loops) == 0 {
+		return nil
+	}
+	q := &mast.Node{Kind: "query", Value: loops[0].Var}
+	q.Children = append(q.Children, &mast.Node{Kind: "source", Children: []*mast.Node{transformExpr(loops[0].Src)}})
+	for _, l := range loops[1:] {
+		fn := &mast.Node{Kind: "from", Value: l.Var}
+		fn.Children = append(fn.Children, &mast.Node{Kind: "source", Children: []*mast.Node{transformExpr(l.Src)}})
+		q.Children = append(q.Children, fn)
+	}
+	if where != nil {
+		q.Children = append(q.Children, &mast.Node{Kind: "where", Children: []*mast.Node{transformExpr(where)}})
+	}
+	q.Children = append(q.Children, &mast.Node{Kind: "select", Children: []*mast.Node{transformExpr(val)}})
+	return q
+}
+
 // tryMapKeysIIFE detects an immediately invoked function that builds and
 // returns a slice of map keys sorted deterministically. It returns the map
 // expression if the pattern matches.
@@ -1154,7 +1289,7 @@ func transformExpr(e ast.Expr) *mast.Node {
 				if kv, ok := e.(*ast.KeyValueExpr); ok {
 					key := ""
 					if id, ok := kv.Key.(*ast.Ident); ok {
-						key = strings.ToLower(id.Name)
+						key = lowerFirst(id.Name)
 					} else if bl, ok := kv.Key.(*ast.BasicLit); ok {
 						key, _ = strconv.Unquote(bl.Value)
 					}
@@ -1184,27 +1319,39 @@ func transformExpr(e ast.Expr) *mast.Node {
 				}
 			}
 			return n
-               case *ast.Ident, *ast.StructType:
-                       if st, ok := t.(*ast.StructType); ok && len(st.Fields.List) == 0 && len(v.Elts) == 0 {
-                               return &mast.Node{Kind: "map"}
-                       }
-                       m := &mast.Node{Kind: "map"}
-                       for _, e := range v.Elts {
-                               if kv, ok := e.(*ast.KeyValueExpr); ok {
-                                       key := ""
-                                       if id, ok := kv.Key.(*ast.Ident); ok {
-                                               key = strings.ToLower(id.Name)
-                                       } else if bl, ok := kv.Key.(*ast.BasicLit); ok {
-                                               key, _ = strconv.Unquote(bl.Value)
-                                       }
-                                       m.Children = append(m.Children, &mast.Node{
-                                               Kind:     "entry",
-                                               Children: []*mast.Node{{Kind: "string", Value: key}, transformExpr(kv.Value)},
-                                       })
-                               }
-                       }
-                       return &mast.Node{Kind: "cast", Children: []*mast.Node{m, transformType(t)}}
-               }
+		case *ast.Ident, *ast.StructType:
+			if st, ok := t.(*ast.StructType); ok && len(st.Fields.List) == 0 && len(v.Elts) == 0 {
+				return &mast.Node{Kind: "map"}
+			}
+			m := &mast.Node{Kind: "map"}
+			for _, e := range v.Elts {
+				if kv, ok := e.(*ast.KeyValueExpr); ok {
+					key := ""
+					if id, ok := kv.Key.(*ast.Ident); ok {
+						key = lowerFirst(id.Name)
+						var typeName string
+						switch tt := t.(type) {
+						case *ast.Ident:
+							typeName = tt.Name
+						}
+						if typeName != "" {
+							if tagMap, ok := structTags[typeName]; ok {
+								if tag, ok := tagMap[id.Name]; ok {
+									key = tag
+								}
+							}
+						}
+					} else if bl, ok := kv.Key.(*ast.BasicLit); ok {
+						key, _ = strconv.Unquote(bl.Value)
+					}
+					m.Children = append(m.Children, &mast.Node{
+						Kind:     "entry",
+						Children: []*mast.Node{{Kind: "string", Value: key}, transformExpr(kv.Value)},
+					})
+				}
+			}
+			return &mast.Node{Kind: "cast", Children: []*mast.Node{m, transformType(t)}}
+		}
 	case *ast.IndexExpr:
 		return &mast.Node{Kind: "index", Children: []*mast.Node{transformExpr(v.X), transformExpr(v.Index)}}
 	case *ast.SliceExpr:
@@ -1282,4 +1429,13 @@ func fieldName(name string, f *ast.Field) string {
 		}
 	}
 	return strings.ToLower(name)
+}
+
+func lowerFirst(s string) string {
+	if s == "" {
+		return s
+	}
+	r := []rune(s)
+	r[0] = unicode.ToLower(r[0])
+	return string(r)
 }

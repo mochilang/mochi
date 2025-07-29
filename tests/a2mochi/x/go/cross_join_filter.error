@@ -1,5 +1,5 @@
-error[T003]: unknown function: unknown
-  --> :7:13
+error[T008]: type mismatch: expected bool, got bigint
+  --> :9:23
 
 help:
-  Ensure the function is defined before it's called.
+  Change the value to match the expected type.

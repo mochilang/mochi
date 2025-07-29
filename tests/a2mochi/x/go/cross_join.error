@@ -1,5 +1,5 @@
-error[T003]: unknown function: unknown
-  --> :18:14
+error[T026]: unknown field `customerid` on Order
+  --> :20:60
 
 help:
-  Ensure the function is defined before it's called.
+  Check the struct definition for valid fields.

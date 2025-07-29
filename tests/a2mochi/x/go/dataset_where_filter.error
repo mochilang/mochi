@@ -1,5 +1,5 @@
-error[T003]: unknown function: unknown
-  --> :11:14
+error[T026]: unknown field `issenior` on Adult
+  --> :16:43
 
 help:
-  Ensure the function is defined before it's called.
+  Check the struct definition for valid fields.
