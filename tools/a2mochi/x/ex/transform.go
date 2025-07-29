@@ -184,11 +184,18 @@ func translateExpr(expr string) string {
 		if len(parts) == 2 {
 			return translateExpr(parts[0]) + "[" + translateExpr(parts[1]) + "]"
 		}
-	case strings.HasPrefix(expr, "Enum.at(") && strings.HasSuffix(expr, ")"):
-		parts := splitArgs(expr[len("Enum.at(") : len(expr)-1])
-		if len(parts) == 2 {
-			return translateExpr(parts[0]) + "[" + translateExpr(parts[1]) + "]"
-		}
+       case strings.HasPrefix(expr, "Enum.slice(") && strings.HasSuffix(expr, ")"):
+               parts := splitArgs(expr[len("Enum.slice(") : len(expr)-1])
+               if len(parts) == 3 {
+                       start := translateExpr(parts[1])
+                       length := translateExpr(parts[2])
+                       return translateExpr(parts[0]) + "[" + start + ":" + start + " + " + length + "]"
+               }
+       case strings.HasPrefix(expr, "Enum.at(") && strings.HasSuffix(expr, ")"):
+               parts := splitArgs(expr[len("Enum.at(") : len(expr)-1])
+               if len(parts) == 2 {
+                       return translateExpr(parts[0]) + "[" + translateExpr(parts[1]) + "]"
+               }
 	case strings.HasPrefix(expr, "Enum.any?(") && strings.HasSuffix(expr, ")"):
 		inner := expr[len("Enum.any?(") : len(expr)-1]
 		return "exists(" + translateExpr(inner) + ")"
@@ -215,15 +222,25 @@ func translateExpr(expr string) string {
 	case strings.HasPrefix(expr, "Enum.count(") && strings.HasSuffix(expr, ")"):
 		inner := expr[len("Enum.count(") : len(expr)-1]
 		return "len(" + inner + ")"
-	case strings.HasPrefix(expr, "Enum.sum(") && strings.HasSuffix(expr, ")"):
-		inner := expr[len("Enum.sum(") : len(expr)-1]
-		return "sum(" + inner + ")"
+       case strings.HasPrefix(expr, "Enum.sum(") && strings.HasSuffix(expr, ")"):
+               inner := expr[len("Enum.sum(") : len(expr)-1]
+               return "sum(" + inner + ")"
+       case strings.HasPrefix(expr, "to_string(") && strings.HasSuffix(expr, ")"):
+               inner := expr[len("to_string(") : len(expr)-1]
+               return "str(" + translateExpr(strings.TrimSpace(inner)) + ")"
+       case strings.Contains(expr, ".to_string(") && strings.HasSuffix(expr, ")"):
+               idx := strings.Index(expr, ".to_string(")
+               inner := expr[idx+len(".to_string(") : len(expr)-1]
+               return "str(" + translateExpr(strings.TrimSpace(inner)) + ")"
 	case strings.HasPrefix(expr, "map_size(") && strings.HasSuffix(expr, ")"):
 		inner := expr[len("map_size(") : len(expr)-1]
 		return "len(" + translateExpr(inner) + ")"
-	case strings.HasPrefix(expr, "Map.values(") && strings.HasSuffix(expr, ")"):
-		inner := expr[len("Map.values(") : len(expr)-1]
-		return "values(" + translateExpr(inner) + ")"
+       case strings.HasPrefix(expr, "Map.values(") && strings.HasSuffix(expr, ")"):
+               inner := expr[len("Map.values(") : len(expr)-1]
+               return "values(" + translateExpr(inner) + ")"
+       case strings.HasPrefix(expr, "Map.keys(") && strings.HasSuffix(expr, ")"):
+               inner := expr[len("Map.keys(") : len(expr)-1]
+               return "keys(" + translateExpr(inner) + ")"
 	case strings.HasPrefix(expr, "Enum.sort(") && strings.HasSuffix(expr, ")"):
 		inner := expr[len("Enum.sort(") : len(expr)-1]
 		return "sort(" + translateExpr(inner) + ")"

@@ -1,0 +1,8 @@
+(program
+  (fun main
+    (call print
+      (call str (int 123))
+    )
+  )
+  (call main)
+)
