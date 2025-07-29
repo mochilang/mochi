@@ -14,6 +14,7 @@ import (
 )
 
 var structTags map[string]map[string]string
+var fieldTags map[string]string
 
 // Transform converts a parsed Go Program into a Mochi AST node.
 func Transform(p *Program) (*mast.Node, error) {
@@ -22,6 +23,7 @@ func Transform(p *Program) (*mast.Node, error) {
 	}
 
 	structTags = make(map[string]map[string]string)
+	fieldTags = make(map[string]string)
 	for _, decl := range p.File.Decls {
 		gd, ok := decl.(*ast.GenDecl)
 		if !ok || gd.Tok != token.TYPE {
@@ -39,7 +41,9 @@ func Transform(p *Program) (*mast.Node, error) {
 			m := make(map[string]string)
 			for _, f := range st.Fields.List {
 				for _, n := range f.Names {
-					m[n.Name] = fieldName(n.Name, f)
+					fname := fieldName(n.Name, f)
+					m[n.Name] = fname
+					fieldTags[n.Name] = fname
 				}
 			}
 			structTags[ts.Name.Name] = m
@@ -1143,7 +1147,13 @@ func transformExpr(e ast.Expr) *mast.Node {
 	case *ast.Ident:
 		return &mast.Node{Kind: "selector", Value: v.Name}
 	case *ast.SelectorExpr:
-		return &mast.Node{Kind: "selector", Value: strings.ToLower(v.Sel.Name), Children: []*mast.Node{transformExpr(v.X)}}
+		name := v.Sel.Name
+		if tag, ok := fieldTags[name]; ok {
+			name = tag
+		} else {
+			name = lowerFirst(name)
+		}
+		return &mast.Node{Kind: "selector", Value: name, Children: []*mast.Node{transformExpr(v.X)}}
 	case *ast.BinaryExpr:
 		if n := tryExists(v); n != nil {
 			return n

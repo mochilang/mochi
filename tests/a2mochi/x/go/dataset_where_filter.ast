@@ -1,0 +1,92 @@
+(program
+  (var people
+    (list
+      (cast
+        (map
+          (entry (string name) (string Alice))
+          (entry (string age) (int 30))
+        )
+        (type People)
+      )
+      (cast
+        (map
+          (entry (string name) (string Bob))
+          (entry (string age) (int 15))
+        )
+        (type People)
+      )
+      (cast
+        (map
+          (entry (string name) (string Charlie))
+          (entry (string age) (int 65))
+        )
+        (type People)
+      )
+      (cast
+        (map
+          (entry (string name) (string Diana))
+          (entry (string age) (int 45))
+        )
+        (type People)
+      )
+    )
+  )
+  (type People
+    (field name (type string))
+    (field age (type int))
+  )
+  (type Adult
+    (field name (type string))
+    (field age (type int))
+    (field is_senior (type bool))
+  )
+  (let adults
+    (query person
+      (source (selector people))
+      (where
+        (binary >=
+          (selector age (selector person))
+          (int 18)
+        )
+      )
+      (select
+        (cast
+          (map
+            (entry
+              (string name)
+              (selector name (selector person))
+            )
+            (entry
+              (string age)
+              (selector age (selector person))
+            )
+            (entry
+              (string is_senior)
+              (binary >=
+                (selector age (selector person))
+                (int 60)
+              )
+            )
+          )
+          (type Adult)
+        )
+      )
+    )
+  )
+  (call print (string "--- Adults ---"))
+  (for person
+    (in (selector adults))
+    (block
+      (call print
+        (selector name (selector person))
+        (string is)
+        (selector age (selector person))
+        (if_expr
+          (selector is_senior (selector person))
+          (string " (senior)")
+          (string "")
+        )
+      )
+    )
+  )
+)
