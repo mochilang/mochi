@@ -301,6 +301,8 @@ public static class AstJson
                 var rn = new Node { Kind = "return" };
                 if (ret.Expression != null) rn.Children.Add(ParseExpr(ret.Expression));
                 return rn;
+            case EmptyStatementSyntax:
+                return new Node { Kind = "empty" };
             case BreakStatementSyntax:
                 return new Node { Kind = "break" };
             case ContinueStatementSyntax:

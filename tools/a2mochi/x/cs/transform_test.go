@@ -116,8 +116,10 @@ func TestTransformGolden(t *testing.T) {
 			outPath := filepath.Join(outDir, name+".out")
 			errPath := filepath.Join(outDir, name+".error")
 			if err != nil {
+				os.WriteFile(errPath, []byte(err.Error()), 0o644)
 				if *update {
-					os.WriteFile(errPath, []byte(err.Error()), 0o644)
+					os.Remove(mochiPath)
+					os.Remove(outPath)
 				}
 				t.Errorf("convert: %v", err)
 				return

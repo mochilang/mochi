@@ -346,7 +346,9 @@ func blockToNodes(block *Node) ([]*ast.Node, error) {
 	}
 	var out []*ast.Node
 	for _, st := range block.Children {
-		out = append(out, stmtNode(st))
+		if n := stmtNode(st); n != nil {
+			out = append(out, n)
+		}
 	}
 	return out, nil
 }
@@ -413,6 +415,8 @@ func stmtNode(n *Node) *ast.Node {
 		return &ast.Node{Kind: "break"}
 	case "continue":
 		return &ast.Node{Kind: "continue"}
+	case "empty":
+		return nil
 	case "block":
 		return blockNode(n)
 	}
