@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 )
 
@@ -62,23 +63,53 @@ func Parse(src string) (*Program, error) {
 }
 
 func runParser(src string) ([]Function, []Class, error) {
-	dartPath, err := exec.LookPath("dart")
-	if err != nil {
-		return nil, nil, fmt.Errorf("dart not found: %w", err)
-	}
-	f, err := os.CreateTemp("", "parser-*.dart")
-	if err != nil {
-		return nil, nil, err
-	}
-	if _, err := f.WriteString(parserDart); err != nil {
+	if dartPath, err := exec.LookPath("dart"); err == nil {
+		f, err := os.CreateTemp("", "parser-*.dart")
+		if err != nil {
+			return nil, nil, err
+		}
+		if _, err := f.WriteString(parserDart); err != nil {
+			f.Close()
+			os.Remove(f.Name())
+			return nil, nil, err
+		}
 		f.Close()
-		os.Remove(f.Name())
-		return nil, nil, err
-	}
-	f.Close()
-	defer os.Remove(f.Name())
+		defer os.Remove(f.Name())
 
-	cmd := exec.Command(dartPath, f.Name())
+		cmd := exec.Command(dartPath, f.Name())
+		cmd.Stdin = strings.NewReader(src)
+		var out bytes.Buffer
+		var errBuf bytes.Buffer
+		cmd.Stdout = &out
+		cmd.Stderr = &errBuf
+		if err := cmd.Run(); err == nil {
+			return decode(out.Bytes())
+		}
+	}
+
+	exe, err := exec.LookPath("dartast")
+	if err != nil {
+		root, rErr := repoRoot()
+		if rErr != nil {
+			return nil, nil, fmt.Errorf("dart not found and dartast missing: %w", err)
+		}
+		exe = filepath.Join(root, "cmd", "dartast")
+		cmd := exec.Command("go", "run", exe)
+		cmd.Stdin = strings.NewReader(src)
+		var out bytes.Buffer
+		var errBuf bytes.Buffer
+		cmd.Stdout = &out
+		cmd.Stderr = &errBuf
+		if runErr := cmd.Run(); runErr != nil {
+			if errBuf.Len() > 0 {
+				return nil, nil, fmt.Errorf("%v: %s", runErr, errBuf.String())
+			}
+			return nil, nil, runErr
+		}
+		return decode(out.Bytes())
+	}
+
+	cmd := exec.Command(exe)
 	cmd.Stdin = strings.NewReader(src)
 	var out bytes.Buffer
 	var errBuf bytes.Buffer
@@ -102,4 +133,22 @@ func decode(data []byte) ([]Function, []Class, error) {
 		return nil, nil, err
 	}
 	return a.Functions, a.Classes, nil
+}
+
+func repoRoot() (string, error) {
+	dir, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir, nil
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return "", os.ErrNotExist
 }
