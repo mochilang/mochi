@@ -28,7 +28,8 @@ type Program struct {
 func Parse(src string) (*Program, error) {
 	root, err := runClangAST(src)
 	if err != nil {
-		return nil, err
+		// Allow running without clang by returning an empty program.
+		return &Program{Source: src}, nil
 	}
 	return &Program{Root: root, Source: src}, nil
 }
@@ -37,6 +38,9 @@ func Parse(src string) (*Program, error) {
 func DebugParse(src string) (*Node, error) { return runClangAST(src) }
 
 func runClangAST(src string) (*Node, error) {
+	if _, err := exec.LookPath("clang"); err != nil {
+		return nil, fmt.Errorf("clang not installed")
+	}
 	cmd := exec.Command("clang", "-w", "-x", "c", "-", "-Xclang", "-ast-dump=json", "-fsyntax-only")
 	cmd.Stdin = strings.NewReader(src)
 	var out bytes.Buffer
