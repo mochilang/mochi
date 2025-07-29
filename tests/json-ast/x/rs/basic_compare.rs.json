@@ -1,0 +1,1002 @@
+{
+  "file": {
+    "kind": "SOURCE_FILE",
+    "start": 0,
+    "end": 257,
+    "children": [
+      {
+        "kind": "FN",
+        "start": 0,
+        "end": 256,
+        "children": [
+          {
+            "kind": "COMMENT",
+            "start": 0,
+            "end": 67
+          },
+          {
+            "kind": "WHITESPACE",
+            "start": 67,
+            "end": 68
+          },
+          {
+            "kind": "FN_KW",
+            "start": 68,
+            "end": 70
+          },
+          {
+            "kind": "WHITESPACE",
+            "start": 70,
+            "end": 71
+          },
+          {
+            "kind": "NAME",
+            "start": 71,
+            "end": 75,
+            "children": [
+              {
+                "kind": "IDENT",
+                "start": 71,
+                "end": 75
+              }
+            ]
+          },
+          {
+            "kind": "PARAM_LIST",
+            "start": 75,
+            "end": 77,
+            "children": [
+              {
+                "kind": "L_PAREN",
+                "start": 75,
+                "end": 76
+              },
+              {
+                "kind": "R_PAREN",
+                "start": 76,
+                "end": 77
+              }
+            ]
+          },
+          {
+            "kind": "WHITESPACE",
+            "start": 77,
+            "end": 78
+          },
+          {
+            "kind": "BLOCK_EXPR",
+            "start": 78,
+            "end": 256,
+            "children": [
+              {
+                "kind": "STMT_LIST",
+                "start": 78,
+                "end": 256,
+                "children": [
+                  {
+                    "kind": "L_CURLY",
+                    "start": 78,
+                    "end": 79
+                  },
+                  {
+                    "kind": "WHITESPACE",
+                    "start": 79,
+                    "end": 84
+                  },
+                  {
+                    "kind": "LET_STMT",
+                    "start": 84,
+                    "end": 106,
+                    "children": [
+                      {
+                        "kind": "LET_KW",
+                        "start": 84,
+                        "end": 87
+                      },
+                      {
+                        "kind": "WHITESPACE",
+                        "start": 87,
+                        "end": 88
+                      },
+                      {
+                        "kind": "IDENT_PAT",
+                        "start": 88,
+                        "end": 89,
+                        "children": [
+                          {
+                            "kind": "NAME",
+                            "start": 88,
+                            "end": 89,
+                            "children": [
+                              {
+                                "kind": "IDENT",
+                                "start": 88,
+                                "end": 89
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "COLON",
+                        "start": 89,
+                        "end": 90
+                      },
+                      {
+                        "kind": "WHITESPACE",
+                        "start": 90,
+                        "end": 91
+                      },
+                      {
+                        "kind": "PATH_TYPE",
+                        "start": 91,
+                        "end": 94,
+                        "children": [
+                          {
+                            "kind": "PATH",
+                            "start": 91,
+                            "end": 94,
+                            "children": [
+                              {
+                                "kind": "PATH_SEGMENT",
+                                "start": 91,
+                                "end": 94,
+                                "children": [
+                                  {
+                                    "kind": "NAME_REF",
+                                    "start": 91,
+                                    "end": 94,
+                                    "children": [
+                                      {
+                                        "kind": "IDENT",
+                                        "start": 91,
+                                        "end": 94
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "WHITESPACE",
+                        "start": 94,
+                        "end": 95
+                      },
+                      {
+                        "kind": "EQ",
+                        "start": 95,
+                        "end": 96
+                      },
+                      {
+                        "kind": "WHITESPACE",
+                        "start": 96,
+                        "end": 97
+                      },
+                      {
+                        "kind": "PAREN_EXPR",
+                        "start": 97,
+                        "end": 105,
+                        "children": [
+                          {
+                            "kind": "L_PAREN",
+                            "start": 97,
+                            "end": 98
+                          },
+                          {
+                            "kind": "BIN_EXPR",
+                            "start": 98,
+                            "end": 104,
+                            "children": [
+                              {
+                                "kind": "LITERAL",
+                                "start": 98,
+                                "end": 100,
+                                "children": [
+                                  {
+                                    "kind": "INT_NUMBER",
+                                    "start": 98,
+                                    "end": 100
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "WHITESPACE",
+                                "start": 100,
+                                "end": 101
+                              },
+                              {
+                                "kind": "MINUS",
+                                "start": 101,
+                                "end": 102
+                              },
+                              {
+                                "kind": "WHITESPACE",
+                                "start": 102,
+                                "end": 103
+                              },
+                              {
+                                "kind": "LITERAL",
+                                "start": 103,
+                                "end": 104,
+                                "children": [
+                                  {
+                                    "kind": "INT_NUMBER",
+                                    "start": 103,
+                                    "end": 104
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "R_PAREN",
+                            "start": 104,
+                            "end": 105
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "SEMICOLON",
+                        "start": 105,
+                        "end": 106
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "WHITESPACE",
+                    "start": 106,
+                    "end": 111
+                  },
+                  {
+                    "kind": "LET_STMT",
+                    "start": 111,
+                    "end": 132,
+                    "children": [
+                      {
+                        "kind": "LET_KW",
+                        "start": 111,
+                        "end": 114
+                      },
+                      {
+                        "kind": "WHITESPACE",
+                        "start": 114,
+                        "end": 115
+                      },
+                      {
+                        "kind": "IDENT_PAT",
+                        "start": 115,
+                        "end": 116,
+                        "children": [
+                          {
+                            "kind": "NAME",
+                            "start": 115,
+                            "end": 116,
+                            "children": [
+                              {
+                                "kind": "IDENT",
+                                "start": 115,
+                                "end": 116
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "COLON",
+                        "start": 116,
+                        "end": 117
+                      },
+                      {
+                        "kind": "WHITESPACE",
+                        "start": 117,
+                        "end": 118
+                      },
+                      {
+                        "kind": "PATH_TYPE",
+                        "start": 118,
+                        "end": 121,
+                        "children": [
+                          {
+                            "kind": "PATH",
+                            "start": 118,
+                            "end": 121,
+                            "children": [
+                              {
+                                "kind": "PATH_SEGMENT",
+                                "start": 118,
+                                "end": 121,
+                                "children": [
+                                  {
+                                    "kind": "NAME_REF",
+                                    "start": 118,
+                                    "end": 121,
+                                    "children": [
+                                      {
+                                        "kind": "IDENT",
+                                        "start": 118,
+                                        "end": 121
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "WHITESPACE",
+                        "start": 121,
+                        "end": 122
+                      },
+                      {
+                        "kind": "EQ",
+                        "start": 122,
+                        "end": 123
+                      },
+                      {
+                        "kind": "WHITESPACE",
+                        "start": 123,
+                        "end": 124
+                      },
+                      {
+                        "kind": "PAREN_EXPR",
+                        "start": 124,
+                        "end": 131,
+                        "children": [
+                          {
+                            "kind": "L_PAREN",
+                            "start": 124,
+                            "end": 125
+                          },
+                          {
+                            "kind": "BIN_EXPR",
+                            "start": 125,
+                            "end": 130,
+                            "children": [
+                              {
+                                "kind": "LITERAL",
+                                "start": 125,
+                                "end": 126,
+                                "children": [
+                                  {
+                                    "kind": "INT_NUMBER",
+                                    "start": 125,
+                                    "end": 126
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "WHITESPACE",
+                                "start": 126,
+                                "end": 127
+                              },
+                              {
+                                "kind": "PLUS",
+                                "start": 127,
+                                "end": 128
+                              },
+                              {
+                                "kind": "WHITESPACE",
+                                "start": 128,
+                                "end": 129
+                              },
+                              {
+                                "kind": "LITERAL",
+                                "start": 129,
+                                "end": 130,
+                                "children": [
+                                  {
+                                    "kind": "INT_NUMBER",
+                                    "start": 129,
+                                    "end": 130
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "R_PAREN",
+                            "start": 130,
+                            "end": 131
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "SEMICOLON",
+                        "start": 131,
+                        "end": 132
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "WHITESPACE",
+                    "start": 132,
+                    "end": 137
+                  },
+                  {
+                    "kind": "EXPR_STMT",
+                    "start": 137,
+                    "end": 155,
+                    "children": [
+                      {
+                        "kind": "MACRO_EXPR",
+                        "start": 137,
+                        "end": 154,
+                        "children": [
+                          {
+                            "kind": "MACRO_CALL",
+                            "start": 137,
+                            "end": 154,
+                            "children": [
+                              {
+                                "kind": "PATH",
+                                "start": 137,
+                                "end": 144,
+                                "children": [
+                                  {
+                                    "kind": "PATH_SEGMENT",
+                                    "start": 137,
+                                    "end": 144,
+                                    "children": [
+                                      {
+                                        "kind": "NAME_REF",
+                                        "start": 137,
+                                        "end": 144,
+                                        "children": [
+                                          {
+                                            "kind": "IDENT",
+                                            "start": 137,
+                                            "end": 144
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "BANG",
+                                "start": 144,
+                                "end": 145
+                              },
+                              {
+                                "kind": "TOKEN_TREE",
+                                "start": 145,
+                                "end": 154,
+                                "children": [
+                                  {
+                                    "kind": "L_PAREN",
+                                    "start": 145,
+                                    "end": 146
+                                  },
+                                  {
+                                    "kind": "STRING",
+                                    "start": 146,
+                                    "end": 150
+                                  },
+                                  {
+                                    "kind": "COMMA",
+                                    "start": 150,
+                                    "end": 151
+                                  },
+                                  {
+                                    "kind": "WHITESPACE",
+                                    "start": 151,
+                                    "end": 152
+                                  },
+                                  {
+                                    "kind": "IDENT",
+                                    "start": 152,
+                                    "end": 153
+                                  },
+                                  {
+                                    "kind": "R_PAREN",
+                                    "start": 153,
+                                    "end": 154
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "SEMICOLON",
+                        "start": 154,
+                        "end": 155
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "WHITESPACE",
+                    "start": 155,
+                    "end": 160
+                  },
+                  {
+                    "kind": "EXPR_STMT",
+                    "start": 160,
+                    "end": 205,
+                    "children": [
+                      {
+                        "kind": "MACRO_EXPR",
+                        "start": 160,
+                        "end": 204,
+                        "children": [
+                          {
+                            "kind": "MACRO_CALL",
+                            "start": 160,
+                            "end": 204,
+                            "children": [
+                              {
+                                "kind": "PATH",
+                                "start": 160,
+                                "end": 167,
+                                "children": [
+                                  {
+                                    "kind": "PATH_SEGMENT",
+                                    "start": 160,
+                                    "end": 167,
+                                    "children": [
+                                      {
+                                        "kind": "NAME_REF",
+                                        "start": 160,
+                                        "end": 167,
+                                        "children": [
+                                          {
+                                            "kind": "IDENT",
+                                            "start": 160,
+                                            "end": 167
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "BANG",
+                                "start": 167,
+                                "end": 168
+                              },
+                              {
+                                "kind": "TOKEN_TREE",
+                                "start": 168,
+                                "end": 204,
+                                "children": [
+                                  {
+                                    "kind": "L_PAREN",
+                                    "start": 168,
+                                    "end": 169
+                                  },
+                                  {
+                                    "kind": "STRING",
+                                    "start": 169,
+                                    "end": 173
+                                  },
+                                  {
+                                    "kind": "COMMA",
+                                    "start": 173,
+                                    "end": 174
+                                  },
+                                  {
+                                    "kind": "WHITESPACE",
+                                    "start": 174,
+                                    "end": 175
+                                  },
+                                  {
+                                    "kind": "IF_KW",
+                                    "start": 175,
+                                    "end": 177
+                                  },
+                                  {
+                                    "kind": "WHITESPACE",
+                                    "start": 177,
+                                    "end": 178
+                                  },
+                                  {
+                                    "kind": "TOKEN_TREE",
+                                    "start": 178,
+                                    "end": 186,
+                                    "children": [
+                                      {
+                                        "kind": "L_PAREN",
+                                        "start": 178,
+                                        "end": 179
+                                      },
+                                      {
+                                        "kind": "IDENT",
+                                        "start": 179,
+                                        "end": 180
+                                      },
+                                      {
+                                        "kind": "WHITESPACE",
+                                        "start": 180,
+                                        "end": 181
+                                      },
+                                      {
+                                        "kind": "EQ",
+                                        "start": 181,
+                                        "end": 182
+                                      },
+                                      {
+                                        "kind": "EQ",
+                                        "start": 182,
+                                        "end": 183
+                                      },
+                                      {
+                                        "kind": "WHITESPACE",
+                                        "start": 183,
+                                        "end": 184
+                                      },
+                                      {
+                                        "kind": "INT_NUMBER",
+                                        "start": 184,
+                                        "end": 185
+                                      },
+                                      {
+                                        "kind": "R_PAREN",
+                                        "start": 185,
+                                        "end": 186
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "WHITESPACE",
+                                    "start": 186,
+                                    "end": 187
+                                  },
+                                  {
+                                    "kind": "TOKEN_TREE",
+                                    "start": 187,
+                                    "end": 192,
+                                    "children": [
+                                      {
+                                        "kind": "L_CURLY",
+                                        "start": 187,
+                                        "end": 188
+                                      },
+                                      {
+                                        "kind": "WHITESPACE",
+                                        "start": 188,
+                                        "end": 189
+                                      },
+                                      {
+                                        "kind": "INT_NUMBER",
+                                        "start": 189,
+                                        "end": 190
+                                      },
+                                      {
+                                        "kind": "WHITESPACE",
+                                        "start": 190,
+                                        "end": 191
+                                      },
+                                      {
+                                        "kind": "R_CURLY",
+                                        "start": 191,
+                                        "end": 192
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "WHITESPACE",
+                                    "start": 192,
+                                    "end": 193
+                                  },
+                                  {
+                                    "kind": "ELSE_KW",
+                                    "start": 193,
+                                    "end": 197
+                                  },
+                                  {
+                                    "kind": "WHITESPACE",
+                                    "start": 197,
+                                    "end": 198
+                                  },
+                                  {
+                                    "kind": "TOKEN_TREE",
+                                    "start": 198,
+                                    "end": 203,
+                                    "children": [
+                                      {
+                                        "kind": "L_CURLY",
+                                        "start": 198,
+                                        "end": 199
+                                      },
+                                      {
+                                        "kind": "WHITESPACE",
+                                        "start": 199,
+                                        "end": 200
+                                      },
+                                      {
+                                        "kind": "INT_NUMBER",
+                                        "start": 200,
+                                        "end": 201
+                                      },
+                                      {
+                                        "kind": "WHITESPACE",
+                                        "start": 201,
+                                        "end": 202
+                                      },
+                                      {
+                                        "kind": "R_CURLY",
+                                        "start": 202,
+                                        "end": 203
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "R_PAREN",
+                                    "start": 203,
+                                    "end": 204
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "SEMICOLON",
+                        "start": 204,
+                        "end": 205
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "WHITESPACE",
+                    "start": 205,
+                    "end": 210
+                  },
+                  {
+                    "kind": "EXPR_STMT",
+                    "start": 210,
+                    "end": 254,
+                    "children": [
+                      {
+                        "kind": "MACRO_EXPR",
+                        "start": 210,
+                        "end": 253,
+                        "children": [
+                          {
+                            "kind": "MACRO_CALL",
+                            "start": 210,
+                            "end": 253,
+                            "children": [
+                              {
+                                "kind": "PATH",
+                                "start": 210,
+                                "end": 217,
+                                "children": [
+                                  {
+                                    "kind": "PATH_SEGMENT",
+                                    "start": 210,
+                                    "end": 217,
+                                    "children": [
+                                      {
+                                        "kind": "NAME_REF",
+                                        "start": 210,
+                                        "end": 217,
+                                        "children": [
+                                          {
+                                            "kind": "IDENT",
+                                            "start": 210,
+                                            "end": 217
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "BANG",
+                                "start": 217,
+                                "end": 218
+                              },
+                              {
+                                "kind": "TOKEN_TREE",
+                                "start": 218,
+                                "end": 253,
+                                "children": [
+                                  {
+                                    "kind": "L_PAREN",
+                                    "start": 218,
+                                    "end": 219
+                                  },
+                                  {
+                                    "kind": "STRING",
+                                    "start": 219,
+                                    "end": 223
+                                  },
+                                  {
+                                    "kind": "COMMA",
+                                    "start": 223,
+                                    "end": 224
+                                  },
+                                  {
+                                    "kind": "WHITESPACE",
+                                    "start": 224,
+                                    "end": 225
+                                  },
+                                  {
+                                    "kind": "IF_KW",
+                                    "start": 225,
+                                    "end": 227
+                                  },
+                                  {
+                                    "kind": "WHITESPACE",
+                                    "start": 227,
+                                    "end": 228
+                                  },
+                                  {
+                                    "kind": "TOKEN_TREE",
+                                    "start": 228,
+                                    "end": 235,
+                                    "children": [
+                                      {
+                                        "kind": "L_PAREN",
+                                        "start": 228,
+                                        "end": 229
+                                      },
+                                      {
+                                        "kind": "IDENT",
+                                        "start": 229,
+                                        "end": 230
+                                      },
+                                      {
+                                        "kind": "WHITESPACE",
+                                        "start": 230,
+                                        "end": 231
+                                      },
+                                      {
+                                        "kind": "L_ANGLE",
+                                        "start": 231,
+                                        "end": 232
+                                      },
+                                      {
+                                        "kind": "WHITESPACE",
+                                        "start": 232,
+                                        "end": 233
+                                      },
+                                      {
+                                        "kind": "INT_NUMBER",
+                                        "start": 233,
+                                        "end": 234
+                                      },
+                                      {
+                                        "kind": "R_PAREN",
+                                        "start": 234,
+                                        "end": 235
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "WHITESPACE",
+                                    "start": 235,
+                                    "end": 236
+                                  },
+                                  {
+                                    "kind": "TOKEN_TREE",
+                                    "start": 236,
+                                    "end": 241,
+                                    "children": [
+                                      {
+                                        "kind": "L_CURLY",
+                                        "start": 236,
+                                        "end": 237
+                                      },
+                                      {
+                                        "kind": "WHITESPACE",
+                                        "start": 237,
+                                        "end": 238
+                                      },
+                                      {
+                                        "kind": "INT_NUMBER",
+                                        "start": 238,
+                                        "end": 239
+                                      },
+                                      {
+                                        "kind": "WHITESPACE",
+                                        "start": 239,
+                                        "end": 240
+                                      },
+                                      {
+                                        "kind": "R_CURLY",
+                                        "start": 240,
+                                        "end": 241
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "WHITESPACE",
+                                    "start": 241,
+                                    "end": 242
+                                  },
+                                  {
+                                    "kind": "ELSE_KW",
+                                    "start": 242,
+                                    "end": 246
+                                  },
+                                  {
+                                    "kind": "WHITESPACE",
+                                    "start": 246,
+                                    "end": 247
+                                  },
+                                  {
+                                    "kind": "TOKEN_TREE",
+                                    "start": 247,
+                                    "end": 252,
+                                    "children": [
+                                      {
+                                        "kind": "L_CURLY",
+                                        "start": 247,
+                                        "end": 248
+                                      },
+                                      {
+                                        "kind": "WHITESPACE",
+                                        "start": 248,
+                                        "end": 249
+                                      },
+                                      {
+                                        "kind": "INT_NUMBER",
+                                        "start": 249,
+                                        "end": 250
+                                      },
+                                      {
+                                        "kind": "WHITESPACE",
+                                        "start": 250,
+                                        "end": 251
+                                      },
+                                      {
+                                        "kind": "R_CURLY",
+                                        "start": 251,
+                                        "end": 252
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "R_PAREN",
+                                    "start": 252,
+                                    "end": 253
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "SEMICOLON",
+                        "start": 253,
+                        "end": 254
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "WHITESPACE",
+                    "start": 254,
+                    "end": 255
+                  },
+                  {
+                    "kind": "R_CURLY",
+                    "start": 255,
+                    "end": 256
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "WHITESPACE",
+        "start": 256,
+        "end": 257
+      }
+    ]
+  }
+}
