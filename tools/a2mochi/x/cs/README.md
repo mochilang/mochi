@@ -4,7 +4,7 @@ Created: 2025-07-28
 
 This directory contains helpers and golden files for converting the C# output of the Mochi compiler back into Mochi AST form.
 
-Completed programs: 13/103
+Completed programs: 16/103
 
 ## Checklist
 - [x] append_builtin
@@ -20,3 +20,6 @@ Completed programs: 13/103
 - [x] bool_chain
 - [x] for_loop
 - [x] if_else
+- [x] binary_precedence
+- [x] unary_neg
+- [x] while_loop

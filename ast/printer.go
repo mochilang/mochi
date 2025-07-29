@@ -292,7 +292,13 @@ func exprString(n *Node) string {
 	case "unary":
 		return fmt.Sprintf("%s%s", n.Value, exprString(n.Children[0]))
 	case "binary":
-		return fmt.Sprintf("(%s %s %s)", exprString(n.Children[0]), n.Value, exprString(n.Children[1]))
+		right := exprString(n.Children[1])
+		if len(right) > 0 && (right[0] == '-' || right[0] == '+') {
+			if !(strings.HasPrefix(right, "(") && strings.HasSuffix(right, ")")) {
+				right = "(" + right + ")"
+			}
+		}
+		return fmt.Sprintf("(%s %s %s)", exprString(n.Children[0]), n.Value, right)
 	case "list":
 		parts := make([]string, len(n.Children))
 		for i, c := range n.Children {
