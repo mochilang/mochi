@@ -57,7 +57,7 @@ func buildMochi(p *Program) string {
 		}
 		fmt.Fprintf(&out, "fun %s(%s): %s {\n", fn.Name, strings.Join(params, ", "), rtype)
 		for i, line := range lines {
-			if i == len(lines)-1 && !strings.Contains(line, "=") && !strings.HasPrefix(line, "print(") {
+			if i == len(lines)-1 && !strings.Contains(line, " :=") && !strings.Contains(line, ":=") && !(strings.Contains(line, "=") && !strings.Contains(line, "==") && !strings.Contains(line, "!=")) && !strings.HasPrefix(line, "print(") {
 				fmt.Fprintf(&out, "  return %s\n", line)
 			} else {
 				fmt.Fprintf(&out, "  %s\n", line)
@@ -99,7 +99,7 @@ func buildMochi(p *Program) string {
 				}
 				fmt.Fprintf(&out, "fun %s(%s): %s {\n", v.Name, strings.Join(pList, ", "), rtype)
 				for i, line := range lines {
-					if i == len(lines)-1 && !strings.Contains(line, "=") && !strings.HasPrefix(line, "print(") {
+					if i == len(lines)-1 && !strings.Contains(line, " :=") && !strings.Contains(line, ":=") && !(strings.Contains(line, "=") && !strings.Contains(line, "==") && !strings.Contains(line, "!=")) && !strings.HasPrefix(line, "print(") {
 						fmt.Fprintf(&out, "  return %s\n", line)
 					} else {
 						fmt.Fprintf(&out, "  %s\n", line)
@@ -178,7 +178,7 @@ func convertExpr(expr string) []string {
 				}
 				fmt.Fprintf(&b, "fun %s(%s): %s {\n", name, strings.Join(pList, ", "), rtype)
 				for i, line := range fnLines {
-					if i == len(fnLines)-1 && !strings.Contains(line, "=") && !strings.HasPrefix(line, "print(") {
+					if i == len(fnLines)-1 && !strings.Contains(line, " :=") && !strings.Contains(line, ":=") && !(strings.Contains(line, "=") && !strings.Contains(line, "==") && !strings.Contains(line, "!=")) && !strings.HasPrefix(line, "print(") {
 						fmt.Fprintf(&b, "  return %s\n", line)
 					} else {
 						fmt.Fprintf(&b, "  %s\n", line)
@@ -198,14 +198,35 @@ func convertExpr(expr string) []string {
 		expr = strings.TrimSpace(m[3])
 	}
 
-	reIf := regexp.MustCompile(`(?s)^if\s+(.*)\s+then\s*\((.*)\)\s*else\s*\((.*)\)$`)
+	reIf := regexp.MustCompile(`(?s)^if\s+(.*?)\s+then\s*(?:\((.*)\)|([^\s].*))\s+else\s*(?:\((.*)\)|(.+))$`)
 	if m := reIf.FindStringSubmatch(expr); m != nil {
 		cond := simplify(m[1])
-		thenLines := convertExpr(m[2])
-		elseLines := convertExpr(m[3])
-		thenStmt := strings.Join(thenLines, "; ")
-		elseStmt := strings.Join(elseLines, "; ")
-		lines = append(lines, fmt.Sprintf("if %s { %s } else { %s }", cond, thenStmt, elseStmt))
+		cond = strings.ReplaceAll(cond, " = ", " == ")
+		thenBody := m[2]
+		if thenBody == "" {
+			thenBody = m[3]
+		}
+		elseBody := m[4]
+		if elseBody == "" {
+			elseBody = m[5]
+		}
+		thenLines := convertExpr(strings.TrimSpace(thenBody))
+		elseLines := convertExpr(strings.TrimSpace(elseBody))
+		simple := len(thenLines) == 1 && len(elseLines) == 1 &&
+			!strings.HasPrefix(thenLines[0], "print(") &&
+			!strings.HasPrefix(elseLines[0], "print(") &&
+			!strings.Contains(thenLines[0], "=") &&
+			!strings.Contains(elseLines[0], "=")
+		if simple {
+			lines = append(lines, fmt.Sprintf("if %s {", cond))
+			lines = append(lines, "  return "+thenLines[0])
+			lines = append(lines, "}")
+			lines = append(lines, elseLines[0])
+		} else {
+			thenStmt := strings.Join(thenLines, "; ")
+			elseStmt := strings.Join(elseLines, "; ")
+			lines = append(lines, fmt.Sprintf("if %s { %s } else { %s }", cond, thenStmt, elseStmt))
+		}
 		return lines
 	}
 
@@ -301,6 +322,7 @@ func simplify(e string) string {
 		e = strings.TrimSuffix(strings.TrimPrefix(e, "("), ")")
 	}
 	e = strings.ReplaceAll(e, "not ", "!")
+	e = strings.ReplaceAll(e, " <> ", " != ")
 	e = strings.ReplaceAll(e, "ref ", "")
 	reRef := regexp.MustCompile(`!([A-Za-z0-9_]+)`)
 	e = reRef.ReplaceAllString(e, `$1`)
@@ -346,6 +368,10 @@ func simplify(e string) string {
 	// map membership using mem_assoc
 	re = regexp.MustCompile(`List\.mem_assoc\s+([^\s]+)\s+([^\s]+)`)
 	e = re.ReplaceAllString(e, `$1 in $2`)
+
+	// map index using assoc
+	re = regexp.MustCompile(`List\.assoc\s+([^\s]+)\s+([^\s]+)`)
+	e = re.ReplaceAllString(e, `$2[$1]`)
 
 	// list syntax
 	e = strings.ReplaceAll(e, ";", ",")
@@ -411,6 +437,16 @@ func simplify(e string) string {
 	}
 	re = regexp.MustCompile(`if \(([^\)]*\.contains\("[^"\)]+"\))\) then true else false`)
 	e = re.ReplaceAllString(e, `$1`)
+
+	// convert curried call syntax f(a)(b) to f(a, b)
+	reCallTwo := regexp.MustCompile(`([A-Za-z_][A-Za-z0-9_']*)\s*\(([^\)]+)\)\s*\(([^\)]+)\)`)
+	for {
+		if m := reCallTwo.FindStringSubmatch(e); m != nil {
+			e = reCallTwo.ReplaceAllString(e, `$1($2, $3)`)
+		} else {
+			break
+		}
+	}
 
 	e = strings.TrimSpace(e)
 	for hasOuterParens(e) {

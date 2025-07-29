@@ -163,6 +163,7 @@ func TestTransform_Golden(t *testing.T) {
 		"string_concat":       true,
 		"string_compare":      true,
 		"sum_builtin":         true,
+		"tail_recursion":      true,
 		"avg_builtin":         true,
 		"let_and_print":       true,
 		"var_assignment":      true,
