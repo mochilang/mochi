@@ -161,18 +161,22 @@ func stmtNode(s Stmt) (*ast.Node, error) {
 		n := &ast.Node{Kind: "fun", Value: v.Name}
 		for _, p := range v.Params {
 			pn := &ast.Node{Kind: "param", Value: p.Name}
+			typ := "any"
 			if p.Type != "" {
 				if t := mapType(p.Type); t != "" {
-					pn.Children = append(pn.Children, typeNode(t))
+					typ = t
 				}
 			}
+			pn.Children = append(pn.Children, typeNode(typ))
 			n.Children = append(n.Children, pn)
 		}
+		retType := "any"
 		if v.Ret != "" {
 			if t := mapType(v.Ret); t != "" {
-				n.Children = append(n.Children, typeNode(t))
+				retType = t
 			}
 		}
+		n.Children = append(n.Children, typeNode(retType))
 		body, err := stmtsToNodes(v.Body)
 		if err != nil {
 			return nil, err
@@ -253,6 +257,7 @@ func fixIndex(expr string) string {
 	expr = stripStringCall(expr)
 	expr = convertBuiltins(expr)
 	expr = stripStringCall(expr)
+	expr = convertCallSyntax(expr)
 	expr = convertEquality(expr)
 	expr = strings.ReplaceAll(expr, ";", ",")
 	return expr
@@ -279,6 +284,73 @@ func convertRecordFields(expr string) string {
 		out.WriteByte(expr[i])
 	}
 	return out.String()
+}
+
+// convertCallSyntax converts simple F# space-separated function calls like
+// "add 1 2" into the Mochi style "add(1, 2)". It only operates on top-level
+// space separated tokens and ignores expressions containing operators.
+func convertCallSyntax(expr string) string {
+	expr = strings.TrimSpace(expr)
+	if expr == "" {
+		return expr
+	}
+	// quick check for operators
+	if strings.ContainsAny(expr, "+-*/=<>&|%^") {
+		return expr
+	}
+	parts := splitTopLevel(expr, ' ')
+	if len(parts) <= 1 {
+		return expr
+	}
+	name := parts[0]
+	if !isIdent(name) {
+		return expr
+	}
+	return name + "(" + strings.Join(parts[1:], ", ") + ")"
+}
+
+func splitTopLevel(s string, sep rune) []string {
+	var parts []string
+	var buf strings.Builder
+	depth := 0
+	for _, r := range s {
+		switch r {
+		case '(', '[', '{':
+			depth++
+		case ')', ']', '}':
+			if depth > 0 {
+				depth--
+			}
+		}
+		if r == sep && depth == 0 {
+			if buf.Len() > 0 {
+				parts = append(parts, buf.String())
+				buf.Reset()
+			}
+			continue
+		}
+		buf.WriteRune(r)
+	}
+	if buf.Len() > 0 {
+		parts = append(parts, buf.String())
+	}
+	return parts
+}
+
+func isIdent(s string) bool {
+	if s == "" {
+		return false
+	}
+	for i, r := range s {
+		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || r == '_' {
+			// ok
+		} else if i > 0 && r >= '0' && r <= '9' {
+			// ok
+		} else {
+			return false
+		}
+	}
+	return true
 }
 
 func convertContains(expr string) string {
