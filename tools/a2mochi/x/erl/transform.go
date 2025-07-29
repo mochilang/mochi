@@ -20,6 +20,8 @@ var stringStrNotZeroRe = regexp.MustCompile(`string:str\(([^,]+),\s*([^\)]+)\)\s
 var stringStrZeroRe = regexp.MustCompile(`string:str\(([^,]+),\s*([^\)]+)\)\s*(=|=:=)\s*0`)
 var substrRe = regexp.MustCompile(`string:substr\(([^,]+),\s*([^,]+?)\s*\+\s*1,\s*([^\)]+)\)`)
 var plusNegRe = regexp.MustCompile(`\+\s*-([0-9]+)`)
+var caseIfRe = regexp.MustCompile(`case\s+(.+?)\s+of\s+true\s*->\s*(.+?);\s*(?:_|false)\s*->\s*(.+?)\s*end`)
+var printCallRe = regexp.MustCompile(`io:(?:format|fwrite)\("~[sp]~n",\s*\[(.+?)\]\)`)
 
 func node(kind string, value any, children ...*ast.Node) *ast.Node {
 	return &ast.Node{Kind: kind, Value: value, Children: children}
@@ -140,6 +142,11 @@ func formatProgram(p *Program) (string, error) {
 
 func rewriteLine(ln string, recs []Record) string {
 	ln = strings.TrimSuffix(strings.TrimSpace(ln), ",")
+	prefix := ""
+	if m := assignRe.FindStringSubmatch(ln); m != nil {
+		prefix = "let " + m[1] + " = "
+		ln = strings.TrimSpace(m[2])
+	}
 	if strings.HasPrefix(ln, "io:format(") {
 		ln = strings.TrimPrefix(ln, "io:format(")
 		ln = rewritePrint(ln)
@@ -151,9 +158,6 @@ func rewriteLine(ln string, recs []Record) string {
 	}
 	if appendRe.MatchString(ln) {
 		ln = appendRe.ReplaceAllString(ln, "append($1, $2)")
-	}
-	if m := assignRe.FindStringSubmatch(strings.TrimSuffix(ln, ",")); m != nil {
-		ln = "let " + m[1] + " = " + m[2]
 	}
 	if strings.Contains(ln, "lists:sum(") {
 		ln = strings.ReplaceAll(ln, "lists:sum(", "sum(")
@@ -199,6 +203,21 @@ func rewriteLine(ln string, recs []Record) string {
 			}
 			return "substring(" + target + ", " + start + ", " + start + " + " + length + ")"
 		})
+	}
+	if printCallRe.MatchString(ln) {
+		ln = printCallRe.ReplaceAllString(ln, "print($1)")
+	}
+	for caseIfRe.MatchString(ln) {
+		ln = caseIfRe.ReplaceAllStringFunc(ln, func(s string) string {
+			m := caseIfRe.FindStringSubmatch(s)
+			if len(m) == 4 {
+				return fmt.Sprintf("if %s { %s } else { %s }", strings.TrimSpace(m[1]), strings.TrimSpace(m[2]), strings.TrimSpace(m[3]))
+			}
+			return s
+		})
+	}
+	if prefix != "" {
+		ln = prefix + ln
 	}
 	if strings.Contains(ln, "andalso") {
 		ln = strings.ReplaceAll(ln, "andalso", "&&")
