@@ -1,0 +1,406 @@
+(program
+  (fun input
+    (return
+      (call io.read (string *l))
+    )
+  )
+  (let _nil (list))
+  (var _now_seed (int 0))
+  (var _now_seeded (bool false))
+  (fun _now
+    (type int)
+    (if
+      (selector _now_seeded)
+      (block
+        (var _now_seed
+          (binary %
+            (binary +
+              (binary * (selector _now_seed) (int 1664525))
+              (int 1013904223)
+            )
+            (int 2147483647)
+          )
+        )
+        (return (selector _now_seed))
+      )
+    )
+    (return
+      (binary +
+        (binary * (call os.time) (int 1000000000))
+        (call math.floor
+          (binary * (call os.clock) (int 1000000000))
+        )
+      )
+    )
+  )
+  (fun _padStart
+    (if
+      (binary ||
+        (binary == (selector ch) (null))
+        (binary == (selector ch) (string ""))
+      )
+      (block
+        (let ch (string " "))
+      )
+    )
+    (if
+      (binary >=
+        (call len (selector s))
+        (selector len)
+      )
+      (block
+        (return (selector s))
+      )
+    )
+    (let fill
+      (call substring (selector ch) (int 1) (int 1))
+    )
+    (return
+      (binary +
+        (call string.rep
+          (selector fill)
+          (binary -
+            (selector len)
+            (call len (selector s))
+          )
+        )
+        (selector s)
+      )
+    )
+  )
+  (fun _gcd
+    (let a
+      (call math.abs (selector a))
+    )
+    (let b
+      (call math.abs (selector b))
+    )
+    (while
+      (binary != (selector b) (int 0))
+      (block
+        (assign (selector a) (selector b))
+        (assign
+          (selector b)
+          (binary % (selector a) (selector b))
+        )
+      )
+    )
+    (return (selector a))
+  )
+  (fun _bigrat
+    (if
+      (binary &&
+        (binary &&
+          (binary &&
+            (binary ==
+              (call type (selector n))
+              (string table)
+            )
+            (binary !=
+              (selector num (selector n))
+              (null)
+            )
+          )
+          (binary !=
+            (selector den (selector n))
+            (null)
+          )
+        )
+        (binary == (selector d) (null))
+      )
+      (block
+        (return (selector n))
+      )
+    )
+    (if
+      (binary == (selector d) (null))
+      (block
+        (let d (int 1))
+      )
+    )
+    (if
+      (binary < (selector d) (int 0))
+      (block
+        (let n
+          (binary - (int 0) (selector n))
+        )
+        (let d
+          (binary - (int 0) (selector d))
+        )
+      )
+    )
+    (let g
+      (call _gcd (selector n) (selector d))
+    )
+    (return
+      (map
+        (entry
+          (string num)
+          (binary / (selector n) (selector g))
+        )
+        (entry
+          (string den)
+          (binary / (selector d) (selector g))
+        )
+      )
+    )
+  )
+  (fun _add
+    (return
+      (call _bigrat
+        (binary +
+          (binary *
+            (selector num (selector a))
+            (selector den (selector b))
+          )
+          (binary *
+            (selector num (selector b))
+            (selector den (selector a))
+          )
+        )
+        (binary *
+          (selector den (selector a))
+          (selector den (selector b))
+        )
+      )
+    )
+  )
+  (fun _sub
+    (return
+      (call _bigrat
+        (binary -
+          (binary *
+            (selector num (selector a))
+            (selector den (selector b))
+          )
+          (binary *
+            (selector num (selector b))
+            (selector den (selector a))
+          )
+        )
+        (binary *
+          (selector den (selector a))
+          (selector den (selector b))
+        )
+      )
+    )
+  )
+  (fun _mul
+    (return
+      (call _bigrat
+        (binary *
+          (selector num (selector a))
+          (selector num (selector b))
+        )
+        (binary *
+          (selector den (selector a))
+          (selector den (selector b))
+        )
+      )
+    )
+  )
+  (fun _div
+    (return
+      (call _bigrat
+        (binary *
+          (selector num (selector a))
+          (selector den (selector b))
+        )
+        (binary *
+          (selector den (selector a))
+          (selector num (selector b))
+        )
+      )
+    )
+  )
+  (fun num
+    (param x (type int))
+    (if
+      (binary &&
+        (binary ==
+          (call type (selector x))
+          (string table)
+        )
+        (binary !=
+          (selector num (selector x))
+          (null)
+        )
+      )
+      (block
+        (return
+          (selector num (selector x))
+        )
+      )
+    )
+    (return (selector x))
+  )
+  (fun denom
+    (param x)
+    (type int)
+    (if
+      (binary &&
+        (binary ==
+          (call type (selector x))
+          (string table)
+        )
+        (binary !=
+          (selector den (selector x))
+          (null)
+        )
+      )
+      (block
+        (return
+          (selector den (selector x))
+        )
+      )
+    )
+    (return (int 1))
+  )
+  (fun _sha256
+    (let tmp (call os.tmpname))
+    (let f
+      (call assert
+        (call io.open (selector tmp) (string wb))
+      )
+    )
+    (for i
+      (range
+        (int 1)
+        (binary +
+          (call len (selector bs))
+          (int 1)
+        )
+      )
+      (block
+        (call f.write
+          (call string.char
+            (selector i (selector bs))
+          )
+        )
+      )
+    )
+    (call f.close)
+    (let p
+      (call io.popen
+        (binary + (string "sha256sum ") (selector tmp))
+      )
+    )
+    (let out
+      (binary ||
+        (call p.read (string *l))
+        (string "")
+      )
+    )
+    (call p.close)
+    (call os.remove (selector tmp))
+    (let hex
+      (call substring (selector out) (int 1) (int 64))
+    )
+    (let res (list))
+    (for i
+      (range
+        (int 1)
+        (binary +
+          (call len (selector hex))
+          (int 2)
+        )
+      )
+      (block
+        (assign
+          (index
+            (selector res)
+            (call len (selector res))
+          )
+          (call tonumber
+            (call substring
+              (selector hex)
+              (selector i)
+              (binary + (selector i) (int 1))
+            )
+            (int 16)
+          )
+        )
+      )
+    )
+    (return (selector res))
+  )
+  (fun _indexOf
+    (for i
+      (range
+        (int 1)
+        (binary +
+          (call len (selector s))
+          (int 1)
+        )
+      )
+      (block
+        (if
+          (binary ==
+            (call substring (selector s) (selector i) (selector i))
+            (selector ch)
+          )
+          (block
+            (return
+              (binary - (selector i) (int 1))
+            )
+          )
+        )
+      )
+    )
+    (return
+      (binary - (int 0) (int 1))
+    )
+  )
+  (fun _parseIntStr
+    (let n
+      (call tonumber (selector str) (int 10))
+    )
+    (if
+      (binary == (selector n) (null))
+      (block
+        (return (int 0))
+      )
+    )
+    (return
+      (call math.floor (selector n))
+    )
+  )
+  (fun slice
+    (if
+      (binary < (selector s) (int 0))
+      (block
+        (var s
+          (binary +
+            (call len (selector lst))
+            (selector s)
+          )
+        )
+      )
+    )
+    (if
+      (binary == (selector e) (null))
+      (block
+        (let e
+          (call len (selector lst))
+        )
+      )
+    )
+    (let r (list))
+    (for i
+      (range
+        (binary + (selector s) (int 1))
+        (binary + (selector e) (int 1))
+      )
+      (block
+        (assign
+          (index
+            (selector r)
+            (call len (selector r))
+          )
+          (selector i (selector lst))
+        )
+      )
+    )
+    (return (selector r))
+  )
+)

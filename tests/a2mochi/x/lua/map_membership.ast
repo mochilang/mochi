@@ -1,0 +1,20 @@
+(program
+  (let m
+    (map
+      (entry (string a) (int 1))
+      (entry (string b) (int 2))
+    )
+  )
+  (call print
+    (binary !=
+      (selector a (selector m))
+      (null)
+    )
+  )
+  (call print
+    (binary !=
+      (selector c (selector m))
+      (null)
+    )
+  )
+)

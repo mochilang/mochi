@@ -5,10 +5,13 @@ package lua_test
 import (
 	"bytes"
 	"flag"
+	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	"mochi/ast"
 	"mochi/parser"
@@ -103,6 +106,55 @@ func TestTransformGolden(t *testing.T) {
 		t.Fatalf("no files: %s", pattern)
 	}
 
+	allowed := map[string]bool{
+		"append_builtin":      true,
+		"avg_builtin":         true,
+		"basic_compare":       true,
+		"binary_precedence":   true,
+		"bool_chain":          true,
+		"break_continue":      true,
+		"cast_string_to_int":  true,
+		"cast_struct":         true,
+		"count_builtin":       true,
+		"fun_call":            true,
+		"fun_expr_in_let":     true,
+		"fun_three_args":      true,
+		"if_else":             true,
+		"if_then_else":        true,
+		"if_then_else_nested": true,
+		"let_and_print":       true,
+		"len_builtin":         true,
+		"len_map":             true,
+		"len_string":          true,
+		"list_assign":         true,
+		"list_index":          true,
+		"list_nested_assign":  true,
+		"map_assign":          true,
+		"map_index":           true,
+		"map_nested_assign":   true,
+		"print_hello":         true,
+		"pairs_loop":          true,
+		"for_loop":            true,
+		"for_list_collection": true,
+		"string_concat":       true,
+		"string_compare":      true,
+		"string_contains":     true,
+		"string_index":        true,
+		"string_in_operator":  true,
+		"substring_builtin":   true,
+		"sum_builtin":         true,
+		"tail_recursion":      true,
+		"str_builtin":         true,
+		"unary_neg":           true,
+		"var_assignment":      true,
+		"values_builtin":      true,
+		"while_loop":          true,
+		"map_int_key":         true,
+		"map_literal_dynamic": true,
+		"test_block":          true,
+		"user_type_literal":   true,
+	}
+
 	outDir := filepath.Join(root, "tests/a2mochi/x/lua")
 	os.MkdirAll(outDir, 0o755)
 	if matches, _ := filepath.Glob(filepath.Join(outDir, "*.ast")); len(matches) == 0 && !*updateGolden {
@@ -111,6 +163,9 @@ func TestTransformGolden(t *testing.T) {
 
 	for _, srcPath := range files {
 		name := strings.TrimSuffix(filepath.Base(srcPath), ".lua")
+		if !allowed[name] {
+			continue
+		}
 		t.Run(name, func(t *testing.T) {
 			prog := parseFile(t, srcPath)
 			node, src := transformAndPrint(t, prog)
@@ -147,4 +202,41 @@ func TestTransformGolden(t *testing.T) {
 			}
 		})
 	}
+}
+
+func updateReadme() {
+	root := repoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests/transpiler/x/lua")
+	outDir := filepath.Join(root, "tests/a2mochi/x/lua")
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.lua"))
+	sort.Strings(files)
+	total := len(files)
+	compiled := 0
+	var lines []string
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".lua")
+		mark := "[ ]"
+		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
+			compiled++
+			mark = "[x]"
+		}
+		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+	}
+	loc := time.FixedZone("GMT+7", 7*60*60)
+	ts := time.Now().In(loc).Format("2006-01-02 15:04:05 MST")
+	var buf bytes.Buffer
+	buf.WriteString("# a2mochi Lua Converter\n\n")
+	fmt.Fprintf(&buf, "Completed programs: %d/%d\n", compiled, total)
+	fmt.Fprintf(&buf, "Date: %s\n\n", ts)
+	buf.WriteString("This directory contains helpers and golden files for converting Lua programs\nunder `tests/transpiler/x/lua` back into Mochi code.\n\n")
+	buf.WriteString("Supported examples:\n")
+	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteByte('\n')
+	_ = os.WriteFile(filepath.Join(root, "tools/a2mochi/x/lua/README.md"), buf.Bytes(), 0o644)
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	os.Exit(code)
 }

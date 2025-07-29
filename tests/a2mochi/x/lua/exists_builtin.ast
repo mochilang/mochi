@@ -1,0 +1,12 @@
+(program
+  (let data
+    (list (int 1) (int 2))
+  )
+  (let flag
+    (binary >
+      (call len (call "fun() {\n    let _res = []\n    for x in data {\n      if x == 1 {\n        table.insert(_res, x)\n      }\n    }\n    return _res\n}"))
+      (int 0)
+    )
+  )
+  (call print (selector flag))
+)

@@ -1,0 +1,14 @@
+(program
+  (let x (int 3))
+  (let y (int 4))
+  (let m
+    (map
+      (entry (string a) (selector x))
+      (entry (string b) (selector y))
+    )
+  )
+  (call print
+    (selector a (selector m))
+    (selector b (selector m))
+  )
+)

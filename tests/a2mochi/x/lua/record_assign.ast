@@ -1,0 +1,23 @@
+(program
+  (fun inc
+    (param c)
+    (assign
+      (selector n (selector c))
+      (binary +
+        (selector n (selector c))
+        (int 1)
+      )
+    )
+  )
+  (var c
+    (map
+      (entry (string n) (int 0))
+    )
+  )
+  (call inc
+    (call "fun(_t) {\n    let _c = []\n    for v in values(_t) {\n      _c.k = v\n    }\n    return _c\n}" (selector c))
+  )
+  (call "fun(v: int) {\n    fun encode(x) {\n      if type(x) == \"table\" {\n        if len(x) > 0 {\n          let parts = [\"[\"]\n          for val in x {\n            parts[(len(parts) + 1)] = encode(val)\n            if i < len(x) {\n              parts[(len(parts) + 1)] = \", \"\n            }\n          }\n          parts[(len(parts) + 1)] = \"]\"\n          return table.concat(parts)\n        } else {\n          let keys = []\n          for k in x {\n            table.insert(keys, k)\n          }\n          table.sort(keys, fun(a: int, b: int): bool => str(a) < str(b))\n          let parts = [\"{\"]\n          for k in keys {\n            parts[(len(parts) + 1)] = \"'\" + str(k) + \"': \" + encode(x.k)\n            if i < len(keys) {\n              parts[(len(parts) + 1)] = \", \"\n            }\n          }\n          parts[(len(parts) + 1)] = \"}\"\n          return table.concat(parts)\n        }\n      } else if type(x) == \"string\" {\n        return \"'\" + x + \"'\"\n      } else {\n        return str(x)\n      }\n    }\n    print(encode(v))\n}"
+    (selector n (selector c))
+  )
+)

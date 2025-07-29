@@ -1,0 +1,64 @@
+(program
+  (var people
+    (list
+      (map
+        (entry (string name) (string Alice))
+        (entry (string age) (int 17))
+        (entry (string status) (string minor))
+      )
+      (map
+        (entry (string name) (string Bob))
+        (entry (string age) (int 25))
+        (entry (string status) (string unknown))
+      )
+      (map
+        (entry (string name) (string Charlie))
+        (entry (string age) (int 18))
+        (entry (string status) (string unknown))
+      )
+      (map
+        (entry (string name) (string Diana))
+        (entry (string age) (int 16))
+        (entry (string status) (string minor))
+      )
+    )
+  )
+  (for _i0
+    (range
+      (int 1)
+      (binary +
+        (call len (selector people))
+        (int 1)
+      )
+    )
+    (block
+      (var item
+        (selector _i0 (selector people))
+      )
+      (if
+        (binary >=
+          (selector age (selector item))
+          (int 18)
+        )
+        (block
+          (assign
+            (selector status (selector item))
+            (string adult)
+          )
+          (assign
+            (selector age (selector item))
+            (binary +
+              (selector age (selector item))
+              (int 1)
+            )
+          )
+        )
+      )
+      (assign
+        (selector _i0 (selector people))
+        (selector item)
+      )
+    )
+  )
+  (call print (string ok))
+)

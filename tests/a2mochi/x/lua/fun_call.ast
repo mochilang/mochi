@@ -4,9 +4,7 @@
     (param b (type int))
     (type int)
     (return
-      (group
-        (binary + (selector a) (selector b))
-      )
+      (binary + (selector a) (selector b))
     )
   )
   (call print
