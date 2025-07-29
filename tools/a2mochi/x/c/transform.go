@@ -153,6 +153,10 @@ func valueWithVars(n *Node, vars map[string]string) string {
 		return n.Value
 	case "StringLiteral":
 		return strconv.Quote(strings.Trim(n.Value, "\""))
+	case "CharacterLiteral":
+		if v, err := strconv.Atoi(n.Value); err == nil {
+			return strconv.QuoteRune(rune(v))
+		}
 	case "DeclRefExpr":
 		if n.Name != "" {
 			if v, ok := vars[n.Name]; ok {
@@ -165,15 +169,62 @@ func valueWithVars(n *Node, vars map[string]string) string {
 			}
 		}
 		return ""
+	case "ConditionalOperator":
+		if len(n.Inner) == 3 {
+			cond := valueWithVars(&n.Inner[0], vars)
+			if cond != "" {
+				if isTrue(cond) {
+					return valueWithVars(&n.Inner[1], vars)
+				}
+				return valueWithVars(&n.Inner[2], vars)
+			}
+		}
 	case "BinaryOperator":
 		if len(n.Inner) == 2 {
 			a := valueWithVars(&n.Inner[0], vars)
 			b := valueWithVars(&n.Inner[1], vars)
 			if a != "" && b != "" {
-				ai, err1 := strconv.Atoi(a)
-				bi, err2 := strconv.Atoi(b)
-				if err1 == nil && err2 == nil {
-					return strconv.Itoa(ai + bi)
+				switch n.Op {
+				case "+", "-", "*", "/":
+					ai, err1 := strconv.Atoi(a)
+					bi, err2 := strconv.Atoi(b)
+					if err1 == nil && err2 == nil {
+						switch n.Op {
+						case "+":
+							return strconv.Itoa(ai + bi)
+						case "-":
+							return strconv.Itoa(ai - bi)
+						case "*":
+							return strconv.Itoa(ai * bi)
+						case "/":
+							if bi != 0 {
+								return strconv.Itoa(ai / bi)
+							}
+						}
+					}
+				case "&&":
+					return strconv.FormatBool(isTrue(a) && isTrue(b))
+				case "||":
+					return strconv.FormatBool(isTrue(a) || isTrue(b))
+				case "==":
+					return strconv.FormatBool(a == b)
+				case "!=":
+					return strconv.FormatBool(a != b)
+				case "<", "<=", ">", ">=":
+					ai, err1 := strconv.Atoi(a)
+					bi, err2 := strconv.Atoi(b)
+					if err1 == nil && err2 == nil {
+						switch n.Op {
+						case "<":
+							return strconv.FormatBool(ai < bi)
+						case "<=":
+							return strconv.FormatBool(ai <= bi)
+						case ">":
+							return strconv.FormatBool(ai > bi)
+						case ">=":
+							return strconv.FormatBool(ai >= bi)
+						}
+					}
 				}
 			}
 		}
@@ -204,6 +255,20 @@ func valueNode(v string) *ast.Node {
 		return &ast.Node{Kind: "bool", Value: v == "true"}
 	}
 	return &ast.Node{Kind: "unknown", Value: v}
+}
+
+func isTrue(v string) bool {
+	switch v {
+	case "true", "1":
+		return true
+	case "false", "0", "":
+		return false
+	}
+	// fallback for numeric strings
+	if i, err := strconv.Atoi(v); err == nil {
+		return i != 0
+	}
+	return v != ""
 }
 
 func parseArrayLoops(p *Program) []string {

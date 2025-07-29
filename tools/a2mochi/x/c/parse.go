@@ -13,6 +13,7 @@ type Node struct {
 	Kind  string `json:"kind"`
 	Name  string `json:"name"`
 	Value string `json:"value"`
+	Op    string `json:"opcode"`
 	Inner []Node `json:"inner"`
 	Ref   *Node  `json:"referencedDecl"`
 }
