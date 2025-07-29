@@ -17,12 +17,857 @@
         }
       ],
       "ret": "int",
-      "body": "{\n    for (size_t i = 0; i \u003c len; i++) {\n        if (arr[i] == val) return 1;\n    }\n    return 0;\n"
+      "body": {
+        "kind": "CompoundStmt",
+        "inner": [
+          {
+            "kind": "ForStmt",
+            "inner": [
+              {
+                "kind": "DeclStmt",
+                "inner": [
+                  {
+                    "kind": "VarDecl",
+                    "name": "i",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "IntegerLiteral",
+                            "type": "int",
+                            "value": "0"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": ""
+              },
+              {
+                "kind": "BinaryOperator",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "DeclRefExpr",
+                        "type": "int"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "DeclRefExpr",
+                        "type": "int"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "UnaryOperator",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int"
+                  }
+                ]
+              },
+              {
+                "kind": "CompoundStmt",
+                "inner": [
+                  {
+                    "kind": "IfStmt",
+                    "inner": [
+                      {
+                        "kind": "BinaryOperator",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "ArraySubscriptExpr",
+                                "type": "int",
+                                "inner": [
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "int"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "int"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "DeclRefExpr",
+                                "type": "int"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "ReturnStmt",
+                        "inner": [
+                          {
+                            "kind": "IntegerLiteral",
+                            "type": "int",
+                            "value": "1"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "ReturnStmt",
+            "inner": [
+              {
+                "kind": "IntegerLiteral",
+                "type": "int",
+                "value": "0"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "name": "main",
       "ret": "int",
-      "body": "{\n    int ys[3]; size_t ys_len = 0;\n    for(size_t i=0;i\u003c3;i++){ int x=xs[i]; if((x % 2) == 1) {ys[ys_len++] = x; }}\n    printf(\"%d\\n\", contains_int(ys, ys_len, 1));\n    printf(\"%d\\n\", contains_int(ys, ys_len, 2));\n    printf(\"%d\\n\", 0);\n    printf(\"%d\\n\", 0);\n    printf(\"%d\\n\", strstr(s, \"ell\") != NULL);\n    printf(\"%d\\n\", strstr(s, \"foo\") != NULL);\n    return 0;\n"
+      "body": {
+        "kind": "CompoundStmt",
+        "inner": [
+          {
+            "kind": "DeclStmt",
+            "inner": [
+              {
+                "kind": "VarDecl",
+                "name": "ys",
+                "type": "int[3]"
+              }
+            ]
+          },
+          {
+            "kind": "DeclStmt",
+            "inner": [
+              {
+                "kind": "VarDecl",
+                "name": "ys_len",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "IntegerLiteral",
+                        "type": "int",
+                        "value": "0"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "ForStmt",
+            "inner": [
+              {
+                "kind": "DeclStmt",
+                "inner": [
+                  {
+                    "kind": "VarDecl",
+                    "name": "i",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "IntegerLiteral",
+                            "type": "int",
+                            "value": "0"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": ""
+              },
+              {
+                "kind": "BinaryOperator",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "DeclRefExpr",
+                        "type": "int"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "IntegerLiteral",
+                        "type": "int",
+                        "value": "3"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "UnaryOperator",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int"
+                  }
+                ]
+              },
+              {
+                "kind": "CompoundStmt",
+                "inner": [
+                  {
+                    "kind": "DeclStmt",
+                    "inner": [
+                      {
+                        "kind": "VarDecl",
+                        "name": "x",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "ArraySubscriptExpr",
+                                "type": "int",
+                                "inner": [
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "int[3]"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "int"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "IfStmt",
+                    "inner": [
+                      {
+                        "kind": "BinaryOperator",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "ParenExpr",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "BinaryOperator",
+                                "type": "int",
+                                "inner": [
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "int"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "IntegerLiteral",
+                                    "type": "int",
+                                    "value": "2"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "IntegerLiteral",
+                            "type": "int",
+                            "value": "1"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "CompoundStmt",
+                        "inner": [
+                          {
+                            "kind": "BinaryOperator",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "ArraySubscriptExpr",
+                                "type": "int",
+                                "inner": [
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "int[3]"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "UnaryOperator",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "int"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "ImplicitCastExpr",
+                                "type": "int",
+                                "inner": [
+                                  {
+                                    "kind": "DeclRefExpr",
+                                    "type": "int"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "CallExpr",
+            "type": "int",
+            "inner": [
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "int (*)(const char *, ...)",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int (const char *, ...)"
+                  }
+                ]
+              },
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "string",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "StringLiteral",
+                        "type": "int",
+                        "value": "\"%d\\n\""
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "CallExpr",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int (*)(const int *, size_t, int)",
+                    "inner": [
+                      {
+                        "kind": "DeclRefExpr",
+                        "type": "int (const int *, size_t, int)"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "DeclRefExpr",
+                            "type": "int[3]"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "DeclRefExpr",
+                        "type": "int"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "IntegerLiteral",
+                    "type": "int",
+                    "value": "1"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "CallExpr",
+            "type": "int",
+            "inner": [
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "int (*)(const char *, ...)",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int (const char *, ...)"
+                  }
+                ]
+              },
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "string",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "StringLiteral",
+                        "type": "int",
+                        "value": "\"%d\\n\""
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "CallExpr",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int (*)(const int *, size_t, int)",
+                    "inner": [
+                      {
+                        "kind": "DeclRefExpr",
+                        "type": "int (const int *, size_t, int)"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "DeclRefExpr",
+                            "type": "int[3]"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "DeclRefExpr",
+                        "type": "int"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "IntegerLiteral",
+                    "type": "int",
+                    "value": "2"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "CallExpr",
+            "type": "int",
+            "inner": [
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "int (*)(const char *, ...)",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int (const char *, ...)"
+                  }
+                ]
+              },
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "string",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "StringLiteral",
+                        "type": "int",
+                        "value": "\"%d\\n\""
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "IntegerLiteral",
+                "type": "int",
+                "value": "0"
+              }
+            ]
+          },
+          {
+            "kind": "CallExpr",
+            "type": "int",
+            "inner": [
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "int (*)(const char *, ...)",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int (const char *, ...)"
+                  }
+                ]
+              },
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "string",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "StringLiteral",
+                        "type": "int",
+                        "value": "\"%d\\n\""
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "IntegerLiteral",
+                "type": "int",
+                "value": "0"
+              }
+            ]
+          },
+          {
+            "kind": "CallExpr",
+            "type": "int",
+            "inner": [
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "int (*)(const char *, ...)",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int (const char *, ...)"
+                  }
+                ]
+              },
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "string",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "StringLiteral",
+                        "type": "int",
+                        "value": "\"%d\\n\""
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "BinaryOperator",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "CallExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "DeclRefExpr",
+                            "type": "int"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "string",
+                        "inner": [
+                          {
+                            "kind": "DeclRefExpr",
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "string",
+                        "inner": [
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "string",
+                            "inner": [
+                              {
+                                "kind": "StringLiteral",
+                                "type": "int",
+                                "value": "\"ell\""
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "ParenExpr",
+                        "inner": [
+                          {
+                            "kind": "CStyleCastExpr",
+                            "inner": [
+                              {
+                                "kind": "IntegerLiteral",
+                                "type": "int",
+                                "value": "0"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "CallExpr",
+            "type": "int",
+            "inner": [
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "int (*)(const char *, ...)",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int (const char *, ...)"
+                  }
+                ]
+              },
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "string",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "StringLiteral",
+                        "type": "int",
+                        "value": "\"%d\\n\""
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "BinaryOperator",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "CallExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "DeclRefExpr",
+                            "type": "int"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "string",
+                        "inner": [
+                          {
+                            "kind": "DeclRefExpr",
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "string",
+                        "inner": [
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "string",
+                            "inner": [
+                              {
+                                "kind": "StringLiteral",
+                                "type": "int",
+                                "value": "\"foo\""
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "ParenExpr",
+                        "inner": [
+                          {
+                            "kind": "CStyleCastExpr",
+                            "inner": [
+                              {
+                                "kind": "IntegerLiteral",
+                                "type": "int",
+                                "value": "0"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "ReturnStmt",
+            "inner": [
+              {
+                "kind": "IntegerLiteral",
+                "type": "int",
+                "value": "0"
+              }
+            ]
+          }
+        ]
+      }
     }
   ],
   "globals": [

@@ -3,7 +3,706 @@
     {
       "name": "main",
       "ret": "int",
-      "body": "{\n    puts(\"--- Cross Join of three lists ---\");\n    {\n        Anon1 c_arr[] = {(Anon1){.b = 1, .l = \"A\", .n = 1}, (Anon1){.b = 0, .l = \"A\", .n = 1}, (Anon1){.b = 1, .l = \"B\", .n = 1}, (Anon1){.b = 0, .l = \"B\", .n = 1}, (Anon1){.b = 1, .l = \"A\", .n = 2}, (Anon1){.b = 0, .l = \"A\", .n = 2}, (Anon1){.b = 1, .l = \"B\", .n = 2}, (Anon1){.b = 0, .l = \"B\", .n = 2}};\n        size_t c_len = sizeof(c_arr) / sizeof(c_arr[0]);\n        for (size_t i = 0; i \u003c c_len; i++) {\n            Anon1 c = c_arr[i];\n            printf(\"%d %s %d\\n\", c.n, c.l, c.b);\n        }\n    }\n    return 0;\n"
+      "body": {
+        "kind": "CompoundStmt",
+        "inner": [
+          {
+            "kind": "CallExpr",
+            "type": "int",
+            "inner": [
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "int (*)(const char *)",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int (const char *)"
+                  }
+                ]
+              },
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "string",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "StringLiteral",
+                        "type": "int",
+                        "value": "\"--- Cross Join of three lists ---\""
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "CompoundStmt",
+            "inner": [
+              {
+                "kind": "DeclStmt",
+                "inner": [
+                  {
+                    "kind": "VarDecl",
+                    "name": "c_arr",
+                    "type": "Anon1[8]",
+                    "inner": [
+                      {
+                        "kind": "InitListExpr",
+                        "type": "Anon1[8]",
+                        "inner": [
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "Anon1",
+                            "inner": [
+                              {
+                                "kind": "CompoundLiteralExpr",
+                                "type": "Anon1",
+                                "inner": [
+                                  {
+                                    "kind": "InitListExpr",
+                                    "type": "Anon1",
+                                    "inner": [
+                                      {
+                                        "kind": "IntegerLiteral",
+                                        "type": "int",
+                                        "value": "1"
+                                      },
+                                      {
+                                        "kind": "ImplicitCastExpr",
+                                        "type": "string",
+                                        "inner": [
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "string",
+                                            "inner": [
+                                              {
+                                                "kind": "StringLiteral",
+                                                "type": "int",
+                                                "value": "\"A\""
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "IntegerLiteral",
+                                        "type": "int",
+                                        "value": "1"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "Anon1",
+                            "inner": [
+                              {
+                                "kind": "CompoundLiteralExpr",
+                                "type": "Anon1",
+                                "inner": [
+                                  {
+                                    "kind": "InitListExpr",
+                                    "type": "Anon1",
+                                    "inner": [
+                                      {
+                                        "kind": "IntegerLiteral",
+                                        "type": "int",
+                                        "value": "0"
+                                      },
+                                      {
+                                        "kind": "ImplicitCastExpr",
+                                        "type": "string",
+                                        "inner": [
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "string",
+                                            "inner": [
+                                              {
+                                                "kind": "StringLiteral",
+                                                "type": "int",
+                                                "value": "\"A\""
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "IntegerLiteral",
+                                        "type": "int",
+                                        "value": "1"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "Anon1",
+                            "inner": [
+                              {
+                                "kind": "CompoundLiteralExpr",
+                                "type": "Anon1",
+                                "inner": [
+                                  {
+                                    "kind": "InitListExpr",
+                                    "type": "Anon1",
+                                    "inner": [
+                                      {
+                                        "kind": "IntegerLiteral",
+                                        "type": "int",
+                                        "value": "1"
+                                      },
+                                      {
+                                        "kind": "ImplicitCastExpr",
+                                        "type": "string",
+                                        "inner": [
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "string",
+                                            "inner": [
+                                              {
+                                                "kind": "StringLiteral",
+                                                "type": "int",
+                                                "value": "\"B\""
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "IntegerLiteral",
+                                        "type": "int",
+                                        "value": "1"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "Anon1",
+                            "inner": [
+                              {
+                                "kind": "CompoundLiteralExpr",
+                                "type": "Anon1",
+                                "inner": [
+                                  {
+                                    "kind": "InitListExpr",
+                                    "type": "Anon1",
+                                    "inner": [
+                                      {
+                                        "kind": "IntegerLiteral",
+                                        "type": "int",
+                                        "value": "0"
+                                      },
+                                      {
+                                        "kind": "ImplicitCastExpr",
+                                        "type": "string",
+                                        "inner": [
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "string",
+                                            "inner": [
+                                              {
+                                                "kind": "StringLiteral",
+                                                "type": "int",
+                                                "value": "\"B\""
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "IntegerLiteral",
+                                        "type": "int",
+                                        "value": "1"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "Anon1",
+                            "inner": [
+                              {
+                                "kind": "CompoundLiteralExpr",
+                                "type": "Anon1",
+                                "inner": [
+                                  {
+                                    "kind": "InitListExpr",
+                                    "type": "Anon1",
+                                    "inner": [
+                                      {
+                                        "kind": "IntegerLiteral",
+                                        "type": "int",
+                                        "value": "1"
+                                      },
+                                      {
+                                        "kind": "ImplicitCastExpr",
+                                        "type": "string",
+                                        "inner": [
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "string",
+                                            "inner": [
+                                              {
+                                                "kind": "StringLiteral",
+                                                "type": "int",
+                                                "value": "\"A\""
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "IntegerLiteral",
+                                        "type": "int",
+                                        "value": "2"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "Anon1",
+                            "inner": [
+                              {
+                                "kind": "CompoundLiteralExpr",
+                                "type": "Anon1",
+                                "inner": [
+                                  {
+                                    "kind": "InitListExpr",
+                                    "type": "Anon1",
+                                    "inner": [
+                                      {
+                                        "kind": "IntegerLiteral",
+                                        "type": "int",
+                                        "value": "0"
+                                      },
+                                      {
+                                        "kind": "ImplicitCastExpr",
+                                        "type": "string",
+                                        "inner": [
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "string",
+                                            "inner": [
+                                              {
+                                                "kind": "StringLiteral",
+                                                "type": "int",
+                                                "value": "\"A\""
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "IntegerLiteral",
+                                        "type": "int",
+                                        "value": "2"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "Anon1",
+                            "inner": [
+                              {
+                                "kind": "CompoundLiteralExpr",
+                                "type": "Anon1",
+                                "inner": [
+                                  {
+                                    "kind": "InitListExpr",
+                                    "type": "Anon1",
+                                    "inner": [
+                                      {
+                                        "kind": "IntegerLiteral",
+                                        "type": "int",
+                                        "value": "1"
+                                      },
+                                      {
+                                        "kind": "ImplicitCastExpr",
+                                        "type": "string",
+                                        "inner": [
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "string",
+                                            "inner": [
+                                              {
+                                                "kind": "StringLiteral",
+                                                "type": "int",
+                                                "value": "\"B\""
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "IntegerLiteral",
+                                        "type": "int",
+                                        "value": "2"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "Anon1",
+                            "inner": [
+                              {
+                                "kind": "CompoundLiteralExpr",
+                                "type": "Anon1",
+                                "inner": [
+                                  {
+                                    "kind": "InitListExpr",
+                                    "type": "Anon1",
+                                    "inner": [
+                                      {
+                                        "kind": "IntegerLiteral",
+                                        "type": "int",
+                                        "value": "0"
+                                      },
+                                      {
+                                        "kind": "ImplicitCastExpr",
+                                        "type": "string",
+                                        "inner": [
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "string",
+                                            "inner": [
+                                              {
+                                                "kind": "StringLiteral",
+                                                "type": "int",
+                                                "value": "\"B\""
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "IntegerLiteral",
+                                        "type": "int",
+                                        "value": "2"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "DeclStmt",
+                "inner": [
+                  {
+                    "kind": "VarDecl",
+                    "name": "c_len",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "BinaryOperator",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "UnaryExprOrTypeTraitExpr",
+                            "name": "sizeof",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "ParenExpr",
+                                "type": "Anon1[8]",
+                                "inner": [
+                                  {
+                                    "kind": "DeclRefExpr",
+                                    "type": "Anon1[8]"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "UnaryExprOrTypeTraitExpr",
+                            "name": "sizeof",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "ParenExpr",
+                                "type": "Anon1",
+                                "inner": [
+                                  {
+                                    "kind": "ArraySubscriptExpr",
+                                    "type": "Anon1",
+                                    "inner": [
+                                      {
+                                        "kind": "ImplicitCastExpr",
+                                        "type": "Anon1",
+                                        "inner": [
+                                          {
+                                            "kind": "DeclRefExpr",
+                                            "type": "Anon1[8]"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "IntegerLiteral",
+                                        "type": "int",
+                                        "value": "0"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "ForStmt",
+                "inner": [
+                  {
+                    "kind": "DeclStmt",
+                    "inner": [
+                      {
+                        "kind": "VarDecl",
+                        "name": "i",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "IntegerLiteral",
+                                "type": "int",
+                                "value": "0"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": ""
+                  },
+                  {
+                    "kind": "BinaryOperator",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "DeclRefExpr",
+                            "type": "int"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "DeclRefExpr",
+                            "type": "int"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "UnaryOperator",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "DeclRefExpr",
+                        "type": "int"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "CompoundStmt",
+                    "inner": [
+                      {
+                        "kind": "DeclStmt",
+                        "inner": [
+                          {
+                            "kind": "VarDecl",
+                            "name": "c",
+                            "type": "Anon1",
+                            "inner": [
+                              {
+                                "kind": "ImplicitCastExpr",
+                                "type": "Anon1",
+                                "inner": [
+                                  {
+                                    "kind": "ArraySubscriptExpr",
+                                    "type": "Anon1",
+                                    "inner": [
+                                      {
+                                        "kind": "ImplicitCastExpr",
+                                        "type": "Anon1",
+                                        "inner": [
+                                          {
+                                            "kind": "DeclRefExpr",
+                                            "type": "Anon1[8]"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "ImplicitCastExpr",
+                                        "type": "int",
+                                        "inner": [
+                                          {
+                                            "kind": "DeclRefExpr",
+                                            "type": "int"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "CallExpr",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "int (*)(const char *, ...)",
+                            "inner": [
+                              {
+                                "kind": "DeclRefExpr",
+                                "type": "int (const char *, ...)"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "string",
+                            "inner": [
+                              {
+                                "kind": "ImplicitCastExpr",
+                                "type": "string",
+                                "inner": [
+                                  {
+                                    "kind": "StringLiteral",
+                                    "type": "int",
+                                    "value": "\"%d %s %d\\n\""
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "MemberExpr",
+                                "name": "n",
+                                "type": "int",
+                                "inner": [
+                                  {
+                                    "kind": "DeclRefExpr",
+                                    "type": "Anon1"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "string",
+                            "inner": [
+                              {
+                                "kind": "MemberExpr",
+                                "name": "l",
+                                "type": "string",
+                                "inner": [
+                                  {
+                                    "kind": "DeclRefExpr",
+                                    "type": "Anon1"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "MemberExpr",
+                                "name": "b",
+                                "type": "int",
+                                "inner": [
+                                  {
+                                    "kind": "DeclRefExpr",
+                                    "type": "Anon1"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "ReturnStmt",
+            "inner": [
+              {
+                "kind": "IntegerLiteral",
+                "type": "int",
+                "value": "0"
+              }
+            ]
+          }
+        ]
+      }
     }
   ],
   "structs": [

@@ -3,7 +3,135 @@
     {
       "name": "main",
       "ret": "int",
-      "body": "{\n    printf(\"%d\\n\", 42);\n    printf(\"%d\\n\", 3);\n    printf(\"%d\\n\", 1);\n    return 0;\n"
+      "body": {
+        "kind": "CompoundStmt",
+        "inner": [
+          {
+            "kind": "CallExpr",
+            "type": "int",
+            "inner": [
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "int (*)(const char *, ...)",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int (const char *, ...)"
+                  }
+                ]
+              },
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "string",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "StringLiteral",
+                        "type": "int",
+                        "value": "\"%d\\n\""
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "IntegerLiteral",
+                "type": "int",
+                "value": "42"
+              }
+            ]
+          },
+          {
+            "kind": "CallExpr",
+            "type": "int",
+            "inner": [
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "int (*)(const char *, ...)",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int (const char *, ...)"
+                  }
+                ]
+              },
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "string",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "StringLiteral",
+                        "type": "int",
+                        "value": "\"%d\\n\""
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "IntegerLiteral",
+                "type": "int",
+                "value": "3"
+              }
+            ]
+          },
+          {
+            "kind": "CallExpr",
+            "type": "int",
+            "inner": [
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "int (*)(const char *, ...)",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int (const char *, ...)"
+                  }
+                ]
+              },
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "string",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "StringLiteral",
+                        "type": "int",
+                        "value": "\"%d\\n\""
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "IntegerLiteral",
+                "type": "int",
+                "value": "1"
+              }
+            ]
+          },
+          {
+            "kind": "ReturnStmt",
+            "inner": [
+              {
+                "kind": "IntegerLiteral",
+                "type": "int",
+                "value": "0"
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }

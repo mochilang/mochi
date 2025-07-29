@@ -3,7 +3,227 @@
     {
       "name": "main",
       "ret": "int",
-      "body": "{\n    printf(\"%d\\n\", strstr(s, \"cat\") != NULL);\n    printf(\"%d\\n\", strstr(s, \"dog\") != NULL);\n    return 0;\n"
+      "body": {
+        "kind": "CompoundStmt",
+        "inner": [
+          {
+            "kind": "CallExpr",
+            "type": "int",
+            "inner": [
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "int (*)(const char *, ...)",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int (const char *, ...)"
+                  }
+                ]
+              },
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "string",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "StringLiteral",
+                        "type": "int",
+                        "value": "\"%d\\n\""
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "BinaryOperator",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "CallExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "DeclRefExpr",
+                            "type": "int"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "string",
+                        "inner": [
+                          {
+                            "kind": "DeclRefExpr",
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "string",
+                        "inner": [
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "string",
+                            "inner": [
+                              {
+                                "kind": "StringLiteral",
+                                "type": "int",
+                                "value": "\"cat\""
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "ParenExpr",
+                        "inner": [
+                          {
+                            "kind": "CStyleCastExpr",
+                            "inner": [
+                              {
+                                "kind": "IntegerLiteral",
+                                "type": "int",
+                                "value": "0"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "CallExpr",
+            "type": "int",
+            "inner": [
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "int (*)(const char *, ...)",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int (const char *, ...)"
+                  }
+                ]
+              },
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "string",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "StringLiteral",
+                        "type": "int",
+                        "value": "\"%d\\n\""
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "BinaryOperator",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "CallExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "DeclRefExpr",
+                            "type": "int"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "string",
+                        "inner": [
+                          {
+                            "kind": "DeclRefExpr",
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "string",
+                        "inner": [
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "string",
+                            "inner": [
+                              {
+                                "kind": "StringLiteral",
+                                "type": "int",
+                                "value": "\"dog\""
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "ParenExpr",
+                        "inner": [
+                          {
+                            "kind": "CStyleCastExpr",
+                            "inner": [
+                              {
+                                "kind": "IntegerLiteral",
+                                "type": "int",
+                                "value": "0"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "ReturnStmt",
+            "inner": [
+              {
+                "kind": "IntegerLiteral",
+                "type": "int",
+                "value": "0"
+              }
+            ]
+          }
+        ]
+      }
     }
   ],
   "globals": [

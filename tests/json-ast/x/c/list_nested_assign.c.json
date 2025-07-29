@@ -3,7 +3,147 @@
     {
       "name": "main",
       "ret": "int",
-      "body": "{\n    matrix[1][0] = 5;\n    printf(\"%d\\n\", matrix[1][0]);\n    return 0;\n"
+      "body": {
+        "kind": "CompoundStmt",
+        "inner": [
+          {
+            "kind": "BinaryOperator",
+            "type": "int",
+            "inner": [
+              {
+                "kind": "ArraySubscriptExpr",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "ArraySubscriptExpr",
+                        "type": "int[2]",
+                        "inner": [
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "int (*)[2]",
+                            "inner": [
+                              {
+                                "kind": "DeclRefExpr",
+                                "type": "int[2][2]"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "IntegerLiteral",
+                            "type": "int",
+                            "value": "1"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "IntegerLiteral",
+                    "type": "int",
+                    "value": "0"
+                  }
+                ]
+              },
+              {
+                "kind": "IntegerLiteral",
+                "type": "int",
+                "value": "5"
+              }
+            ]
+          },
+          {
+            "kind": "CallExpr",
+            "type": "int",
+            "inner": [
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "int (*)(const char *, ...)",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int (const char *, ...)"
+                  }
+                ]
+              },
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "string",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "StringLiteral",
+                        "type": "int",
+                        "value": "\"%d\\n\""
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "ArraySubscriptExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "ArraySubscriptExpr",
+                            "type": "int[2]",
+                            "inner": [
+                              {
+                                "kind": "ImplicitCastExpr",
+                                "type": "int (*)[2]",
+                                "inner": [
+                                  {
+                                    "kind": "DeclRefExpr",
+                                    "type": "int[2][2]"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "IntegerLiteral",
+                                "type": "int",
+                                "value": "1"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "IntegerLiteral",
+                        "type": "int",
+                        "value": "0"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "ReturnStmt",
+            "inner": [
+              {
+                "kind": "IntegerLiteral",
+                "type": "int",
+                "value": "0"
+              }
+            ]
+          }
+        ]
+      }
     }
   ],
   "globals": [

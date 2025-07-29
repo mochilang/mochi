@@ -3,7 +3,54 @@
     {
       "name": "main",
       "ret": "int",
-      "body": "{\n    puts(\"{\\\"cat\\\": \\\"b\\\", \\\"total\\\": 7} {\\\"cat\\\": \\\"a\\\", \\\"total\\\": 4}\");\n    return 0;\n"
+      "body": {
+        "kind": "CompoundStmt",
+        "inner": [
+          {
+            "kind": "CallExpr",
+            "type": "int",
+            "inner": [
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "int (*)(const char *)",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int (const char *)"
+                  }
+                ]
+              },
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "string",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "StringLiteral",
+                        "type": "int",
+                        "value": "\"{\\\"cat\\\": \\\"b\\\", \\\"total\\\": 7} {\\\"cat\\\": \\\"a\\\", \\\"total\\\": 4}\""
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "ReturnStmt",
+            "inner": [
+              {
+                "kind": "IntegerLiteral",
+                "type": "int",
+                "value": "0"
+              }
+            ]
+          }
+        ]
+      }
     }
   ],
   "structs": [

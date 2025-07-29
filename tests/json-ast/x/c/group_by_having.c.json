@@ -3,7 +3,54 @@
     {
       "name": "main",
       "ret": "int",
-      "body": "{\n    puts(\"[{\\\"city\\\":\\\"Paris\\\",\\\"num\\\":4},{\\\"city\\\":\\\"Hanoi\\\",\\\"num\\\":3}]\");\n    return 0;\n"
+      "body": {
+        "kind": "CompoundStmt",
+        "inner": [
+          {
+            "kind": "CallExpr",
+            "type": "int",
+            "inner": [
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "int (*)(const char *)",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int (const char *)"
+                  }
+                ]
+              },
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "string",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "StringLiteral",
+                        "type": "int",
+                        "value": "\"[{\\\"city\\\":\\\"Paris\\\",\\\"num\\\":4},{\\\"city\\\":\\\"Hanoi\\\",\\\"num\\\":3}]\""
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "ReturnStmt",
+            "inner": [
+              {
+                "kind": "IntegerLiteral",
+                "type": "int",
+                "value": "0"
+              }
+            ]
+          }
+        ]
+      }
     }
   ],
   "structs": [

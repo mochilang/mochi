@@ -3,7 +3,164 @@
     {
       "name": "main",
       "ret": "int",
-      "body": "{\n    const char* msg = (x \u003e 10 ? \"big\" : (x \u003e 5 ? \"medium\" : \"small\"));\n    puts(msg);\n    return 0;\n"
+      "body": {
+        "kind": "CompoundStmt",
+        "inner": [
+          {
+            "kind": "DeclStmt",
+            "inner": [
+              {
+                "kind": "VarDecl",
+                "name": "msg",
+                "type": "string",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "ParenExpr",
+                        "type": "string",
+                        "inner": [
+                          {
+                            "kind": "ConditionalOperator",
+                            "type": "string",
+                            "inner": [
+                              {
+                                "kind": "BinaryOperator",
+                                "type": "int",
+                                "inner": [
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "int"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "IntegerLiteral",
+                                    "type": "int",
+                                    "value": "10"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "ImplicitCastExpr",
+                                "type": "string",
+                                "inner": [
+                                  {
+                                    "kind": "StringLiteral",
+                                    "type": "int",
+                                    "value": "\"big\""
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "ParenExpr",
+                                "type": "string",
+                                "inner": [
+                                  {
+                                    "kind": "ConditionalOperator",
+                                    "type": "string",
+                                    "inner": [
+                                      {
+                                        "kind": "BinaryOperator",
+                                        "type": "int",
+                                        "inner": [
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "int",
+                                            "inner": [
+                                              {
+                                                "kind": "DeclRefExpr",
+                                                "type": "int"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "IntegerLiteral",
+                                            "type": "int",
+                                            "value": "5"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "ImplicitCastExpr",
+                                        "type": "string",
+                                        "inner": [
+                                          {
+                                            "kind": "StringLiteral",
+                                            "type": "int",
+                                            "value": "\"medium\""
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "ImplicitCastExpr",
+                                        "type": "string",
+                                        "inner": [
+                                          {
+                                            "kind": "StringLiteral",
+                                            "type": "int",
+                                            "value": "\"small\""
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "CallExpr",
+            "type": "int",
+            "inner": [
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "int (*)(const char *)",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int (const char *)"
+                  }
+                ]
+              },
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "string",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "string"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "ReturnStmt",
+            "inner": [
+              {
+                "kind": "IntegerLiteral",
+                "type": "int",
+                "value": "0"
+              }
+            ]
+          }
+        ]
+      }
     }
   ],
   "globals": [

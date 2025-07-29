@@ -3,7 +3,81 @@
     {
       "name": "main",
       "ret": "int",
-      "body": "{\n    int y = 0;\n    printf(\"%d\\n\", y);\n    return 0;\n"
+      "body": {
+        "kind": "CompoundStmt",
+        "inner": [
+          {
+            "kind": "DeclStmt",
+            "inner": [
+              {
+                "kind": "VarDecl",
+                "name": "y",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "IntegerLiteral",
+                    "type": "int",
+                    "value": "0"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "CallExpr",
+            "type": "int",
+            "inner": [
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "int (*)(const char *, ...)",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int (const char *, ...)"
+                  }
+                ]
+              },
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "string",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "string",
+                    "inner": [
+                      {
+                        "kind": "StringLiteral",
+                        "type": "int",
+                        "value": "\"%d\\n\""
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "ImplicitCastExpr",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "ReturnStmt",
+            "inner": [
+              {
+                "kind": "IntegerLiteral",
+                "type": "int",
+                "value": "0"
+              }
+            ]
+          }
+        ]
+      }
     }
   ],
   "globals": [

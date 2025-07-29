@@ -3,7 +3,1818 @@
     {
       "name": "main",
       "ret": "int",
-      "body": "{\n    struct ResultItem {int c_custkey; const char* c_name; double revenue; double c_acctbal; const char* n_name; const char* c_address; const char* c_phone; const char* c_comment;};\n    ResultItem result[4]; size_t result_len = 0;\n    for(size_t i=0;i\u003c1;i++){ Customer c=customer[i];\n      for(size_t j=0;j\u003c2;j++){ Orders o=orders[j]; if(o.o_custkey==c.c_custkey){\n        for(size_t k=0;k\u003c2;k++){ Lineitem l=lineitem[k]; if(l.l_orderkey==o.o_orderkey){\n          for(size_t m=0;m\u003c1;m++){ Nation n=nation[m]; if(n.n_nationkey==c.c_nationkey){\n            if(strcmp(o.o_orderdate,start_date)\u003e=0 \u0026\u0026 strcmp(o.o_orderdate,end_date)\u003c0 \u0026\u0026 strcmp(l.l_returnflag,\"R\")==0){\n              double rev=l.l_extendedprice*(1-l.l_discount);\n              size_t idx=0; int found=0;\n              for(; idx\u003cresult_len; idx++){ if(result[idx].c_custkey==c.c_custkey){ found=1; break; } }\n              if(found){ result[idx].revenue += rev; } else { result[result_len++] = (ResultItem){c.c_custkey,c.c_name,rev,c.c_acctbal,n.n_name,c.c_address,c.c_phone,c.c_comment}; }\n            }\n          }}\n        }}\n      }\n    }\n    }\n    for(size_t a=0;a\u003cresult_len;a++){ for(size_t b=a+1;b\u003cresult_len;b++){ if(result[a].revenue \u003c result[b].revenue){ ResultItem tmp=result[a]; result[a]=result[b]; result[b]=tmp; } }}\n    "
+      "body": {
+        "kind": "CompoundStmt",
+        "inner": [
+          {
+            "kind": "DeclStmt",
+            "inner": [
+              {
+                "kind": "RecordDecl",
+                "name": "ResultItem",
+                "inner": [
+                  {
+                    "kind": "FieldDecl",
+                    "name": "c_custkey",
+                    "type": "int"
+                  },
+                  {
+                    "kind": "FieldDecl",
+                    "name": "c_name",
+                    "type": "string"
+                  },
+                  {
+                    "kind": "FieldDecl",
+                    "name": "revenue",
+                    "type": "float"
+                  },
+                  {
+                    "kind": "FieldDecl",
+                    "name": "c_acctbal",
+                    "type": "float"
+                  },
+                  {
+                    "kind": "FieldDecl",
+                    "name": "n_name",
+                    "type": "string"
+                  },
+                  {
+                    "kind": "FieldDecl",
+                    "name": "c_address",
+                    "type": "string"
+                  },
+                  {
+                    "kind": "FieldDecl",
+                    "name": "c_phone",
+                    "type": "string"
+                  },
+                  {
+                    "kind": "FieldDecl",
+                    "name": "c_comment",
+                    "type": "string"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "DeclStmt",
+            "inner": [
+              {
+                "kind": "VarDecl",
+                "name": "result",
+                "type": "ResultItem[4]"
+              }
+            ]
+          },
+          {
+            "kind": "DeclStmt",
+            "inner": [
+              {
+                "kind": "VarDecl",
+                "name": "result_len",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "IntegerLiteral",
+                        "type": "int",
+                        "value": "0"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "ForStmt",
+            "inner": [
+              {
+                "kind": "DeclStmt",
+                "inner": [
+                  {
+                    "kind": "VarDecl",
+                    "name": "i",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "IntegerLiteral",
+                            "type": "int",
+                            "value": "0"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": ""
+              },
+              {
+                "kind": "BinaryOperator",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "DeclRefExpr",
+                        "type": "int"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "IntegerLiteral",
+                        "type": "int",
+                        "value": "1"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "UnaryOperator",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int"
+                  }
+                ]
+              },
+              {
+                "kind": "CompoundStmt",
+                "inner": [
+                  {
+                    "kind": "DeclStmt",
+                    "inner": [
+                      {
+                        "kind": "VarDecl",
+                        "name": "c",
+                        "type": "Customer",
+                        "inner": [
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "Customer",
+                            "inner": [
+                              {
+                                "kind": "ArraySubscriptExpr",
+                                "type": "Customer",
+                                "inner": [
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "Customer",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "Customer[1]"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "int"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "ForStmt",
+                    "inner": [
+                      {
+                        "kind": "DeclStmt",
+                        "inner": [
+                          {
+                            "kind": "VarDecl",
+                            "name": "j",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "ImplicitCastExpr",
+                                "type": "int",
+                                "inner": [
+                                  {
+                                    "kind": "IntegerLiteral",
+                                    "type": "int",
+                                    "value": "0"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": ""
+                      },
+                      {
+                        "kind": "BinaryOperator",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "DeclRefExpr",
+                                "type": "int"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "IntegerLiteral",
+                                "type": "int",
+                                "value": "2"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "UnaryOperator",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "DeclRefExpr",
+                            "type": "int"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "CompoundStmt",
+                        "inner": [
+                          {
+                            "kind": "DeclStmt",
+                            "inner": [
+                              {
+                                "kind": "VarDecl",
+                                "name": "o",
+                                "type": "Orders",
+                                "inner": [
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "Orders",
+                                    "inner": [
+                                      {
+                                        "kind": "ArraySubscriptExpr",
+                                        "type": "Orders",
+                                        "inner": [
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "Orders",
+                                            "inner": [
+                                              {
+                                                "kind": "DeclRefExpr",
+                                                "type": "Orders[2]"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "int",
+                                            "inner": [
+                                              {
+                                                "kind": "DeclRefExpr",
+                                                "type": "int"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "IfStmt",
+                            "inner": [
+                              {
+                                "kind": "BinaryOperator",
+                                "type": "int",
+                                "inner": [
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "MemberExpr",
+                                        "name": "o_custkey",
+                                        "type": "int",
+                                        "inner": [
+                                          {
+                                            "kind": "DeclRefExpr",
+                                            "type": "Orders"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "MemberExpr",
+                                        "name": "c_custkey",
+                                        "type": "int",
+                                        "inner": [
+                                          {
+                                            "kind": "DeclRefExpr",
+                                            "type": "Customer"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "CompoundStmt",
+                                "inner": [
+                                  {
+                                    "kind": "ForStmt",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclStmt",
+                                        "inner": [
+                                          {
+                                            "kind": "VarDecl",
+                                            "name": "k",
+                                            "type": "int",
+                                            "inner": [
+                                              {
+                                                "kind": "ImplicitCastExpr",
+                                                "type": "int",
+                                                "inner": [
+                                                  {
+                                                    "kind": "IntegerLiteral",
+                                                    "type": "int",
+                                                    "value": "0"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": ""
+                                      },
+                                      {
+                                        "kind": "BinaryOperator",
+                                        "type": "int",
+                                        "inner": [
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "int",
+                                            "inner": [
+                                              {
+                                                "kind": "DeclRefExpr",
+                                                "type": "int"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "int",
+                                            "inner": [
+                                              {
+                                                "kind": "IntegerLiteral",
+                                                "type": "int",
+                                                "value": "2"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "UnaryOperator",
+                                        "type": "int",
+                                        "inner": [
+                                          {
+                                            "kind": "DeclRefExpr",
+                                            "type": "int"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "CompoundStmt",
+                                        "inner": [
+                                          {
+                                            "kind": "DeclStmt",
+                                            "inner": [
+                                              {
+                                                "kind": "VarDecl",
+                                                "name": "l",
+                                                "type": "Lineitem",
+                                                "inner": [
+                                                  {
+                                                    "kind": "ImplicitCastExpr",
+                                                    "type": "Lineitem",
+                                                    "inner": [
+                                                      {
+                                                        "kind": "ArraySubscriptExpr",
+                                                        "type": "Lineitem",
+                                                        "inner": [
+                                                          {
+                                                            "kind": "ImplicitCastExpr",
+                                                            "type": "Lineitem",
+                                                            "inner": [
+                                                              {
+                                                                "kind": "DeclRefExpr",
+                                                                "type": "Lineitem[2]"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "ImplicitCastExpr",
+                                                            "type": "int",
+                                                            "inner": [
+                                                              {
+                                                                "kind": "DeclRefExpr",
+                                                                "type": "int"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "IfStmt",
+                                            "inner": [
+                                              {
+                                                "kind": "BinaryOperator",
+                                                "type": "int",
+                                                "inner": [
+                                                  {
+                                                    "kind": "ImplicitCastExpr",
+                                                    "type": "int",
+                                                    "inner": [
+                                                      {
+                                                        "kind": "MemberExpr",
+                                                        "name": "l_orderkey",
+                                                        "type": "int",
+                                                        "inner": [
+                                                          {
+                                                            "kind": "DeclRefExpr",
+                                                            "type": "Lineitem"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "ImplicitCastExpr",
+                                                    "type": "int",
+                                                    "inner": [
+                                                      {
+                                                        "kind": "MemberExpr",
+                                                        "name": "o_orderkey",
+                                                        "type": "int",
+                                                        "inner": [
+                                                          {
+                                                            "kind": "DeclRefExpr",
+                                                            "type": "Orders"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "CompoundStmt",
+                                                "inner": [
+                                                  {
+                                                    "kind": "ForStmt",
+                                                    "inner": [
+                                                      {
+                                                        "kind": "DeclStmt",
+                                                        "inner": [
+                                                          {
+                                                            "kind": "VarDecl",
+                                                            "name": "m",
+                                                            "type": "int",
+                                                            "inner": [
+                                                              {
+                                                                "kind": "ImplicitCastExpr",
+                                                                "type": "int",
+                                                                "inner": [
+                                                                  {
+                                                                    "kind": "IntegerLiteral",
+                                                                    "type": "int",
+                                                                    "value": "0"
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": ""
+                                                      },
+                                                      {
+                                                        "kind": "BinaryOperator",
+                                                        "type": "int",
+                                                        "inner": [
+                                                          {
+                                                            "kind": "ImplicitCastExpr",
+                                                            "type": "int",
+                                                            "inner": [
+                                                              {
+                                                                "kind": "DeclRefExpr",
+                                                                "type": "int"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "ImplicitCastExpr",
+                                                            "type": "int",
+                                                            "inner": [
+                                                              {
+                                                                "kind": "IntegerLiteral",
+                                                                "type": "int",
+                                                                "value": "1"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "UnaryOperator",
+                                                        "type": "int",
+                                                        "inner": [
+                                                          {
+                                                            "kind": "DeclRefExpr",
+                                                            "type": "int"
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "CompoundStmt",
+                                                        "inner": [
+                                                          {
+                                                            "kind": "DeclStmt",
+                                                            "inner": [
+                                                              {
+                                                                "kind": "VarDecl",
+                                                                "name": "n",
+                                                                "type": "Nation",
+                                                                "inner": [
+                                                                  {
+                                                                    "kind": "ImplicitCastExpr",
+                                                                    "type": "Nation",
+                                                                    "inner": [
+                                                                      {
+                                                                        "kind": "ArraySubscriptExpr",
+                                                                        "type": "Nation",
+                                                                        "inner": [
+                                                                          {
+                                                                            "kind": "ImplicitCastExpr",
+                                                                            "type": "Nation",
+                                                                            "inner": [
+                                                                              {
+                                                                                "kind": "DeclRefExpr",
+                                                                                "type": "Nation[1]"
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "kind": "ImplicitCastExpr",
+                                                                            "type": "int",
+                                                                            "inner": [
+                                                                              {
+                                                                                "kind": "DeclRefExpr",
+                                                                                "type": "int"
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "IfStmt",
+                                                            "inner": [
+                                                              {
+                                                                "kind": "BinaryOperator",
+                                                                "type": "int",
+                                                                "inner": [
+                                                                  {
+                                                                    "kind": "ImplicitCastExpr",
+                                                                    "type": "int",
+                                                                    "inner": [
+                                                                      {
+                                                                        "kind": "MemberExpr",
+                                                                        "name": "n_nationkey",
+                                                                        "type": "int",
+                                                                        "inner": [
+                                                                          {
+                                                                            "kind": "DeclRefExpr",
+                                                                            "type": "Nation"
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "kind": "ImplicitCastExpr",
+                                                                    "type": "int",
+                                                                    "inner": [
+                                                                      {
+                                                                        "kind": "MemberExpr",
+                                                                        "name": "c_nationkey",
+                                                                        "type": "int",
+                                                                        "inner": [
+                                                                          {
+                                                                            "kind": "DeclRefExpr",
+                                                                            "type": "Customer"
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "CompoundStmt",
+                                                                "inner": [
+                                                                  {
+                                                                    "kind": "IfStmt",
+                                                                    "inner": [
+                                                                      {
+                                                                        "kind": "BinaryOperator",
+                                                                        "type": "int",
+                                                                        "inner": [
+                                                                          {
+                                                                            "kind": "BinaryOperator",
+                                                                            "type": "int",
+                                                                            "inner": [
+                                                                              {
+                                                                                "kind": "BinaryOperator",
+                                                                                "type": "int",
+                                                                                "inner": [
+                                                                                  {
+                                                                                    "kind": "CallExpr",
+                                                                                    "type": "int",
+                                                                                    "inner": [
+                                                                                      {
+                                                                                        "kind": "ImplicitCastExpr",
+                                                                                        "type": "int (*)(const char *, const char *)",
+                                                                                        "inner": [
+                                                                                          {
+                                                                                            "kind": "DeclRefExpr",
+                                                                                            "type": "int (const char *, const char *)"
+                                                                                          }
+                                                                                        ]
+                                                                                      },
+                                                                                      {
+                                                                                        "kind": "ImplicitCastExpr",
+                                                                                        "type": "string",
+                                                                                        "inner": [
+                                                                                          {
+                                                                                            "kind": "MemberExpr",
+                                                                                            "name": "o_orderdate",
+                                                                                            "type": "string",
+                                                                                            "inner": [
+                                                                                              {
+                                                                                                "kind": "DeclRefExpr",
+                                                                                                "type": "Orders"
+                                                                                              }
+                                                                                            ]
+                                                                                          }
+                                                                                        ]
+                                                                                      },
+                                                                                      {
+                                                                                        "kind": "ImplicitCastExpr",
+                                                                                        "type": "string",
+                                                                                        "inner": [
+                                                                                          {
+                                                                                            "kind": "DeclRefExpr",
+                                                                                            "type": "string"
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  },
+                                                                                  {
+                                                                                    "kind": "IntegerLiteral",
+                                                                                    "type": "int",
+                                                                                    "value": "0"
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "BinaryOperator",
+                                                                                "type": "int",
+                                                                                "inner": [
+                                                                                  {
+                                                                                    "kind": "CallExpr",
+                                                                                    "type": "int",
+                                                                                    "inner": [
+                                                                                      {
+                                                                                        "kind": "ImplicitCastExpr",
+                                                                                        "type": "int (*)(const char *, const char *)",
+                                                                                        "inner": [
+                                                                                          {
+                                                                                            "kind": "DeclRefExpr",
+                                                                                            "type": "int (const char *, const char *)"
+                                                                                          }
+                                                                                        ]
+                                                                                      },
+                                                                                      {
+                                                                                        "kind": "ImplicitCastExpr",
+                                                                                        "type": "string",
+                                                                                        "inner": [
+                                                                                          {
+                                                                                            "kind": "MemberExpr",
+                                                                                            "name": "o_orderdate",
+                                                                                            "type": "string",
+                                                                                            "inner": [
+                                                                                              {
+                                                                                                "kind": "DeclRefExpr",
+                                                                                                "type": "Orders"
+                                                                                              }
+                                                                                            ]
+                                                                                          }
+                                                                                        ]
+                                                                                      },
+                                                                                      {
+                                                                                        "kind": "ImplicitCastExpr",
+                                                                                        "type": "string",
+                                                                                        "inner": [
+                                                                                          {
+                                                                                            "kind": "DeclRefExpr",
+                                                                                            "type": "string"
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  },
+                                                                                  {
+                                                                                    "kind": "IntegerLiteral",
+                                                                                    "type": "int",
+                                                                                    "value": "0"
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "kind": "BinaryOperator",
+                                                                            "type": "int",
+                                                                            "inner": [
+                                                                              {
+                                                                                "kind": "CallExpr",
+                                                                                "type": "int",
+                                                                                "inner": [
+                                                                                  {
+                                                                                    "kind": "ImplicitCastExpr",
+                                                                                    "type": "int (*)(const char *, const char *)",
+                                                                                    "inner": [
+                                                                                      {
+                                                                                        "kind": "DeclRefExpr",
+                                                                                        "type": "int (const char *, const char *)"
+                                                                                      }
+                                                                                    ]
+                                                                                  },
+                                                                                  {
+                                                                                    "kind": "ImplicitCastExpr",
+                                                                                    "type": "string",
+                                                                                    "inner": [
+                                                                                      {
+                                                                                        "kind": "MemberExpr",
+                                                                                        "name": "l_returnflag",
+                                                                                        "type": "string",
+                                                                                        "inner": [
+                                                                                          {
+                                                                                            "kind": "DeclRefExpr",
+                                                                                            "type": "Lineitem"
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  },
+                                                                                  {
+                                                                                    "kind": "ImplicitCastExpr",
+                                                                                    "type": "string",
+                                                                                    "inner": [
+                                                                                      {
+                                                                                        "kind": "ImplicitCastExpr",
+                                                                                        "type": "string",
+                                                                                        "inner": [
+                                                                                          {
+                                                                                            "kind": "StringLiteral",
+                                                                                            "type": "int",
+                                                                                            "value": "\"R\""
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "IntegerLiteral",
+                                                                                "type": "int",
+                                                                                "value": "0"
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "kind": "CompoundStmt",
+                                                                        "inner": [
+                                                                          {
+                                                                            "kind": "DeclStmt",
+                                                                            "inner": [
+                                                                              {
+                                                                                "kind": "VarDecl",
+                                                                                "name": "rev",
+                                                                                "type": "float",
+                                                                                "inner": [
+                                                                                  {
+                                                                                    "kind": "BinaryOperator",
+                                                                                    "type": "float",
+                                                                                    "inner": [
+                                                                                      {
+                                                                                        "kind": "ImplicitCastExpr",
+                                                                                        "type": "float",
+                                                                                        "inner": [
+                                                                                          {
+                                                                                            "kind": "MemberExpr",
+                                                                                            "name": "l_extendedprice",
+                                                                                            "type": "float",
+                                                                                            "inner": [
+                                                                                              {
+                                                                                                "kind": "DeclRefExpr",
+                                                                                                "type": "Lineitem"
+                                                                                              }
+                                                                                            ]
+                                                                                          }
+                                                                                        ]
+                                                                                      },
+                                                                                      {
+                                                                                        "kind": "ParenExpr",
+                                                                                        "type": "float",
+                                                                                        "inner": [
+                                                                                          {
+                                                                                            "kind": "BinaryOperator",
+                                                                                            "type": "float",
+                                                                                            "inner": [
+                                                                                              {
+                                                                                                "kind": "ImplicitCastExpr",
+                                                                                                "type": "float",
+                                                                                                "inner": [
+                                                                                                  {
+                                                                                                    "kind": "IntegerLiteral",
+                                                                                                    "type": "int",
+                                                                                                    "value": "1"
+                                                                                                  }
+                                                                                                ]
+                                                                                              },
+                                                                                              {
+                                                                                                "kind": "ImplicitCastExpr",
+                                                                                                "type": "float",
+                                                                                                "inner": [
+                                                                                                  {
+                                                                                                    "kind": "MemberExpr",
+                                                                                                    "name": "l_discount",
+                                                                                                    "type": "float",
+                                                                                                    "inner": [
+                                                                                                      {
+                                                                                                        "kind": "DeclRefExpr",
+                                                                                                        "type": "Lineitem"
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  }
+                                                                                                ]
+                                                                                              }
+                                                                                            ]
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "kind": "DeclStmt",
+                                                                            "inner": [
+                                                                              {
+                                                                                "kind": "VarDecl",
+                                                                                "name": "idx",
+                                                                                "type": "int",
+                                                                                "inner": [
+                                                                                  {
+                                                                                    "kind": "ImplicitCastExpr",
+                                                                                    "type": "int",
+                                                                                    "inner": [
+                                                                                      {
+                                                                                        "kind": "IntegerLiteral",
+                                                                                        "type": "int",
+                                                                                        "value": "0"
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "kind": "DeclStmt",
+                                                                            "inner": [
+                                                                              {
+                                                                                "kind": "VarDecl",
+                                                                                "name": "found",
+                                                                                "type": "int",
+                                                                                "inner": [
+                                                                                  {
+                                                                                    "kind": "IntegerLiteral",
+                                                                                    "type": "int",
+                                                                                    "value": "0"
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "kind": "ForStmt",
+                                                                            "inner": [
+                                                                              {
+                                                                                "kind": ""
+                                                                              },
+                                                                              {
+                                                                                "kind": ""
+                                                                              },
+                                                                              {
+                                                                                "kind": "BinaryOperator",
+                                                                                "type": "int",
+                                                                                "inner": [
+                                                                                  {
+                                                                                    "kind": "ImplicitCastExpr",
+                                                                                    "type": "int",
+                                                                                    "inner": [
+                                                                                      {
+                                                                                        "kind": "DeclRefExpr",
+                                                                                        "type": "int"
+                                                                                      }
+                                                                                    ]
+                                                                                  },
+                                                                                  {
+                                                                                    "kind": "ImplicitCastExpr",
+                                                                                    "type": "int",
+                                                                                    "inner": [
+                                                                                      {
+                                                                                        "kind": "DeclRefExpr",
+                                                                                        "type": "int"
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "UnaryOperator",
+                                                                                "type": "int",
+                                                                                "inner": [
+                                                                                  {
+                                                                                    "kind": "DeclRefExpr",
+                                                                                    "type": "int"
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "CompoundStmt",
+                                                                                "inner": [
+                                                                                  {
+                                                                                    "kind": "IfStmt",
+                                                                                    "inner": [
+                                                                                      {
+                                                                                        "kind": "BinaryOperator",
+                                                                                        "type": "int",
+                                                                                        "inner": [
+                                                                                          {
+                                                                                            "kind": "ImplicitCastExpr",
+                                                                                            "type": "int",
+                                                                                            "inner": [
+                                                                                              {
+                                                                                                "kind": "MemberExpr",
+                                                                                                "name": "c_custkey",
+                                                                                                "type": "int",
+                                                                                                "inner": [
+                                                                                                  {
+                                                                                                    "kind": "ArraySubscriptExpr",
+                                                                                                    "type": "ResultItem",
+                                                                                                    "inner": [
+                                                                                                      {
+                                                                                                        "kind": "ImplicitCastExpr",
+                                                                                                        "type": "ResultItem",
+                                                                                                        "inner": [
+                                                                                                          {
+                                                                                                            "kind": "DeclRefExpr",
+                                                                                                            "type": "ResultItem[4]"
+                                                                                                          }
+                                                                                                        ]
+                                                                                                      },
+                                                                                                      {
+                                                                                                        "kind": "ImplicitCastExpr",
+                                                                                                        "type": "int",
+                                                                                                        "inner": [
+                                                                                                          {
+                                                                                                            "kind": "DeclRefExpr",
+                                                                                                            "type": "int"
+                                                                                                          }
+                                                                                                        ]
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  }
+                                                                                                ]
+                                                                                              }
+                                                                                            ]
+                                                                                          },
+                                                                                          {
+                                                                                            "kind": "ImplicitCastExpr",
+                                                                                            "type": "int",
+                                                                                            "inner": [
+                                                                                              {
+                                                                                                "kind": "MemberExpr",
+                                                                                                "name": "c_custkey",
+                                                                                                "type": "int",
+                                                                                                "inner": [
+                                                                                                  {
+                                                                                                    "kind": "DeclRefExpr",
+                                                                                                    "type": "Customer"
+                                                                                                  }
+                                                                                                ]
+                                                                                              }
+                                                                                            ]
+                                                                                          }
+                                                                                        ]
+                                                                                      },
+                                                                                      {
+                                                                                        "kind": "CompoundStmt",
+                                                                                        "inner": [
+                                                                                          {
+                                                                                            "kind": "BinaryOperator",
+                                                                                            "type": "int",
+                                                                                            "inner": [
+                                                                                              {
+                                                                                                "kind": "DeclRefExpr",
+                                                                                                "type": "int"
+                                                                                              },
+                                                                                              {
+                                                                                                "kind": "IntegerLiteral",
+                                                                                                "type": "int",
+                                                                                                "value": "1"
+                                                                                              }
+                                                                                            ]
+                                                                                          },
+                                                                                          {
+                                                                                            "kind": "BreakStmt"
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "kind": "IfStmt",
+                                                                            "inner": [
+                                                                              {
+                                                                                "kind": "ImplicitCastExpr",
+                                                                                "type": "int",
+                                                                                "inner": [
+                                                                                  {
+                                                                                    "kind": "DeclRefExpr",
+                                                                                    "type": "int"
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "CompoundStmt",
+                                                                                "inner": [
+                                                                                  {
+                                                                                    "kind": "CompoundAssignOperator",
+                                                                                    "type": "float",
+                                                                                    "inner": [
+                                                                                      {
+                                                                                        "kind": "MemberExpr",
+                                                                                        "name": "revenue",
+                                                                                        "type": "float",
+                                                                                        "inner": [
+                                                                                          {
+                                                                                            "kind": "ArraySubscriptExpr",
+                                                                                            "type": "ResultItem",
+                                                                                            "inner": [
+                                                                                              {
+                                                                                                "kind": "ImplicitCastExpr",
+                                                                                                "type": "ResultItem",
+                                                                                                "inner": [
+                                                                                                  {
+                                                                                                    "kind": "DeclRefExpr",
+                                                                                                    "type": "ResultItem[4]"
+                                                                                                  }
+                                                                                                ]
+                                                                                              },
+                                                                                              {
+                                                                                                "kind": "ImplicitCastExpr",
+                                                                                                "type": "int",
+                                                                                                "inner": [
+                                                                                                  {
+                                                                                                    "kind": "DeclRefExpr",
+                                                                                                    "type": "int"
+                                                                                                  }
+                                                                                                ]
+                                                                                              }
+                                                                                            ]
+                                                                                          }
+                                                                                        ]
+                                                                                      },
+                                                                                      {
+                                                                                        "kind": "ImplicitCastExpr",
+                                                                                        "type": "float",
+                                                                                        "inner": [
+                                                                                          {
+                                                                                            "kind": "DeclRefExpr",
+                                                                                            "type": "float"
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "CompoundStmt",
+                                                                                "inner": [
+                                                                                  {
+                                                                                    "kind": "BinaryOperator",
+                                                                                    "type": "ResultItem",
+                                                                                    "inner": [
+                                                                                      {
+                                                                                        "kind": "ArraySubscriptExpr",
+                                                                                        "type": "ResultItem",
+                                                                                        "inner": [
+                                                                                          {
+                                                                                            "kind": "ImplicitCastExpr",
+                                                                                            "type": "ResultItem",
+                                                                                            "inner": [
+                                                                                              {
+                                                                                                "kind": "DeclRefExpr",
+                                                                                                "type": "ResultItem[4]"
+                                                                                              }
+                                                                                            ]
+                                                                                          },
+                                                                                          {
+                                                                                            "kind": "UnaryOperator",
+                                                                                            "type": "int",
+                                                                                            "inner": [
+                                                                                              {
+                                                                                                "kind": "DeclRefExpr",
+                                                                                                "type": "int"
+                                                                                              }
+                                                                                            ]
+                                                                                          }
+                                                                                        ]
+                                                                                      },
+                                                                                      {
+                                                                                        "kind": "ImplicitCastExpr",
+                                                                                        "type": "ResultItem",
+                                                                                        "inner": [
+                                                                                          {
+                                                                                            "kind": "CompoundLiteralExpr",
+                                                                                            "type": "ResultItem",
+                                                                                            "inner": [
+                                                                                              {
+                                                                                                "kind": "InitListExpr",
+                                                                                                "type": "ResultItem",
+                                                                                                "inner": [
+                                                                                                  {
+                                                                                                    "kind": "ImplicitCastExpr",
+                                                                                                    "type": "int",
+                                                                                                    "inner": [
+                                                                                                      {
+                                                                                                        "kind": "MemberExpr",
+                                                                                                        "name": "c_custkey",
+                                                                                                        "type": "int",
+                                                                                                        "inner": [
+                                                                                                          {
+                                                                                                            "kind": "DeclRefExpr",
+                                                                                                            "type": "Customer"
+                                                                                                          }
+                                                                                                        ]
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "kind": "ImplicitCastExpr",
+                                                                                                    "type": "string",
+                                                                                                    "inner": [
+                                                                                                      {
+                                                                                                        "kind": "MemberExpr",
+                                                                                                        "name": "c_name",
+                                                                                                        "type": "string",
+                                                                                                        "inner": [
+                                                                                                          {
+                                                                                                            "kind": "DeclRefExpr",
+                                                                                                            "type": "Customer"
+                                                                                                          }
+                                                                                                        ]
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "kind": "ImplicitCastExpr",
+                                                                                                    "type": "float",
+                                                                                                    "inner": [
+                                                                                                      {
+                                                                                                        "kind": "DeclRefExpr",
+                                                                                                        "type": "float"
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "kind": "ImplicitCastExpr",
+                                                                                                    "type": "float",
+                                                                                                    "inner": [
+                                                                                                      {
+                                                                                                        "kind": "MemberExpr",
+                                                                                                        "name": "c_acctbal",
+                                                                                                        "type": "float",
+                                                                                                        "inner": [
+                                                                                                          {
+                                                                                                            "kind": "DeclRefExpr",
+                                                                                                            "type": "Customer"
+                                                                                                          }
+                                                                                                        ]
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "kind": "ImplicitCastExpr",
+                                                                                                    "type": "string",
+                                                                                                    "inner": [
+                                                                                                      {
+                                                                                                        "kind": "MemberExpr",
+                                                                                                        "name": "n_name",
+                                                                                                        "type": "string",
+                                                                                                        "inner": [
+                                                                                                          {
+                                                                                                            "kind": "DeclRefExpr",
+                                                                                                            "type": "Nation"
+                                                                                                          }
+                                                                                                        ]
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "kind": "ImplicitCastExpr",
+                                                                                                    "type": "string",
+                                                                                                    "inner": [
+                                                                                                      {
+                                                                                                        "kind": "MemberExpr",
+                                                                                                        "name": "c_address",
+                                                                                                        "type": "string",
+                                                                                                        "inner": [
+                                                                                                          {
+                                                                                                            "kind": "DeclRefExpr",
+                                                                                                            "type": "Customer"
+                                                                                                          }
+                                                                                                        ]
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "kind": "ImplicitCastExpr",
+                                                                                                    "type": "string",
+                                                                                                    "inner": [
+                                                                                                      {
+                                                                                                        "kind": "MemberExpr",
+                                                                                                        "name": "c_phone",
+                                                                                                        "type": "string",
+                                                                                                        "inner": [
+                                                                                                          {
+                                                                                                            "kind": "DeclRefExpr",
+                                                                                                            "type": "Customer"
+                                                                                                          }
+                                                                                                        ]
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "kind": "ImplicitCastExpr",
+                                                                                                    "type": "string",
+                                                                                                    "inner": [
+                                                                                                      {
+                                                                                                        "kind": "MemberExpr",
+                                                                                                        "name": "c_comment",
+                                                                                                        "type": "string",
+                                                                                                        "inner": [
+                                                                                                          {
+                                                                                                            "kind": "DeclRefExpr",
+                                                                                                            "type": "Customer"
+                                                                                                          }
+                                                                                                        ]
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  }
+                                                                                                ]
+                                                                                              }
+                                                                                            ]
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "ForStmt",
+            "inner": [
+              {
+                "kind": "DeclStmt",
+                "inner": [
+                  {
+                    "kind": "VarDecl",
+                    "name": "a",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "ImplicitCastExpr",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "IntegerLiteral",
+                            "type": "int",
+                            "value": "0"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": ""
+              },
+              {
+                "kind": "BinaryOperator",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "DeclRefExpr",
+                        "type": "int"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "ImplicitCastExpr",
+                    "type": "int",
+                    "inner": [
+                      {
+                        "kind": "DeclRefExpr",
+                        "type": "int"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "UnaryOperator",
+                "type": "int",
+                "inner": [
+                  {
+                    "kind": "DeclRefExpr",
+                    "type": "int"
+                  }
+                ]
+              },
+              {
+                "kind": "CompoundStmt",
+                "inner": [
+                  {
+                    "kind": "ForStmt",
+                    "inner": [
+                      {
+                        "kind": "DeclStmt",
+                        "inner": [
+                          {
+                            "kind": "VarDecl",
+                            "name": "b",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "BinaryOperator",
+                                "type": "int",
+                                "inner": [
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "DeclRefExpr",
+                                        "type": "int"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "int",
+                                    "inner": [
+                                      {
+                                        "kind": "IntegerLiteral",
+                                        "type": "int",
+                                        "value": "1"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": ""
+                      },
+                      {
+                        "kind": "BinaryOperator",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "DeclRefExpr",
+                                "type": "int"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "ImplicitCastExpr",
+                            "type": "int",
+                            "inner": [
+                              {
+                                "kind": "DeclRefExpr",
+                                "type": "int"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "UnaryOperator",
+                        "type": "int",
+                        "inner": [
+                          {
+                            "kind": "DeclRefExpr",
+                            "type": "int"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "CompoundStmt",
+                        "inner": [
+                          {
+                            "kind": "IfStmt",
+                            "inner": [
+                              {
+                                "kind": "BinaryOperator",
+                                "type": "int",
+                                "inner": [
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "float",
+                                    "inner": [
+                                      {
+                                        "kind": "MemberExpr",
+                                        "name": "revenue",
+                                        "type": "float",
+                                        "inner": [
+                                          {
+                                            "kind": "ArraySubscriptExpr",
+                                            "type": "ResultItem",
+                                            "inner": [
+                                              {
+                                                "kind": "ImplicitCastExpr",
+                                                "type": "ResultItem",
+                                                "inner": [
+                                                  {
+                                                    "kind": "DeclRefExpr",
+                                                    "type": "ResultItem[4]"
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "ImplicitCastExpr",
+                                                "type": "int",
+                                                "inner": [
+                                                  {
+                                                    "kind": "DeclRefExpr",
+                                                    "type": "int"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "ImplicitCastExpr",
+                                    "type": "float",
+                                    "inner": [
+                                      {
+                                        "kind": "MemberExpr",
+                                        "name": "revenue",
+                                        "type": "float",
+                                        "inner": [
+                                          {
+                                            "kind": "ArraySubscriptExpr",
+                                            "type": "ResultItem",
+                                            "inner": [
+                                              {
+                                                "kind": "ImplicitCastExpr",
+                                                "type": "ResultItem",
+                                                "inner": [
+                                                  {
+                                                    "kind": "DeclRefExpr",
+                                                    "type": "ResultItem[4]"
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "ImplicitCastExpr",
+                                                "type": "int",
+                                                "inner": [
+                                                  {
+                                                    "kind": "DeclRefExpr",
+                                                    "type": "int"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "CompoundStmt",
+                                "inner": [
+                                  {
+                                    "kind": "DeclStmt",
+                                    "inner": [
+                                      {
+                                        "kind": "VarDecl",
+                                        "name": "tmp",
+                                        "type": "ResultItem",
+                                        "inner": [
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "ResultItem",
+                                            "inner": [
+                                              {
+                                                "kind": "ArraySubscriptExpr",
+                                                "type": "ResultItem",
+                                                "inner": [
+                                                  {
+                                                    "kind": "ImplicitCastExpr",
+                                                    "type": "ResultItem",
+                                                    "inner": [
+                                                      {
+                                                        "kind": "DeclRefExpr",
+                                                        "type": "ResultItem[4]"
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "ImplicitCastExpr",
+                                                    "type": "int",
+                                                    "inner": [
+                                                      {
+                                                        "kind": "DeclRefExpr",
+                                                        "type": "int"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "BinaryOperator",
+                                    "type": "ResultItem",
+                                    "inner": [
+                                      {
+                                        "kind": "ArraySubscriptExpr",
+                                        "type": "ResultItem",
+                                        "inner": [
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "ResultItem",
+                                            "inner": [
+                                              {
+                                                "kind": "DeclRefExpr",
+                                                "type": "ResultItem[4]"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "int",
+                                            "inner": [
+                                              {
+                                                "kind": "DeclRefExpr",
+                                                "type": "int"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "ImplicitCastExpr",
+                                        "type": "ResultItem",
+                                        "inner": [
+                                          {
+                                            "kind": "ArraySubscriptExpr",
+                                            "type": "ResultItem",
+                                            "inner": [
+                                              {
+                                                "kind": "ImplicitCastExpr",
+                                                "type": "ResultItem",
+                                                "inner": [
+                                                  {
+                                                    "kind": "DeclRefExpr",
+                                                    "type": "ResultItem[4]"
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "ImplicitCastExpr",
+                                                "type": "int",
+                                                "inner": [
+                                                  {
+                                                    "kind": "DeclRefExpr",
+                                                    "type": "int"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "BinaryOperator",
+                                    "type": "ResultItem",
+                                    "inner": [
+                                      {
+                                        "kind": "ArraySubscriptExpr",
+                                        "type": "ResultItem",
+                                        "inner": [
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "ResultItem",
+                                            "inner": [
+                                              {
+                                                "kind": "DeclRefExpr",
+                                                "type": "ResultItem[4]"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "ImplicitCastExpr",
+                                            "type": "int",
+                                            "inner": [
+                                              {
+                                                "kind": "DeclRefExpr",
+                                                "type": "int"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "ImplicitCastExpr",
+                                        "type": "ResultItem",
+                                        "inner": [
+                                          {
+                                            "kind": "DeclRefExpr",
+                                            "type": "ResultItem"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
     }
   ],
   "structs": [
