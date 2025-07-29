@@ -1,0 +1,75 @@
+(program
+  (let people
+    (list
+      (map
+        (entry (string name) (string Alice))
+        (entry (string age) (int 30))
+      )
+      (map
+        (entry (string name) (string Bob))
+        (entry (string age) (int 15))
+      )
+      (map
+        (entry (string name) (string Charlie))
+        (entry (string age) (int 65))
+      )
+      (map
+        (entry (string name) (string Diana))
+        (entry (string age) (int 45))
+      )
+    )
+  )
+  (var adults (list))
+  (for person
+    (in (selector people))
+    (block
+      (if
+        (binary >=
+          (selector age (selector person))
+          (int 18)
+        )
+        (block
+          (assign
+            (selector adults)
+            (call append
+              (selector adults)
+              (map
+                (entry
+                  (string name)
+                  (selector name (selector person))
+                )
+                (entry
+                  (string age)
+                  (selector age (selector person))
+                )
+                (entry
+                  (string is_senior)
+                  (binary >=
+                    (selector age (selector person))
+                    (int 60)
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (call print (string "--- Adults ---"))
+  (for person
+    (in (selector adults))
+    (block
+      (call print
+        (selector name (selector person))
+        (string is)
+        (selector age (selector person))
+        (if_expr
+          (selector is_senior (selector person))
+          (string " (senior)")
+          (string "")
+        )
+      )
+    )
+  )
+)
