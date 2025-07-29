@@ -1,0 +1,16 @@
+(program
+  (fun triple
+    (param x (type int))
+    (type int)
+    (block
+      (return
+        (binary * (selector x) (int 3))
+      )
+    )
+  )
+  (call print
+    (call triple
+      (binary + (int 1) (int 2))
+    )
+  )
+)
