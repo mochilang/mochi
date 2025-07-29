@@ -3,8 +3,18 @@
 package dart
 
 import (
-	a2dart "mochi/tools/a2mochi/x/dart"
+	"bytes"
+	_ "embed"
+	"encoding/json"
+	"fmt"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
 )
+
+//go:embed parser.dart
+var parserDart string
 
 // Program represents a parsed Dart source file.
 type Program struct {
@@ -44,45 +54,121 @@ type Class struct {
 	Doc    string  `json:"doc,omitempty"`
 }
 
-// Inspect parses Dart source code and returns its Program structure.
+// Inspect parses Dart source code and returns its Program structure using the official Dart parser.
 func Inspect(src string) (*Program, error) {
-	p, err := a2dart.Parse(src)
+	funcs, classes, err := runParser(src)
 	if err != nil {
 		return nil, err
 	}
-	// convert to local Program struct to avoid exposing Src field
-	out := &Program{
-		Functions: make([]Function, len(p.Functions)),
-		Classes:   make([]Class, len(p.Classes)),
-	}
-	for i, fn := range p.Functions {
-		params := make([]Param, len(fn.Params))
-		for j, pm := range fn.Params {
-			params[j] = Param{Name: pm.Name, Type: pm.Type}
+	return &Program{Functions: funcs, Classes: classes}, nil
+}
+
+func runParser(src string) ([]Function, []Class, error) {
+	if dartPath, err := exec.LookPath("dart"); err == nil {
+		f, err := os.CreateTemp("", "parser-*.dart")
+		if err != nil {
+			return nil, nil, err
 		}
-		body := append([]string(nil), fn.Body...)
-		out.Functions[i] = Function{
-			Name:   fn.Name,
-			Params: params,
-			Ret:    fn.Ret,
-			Body:   body,
-			Start:  fn.Start,
-			End:    fn.End,
-			Doc:    fn.Doc,
+		if _, err := f.WriteString(parserDart); err != nil {
+			f.Close()
+			os.Remove(f.Name())
+			return nil, nil, err
 		}
-	}
-	for i, c := range p.Classes {
-		fields := make([]Field, len(c.Fields))
-		for j, f := range c.Fields {
-			fields[j] = Field{Name: f.Name, Type: f.Type}
-		}
-		out.Classes[i] = Class{
-			Name:   c.Name,
-			Fields: fields,
-			Start:  c.Start,
-			End:    c.End,
-			Doc:    c.Doc,
+		f.Close()
+		defer os.Remove(f.Name())
+
+		cmd := exec.Command(dartPath, f.Name())
+		cmd.Stdin = strings.NewReader(src)
+		var out bytes.Buffer
+		var errBuf bytes.Buffer
+		cmd.Stdout = &out
+		cmd.Stderr = &errBuf
+		if err := cmd.Run(); err == nil {
+			return decode(out.Bytes())
 		}
 	}
-	return out, nil
+
+	exe, err := exec.LookPath("dartast")
+	if err != nil {
+		root, rErr := repoRoot()
+		if rErr != nil {
+			return nil, nil, fmt.Errorf("dart not found and dartast missing: %w", err)
+		}
+		exe = filepath.Join(root, "cmd", "dartast")
+		cmd := exec.Command("go", "run", exe)
+		cmd.Stdin = strings.NewReader(src)
+		var out bytes.Buffer
+		var errBuf bytes.Buffer
+		cmd.Stdout = &out
+		cmd.Stderr = &errBuf
+		if runErr := cmd.Run(); runErr != nil {
+			if errBuf.Len() > 0 {
+				return nil, nil, fmt.Errorf("%v: %s", runErr, errBuf.String())
+			}
+			return nil, nil, runErr
+		}
+		return decode(out.Bytes())
+	}
+
+	cmd := exec.Command(exe)
+	cmd.Stdin = strings.NewReader(src)
+	var out bytes.Buffer
+	var errBuf bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &errBuf
+	if err := cmd.Run(); err != nil {
+		if errBuf.Len() > 0 {
+			return nil, nil, fmt.Errorf("%v: %s", err, errBuf.String())
+		}
+		return nil, nil, err
+	}
+	return decode(out.Bytes())
+}
+
+func decode(data []byte) ([]Function, []Class, error) {
+	var a struct {
+		Functions []Function `json:"functions"`
+		Classes   []Class    `json:"classes"`
+	}
+	if err := json.Unmarshal(data, &a); err != nil {
+		return nil, nil, err
+	}
+	if a.Functions == nil {
+		a.Functions = []Function{}
+	} else {
+		for i := range a.Functions {
+			if a.Functions[i].Params == nil {
+				a.Functions[i].Params = []Param{}
+			}
+			// keep body as-is to preserve nil vs empty
+		}
+	}
+	if a.Classes == nil {
+		a.Classes = []Class{}
+	} else {
+		for i := range a.Classes {
+			if a.Classes[i].Fields == nil {
+				a.Classes[i].Fields = []Field{}
+			}
+		}
+	}
+	return a.Functions, a.Classes, nil
+}
+
+func repoRoot() (string, error) {
+	dir, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir, nil
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return "", os.ErrNotExist
 }
