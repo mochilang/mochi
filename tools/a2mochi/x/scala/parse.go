@@ -23,6 +23,7 @@ type Decl struct {
 	Ret    string  `json:"ret,omitempty"`
 	Body   string  `json:"body,omitempty"`
 	RHS    string  `json:"rhs,omitempty"`
+	Fields []Param `json:"fields,omitempty"`
 }
 
 // Program is the root of the JSON AST produced by parser.scala.
@@ -69,8 +70,22 @@ func fallbackParse(src string) *Program {
 	var decls []Decl
 	valRe := regexp.MustCompile(`^(val|var) ([^:=]+)(:[^=]+)?= (.+)$`)
 	defRe := regexp.MustCompile(`^def ([^(]+)\(([^)]*)\).*{`)
+	caseRe := regexp.MustCompile(`^case class ([^(]+)\(([^)]*)\)`)
 	for i := 0; i < len(lines); i++ {
 		line := strings.TrimSpace(lines[i])
+		if m := caseRe.FindStringSubmatch(line); len(m) == 3 {
+			fields := []Param{}
+			for _, f := range strings.Split(m[2], ",") {
+				f = strings.TrimSpace(f)
+				if f == "" {
+					continue
+				}
+				parts := strings.SplitN(f, ":", 2)
+				fields = append(fields, Param{Name: strings.TrimSpace(parts[0])})
+			}
+			decls = append(decls, Decl{Kind: "caseclass", Name: strings.TrimSpace(m[1]), Fields: fields})
+			continue
+		}
 		if m := valRe.FindStringSubmatch(line); len(m) == 5 {
 			decls = append(decls, Decl{Kind: m[1], Name: strings.TrimSpace(m[2]), RHS: strings.TrimSpace(m[4])})
 			continue

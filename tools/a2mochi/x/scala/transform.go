@@ -66,17 +66,19 @@ func convertIfExpr(expr string) string {
 }
 
 var (
-	forRangeRE = regexp.MustCompile(`^for \(([^ ]+) <- ([0-9]+) until ([0-9]+)\) {?$`)
-	forCollRE  = regexp.MustCompile(`^for \(([^ ]+) <- (.+)\)\s*{?$`)
-	valLineRE  = regexp.MustCompile(`^val ([^:=]+)(:[^=]+)?= (.+)$`)
-	varLineRE  = regexp.MustCompile(`^var ([^:=]+)(:[^=]+)?= (.+)$`)
-	whileRE    = regexp.MustCompile(`^while \((.+)\) {`)
-	ifRE       = regexp.MustCompile(`^if \((.+)\) {`)
-	elseIfRE   = regexp.MustCompile(`^else if \((.+)\) {`)
-	arrayBufRE = regexp.MustCompile(`ArrayBuffer\(([^)]*)\)`)      // to slice
-	appendOpRE = regexp.MustCompile(`([A-Za-z0-9_]+) :\+ (.+)`)    // a :+ b
-	sumCallRE  = regexp.MustCompile(`([A-Za-z0-9_\[\], ]+)\.sum`)  // x.sum
-	sizeCallRE = regexp.MustCompile(`([A-Za-z0-9_\[\], ]+)\.size`) // x.size
+	forRangeRE   = regexp.MustCompile(`^for \(([^ ]+) <- ([^ ]+) until ([^)]+)\) {?$`)
+	forRangeToRE = regexp.MustCompile(`^for \(([^ ]+) <- ([^ ]+) to ([^)]+)\) {?$`)
+	forCollRE    = regexp.MustCompile(`^for \(([^ ]+) <- (.+)\)\s*{?$`)
+	valLineRE    = regexp.MustCompile(`^val ([^:=]+)(:[^=]+)?= (.+)$`)
+	varLineRE    = regexp.MustCompile(`^var ([^:=]+)(:[^=]+)?= (.+)$`)
+	whileRE      = regexp.MustCompile(`^while \((.+)\) {`)
+	ifRE         = regexp.MustCompile(`^if \((.+)\) {`)
+	elseIfRE     = regexp.MustCompile(`^else if \((.+)\) {`)
+	arrayBufRE   = regexp.MustCompile(`ArrayBuffer\(([^)]*)\)`)               // to slice
+	appendOpRE   = regexp.MustCompile(`([A-Za-z0-9_]+) :\+ (.+)`)             // a :+ b
+	sumCallRE    = regexp.MustCompile(`([A-Za-z0-9_\[\], ]+)\.sum`)           // x.sum
+	sizeCallRE   = regexp.MustCompile(`([A-Za-z0-9_\[\], ]+)\.size`)          // x.size
+	mapCallRE    = regexp.MustCompile(`([A-Za-z0-9_\[\].]+)\.map\(([^)]+)\)`) // x.map(f)
 )
 
 func convertExpr(expr string) string {
@@ -86,6 +88,7 @@ func convertExpr(expr string) string {
 	expr = appendOpRE.ReplaceAllString(expr, "append($1, $2)")
 	expr = sumCallRE.ReplaceAllString(expr, "sum($1)")
 	expr = sizeCallRE.ReplaceAllString(expr, "len($1)")
+	expr = mapCallRE.ReplaceAllString(expr, "map($1, $2)")
 	return expr
 }
 
@@ -99,6 +102,9 @@ func convertLine(line string) string {
 		return "return " + convertExpr(strings.TrimPrefix(line, "return "))
 	}
 	if m := forRangeRE.FindStringSubmatch(line); len(m) == 4 {
+		return fmt.Sprintf("for %s in %s..%s {", m[1], m[2], m[3])
+	}
+	if m := forRangeToRE.FindStringSubmatch(line); len(m) == 4 {
 		return fmt.Sprintf("for %s in %s..%s {", m[1], m[2], m[3])
 	}
 	if m := forCollRE.FindStringSubmatch(line); len(m) == 3 {
@@ -174,6 +180,12 @@ func Transform(p *Program) (*ast.Node, error) {
 					}
 					b.WriteString("  " + line + "\n")
 				}
+			}
+			b.WriteString("}\n")
+		case "caseclass":
+			fmt.Fprintf(&b, "type %s {\n", d.Name)
+			for _, f := range d.Fields {
+				fmt.Fprintf(&b, "  %s\n", f.Name)
 			}
 			b.WriteString("}\n")
 		}

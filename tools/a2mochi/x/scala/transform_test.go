@@ -110,14 +110,17 @@ func TestTransform_Golden(t *testing.T) {
 			}
 			got := []byte(node.String())
 			outPath := filepath.Join(outDir, name+".ast")
-			if *update {
-				os.WriteFile(outPath, got, 0o644)
-				os.WriteFile(filepath.Join(outDir, name+".mochi"), []byte(code), 0o644)
-				stdout, err := runMochi(code)
-				if err == nil {
-					os.WriteFile(filepath.Join(outDir, name+".out"), stdout, 0o644)
-				}
-			}
+                        if *update {
+                                os.WriteFile(outPath, got, 0o644)
+                                os.WriteFile(filepath.Join(outDir, name+".mochi"), []byte(code), 0o644)
+                                stdout, err := runMochi(code)
+                                if err != nil {
+                                        os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0o644)
+                                } else {
+                                        os.Remove(filepath.Join(outDir, name+".error"))
+                                        os.WriteFile(filepath.Join(outDir, name+".out"), stdout, 0o644)
+                                }
+                        }
 			want, err := os.ReadFile(outPath)
 			if err != nil {
 				t.Fatalf("missing golden: %v", err)
@@ -146,23 +149,31 @@ func TestTransform_Golden(t *testing.T) {
 }
 
 func updateReadme() {
-	root := repoRoot(&testing.T{})
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "scala")
-	outDir := filepath.Join(root, "tests", "a2mochi", "x", "scala")
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.scala"))
-	sort.Strings(files)
-	total := len(files)
-	compiled := 0
-	var lines []string
-	for _, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".scala")
-		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
-			compiled++
-			mark = "[x]"
-		}
-		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
-	}
+        root := repoRoot(&testing.T{})
+        srcDir := filepath.Join(root, "tests", "transpiler", "x", "scala")
+        outDir := filepath.Join(root, "tests", "a2mochi", "x", "scala")
+        vmDir := filepath.Join(root, "tests", "vm", "valid")
+        files, _ := filepath.Glob(filepath.Join(srcDir, "*.scala"))
+        sort.Strings(files)
+        total := len(files)
+        compiled := 0
+        var lines []string
+        for _, f := range files {
+                name := strings.TrimSuffix(filepath.Base(f), ".scala")
+                mark := "[ ]"
+                outPath := filepath.Join(outDir, name+".out")
+                if outData, err := os.ReadFile(outPath); err == nil {
+                        vmSrc, err := os.ReadFile(filepath.Join(vmDir, name+".mochi"))
+                        if err == nil {
+                                wantOut, err := runMochi(string(vmSrc))
+                                if err == nil && bytes.Equal(bytes.TrimSpace(outData), bytes.TrimSpace(wantOut)) {
+                                        compiled++
+                                        mark = "[x]"
+                                }
+                        }
+                }
+                lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+        }
 	var buf bytes.Buffer
 	buf.WriteString("# a2mochi Scala Converter\n\n")
 	fmt.Fprintf(&buf, "Completed programs: %d/%d\n", compiled, total)
