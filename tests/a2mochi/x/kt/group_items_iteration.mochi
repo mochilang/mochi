@@ -5,3 +5,4 @@ type GGroup {
 }
 fun main() {
 }
+var tmp: list<any>

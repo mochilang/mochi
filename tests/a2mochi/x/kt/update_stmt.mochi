@@ -8,5 +8,3 @@ type Person {
 }
 fun test_update_adult_status() {
 }
-fun main() {
-}

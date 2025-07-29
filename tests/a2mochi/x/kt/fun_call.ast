@@ -4,5 +4,4 @@
     (param b (type int))
     (type int)
   )
-  (fun main)
 )

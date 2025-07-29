@@ -3,5 +3,3 @@ fun _expect(cond: bool) {
 }
 fun test_addition_works() {
 }
-fun main() {
-}

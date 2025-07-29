@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 )
 
@@ -17,6 +18,7 @@ type Node struct {
 	Params []Param `json:"params,omitempty"`
 	Ret    string  `json:"ret,omitempty"`
 	Fields []Field `json:"fields,omitempty"`
+	Stmts  []Stmt  `json:"stmts,omitempty"`
 }
 
 // Param represents a Kotlin function parameter.
@@ -29,6 +31,13 @@ type Param struct {
 type Field struct {
 	Name string `json:"name"`
 	Typ  string `json:"typ"`
+}
+
+// Stmt represents a simple statement inside a function body.
+type Stmt struct {
+	Kind string `json:"kind"`
+	Name string `json:"name,omitempty"`
+	Expr string `json:"expr,omitempty"`
 }
 
 // Program holds parsed declarations and the original Kotlin source.
@@ -354,9 +363,21 @@ func splitGeneric(s string) []string {
 
 func parseNaive(src string) (*Program, error) {
 	var nodes []Node
+	var current *Node
+	var body []string
 	depth := 0
 	for _, line := range strings.Split(src, "\n") {
 		trimmed := strings.TrimSpace(line)
+		if current != nil {
+			if trimmed == "}" {
+				current.Stmts = parseStmts(body)
+				current = nil
+				body = nil
+				continue
+			}
+			body = append(body, trimmed)
+			continue
+		}
 		if depth == 0 {
 			if strings.HasPrefix(trimmed, "data class ") {
 				rest := strings.TrimPrefix(trimmed, "data class ")
@@ -458,6 +479,10 @@ func parseNaive(src string) (*Program, error) {
 							}
 						}
 						nodes = append(nodes, Node{Kind: "func", Name: name, Params: params, Ret: ret})
+						if strings.HasSuffix(trimmed, "{") {
+							current = &nodes[len(nodes)-1]
+							body = nil
+						}
 					}
 				}
 			} else if strings.HasPrefix(trimmed, "val ") || strings.HasPrefix(trimmed, "var ") {
@@ -515,4 +540,66 @@ func splitParams(s string) []string {
 		parts = append(parts, strings.TrimSpace(s[start:]))
 	}
 	return parts
+}
+
+func parseStmts(lines []string) []Stmt {
+	var stmts []Stmt
+	for _, l := range lines {
+		l = strings.TrimSpace(strings.TrimSuffix(l, ";"))
+		if strings.HasPrefix(l, "val ") || strings.HasPrefix(l, "var ") {
+			rest := strings.TrimSpace(strings.TrimPrefix(strings.TrimPrefix(l, "val "), "var "))
+			eq := strings.Index(rest, "=")
+			if eq == -1 {
+				continue
+			}
+			name := strings.TrimSpace(rest[:eq])
+			if colon := strings.Index(name, ":"); colon != -1 {
+				name = strings.TrimSpace(name[:colon])
+			}
+			expr := convertExpr(strings.TrimSpace(rest[eq+1:]))
+			if expr != "" {
+				stmts = append(stmts, Stmt{Kind: "let", Name: name, Expr: expr})
+			}
+			continue
+		}
+		if strings.HasPrefix(l, "println(") && strings.HasSuffix(l, ")") {
+			inner := strings.TrimSuffix(strings.TrimPrefix(l, "println("), ")")
+			expr := convertExpr(inner)
+			if expr != "" {
+				stmts = append(stmts, Stmt{Kind: "print", Expr: expr})
+			}
+			continue
+		}
+	}
+	return stmts
+}
+
+var appendRe = regexp.MustCompile(`^([a-zA-Z_][a-zA-Z0-9_]*)\s*\+\s*(\d+)$`)
+
+func convertExpr(expr string) string {
+	expr = strings.TrimSpace(expr)
+	if strings.HasSuffix(expr, ".average()") {
+		inner := strings.TrimSuffix(expr, ".average()")
+		if strings.HasPrefix(inner, "mutableListOf(") && strings.HasSuffix(inner, ")") {
+			inner = strings.TrimSuffix(strings.TrimPrefix(inner, "mutableListOf("), ")")
+			if strings.Contains(inner, "to") || strings.Contains(inner, "mutableListOf(") {
+				return ""
+			}
+			inner = strings.ReplaceAll(inner, " ", "")
+			return "avg([" + inner + "])"
+		}
+		return ""
+	}
+	if strings.HasPrefix(expr, "mutableListOf(") && strings.HasSuffix(expr, ")") && !strings.Contains(expr, ".") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(expr, "mutableListOf("), ")")
+		if strings.Contains(inner, "to") || strings.Contains(inner, "mutableListOf(") {
+			return ""
+		}
+		inner = strings.ReplaceAll(inner, " ", "")
+		return "[" + inner + "]"
+	}
+	if m := appendRe.FindStringSubmatch(expr); m != nil {
+		return fmt.Sprintf("append(%s, %s)", m[1], m[2])
+	}
+	return ""
 }

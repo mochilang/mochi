@@ -1,1 +1,8 @@
-(program (fun main))
+(program
+  (let a
+    (list (int 1) (int 2))
+  )
+  (call print
+    (call append (selector a) (int 3))
+  )
+)

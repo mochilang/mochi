@@ -3,5 +3,4 @@
     (param n (type int))
     (type "fun(int): int")
   )
-  (fun main)
 )

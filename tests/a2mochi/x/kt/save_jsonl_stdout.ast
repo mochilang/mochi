@@ -8,5 +8,4 @@
     (param v (type any))
     (type string)
   )
-  (fun main)
 )

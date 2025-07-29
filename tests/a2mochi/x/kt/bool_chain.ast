@@ -1,4 +1,3 @@
 (program
   (fun boom (type bool))
-  (fun main)
 )

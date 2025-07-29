@@ -3,5 +3,3 @@ fun _save(rows: list<any>, path: string, opts: map<string, any>) {
 }
 fun toJson(v: any): string {
 }
-fun main() {
-}

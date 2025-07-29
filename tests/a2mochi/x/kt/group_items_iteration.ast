@@ -4,4 +4,5 @@
     (field items (type "list<map<string, map<string, any>>>"))
   )
   (fun main)
+  (var tmp (type list<any>))
 )
