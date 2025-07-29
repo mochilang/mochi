@@ -172,6 +172,7 @@ func TestTransform_Golden(t *testing.T) {
 		"if_then_else_nested": true,
 		"test_block":          true,
 		"list_index":          true,
+		"list_assign":         true,
 		"append_builtin":      true,
 		"bool_chain":          true,
 		"if_else":             true,
