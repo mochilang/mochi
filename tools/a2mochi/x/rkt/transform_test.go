@@ -95,6 +95,8 @@ func TestTransformGolden(t *testing.T) {
 		"string_compare":      true,
 		"membership":          true,
 		"str_builtin":         true,
+		"math_ops":            true,
+		"string_contains":     true,
 	}
 
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "rkt")
