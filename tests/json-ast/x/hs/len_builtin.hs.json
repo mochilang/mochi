@@ -1,0 +1,21 @@
+{
+  "items": [
+    {
+      "kind": "sig",
+      "name": "main",
+      "params": [],
+      "body": "",
+      "type": "IO ()",
+      "fields": []
+    },
+    {
+      "kind": "func",
+      "name": "main",
+      "params": [],
+      "body": "print (length [1, 2, 3])",
+      "type": "",
+      "fields": []
+    }
+  ]
+}
+
