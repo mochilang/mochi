@@ -401,13 +401,15 @@ func emitFuncDef(b *strings.Builder, n *Node, indent string, lines []string, see
 		}
 	}
 	b.WriteByte(')')
+	b.WriteString(": ")
 	if n.Returns != nil {
-		b.WriteString(": ")
 		if err := emitExpr(b, n.Returns, lines); err != nil {
 			return err
 		}
+	} else if rt := inferReturnType(n, lines); rt != "" {
+		b.WriteString(rt)
 	} else {
-		b.WriteString(": int")
+		b.WriteString("int")
 	}
 	b.WriteString(" {\n")
 	for _, st := range n.Body {
@@ -819,8 +821,19 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 			b.WriteByte(')')
 			return nil
 		}
-		if err := emitExpr(b, n.Left, lines); err != nil {
-			return err
+		lp := binOpPrec(n.Left)
+		rp := binOpPrec(n.Right)
+		cp := binOpPrec(n)
+		if lp > 0 && lp < cp {
+			b.WriteByte('(')
+			if err := emitExpr(b, n.Left, lines); err != nil {
+				return err
+			}
+			b.WriteByte(')')
+		} else {
+			if err := emitExpr(b, n.Left, lines); err != nil {
+				return err
+			}
 		}
 		b.WriteByte(' ')
 		if n.Op != nil {
@@ -842,8 +855,16 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 			}
 		}
 		b.WriteByte(' ')
-		if err := emitExpr(b, n.Right, lines); err != nil {
-			return err
+		if rp > 0 && rp < cp {
+			b.WriteByte('(')
+			if err := emitExpr(b, n.Right, lines); err != nil {
+				return err
+			}
+			b.WriteByte(')')
+		} else {
+			if err := emitExpr(b, n.Right, lines); err != nil {
+				return err
+			}
 		}
 	case "Compare":
 		if lc, ok := existsListComp(n); ok {
@@ -1189,6 +1210,20 @@ func nodesEqual(a, b *Node) bool {
 	}
 }
 
+func binOpPrec(n *Node) int {
+	if n == nil || n.Type != "BinOp" || n.Op == nil {
+		return 0
+	}
+	switch n.Op.Type {
+	case "Add", "Sub":
+		return 1
+	case "Mult", "Div", "FloorDiv", "Mod":
+		return 2
+	default:
+		return 0
+	}
+}
+
 func condBool(n *Node) *Node {
 	if n == nil || n.Type != "IfExp" || len(n.Body) == 0 || len(n.Orelse) == 0 {
 		return nil
@@ -1272,4 +1307,40 @@ func setBinOp(n *Node) (string, *Node, *Node, bool) {
 		return "", nil, nil, false
 	}
 	return op, largs[0], rargs[0], true
+}
+
+func inferReturnType(n *Node, lines []string) string {
+	if len(n.Body) > 0 {
+		ret := n.Body[len(n.Body)-1]
+		if ret.Type == "Return" {
+			val := ret.valueNode()
+			if val != nil && val.Type == "Lambda" {
+				return lambdaType(val, lines)
+			}
+			if val != nil && val.Type == "Constant" {
+				v := val.constValue()
+				if v == true || v == false {
+					return "bool"
+				}
+			}
+		}
+	}
+	return ""
+}
+
+func lambdaType(n *Node, lines []string) string {
+	snippet := extractSegment(lines, n.Line, n.Col, n.EndLine, n.EndCol)
+	parts := strings.SplitN(snippet, ":", 2)
+	argStr := ""
+	if len(parts) == 2 {
+		argStr = strings.TrimSpace(strings.TrimPrefix(parts[0], "lambda"))
+	}
+	args := []string{}
+	for _, p := range strings.Split(argStr, ",") {
+		p = strings.TrimSpace(p)
+		if p != "" {
+			args = append(args, "int")
+		}
+	}
+	return fmt.Sprintf("fun(%s): int", strings.Join(args, ", "))
 }
