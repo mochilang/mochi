@@ -5,6 +5,7 @@ package java
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	mochias "mochi/ast"
 )
@@ -55,7 +56,12 @@ func stmtNode(s Stmt, mutated map[string]bool) *mochias.Node {
 	case "Print":
 		call := &mochias.Node{Kind: "call", Value: "print"}
 		if s.Expr != nil {
-			call.Children = append(call.Children, exprNode(*s.Expr))
+			if args, ok := splitConcat(*s.Expr); ok && len(args) > 0 {
+				merged := mergeStrings(args)
+				call.Children = append(call.Children, merged...)
+			} else {
+				call.Children = append(call.Children, exprNode(*s.Expr))
+			}
 		}
 		return call
 	case "ForRange":
@@ -68,10 +74,21 @@ func stmtNode(s Stmt, mutated map[string]bool) *mochias.Node {
 		return &mochias.Node{Kind: "for", Value: s.Name, Children: []*mochias.Node{in, b}}
 	case "While":
 		b := blockNode(s.Body, mutated)
+		if s.Cond != nil {
+			return &mochias.Node{Kind: "while", Children: []*mochias.Node{exprNode(*s.Cond), b}}
+		}
 		return &mochias.Node{Kind: "while", Children: []*mochias.Node{exprNode(*s.Expr), b}}
+	case "Break":
+		return &mochias.Node{Kind: "break"}
+	case "Continue":
+		return &mochias.Node{Kind: "continue"}
 	case "If":
 		thenN := blockNode(s.Then, mutated)
-		n := &mochias.Node{Kind: "if", Children: []*mochias.Node{exprNode(*s.Expr), thenN}}
+		cond := s.Expr
+		if s.Cond != nil {
+			cond = s.Cond
+		}
+		n := &mochias.Node{Kind: "if", Children: []*mochias.Node{exprNode(*cond), thenN}}
 		if len(s.Else) > 0 {
 			n.Children = append(n.Children, blockNode(s.Else, mutated))
 		}
@@ -107,8 +124,21 @@ func exprNode(e Expr) *mochias.Node {
 	case "Ident":
 		return &mochias.Node{Kind: "selector", Value: e.Name}
 	case "Binary":
-		return &mochias.Node{Kind: "binary", Value: op(e.Op), Children: []*mochias.Node{exprNode(*e.Left), exprNode(*e.Right)}}
+		l := exprNode(*e.Left)
+		r := exprNode(*e.Right)
+		if l.Kind == "int" && r.Kind == "int" && e.Op == "DIVIDE" {
+			lv := l.Value.(int)
+			rv := r.Value.(int)
+			if rv != 0 {
+				return &mochias.Node{Kind: "int", Value: lv / rv}
+			}
+		}
+		return &mochias.Node{Kind: "binary", Value: op(e.Op), Children: []*mochias.Node{l, r}}
 	case "Call":
+		// special case: <expr>.length()
+		if e.Target != nil && e.Target.Kind == "Member" && e.Target.Name == "length" && len(e.Args) == 0 {
+			return &mochias.Node{Kind: "call", Value: "len", Children: []*mochias.Node{exprNode(*e.Target.Expr)}}
+		}
 		n := &mochias.Node{Kind: "call"}
 		n.Children = append(n.Children, exprNode(*e.Target))
 		for _, a := range e.Args {
@@ -116,6 +146,10 @@ func exprNode(e Expr) *mochias.Node {
 		}
 		return n
 	case "Member":
+		// special case: <expr>.length
+		if e.Name == "length" && e.Expr != nil {
+			return &mochias.Node{Kind: "call", Value: "len", Children: []*mochias.Node{exprNode(*e.Expr)}}
+		}
 		return &mochias.Node{Kind: "selector", Value: e.Name, Children: []*mochias.Node{exprNode(*e.Expr)}}
 	case "Array":
 		arr := &mochias.Node{Kind: "list"}
@@ -162,4 +196,52 @@ func op(k string) string {
 		return ">="
 	}
 	return k
+}
+
+func isNumericLiteral(v string) bool {
+	if _, err := strconv.Atoi(v); err == nil {
+		return true
+	}
+	if _, err := strconv.ParseFloat(v, 64); err == nil {
+		return true
+	}
+	return false
+}
+
+func splitConcat(e Expr) ([]*mochias.Node, bool) {
+	if e.Kind == "Binary" && e.Op == "PLUS" && e.Left != nil && e.Right != nil {
+		left, lstr := splitConcat(*e.Left)
+		right, rstr := splitConcat(*e.Right)
+		if lstr || rstr {
+			return append(left, right...), true
+		}
+	}
+	if e.Kind == "String" || (e.Kind == "Literal" && !isNumericLiteral(e.Value)) {
+		return []*mochias.Node{exprNode(e)}, true
+	}
+	return []*mochias.Node{exprNode(e)}, false
+}
+
+func mergeStrings(nodes []*mochias.Node) []*mochias.Node {
+	if len(nodes) == 0 {
+		return nodes
+	}
+	merged := []*mochias.Node{nodes[0]}
+	for _, n := range nodes[1:] {
+		if n.Kind == "string" && n.Value == " " {
+			continue
+		}
+		last := merged[len(merged)-1]
+		if last.Kind == "string" && n.Kind == "string" {
+			last.Value = last.Value.(string) + n.Value.(string)
+		} else {
+			merged = append(merged, n)
+		}
+	}
+	if len(merged) > 1 && merged[0].Kind == "string" {
+		if s, ok := merged[0].Value.(string); ok {
+			merged[0].Value = strings.TrimRight(s, " ")
+		}
+	}
+	return merged
 }

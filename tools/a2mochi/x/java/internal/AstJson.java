@@ -149,6 +149,12 @@ public class AstJson {
             printBlockStatements(wl.getStatement());
             out.print("}");
             break;
+        case BREAK:
+            out.print("{\"kind\":\"Break\"}");
+            break;
+        case CONTINUE:
+            out.print("{\"kind\":\"Continue\"}");
+            break;
         case IF:
             IfTree it = (IfTree) st;
             out.print("{\"kind\":\"If\",\"cond\":");
@@ -201,6 +207,10 @@ public class AstJson {
             out.print("{\"kind\":\"Literal\",\"value\":\"");
             out.print(((LiteralTree)expr).getValue());
             out.print("\"}");
+            break;
+        case PARENTHESIZED:
+            ParenthesizedTree pt = (ParenthesizedTree) expr;
+            printExpr(pt.getExpression());
             break;
         case IDENTIFIER:
             out.print("{\"kind\":\"Ident\",\"name\":\"");

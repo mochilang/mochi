@@ -22,6 +22,7 @@ type Stmt struct {
 	Kind  string `json:"kind"`
 	Name  string `json:"name,omitempty"`
 	Expr  *Expr  `json:"expr,omitempty"`
+	Cond  *Expr  `json:"cond,omitempty"`
 	Start *Expr  `json:"start,omitempty"`
 	End   *Expr  `json:"end,omitempty"`
 	Body  []Stmt `json:"body,omitempty"`
