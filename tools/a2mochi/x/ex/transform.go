@@ -335,6 +335,34 @@ func translateExpr(expr string) string {
 	case strings.HasPrefix(expr, "length(String.graphemes(") && strings.HasSuffix(expr, "))"):
 		inner := expr[len("length(String.graphemes(") : len(expr)-2]
 		return "len(" + inner + ")"
+	case strings.HasPrefix(expr, "if ") && strings.Contains(expr, ", do:") && strings.Contains(expr, ", else:"):
+		tmp := strings.TrimPrefix(expr, "if ")
+		idxDo := strings.Index(tmp, ", do:")
+		rest := tmp[idxDo+len(", do:"):]
+		depth := 0
+		idxElse := -1
+		for i := 0; i < len(rest); i++ {
+			if strings.HasPrefix(rest[i:], "if ") {
+				depth++
+				i += len("if ") - 1
+				continue
+			}
+			if strings.HasPrefix(rest[i:], ", else:") {
+				if depth == 0 {
+					idxElse = i
+					break
+				}
+				depth--
+				i += len(", else:") - 1
+				continue
+			}
+		}
+		if idxDo >= 0 && idxElse >= 0 {
+			cond := strings.TrimSpace(tmp[:idxDo])
+			thenPart := strings.TrimSpace(rest[:idxElse])
+			elsePart := strings.TrimSpace(rest[idxElse+len(", else:"):])
+			return "if " + translateExpr(cond) + " then " + translateExpr(thenPart) + " else " + translateExpr(elsePart)
+		}
 	}
 	remRe := regexp.MustCompile(`rem\(([^,]+),\s*([^)]+)\)`)
 	for remRe.MatchString(expr) {

@@ -2,8 +2,8 @@
 
 This directory provides a small converter that turns a subset of Elixir source code into Mochi AST form. The implementation mirrors the Python and TypeScript converters and is mostly regex based.
 
-Completed programs: 47/102
-Date: 2025-07-29 21:10:30 GMT+7
+Completed programs: 49/102
+Date: 2025-07-29 21:38:05 GMT+7
 
 ## Checklist
 - [x] append_builtin
@@ -40,8 +40,8 @@ Date: 2025-07-29 21:10:30 GMT+7
 - [ ] group_by_sort
 - [ ] group_items_iteration
 - [x] if_else
-- [ ] if_then_else
-- [ ] if_then_else_nested
+- [x] if_then_else
+- [x] if_then_else_nested
 - [x] in_operator
 - [ ] in_operator_extended
 - [ ] inner_join
