@@ -176,6 +176,8 @@ func convertBodyLine(s string) string {
 	s = convertArrowFunc(s)
 	s = convertTernaryPrint(s)
 	s = convertTernary(s)
+	s = convertIsEmpty(s)
+	s = convertAvg(s)
 	s = convertSpread(s)
 	s = convertReduce(s)
 	s = convertLength(s)
@@ -208,6 +210,23 @@ var ternaryRe = regexp.MustCompile(`([^?]+)\?\s*([^:]+)\s*:\s*(.+)`)
 func convertTernary(s string) string {
 	if ternaryRe.MatchString(s) {
 		return ternaryRe.ReplaceAllString(s, "if $1 { $2 } else { $3 }")
+	}
+	return s
+}
+
+var isEmptyRe = regexp.MustCompile(`([^\s]+)\.isEmpty`)
+
+func convertIsEmpty(s string) string {
+	return isEmptyRe.ReplaceAllString(s, "len($1) == 0")
+}
+
+var avgPrintRe = regexp.MustCompile(`^\s*print\(if len\(([^)]+)\) == 0 \{ 0 \} else \{ \(sum\(([^)]+)\) / len\(([^)]+)\)\) \}\)$`)
+
+func convertAvg(s string) string {
+	if m := avgPrintRe.FindStringSubmatch(strings.TrimSpace(s)); m != nil {
+		if m[1] == m[2] && m[1] == m[3] {
+			return fmt.Sprintf("print(avg(%s))", m[1])
+		}
 	}
 	return s
 }
