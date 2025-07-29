@@ -31,6 +31,8 @@ var seqRangeRe = regexp.MustCompile(`lists:seq\(1,\s*([^\)]+)\s*-\s*1\)`)
 var listAssignRe = regexp.MustCompile(`^lists:sublist\(([^,]+),\s*([^,\)]+)\)\s*\+\+\s*\[([^\]]+)\]\s*\+\+\s*lists:nthtail\(([^,]+),\s*([^\)]+)\)$`)
 var listsAnyRe = regexp.MustCompile(`lists:any\(fun\(([^)]*)\)\s*->\s*(.+?)\s*end,\s*([^\)]+)\)`)
 var listsSublistCall = "lists:sublist("
+var divRe = regexp.MustCompile(`([0-9A-Za-z_()+\-*/]+)\s+div\s+([0-9A-Za-z_()+\-*/]+)`)
+var remRe = regexp.MustCompile(`([0-9A-Za-z_()+\-*/]+)\s+rem\s+([0-9A-Za-z_()+\-*/]+)`)
 
 func node(kind string, value any, children ...*ast.Node) *ast.Node {
 	return &ast.Node{Kind: kind, Value: value, Children: children}
@@ -219,12 +221,12 @@ func rewriteLine(ln string, recs []Record) []string {
 	if strings.Contains(ln, "lists:max(") {
 		ln = strings.ReplaceAll(ln, "lists:max(", "max(")
 	}
-        if strings.Contains(ln, "list_to_integer(") {
-                ln = strings.ReplaceAll(ln, "list_to_integer(", "int(")
-        }
-        if strings.Contains(ln, "integer_to_list(") {
-                ln = strings.ReplaceAll(ln, "integer_to_list(", "str(")
-        }
+	if strings.Contains(ln, "list_to_integer(") {
+		ln = strings.ReplaceAll(ln, "list_to_integer(", "int(")
+	}
+	if strings.Contains(ln, "integer_to_list(") {
+		ln = strings.ReplaceAll(ln, "integer_to_list(", "str(")
+	}
 	if strings.Contains(ln, "length(") {
 		ln = strings.ReplaceAll(ln, "length(", "len(")
 	}
@@ -238,6 +240,12 @@ func rewriteLine(ln string, recs []Record) []string {
 		ln = strings.ReplaceAll(ln, "++", "+")
 	}
 	ln = fixPlusNeg(ln)
+	for divRe.MatchString(ln) {
+		ln = divRe.ReplaceAllString(ln, "int($1 / $2)")
+	}
+	for remRe.MatchString(ln) {
+		ln = remRe.ReplaceAllString(ln, "$1 % $2")
+	}
 	if notListsMemberRe.MatchString(ln) {
 		ln = notListsMemberRe.ReplaceAllString(ln, "!($1 in $2)")
 	}

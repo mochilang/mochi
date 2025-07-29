@@ -146,9 +146,9 @@ func TestTransform_Golden(t *testing.T) {
 		"string_index":        true,
 		"string_compare":      true,
 		"string_prefix_slice": true,
-                "substring_builtin":   true,
-                "str_builtin":        true,
-                "sum_builtin":         true,
+		"substring_builtin":   true,
+		"str_builtin":         true,
+		"sum_builtin":         true,
 		"bool_chain":          true,
 		"short_circuit":       true,
 		"unary_neg":           true,
@@ -175,6 +175,11 @@ func TestTransform_Golden(t *testing.T) {
 		"map_nested_assign":   true,
 		"slice":               true,
 		"record_assign":       false,
+		"match_expr":          true,
+		"typed_var":           false,
+		"typed_let":           false,
+		"test_block":          false,
+		"math_ops":            false,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "erl")
 	os.MkdirAll(outDir, 0o755)

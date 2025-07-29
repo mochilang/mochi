@@ -4,6 +4,7 @@ package erl
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"mochi/ast"
@@ -20,7 +21,11 @@ func Print(node *ast.Node) (string, error) {
 		return "", err
 	}
 	var out strings.Builder
-	out.Write(meta.Header("//"))
+	prefix := "//"
+	if p := os.Getenv("ERL_HEADER_PREFIX"); p != "" {
+		prefix = p
+	}
+	out.Write(meta.Header(prefix))
 	trimmed := strings.TrimRight(code.String(), " \t\n")
 	out.WriteString(trimmed)
 	out.WriteByte('\n')
