@@ -50,6 +50,7 @@ type Field struct {
 	Access string
 	Line   int
 	Value  string
+	Ast    *Node `json:"Ast,omitempty"`
 	Static bool
 	Doc    string
 }

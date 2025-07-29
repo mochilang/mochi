@@ -21,6 +21,7 @@ public class Field
     public string Access { get; set; }
     public int Line { get; set; }
     public string Value { get; set; }
+    public Node Ast { get; set; }
     public bool Static { get; set; }
     public string Doc { get; set; }
 }
@@ -95,6 +96,7 @@ public static class AstJson
         FileLinePositionSpan span = default;
         bool isStatic = false;
         string value = "";
+        Node ast = null;
 
         if (m is FieldDeclarationSyntax fd)
         {
@@ -103,7 +105,11 @@ public static class AstJson
             modifiers = fd.Modifiers;
             span = fd.GetLocation().GetLineSpan();
             var v = fd.Declaration.Variables.First();
-            value = v.Initializer != null ? v.Initializer.Value.ToString() : "";
+            if (v.Initializer != null)
+            {
+                value = v.Initializer.Value.ToString();
+                ast = ParseExpr(v.Initializer.Value);
+            }
             isStatic = fd.Modifiers.Any(SyntaxKind.StaticKeyword);
         }
         else if (m is PropertyDeclarationSyntax pd)
@@ -113,6 +119,11 @@ public static class AstJson
             modifiers = pd.Modifiers;
             span = pd.GetLocation().GetLineSpan();
             isStatic = pd.Modifiers.Any(SyntaxKind.StaticKeyword);
+            if (pd.Initializer != null)
+            {
+                value = pd.Initializer.Value.ToString();
+                ast = ParseExpr(pd.Initializer.Value);
+            }
         }
         else
         {
@@ -126,6 +137,7 @@ public static class AstJson
             Access = GetAccess(modifiers),
             Line = span.StartLinePosition.Line + 1,
             Value = value,
+            Ast = ast,
             Static = isStatic,
             Doc = GetDoc(m)
         };
@@ -169,8 +181,39 @@ public static class AstJson
                 return new Node { Kind = "cond", Children = new List<Node> { ParseExpr(cond.Condition), ParseExpr(cond.WhenTrue), ParseExpr(cond.WhenFalse) } };
             case MemberAccessExpressionSyntax mem:
                 return new Node { Kind = "member", Value = mem.Name.Identifier.Text, Children = new List<Node> { ParseExpr(mem.Expression) } };
+            case ObjectCreationExpressionSyntax obj:
+                var on = new Node { Kind = "new", Value = obj.Type.ToString() };
+                if (obj.Initializer != null)
+                    on.Children.Add(ParseInitializer(obj.Initializer));
+                return on;
+            case ImplicitObjectCreationExpressionSyntax imp:
+                var ion = new Node { Kind = "new", Value = "" };
+                if (imp.Initializer != null)
+                    ion.Children.Add(ParseInitializer(imp.Initializer));
+                return ion;
         }
         return new Node { Kind = "unknown" };
+    }
+
+    static Node ParseInitializer(InitializerExpressionSyntax init)
+    {
+        var n = new Node { Kind = "init" };
+        foreach (var expr in init.Expressions)
+        {
+            if (expr is AssignmentExpressionSyntax ass)
+            {
+                n.Children.Add(new Node { Kind = "field", Value = ass.Left.ToString(), Children = new List<Node> { ParseExpr(ass.Right) } });
+            }
+            else if (expr is InitializerExpressionSyntax ie && ie.Expressions.Count == 2)
+            {
+                n.Children.Add(new Node { Kind = "pair", Children = new List<Node> { ParseExpr(ie.Expressions[0]), ParseExpr(ie.Expressions[1]) } });
+            }
+            else
+            {
+                n.Children.Add(ParseExpr(expr));
+            }
+        }
+        return n;
     }
 
     static Node ParseCall(InvocationExpressionSyntax inv)
