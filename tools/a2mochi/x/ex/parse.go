@@ -234,11 +234,18 @@ func parseFunc(n []interface{}, lines []string) *Func {
 
 func captureFuncLines(lines []string, start int) ([]string, int) {
 	seg := []string{}
+	depth := 0
 	for i := start - 1; i < len(lines); i++ {
 		l := strings.TrimSpace(lines[i])
 		seg = append(seg, l)
-		if i > start-1 && l == "end" {
-			return seg, i + 1
+		if strings.HasSuffix(l, "do") || strings.HasSuffix(l, "->") {
+			depth++
+		}
+		if l == "end" || strings.HasPrefix(l, "end)") || strings.HasPrefix(l, "end,") {
+			depth--
+			if depth <= 0 {
+				return seg, i + 1
+			}
 		}
 	}
 	return seg, len(lines)
