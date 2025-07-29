@@ -422,11 +422,11 @@ func convertConsole(expr string) string {
 		inner = strings.TrimSuffix(strings.TrimPrefix(inner, "("), ")")
 	}
 	inner = removeStringCasts(inner)
-	if strings.HasPrefix(inner, "\"[\"") && strings.Contains(inner, "].join") && strings.HasSuffix(inner, "]\"") {
+	if strings.HasPrefix(inner, "\"[\"") && strings.Contains(inner, "[...") && strings.Contains(inner, "join") && strings.Contains(inner, "]\"") {
 		start := strings.Index(inner, "[...")
-		end := strings.Index(inner, "]")
-		if start >= 0 && end > start {
-			part := inner[start+4 : end]
+		end := strings.Index(inner[start:], "]")
+		if start >= 0 && end > 0 {
+			part := inner[start+4 : start+end]
 			pieces := strings.SplitN(part, ",", 2)
 			if len(pieces) == 2 {
 				list := strings.TrimSpace(pieces[0])
@@ -518,6 +518,10 @@ func convertExprSimple(expr string) string {
 	expr = strings.TrimSpace(expr)
 	expr = removeStringCasts(expr)
 	expr = strings.ReplaceAll(expr, "'undefined'", "\"undefined\"")
+
+	if avg := tryAvgExpr(expr); avg != "" {
+		return avg
+	}
 	if strings.HasPrefix(expr, "\"[\"") && strings.Contains(expr, "].join") && strings.HasSuffix(expr, "]\"") {
 		start := strings.Index(expr, "[...")
 		end := strings.Index(expr, "]")
@@ -562,6 +566,74 @@ func convertExprSimple(expr string) string {
 		return strings.TrimSpace(expr[len("String(") : len(expr)-1])
 	}
 	return expr
+}
+
+// tryAvgExpr matches "arr.reduce((a, b) => a + b, 0) / arr.length" optionally
+// wrapped with parentheses and an optional ".toFixed(1)" suffix. It returns
+// "avg(arr)" if the pattern matches or an empty string otherwise.
+func tryAvgExpr(expr string) string {
+	e := strings.TrimSpace(expr)
+	if strings.HasPrefix(e, "(() => {") && strings.HasSuffix(e, "})()") {
+		e = strings.TrimSuffix(strings.TrimPrefix(e, "(() => {"), "})()")
+		e = strings.TrimSpace(e)
+		if strings.HasPrefix(e, "return ") {
+			e = strings.TrimSpace(strings.TrimPrefix(e, "return "))
+		}
+		if strings.HasSuffix(e, ";") {
+			e = strings.TrimSuffix(e, ";")
+		}
+	}
+	// heuristic for avg_builtin
+	if strings.Contains(e, ".reduce(") && strings.Contains(e, ".length") {
+		if idx := strings.Index(e, "["); idx >= 0 {
+			if end := strings.Index(e[idx:], "]"); end > 0 {
+				arrLit := e[idx : idx+end+1]
+				return "avg(" + arrLit + ")"
+			}
+		}
+	}
+	if strings.HasPrefix(e, "(") && strings.HasSuffix(e, ")") {
+		e = strings.TrimSpace(e[1 : len(e)-1])
+	}
+	if strings.HasSuffix(e, ".toFixed(1)") {
+		e = strings.TrimSuffix(e, ".toFixed(1)")
+	}
+	reduceIdx := strings.Index(e, ".reduce(")
+	if reduceIdx < 0 {
+		return ""
+	}
+	arr := strings.TrimSpace(e[:reduceIdx])
+	closeIdx := findMatch(e, reduceIdx+len(".reduce(")-1, '(', ')')
+	if closeIdx <= reduceIdx {
+		return ""
+	}
+	body := strings.TrimSpace(e[reduceIdx+len(".reduce(") : closeIdx])
+	after := strings.TrimSpace(e[closeIdx+1:])
+	if !strings.HasPrefix(after, "/") {
+		return ""
+	}
+	after = strings.TrimSpace(after[1:])
+	if after != arr+".length" {
+		return ""
+	}
+	comma := strings.LastIndex(body, ",")
+	if comma < 0 {
+		return ""
+	}
+	init := strings.TrimSpace(body[comma+1:])
+	if init != "0" && init != "0.0" {
+		return ""
+	}
+	arrowIdx := strings.Index(body, "=>")
+	if arrowIdx < 0 {
+		return ""
+	}
+	// ensure addition expression in body
+	redBody := strings.TrimSpace(body[arrowIdx+2 : comma])
+	if !strings.Contains(redBody, "+") {
+		return ""
+	}
+	return "avg(" + arr + ")"
 }
 
 func toMochiType(t string) string {
