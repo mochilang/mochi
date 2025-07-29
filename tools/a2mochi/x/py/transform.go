@@ -595,12 +595,12 @@ func emitAssignStmt(b *strings.Builder, n *Node, lines []string, seen map[string
 	if len(targets) == 0 {
 		return newTransformError(n.Line, lines, "unsupported assignment")
 	}
-	if strings.TrimSpace(string(n.Value)) == "null" {
-		return nil
-	}
-	if v := n.valueNode(); v != nil && v.Type == "Constant" && strings.TrimSpace(string(v.Value)) == "null" {
-		return nil
-	}
+       if strings.TrimSpace(string(n.Value)) == "null" {
+               // keep explicit assignments to null so the variable can be used later
+       }
+       if v := n.valueNode(); v != nil && v.Type == "Constant" && strings.TrimSpace(string(v.Value)) == "null" {
+               // allow declarations assigning null rather than skipping
+       }
 	nameNode := targets[0]
 	declared := false
 	if seen != nil {
@@ -1099,8 +1099,8 @@ func emitExpr(b *strings.Builder, n *Node, lines []string, structs map[string][]
 			} else {
 				fmt.Fprintf(b, "%v", vv)
 			}
-		case nil:
-			b.WriteString("nil")
+               case nil:
+                       b.WriteString("null")
 		default:
 			fmt.Fprintf(b, "%v", vv)
 		}
@@ -1599,18 +1599,21 @@ func inferReturnType(n *Node, lines []string) string {
 		ret := n.Body[len(n.Body)-1]
 		if ret.Type == "Return" {
 			val := ret.valueNode()
-			if val != nil && val.Type == "Lambda" {
-				return lambdaType(val, lines)
-			}
-			if val != nil && val.Type == "Constant" {
-				v := val.constValue()
-				if v == true || v == false {
-					return "bool"
-				}
-			}
-		}
-	}
-	return ""
+                       if val != nil && val.Type == "Lambda" {
+                               return lambdaType(val, lines)
+                       }
+                       if val != nil && val.Type == "Constant" {
+                               v := val.constValue()
+                               if v == true || v == false {
+                                       return "bool"
+                               }
+                               if _, ok := v.(string); ok {
+                                       return "string"
+                               }
+                       }
+               }
+       }
+       return ""
 }
 
 func lambdaType(n *Node, lines []string) string {
