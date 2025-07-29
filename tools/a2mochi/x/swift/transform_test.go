@@ -140,6 +140,15 @@ func TestTransformGolden(t *testing.T) {
 		"avg_builtin":         true,
 		"sum_builtin":         true,
 		"let_and_print":       true,
+		// closure uses invalid Swift code and cannot be parsed
+		"closure":             false,
+		"fun_expr_in_let":     true,
+		"list_nested_assign":  true,
+		"typed_var":           false,
+		"typed_let":           false,
+		"map_literal_dynamic": false,
+		"map_nested_assign":   false,
+		"user_type_literal":   false,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "swift")
 	os.MkdirAll(outDir, 0o755)

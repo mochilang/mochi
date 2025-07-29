@@ -1,9 +1,11 @@
 (program
-  (var square
+  (let square
     (funexpr
       (param x (type int))
       (type int)
-      (binary * (selector x) (selector x))
+      (group
+        (binary * (selector x) (selector x))
+      )
     )
   )
   (call print

@@ -1,0 +1,4 @@
+// a2mochi-swift v0.10.48 on 2025-07-29 23:54 GMT+7
+var matrix = [[1, 2], [3, 4]]
+matrix[1][0] = 5
+print(matrix[1][0])

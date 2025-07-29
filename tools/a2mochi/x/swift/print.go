@@ -4,6 +4,7 @@ package swift
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -22,7 +23,11 @@ func Print(n *ast.Node) (string, error) {
 }
 
 func header() string {
-	loc := time.FixedZone("GMT+7", 7*3600)
+	zone := "GMT+7"
+	if env := os.Getenv("MOCHI_TZ"); env != "" {
+		zone = env
+	}
+	loc := time.FixedZone(zone, 7*3600)
 	t := time.Now().In(loc)
 	return fmt.Sprintf("// a2mochi-swift v%s on %s\n", version(), t.Format("2006-01-02 15:04 MST"))
 }
