@@ -155,6 +155,7 @@ func TestTransform_Golden(t *testing.T) {
 		"go_auto":             true,
 		"if_else":             true,
 		"len_map":             true,
+		"len_builtin":         true,
 		"len_string":          true,
 		"let_and_print":       true,
 		"list_assign":         true,
