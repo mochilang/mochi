@@ -27,9 +27,11 @@ func UpdateReadmeForTests() {
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".rb")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
-			converted++
-			mark = "[x]"
+		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+			if _, err2 := os.Stat(filepath.Join(outDir, name+".error")); os.IsNotExist(err2) {
+				converted++
+				mark = "[x]"
+			}
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}

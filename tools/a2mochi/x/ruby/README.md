@@ -2,8 +2,8 @@
 
 This directory contains a minimal converter that translates simple Ruby programs back into Mochi form. It uses Ruby's built in `ripper` library to obtain an s-expression AST which is then converted to Mochi code. The implementation mirrors the Python and TypeScript converters and is only powerful enough for the examples under `tests/transpiler/x/rb`.
 
-Completed programs: 41/104
-Date: 2025-07-29 18:16 +07
+Completed programs: 39/104
+Date: 2025-07-29 20:48 +07
 
 ## Checklist
 - [x] append_builtin
@@ -11,11 +11,11 @@ Date: 2025-07-29 18:16 +07
 - [x] basic_compare
 - [ ] bench_block
 - [x] binary_precedence
-- [x] bool_chain
+- [ ] bool_chain
 - [x] break_continue
 - [x] cast_string_to_int
 - [ ] cast_struct
-- [x] closure
+- [ ] closure
 - [x] count_builtin
 - [ ] cross_join
 - [ ] cross_join_filter
@@ -26,7 +26,7 @@ Date: 2025-07-29 18:16 +07
 - [x] for_list_collection
 - [x] for_loop
 - [x] for_map_collection
-- [x] fun_call
+- [ ] fun_call
 - [ ] fun_expr_in_let
 - [ ] fun_three_args
 - [ ] go_auto
@@ -56,7 +56,7 @@ Date: 2025-07-29 18:16 +07
 - [x] let_and_print
 - [x] list_assign
 - [x] list_index
-- [ ] list_nested_assign
+- [x] list_nested_assign
 - [ ] list_set_ops
 - [ ] load_jsonl
 - [ ] load_yaml
