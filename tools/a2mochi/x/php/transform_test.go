@@ -117,6 +117,7 @@ func TestTransform_Golden(t *testing.T) {
 		"string_in_operator":  true,
 		"string_index":        true,
 		"string_prefix_slice": true,
+		"slice":               true,
 		"var_assignment":      true,
 		"user_type_literal":   true,
 		"if_else":             true,

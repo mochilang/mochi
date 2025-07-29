@@ -441,6 +441,14 @@ func simpleExpr(n pnode.Node) (string, bool) {
 				val := strings.TrimSuffix(strings.TrimPrefix(args[1], "["), "]")
 				return fmt.Sprintf("append(%s, %s)", args[0], val), true
 			}
+		case "array_slice":
+			switch len(args) {
+			case 2:
+				return fmt.Sprintf("%s[%s:]", args[0], args[1]), true
+			case 3:
+				end := fmt.Sprintf("(%s + %s)", args[1], args[2])
+				return fmt.Sprintf("%s[%s:%s]", args[0], args[1], end), true
+			}
 		case "array_values":
 			name = "values"
 		case "min":
