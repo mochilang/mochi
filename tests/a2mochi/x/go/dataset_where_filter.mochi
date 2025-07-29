@@ -9,7 +9,7 @@ type Adult {
   is_senior: bool
 }
 let adults = from person in people
-               where (person.age >= 18)
+               where person.age >= 18
                select {"name": person.name, "age": person.age, "is_senior": (person.age >= 60)} as Adult
 print("--- Adults ---")
 for person in adults {

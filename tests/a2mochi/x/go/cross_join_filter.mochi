@@ -1,0 +1,14 @@
+var nums = [1, 2, 3]
+var letters = ["A", "B"]
+type Pair {
+  n: int
+  l: string
+}
+let pairs = from n in nums
+              from l in letters
+              where n % 2 == 0
+              select {"n": n, "l": l} as Pair
+print("--- Even pairs ---")
+for p in pairs {
+  print(p.n, p.l)
+}
