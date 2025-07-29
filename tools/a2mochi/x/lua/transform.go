@@ -91,6 +91,15 @@ func convertStmtsToNodes(stmts []luaast.Stmt, vars map[string]bool, mut map[stri
 			}
 		case *luaast.FuncCallStmt:
 			if fc, ok := s.Expr.(*luaast.FuncCallExpr); ok {
+				if tgt := tableInsertTarget(fc); tgt != "" {
+					assignNode := node("assign", nil,
+						node("selector", tgt),
+						node("call", "append",
+							node("selector", tgt),
+							exprToNode(fc.Args[1], mut)))
+					out = append(out, assignNode)
+					continue
+				}
 				if luaExprString(fc.Func, mut) == "print" && len(fc.Args) == 1 {
 					if inner, ok := fc.Args[0].(*luaast.FuncCallExpr); ok {
 						if luaExprString(inner.Func, mut) == "string.format" && len(inner.Args) >= 1 {
@@ -1157,6 +1166,20 @@ func isAttrCall(e luaast.Expr, object, method string) bool {
 	}
 	return false
 }
+
+func tableInsertTarget(e luaast.Expr) string {
+	call, ok := e.(*luaast.FuncCallExpr)
+	if !ok || len(call.Args) != 2 {
+		return ""
+	}
+	if !isAttrCall(call.Func, "table", "insert") {
+		return ""
+	}
+	if id, ok := call.Args[0].(*luaast.IdentExpr); ok {
+		return id.Value
+	}
+	return ""
+}
 func writeLuaChunk(out *strings.Builder, chunk []luaast.Stmt, mut map[string]bool) {
 	for _, line := range convertLuaStmts(chunk, 0, map[string]bool{}, mut) {
 		if strings.HasPrefix(line, "fun __") {
@@ -1220,6 +1243,10 @@ func collectAssignCounts(stmts []luaast.Stmt, counts map[string]int) {
 				counts[n]++
 			}
 			collectAssignCounts(s.Stmts, counts)
+		case *luaast.FuncCallStmt:
+			if list := tableInsertTarget(s.Expr); list != "" {
+				counts[list]++
+			}
 		}
 	}
 }

@@ -1,7 +1,7 @@
 # a2mochi Lua Converter
 
-Completed programs: 61/104
-Date: 2025-07-29 15:24:53 GMT+7
+Completed programs: 63/104
+Date: 2025-07-29 17:46:12 GMT+7
 
 This directory contains helpers and golden files for converting Lua programs
 under `tests/transpiler/x/lua` back into Mochi code.
@@ -20,13 +20,13 @@ Supported examples:
 - [x] count_builtin
 - [x] cross_join
 - [x] cross_join_filter
-- [ ] cross_join_triple
+- [x] cross_join_triple
 - [ ] dataset_sort_take_limit
 - [ ] dataset_where_filter
 - [x] exists_builtin
 - [x] for_list_collection
 - [x] for_loop
-- [ ] for_map_collection
+- [x] for_map_collection
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
