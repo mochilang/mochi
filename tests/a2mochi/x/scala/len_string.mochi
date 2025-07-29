@@ -1,2 +1,2 @@
-// a2mochi scala v0.10.48 2025-07-29 18:25:43 GMT+7
-print("mochi".size)
+// a2mochi scala v0.10.48 2025-07-29 23:59:55 GMT+7
+print(len("mochi"))

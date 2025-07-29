@@ -1,0 +1,4 @@
+// a2mochi scala v0.10.48 2025-07-29 23:59:28 GMT+7
+var scores = {"alice": 1}
+scores["bob"] = 2
+print(scores["bob"])
