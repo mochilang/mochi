@@ -108,6 +108,12 @@ func rewriteExpr(s string) string {
 			}
 		}
 
+		// remove surrounding "[" + expr + "]" patterns
+		if strings.HasPrefix(s, "\"[\" +") && strings.HasSuffix(s, "+ \"]\"") {
+			inner := strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(s, "\"[\" +"), "+ \"]\""))
+			s = inner
+		}
+
 		// <x>.Append(y).ToArray() -> append(x, y)
 		if strings.Contains(s, ".Append(") && strings.HasSuffix(s, ").ToArray()") {
 			before := stripOuterParens(strings.TrimSpace(s[:strings.Index(s, ".Append(")]))
@@ -465,6 +471,15 @@ func exprNodeFromAST(n *Node) *ast.Node {
 	case "ident":
 		return &ast.Node{Kind: "selector", Value: n.Value}
 	case "binary":
+		if n.Value == "+" && len(n.Children) == 2 {
+			l := n.Children[0]
+			r := n.Children[1]
+			if l.Kind == "literal" && l.Value == "[" && r.Kind == "binary" && r.Value == "+" && len(r.Children) == 2 {
+				if rc := r.Children[1]; rc.Kind == "literal" && rc.Value == "]" {
+					return exprNodeFromAST(r.Children[0])
+				}
+			}
+		}
 		return &ast.Node{Kind: "binary", Value: n.Value, Children: []*ast.Node{exprNodeFromAST(n.Children[0]), exprNodeFromAST(n.Children[1])}}
 	case "unary":
 		return &ast.Node{Kind: "unary", Value: n.Value, Children: []*ast.Node{exprNodeFromAST(n.Children[0])}}
