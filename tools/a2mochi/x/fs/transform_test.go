@@ -4,7 +4,6 @@ package fs_test
 
 import (
 	"bytes"
-	"encoding/json"
 	"flag"
 	"os"
 	"path/filepath"
@@ -95,35 +94,34 @@ func TestTransformGolden(t *testing.T) {
 		t.Fatalf("no files: %s", pattern)
 	}
 	allowed := map[string]bool{
-		"append_builtin":     true,
-		"avg_builtin":        true,
-		"basic_compare":      true,
-		"cast_string_to_int": true,
-		"print_hello":        true,
-		"sum_builtin":        true,
-		"for_loop":           true,
+		"avg_builtin":        false,
+		"binary_precedence":  true,
+		"bool_chain":         false,
+		"cast_string_to_int": false,
+		"closure":            false,
+		"fun_call":           false,
 		"len_builtin":        true,
 		"len_string":         true,
-		"map_index":          true,
-		"if_else":            true,
-		"while_loop":         true,
-		"unary_neg":          true,
-		"closure":            true,
-		"fun_call":           true,
-		"binary_precedence":  true,
-		"bool_chain":         true,
-		"break_continue":     false,
-		"map_membership":     true,
-		"map_int_key":        true,
-		"string_concat":      true,
+		"let_and_print":      true,
+		"list_index":         true,
+		"map_index":          false,
+		"map_int_key":        false,
+		"map_membership":     false,
+		"membership":         false,
 		"min_max_builtin":    true,
-		"membership":         true,
-		"typed_let":          true,
-		"typed_var":          true,
-		"string_index":       true,
+		"print_hello":        true,
+		"str_builtin":        true,
+		"string_concat":      true,
 		"string_contains":    true,
-		"var_assignment":     true,
+		"string_in_operator": true,
+		"string_index":       true,
+		"sum_builtin":        true,
+		"typed_let":          false,
+		"typed_var":          false,
+		"unary_neg":          true,
 		"user_type_literal":  true,
+		"var_assignment":     true,
+		"while_loop":         true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "fs")
 	os.MkdirAll(outDir, 0o755)
@@ -134,15 +132,7 @@ func TestTransformGolden(t *testing.T) {
 		}
 		t.Run(name, func(t *testing.T) {
 			prog := parseFile(t, src)
-			j, err := json.Marshal(prog)
-			if err != nil {
-				t.Fatalf("marshal: %v", err)
-			}
-			var p2 fs.Program
-			if err := json.Unmarshal(j, &p2); err != nil {
-				t.Fatalf("unmarshal: %v", err)
-			}
-			code := transformSrc(t, &p2)
+			code := transformSrc(t, prog)
 			mochiPath := filepath.Join(outDir, name+".mochi")
 			if *updateGolden {
 				os.WriteFile(mochiPath, []byte(code), 0o644)

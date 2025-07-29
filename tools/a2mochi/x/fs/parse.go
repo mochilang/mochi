@@ -181,13 +181,14 @@ func ParseFile(path string) (*Program, error) {
 }
 
 var (
-	reLet    = regexp.MustCompile(`^let\s+(mutable\s+)?([a-zA-Z_][\w]*)?(?::\s*([^=]+))?\s*=\s*(.+)$`)
-	rePrint  = regexp.MustCompile(`^printfn\s+"[^"]*"\s*(.*)$`)
-	reAssign = regexp.MustCompile(`^([a-zA-Z_][\w]*(?:\.\[[^\]]+\])?)\s*<-\s*(.+)$`)
-	reFor    = regexp.MustCompile(`^for\s+([a-zA-Z_][\w]*)\s+in\s+(.+)\s+\.\.\s+(.+)\s+do$`)
-	reWhile  = regexp.MustCompile(`^while\s+(.+)\s+do$`)
-	reIf     = regexp.MustCompile(`^if\s+(.+)\s+then$`)
-	reElse   = regexp.MustCompile(`^else$`)
+	reLet      = regexp.MustCompile(`^let\s+(mutable\s+)?([a-zA-Z_][\w]*)?(?::\s*([^=]+))?\s*=\s*(.+)$`)
+	rePrint    = regexp.MustCompile(`^printfn\s+"[^"]*"\s*(.*)$`)
+	reAssign   = regexp.MustCompile(`^([a-zA-Z_][\w]*(?:\.[^\[]*\[[^\]]+\])*)\s*<-\s*(.+)$`)
+	reForRange = regexp.MustCompile(`^for\s+([a-zA-Z_][\w]*)\s+in\s+(.+)\s+\.\.\s+(.+)\s+do$`)
+	reForIn    = regexp.MustCompile(`^for\s+([a-zA-Z_][\w]*)\s+in\s+(.+)\s+do$`)
+	reWhile    = regexp.MustCompile(`^while\s+(.+)\s+do$`)
+	reIf       = regexp.MustCompile(`^if\s+(.+)\s+then$`)
+	reElse     = regexp.MustCompile(`^else$`)
 )
 
 func parseFallback(src string) (*Program, error) {
@@ -226,7 +227,7 @@ func parseFallback(src string) (*Program, error) {
 			p.Stmts = append(p.Stmts, Assign{Name: name, Index: idx, Expr: strings.TrimSpace(m[2])})
 			continue
 		}
-		if m := reFor.FindStringSubmatch(line); m != nil {
+		if m := reForRange.FindStringSubmatch(line); m != nil {
 			var body []Stmt
 			if i+1 < len(lines) {
 				i++
@@ -237,11 +238,22 @@ func parseFallback(src string) (*Program, error) {
 			p.Stmts = append(p.Stmts, ForRange{Var: m[1], Start: strings.TrimSpace(m[2]), End: strings.TrimSpace(m[3]), Body: body})
 			continue
 		}
+		if m := reForIn.FindStringSubmatch(line); m != nil {
+			var body []Stmt
+			if i+1 < len(lines) {
+				i++
+				if st := parseLine(strings.TrimSpace(lines[i])); st != nil {
+					body = append(body, st)
+				}
+			}
+			p.Stmts = append(p.Stmts, ForIn{Var: m[1], Expr: strings.TrimSpace(m[2]), Body: body})
+			continue
+		}
 		if m := reWhile.FindStringSubmatch(line); m != nil {
 			var body []Stmt
 			for i+1 < len(lines) {
 				next := strings.TrimSpace(lines[i+1])
-				if next == "" || reIf.MatchString(next) || reFor.MatchString(next) || reWhile.MatchString(next) {
+				if next == "" || reIf.MatchString(next) || reForRange.MatchString(next) || reForIn.MatchString(next) || reWhile.MatchString(next) {
 					break
 				}
 				if st := parseLine(next); st != nil {
