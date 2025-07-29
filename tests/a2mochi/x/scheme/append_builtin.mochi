@@ -1,11 +1,3 @@
-fun to_str(x: any) {
-}
-fun upper(s: any) {
-}
-fun lower(s: any) {
-}
-fun fmod(a: any, b: any) {
-}
-let a
-print
-print
+let a = [1, 2]
+print to_str(append(a, [3]))
+print ""

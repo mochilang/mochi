@@ -1,16 +1,8 @@
-fun to_str(x: any) {
-}
-fun upper(s: any) {
-}
-fun lower(s: any) {
-}
-fun fmod(a: any, b: any) {
-}
 fun boom() {
 }
-print
-print
-print
-print
-print
-print
+print to_str(if(and(and((1 < 2), (2 < 3)), (3 < 4)), true, false))
+print ""
+print to_str(if(and(and((1 < 2), (2 > 3)), boom()), true, false))
+print ""
+print to_str(if(and(and(and((1 < 2), (2 < 3)), (3 > 4)), boom()), true, false))
+print ""

@@ -1,12 +1,4 @@
-let _now_seeded
+let _now_seeded = false
 let _now_seed = 0
 fun now() {
-}
-fun to_str(x: any) {
-}
-fun upper(s: any) {
-}
-fun lower(s: any) {
-}
-fun fmod(a: any, b: any) {
 }

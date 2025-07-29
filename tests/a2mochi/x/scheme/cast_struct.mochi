@@ -1,11 +1,3 @@
-fun to_str(x: any) {
-}
-fun upper(s: any) {
-}
-fun lower(s: any) {
-}
-fun fmod(a: any, b: any) {
-}
-let todo
-print
-print
+let todo = alist_to_hash_table([cons("title", "hi")])
+print to_str(hash_table_ref(todo, "title"))
+print ""

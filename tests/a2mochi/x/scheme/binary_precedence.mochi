@@ -1,16 +1,8 @@
-fun to_str(x: any) {
-}
-fun upper(s: any) {
-}
-fun lower(s: any) {
-}
-fun fmod(a: any, b: any) {
-}
-print
-print
-print
-print
-print
-print
-print
-print
+print to_str((1 + (2 * 3)))
+print ""
+print to_str(((1 + 2) * 3))
+print ""
+print to_str(((2 * 3) + 1))
+print ""
+print to_str((2 * (3 + 1)))
+print ""

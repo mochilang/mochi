@@ -1,5 +1,5 @@
-let customers
-let orders
-let stats
-print
-print
+let customers = [alist_to_hash_table([cons("id", 1), cons("name", "Alice")]), alist_to_hash_table([cons("id", 2), cons("name", "Bob")])]
+let orders = [alist_to_hash_table([cons("id", 100), cons("customerId", 1)]), alist_to_hash_table([cons("id", 101), cons("customerId", 1)]), alist_to_hash_table([cons("id", 102), cons("customerId", 2)])]
+let stats = let(begin(for_each(lambda(o(), for_each(lambda(c(), if((hash_table_ref(o, "customerId") == hash_table_ref(c, "id")), let*(begin(if(not(g20), begin(set_bang(g20, alist_to_hash_table([cons("key", k21), cons("items", [])])), hash_table_set_bang(groups19, k21, g20)), quote(nil)), hash_table_set_bang(g20, "items", append(hash_table_ref(g20, "items"), [alist_to_hash_table([cons("o", o), cons("c", c)])])))), quote(nil))), customers)), orders), for_each(lambda(g(), set_bang(res22, append(res22, [alist_to_hash_table([cons("name", hash_table_ref(g, "key")), cons("count", length(hash_table_ref(g, "items")))])]))), hash_table_values(groups19)), res22))
+print "--- Orders per customer ---"
+print ""

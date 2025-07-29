@@ -1,9 +1,7 @@
-fun to_str(x: any) {
-}
-let nations
-let suppliers
-let partsupp
-let filtered
-let grouped
-print
-print
+let nations = [alist_to_hash_table([cons("id", 1), cons("name", "A")]), alist_to_hash_table([cons("id", 2), cons("name", "B")])]
+let suppliers = [alist_to_hash_table([cons("id", 1), cons("nation", 1)]), alist_to_hash_table([cons("id", 2), cons("nation", 2)])]
+let partsupp = [alist_to_hash_table([cons("part", 100), cons("supplier", 1), cons("cost", 10), cons("qty", 2)]), alist_to_hash_table([cons("part", 100), cons("supplier", 2), cons("cost", 20), cons("qty", 1)]), alist_to_hash_table([cons("part", 200), cons("supplier", 1), cons("cost", 5), cons("qty", 3)])]
+let filtered = let(begin(for_each(lambda(ps(), for_each(lambda(s(), for_each(lambda(n(), if(and(and(string=_p(hash_table_ref(n, "name"), "A"), (hash_table_ref(s, "id") == hash_table_ref(ps, "supplier"))), (hash_table_ref(n, "id") == hash_table_ref(s, "nation"))), set_bang(res1, append(res1, [alist_to_hash_table([cons("part", hash_table_ref(ps, "part")), cons("value", (hash_table_ref(ps, "cost") * hash_table_ref(ps, "qty")))])])), quote(nil))), nations)), suppliers)), partsupp), res1))
+let grouped = let(begin(for_each(lambda(x(), let*(begin(if(not(g4), begin(set_bang(g4, alist_to_hash_table([cons("key", k5), cons("items", [])])), hash_table_set_bang(groups3, k5, g4)), quote(nil)), hash_table_set_bang(g4, "items", append(hash_table_ref(g4, "items"), [x]))))), filtered), for_each(lambda(g(), set_bang(res6, append(res6, [alist_to_hash_table([cons("part", hash_table_ref(g, "key")), cons("total", apply(+, let(begin(for_each(lambda(r(), set_bang(res2, append(res2, [hash_table_ref(r, "value")]))), hash_table_ref(g, "items")), res2))))])]))), hash_table_values(groups3)), res6))
+print to_str(grouped)
+print ""

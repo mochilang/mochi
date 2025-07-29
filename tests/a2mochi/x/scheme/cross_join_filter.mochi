@@ -1,5 +1,5 @@
-let nums
-let letters
-let pairs
-print
-print
+let nums = [1, 2, 3]
+let letters = ["A", "B"]
+let pairs = let(begin(for_each(lambda(n(), for_each(lambda(l(), if((modulo(n, 2) == 0), set_bang(res2, append(res2, [alist_to_hash_table([cons("n", n), cons("l", l)])])), quote(nil))), letters)), nums), res2))
+print "--- Even pairs ---"
+print ""

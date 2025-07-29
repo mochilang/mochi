@@ -1,10 +1,2 @@
-fun to_str(x: any) {
-}
-fun upper(s: any) {
-}
-fun lower(s: any) {
-}
-fun fmod(a: any, b: any) {
-}
-print
-print
+print to_str(let(cond(else(inexact_to_exact(v12)))))
+print ""

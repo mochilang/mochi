@@ -1,4 +1,4 @@
 fun sum3(a: any, b: any, c: any) {
 }
-print
-print
+print sum3(1, 2, 3)
+print ""
