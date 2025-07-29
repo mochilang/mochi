@@ -16,5 +16,6 @@ func Print(n *ast.Node) (string, error) {
 	if err := ast.Fprint(&b, n); err != nil {
 		return "", err
 	}
-	return b.String(), nil
+	out := strings.ReplaceAll(b.String(), "union_all", "union all")
+	return out, nil
 }

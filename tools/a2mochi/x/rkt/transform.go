@@ -28,6 +28,55 @@ func groupIfUnary(n *ast.Node) *ast.Node {
 	return n
 }
 
+func avgArg(cond any, elseExpr any) *ast.Node {
+	list, ok := cond.([]any)
+	if !ok || len(list) != 2 {
+		return nil
+	}
+	if h, _ := symString(list[0]); h != "null?" {
+		return nil
+	}
+	xs := list[1]
+	call, ok := elseExpr.([]any)
+	if !ok || len(call) != 2 {
+		return nil
+	}
+	if h, _ := symString(call[0]); h != "exact->inexact" {
+		return nil
+	}
+	div, ok := call[1].([]any)
+	if !ok || len(div) != 3 {
+		return nil
+	}
+	if hd, _ := symString(div[0]); hd != "/" {
+		return nil
+	}
+	apply, ok := div[1].([]any)
+	if !ok || len(apply) != 3 {
+		return nil
+	}
+	if ah, _ := symString(apply[0]); ah != "apply" {
+		return nil
+	}
+	if op, _ := symString(apply[1]); op != "+" {
+		return nil
+	}
+	if !reflect.DeepEqual(apply[2], xs) {
+		return nil
+	}
+	ln, ok := div[2].([]any)
+	if !ok || len(ln) != 2 {
+		return nil
+	}
+	if lh, _ := symString(ln[0]); lh != "length" {
+		return nil
+	}
+	if !reflect.DeepEqual(ln[1], xs) {
+		return nil
+	}
+	return exprNode(xs)
+}
+
 func condLen(args []any) *ast.Node {
 	if len(args) != 3 {
 		return nil
@@ -81,7 +130,13 @@ func condLen(args []any) *ast.Node {
 	e2b := b2[1]
 	e3 := b3[1]
 	if reflect.DeepEqual(e1b, e2b) && reflect.DeepEqual(e1b, e3) {
-		return &ast.Node{Kind: "call", Value: "len", Children: []*ast.Node{exprNode(e1)}}
+		child := exprNode(e1)
+		if u, ok := e1.([]any); ok && len(u) == 3 {
+			if h, _ := symString(u[0]); h == "union" {
+				child = &ast.Node{Kind: "binary", Value: "union_all", Children: []*ast.Node{exprNode(u[1]), exprNode(u[2])}}
+			}
+		}
+		return &ast.Node{Kind: "call", Value: "len", Children: []*ast.Node{child}}
 	}
 	return nil
 }
@@ -383,9 +438,13 @@ func exprNode(d any) *ast.Node {
 			if len(v) == 3 {
 				return &ast.Node{Kind: "binary", Value: "in", Children: []*ast.Node{exprNode(v[1]), exprNode(v[2])}}
 			}
+		case "union", "except", "intersect":
+			if len(v) == 3 {
+				return &ast.Node{Kind: "binary", Value: head, Children: []*ast.Node{exprNode(v[1]), exprNode(v[2])}}
+			}
 		case "if":
 			if len(args) >= 2 {
-				// special case: (if (null? xs) 0 (apply min xs)) -> min(xs)
+				// special cases: min/max and avg builtins
 				if cond, ok := args[0].([]any); ok && len(cond) == 2 {
 					if h, _ := symString(cond[0]); h == "null?" {
 						if zero, ok := args[1].(float64); ok && zero == 0 && len(args) == 3 {
@@ -395,6 +454,9 @@ func exprNode(d any) *ast.Node {
 										return &ast.Node{Kind: "call", Value: op, Children: []*ast.Node{exprNode(apply[2])}}
 									}
 								}
+							}
+							if arg := avgArg(cond, args[2]); arg != nil {
+								return &ast.Node{Kind: "call", Value: "avg", Children: []*ast.Node{arg}}
 							}
 						}
 					}

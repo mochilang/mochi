@@ -80,6 +80,7 @@ func TestTransformGolden(t *testing.T) {
 	allowed := map[string]bool{
 		"print_hello":         true,
 		"append_builtin":      true,
+		"avg_builtin":         true,
 		"fun_call":            true,
 		"fun_three_args":      true,
 		"unary_neg":           true,
@@ -89,6 +90,7 @@ func TestTransformGolden(t *testing.T) {
 		"basic_compare":       true,
 		"string_concat":       true,
 		"list_index":          true,
+		"list_set_ops":        true,
 		"bool_chain":          true,
 		"if_then_else":        true,
 		"short_circuit":       true,

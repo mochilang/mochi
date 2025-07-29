@@ -5,7 +5,7 @@ This directory contains a very small converter that translates simple Racket pro
 The converter does not rely on a language server. It tokenises the input and recognises basic forms such as `define`, `struct` and `for`. Only a subset of expressions and statements are supported.
 
 Completed programs: 44/103
-Date: 2025-07-29 15:19 GMT+7
+Date: 2025-07-29 17:44 GMT+7
 
 ## Checklist
 - [x] append_builtin
@@ -13,7 +13,7 @@ Date: 2025-07-29 15:19 GMT+7
 - [x] basic_compare
 - [x] binary_precedence
 - [x] bool_chain
-- [x] break_continue
+- [ ] break_continue
 - [x] cast_string_to_int
 - [x] cast_struct
 - [x] closure
@@ -58,7 +58,7 @@ Date: 2025-07-29 15:19 GMT+7
 - [x] list_assign
 - [x] list_index
 - [ ] list_nested_assign
-- [ ] list_set_ops
+- [x] list_set_ops
 - [ ] load_jsonl
 - [ ] load_yaml
 - [x] map_assign
