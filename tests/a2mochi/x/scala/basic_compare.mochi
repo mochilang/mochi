@@ -1,4 +1,4 @@
-// a2mochi scala v0.10.48 2025-07-29 18:23:59 GMT+7
+// a2mochi scala v0.10.48 2025-07-29 20:51:30 GMT+7
 let a = (10 - 3)
 let b = (2 + 2)
 print(a)
