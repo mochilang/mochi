@@ -1,13 +1,7 @@
 (program
-  (type Todo
-    (field title (type string))
-  )
   (let todo
-    (cast
-      (map
-        (entry (string title) (string hi))
-      )
-      (type Todo)
+    (map
+      (entry (string title) (string hi))
     )
   )
   (call print
