@@ -151,6 +151,121 @@ func parseOrder(expr string) (string, bool) {
 	return "", false
 }
 
+func extractParens(s string) (inner, rest string, ok bool) {
+	if !strings.HasPrefix(strings.TrimSpace(s), "(") {
+		return "", s, false
+	}
+	depth := 0
+	for i, r := range s {
+		switch r {
+		case '(':
+			depth++
+		case ')':
+			depth--
+			if depth == 0 {
+				inner = strings.TrimSpace(s[1:i])
+				rest = s[i+1:]
+				return inner, rest, true
+			}
+		}
+	}
+	return "", s, false
+}
+
+func splitElseExpr(s string) (thenPart, elsePart string, ok bool) {
+	depth := 0
+	for i := 0; i < len(s); i++ {
+		switch s[i] {
+		case '(', '{':
+			depth++
+		case ')', '}':
+			depth--
+		}
+		if depth == 0 && strings.HasPrefix(s[i:], "else ") {
+			thenPart = strings.TrimSpace(s[:i])
+			elsePart = strings.TrimSpace(s[i+5:])
+			return thenPart, elsePart, true
+		}
+	}
+	return "", "", false
+}
+
+func parseIfExpr(expr string) (string, bool) {
+	expr = strings.TrimSpace(expr)
+	if !strings.HasPrefix(expr, "if ") {
+		return "", false
+	}
+	expr = strings.TrimSpace(strings.TrimPrefix(expr, "if "))
+	cond, rest, ok := extractParens(expr)
+	if !ok {
+		return "", false
+	}
+	thenPart, elsePart, ok := splitElseExpr(strings.TrimSpace(rest))
+	if !ok {
+		return "", false
+	}
+	thenPart = transformExpr(thenPart)
+	if strings.HasPrefix(elsePart, "if ") {
+		elsePart, _ = parseIfExpr(elsePart)
+	} else {
+		elsePart = transformExpr(elsePart)
+	}
+	return fmt.Sprintf("if %s then %s else %s", transformExpr(cond), thenPart, elsePart), true
+}
+
+func parseContains(expr string) (string, bool) {
+	expr = strings.TrimSpace(expr)
+	var not bool
+	switch {
+	case strings.HasSuffix(expr, " != null"):
+		expr = strings.TrimSpace(expr[:len(expr)-len(" != null")])
+	case strings.HasSuffix(expr, " == null"):
+		not = true
+		expr = strings.TrimSpace(expr[:len(expr)-len(" == null")])
+	default:
+		return "", false
+	}
+	prefix := "std.mem.indexOf(u8,"
+	if !strings.HasPrefix(expr, prefix) || !strings.HasSuffix(expr, ")") {
+		return "", false
+	}
+	args := strings.TrimSuffix(strings.TrimPrefix(expr, prefix), ")")
+	parts := strings.Split(args, ",")
+	if len(parts) != 2 {
+		return "", false
+	}
+	s := strings.TrimSpace(parts[0])
+	sub := strings.TrimSpace(parts[1])
+	out := fmt.Sprintf("%s.contains(%s)", s, sub)
+	if not {
+		out = "!" + out
+	}
+	return out, true
+}
+
+func parseSlice(expr string) (string, bool) {
+	idxDots := strings.Index(expr, "..")
+	if idxDots < 0 {
+		return "", false
+	}
+	idxOpen := strings.LastIndex(expr[:idxDots], "[")
+	if idxOpen < 0 {
+		return "", false
+	}
+	idxClose := strings.Index(expr[idxDots:], "]")
+	if idxClose < 0 {
+		return "", false
+	}
+	idxClose += idxDots
+	base := strings.TrimSpace(expr[:idxOpen])
+	start := strings.TrimSpace(expr[idxOpen+1 : idxDots])
+	end := strings.TrimSpace(expr[idxDots+2 : idxClose])
+	if rest := strings.TrimSpace(expr[idxClose+1:]); rest != "" {
+		return "", false
+	}
+	return fmt.Sprintf("%s[%s:%s]", transformExpr(base), start, end), true
+}
+
 func parseFuncHeader(src string) (name, params, ret string, ok bool) {
 	src = strings.TrimSpace(src)
 	if strings.HasPrefix(src, "pub ") {
@@ -178,8 +293,17 @@ func parseFuncHeader(src string) (name, params, ret string, ok bool) {
 }
 
 func transformExpr(expr string) string {
+	if res, ok := parseSlice(expr); ok {
+		return res
+	}
 	if inner, ok := isTypedArray(expr); ok {
 		return "[" + inner + "]"
+	}
+	if res, ok := parseIfExpr(expr); ok {
+		return res
+	}
+	if res, ok := parseContains(expr); ok {
+		return res
 	}
 	if res, ok := parseOrder(expr); ok {
 		return res
@@ -276,6 +400,7 @@ func gen(st stmt, indent string, b *strings.Builder) {
 			return
 		}
 		rng := strings.TrimSpace(line[open+1 : close])
+		rng = transformExpr(rng)
 		rest := line[close+1:]
 		p1 := strings.Index(rest, "|")
 		if p1 < 0 {
@@ -291,9 +416,16 @@ func gen(st stmt, indent string, b *strings.Builder) {
 			gen(ch, indent+"  ", b)
 		}
 		fmt.Fprintf(b, "%s}\n", indent)
+	case strings.HasPrefix(line, "while ("):
+		cond := strings.TrimSuffix(strings.TrimPrefix(line, "while ("), ")")
+		fmt.Fprintf(b, "%swhile %s {\n", indent, transformExpr(cond))
+		for _, ch := range st.children {
+			gen(ch, indent+"  ", b)
+		}
+		fmt.Fprintf(b, "%s}\n", indent)
 	case strings.HasPrefix(line, "if ("):
 		cond := strings.TrimSuffix(strings.TrimPrefix(line, "if ("), ")")
-		fmt.Fprintf(b, "%sif %s {\n", indent, cond)
+		fmt.Fprintf(b, "%sif %s {\n", indent, transformExpr(cond))
 		for _, ch := range st.children {
 			gen(ch, indent+"  ", b)
 		}

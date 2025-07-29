@@ -3,7 +3,7 @@
 This directory stores helpers and golden files for converting Zig programs
 in `tests/transpiler/x/zig` into Mochi AST form.
 
-Completed programs: 29/104
+Completed programs: 35/104
 
 ## Checklist
 - [x] avg_builtin
@@ -35,3 +35,9 @@ Completed programs: 29/104
 - [x] break_continue
 - [x] list_index
 - [x] list_assign
+- [x] for_list_collection
+- [x] string_contains
+- [x] slice
+- [x] string_index
+- [x] if_then_else
+- [x] if_then_else_nested
