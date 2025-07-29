@@ -6,7 +6,7 @@ This directory holds golden outputs for the Swift to Mochi converter. Each `.swi
 
 Generated Mochi files include a meta header with the current version and timestamp (GMT+7) and embed the original Swift source inside a block comment.
 
-Completed programs: 24/104
+Completed programs: 28/104
 
 ## Checklist
 - [x] append_builtin
@@ -45,3 +45,7 @@ Completed programs: 24/104
 - [x] map_int_key
 - [x] map_membership
 - [x] membership
+- [x] string_contains
+- [x] string_index
+- [x] substring_builtin
+- [x] string_in_operator
