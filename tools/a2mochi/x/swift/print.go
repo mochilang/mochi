@@ -28,6 +28,12 @@ func header() string {
 		zone = env
 	}
 	loc := time.FixedZone(zone, 7*3600)
+	if now := os.Getenv("MOCHI_NOW"); now != "" {
+		if ts, err := time.Parse(time.RFC3339, now); err == nil {
+			ts = ts.In(loc)
+			return fmt.Sprintf("// a2mochi-swift v%s on %s\n", version(), ts.Format("2006-01-02 15:04 MST"))
+		}
+	}
 	t := time.Now().In(loc)
 	return fmt.Sprintf("// a2mochi-swift v%s on %s\n", version(), t.Format("2006-01-02 15:04 MST"))
 }

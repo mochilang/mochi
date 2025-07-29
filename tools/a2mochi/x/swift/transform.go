@@ -155,6 +155,17 @@ func buildNode(p *parser.Program) *ast.Node {
 }
 
 func interfaceTypeToMochi(t string) string {
+	t = strings.TrimSpace(t)
+	if strings.HasSuffix(t, "?") {
+		t = strings.TrimSuffix(t, "?")
+	}
+	if strings.HasPrefix(t, "[") && strings.HasSuffix(t, "]") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(t, "["), "]")
+		if it := interfaceTypeToMochi(inner); it != "" {
+			return "list<" + it + ">"
+		}
+		return "list<any>"
+	}
 	if strings.HasPrefix(t, "$sS") && strings.HasSuffix(t, "D") {
 		mid := strings.TrimSuffix(strings.TrimPrefix(t, "$sS"), "D")
 		switch mid {
@@ -168,7 +179,7 @@ func interfaceTypeToMochi(t string) string {
 			return "string"
 		}
 	}
-	switch strings.TrimSpace(t) {
+	switch t {
 	case "Int":
 		return "int"
 	case "Double", "Float":
