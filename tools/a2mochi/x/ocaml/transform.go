@@ -46,12 +46,19 @@ func buildMochi(p *Program) string {
 	return out.String()
 }
 
+// DebugSimplify exposes simplify for debugging.
+func DebugSimplify(s string) string { return simplify(s) }
+
+// DebugBuildMochi exposes buildMochi for debugging.
+func DebugBuildMochi(p *Program) string { return buildMochi(p) }
+
 // convertExpr converts a single OCaml expression that may contain nested let
 // bindings and multiple statements separated by semicolons. The returned slice
 // contains Mochi statements.
 func convertExpr(expr string) []string {
 	expr = strings.ReplaceAll(expr, "\r", "")
 	expr = strings.TrimSpace(expr)
+	expr = fixListSemicolons(expr)
 	var lines []string
 
 	// handle leading let-bindings: let x = ... in ...
@@ -63,7 +70,11 @@ func convertExpr(expr string) []string {
 		}
 		name := m[1]
 		val := simplify(m[2])
-		lines = append(lines, fmt.Sprintf("let %s = %s", name, val))
+		if strings.Contains(m[3], name+":=") || strings.Contains(m[3], name+" :=") {
+			lines = append(lines, fmt.Sprintf("var %s = %s", name, val))
+		} else {
+			lines = append(lines, fmt.Sprintf("let %s = %s", name, val))
+		}
 		expr = strings.TrimSpace(m[3])
 	}
 
@@ -88,6 +99,32 @@ func convertExpr(expr string) []string {
 		lines = append(lines, simplify(p))
 	}
 	return lines
+}
+
+func fixListSemicolons(s string) string {
+	var out strings.Builder
+	depth := 0
+	for _, r := range s {
+		switch r {
+		case '[':
+			depth++
+			out.WriteRune(r)
+		case ']':
+			if depth > 0 {
+				depth--
+			}
+			out.WriteRune(r)
+		case ';':
+			if depth > 0 {
+				out.WriteByte(',')
+			} else {
+				out.WriteRune(r)
+			}
+		default:
+			out.WriteRune(r)
+		}
+	}
+	return out.String()
 }
 
 func unwrapPrint(s string) string {
@@ -122,15 +159,34 @@ func simplify(e string) string {
 	e = strings.ReplaceAll(e, "string_of_bool", "")
 	e = strings.ReplaceAll(e, "not ", "!")
 	e = strings.ReplaceAll(e, "ref ", "")
+	reRef := regexp.MustCompile(`!([A-Za-z0-9_]+)`)
+	e = reRef.ReplaceAllString(e, `$1`)
 
 	// List and string length
 	e = strings.ReplaceAll(e, "List.length", "len")
 	e = strings.ReplaceAll(e, "String.length", "len")
+	e = strings.ReplaceAll(e, "List.fold_left (fun acc x -> acc + x) 0", "sum")
+	reCall := regexp.MustCompile(`\b(len|sum)\s+(\[[^\]]*\]|"[^"]+"|[A-Za-z0-9_]+)`)
+	e = reCall.ReplaceAllString(e, `$1($2)`)
 
 	// list syntax
 	e = strings.ReplaceAll(e, ";", ",")
+	e = strings.ReplaceAll(e, "^", "+")
 
-	re := regexp.MustCompile(`String\.get\s+([A-Za-z0-9_]+)\s+(\d+)`)
+	// list indexing
+	re := regexp.MustCompile(`List\.nth\s+(\([^)]+\)|[A-Za-z0-9_]+)\s+(\d+)`)
+	e = re.ReplaceAllStringFunc(e, func(m string) string {
+		parts := re.FindStringSubmatch(m)
+		if parts == nil {
+			return m
+		}
+		expr := strings.TrimSpace(parts[1])
+		if strings.HasPrefix(expr, "(") && strings.HasSuffix(expr, ")") {
+			expr = strings.TrimSuffix(strings.TrimPrefix(expr, "("), ")")
+		}
+		return fmt.Sprintf("%s[%s]", expr, parts[2])
+	})
+	re = regexp.MustCompile(`String\.get\s+([A-Za-z0-9_]+)\s+(\d+)`)
 	e = re.ReplaceAllString(e, `$1[$2]`)
 
 	re = regexp.MustCompile(`String\.make\s+1\s+\(([^\)]+)\)`)
@@ -149,6 +205,11 @@ func simplify(e string) string {
 			end := start + ln
 			e = re.ReplaceAllString(e, fmt.Sprintf("substring(%s, %d, %d)", m[1], start, end))
 		}
+	}
+
+	e = strings.TrimSpace(e)
+	for strings.HasPrefix(e, "(") && strings.HasSuffix(e, ")") {
+		e = strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(e, "("), ")"))
 	}
 
 	e = strings.TrimSpace(e)

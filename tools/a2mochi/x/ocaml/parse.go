@@ -16,11 +16,11 @@ import (
 // Only a few fields are required for the limited examples used in the tests.
 // Source retains the original OCaml code so the printer can include it.
 type Program struct {
-	Funcs  []Func  `json:"funcs"`
-	Prints []Print `json:"prints"`
-	Types  []Type  `json:"types"`
-	Vars   []Var   `json:"vars"`
-	Source string  `json:"-"`
+	Funcs  []Func      `json:"funcs"`
+	Prints []PrintStmt `json:"prints"`
+	Types  []Type      `json:"types"`
+	Vars   []Var       `json:"vars"`
+	Source string      `json:"-"`
 }
 
 type Func struct {
@@ -35,7 +35,7 @@ type Var struct {
 	Mutable bool   `json:"mutable"`
 }
 
-type Print struct {
+type PrintStmt struct {
 	Expr string `json:"expr"`
 }
 
