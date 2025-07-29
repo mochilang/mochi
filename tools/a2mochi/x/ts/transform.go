@@ -410,7 +410,8 @@ func convertConsole(expr string) string {
 	if !strings.HasPrefix(expr, "console.log(") {
 		return expr
 	}
-	inner := strings.TrimSuffix(strings.TrimPrefix(expr, "console.log("), ")")
+	inner := strings.TrimPrefix(expr, "console.log(")
+	inner = strings.TrimSuffix(inner, ");")
 	postfix := ""
 	if strings.HasSuffix(inner, ".trim()") {
 		inner = strings.TrimSuffix(inner, ".trim()")
@@ -420,11 +421,8 @@ func convertConsole(expr string) string {
 	if strings.HasPrefix(inner, "(") && strings.HasSuffix(inner, ")") {
 		inner = strings.TrimSuffix(strings.TrimPrefix(inner, "("), ")")
 	}
-	if strings.HasPrefix(inner, "String(") && strings.HasSuffix(inner, ")") {
-		inner = inner[len("String(") : len(inner)-1]
-	}
 	inner = removeStringCasts(inner)
-	if strings.HasPrefix(inner, "\"[\"") && strings.Contains(inner, "]).join") && strings.HasSuffix(inner, "]\"") {
+	if strings.HasPrefix(inner, "\"[\"") && strings.Contains(inner, "].join") && strings.HasSuffix(inner, "]\"") {
 		start := strings.Index(inner, "[...")
 		end := strings.Index(inner, "]")
 		if start >= 0 && end > start {
@@ -441,6 +439,15 @@ func convertConsole(expr string) string {
 			}
 		}
 	}
+
+	parts := splitByPlus(inner)
+	if len(parts) > 1 {
+		for i, p := range parts {
+			parts[i] = convertExprSimple(p)
+		}
+		return "print(" + strings.Join(parts, ", ") + ")"
+	}
+
 	inner = convertExprSimple(inner)
 	if postfix != "" {
 		return "print((" + inner + ")" + postfix + ")"
@@ -462,6 +469,35 @@ func removeStringCasts(s string) string {
 		s = s[:idx] + inner + s[end+1:]
 	}
 	return s
+}
+
+func splitByPlus(s string) []string {
+	var parts []string
+	start := 0
+	depth := 0
+	for i, r := range s {
+		switch r {
+		case '(':
+			depth++
+		case ')':
+			if depth > 0 {
+				depth--
+			}
+		case '+':
+			if depth == 0 {
+				part := strings.TrimSpace(s[start:i])
+				if part != "" {
+					parts = append(parts, part)
+				}
+				start = i + 1
+			}
+		}
+	}
+	last := strings.TrimSpace(s[start:])
+	if last != "" {
+		parts = append(parts, last)
+	}
+	return parts
 }
 
 func convertExpr(expr string) string {
