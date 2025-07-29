@@ -198,6 +198,17 @@ func convertExpr(expr string) []string {
 		expr = strings.TrimSpace(m[3])
 	}
 
+	reIf := regexp.MustCompile(`(?s)^if\s+(.*)\s+then\s*\((.*)\)\s*else\s*\((.*)\)$`)
+	if m := reIf.FindStringSubmatch(expr); m != nil {
+		cond := simplify(m[1])
+		thenLines := convertExpr(m[2])
+		elseLines := convertExpr(m[3])
+		thenStmt := strings.Join(thenLines, "; ")
+		elseStmt := strings.Join(elseLines, "; ")
+		lines = append(lines, fmt.Sprintf("if %s { %s } else { %s }", cond, thenStmt, elseStmt))
+		return lines
+	}
+
 	parts := strings.Split(expr, ";")
 	for _, p := range parts {
 		p = strings.TrimSpace(p)

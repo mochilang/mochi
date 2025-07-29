@@ -173,6 +173,7 @@ func TestTransform_Golden(t *testing.T) {
 		"list_index":          true,
 		"append_builtin":      true,
 		"bool_chain":          true,
+		"if_else":             true,
 		"fun_call":            true,
 		"fun_expr_in_let":     true,
 		"fun_three_args":      true,
