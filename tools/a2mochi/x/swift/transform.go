@@ -1,50 +1,19 @@
-//go:build slow
-
 package swift
 
 import (
-	"bytes"
-	"context"
-	"encoding/json"
 	"fmt"
-	"os"
-	"os/exec"
-	"path/filepath"
 	"regexp"
-	"strconv"
 	"strings"
-	"time"
 
 	"mochi/ast"
 	"mochi/parser"
 )
 
-// ConvertError provides a detailed error message for Swift conversion.
-type ConvertError struct {
-	Line   int
-	Column int
-	Msg    string
-	Snip   string
-}
-
-func (e *ConvertError) Error() string {
-	if e.Line > 0 {
-		if e.Column > 0 {
-			return fmt.Sprintf("line %d:%d: %s\n%s", e.Line, e.Column, e.Msg, e.Snip)
-		}
-		return fmt.Sprintf("line %d: %s\n%s", e.Line, e.Msg, e.Snip)
-	}
-	return fmt.Sprintf("%s\n%s", e.Msg, e.Snip)
-}
-
-// ConvertSource converts Swift source code to Mochi source.
-func ConvertSource(src string) (string, error) {
-	ast, err := parse(src)
-	if err != nil {
-		return "", err
-	}
+// Transform converts a parsed Program into a Mochi AST node.
+func Transform(p *Program) (*ast.Node, error) {
 	var out strings.Builder
-	for _, it := range ast.Items {
+	src := p.Src
+	for _, it := range p.Items {
 		switch it.Kind {
 		case "func_decl":
 			if it.Name != nil && strings.HasPrefix(it.Name.BaseName.Name, "_") {
@@ -56,12 +25,12 @@ func ConvertSource(src string) (string, error) {
 			}
 			out.WriteByte('(')
 			if it.Params != nil {
-				for i, p := range it.Params.Params {
+				for i, pr := range it.Params.Params {
 					if i > 0 {
 						out.WriteString(", ")
 					}
-					out.WriteString(p.Name.BaseName.Name)
-					if t := interfaceTypeToMochi(p.InterfaceType); t != "" {
+					out.WriteString(pr.Name.BaseName.Name)
+					if t := interfaceTypeToMochi(pr.InterfaceType); t != "" {
 						out.WriteString(": ")
 						out.WriteString(t)
 					}
@@ -154,124 +123,50 @@ func ConvertSource(src string) (string, error) {
 		}
 	}
 	if out.Len() == 0 {
-		return "", fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
 	}
-	var buf strings.Builder
-	buf.WriteString(header())
-	buf.WriteString("/*\n")
-	buf.WriteString(src)
-	if !strings.HasSuffix(src, "\n") {
-		buf.WriteByte('\n')
-	}
-	buf.WriteString("*/\n")
-	buf.WriteString(out.String())
-	return buf.String(), nil
-}
-
-// Convert parses Swift source and returns a Mochi AST node.
-func Convert(src string) (*ast.Node, error) {
-	code, err := ConvertSource(src)
+	prog, err := parser.ParseString(out.String())
 	if err != nil {
 		return nil, err
 	}
-	prog, err := parser.ParseString(code)
+	return buildNode(prog), nil
+}
+
+// TransformFile parses and converts a Swift file.
+func TransformFile(path string) (*ast.Node, error) {
+	p, err := ParseFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return ast.FromProgram(prog), nil
+	return Transform(p)
 }
 
-func ConvertFile(path string) (*ast.Node, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
+func buildNode(p *parser.Program) *ast.Node {
+	n := &ast.Node{Kind: "program"}
+	if p.Package != "" {
+		n.Value = p.Package
 	}
-	return Convert(string(data))
-}
-
-type file struct {
-	Items []item `json:"items"`
-}
-
-type item struct {
-	Kind          string      `json:"_kind"`
-	Name          *declName   `json:"name,omitempty"`
-	Params        *paramList  `json:"params,omitempty"`
-	Body          *body       `json:"body,omitempty"`
-	Range         offsetRange `json:"range"`
-	Result        string      `json:"result,omitempty"`
-	InterfaceType string      `json:"interface_type,omitempty"`
-	ThrownType    string      `json:"thrown_type,omitempty"`
-	Access        string      `json:"access,omitempty"`
-	Members       []item      `json:"members,omitempty"`
-	Elements      []item      `json:"elements,omitempty"`
-}
-
-type declName struct {
-	BaseName baseName `json:"base_name"`
-}
-
-type baseName struct {
-	Name string `json:"name"`
-}
-
-type paramList struct {
-	Params []param `json:"params"`
-}
-
-type param struct {
-	Name          declName `json:"name"`
-	InterfaceType string   `json:"interface_type,omitempty"`
-}
-
-type body struct {
-	Range offsetRange `json:"range"`
-}
-
-type offsetRange struct {
-	Start int `json:"start"`
-	End   int `json:"end"`
-}
-
-func parse(src string) (file, error) {
-	tmp, err := os.CreateTemp("", "swift-src-*.swift")
-	if err != nil {
-		return file{}, err
+	for _, st := range p.Statements {
+		n.Children = append(n.Children, ast.FromStatement(st))
 	}
-	defer os.Remove(tmp.Name())
-	if _, err := tmp.WriteString(src); err != nil {
-		tmp.Close()
-		return file{}, err
-	}
-	tmp.Close()
+	return n
+}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	cmd := exec.CommandContext(ctx, "swiftc", "-dump-ast", "-dump-ast-format", "json", tmp.Name())
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &out
-	if err := cmd.Run(); err != nil {
-		line, col := 0, 0
-		msg := err.Error()
-		re := regexp.MustCompile(`:(\d+):(\d+): error: (.*)`)
-		if m := re.FindStringSubmatch(out.String()); len(m) == 4 {
-			line, _ = strconv.Atoi(m[1])
-			col, _ = strconv.Atoi(m[2])
-			msg = m[3]
+func interfaceTypeToMochi(t string) string {
+	if strings.HasPrefix(t, "$sS") && strings.HasSuffix(t, "D") {
+		mid := strings.TrimSuffix(strings.TrimPrefix(t, "$sS"), "D")
+		switch mid {
+		case "i":
+			return "int"
+		case "d":
+			return "float"
+		case "b":
+			return "bool"
+		case "S":
+			return "string"
 		}
-		return file{}, &ConvertError{Line: line, Column: col, Msg: msg, Snip: snippetAround(src, line, col)}
 	}
-	data := out.Bytes()
-	if idx := bytes.IndexByte(data, '{'); idx > 0 {
-		data = data[idx:]
-	}
-	dec := json.NewDecoder(bytes.NewReader(data))
-	var f file
-	if err := dec.Decode(&f); err != nil {
-		return file{}, err
-	}
-	return f, nil
+	return ""
 }
 
 func extractRange(src string, r offsetRange) string {
@@ -298,23 +193,6 @@ func bodyFromRange(src string, r offsetRange) []string {
 	return parseStatementsIndent(text[start+1:end], 1)
 }
 
-func interfaceTypeToMochi(t string) string {
-	if strings.HasPrefix(t, "$sS") && strings.HasSuffix(t, "D") {
-		mid := strings.TrimSuffix(strings.TrimPrefix(t, "$sS"), "D")
-		switch mid {
-		case "i":
-			return "int"
-		case "d":
-			return "float"
-		case "b":
-			return "bool"
-		case "S":
-			return "string"
-		}
-	}
-	return ""
-}
-
 func parseStatements(body string) []string { return parseStatementsIndent(body, 1) }
 
 func parseStatementsIndent(body string, indent int) []string {
@@ -326,7 +204,6 @@ func parseStatementsIndent(body string, indent int) []string {
 			if l == "" {
 				continue
 			}
-			l = strings.TrimSpace(l)
 			l = strings.TrimSuffix(l, ";")
 			l = rewriteMapLiteral(l)
 			l = rewriteStructLiteral(l)
@@ -394,15 +271,14 @@ func parseStatementsIndent(body string, indent int) []string {
 }
 
 var structLitRE = regexp.MustCompile(`^([A-Z][A-Za-z0-9_]*)\((.*)\)$`)
-
 var mapLitRE = regexp.MustCompile(`^\[(.*:.+)\]$`)
-
 var countPropRE = regexp.MustCompile(`\(([^()]+)\)\.count\b`)
 var identCountRE = regexp.MustCompile(`([A-Za-z0-9_]+)\.count\b`)
 var parenMinRE = regexp.MustCompile(`\(([^()]+)\)\.min\(\)`)
 var identMinRE = regexp.MustCompile(`([A-Za-z0-9_]+)\.min\(\)`)
 var parenMaxRE = regexp.MustCompile(`\(([^()]+)\)\.max\(\)`)
 var identMaxRE = regexp.MustCompile(`([A-Za-z0-9_]+)\.max\(\)`)
+var castRE = regexp.MustCompile(`\((.+?)\s+as!\s+[A-Za-z0-9_<>.]+\)`)
 
 func rewriteMapLiteral(expr string) string {
 	m := mapLitRE.FindStringSubmatch(expr)
@@ -430,8 +306,6 @@ func rewriteStructLiteral(expr string) string {
 	}
 	return name + " { " + strings.Join(fields, ", ") + " }"
 }
-
-var castRE = regexp.MustCompile(`\((.+?)\s+as!\s+[A-Za-z0-9_<>.]+\)`)
 
 func rewriteCasts(expr string) string {
 	for {
@@ -493,74 +367,4 @@ func gatherEnumElements(ms []item) []item {
 		}
 	}
 	return out
-}
-
-func snippet(src string) string {
-	lines := strings.Split(src, "\n")
-	if len(lines) > 10 {
-		lines = lines[:10]
-	}
-	for i, l := range lines {
-		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
-	}
-	return strings.Join(lines, "\n")
-}
-
-func snippetAround(src string, line, col int) string {
-	lines := strings.Split(src, "\n")
-	if line <= 0 || line > len(lines) {
-		return snippet(src)
-	}
-	start := line - 2
-	if start < 0 {
-		start = 0
-	}
-	end := line + 2
-	if end > len(lines) {
-		end = len(lines)
-	}
-	var out strings.Builder
-	for i := start; i < end; i++ {
-		fmt.Fprintf(&out, "%4d| %s\n", i+1, lines[i])
-		if i == line-1 {
-			caretPos := len(lines[i])
-			if col > 0 && col-1 < caretPos {
-				caretPos = col - 1
-			}
-			out.WriteString("    | " + strings.Repeat(" ", caretPos) + "^\n")
-		}
-	}
-	return strings.TrimRight(out.String(), "\n")
-}
-
-func repoRoot() string {
-	dir, _ := os.Getwd()
-	for i := 0; i < 10; i++ {
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-			return dir
-		}
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			break
-		}
-		dir = parent
-	}
-	return ""
-}
-
-func version() string {
-	root := repoRoot()
-	if root == "" {
-		return "dev"
-	}
-	if data, err := os.ReadFile(filepath.Join(root, "VERSION")); err == nil {
-		return strings.TrimSpace(string(data))
-	}
-	return "dev"
-}
-
-func header() string {
-	loc := time.FixedZone("GMT+7", 7*3600)
-	t := time.Now().In(loc)
-	return fmt.Sprintf("// a2mochi-swift v%s on %s\n", version(), t.Format("2006-01-02 15:04 MST"))
 }
