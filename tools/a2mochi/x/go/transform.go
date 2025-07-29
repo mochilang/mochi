@@ -246,6 +246,84 @@ func transformCall(c *ast.CallExpr) *mast.Node {
 	return nil
 }
 
+// tryIIFE attempts to unwrap immediately-invoked function expressions that
+// return a simple expression or if/else chain. It returns nil if the call does
+// not match a supported pattern.
+func tryIIFE(c *ast.CallExpr) *mast.Node {
+	if len(c.Args) != 0 {
+		return nil
+	}
+	fn, ok := c.Fun.(*ast.FuncLit)
+	if !ok {
+		return nil
+	}
+	if fn.Type != nil && fn.Type.Params != nil && len(fn.Type.Params.List) > 0 {
+		return nil
+	}
+	if len(fn.Body.List) == 1 {
+		switch st := fn.Body.List[0].(type) {
+		case *ast.ReturnStmt:
+			if len(st.Results) == 1 {
+				return transformExpr(st.Results[0])
+			}
+		case *ast.IfStmt:
+			if n := transformIfExpr(st); n != nil {
+				return n
+			}
+		}
+	}
+	if len(fn.Body.List) == 2 {
+		// match `n, _ := strconv.Atoi(arg); return n`
+		if as, ok := fn.Body.List[0].(*ast.AssignStmt); ok && as.Tok == token.DEFINE && len(as.Lhs) == 2 && len(as.Rhs) == 1 {
+			if id, ok := as.Lhs[0].(*ast.Ident); ok {
+				if ret, ok := fn.Body.List[1].(*ast.ReturnStmt); ok && len(ret.Results) == 1 {
+					if rid, ok := ret.Results[0].(*ast.Ident); ok && rid.Name == id.Name {
+						if call, ok := as.Rhs[0].(*ast.CallExpr); ok {
+							if sel, ok := call.Fun.(*ast.SelectorExpr); ok {
+								if pkg, ok := sel.X.(*ast.Ident); ok && pkg.Name == "strconv" && sel.Sel.Name == "Atoi" && len(call.Args) == 1 {
+									return &mast.Node{Kind: "cast", Children: []*mast.Node{transformExpr(call.Args[0]), &mast.Node{Kind: "type", Value: "int"}}}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return nil
+}
+
+// transformIfExpr converts nested if statements that return expressions into a
+// Mochi if_expr node.
+func transformIfExpr(ifs *ast.IfStmt) *mast.Node {
+	cond := transformExpr(ifs.Cond)
+	thenNode := returnExprFromBlock(ifs.Body)
+	if thenNode == nil {
+		return nil
+	}
+	var elseNode *mast.Node
+	switch el := ifs.Else.(type) {
+	case *ast.BlockStmt:
+		elseNode = returnExprFromBlock(el)
+	case *ast.IfStmt:
+		elseNode = transformIfExpr(el)
+	}
+	if elseNode == nil {
+		return nil
+	}
+	return &mast.Node{Kind: "if_expr", Children: []*mast.Node{cond, thenNode, elseNode}}
+}
+
+func returnExprFromBlock(b *ast.BlockStmt) *mast.Node {
+	if b == nil || len(b.List) != 1 {
+		return nil
+	}
+	if ret, ok := b.List[0].(*ast.ReturnStmt); ok && len(ret.Results) == 1 {
+		return transformExpr(ret.Results[0])
+	}
+	return nil
+}
+
 func transformExpr(e ast.Expr) *mast.Node {
 	switch v := e.(type) {
 	case *ast.BasicLit:
@@ -271,6 +349,9 @@ func transformExpr(e ast.Expr) *mast.Node {
 			return &mast.Node{Kind: "unary", Value: "-", Children: []*mast.Node{transformExpr(v.X)}}
 		}
 	case *ast.CallExpr:
+		if n := tryIIFE(v); n != nil {
+			return n
+		}
 		if n := transformCall(v); n != nil {
 			return n
 		}

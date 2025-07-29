@@ -1,0 +1,14 @@
+var x = 2
+var label = if (x == 1) then "one" else if (x == 2) then "two" else if (x == 3) then "three" else "unknown"
+var day = "sun"
+var mood = if (day == "mon") then "tired" else if (day == "fri") then "excited" else if (day == "sun") then "relaxed" else "normal"
+var ok = true
+var status = if (ok == true) then "confirmed" else if (ok == false) then "denied" else ""
+fun classify(n: int): string {
+  return if (n == 0) then "zero" else if (n == 1) then "one" else "many"
+}
+print(label)
+print(mood)
+print(status)
+print(classify(0))
+print(classify(5))
