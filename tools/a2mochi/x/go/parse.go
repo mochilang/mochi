@@ -24,6 +24,7 @@ func Parse(src string) (*Program, error) {
 		return nil, fmt.Errorf("empty source")
 	}
 	src = strings.ReplaceAll(src, "\r\n", "\n")
+	src = strings.ReplaceAll(src, "\r", "")
 	src = stripBOM(src)
 	src = stripShebang(src)
 	src = stripBuildTag(src)
@@ -32,6 +33,9 @@ func Parse(src string) (*Program, error) {
 	file, err := goparser.ParseFile(fset, "", src, goparser.ParseComments)
 	if err != nil {
 		return nil, err
+	}
+	if !strings.HasSuffix(src, "\n") {
+		src += "\n"
 	}
 	return &Program{File: file, Fset: fset, Lines: strings.Split(src, "\n")}, nil
 }
