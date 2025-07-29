@@ -239,11 +239,11 @@ func fixIndex(expr string) string {
 	expr = strings.ReplaceAll(expr, ".[", "[")
 	expr = strings.ReplaceAll(expr, "[|", "[")
 	expr = strings.ReplaceAll(expr, "|]", "]")
-	expr = strings.ReplaceAll(expr, ";", ",")
 	expr = convertRecordFields(expr)
 	expr = convertContains(expr)
-	expr = convertBuiltins(expr)
 	expr = stripStringCall(expr)
+	expr = convertBuiltins(expr)
+	expr = strings.ReplaceAll(expr, ";", ",")
 	return expr
 }
 
@@ -315,6 +315,17 @@ func convertBuiltins(expr string) string {
 		arg := strings.TrimSpace(expr[i+len("List.sum"):])
 		expr = expr[:i] + "sum(" + arg + ")"
 	}
+	if i := strings.Index(expr, "List.averageBy float"); i != -1 {
+		arg := strings.TrimSpace(expr[i+len("List.averageBy float"):])
+		expr = expr[:i] + "avg(" + arg + ")"
+	}
+	if i := strings.Index(expr, "int ("); i != -1 && strings.HasSuffix(expr, ")") {
+		inner := strings.TrimSpace(expr[i+len("int (") : len(expr)-1])
+		expr = expr[:i] + "(" + inner + " as int)"
+	} else if strings.HasPrefix(expr, "int ") {
+		inner := strings.TrimSpace(expr[len("int "):])
+		expr = "(" + inner + " as int)"
+	}
 	if i := strings.Index(expr, "Map.ofList ["); i != -1 {
 		rest := expr[i+len("Map.ofList ["):]
 		if j := strings.Index(rest, "]"); j != -1 {
@@ -323,7 +334,8 @@ func convertBuiltins(expr string) string {
 			items := strings.Split(list, ";")
 			parts := make([]string, 0, len(items))
 			for _, it := range items {
-				it = strings.TrimSpace(strings.Trim(it, "()"))
+				it = strings.TrimSpace(it)
+				it = strings.Trim(it, "()")
 				kv := strings.SplitN(it, ",", 2)
 				if len(kv) == 2 {
 					parts = append(parts, strings.TrimSpace(kv[0])+": "+strings.TrimSpace(kv[1]))
