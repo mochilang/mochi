@@ -1,0 +1,431 @@
+{
+  "Types": [
+    {
+      "Name": "Person",
+      "Kind": "struct",
+      "Access": "",
+      "StartLine": 4,
+      "EndLine": 9,
+      "Fields": [
+        {
+          "Name": "name",
+          "Type": "string",
+          "Access": "public",
+          "Line": 5,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        },
+        {
+          "Name": "age",
+          "Type": "int",
+          "Access": "public",
+          "Line": 6,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        },
+        {
+          "Name": "status",
+          "Type": "string",
+          "Access": "public",
+          "Line": 7,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "ToString",
+          "Params": [],
+          "Ret": "string",
+          "Access": "public",
+          "Static": false,
+          "Body": [],
+          "Ast": {
+            "Kind": "block"
+          },
+          "StartLine": 8,
+          "EndLine": 8,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    },
+    {
+      "Name": "Program",
+      "Kind": "class",
+      "Access": "",
+      "StartLine": 10,
+      "EndLine": 24,
+      "Fields": [
+        {
+          "Name": "people",
+          "Type": "Person[]",
+          "Access": "",
+          "Line": 11,
+          "Value": "new Person[]{new Person{name = \"Alice\", age = 17, status = \"minor\"}, new Person{name = \"Bob\", age = 25, status = \"unknown\"}, new Person{name = \"Charlie\", age = 18, status = \"unknown\"}, new Person{name = \"Diana\", age = 16, status = \"minor\"}}",
+          "Ast": {
+            "Kind": "array",
+            "Children": [
+              {
+                "Kind": "new",
+                "Value": "Person",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "name",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Alice"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "age",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "17"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "status",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "minor"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "Person",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "name",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Bob"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "age",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "25"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "status",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "unknown"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "Person",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "name",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Charlie"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "age",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "18"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "status",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "unknown"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "Person",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "name",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Diana"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "age",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "16"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "status",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "minor"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "Main",
+          "Params": [],
+          "Ret": "void",
+          "Access": "",
+          "Static": true,
+          "Body": [
+            "        for (int i = 0; i \u003c people.Length; i++) {",
+            "    var item = people[i];",
+            "    if ((age \u003e= 18)) {",
+            "        item.status = \"adult\";",
+            "        item.age = (age + 1);",
+            "    }",
+            "    people[i] = item;",
+            "}",
+            ";",
+            "        Console.WriteLine(\"ok\");"
+          ],
+          "Ast": {
+            "Kind": "block",
+            "Children": [
+              {
+                "Kind": "for",
+                "Value": "i",
+                "Children": [
+                  {
+                    "Kind": "range",
+                    "Children": [
+                      {
+                        "Kind": "literal",
+                        "Value": "0"
+                      },
+                      {
+                        "Kind": "member",
+                        "Value": "Length",
+                        "Children": [
+                          {
+                            "Kind": "ident",
+                            "Value": "people"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "Kind": "block",
+                    "Children": [
+                      {
+                        "Kind": "var",
+                        "Value": "item",
+                        "Children": [
+                          {
+                            "Kind": "index",
+                            "Children": [
+                              {
+                                "Kind": "ident",
+                                "Value": "people"
+                              },
+                              {
+                                "Kind": "ident",
+                                "Value": "i"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "if",
+                        "Children": [
+                          {
+                            "Kind": "binary",
+                            "Value": "\u003e=",
+                            "Children": [
+                              {
+                                "Kind": "ident",
+                                "Value": "age"
+                              },
+                              {
+                                "Kind": "literal",
+                                "Value": "18"
+                              }
+                            ]
+                          },
+                          {
+                            "Kind": "block",
+                            "Children": [
+                              {
+                                "Kind": "assign",
+                                "Children": [
+                                  {
+                                    "Kind": "member",
+                                    "Value": "status",
+                                    "Children": [
+                                      {
+                                        "Kind": "ident",
+                                        "Value": "item"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "Kind": "literal",
+                                    "Value": "adult"
+                                  }
+                                ]
+                              },
+                              {
+                                "Kind": "assign",
+                                "Children": [
+                                  {
+                                    "Kind": "member",
+                                    "Value": "age",
+                                    "Children": [
+                                      {
+                                        "Kind": "ident",
+                                        "Value": "item"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "Kind": "binary",
+                                    "Value": "+",
+                                    "Children": [
+                                      {
+                                        "Kind": "ident",
+                                        "Value": "age"
+                                      },
+                                      {
+                                        "Kind": "literal",
+                                        "Value": "1"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "assign",
+                        "Children": [
+                          {
+                            "Kind": "index",
+                            "Children": [
+                              {
+                                "Kind": "ident",
+                                "Value": "people"
+                              },
+                              {
+                                "Kind": "ident",
+                                "Value": "i"
+                              }
+                            ]
+                          },
+                          {
+                            "Kind": "ident",
+                            "Value": "item"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "empty"
+              },
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "literal",
+                    "Value": "ok"
+                  }
+                ]
+              }
+            ]
+          },
+          "StartLine": 12,
+          "EndLine": 23,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    }
+  ],
+  "Src": "// Generated by Mochi 0.10.34 on 2025-07-22 09:58 +0700\nusing System;\n\nstruct Person {\n    public string name;\n    public int age;\n    public string status;\n    public override string ToString() =\u003e $\"Person {{name = \\\"{name}\\\", age = {age}, status = \\\"{status}\\\"}}\";\n}\nclass Program {\n    static Person[] people = new Person[]{new Person{name = \"Alice\", age = 17, status = \"minor\"}, new Person{name = \"Bob\", age = 25, status = \"unknown\"}, new Person{name = \"Charlie\", age = 18, status = \"unknown\"}, new Person{name = \"Diana\", age = 16, status = \"minor\"}};\n    static void Main() {\n        for (int i = 0; i \u003c people.Length; i++) {\n    var item = people[i];\n    if ((age \u003e= 18)) {\n        item.status = \"adult\";\n        item.age = (age + 1);\n    }\n    people[i] = item;\n}\n;\n        Console.WriteLine(\"ok\");\n    }\n}\n"
+}

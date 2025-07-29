@@ -1,0 +1,162 @@
+{
+  "Types": [
+    {
+      "Name": "Program",
+      "Kind": "class",
+      "Access": "",
+      "StartLine": 4,
+      "EndLine": 10,
+      "Fields": [
+        {
+          "Name": "xs",
+          "Type": "int[]",
+          "Access": "",
+          "Line": 5,
+          "Value": "new int[]{1, 2, 3}",
+          "Ast": {
+            "Kind": "array",
+            "Children": [
+              {
+                "Kind": "literal",
+                "Value": "1"
+              },
+              {
+                "Kind": "literal",
+                "Value": "2"
+              },
+              {
+                "Kind": "literal",
+                "Value": "3"
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "Main",
+          "Params": [],
+          "Ret": "void",
+          "Access": "",
+          "Static": true,
+          "Body": [
+            "        Console.WriteLine(((Array.IndexOf(xs, 2) \u003e= 0) ? \"true\" : \"false\"));",
+            "        Console.WriteLine(((!(Array.IndexOf(xs, 5) \u003e= 0)) ? \"true\" : \"false\"));"
+          ],
+          "Ast": {
+            "Kind": "block",
+            "Children": [
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "cond",
+                    "Children": [
+                      {
+                        "Kind": "binary",
+                        "Value": "\u003e=",
+                        "Children": [
+                          {
+                            "Kind": "call",
+                            "Value": "IndexOf",
+                            "Children": [
+                              {
+                                "Kind": "ident",
+                                "Value": "Array"
+                              },
+                              {
+                                "Kind": "ident",
+                                "Value": "xs"
+                              },
+                              {
+                                "Kind": "literal",
+                                "Value": "2"
+                              }
+                            ]
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": "0"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "true"
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "false"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "cond",
+                    "Children": [
+                      {
+                        "Kind": "unary",
+                        "Value": "!",
+                        "Children": [
+                          {
+                            "Kind": "binary",
+                            "Value": "\u003e=",
+                            "Children": [
+                              {
+                                "Kind": "call",
+                                "Value": "IndexOf",
+                                "Children": [
+                                  {
+                                    "Kind": "ident",
+                                    "Value": "Array"
+                                  },
+                                  {
+                                    "Kind": "ident",
+                                    "Value": "xs"
+                                  },
+                                  {
+                                    "Kind": "literal",
+                                    "Value": "5"
+                                  }
+                                ]
+                              },
+                              {
+                                "Kind": "literal",
+                                "Value": "0"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "true"
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "false"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "StartLine": 6,
+          "EndLine": 9,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    }
+  ],
+  "Src": "// Generated by Mochi 0.10.33 on 2025-07-21 18:06 +0700\nusing System;\n\nclass Program {\n    static int[] xs = new int[]{1, 2, 3};\n    static void Main() {\n        Console.WriteLine(((Array.IndexOf(xs, 2) \u003e= 0) ? \"true\" : \"false\"));\n        Console.WriteLine(((!(Array.IndexOf(xs, 5) \u003e= 0)) ? \"true\" : \"false\"));\n    }\n}\n"
+}

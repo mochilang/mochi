@@ -1,0 +1,194 @@
+{
+  "Types": [
+    {
+      "Name": "M",
+      "Kind": "struct",
+      "Access": "",
+      "StartLine": 6,
+      "EndLine": 11,
+      "Fields": [
+        {
+          "Name": "a",
+          "Type": "int",
+          "Access": "public",
+          "Line": 7,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        },
+        {
+          "Name": "b",
+          "Type": "int",
+          "Access": "public",
+          "Line": 8,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        },
+        {
+          "Name": "c",
+          "Type": "int",
+          "Access": "public",
+          "Line": 9,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "ToString",
+          "Params": [],
+          "Ret": "string",
+          "Access": "public",
+          "Static": false,
+          "Body": [],
+          "Ast": {
+            "Kind": "block"
+          },
+          "StartLine": 10,
+          "EndLine": 10,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    },
+    {
+      "Name": "Program",
+      "Kind": "class",
+      "Access": "",
+      "StartLine": 12,
+      "EndLine": 17,
+      "Fields": [
+        {
+          "Name": "m",
+          "Type": "M",
+          "Access": "",
+          "Line": 13,
+          "Value": "new M{a = 1, b = 2, c = 3}",
+          "Ast": {
+            "Kind": "new",
+            "Value": "M",
+            "Children": [
+              {
+                "Kind": "init",
+                "Children": [
+                  {
+                    "Kind": "field",
+                    "Value": "a",
+                    "Children": [
+                      {
+                        "Kind": "literal",
+                        "Value": "1"
+                      }
+                    ]
+                  },
+                  {
+                    "Kind": "field",
+                    "Value": "b",
+                    "Children": [
+                      {
+                        "Kind": "literal",
+                        "Value": "2"
+                      }
+                    ]
+                  },
+                  {
+                    "Kind": "field",
+                    "Value": "c",
+                    "Children": [
+                      {
+                        "Kind": "literal",
+                        "Value": "3"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "Main",
+          "Params": [],
+          "Ret": "void",
+          "Access": "",
+          "Static": true,
+          "Body": [
+            "        Console.WriteLine((\"[\" + (string.Join(\", \", m.Values.ToList()) + \"]\")));"
+          ],
+          "Ast": {
+            "Kind": "block",
+            "Children": [
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "binary",
+                    "Value": "+",
+                    "Children": [
+                      {
+                        "Kind": "literal",
+                        "Value": "["
+                      },
+                      {
+                        "Kind": "binary",
+                        "Value": "+",
+                        "Children": [
+                          {
+                            "Kind": "call",
+                            "Value": "Join",
+                            "Children": [
+                              {
+                                "Kind": "ident",
+                                "Value": "string"
+                              },
+                              {
+                                "Kind": "literal",
+                                "Value": ", "
+                              },
+                              {
+                                "Kind": "call",
+                                "Value": "ToList",
+                                "Children": [
+                                  {
+                                    "Kind": "member",
+                                    "Value": "Values",
+                                    "Children": [
+                                      {
+                                        "Kind": "ident",
+                                        "Value": "m"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": "]"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "StartLine": 14,
+          "EndLine": 16,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    }
+  ],
+  "Src": "// Generated by Mochi 0.10.34 on 2025-07-22 09:58 +0700\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\n\nstruct M {\n    public int a;\n    public int b;\n    public int c;\n    public override string ToString() =\u003e $\"M {{a = {a}, b = {b}, c = {c}}}\";\n}\nclass Program {\n    static M m = new M{a = 1, b = 2, c = 3};\n    static void Main() {\n        Console.WriteLine((\"[\" + (string.Join(\", \", m.Values.ToList()) + \"]\")));\n    }\n}\n"
+}

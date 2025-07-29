@@ -1,0 +1,289 @@
+{
+  "Types": [
+    {
+      "Name": "Program",
+      "Kind": "class",
+      "Access": "",
+      "StartLine": 5,
+      "EndLine": 12,
+      "Fields": [],
+      "Methods": [
+        {
+          "Name": "Main",
+          "Params": [],
+          "Ret": "void",
+          "Access": "",
+          "Static": true,
+          "Body": [
+            "        Console.WriteLine(string.Join(\" \", (new int[]{1, 2}.Concat(new int[]{2, 3}).Distinct().ToArray())).TrimEnd());",
+            "        Console.WriteLine(string.Join(\" \", (new int[]{1, 2, 3}.Except(new int[]{2}).ToArray())).TrimEnd());",
+            "        Console.WriteLine(string.Join(\" \", (new int[]{1, 2, 3}.Intersect(new int[]{2, 4}).ToArray())).TrimEnd());",
+            "        Console.WriteLine((new int[]{1, 2}.Concat(new int[]{2, 3}).ToArray()).Length);"
+          ],
+          "Ast": {
+            "Kind": "block",
+            "Children": [
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "call",
+                    "Value": "TrimEnd",
+                    "Children": [
+                      {
+                        "Kind": "call",
+                        "Value": "Join",
+                        "Children": [
+                          {
+                            "Kind": "ident",
+                            "Value": "string"
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": " "
+                          },
+                          {
+                            "Kind": "call",
+                            "Value": "ToArray",
+                            "Children": [
+                              {
+                                "Kind": "call",
+                                "Value": "Distinct",
+                                "Children": [
+                                  {
+                                    "Kind": "call",
+                                    "Value": "Concat",
+                                    "Children": [
+                                      {
+                                        "Kind": "array",
+                                        "Children": [
+                                          {
+                                            "Kind": "literal",
+                                            "Value": "1"
+                                          },
+                                          {
+                                            "Kind": "literal",
+                                            "Value": "2"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "Kind": "array",
+                                        "Children": [
+                                          {
+                                            "Kind": "literal",
+                                            "Value": "2"
+                                          },
+                                          {
+                                            "Kind": "literal",
+                                            "Value": "3"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "call",
+                    "Value": "TrimEnd",
+                    "Children": [
+                      {
+                        "Kind": "call",
+                        "Value": "Join",
+                        "Children": [
+                          {
+                            "Kind": "ident",
+                            "Value": "string"
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": " "
+                          },
+                          {
+                            "Kind": "call",
+                            "Value": "ToArray",
+                            "Children": [
+                              {
+                                "Kind": "call",
+                                "Value": "Except",
+                                "Children": [
+                                  {
+                                    "Kind": "array",
+                                    "Children": [
+                                      {
+                                        "Kind": "literal",
+                                        "Value": "1"
+                                      },
+                                      {
+                                        "Kind": "literal",
+                                        "Value": "2"
+                                      },
+                                      {
+                                        "Kind": "literal",
+                                        "Value": "3"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "Kind": "array",
+                                    "Children": [
+                                      {
+                                        "Kind": "literal",
+                                        "Value": "2"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "call",
+                    "Value": "TrimEnd",
+                    "Children": [
+                      {
+                        "Kind": "call",
+                        "Value": "Join",
+                        "Children": [
+                          {
+                            "Kind": "ident",
+                            "Value": "string"
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": " "
+                          },
+                          {
+                            "Kind": "call",
+                            "Value": "ToArray",
+                            "Children": [
+                              {
+                                "Kind": "call",
+                                "Value": "Intersect",
+                                "Children": [
+                                  {
+                                    "Kind": "array",
+                                    "Children": [
+                                      {
+                                        "Kind": "literal",
+                                        "Value": "1"
+                                      },
+                                      {
+                                        "Kind": "literal",
+                                        "Value": "2"
+                                      },
+                                      {
+                                        "Kind": "literal",
+                                        "Value": "3"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "Kind": "array",
+                                    "Children": [
+                                      {
+                                        "Kind": "literal",
+                                        "Value": "2"
+                                      },
+                                      {
+                                        "Kind": "literal",
+                                        "Value": "4"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "member",
+                    "Value": "Length",
+                    "Children": [
+                      {
+                        "Kind": "call",
+                        "Value": "ToArray",
+                        "Children": [
+                          {
+                            "Kind": "call",
+                            "Value": "Concat",
+                            "Children": [
+                              {
+                                "Kind": "array",
+                                "Children": [
+                                  {
+                                    "Kind": "literal",
+                                    "Value": "1"
+                                  },
+                                  {
+                                    "Kind": "literal",
+                                    "Value": "2"
+                                  }
+                                ]
+                              },
+                              {
+                                "Kind": "array",
+                                "Children": [
+                                  {
+                                    "Kind": "literal",
+                                    "Value": "2"
+                                  },
+                                  {
+                                    "Kind": "literal",
+                                    "Value": "3"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "StartLine": 6,
+          "EndLine": 11,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    }
+  ],
+  "Src": "// Generated by Mochi 0.10.33 on 2025-07-21 18:06 +0700\nusing System;\nusing System.Linq;\n\nclass Program {\n    static void Main() {\n        Console.WriteLine(string.Join(\" \", (new int[]{1, 2}.Concat(new int[]{2, 3}).Distinct().ToArray())).TrimEnd());\n        Console.WriteLine(string.Join(\" \", (new int[]{1, 2, 3}.Except(new int[]{2}).ToArray())).TrimEnd());\n        Console.WriteLine(string.Join(\" \", (new int[]{1, 2, 3}.Intersect(new int[]{2, 4}).ToArray())).TrimEnd());\n        Console.WriteLine((new int[]{1, 2}.Concat(new int[]{2, 3}).ToArray()).Length);\n    }\n}\n"
+}

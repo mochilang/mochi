@@ -1,0 +1,436 @@
+{
+  "Types": [
+    {
+      "Name": "People",
+      "Kind": "struct",
+      "Access": "",
+      "StartLine": 7,
+      "EndLine": 11,
+      "Fields": [
+        {
+          "Name": "name",
+          "Type": "string",
+          "Access": "public",
+          "Line": 8,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        },
+        {
+          "Name": "city",
+          "Type": "string",
+          "Access": "public",
+          "Line": 9,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "ToString",
+          "Params": [],
+          "Ret": "string",
+          "Access": "public",
+          "Static": false,
+          "Body": [],
+          "Ast": {
+            "Kind": "block"
+          },
+          "StartLine": 10,
+          "EndLine": 10,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    },
+    {
+      "Name": "GGroup",
+      "Kind": "struct",
+      "Access": "",
+      "StartLine": 12,
+      "EndLine": 16,
+      "Fields": [
+        {
+          "Name": "key",
+          "Type": "string",
+          "Access": "public",
+          "Line": 13,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        },
+        {
+          "Name": "items",
+          "Type": "People[]",
+          "Access": "public",
+          "Line": 14,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "ToString",
+          "Params": [],
+          "Ret": "string",
+          "Access": "public",
+          "Static": false,
+          "Body": [],
+          "Ast": {
+            "Kind": "block"
+          },
+          "StartLine": 15,
+          "EndLine": 15,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    },
+    {
+      "Name": "GResult",
+      "Kind": "struct",
+      "Access": "",
+      "StartLine": 17,
+      "EndLine": 21,
+      "Fields": [
+        {
+          "Name": "city",
+          "Type": "string",
+          "Access": "public",
+          "Line": 18,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        },
+        {
+          "Name": "num",
+          "Type": "int",
+          "Access": "public",
+          "Line": 19,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "ToString",
+          "Params": [],
+          "Ret": "string",
+          "Access": "public",
+          "Static": false,
+          "Body": [],
+          "Ast": {
+            "Kind": "block"
+          },
+          "StartLine": 20,
+          "EndLine": 20,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    },
+    {
+      "Name": "Program",
+      "Kind": "class",
+      "Access": "",
+      "StartLine": 22,
+      "EndLine": 28,
+      "Fields": [
+        {
+          "Name": "people",
+          "Type": "People[]",
+          "Access": "",
+          "Line": 23,
+          "Value": "new People[]{new People{name = \"Alice\", city = \"Paris\"}, new People{name = \"Bob\", city = \"Hanoi\"}, new People{name = \"Charlie\", city = \"Paris\"}, new People{name = \"Diana\", city = \"Hanoi\"}, new People{name = \"Eve\", city = \"Paris\"}, new People{name = \"Frank\", city = \"Hanoi\"}, new People{name = \"George\", city = \"Paris\"}}",
+          "Ast": {
+            "Kind": "array",
+            "Children": [
+              {
+                "Kind": "new",
+                "Value": "People",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "name",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Alice"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "city",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Paris"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "People",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "name",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Bob"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "city",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Hanoi"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "People",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "name",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Charlie"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "city",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Paris"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "People",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "name",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Diana"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "city",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Hanoi"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "People",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "name",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Eve"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "city",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Paris"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "People",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "name",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Frank"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "city",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Hanoi"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "People",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "name",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "George"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "city",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Paris"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        },
+        {
+          "Name": "big",
+          "Type": "GResult[]",
+          "Access": "",
+          "Line": 24,
+          "Value": "(from p in people group p by p.city into gTmp let g = new GGroup{ key = gTmp.Key, items = gTmp.ToArray() } where (g.items.Length \u003e= 4) select new GResult{city = g.key, num = g.items.Length}).ToArray()",
+          "Ast": {
+            "Kind": "call",
+            "Value": "ToArray",
+            "Children": [
+              {
+                "Kind": "unknown"
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "Main",
+          "Params": [],
+          "Ret": "void",
+          "Access": "",
+          "Static": true,
+          "Body": [
+            "        Console.WriteLine(JsonSerializer.Serialize(big));"
+          ],
+          "Ast": {
+            "Kind": "block",
+            "Children": [
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "call",
+                    "Value": "Serialize",
+                    "Children": [
+                      {
+                        "Kind": "ident",
+                        "Value": "JsonSerializer"
+                      },
+                      {
+                        "Kind": "ident",
+                        "Value": "big"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "StartLine": 25,
+          "EndLine": 27,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    }
+  ],
+  "Src": "// Generated by Mochi 0.10.33 on 2025-07-21 18:06 +0700\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Text.Json;\n\nstruct People {\n    public string name;\n    public string city;\n    public override string ToString() =\u003e $\"{{\\\"name\\\": \\\"{name}\\\", \\\"city\\\": \\\"{city}\\\"}}\";\n}\nstruct GGroup {\n    public string key;\n    public People[] items;\n    public override string ToString() =\u003e $\"{{\\\"key\\\": \\\"{key}\\\", \\\"items\\\": {items}}}\";\n}\nstruct GResult {\n    public string city;\n    public int num;\n    public override string ToString() =\u003e $\"{{\\\"city\\\": \\\"{city}\\\", \\\"num\\\": {num}}}\";\n}\nclass Program {\n    static People[] people = new People[]{new People{name = \"Alice\", city = \"Paris\"}, new People{name = \"Bob\", city = \"Hanoi\"}, new People{name = \"Charlie\", city = \"Paris\"}, new People{name = \"Diana\", city = \"Hanoi\"}, new People{name = \"Eve\", city = \"Paris\"}, new People{name = \"Frank\", city = \"Hanoi\"}, new People{name = \"George\", city = \"Paris\"}};\n    static GResult[] big = (from p in people group p by p.city into gTmp let g = new GGroup{ key = gTmp.Key, items = gTmp.ToArray() } where (g.items.Length \u003e= 4) select new GResult{city = g.key, num = g.items.Length}).ToArray();\n    static void Main() {\n        Console.WriteLine(JsonSerializer.Serialize(big));\n    }\n}\n"
+}

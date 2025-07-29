@@ -1,0 +1,256 @@
+{
+  "Types": [
+    {
+      "Name": "Program",
+      "Kind": "class",
+      "Access": "",
+      "StartLine": 5,
+      "EndLine": 11,
+      "Fields": [],
+      "Methods": [
+        {
+          "Name": "Main",
+          "Params": [],
+          "Ret": "void",
+          "Access": "",
+          "Static": true,
+          "Body": [
+            "        Console.WriteLine((\"[\" + (string.Join(\", \", new int[]{1, 2, 3}.Skip(1).Take((3 - 1)).ToArray()) + \"]\")));",
+            "        Console.WriteLine((\"[\" + (string.Join(\", \", new int[]{1, 2, 3}.Skip(0).Take((2 - 0)).ToArray()) + \"]\")));",
+            "        Console.WriteLine(\"hello\".Substring(1, (4 - 1)));"
+          ],
+          "Ast": {
+            "Kind": "block",
+            "Children": [
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "binary",
+                    "Value": "+",
+                    "Children": [
+                      {
+                        "Kind": "literal",
+                        "Value": "["
+                      },
+                      {
+                        "Kind": "binary",
+                        "Value": "+",
+                        "Children": [
+                          {
+                            "Kind": "call",
+                            "Value": "Join",
+                            "Children": [
+                              {
+                                "Kind": "ident",
+                                "Value": "string"
+                              },
+                              {
+                                "Kind": "literal",
+                                "Value": ", "
+                              },
+                              {
+                                "Kind": "call",
+                                "Value": "ToArray",
+                                "Children": [
+                                  {
+                                    "Kind": "call",
+                                    "Value": "Take",
+                                    "Children": [
+                                      {
+                                        "Kind": "call",
+                                        "Value": "Skip",
+                                        "Children": [
+                                          {
+                                            "Kind": "array",
+                                            "Children": [
+                                              {
+                                                "Kind": "literal",
+                                                "Value": "1"
+                                              },
+                                              {
+                                                "Kind": "literal",
+                                                "Value": "2"
+                                              },
+                                              {
+                                                "Kind": "literal",
+                                                "Value": "3"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "Kind": "literal",
+                                            "Value": "1"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "Kind": "binary",
+                                        "Value": "-",
+                                        "Children": [
+                                          {
+                                            "Kind": "literal",
+                                            "Value": "3"
+                                          },
+                                          {
+                                            "Kind": "literal",
+                                            "Value": "1"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": "]"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "binary",
+                    "Value": "+",
+                    "Children": [
+                      {
+                        "Kind": "literal",
+                        "Value": "["
+                      },
+                      {
+                        "Kind": "binary",
+                        "Value": "+",
+                        "Children": [
+                          {
+                            "Kind": "call",
+                            "Value": "Join",
+                            "Children": [
+                              {
+                                "Kind": "ident",
+                                "Value": "string"
+                              },
+                              {
+                                "Kind": "literal",
+                                "Value": ", "
+                              },
+                              {
+                                "Kind": "call",
+                                "Value": "ToArray",
+                                "Children": [
+                                  {
+                                    "Kind": "call",
+                                    "Value": "Take",
+                                    "Children": [
+                                      {
+                                        "Kind": "call",
+                                        "Value": "Skip",
+                                        "Children": [
+                                          {
+                                            "Kind": "array",
+                                            "Children": [
+                                              {
+                                                "Kind": "literal",
+                                                "Value": "1"
+                                              },
+                                              {
+                                                "Kind": "literal",
+                                                "Value": "2"
+                                              },
+                                              {
+                                                "Kind": "literal",
+                                                "Value": "3"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "Kind": "literal",
+                                            "Value": "0"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "Kind": "binary",
+                                        "Value": "-",
+                                        "Children": [
+                                          {
+                                            "Kind": "literal",
+                                            "Value": "2"
+                                          },
+                                          {
+                                            "Kind": "literal",
+                                            "Value": "0"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": "]"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "call",
+                    "Value": "Substring",
+                    "Children": [
+                      {
+                        "Kind": "literal",
+                        "Value": "hello"
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "1"
+                      },
+                      {
+                        "Kind": "binary",
+                        "Value": "-",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "4"
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": "1"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "StartLine": 6,
+          "EndLine": 10,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    }
+  ],
+  "Src": "// Generated by Mochi 0.10.34 on 2025-07-22 09:11 +0700\nusing System;\nusing System.Linq;\n\nclass Program {\n    static void Main() {\n        Console.WriteLine((\"[\" + (string.Join(\", \", new int[]{1, 2, 3}.Skip(1).Take((3 - 1)).ToArray()) + \"]\")));\n        Console.WriteLine((\"[\" + (string.Join(\", \", new int[]{1, 2, 3}.Skip(0).Take((2 - 0)).ToArray()) + \"]\")));\n        Console.WriteLine(\"hello\".Substring(1, (4 - 1)));\n    }\n}\n"
+}

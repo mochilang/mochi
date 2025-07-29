@@ -1,0 +1,256 @@
+{
+  "Types": [
+    {
+      "Name": "People",
+      "Kind": "struct",
+      "Access": "",
+      "StartLine": 7,
+      "EndLine": 11,
+      "Fields": [
+        {
+          "Name": "name",
+          "Type": "string",
+          "Access": "public",
+          "Line": 8,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        },
+        {
+          "Name": "age",
+          "Type": "int",
+          "Access": "public",
+          "Line": 9,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "ToString",
+          "Params": [],
+          "Ret": "string",
+          "Access": "public",
+          "Static": false,
+          "Body": [],
+          "Ast": {
+            "Kind": "block"
+          },
+          "StartLine": 10,
+          "EndLine": 10,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    },
+    {
+      "Name": "Program",
+      "Kind": "class",
+      "Access": "",
+      "StartLine": 12,
+      "EndLine": 20,
+      "Fields": [
+        {
+          "Name": "people",
+          "Type": "People[]",
+          "Access": "",
+          "Line": 13,
+          "Value": "new People[]{new People{name = \"Alice\", age = 30}, new People{name = \"Bob\", age = 25}}",
+          "Ast": {
+            "Kind": "array",
+            "Children": [
+              {
+                "Kind": "new",
+                "Value": "People",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "name",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Alice"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "age",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "30"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "People",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "name",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Bob"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "age",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "25"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "Main",
+          "Params": [],
+          "Ret": "void",
+          "Access": "",
+          "Static": true,
+          "Body": [
+            "        foreach (var _row in people) {",
+            "    var _tmp = new SortedDictionary\u003cstring, object\u003e{{\"age\", _row.age}, {\"name\", _row.name}};",
+            "    Console.WriteLine(JsonSerializer.Serialize(_tmp));",
+            "};"
+          ],
+          "Ast": {
+            "Kind": "block",
+            "Children": [
+              {
+                "Kind": "for",
+                "Value": "_row",
+                "Children": [
+                  {
+                    "Kind": "range",
+                    "Children": [
+                      {
+                        "Kind": "ident",
+                        "Value": "people"
+                      }
+                    ]
+                  },
+                  {
+                    "Kind": "block",
+                    "Children": [
+                      {
+                        "Kind": "var",
+                        "Value": "_tmp",
+                        "Children": [
+                          {
+                            "Kind": "new",
+                            "Value": "SortedDictionary\u003cstring, object\u003e",
+                            "Children": [
+                              {
+                                "Kind": "init",
+                                "Children": [
+                                  {
+                                    "Kind": "pair",
+                                    "Children": [
+                                      {
+                                        "Kind": "literal",
+                                        "Value": "age"
+                                      },
+                                      {
+                                        "Kind": "member",
+                                        "Value": "age",
+                                        "Children": [
+                                          {
+                                            "Kind": "ident",
+                                            "Value": "_row"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "Kind": "pair",
+                                    "Children": [
+                                      {
+                                        "Kind": "literal",
+                                        "Value": "name"
+                                      },
+                                      {
+                                        "Kind": "member",
+                                        "Value": "name",
+                                        "Children": [
+                                          {
+                                            "Kind": "ident",
+                                            "Value": "_row"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "call",
+                        "Value": "print",
+                        "Children": [
+                          {
+                            "Kind": "call",
+                            "Value": "Serialize",
+                            "Children": [
+                              {
+                                "Kind": "ident",
+                                "Value": "JsonSerializer"
+                              },
+                              {
+                                "Kind": "ident",
+                                "Value": "_tmp"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "empty"
+              }
+            ]
+          },
+          "StartLine": 14,
+          "EndLine": 19,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    }
+  ],
+  "Src": "// Generated by Mochi 0.10.34 on 2025-07-22 09:58 +0700\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Text.Json;\n\nstruct People {\n    public string name;\n    public int age;\n    public override string ToString() =\u003e $\"People {{name = \\\"{name}\\\", age = {age}}}\";\n}\nclass Program {\n    static People[] people = new People[]{new People{name = \"Alice\", age = 30}, new People{name = \"Bob\", age = 25}};\n    static void Main() {\n        foreach (var _row in people) {\n    var _tmp = new SortedDictionary\u003cstring, object\u003e{{\"age\", _row.age}, {\"name\", _row.name}};\n    Console.WriteLine(JsonSerializer.Serialize(_tmp));\n};\n    }\n}\n"
+}

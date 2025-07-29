@@ -1,0 +1,356 @@
+{
+  "Types": [
+    {
+      "Name": "Program",
+      "Kind": "class",
+      "Access": "",
+      "StartLine": 6,
+      "EndLine": 19,
+      "Fields": [
+        {
+          "Name": "xs",
+          "Type": "int[]",
+          "Access": "",
+          "Line": 7,
+          "Value": "new int[]{1, 2, 3}",
+          "Ast": {
+            "Kind": "array",
+            "Children": [
+              {
+                "Kind": "literal",
+                "Value": "1"
+              },
+              {
+                "Kind": "literal",
+                "Value": "2"
+              },
+              {
+                "Kind": "literal",
+                "Value": "3"
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        },
+        {
+          "Name": "ys",
+          "Type": "int[]",
+          "Access": "",
+          "Line": 8,
+          "Value": "(from x in xs where ((x % 2) == 1) select x).ToArray()",
+          "Ast": {
+            "Kind": "call",
+            "Value": "ToArray",
+            "Children": [
+              {
+                "Kind": "unknown"
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        },
+        {
+          "Name": "m",
+          "Type": "Dictionary\u003cstring, int\u003e",
+          "Access": "",
+          "Line": 9,
+          "Value": "new Dictionary\u003cstring, int\u003e{{\"a\", 1}}",
+          "Ast": {
+            "Kind": "new",
+            "Value": "Dictionary\u003cstring, int\u003e",
+            "Children": [
+              {
+                "Kind": "init",
+                "Children": [
+                  {
+                    "Kind": "pair",
+                    "Children": [
+                      {
+                        "Kind": "literal",
+                        "Value": "a"
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "1"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        },
+        {
+          "Name": "s",
+          "Type": "string",
+          "Access": "",
+          "Line": 10,
+          "Value": "\"hello\"",
+          "Ast": {
+            "Kind": "literal",
+            "Value": "hello"
+          },
+          "Static": true,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "Main",
+          "Params": [],
+          "Ret": "void",
+          "Access": "",
+          "Static": true,
+          "Body": [
+            "        Console.WriteLine(((Array.IndexOf(ys, 1) \u003e= 0) ? \"true\" : \"false\"));",
+            "        Console.WriteLine(((Array.IndexOf(ys, 2) \u003e= 0) ? \"true\" : \"false\"));",
+            "        Console.WriteLine(((m.ContainsKey(\"a\")) ? \"true\" : \"false\"));",
+            "        Console.WriteLine(((m.ContainsKey(\"b\")) ? \"true\" : \"false\"));",
+            "        Console.WriteLine(((s.Contains(\"ell\")) ? \"true\" : \"false\"));",
+            "        Console.WriteLine(((s.Contains(\"foo\")) ? \"true\" : \"false\"));"
+          ],
+          "Ast": {
+            "Kind": "block",
+            "Children": [
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "cond",
+                    "Children": [
+                      {
+                        "Kind": "binary",
+                        "Value": "\u003e=",
+                        "Children": [
+                          {
+                            "Kind": "call",
+                            "Value": "IndexOf",
+                            "Children": [
+                              {
+                                "Kind": "ident",
+                                "Value": "Array"
+                              },
+                              {
+                                "Kind": "ident",
+                                "Value": "ys"
+                              },
+                              {
+                                "Kind": "literal",
+                                "Value": "1"
+                              }
+                            ]
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": "0"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "true"
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "false"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "cond",
+                    "Children": [
+                      {
+                        "Kind": "binary",
+                        "Value": "\u003e=",
+                        "Children": [
+                          {
+                            "Kind": "call",
+                            "Value": "IndexOf",
+                            "Children": [
+                              {
+                                "Kind": "ident",
+                                "Value": "Array"
+                              },
+                              {
+                                "Kind": "ident",
+                                "Value": "ys"
+                              },
+                              {
+                                "Kind": "literal",
+                                "Value": "2"
+                              }
+                            ]
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": "0"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "true"
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "false"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "cond",
+                    "Children": [
+                      {
+                        "Kind": "call",
+                        "Value": "ContainsKey",
+                        "Children": [
+                          {
+                            "Kind": "ident",
+                            "Value": "m"
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": "a"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "true"
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "false"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "cond",
+                    "Children": [
+                      {
+                        "Kind": "call",
+                        "Value": "ContainsKey",
+                        "Children": [
+                          {
+                            "Kind": "ident",
+                            "Value": "m"
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": "b"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "true"
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "false"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "cond",
+                    "Children": [
+                      {
+                        "Kind": "call",
+                        "Value": "Contains",
+                        "Children": [
+                          {
+                            "Kind": "ident",
+                            "Value": "s"
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": "ell"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "true"
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "false"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "cond",
+                    "Children": [
+                      {
+                        "Kind": "call",
+                        "Value": "Contains",
+                        "Children": [
+                          {
+                            "Kind": "ident",
+                            "Value": "s"
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": "foo"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "true"
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "false"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "StartLine": 11,
+          "EndLine": 18,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    }
+  ],
+  "Src": "// Generated by Mochi 0.10.34 on 2025-07-21 23:34 +0700\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\n\nclass Program {\n    static int[] xs = new int[]{1, 2, 3};\n    static int[] ys = (from x in xs where ((x % 2) == 1) select x).ToArray();\n    static Dictionary\u003cstring, int\u003e m = new Dictionary\u003cstring, int\u003e{{\"a\", 1}};\n    static string s = \"hello\";\n    static void Main() {\n        Console.WriteLine(((Array.IndexOf(ys, 1) \u003e= 0) ? \"true\" : \"false\"));\n        Console.WriteLine(((Array.IndexOf(ys, 2) \u003e= 0) ? \"true\" : \"false\"));\n        Console.WriteLine(((m.ContainsKey(\"a\")) ? \"true\" : \"false\"));\n        Console.WriteLine(((m.ContainsKey(\"b\")) ? \"true\" : \"false\"));\n        Console.WriteLine(((s.Contains(\"ell\")) ? \"true\" : \"false\"));\n        Console.WriteLine(((s.Contains(\"foo\")) ? \"true\" : \"false\"));\n    }\n}\n"
+}

@@ -1,0 +1,325 @@
+{
+  "Types": [
+    {
+      "Name": "Program",
+      "Kind": "class",
+      "Access": "",
+      "StartLine": 5,
+      "EndLine": 17,
+      "Fields": [
+        {
+          "Name": "r",
+          "Type": "double",
+          "Access": "",
+          "Line": 6,
+          "Value": "3",
+          "Ast": {
+            "Kind": "literal",
+            "Value": "3"
+          },
+          "Static": true,
+          "Doc": ""
+        },
+        {
+          "Name": "area",
+          "Type": "double",
+          "Access": "",
+          "Line": 7,
+          "Value": "(Math.PI * Math.Pow(r, 2))",
+          "Ast": {
+            "Kind": "binary",
+            "Value": "*",
+            "Children": [
+              {
+                "Kind": "member",
+                "Value": "PI",
+                "Children": [
+                  {
+                    "Kind": "ident",
+                    "Value": "Math"
+                  }
+                ]
+              },
+              {
+                "Kind": "call",
+                "Value": "Pow",
+                "Children": [
+                  {
+                    "Kind": "ident",
+                    "Value": "Math"
+                  },
+                  {
+                    "Kind": "ident",
+                    "Value": "r"
+                  },
+                  {
+                    "Kind": "literal",
+                    "Value": "2"
+                  }
+                ]
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        },
+        {
+          "Name": "root",
+          "Type": "double",
+          "Access": "",
+          "Line": 8,
+          "Value": "Math.Sqrt(49)",
+          "Ast": {
+            "Kind": "call",
+            "Value": "Sqrt",
+            "Children": [
+              {
+                "Kind": "ident",
+                "Value": "Math"
+              },
+              {
+                "Kind": "literal",
+                "Value": "49"
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        },
+        {
+          "Name": "sin45",
+          "Type": "double",
+          "Access": "",
+          "Line": 9,
+          "Value": "Math.Sin((Math.PI / 4))",
+          "Ast": {
+            "Kind": "call",
+            "Value": "Sin",
+            "Children": [
+              {
+                "Kind": "ident",
+                "Value": "Math"
+              },
+              {
+                "Kind": "binary",
+                "Value": "/",
+                "Children": [
+                  {
+                    "Kind": "member",
+                    "Value": "PI",
+                    "Children": [
+                      {
+                        "Kind": "ident",
+                        "Value": "Math"
+                      }
+                    ]
+                  },
+                  {
+                    "Kind": "literal",
+                    "Value": "4"
+                  }
+                ]
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        },
+        {
+          "Name": "log_e",
+          "Type": "double",
+          "Access": "",
+          "Line": 10,
+          "Value": "Math.Log(Math.E)",
+          "Ast": {
+            "Kind": "call",
+            "Value": "Log",
+            "Children": [
+              {
+                "Kind": "ident",
+                "Value": "Math"
+              },
+              {
+                "Kind": "member",
+                "Value": "E",
+                "Children": [
+                  {
+                    "Kind": "ident",
+                    "Value": "Math"
+                  }
+                ]
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "Main",
+          "Params": [],
+          "Ret": "void",
+          "Access": "",
+          "Static": true,
+          "Body": [
+            "        Console.WriteLine(string.Join(\" \", new object[]{\"Circle area with r =\", r, \"=\u003e\", area}));",
+            "        Console.WriteLine(string.Join(\" \", new object[]{\"Square root of 49:\", root}));",
+            "        Console.WriteLine(string.Join(\" \", new object[]{\"sin(π/4):\", sin45}));",
+            "        Console.WriteLine(string.Join(\" \", new object[]{\"log(e):\", log_e}));"
+          ],
+          "Ast": {
+            "Kind": "block",
+            "Children": [
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "call",
+                    "Value": "Join",
+                    "Children": [
+                      {
+                        "Kind": "ident",
+                        "Value": "string"
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": " "
+                      },
+                      {
+                        "Kind": "array",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Circle area with r ="
+                          },
+                          {
+                            "Kind": "ident",
+                            "Value": "r"
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": "=\u003e"
+                          },
+                          {
+                            "Kind": "ident",
+                            "Value": "area"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "call",
+                    "Value": "Join",
+                    "Children": [
+                      {
+                        "Kind": "ident",
+                        "Value": "string"
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": " "
+                      },
+                      {
+                        "Kind": "array",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Square root of 49:"
+                          },
+                          {
+                            "Kind": "ident",
+                            "Value": "root"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "call",
+                    "Value": "Join",
+                    "Children": [
+                      {
+                        "Kind": "ident",
+                        "Value": "string"
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": " "
+                      },
+                      {
+                        "Kind": "array",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "sin(π/4):"
+                          },
+                          {
+                            "Kind": "ident",
+                            "Value": "sin45"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "call",
+                    "Value": "Join",
+                    "Children": [
+                      {
+                        "Kind": "ident",
+                        "Value": "string"
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": " "
+                      },
+                      {
+                        "Kind": "array",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "log(e):"
+                          },
+                          {
+                            "Kind": "ident",
+                            "Value": "log_e"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "StartLine": 11,
+          "EndLine": 16,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    }
+  ],
+  "Src": "// Generated by Mochi 0.10.35 on 2025-07-22 10:54 +0700\nusing System;\nusing math = System.Math;\n\nclass Program {\n    static double r = 3;\n    static double area = (Math.PI * Math.Pow(r, 2));\n    static double root = Math.Sqrt(49);\n    static double sin45 = Math.Sin((Math.PI / 4));\n    static double log_e = Math.Log(Math.E);\n    static void Main() {\n        Console.WriteLine(string.Join(\" \", new object[]{\"Circle area with r =\", r, \"=\u003e\", area}));\n        Console.WriteLine(string.Join(\" \", new object[]{\"Square root of 49:\", root}));\n        Console.WriteLine(string.Join(\" \", new object[]{\"sin(π/4):\", sin45}));\n        Console.WriteLine(string.Join(\" \", new object[]{\"log(e):\", log_e}));\n    }\n}\n"
+}

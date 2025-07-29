@@ -1,0 +1,257 @@
+{
+  "Types": [
+    {
+      "Name": "Item",
+      "Kind": "struct",
+      "Access": "",
+      "StartLine": 6,
+      "EndLine": 10,
+      "Fields": [
+        {
+          "Name": "n",
+          "Type": "int",
+          "Access": "public",
+          "Line": 7,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        },
+        {
+          "Name": "v",
+          "Type": "string",
+          "Access": "public",
+          "Line": 8,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "ToString",
+          "Params": [],
+          "Ret": "string",
+          "Access": "public",
+          "Static": false,
+          "Body": [],
+          "Ast": {
+            "Kind": "block"
+          },
+          "StartLine": 9,
+          "EndLine": 9,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    },
+    {
+      "Name": "Program",
+      "Kind": "class",
+      "Access": "",
+      "StartLine": 11,
+      "EndLine": 17,
+      "Fields": [
+        {
+          "Name": "items",
+          "Type": "Item[]",
+          "Access": "",
+          "Line": 12,
+          "Value": "new Item[]{new Item{n = 1, v = \"a\"}, new Item{n = 1, v = \"b\"}, new Item{n = 2, v = \"c\"}}",
+          "Ast": {
+            "Kind": "array",
+            "Children": [
+              {
+                "Kind": "new",
+                "Value": "Item",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "n",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "1"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "v",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "a"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "Item",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "n",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "1"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "v",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "b"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "Item",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "n",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "2"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "v",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "c"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        },
+        {
+          "Name": "result",
+          "Type": "string[]",
+          "Access": "",
+          "Line": 13,
+          "Value": "(from i in items orderby i.n select i.v).ToArray()",
+          "Ast": {
+            "Kind": "call",
+            "Value": "ToArray",
+            "Children": [
+              {
+                "Kind": "unknown"
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "Main",
+          "Params": [],
+          "Ret": "void",
+          "Access": "",
+          "Static": true,
+          "Body": [
+            "        Console.WriteLine((\"[\" + (string.Join(\", \", result.Select((string x) =\u003e (\"'\" + (x + \"'\")))) + \"]\")));"
+          ],
+          "Ast": {
+            "Kind": "block",
+            "Children": [
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "binary",
+                    "Value": "+",
+                    "Children": [
+                      {
+                        "Kind": "literal",
+                        "Value": "["
+                      },
+                      {
+                        "Kind": "binary",
+                        "Value": "+",
+                        "Children": [
+                          {
+                            "Kind": "call",
+                            "Value": "Join",
+                            "Children": [
+                              {
+                                "Kind": "ident",
+                                "Value": "string"
+                              },
+                              {
+                                "Kind": "literal",
+                                "Value": ", "
+                              },
+                              {
+                                "Kind": "call",
+                                "Value": "Select",
+                                "Children": [
+                                  {
+                                    "Kind": "ident",
+                                    "Value": "result"
+                                  },
+                                  {
+                                    "Kind": "unknown"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": "]"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "StartLine": 14,
+          "EndLine": 16,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    }
+  ],
+  "Src": "// Generated by Mochi 0.10.34 on 2025-07-22 09:11 +0700\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\n\nstruct Item {\n    public int n;\n    public string v;\n    public override string ToString() =\u003e $\"{{'n': {n}, 'v': '{v}'}}\";\n}\nclass Program {\n    static Item[] items = new Item[]{new Item{n = 1, v = \"a\"}, new Item{n = 1, v = \"b\"}, new Item{n = 2, v = \"c\"}};\n    static string[] result = (from i in items orderby i.n select i.v).ToArray();\n    static void Main() {\n        Console.WriteLine((\"[\" + (string.Join(\", \", result.Select((string x) =\u003e (\"'\" + (x + \"'\")))) + \"]\")));\n    }\n}\n"
+}

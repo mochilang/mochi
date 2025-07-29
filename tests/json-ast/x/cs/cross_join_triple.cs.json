@@ -1,0 +1,279 @@
+{
+  "Types": [
+    {
+      "Name": "NResult",
+      "Kind": "struct",
+      "Access": "",
+      "StartLine": 6,
+      "EndLine": 11,
+      "Fields": [
+        {
+          "Name": "n",
+          "Type": "int",
+          "Access": "public",
+          "Line": 7,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        },
+        {
+          "Name": "l",
+          "Type": "string",
+          "Access": "public",
+          "Line": 8,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        },
+        {
+          "Name": "b",
+          "Type": "bool",
+          "Access": "public",
+          "Line": 9,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "ToString",
+          "Params": [],
+          "Ret": "string",
+          "Access": "public",
+          "Static": false,
+          "Body": [],
+          "Ast": {
+            "Kind": "block"
+          },
+          "StartLine": 10,
+          "EndLine": 10,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    },
+    {
+      "Name": "Program",
+      "Kind": "class",
+      "Access": "",
+      "StartLine": 12,
+      "EndLine": 23,
+      "Fields": [
+        {
+          "Name": "nums",
+          "Type": "int[]",
+          "Access": "",
+          "Line": 13,
+          "Value": "new int[]{1, 2}",
+          "Ast": {
+            "Kind": "array",
+            "Children": [
+              {
+                "Kind": "literal",
+                "Value": "1"
+              },
+              {
+                "Kind": "literal",
+                "Value": "2"
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        },
+        {
+          "Name": "letters",
+          "Type": "string[]",
+          "Access": "",
+          "Line": 14,
+          "Value": "new string[]{\"A\", \"B\"}",
+          "Ast": {
+            "Kind": "array",
+            "Children": [
+              {
+                "Kind": "literal",
+                "Value": "A"
+              },
+              {
+                "Kind": "literal",
+                "Value": "B"
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        },
+        {
+          "Name": "bools",
+          "Type": "bool[]",
+          "Access": "",
+          "Line": 15,
+          "Value": "new bool[]{true, false}",
+          "Ast": {
+            "Kind": "array",
+            "Children": [
+              {
+                "Kind": "literal",
+                "Value": "true"
+              },
+              {
+                "Kind": "literal",
+                "Value": "false"
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        },
+        {
+          "Name": "combos",
+          "Type": "NResult[]",
+          "Access": "",
+          "Line": 16,
+          "Value": "(from n in nums from l in letters from b in bools select new NResult{n = n, l = l, b = b}).ToArray()",
+          "Ast": {
+            "Kind": "call",
+            "Value": "ToArray",
+            "Children": [
+              {
+                "Kind": "unknown"
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "Main",
+          "Params": [],
+          "Ret": "void",
+          "Access": "",
+          "Static": true,
+          "Body": [
+            "        Console.WriteLine(\"--- Cross Join of three lists ---\");",
+            "        foreach (var c in combos) {",
+            "    Console.WriteLine(string.Join(\" \", new object[]{c.n, c.l, (c.b ? \"true\" : \"false\")}).TrimEnd());",
+            "}"
+          ],
+          "Ast": {
+            "Kind": "block",
+            "Children": [
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "literal",
+                    "Value": "--- Cross Join of three lists ---"
+                  }
+                ]
+              },
+              {
+                "Kind": "for",
+                "Value": "c",
+                "Children": [
+                  {
+                    "Kind": "range",
+                    "Children": [
+                      {
+                        "Kind": "ident",
+                        "Value": "combos"
+                      }
+                    ]
+                  },
+                  {
+                    "Kind": "block",
+                    "Children": [
+                      {
+                        "Kind": "call",
+                        "Value": "print",
+                        "Children": [
+                          {
+                            "Kind": "call",
+                            "Value": "TrimEnd",
+                            "Children": [
+                              {
+                                "Kind": "call",
+                                "Value": "Join",
+                                "Children": [
+                                  {
+                                    "Kind": "ident",
+                                    "Value": "string"
+                                  },
+                                  {
+                                    "Kind": "literal",
+                                    "Value": " "
+                                  },
+                                  {
+                                    "Kind": "array",
+                                    "Children": [
+                                      {
+                                        "Kind": "member",
+                                        "Value": "n",
+                                        "Children": [
+                                          {
+                                            "Kind": "ident",
+                                            "Value": "c"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "Kind": "member",
+                                        "Value": "l",
+                                        "Children": [
+                                          {
+                                            "Kind": "ident",
+                                            "Value": "c"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "Kind": "cond",
+                                        "Children": [
+                                          {
+                                            "Kind": "member",
+                                            "Value": "b",
+                                            "Children": [
+                                              {
+                                                "Kind": "ident",
+                                                "Value": "c"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "Kind": "literal",
+                                            "Value": "true"
+                                          },
+                                          {
+                                            "Kind": "literal",
+                                            "Value": "false"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "StartLine": 17,
+          "EndLine": 22,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    }
+  ],
+  "Src": "// Generated by Mochi 0.10.33 on 2025-07-21 18:06 +0700\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\n\nstruct NResult {\n    public int n;\n    public string l;\n    public bool b;\n    public override string ToString() =\u003e $\"{{\\\"n\\\": {n}, \\\"l\\\": \\\"{l}\\\", \\\"b\\\": {b}}}\";\n}\nclass Program {\n    static int[] nums = new int[]{1, 2};\n    static string[] letters = new string[]{\"A\", \"B\"};\n    static bool[] bools = new bool[]{true, false};\n    static NResult[] combos = (from n in nums from l in letters from b in bools select new NResult{n = n, l = l, b = b}).ToArray();\n    static void Main() {\n        Console.WriteLine(\"--- Cross Join of three lists ---\");\n        foreach (var c in combos) {\n    Console.WriteLine(string.Join(\" \", new object[]{c.n, c.l, (c.b ? \"true\" : \"false\")}).TrimEnd());\n}\n    }\n}\n"
+}
