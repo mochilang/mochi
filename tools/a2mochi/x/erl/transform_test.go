@@ -150,6 +150,10 @@ func TestTransform_Golden(t *testing.T) {
 		"if_else":             true,
 		"if_then_else":        true,
 		"if_then_else_nested": true,
+		"closure":             true,
+		"for_list_collection": true,
+		"for_loop":            true,
+		"for_map_collection":  true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "erl")
 	os.MkdirAll(outDir, 0o755)
