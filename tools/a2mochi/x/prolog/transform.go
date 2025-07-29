@@ -34,6 +34,15 @@ func TransformFile(path string) (*ast.Node, error) {
 	return Transform(string(data))
 }
 
+// ConvertFile reads a Prolog file and converts it to Mochi source with a header.
+func ConvertFile(path string) (string, error) {
+	node, err := TransformFile(path)
+	if err != nil {
+		return "", err
+	}
+	return Print(node)
+}
+
 // parseExpr converts a Mochi expression string into an AST node using the
 // Mochi parser.
 func parseExpr(expr string) (*ast.Node, error) {

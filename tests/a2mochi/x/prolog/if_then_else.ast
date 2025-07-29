@@ -1,13 +1,14 @@
 (program
   (fun main
     (let _11306 (int 12))
+    (var _11324 (string ""))
     (if
       (binary > (selector _11306) (int 10))
       (block
-        (let _11324 (string yes))
+        (assign _11324 (string yes))
       )
       (block
-        (let _11324 (string no))
+        (assign _11324 (string no))
       )
     )
     (call print (selector _11324))
