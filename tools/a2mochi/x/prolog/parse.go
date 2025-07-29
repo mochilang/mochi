@@ -66,3 +66,12 @@ func Parse(src string) (*Program, error) {
 	}
 	return &prog, nil
 }
+
+// ParseFile reads Prolog source from a file and parses it into a Program.
+func ParseFile(path string) (*Program, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	return Parse(string(data))
+}
