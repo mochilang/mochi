@@ -75,9 +75,7 @@ func TestTransform_Golden(t *testing.T) {
 		t.Fatalf("no files: %s", pattern)
 	}
 
-	skip := map[string]bool{
-		"bench_block": true,
-	}
+	skip := map[string]bool{}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/c")
 	os.MkdirAll(outDir, 0o755)
