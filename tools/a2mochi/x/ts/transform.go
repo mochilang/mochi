@@ -78,7 +78,7 @@ func nodeFromDecl(d Node) (*ast.Node, error) {
 
 func emitVar(d Node) string {
 	var sb strings.Builder
-	sb.WriteString("let ")
+	sb.WriteString("var ")
 	sb.WriteString(d.Name)
 	if d.Ret != "" {
 		sb.WriteString(": ")
@@ -507,7 +507,16 @@ func convertExprSimple(expr string) string {
 	}
 	if strings.HasPrefix(expr, "+") {
 		inner := strings.TrimSpace(expr[1:])
-		return "match " + inner + " { true => 1 false => 0 }"
+		// ignore unary plus on boolean expressions
+		return convertExprSimple(inner)
+	}
+	if q := strings.Index(expr, "?"); q >= 0 {
+		if colon := strings.LastIndex(expr, ":"); colon > q {
+			cond := strings.TrimSpace(expr[:q])
+			thenPart := strings.TrimSpace(expr[q+1 : colon])
+			elsePart := strings.TrimSpace(expr[colon+1:])
+			return fmt.Sprintf("match %s { true => %s false => %s }", cond, thenPart, elsePart)
+		}
 	}
 	if strings.HasPrefix(expr, "String(") && strings.HasSuffix(expr, ")") {
 		return strings.TrimSpace(expr[len("String(") : len(expr)-1])
