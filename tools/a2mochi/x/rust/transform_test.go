@@ -16,6 +16,9 @@ import (
 	"time"
 
 	"mochi/ast"
+	"mochi/parser"
+	"mochi/runtime/vm"
+	"mochi/types"
 
 	rust "mochi/tools/a2mochi/x/rust"
 )
@@ -39,6 +42,27 @@ func repoRoot(t *testing.T) string {
 	}
 	t.Fatal("go.mod not found")
 	return ""
+}
+
+func mochiOutput(src string) ([]byte, error) {
+	prog, err := parser.ParseString(src)
+	if err != nil {
+		return nil, err
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		return nil, errs[0]
+	}
+	p, err := vm.Compile(prog, env)
+	if err != nil {
+		return nil, err
+	}
+	var out bytes.Buffer
+	m := vm.New(p, &out)
+	if err := m.Run(); err != nil {
+		return nil, err
+	}
+	return bytes.TrimSpace(out.Bytes()), nil
 }
 
 func parseProgram(t *testing.T, src []byte) (*rust.Program, rust.ASTNode) {
@@ -178,13 +202,17 @@ func TestTransformGolden(t *testing.T) {
 				t.Fatalf("write out: %v", err)
 			}
 
-			refOutPath := filepath.Join(rootDir, "tests/vm/valid", name+".mochi.out")
-			refOut, err := os.ReadFile(refOutPath)
+			vmSrc, err := os.ReadFile(filepath.Join(rootDir, "tests/vm/valid", name+".mochi"))
 			if err != nil {
 				t.Fatalf("read ref: %v", err)
 			}
-			if string(out) != string(refOut) {
-				t.Fatalf("output mismatch\n--- Got ---\n%s\n--- Want ---\n%s", out, refOut)
+			wantOut, err := mochiOutput(string(vmSrc))
+			if err != nil {
+				t.Fatalf("run vm: %v", err)
+			}
+			gotOut := bytes.TrimSpace(out)
+			if !bytes.Equal(gotOut, wantOut) {
+				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
 			}
 
 			if *update {
