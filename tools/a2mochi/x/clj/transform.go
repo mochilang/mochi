@@ -356,12 +356,24 @@ func sexprToNode(x any, fns map[string]bool) *ast.Node {
 				bind, ok := v[1].([]any)
 				if ok && len(bind) == 2 {
 					name, _ := bind[0].(string)
-					coll := sexprToNode(bind[1], fns)
+					collExpr := bind[1]
+					rangeNode := (*ast.Node)(nil)
+					if arr, ok := collExpr.([]any); ok && len(arr) == 3 {
+						if hd, ok := arr[0].(string); ok && hd == "range" {
+							start := sexprToNode(arr[1], fns)
+							end := sexprToNode(arr[2], fns)
+							rangeNode = newNode("range", nil, start, end)
+						}
+					}
+					coll := sexprToNode(collExpr, fns)
 					blk := newNode("block", nil)
 					for _, b := range v[2:] {
 						if n := sexprToNode(b, fns); n != nil {
 							blk.Children = append(blk.Children, n)
 						}
+					}
+					if rangeNode != nil {
+						return newNode("for", sanitizeName(name), rangeNode, blk)
 					}
 					in := newNode("in", nil, coll)
 					return newNode("for", sanitizeName(name), in, blk)
