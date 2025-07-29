@@ -340,6 +340,9 @@ func parseExprStmtRec(p *Program, st *stmt.Expression, record bool) *ast.Node {
 			}
 			nodes = append(nodes, n)
 		}
+		if len(nodes) == 1 && nodes[0].Kind == "call" && nodes[0].Value == "json" {
+			return nodes[0]
+		}
 		return &ast.Node{Kind: "call", Value: "print", Children: nodes}
 	}
 	return nil
@@ -417,8 +420,17 @@ func simpleExpr(n pnode.Node) (string, bool) {
 			}
 			if nameString(inner.Function) == "json_encode" && inner.ArgumentList != nil && len(inner.ArgumentList.Arguments) >= 1 {
 				if arg0, ok := inner.ArgumentList.Arguments[0].(*pnode.Argument); ok {
+					// if input is array_merge, keep list semantics
+					if fc, ok := arg0.Expr.(*expr.FunctionCall); ok {
+						fn := nameString(fc.Function)
+						if fn == "array_merge" || fn == "array_slice" || fn == "array_values" {
+							if val, ok := simpleExpr(arg0.Expr); ok {
+								return val, true
+							}
+						}
+					}
 					if val, ok := simpleExpr(arg0.Expr); ok {
-						return val, true
+						return fmt.Sprintf("json(%s)", val), true
 					}
 				}
 			}
@@ -455,6 +467,10 @@ func simpleExpr(n pnode.Node) (string, bool) {
 			name = "len"
 		case "strlen":
 			name = "len"
+		case "json_encode":
+			if len(args) >= 1 {
+				return fmt.Sprintf("json(%s)", args[0]), true
+			}
 		case "substr":
 			if len(args) == 3 {
 				end := fmt.Sprintf("(%s + %s)", args[1], args[2])
