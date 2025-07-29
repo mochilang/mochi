@@ -420,6 +420,45 @@ func convertFormatMacro(code string) (string, bool) {
 	return "", false
 }
 
+func convertHashMapFrom(code string) (string, bool) {
+	c := strings.TrimSpace(code)
+	if strings.HasPrefix(c, "HashMap::from([") && strings.HasSuffix(c, "])") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(c, "HashMap::from(["), "])")
+		parts := splitRustArgs(inner)
+		var items []string
+		for _, p := range parts {
+			p = strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(p, "("), ")"))
+			kv := splitRustArgs(p)
+			if len(kv) != 2 {
+				continue
+			}
+			key := sanitizeExpr(kv[0])
+			val := sanitizeExpr(kv[1])
+			items = append(items, fmt.Sprintf("%s: %s", key, val))
+		}
+		return "{" + strings.Join(items, ", ") + "}", true
+	}
+	return "", false
+}
+
+func convertSumIter(code string) (string, bool) {
+	c := strings.TrimSpace(code)
+	// handle expr.iter().sum::<T>() or expr.iter().sum()
+	if strings.Contains(c, ".iter()") && strings.HasSuffix(c, ")") {
+		base := c
+		// remove generic part
+		if idx := strings.Index(c, ".iter()"); idx >= 0 {
+			base = c[:idx]
+		}
+		if strings.Contains(c, ".sum") {
+			if strings.HasPrefix(c[strings.LastIndex(c, ".sum"):], ".sum") {
+				return "sum(" + sanitizeExpr(base) + ")", true
+			}
+		}
+	}
+	return "", false
+}
+
 func findMatch(s string, openIdx int, open, close rune) int {
 	depth := 0
 	for i, r := range s[openIdx:] {
@@ -514,6 +553,10 @@ func sanitizeExpr(code string) string {
 		code = v
 	} else if v, ok := convertFormatMacro(code); ok {
 		code = v
+	} else if v, ok := convertHashMapFrom(code); ok {
+		code = v
+	} else if v, ok := convertSumIter(code); ok {
+		code = v
 	}
 	code = strings.ReplaceAll(code, "let ", "var ")
 	code = strings.ReplaceAll(code, "mut ", "")
@@ -602,6 +645,17 @@ func sanitizeExpr(code string) string {
 		idx := strings.Index(code, ".push(")
 		if idx < 0 {
 			break
+		}
+
+		// remove reference in map indexing like m[&"a"]
+		reMapIndex := regexp.MustCompile(`\[&\s*([^\]]+)\]`)
+		for {
+			loc := reMapIndex.FindStringSubmatchIndex(code)
+			if loc == nil {
+				break
+			}
+			inner := strings.TrimSpace(code[loc[2]:loc[3]])
+			code = code[:loc[0]] + "[" + inner + "]" + code[loc[1]:]
 		}
 		// find identifier start
 		start := idx - 1
