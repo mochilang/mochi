@@ -21,6 +21,7 @@ type Node struct {
 type Stmt struct {
 	Kind  string `json:"kind"`
 	Name  string `json:"name,omitempty"`
+	Type  string `json:"type,omitempty"`
 	Expr  *Expr  `json:"expr,omitempty"`
 	Cond  *Expr  `json:"cond,omitempty"`
 	Start *Expr  `json:"start,omitempty"`
@@ -72,7 +73,7 @@ func ensureCompiled() error {
 		}
 		classDir = filepath.Join(tmp, "bin")
 		os.MkdirAll(classDir, 0o755)
-		cmd := exec.Command("javac", "-d", classDir, src)
+		cmd := exec.Command("javac", "-encoding", "UTF-8", "-d", classDir, src)
 		if out, err := cmd.CombinedOutput(); err != nil {
 			compileErr = fmt.Errorf("javac: %v: %s", err, out)
 		}

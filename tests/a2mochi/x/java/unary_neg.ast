@@ -1,13 +1,6 @@
 (program
+  (call print (int -3))
   (call print
-    (unary - (int 3))
-  )
-  (call print
-    (binary +
-      (int 5)
-      (group
-        (unary - (int 2))
-      )
-    )
+    (binary + (int 5) (int -2))
   )
 )

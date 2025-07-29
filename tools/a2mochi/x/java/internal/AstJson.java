@@ -67,6 +67,11 @@ public class AstJson {
         out.print("{\"kind\":\"VarDecl\",\"name\":\"");
         out.print(vt.getName());
         out.print("\"");
+        if (vt.getType() != null) {
+            out.print(",\"type\":\"");
+            out.print(vt.getType());
+            out.print("\"");
+        }
         if (vt.getInitializer() != null) {
             out.print(",\"expr\":");
             printExpr(vt.getInitializer());

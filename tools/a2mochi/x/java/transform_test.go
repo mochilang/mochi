@@ -107,6 +107,12 @@ func TestTransform_Golden(t *testing.T) {
 		"string_prefix_slice": true,
 		"list_index":          true,
 		"slice":               true,
+		"cast_string_to_int":  true,
+		"if_else":             true,
+		"typed_let":           true,
+		"typed_var":           true,
+		"unary_neg":           true,
+		"while_loop":          true,
 	}
 
 	outDir := filepath.Join(rootDir, "tests/a2mochi/x/java")

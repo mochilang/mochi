@@ -1,4 +1,4 @@
 (program
-  (var y (int 0))
+  (var y (type int))
   (call print (selector y))
 )

@@ -16,11 +16,7 @@ func Transform(n *Node) (*mochias.Node, error) {
 		return nil, fmt.Errorf("nil node")
 	}
 	mutated := map[string]bool{}
-	for _, st := range n.Body {
-		if st.Kind == "Assign" {
-			mutated[st.Name] = true
-		}
-	}
+	scanMutations(n.Body, mutated)
 	prog := &mochias.Node{Kind: "program"}
 	for _, st := range n.Body {
 		prog.Children = append(prog.Children, stmtNode(st, mutated))
@@ -47,6 +43,8 @@ func stmtNode(s Stmt, mutated map[string]bool) *mochias.Node {
 		n := &mochias.Node{Kind: kind, Value: s.Name}
 		if s.Expr != nil {
 			n.Children = append(n.Children, exprNode(*s.Expr))
+		} else if s.Type != "" {
+			n.Children = append(n.Children, &mochias.Node{Kind: "type", Value: s.Type})
 		} else {
 			n.Children = append(n.Children, &mochias.Node{Kind: "int", Value: 0})
 		}
@@ -149,6 +147,9 @@ func exprNode(e Expr) *mochias.Node {
 			return n
 		}
 		if n := tryAvg(e); n != nil {
+			return n
+		}
+		if n := tryParseInt(e); n != nil {
 			return n
 		}
 		// special handling for method calls on an object
@@ -387,4 +388,30 @@ func tryAvg(e Expr) *mochias.Node {
 	}
 	arr := exprNode(streamCall.Args[0])
 	return &mochias.Node{Kind: "call", Value: "avg", Children: []*mochias.Node{arr}}
+}
+
+func tryParseInt(e Expr) *mochias.Node {
+	if e.Kind != "Call" || e.Target == nil {
+		return nil
+	}
+	if p := memberPath(e.Target); (p == "java.lang.Integer.parseInt" || p == "Integer.parseInt") && len(e.Args) == 1 {
+		val := exprNode(e.Args[0])
+		t := &mochias.Node{Kind: "type", Value: "int"}
+		return &mochias.Node{Kind: "cast", Children: []*mochias.Node{val, t}}
+	}
+	return nil
+}
+
+func scanMutations(stmts []Stmt, m map[string]bool) {
+	for _, st := range stmts {
+		switch st.Kind {
+		case "Assign":
+			m[st.Name] = true
+		case "While", "ForRange", "ForEach":
+			scanMutations(st.Body, m)
+		case "If":
+			scanMutations(st.Then, m)
+			scanMutations(st.Else, m)
+		}
+	}
 }
