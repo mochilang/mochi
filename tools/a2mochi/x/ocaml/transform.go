@@ -157,6 +157,9 @@ func simplify(e string) string {
 	e = strings.ReplaceAll(e, "string_of_int", "")
 	e = strings.ReplaceAll(e, "string_of_float", "")
 	e = strings.ReplaceAll(e, "string_of_bool", "")
+	if strings.HasPrefix(e, "(") && strings.HasSuffix(e, ")") {
+		e = strings.TrimSuffix(strings.TrimPrefix(e, "("), ")")
+	}
 	e = strings.ReplaceAll(e, "not ", "!")
 	e = strings.ReplaceAll(e, "ref ", "")
 	reRef := regexp.MustCompile(`!([A-Za-z0-9_]+)`)
@@ -169,12 +172,15 @@ func simplify(e string) string {
 	reCall := regexp.MustCompile(`\b(len|sum)\s+(\[[^\]]*\]|"[^"]+"|[A-Za-z0-9_]+)`)
 	e = reCall.ReplaceAllString(e, `$1($2)`)
 
+	re := regexp.MustCompile(`List\.append\s+(\[[^\]]*\]|[A-Za-z0-9_]+)\s+(\[[^\]]*\]|[A-Za-z0-9_]+)`)
+	e = re.ReplaceAllString(e, `append($1, $2)`)
+
 	// list syntax
 	e = strings.ReplaceAll(e, ";", ",")
 	e = strings.ReplaceAll(e, "^", "+")
 
 	// list indexing
-	re := regexp.MustCompile(`List\.nth\s+(\([^)]+\)|[A-Za-z0-9_]+)\s+(\d+)`)
+	re = regexp.MustCompile(`List\.nth\s+(\([^)]+\)|[A-Za-z0-9_]+)\s+(\d+)`)
 	e = re.ReplaceAllStringFunc(e, func(m string) string {
 		parts := re.FindStringSubmatch(m)
 		if parts == nil {
@@ -208,10 +214,29 @@ func simplify(e string) string {
 	}
 
 	e = strings.TrimSpace(e)
-	for strings.HasPrefix(e, "(") && strings.HasSuffix(e, ")") {
-		e = strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(e, "("), ")"))
+	for hasOuterParens(e) {
+		e = strings.TrimSpace(e[1 : len(e)-1])
 	}
 
 	e = strings.TrimSpace(e)
 	return e
+}
+
+func hasOuterParens(s string) bool {
+	if len(s) < 2 || s[0] != '(' || s[len(s)-1] != ')' {
+		return false
+	}
+	depth := 0
+	for i, r := range s {
+		switch r {
+		case '(':
+			depth++
+		case ')':
+			depth--
+			if depth == 0 && i != len(s)-1 {
+				return false
+			}
+		}
+	}
+	return depth == 0
 }

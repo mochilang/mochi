@@ -1,0 +1,14 @@
+(program
+  (call print
+    (binary /
+      (group
+        (call sum
+          (list (int 1) (int 2) (int 3))
+        )
+      )
+      (call len
+        (list (int 1) (int 2) (int 3))
+      )
+    )
+  )
+)

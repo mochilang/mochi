@@ -2,10 +2,10 @@
 
 This directory holds helpers and golden files for converting OCaml programs in `tests/transpiler/x/ocaml` into Mochi AST form.
 
-Completed programs: 17/104
+Completed programs: 18/104
 Date: 2025-07-29
 
-Currently seventeen examples are exercised by the tests.
+Currently eighteen examples are exercised by the tests.
 
 - [x] len_builtin
 - [x] len_string
@@ -24,3 +24,4 @@ Currently seventeen examples are exercised by the tests.
 - [x] string_index
 - [x] substring_builtin
 - [x] list_index
+- [x] avg_builtin
