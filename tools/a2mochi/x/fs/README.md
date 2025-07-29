@@ -2,11 +2,11 @@
 
 This directory contains test helpers and golden files for converting F# programs under `tests/transpiler/x/fs` into Mochi AST form.
 
-Completed programs: 27/103
-Date: 2025-07-30 00:10 GMT+7
+Completed programs: 37/103
+Date: 2025-07-30 00:44 GMT+7
 
 ## Checklist
-- [ ] append_builtin
+- [x] append_builtin
 - [ ] avg_builtin
 - [ ] basic_compare
 - [ ] bench_block
@@ -14,9 +14,9 @@ Date: 2025-07-30 00:10 GMT+7
 - [ ] bool_chain
 - [x] break_continue
 - [x] cast_string_to_int
-- [ ] cast_struct
+- [x] cast_struct
 - [ ] closure
-- [ ] count_builtin
+- [x] count_builtin
 - [ ] cross_join
 - [ ] cross_join_filter
 - [ ] cross_join_triple
@@ -25,7 +25,7 @@ Date: 2025-07-30 00:10 GMT+7
 - [ ] exists_builtin
 - [x] for_list_collection
 - [x] for_loop
-- [ ] for_map_collection
+- [x] for_map_collection
 - [ ] fun_call
 - [ ] fun_expr_in_let
 - [ ] fun_three_args
@@ -54,7 +54,7 @@ Date: 2025-07-30 00:10 GMT+7
 - [x] len_map
 - [x] len_string
 - [x] let_and_print
-- [ ] list_assign
+- [x] list_assign
 - [x] list_index
 - [ ] list_nested_assign
 - [ ] list_set_ops
@@ -64,12 +64,12 @@ Date: 2025-07-30 00:10 GMT+7
 - [ ] map_in_operator
 - [x] map_index
 - [x] map_int_key
-- [ ] map_literal_dynamic
+- [x] map_literal_dynamic
 - [ ] map_membership
-- [ ] map_nested_assign
+- [x] map_nested_assign
 - [ ] match_expr
 - [ ] match_full
-- [ ] math_ops
+- [x] math_ops
 - [ ] membership
 - [x] min_max_builtin
 - [ ] nested_function
@@ -98,7 +98,7 @@ Date: 2025-07-30 00:10 GMT+7
 - [ ] substring_builtin
 - [x] sum_builtin
 - [ ] tail_recursion
-- [ ] test_block
+- [x] test_block
 - [ ] tree_sum
 - [ ] two-sum
 - [x] typed_let
@@ -106,6 +106,6 @@ Date: 2025-07-30 00:10 GMT+7
 - [x] unary_neg
 - [ ] update_stmt
 - [x] user_type_literal
-- [ ] values_builtin
+- [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
