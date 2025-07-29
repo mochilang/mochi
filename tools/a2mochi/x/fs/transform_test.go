@@ -94,20 +94,20 @@ func TestTransformGolden(t *testing.T) {
 		t.Fatalf("no files: %s", pattern)
 	}
 	allowed := map[string]bool{
-		"avg_builtin":        false,
+		"avg_builtin":        true,
 		"binary_precedence":  true,
 		"bool_chain":         false,
-		"cast_string_to_int": false,
+		"cast_string_to_int": true,
 		"closure":            false,
 		"fun_call":           false,
 		"len_builtin":        true,
 		"len_string":         true,
 		"let_and_print":      true,
 		"list_index":         true,
-		"map_index":          false,
-		"map_int_key":        false,
-		"map_membership":     false,
-		"membership":         false,
+		"map_index":          true,
+		"map_int_key":        true,
+		"map_membership":     true,
+		"membership":         true,
 		"min_max_builtin":    true,
 		"print_hello":        true,
 		"str_builtin":        true,
@@ -156,5 +156,8 @@ func TestTransformGolden(t *testing.T) {
 				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
 			}
 		})
+	}
+	if *updateGolden {
+		fs.UpdateReadme()
 	}
 }
