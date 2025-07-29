@@ -58,6 +58,8 @@ func nodeFromDecl(d Node) (*ast.Node, error) {
 		src = emitForRange(d)
 	case "while":
 		src = emitWhile(d)
+	case "do":
+		src = emitDoWhile(d)
 	case "if":
 		src = emitIf(d)
 	}
@@ -230,6 +232,16 @@ func emitWhile(d Node) string {
 	return fmt.Sprintf("while %s {%s}\n", d.Cond, body)
 }
 
+func emitDoWhile(d Node) string {
+	var body string
+	if len(d.BodyNodes) > 0 {
+		body = emitNodes(d.BodyNodes)
+	} else {
+		body = replaceConsoleLogs(d.Body)
+	}
+	return fmt.Sprintf("do {%s} while %s\n", body, d.Cond)
+}
+
 func emitIf(d Node) string {
 	var thenBody, elseBody string
 	if len(d.BodyNodes) > 0 {
@@ -280,6 +292,8 @@ func emitNode(d Node) string {
 		return emitForRange(d)
 	case "while":
 		return emitWhile(d)
+	case "do":
+		return emitDoWhile(d)
 	case "if":
 		return emitIf(d)
 	}

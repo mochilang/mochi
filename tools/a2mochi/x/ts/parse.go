@@ -3,15 +3,12 @@
 package ts
 
 import (
-	_ "embed"
 	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 )
-
-//go:embed parse.ts
-var tsParser string
 
 // Param represents a function parameter.
 type Param struct {
@@ -80,20 +77,15 @@ func Parse(src string) (*Program, error) {
 	tmp.Close()
 	defer os.Remove(tmp.Name())
 
-	script, err := os.CreateTemp("", "ts-parse-*.ts")
+	root, err := repoRoot()
 	if err != nil {
 		os.Remove(tmp.Name())
 		return nil, err
 	}
-	if _, err := script.WriteString(tsParser); err != nil {
-		os.Remove(tmp.Name())
-		os.Remove(script.Name())
-		return nil, err
-	}
-	script.Close()
-	defer os.Remove(script.Name())
+	scriptPath := filepath.Join(root, "tools", "a2mochi", "x", "ts", "parse.ts")
 
-	cmd := exec.Command("deno", "run", "--quiet", "--allow-read", "--allow-env", "--node-modules-dir=auto", script.Name(), tmp.Name())
+	cmd := exec.Command("deno", "run", "--quiet", "--allow-read", "--allow-env", "--node-modules-dir=auto", scriptPath, tmp.Name())
+	cmd.Dir = filepath.Join(root, "tools", "a2mochi", "x", "ts")
 	cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
 	out, err := cmd.CombinedOutput()
 	if err != nil {

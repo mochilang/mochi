@@ -1,4 +1,4 @@
-import * as ts from "npm:typescript";
+import * as ts from "./node_modules/typescript/lib/typescript.js";
 
 interface TSParam {
   name: string;
@@ -348,6 +348,31 @@ function parse(src: string): TSDecl[] {
       }
       decls.push({
         kind: "while",
+        node: ts.SyntaxKind[stmt.kind],
+        cond,
+        body,
+        bodyNodes,
+        start: start.line,
+        startCol: start.col,
+        end: end.line,
+        endCol: end.col,
+        snippet,
+        startOff: stmt.getStart(source),
+        endOff: stmt.end,
+        doc,
+      });
+    } else if (ts.isDoStatement(stmt)) {
+      const cond = stmt.expression.getText(source);
+      let body = stmt.statement.getText(source);
+      let bodyNodes: TSDecl[] | undefined = undefined;
+      if (ts.isBlock(stmt.statement)) {
+        body = body.slice(1, -1);
+        bodyNodes = parse(body);
+      } else {
+        bodyNodes = parse(body);
+      }
+      decls.push({
+        kind: "do",
         node: ts.SyntaxKind[stmt.kind],
         cond,
         body,

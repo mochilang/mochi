@@ -14,10 +14,15 @@ func Print(n *ast.Node) (string, error) {
 	if err := ast.Fprint(&b, n); err != nil {
 		return "", err
 	}
-	s := b.String()
+	out := strings.ReplaceAll(b.String(), "\r\n", "\n")
+	lines := strings.Split(out, "\n")
+	for i, ln := range lines {
+		lines[i] = strings.TrimRight(ln, " ")
+	}
+	s := strings.Join(lines, "\n")
+	s = strings.TrimRight(s, " \n")
 	if len(s) > 0 && s[len(s)-1] != '\n' {
-		b.WriteByte('\n')
-		s = b.String()
+		s += "\n"
 	}
 	return s, nil
 }
