@@ -13,14 +13,14 @@ import (
 	"mochi/ast"
 	"mochi/parser"
 	"mochi/runtime/vm"
-	"mochi/types"
-
 	"mochi/tools/a2mochi/x/php"
+	"mochi/types"
 )
 
 var update = flag.Bool("update", false, "update golden files")
 
-func findRepoRoot(t *testing.T) string {
+func repoRoot(t *testing.T) string {
+	t.Helper()
 	dir, err := os.Getwd()
 	if err != nil {
 		t.Fatal(err)
@@ -39,29 +39,52 @@ func findRepoRoot(t *testing.T) string {
 	return ""
 }
 
-func runMochi(src string) ([]byte, error) {
+func runMochi(t *testing.T, src string) []byte {
+	t.Helper()
 	prog, err := parser.ParseString(src)
 	if err != nil {
-		return nil, err
+		t.Fatal(err)
 	}
 	env := types.NewEnv(nil)
 	if errs := types.Check(prog, env); len(errs) > 0 {
-		return nil, errs[0]
+		t.Fatal(errs[0])
 	}
 	p, err := vm.Compile(prog, env)
 	if err != nil {
-		return nil, err
+		t.Fatal(err)
 	}
 	var out bytes.Buffer
 	m := vm.New(p, &out)
 	if err := m.Run(); err != nil {
-		return nil, err
+		t.Fatal(err)
 	}
-	return bytes.TrimSpace(out.Bytes()), nil
+	return bytes.TrimSpace(out.Bytes())
 }
 
-func TestConvert_Golden(t *testing.T) {
-	root := findRepoRoot(t)
+func parseProgram(t *testing.T, path string) *php.Program {
+	t.Helper()
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("read %s: %v", path, err)
+	}
+	prog, err := php.Parse(string(data))
+	if err != nil {
+		t.Fatalf("parse %s: %v", path, err)
+	}
+	return prog
+}
+
+func transformProg(t *testing.T, p *php.Program) *ast.Node {
+	t.Helper()
+	node, err := php.Transform(p)
+	if err != nil {
+		t.Fatalf("transform: %v", err)
+	}
+	return node
+}
+
+func TestTransform_Golden(t *testing.T) {
+	root := repoRoot(t)
 	pattern := filepath.Join(root, "tests", "transpiler", "x", "php", "*.php")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
@@ -99,24 +122,18 @@ func TestConvert_Golden(t *testing.T) {
 
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "php")
 	os.MkdirAll(outDir, 0o755)
-	for _, src := range files {
-		name := strings.TrimSuffix(filepath.Base(src), ".php")
+	for _, path := range files {
+		name := strings.TrimSuffix(filepath.Base(path), ".php")
 		if !allowed[name] {
 			continue
 		}
 		t.Run(name, func(t *testing.T) {
-			data, err := os.ReadFile(src)
-			if err != nil {
-				t.Fatalf("read: %v", err)
-			}
-			node, err := php.Convert(string(data))
-			if err != nil {
-				t.Fatalf("convert: %v", err)
-			}
+			prog := parseProgram(t, path)
+			node := transformProg(t, prog)
 			astPath := filepath.Join(outDir, name+".ast")
 			if *update {
 				os.WriteFile(astPath, []byte(node.String()), 0o644)
-				code, err := php.ConvertFile(src)
+				code, err := php.ConvertFile(path)
 				if err == nil {
 					os.WriteFile(filepath.Join(outDir, name+".mochi"), []byte(code), 0o644)
 				}
@@ -134,18 +151,15 @@ func TestConvert_Golden(t *testing.T) {
 				t.Fatalf("print: %v", err)
 			}
 			code := buf.String()
-			gotOut, err := runMochi(code)
-			if err != nil {
-				t.Fatalf("run: %v", err)
+			gotOut := runMochi(t, code)
+			if *update {
+				os.WriteFile(filepath.Join(outDir, name+".out"), gotOut, 0o644)
 			}
 			vmSrc, err := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
 			if err != nil {
 				t.Fatalf("missing vm source: %v", err)
 			}
-			wantOut, err := runMochi(string(vmSrc))
-			if err != nil {
-				t.Fatalf("run vm: %v", err)
-			}
+			wantOut := runMochi(t, string(vmSrc))
 			if !bytes.Equal(gotOut, wantOut) {
 				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
 			}
