@@ -1,8 +1,5 @@
 let a = (10 - 3)
 let b = (2 + 2)
-print to_str(a)
-print ""
-print to_str(if((a == 7), true, false))
-print ""
-print to_str(if((b < 5), true, false))
-print ""
+print(a)
+print(if((a == 7), true, false))
+print(if((b < 5), true, false))

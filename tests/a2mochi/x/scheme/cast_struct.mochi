@@ -1,3 +1,2 @@
 let todo = alist_to_hash_table([cons("title", "hi")])
-print to_str(hash_table_ref(todo, "title"))
-print ""
+print(hash_table_ref(todo, "title"))

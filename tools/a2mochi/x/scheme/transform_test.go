@@ -42,43 +42,41 @@ func repoRoot(t *testing.T) string {
 	return ""
 }
 
-func transformCode(t *testing.T, src string) string {
-	t.Helper()
+func transformCode(src string) (string, error) {
 	prog, err := scheme.Parse(src)
 	if err != nil {
-		t.Fatalf("parse: %v", err)
+		return "", fmt.Errorf("parse: %w", err)
 	}
 	node, err := scheme.Transform(prog)
 	if err != nil {
-		t.Fatalf("transform: %v", err)
+		return "", fmt.Errorf("transform: %w", err)
 	}
 	var buf bytes.Buffer
 	if err := ast.Fprint(&buf, node); err != nil {
-		t.Fatalf("print: %v", err)
+		return "", fmt.Errorf("print: %w", err)
 	}
-	return buf.String()
+	return buf.String(), nil
 }
 
-func runMochi(t *testing.T, src string) []byte {
-	t.Helper()
+func runMochi(src string) ([]byte, error) {
 	prog, err := parser.ParseString(src)
 	if err != nil {
-		t.Fatalf("parse mochi: %v", err)
+		return nil, fmt.Errorf("parse mochi: %w", err)
 	}
 	env := types.NewEnv(nil)
 	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("check: %v", errs[0])
+		return nil, fmt.Errorf("check: %w", errs[0])
 	}
 	p, err := vm.Compile(prog, env)
 	if err != nil {
-		t.Fatalf("compile: %v", err)
+		return nil, fmt.Errorf("compile: %w", err)
 	}
 	var out bytes.Buffer
 	m := vm.New(p, &out)
 	if err := m.Run(); err != nil {
-		t.Fatalf("run: %v", err)
+		return nil, fmt.Errorf("run: %w", err)
 	}
-	return bytes.TrimSpace(out.Bytes())
+	return bytes.TrimSpace(out.Bytes()), nil
 }
 
 func TestTransform_Golden(t *testing.T) {
@@ -103,12 +101,26 @@ func TestTransform_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("read src: %v", err)
 			}
-			code := transformCode(t, string(data))
+			code, err := transformCode(string(data))
+			if err != nil {
+				if *update {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0o644)
+					return
+				}
+				t.Fatalf("%v", err)
+			}
 			mochiPath := filepath.Join(outDir, name+".mochi")
 			if *update {
 				os.WriteFile(mochiPath, []byte(code), 0o644)
 			}
-			gotOut := runMochi(t, code)
+			gotOut, err := runMochi(code)
+			if err != nil {
+				if *update {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0o644)
+					return
+				}
+				t.Fatalf("%v", err)
+			}
 			if *update {
 				os.WriteFile(filepath.Join(outDir, name+".out"), gotOut, 0o644)
 			}
@@ -116,7 +128,10 @@ func TestTransform_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("missing vm source: %v", err)
 			}
-			wantOut := runMochi(t, string(vmSrc))
+			wantOut, err := runMochi(string(vmSrc))
+			if err != nil {
+				t.Fatalf("run vm: %v", err)
+			}
 			if !bytes.Equal(gotOut, wantOut) {
 				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
 			}
@@ -137,9 +152,15 @@ func updateReadme() {
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".scm")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
-			compiled++
-			mark = "[x]"
+		outPath := filepath.Join(outDir, name+".out")
+		if data, err := os.ReadFile(outPath); err == nil {
+			vmSrc, err2 := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
+			if err2 == nil {
+				if want, err3 := runMochi(string(vmSrc)); err3 == nil && bytes.Equal(bytes.TrimSpace(data), want) {
+					compiled++
+					mark = "[x]"
+				}
+			}
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}

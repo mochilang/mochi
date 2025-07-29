@@ -1,0 +1,5 @@
+check: error[T003]: unknown function: begin
+  --> :4:14
+
+help:
+  Ensure the function is defined before it's called.

@@ -1,95 +1,95 @@
 # a2mochi Scheme Converter
 
-Completed programs: 87/87
-Date: 2025-07-29 17:50:16 GMT+7
+Completed programs: 25/87
+Date: 2025-07-29 20:51:48 GMT+7
 
 This directory holds golden outputs for converting Scheme source files under `tests/transpiler/x/scheme` back into Mochi form.
 
 ## Checklist
 - [x] append_builtin
-- [x] avg_builtin
-- [x] basic_compare
-- [x] bench_block
+- [ ] avg_builtin
+- [ ] basic_compare
+- [ ] bench_block
 - [x] binary_precedence
-- [x] bool_chain
-- [x] break_continue
-- [x] cast_string_to_int
+- [ ] bool_chain
+- [ ] break_continue
+- [ ] cast_string_to_int
 - [x] cast_struct
 - [x] closure
-- [x] count_builtin
+- [ ] count_builtin
 - [x] cross_join
 - [x] cross_join_filter
-- [x] cross_join_triple
+- [ ] cross_join_triple
 - [x] dataset_sort_take_limit
-- [x] dataset_where_filter
+- [ ] dataset_where_filter
 - [x] exists_builtin
-- [x] for_list_collection
-- [x] for_loop
+- [ ] for_list_collection
+- [ ] for_loop
 - [x] for_map_collection
-- [x] fun_call
-- [x] fun_expr_in_let
-- [x] fun_three_args
-- [x] group_by
-- [x] group_by_conditional_sum
-- [x] group_by_join
-- [x] group_by_left_join
-- [x] group_by_multi_join
-- [x] group_by_multi_join_sort
-- [x] group_by_sort
-- [x] group_items_iteration
-- [x] if_else
+- [ ] fun_call
+- [ ] fun_expr_in_let
+- [ ] fun_three_args
+- [ ] group_by
+- [ ] group_by_conditional_sum
+- [ ] group_by_join
+- [ ] group_by_left_join
+- [ ] group_by_multi_join
+- [ ] group_by_multi_join_sort
+- [ ] group_by_sort
+- [ ] group_items_iteration
+- [ ] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
-- [x] in_operator
-- [x] in_operator_extended
-- [x] inner_join
-- [x] join_multi
-- [x] left_join
-- [x] left_join_multi
-- [x] len_builtin
-- [x] len_map
-- [x] len_string
-- [x] let_and_print
+- [ ] in_operator
+- [ ] in_operator_extended
+- [ ] inner_join
+- [ ] join_multi
+- [ ] left_join
+- [ ] left_join_multi
+- [ ] len_builtin
+- [ ] len_map
+- [ ] len_string
+- [ ] let_and_print
 - [x] list_assign
 - [x] list_index
 - [x] list_nested_assign
-- [x] list_set_ops
+- [ ] list_set_ops
 - [x] map_assign
-- [x] map_in_operator
+- [ ] map_in_operator
 - [x] map_index
 - [x] map_int_key
 - [x] map_literal_dynamic
-- [x] map_membership
+- [ ] map_membership
 - [x] map_nested_assign
 - [x] match_expr
 - [x] match_full
-- [x] math_ops
-- [x] membership
+- [ ] math_ops
+- [ ] membership
 - [x] min_max_builtin
-- [x] nested_function
-- [x] order_by_map
-- [x] outer_join
+- [ ] nested_function
+- [ ] order_by_map
+- [ ] outer_join
 - [x] partial_application
-- [x] print_hello
-- [x] pure_fold
-- [x] pure_global_fold
+- [ ] print_hello
+- [ ] pure_fold
+- [ ] pure_global_fold
 - [x] query_sum_select
-- [x] right_join
-- [x] short_circuit
-- [x] slice
-- [x] sort_stable
-- [x] str_builtin
-- [x] string_compare
-- [x] string_concat
-- [x] string_contains
-- [x] string_in_operator
-- [x] string_index
-- [x] string_prefix_slice
-- [x] substring_builtin
-- [x] sum_builtin
-- [x] tail_recursion
-- [x] typed_let
-- [x] typed_var
-- [x] unary_neg
+- [ ] right_join
+- [ ] short_circuit
+- [ ] slice
+- [ ] sort_stable
+- [ ] str_builtin
+- [ ] string_compare
+- [ ] string_concat
+- [ ] string_contains
+- [ ] string_in_operator
+- [ ] string_index
+- [ ] string_prefix_slice
+- [ ] substring_builtin
+- [ ] sum_builtin
+- [ ] tail_recursion
+- [ ] typed_let
+- [ ] typed_var
+- [ ] unary_neg
 - [x] var_assignment
-- [x] while_loop
+- [ ] while_loop

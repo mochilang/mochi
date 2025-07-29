@@ -1,8 +1,5 @@
 fun boom() {
 }
-print to_str(if(and(and((1 < 2), (2 < 3)), (3 < 4)), true, false))
-print ""
-print to_str(if(and(and((1 < 2), (2 > 3)), boom()), true, false))
-print ""
-print to_str(if(and(and(and((1 < 2), (2 < 3)), (3 > 4)), boom()), true, false))
-print ""
+print(if(and(and((1 < 2), (2 < 3)), (3 < 4)), true, false))
+print(if(and(and((1 < 2), (2 > 3)), boom()), true, false))
+print(if(and(and(and((1 < 2), (2 < 3)), (3 > 4)), boom()), true, false))

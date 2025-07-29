@@ -1,2 +1,1 @@
-print to_str(let(cond(else(inexact_to_exact(v12)))))
-print ""
+print(cond(else(inexact_to_exact(v12))))
