@@ -98,6 +98,16 @@ func translateExpr(expr string) string {
 	if fb := translateForBlock(expr); fb != "" {
 		return fb
 	}
+	if m := regexp.MustCompile(`^([a-zA-Z_][a-zA-Z0-9_]*)\.(\(.*\))$`).FindStringSubmatch(expr); m != nil {
+		args := splitArgs(strings.TrimSpace(m[2][1 : len(m[2])-1]))
+		for i, a := range args {
+			args[i] = translateExpr(a)
+		}
+		return m[1] + "(" + strings.Join(args, ", ") + ")"
+	}
+	if m := regexp.MustCompile(`^([a-zA-Z_][a-zA-Z0-9_]*)\.([a-zA-Z_][a-zA-Z0-9_]*)$`).FindStringSubmatch(expr); m != nil {
+		return m[1] + "[\"" + m[2] + "\"]"
+	}
 	if strings.Contains(expr, "==") && !strings.Contains(expr, "<-") && !strings.Contains(expr, " do") {
 		parts := strings.SplitN(expr, "==", 2)
 		if len(parts) == 2 {
@@ -139,6 +149,51 @@ func translateExpr(expr string) string {
 		parts := splitArgs(expr[len("_intersect(") : len(expr)-1])
 		if len(parts) == 2 {
 			return parts[0] + " intersect " + parts[1]
+		}
+	case strings.HasPrefix(expr, "Enum.uniq(") && strings.HasSuffix(expr, ")"):
+		inner := expr[len("Enum.uniq(") : len(expr)-1]
+		if strings.Contains(inner, "++") {
+			parts := strings.Split(inner, "++")
+			if len(parts) == 2 {
+				left := translateExpr(strings.TrimSpace(parts[0]))
+				right := translateExpr(strings.TrimSpace(parts[1]))
+				return left + " union " + right
+			}
+		}
+	case strings.HasPrefix(expr, "Enum.filter(") && strings.HasSuffix(expr, ")"):
+		parts := splitArgs(expr[len("Enum.filter(") : len(expr)-1])
+		if len(parts) == 2 {
+			coll := translateExpr(parts[0])
+			cond := strings.TrimSpace(parts[1])
+			re := regexp.MustCompile(`^fn\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*->\s*(.+)\s*end$`)
+			if m := re.FindStringSubmatch(cond); m != nil {
+				v := m[1]
+				body := strings.TrimSpace(m[2])
+				neg := strings.HasPrefix(body, "!")
+				body = strings.TrimPrefix(body, "!")
+				pat := regexp.MustCompile(`^Enum\.member\?\((.*),\s*` + regexp.QuoteMeta(v) + `\)$`)
+				if mm := pat.FindStringSubmatch(body); mm != nil {
+					other := translateExpr(strings.TrimSpace(mm[1]))
+					if neg {
+						return coll + " except " + other
+					}
+					return coll + " intersect " + other
+				}
+			}
+		}
+	case strings.HasPrefix(expr, "length(") && strings.HasSuffix(expr, ")"):
+		inner := expr[len("length(") : len(expr)-1]
+		if strings.Contains(inner, "++") {
+			parts := strings.Split(inner, "++")
+			if len(parts) == 2 {
+				left := translateExpr(strings.TrimSpace(parts[0]))
+				right := translateExpr(strings.TrimSpace(parts[1]))
+				return "len(" + left + " union all " + right + ")"
+			}
+		}
+		parts := splitArgs(inner)
+		if len(parts) == 1 {
+			return "len(" + translateExpr(parts[0]) + ")"
 		}
 	case strings.HasPrefix(expr, "_count(") && strings.HasSuffix(expr, ")"):
 		parts := splitArgs(expr[len("_count(") : len(expr)-1])
@@ -184,18 +239,18 @@ func translateExpr(expr string) string {
 		if len(parts) == 2 {
 			return translateExpr(parts[0]) + "[" + translateExpr(parts[1]) + "]"
 		}
-       case strings.HasPrefix(expr, "Enum.slice(") && strings.HasSuffix(expr, ")"):
-               parts := splitArgs(expr[len("Enum.slice(") : len(expr)-1])
-               if len(parts) == 3 {
-                       start := translateExpr(parts[1])
-                       length := translateExpr(parts[2])
-                       return translateExpr(parts[0]) + "[" + start + ":" + start + " + " + length + "]"
-               }
-       case strings.HasPrefix(expr, "Enum.at(") && strings.HasSuffix(expr, ")"):
-               parts := splitArgs(expr[len("Enum.at(") : len(expr)-1])
-               if len(parts) == 2 {
-                       return translateExpr(parts[0]) + "[" + translateExpr(parts[1]) + "]"
-               }
+	case strings.HasPrefix(expr, "Enum.slice(") && strings.HasSuffix(expr, ")"):
+		parts := splitArgs(expr[len("Enum.slice(") : len(expr)-1])
+		if len(parts) == 3 {
+			start := translateExpr(parts[1])
+			length := translateExpr(parts[2])
+			return translateExpr(parts[0]) + "[" + start + ":" + start + " + " + length + "]"
+		}
+	case strings.HasPrefix(expr, "Enum.at(") && strings.HasSuffix(expr, ")"):
+		parts := splitArgs(expr[len("Enum.at(") : len(expr)-1])
+		if len(parts) == 2 {
+			return translateExpr(parts[0]) + "[" + translateExpr(parts[1]) + "]"
+		}
 	case strings.HasPrefix(expr, "Enum.any?(") && strings.HasSuffix(expr, ")"):
 		inner := expr[len("Enum.any?(") : len(expr)-1]
 		return "exists(" + translateExpr(inner) + ")"
@@ -222,25 +277,25 @@ func translateExpr(expr string) string {
 	case strings.HasPrefix(expr, "Enum.count(") && strings.HasSuffix(expr, ")"):
 		inner := expr[len("Enum.count(") : len(expr)-1]
 		return "len(" + inner + ")"
-       case strings.HasPrefix(expr, "Enum.sum(") && strings.HasSuffix(expr, ")"):
-               inner := expr[len("Enum.sum(") : len(expr)-1]
-               return "sum(" + inner + ")"
-       case strings.HasPrefix(expr, "to_string(") && strings.HasSuffix(expr, ")"):
-               inner := expr[len("to_string(") : len(expr)-1]
-               return "str(" + translateExpr(strings.TrimSpace(inner)) + ")"
-       case strings.Contains(expr, ".to_string(") && strings.HasSuffix(expr, ")"):
-               idx := strings.Index(expr, ".to_string(")
-               inner := expr[idx+len(".to_string(") : len(expr)-1]
-               return "str(" + translateExpr(strings.TrimSpace(inner)) + ")"
+	case strings.HasPrefix(expr, "Enum.sum(") && strings.HasSuffix(expr, ")"):
+		inner := expr[len("Enum.sum(") : len(expr)-1]
+		return "sum(" + inner + ")"
+	case strings.HasPrefix(expr, "to_string(") && strings.HasSuffix(expr, ")"):
+		inner := expr[len("to_string(") : len(expr)-1]
+		return "str(" + translateExpr(strings.TrimSpace(inner)) + ")"
+	case strings.Contains(expr, ".to_string(") && strings.HasSuffix(expr, ")"):
+		idx := strings.Index(expr, ".to_string(")
+		inner := expr[idx+len(".to_string(") : len(expr)-1]
+		return "str(" + translateExpr(strings.TrimSpace(inner)) + ")"
 	case strings.HasPrefix(expr, "map_size(") && strings.HasSuffix(expr, ")"):
 		inner := expr[len("map_size(") : len(expr)-1]
 		return "len(" + translateExpr(inner) + ")"
-       case strings.HasPrefix(expr, "Map.values(") && strings.HasSuffix(expr, ")"):
-               inner := expr[len("Map.values(") : len(expr)-1]
-               return "values(" + translateExpr(inner) + ")"
-       case strings.HasPrefix(expr, "Map.keys(") && strings.HasSuffix(expr, ")"):
-               inner := expr[len("Map.keys(") : len(expr)-1]
-               return "keys(" + translateExpr(inner) + ")"
+	case strings.HasPrefix(expr, "Map.values(") && strings.HasSuffix(expr, ")"):
+		inner := expr[len("Map.values(") : len(expr)-1]
+		return "values(" + translateExpr(inner) + ")"
+	case strings.HasPrefix(expr, "Map.keys(") && strings.HasSuffix(expr, ")"):
+		inner := expr[len("Map.keys(") : len(expr)-1]
+		return "keys(" + translateExpr(inner) + ")"
 	case strings.HasPrefix(expr, "Enum.sort(") && strings.HasSuffix(expr, ")"):
 		inner := expr[len("Enum.sort(") : len(expr)-1]
 		return "sort(" + translateExpr(inner) + ")"
@@ -274,11 +329,6 @@ func translateExpr(expr string) string {
 	case strings.HasPrefix(expr, "length(String.graphemes(") && strings.HasSuffix(expr, "))"):
 		inner := expr[len("length(String.graphemes(") : len(expr)-2]
 		return "len(" + inner + ")"
-	case strings.HasPrefix(expr, "length(") && strings.HasSuffix(expr, ")"):
-		parts := splitArgs(expr[len("length(") : len(expr)-1])
-		if len(parts) == 1 {
-			return "len(" + parts[0] + ")"
-		}
 	}
 	remRe := regexp.MustCompile(`rem\(([^,]+),\s*([^)]+)\)`)
 	for remRe.MatchString(expr) {
@@ -697,3 +747,6 @@ func programNode(p *parser.Program) *ast.Node {
 	}
 	return n
 }
+
+// TranslateExprForTest exposes translateExpr for testing purposes.
+func TranslateExprForTest(s string) string { return translateExpr(s) }

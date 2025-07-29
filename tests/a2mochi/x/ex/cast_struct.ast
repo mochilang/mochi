@@ -1,0 +1,13 @@
+(program
+  (fun main
+    (var todo
+      (map
+        (entry (selector title) (string hi))
+      )
+    )
+    (call print
+      (index (selector todo) (string title))
+    )
+  )
+  (call main)
+)

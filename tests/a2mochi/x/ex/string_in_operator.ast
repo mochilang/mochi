@@ -1,0 +1,18 @@
+(program
+  (fun main
+    (var s (string catch))
+    (call print
+      (call
+        (selector contains (selector s))
+        (string cat)
+      )
+    )
+    (call print
+      (call
+        (selector contains (selector s))
+        (string dog)
+      )
+    )
+  )
+  (call main)
+)

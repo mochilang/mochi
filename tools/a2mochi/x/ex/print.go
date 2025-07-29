@@ -10,6 +10,7 @@ import (
 
 func nodeSource(n *ast.Node) string {
 	code := n.Source()
+	code = strings.ReplaceAll(code, "union_all", "union all")
 	var out strings.Builder
 	out.Write(meta.Header("//"))
 	out.WriteByte('\n')
