@@ -297,11 +297,11 @@ func parseContains(expr string) (string, bool) {
 	}
 	s := strings.TrimSpace(parts[0])
 	sub := strings.TrimSpace(parts[1])
-	out := fmt.Sprintf("%s.contains(%s)", s, sub)
+	cond := fmt.Sprintf("%s.contains(%s)", s, sub)
 	if not {
-		out = "!" + out
+		return fmt.Sprintf("if %s then 0 else 1", cond), true
 	}
-	return out, true
+	return fmt.Sprintf("if %s then 1 else 0", cond), true
 }
 
 func parseScalarContains(expr string) (string, bool) {
@@ -327,11 +327,11 @@ func parseScalarContains(expr string) (string, bool) {
 	}
 	arr := strings.TrimSpace(parts[1])
 	val := strings.TrimSpace(parts[2])
-	out := fmt.Sprintf("%s.contains(%s)", arr, val)
+	cond := fmt.Sprintf("%s in %s", val, arr)
 	if not {
-		out = "!" + out
+		return fmt.Sprintf("if %s then 0 else 1", cond), true
 	}
-	return out, true
+	return fmt.Sprintf("if %s then 1 else 0", cond), true
 }
 
 // parseParseInt converts calls like `std.fmt.parseInt(i64, expr, 10)` optionally
