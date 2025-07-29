@@ -1,4 +1,4 @@
-let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+// a2mochi scala v0.10.47 2025-07-29 00:00:00 GMT+7
 
 for n in numbers {
   if n % 2 == 0 {

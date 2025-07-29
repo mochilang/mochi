@@ -1,4 +1,4 @@
-bench "simple" {
+// a2mochi scala v0.10.47 2025-07-29 00:00:00 GMT+7
   let n = 1000
   var data = []
   for i in 1..n {
