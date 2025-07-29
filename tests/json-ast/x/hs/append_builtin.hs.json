@@ -1,0 +1,29 @@
+{
+  "items": [
+    {
+      "kind": "var",
+      "name": "a",
+      "params": [],
+      "body": "[1, 2]",
+      "type": "",
+      "fields": []
+    },
+    {
+      "kind": "sig",
+      "name": "main",
+      "params": [],
+      "body": "",
+      "type": "IO ()",
+      "fields": []
+    },
+    {
+      "kind": "func",
+      "name": "main",
+      "params": [],
+      "body": "print (a ++ [3])",
+      "type": "",
+      "fields": []
+    }
+  ]
+}
+
