@@ -1,3 +1,14 @@
 (program
-  (let todo (selector "(Todo){.title = \"hi\"}"))
+  (type Todo
+    (field title (type string))
+  )
+  (let todo
+    (cast
+      (map
+        (entry (string title) (string hi))
+      )
+      (type Todo)
+    )
+  )
+  (call print (selector todo.title))
 )

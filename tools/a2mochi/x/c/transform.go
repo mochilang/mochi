@@ -27,6 +27,17 @@ func Transform(p *Program) (*ast.Node, error) {
 	}
 
 	root := &ast.Node{Kind: "program"}
+	for _, st := range p.Structs {
+		t := &ast.Node{Kind: "type", Value: st.Name}
+		for _, f := range st.Fields {
+			field := &ast.Node{Kind: "field", Value: f.Name}
+			if typ := mapCType(f.Type); typ != "" {
+				field.Children = append(field.Children, &ast.Node{Kind: "type", Value: typ})
+			}
+			t.Children = append(t.Children, field)
+		}
+		root.Children = append(root.Children, t)
+	}
 	for i := 0; i < len(p.Stmts); {
 		st := p.Stmts[i]
 		var next Stmt
@@ -126,13 +137,15 @@ func stmtNodeWithAssign(s Stmt, assigned map[string]bool, inFunc bool, next Stmt
 		n := &ast.Node{Kind: "fun", Value: v.Name}
 		for _, p := range v.Params {
 			param := &ast.Node{Kind: "param", Value: p.Name}
-			if p.Type == "int" {
-				param.Children = append(param.Children, &ast.Node{Kind: "type", Value: "int"})
+			if typ := mapCType(p.Type); typ != "" {
+				param.Children = append(param.Children, &ast.Node{Kind: "type", Value: typ})
 			}
 			n.Children = append(n.Children, param)
 		}
-		if v.Ret == "int" {
-			n.Children = append(n.Children, &ast.Node{Kind: "type", Value: "int"})
+		if typ := mapCType(v.Ret); typ != "" {
+			n.Children = append(n.Children, &ast.Node{Kind: "type", Value: typ})
+		} else if v.Ret != "" && v.Ret != "void" {
+			n.Children = append(n.Children, &ast.Node{Kind: "type", Value: v.Ret})
 		}
 		n.Children = append(n.Children, body)
 		return n
@@ -165,6 +178,8 @@ var reCall = regexp.MustCompile(`^([a-zA-Z_][a-zA-Z0-9_]*)\((.*)\)$`)
 var reList = regexp.MustCompile(`^\{\s*([0-9]+(?:\s*,\s*[0-9]+)*)\s*\}$`)
 var reIndex = regexp.MustCompile(`^([a-zA-Z_][a-zA-Z0-9_]*)\[(.+)\]$`)
 var reLen = regexp.MustCompile(`^sizeof\((\w+)\)\s*/\s*sizeof\((\w+)\[0\]\)$`)
+var reStructLit = regexp.MustCompile(`^\(([A-Za-z_][A-Za-z0-9_]*)\)\s*\{(.*)\}$`)
+var reField = regexp.MustCompile(`\.[A-Za-z_][A-Za-z0-9_]*\s*=\s*[^,}]+`)
 
 func exprNode(expr string) *ast.Node {
 	expr = strings.TrimSpace(expr)
@@ -213,6 +228,24 @@ func exprNode(expr string) *ast.Node {
 	}
 	if m := reIndex.FindStringSubmatch(expr); m != nil {
 		return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(m[1]), exprNode(m[2])}}
+	}
+	if m := reStructLit.FindStringSubmatch(expr); m != nil {
+		typ := m[1]
+		fieldsPart := m[2]
+		var entries []*ast.Node
+		matches := reField.FindAllString(fieldsPart, -1)
+		for _, f := range matches {
+			parts := strings.SplitN(f, "=", 2)
+			if len(parts) != 2 {
+				continue
+			}
+			name := strings.TrimSpace(strings.TrimPrefix(parts[0], "."))
+			val := strings.TrimSpace(parts[1])
+			entry := &ast.Node{Kind: "entry", Children: []*ast.Node{&ast.Node{Kind: "string", Value: name}, exprNode(val)}}
+			entries = append(entries, entry)
+		}
+		rec := &ast.Node{Kind: "map", Children: entries}
+		return &ast.Node{Kind: "cast", Children: []*ast.Node{rec, &ast.Node{Kind: "type", Value: typ}}}
 	}
 	if m := reList.FindStringSubmatch(expr); m != nil {
 		parts := strings.Split(m[1], ",")
@@ -363,4 +396,16 @@ func splitBinary(s string) (string, string, string, bool) {
 		}
 	}
 	return "", "", "", false
+}
+
+func mapCType(t string) string {
+	t = strings.TrimSpace(t)
+	switch t {
+	case "int", "long", "long long", "size_t":
+		return "int"
+	case "const char*", "char*", "const char *":
+		return "string"
+	default:
+		return ""
+	}
 }

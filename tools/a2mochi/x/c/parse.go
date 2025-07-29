@@ -10,8 +10,19 @@ import (
 
 // Program is a very simplified representation of a parsed C program.
 type Program struct {
-	Stmts  []Stmt
-	Source string
+	Structs []Struct
+	Stmts   []Stmt
+	Source  string
+}
+
+type Struct struct {
+	Name   string
+	Fields []Field
+}
+
+type Field struct {
+	Name string
+	Type string
 }
 
 type Stmt interface{}
@@ -61,14 +72,15 @@ type Break struct{}
 type Continue struct{}
 
 var (
-	reVar    = regexp.MustCompile(`^(?:[a-zA-Z_][a-zA-Z0-9_]*|int|long\s+long|size_t|const\s+char\s*\*)\s+([a-zA-Z_][a-zA-Z0-9_]*)(?:\[\])?\s*=\s*([^;]+);`)
-	reAssign = regexp.MustCompile(`^([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^;]+);`)
-	reFor    = regexp.MustCompile(`^for\s*\((?:int|size_t)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^;]+);\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*<\s*([^;]+);.*\)\s*{`)
-	reWhile  = regexp.MustCompile(`^while\s*\(([^\)]+)\)\s*{`)
-	reIf     = regexp.MustCompile(`^if\s*\((.*)\)\s*{`)
-	rePrintf = regexp.MustCompile(`printf\s*\((.*)\);`)
-	rePuts   = regexp.MustCompile(`puts\s*\("([^\"]*)"\);`)
-	reFunc   = regexp.MustCompile(`^(int|void)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^\)]*)\)\s*{`)
+	reVar       = regexp.MustCompile(`^(?:[a-zA-Z_][a-zA-Z0-9_]*|int|long\s+long|size_t|const\s+char\s*\*)\s+([a-zA-Z_][a-zA-Z0-9_]*)(?:\[\])?\s*=\s*([^;]+);`)
+	reAssign    = regexp.MustCompile(`^([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^;]+);`)
+	reFor       = regexp.MustCompile(`^for\s*\((?:int|size_t)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^;]+);\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*<\s*([^;]+);.*\)\s*{`)
+	reWhile     = regexp.MustCompile(`^while\s*\(([^\)]+)\)\s*{`)
+	reIf        = regexp.MustCompile(`^if\s*\((.*)\)\s*{`)
+	rePrintf    = regexp.MustCompile(`printf\s*\((.*)\);`)
+	rePuts      = regexp.MustCompile(`puts\s*\(([^\)]*)\);`)
+	reFunc      = regexp.MustCompile(`^([a-zA-Z_][a-zA-Z0-9_]*(?:\s*\*)?)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^\)]*)\)\s*{`)
+	reStructBeg = regexp.MustCompile(`^struct\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*{`)
 )
 
 // Parse parses a limited subset of C needed for simple tests.
@@ -76,6 +88,7 @@ func Parse(src string) (*Program, error) {
 	lines := strings.Split(src, "\n")
 	var body []string
 	var preStmts []Stmt
+	var structs []Struct
 	started := false
 	braces := 0
 	for i := 0; i < len(lines); i++ {
@@ -85,6 +98,27 @@ func Parse(src string) (*Program, error) {
 			if strings.Contains(ln, "main") && strings.Contains(ln, "{") {
 				started = true
 				braces = strings.Count(ln, "{") - strings.Count(ln, "}")
+				continue
+			}
+			if m := reStructBeg.FindStringSubmatch(trimmed); m != nil {
+				i++
+				fields := []Field{}
+				for i < len(lines) {
+					line := strings.TrimSpace(lines[i])
+					if strings.HasPrefix(line, "}") {
+						break
+					}
+					if strings.HasSuffix(line, ";") {
+						parts := strings.Fields(strings.TrimSuffix(line, ";"))
+						if len(parts) >= 2 {
+							typ := strings.Join(parts[:len(parts)-1], " ")
+							name := parts[len(parts)-1]
+							fields = append(fields, Field{Name: name, Type: typ})
+						}
+					}
+					i++
+				}
+				structs = append(structs, Struct{Name: m[1], Fields: fields})
 				continue
 			}
 			if m := reFunc.FindStringSubmatch(trimmed); m != nil {
@@ -112,7 +146,7 @@ func Parse(src string) (*Program, error) {
 	idx := 0
 	stmts := parseBlock(body, &idx)
 	stmts = append(preStmts, stmts...)
-	return &Program{Stmts: stmts, Source: src}, nil
+	return &Program{Structs: structs, Stmts: stmts, Source: src}, nil
 }
 
 func parseBlock(lines []string, idx *int) []Stmt {
@@ -185,7 +219,13 @@ func parseBlock(lines []string, idx *int) []Stmt {
 			continue
 		}
 		if m := rePuts.FindStringSubmatch(ln); m != nil {
-			out = append(out, PrintStmt{Exprs: []string{strconv.Quote(m[1])}, Newline: true})
+			expr := strings.TrimSpace(m[1])
+			if strings.HasPrefix(expr, "\"") && strings.HasSuffix(expr, "\"") {
+				if s, err := strconv.Unquote(expr); err == nil {
+					expr = strconv.Quote(s)
+				}
+			}
+			out = append(out, PrintStmt{Exprs: []string{expr}, Newline: true})
 			(*idx)++
 			continue
 		}

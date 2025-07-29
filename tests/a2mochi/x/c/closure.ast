@@ -1,5 +1,24 @@
 (program
+  (type MakeAdderClosure
+    (field n (type int))
+  )
+  (fun makeAdder
+    (param n (type int))
+    (type MakeAdderClosure)
+    (block
+      (return
+        (cast
+          (map
+            (entry (string n) (selector n))
+          )
+          (type MakeAdderClosure)
+        )
+      )
+    )
+  )
   (fun MakeAdderClosure_call
+    (param n (type int))
+    (param x (type int))
     (type int)
     (block
       (return
@@ -10,5 +29,7 @@
   (let add10
     (call makeAdder (int 10))
   )
-  (call print (selector "7)"))
+  (call print
+    (call MakeAdderClosure_call (selector add10.n) (int 7))
+  )
 )
