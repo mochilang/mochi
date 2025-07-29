@@ -303,9 +303,9 @@ func simplify(e string) string {
 	re := regexp.MustCompile(`List\.append\s+(\[[^\]]*\]|[A-Za-z0-9_]+)\s+(\[[^\]]*\]|[A-Za-z0-9_]+)`)
 	e = re.ReplaceAllString(e, `append($1, $2)`)
 
-	mapListRe := regexp.MustCompile(`\[(\("[^"]+",[^\)]+\)\s*,?\s*)+\]`)
+	mapListRe := regexp.MustCompile(`\[(\(("[^"]+"|[0-9]+),[^\)]+\)\s*,?\s*)+\]`)
 	e = mapListRe.ReplaceAllStringFunc(e, func(m string) string {
-		pairRe := regexp.MustCompile(`\("([^"]+)",\s*([^\)]+)\)`)
+		pairRe := regexp.MustCompile(`\(("[^"]+"|[0-9]+),\s*([^\)]+)\)`)
 		pairs := pairRe.FindAllStringSubmatch(m, -1)
 		var b strings.Builder
 		b.WriteString("{")
@@ -313,7 +313,12 @@ func simplify(e string) string {
 			if i > 0 {
 				b.WriteString(", ")
 			}
-			fmt.Fprintf(&b, "\"%s\": %s", p[1], strings.TrimSpace(p[2]))
+			key := strings.TrimSpace(p[1])
+			if strings.HasPrefix(key, "\"") {
+				fmt.Fprintf(&b, "%s: %s", key, strings.TrimSpace(p[2]))
+			} else {
+				fmt.Fprintf(&b, "%s: %s", key, strings.TrimSpace(p[2]))
+			}
 		}
 		b.WriteString("}")
 		return b.String()
@@ -321,6 +326,20 @@ func simplify(e string) string {
 
 	re = regexp.MustCompile(`List\.mem\s+([^\s]+)\s+([^\s]+)`)
 	e = re.ReplaceAllString(e, `$1 in $2`)
+
+	// map membership using mem_assoc
+	re = regexp.MustCompile(`List\.mem_assoc\s+([^\s]+)\s+([^\s]+)`)
+	e = re.ReplaceAllString(e, `$1 in $2`)
+
+	// string contains/in operator pattern
+	if strings.Contains(e, "String.sub") && strings.Contains(e, "aux 0") {
+		re := regexp.MustCompile(`len ([A-Za-z0-9_]+) and len_sub = len "([^"]+)"`)
+		if m := re.FindStringSubmatch(e); m != nil {
+			e = fmt.Sprintf("%s.contains(\"%s\")", m[1], m[2])
+		}
+	}
+	re = regexp.MustCompile(`if \(([^\)]*\.contains\("[^"\)]+"\))\) then true else false`)
+	e = re.ReplaceAllString(e, `$1`)
 
 	// list syntax
 	e = strings.ReplaceAll(e, ";", ",")
@@ -360,6 +379,17 @@ func simplify(e string) string {
 			ln, _ := strconv.Atoi(m[3])
 			end := start + ln
 			e = re.ReplaceAllString(e, fmt.Sprintf("substring(%s, %d, %d)", m[1], start, end))
+		} else {
+			re = regexp.MustCompile(`String\.sub\s+([A-Za-z0-9_]+)\s+(\d+)\s+\(String\.length\s+([A-Za-z0-9_]+)\s*-\s*(\d+)\)`)
+			if m := re.FindStringSubmatch(e); m != nil {
+				start, _ := strconv.Atoi(m[2])
+				off, _ := strconv.Atoi(m[4])
+				endExpr := fmt.Sprintf("len(%s)", m[3])
+				if off != 0 {
+					endExpr = fmt.Sprintf("len(%s)-%d", m[3], off)
+				}
+				e = re.ReplaceAllString(e, fmt.Sprintf("substring(%s, %d, %s)", m[1], start, endExpr))
+			}
 		}
 	}
 
