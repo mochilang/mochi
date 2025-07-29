@@ -58,7 +58,6 @@ func hasOuterParens(s string) bool {
 
 func translateExpr(expr string) string {
 	expr = strings.TrimSpace(expr)
-	expr = strings.ReplaceAll(expr, "%{", "{")
 	for hasOuterParens(expr) {
 		expr = strings.TrimSpace(expr[1 : len(expr)-1])
 	}
@@ -73,6 +72,7 @@ func translateExpr(expr string) string {
 	case strings.HasPrefix(expr, "%{") && strings.HasSuffix(expr, "}"):
 		inner := strings.TrimSpace(expr[2 : len(expr)-1])
 		inner = strings.ReplaceAll(inner, "=>", ":")
+		inner = strings.ReplaceAll(inner, "%{", "{")
 		return "{" + inner + "}"
 	case strings.HasPrefix(expr, "_union(") && strings.HasSuffix(expr, ")"):
 		parts := splitArgs(expr[len("_union(") : len(expr)-1])
