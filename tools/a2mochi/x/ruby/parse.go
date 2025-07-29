@@ -133,7 +133,26 @@ func tokens(n Node) []string {
 		if idx.Type == "args_add_block" && len(idx.Children) > 0 {
 			idx = idx.Children[0]
 		}
+		idx = firstArg(idx)
+		if (idx.Type == "dot2" || idx.Type == "dot3") && len(idx.Children) == 2 {
+			start := exprString(idx.Children[0])
+			end := exprString(idx.Children[1])
+			return []string{fmt.Sprintf("%s[%s:%s]", recv, start, end)}
+		}
 		return []string{recv + "[" + exprString(idx) + "]"}
+	}
+	if n.Type == "unary" && len(n.Children) == 2 {
+		op := exprString(n.Children[0])
+		val := exprString(n.Children[1])
+		if op == "-" {
+			return []string{"(" + op + val + ")"}
+		}
+		return []string{op + val}
+	}
+	if (n.Type == "dot2" || n.Type == "dot3") && len(n.Children) == 2 {
+		left := exprString(n.Children[0])
+		right := exprString(n.Children[1])
+		return []string{left + ".." + right}
 	}
 	if strings.HasPrefix(n.Type, "@") {
 		if n.Value != "" {
@@ -188,6 +207,12 @@ func exprString(n Node) string {
 			idx := n.Children[1]
 			if idx.Type == "args_add_block" && len(idx.Children) > 0 {
 				idx = idx.Children[0]
+			}
+			idx = firstArg(idx)
+			if (idx.Type == "dot2" || idx.Type == "dot3") && len(idx.Children) == 2 {
+				start := exprString(idx.Children[0])
+				end := exprString(idx.Children[1])
+				return fmt.Sprintf("%s[%s:%s]", recv, start, end)
 			}
 			return recv + "[" + exprString(idx) + "]"
 		}

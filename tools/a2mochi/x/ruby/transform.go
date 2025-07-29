@@ -224,6 +224,12 @@ func convertNode(n Node, level int, out *[]string) {
 						}
 					}
 					recvExpr := exprString(recvNode)
+					if strings.HasPrefix(recvExpr, "(") && strings.HasSuffix(recvExpr, ")") {
+						inner := recvExpr[1 : len(recvExpr)-1]
+						if strings.Contains(inner, "..") {
+							recvExpr = inner
+						}
+					}
 					varName := "v"
 					body := block
 					if block.Type == "do_block" && len(block.Children) >= 2 {
