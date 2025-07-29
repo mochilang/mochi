@@ -1,0 +1,23 @@
+{
+  "functions": [
+    {
+      "name": "main",
+      "params": [],
+      "ret": "void",
+      "body": [
+        "  let r: float = 3.0",
+        "  let area: float = math.pi * math.pow(r, 2.0)",
+        "  let root = math.sqrt(49.0)",
+        "  let sin45 = math.sin(math.pi / 4.0)",
+        "  let log_e = math.log(math.e)",
+        "  print([\"Circle area with r =\", r, \"=\u003e\", area].join(\" \"))",
+        "  print([\"Square root of 49:\", root].join(\" \"))",
+        "  print([\"sin(π/4):\", sin45].join(\" \"))",
+        "  print([\"log(e):\", log_e].join(\" \"))"
+      ],
+      "start": 4,
+      "end": 14
+    }
+  ],
+  "classes": []
+}
