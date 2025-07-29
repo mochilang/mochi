@@ -1,0 +1,98 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "customers",
+      "type": "Data1[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "orders",
+      "type": "Data2[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "stats",
+      "type": "java.util.List\u003cResult5\u003e",
+      "expr": {
+        "kind": "UnknownExpr"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "String",
+        "value": "--- Group Left Join ---"
+      }
+    },
+    {
+      "kind": "ForEach",
+      "name": "s",
+      "expr": {
+        "kind": "Ident",
+        "name": "stats"
+      },
+      "body": [
+        {
+          "kind": "Print",
+          "expr": {
+            "kind": "Binary",
+            "left": {
+              "kind": "Binary",
+              "left": {
+                "kind": "Member",
+                "name": "name",
+                "expr": {
+                  "kind": "Ident",
+                  "name": "s"
+                }
+              },
+              "right": {
+                "kind": "String",
+                "value": " orders: "
+              },
+              "op": "PLUS"
+            },
+            "right": {
+              "kind": "Member",
+              "name": "count",
+              "expr": {
+                "kind": "Ident",
+                "name": "s"
+              }
+            },
+            "op": "PLUS"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,120 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "customers",
+      "type": "Data1[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "orders",
+      "type": "Data2[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "result",
+      "type": "java.util.List\u003cResult4\u003e",
+      "expr": {
+        "kind": "UnknownExpr"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "String",
+        "value": "--- Left Join ---"
+      }
+    },
+    {
+      "kind": "ForEach",
+      "name": "entry",
+      "expr": {
+        "kind": "Ident",
+        "name": "result"
+      },
+      "body": [
+        {
+          "kind": "Print",
+          "expr": {
+            "kind": "Binary",
+            "left": {
+              "kind": "Binary",
+              "left": {
+                "kind": "Binary",
+                "left": {
+                  "kind": "Binary",
+                  "left": {
+                    "kind": "Binary",
+                    "left": {
+                      "kind": "String",
+                      "value": "Order "
+                    },
+                    "right": {
+                      "kind": "Member",
+                      "name": "orderId",
+                      "expr": {
+                        "kind": "Ident",
+                        "name": "entry"
+                      }
+                    },
+                    "op": "PLUS"
+                  },
+                  "right": {
+                    "kind": "String",
+                    "value": " customer "
+                  },
+                  "op": "PLUS"
+                },
+                "right": {
+                  "kind": "Member",
+                  "name": "customer",
+                  "expr": {
+                    "kind": "Ident",
+                    "name": "entry"
+                  }
+                },
+                "op": "PLUS"
+              },
+              "right": {
+                "kind": "String",
+                "value": " total "
+              },
+              "op": "PLUS"
+            },
+            "right": {
+              "kind": "Member",
+              "name": "total",
+              "expr": {
+                "kind": "Ident",
+                "name": "entry"
+              }
+            },
+            "op": "PLUS"
+          }
+        }
+      ]
+    }
+  ]
+}

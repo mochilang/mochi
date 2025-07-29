@@ -1,0 +1,536 @@
+{
+  "body": [
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "toString",
+          "expr": {
+            "kind": "Member",
+            "name": "Arrays",
+            "expr": {
+              "kind": "Member",
+              "name": "util",
+              "expr": {
+                "kind": "Ident",
+                "name": "java"
+              }
+            }
+          }
+        },
+        "args": [
+          {
+            "kind": "Call",
+            "target": {
+              "kind": "Member",
+              "name": "toArray",
+              "expr": {
+                "kind": "Call",
+                "target": {
+                  "kind": "Member",
+                  "name": "distinct",
+                  "expr": {
+                    "kind": "Call",
+                    "target": {
+                      "kind": "Member",
+                      "name": "concat",
+                      "expr": {
+                        "kind": "Member",
+                        "name": "IntStream",
+                        "expr": {
+                          "kind": "Member",
+                          "name": "stream",
+                          "expr": {
+                            "kind": "Member",
+                            "name": "util",
+                            "expr": {
+                              "kind": "Ident",
+                              "name": "java"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "args": [
+                      {
+                        "kind": "Call",
+                        "target": {
+                          "kind": "Member",
+                          "name": "stream",
+                          "expr": {
+                            "kind": "Member",
+                            "name": "Arrays",
+                            "expr": {
+                              "kind": "Member",
+                              "name": "util",
+                              "expr": {
+                                "kind": "Ident",
+                                "name": "java"
+                              }
+                            }
+                          }
+                        },
+                        "args": [
+                          {
+                            "kind": "Array",
+                            "elems": [
+                              {
+                                "kind": "Literal",
+                                "value": "1"
+                              },
+                              {
+                                "kind": "Literal",
+                                "value": "2"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "Call",
+                        "target": {
+                          "kind": "Member",
+                          "name": "stream",
+                          "expr": {
+                            "kind": "Member",
+                            "name": "Arrays",
+                            "expr": {
+                              "kind": "Member",
+                              "name": "util",
+                              "expr": {
+                                "kind": "Ident",
+                                "name": "java"
+                              }
+                            }
+                          }
+                        },
+                        "args": [
+                          {
+                            "kind": "Array",
+                            "elems": [
+                              {
+                                "kind": "Literal",
+                                "value": "2"
+                              },
+                              {
+                                "kind": "Literal",
+                                "value": "3"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "toString",
+          "expr": {
+            "kind": "Member",
+            "name": "Arrays",
+            "expr": {
+              "kind": "Member",
+              "name": "util",
+              "expr": {
+                "kind": "Ident",
+                "name": "java"
+              }
+            }
+          }
+        },
+        "args": [
+          {
+            "kind": "Call",
+            "target": {
+              "kind": "Member",
+              "name": "toArray",
+              "expr": {
+                "kind": "Call",
+                "target": {
+                  "kind": "Member",
+                  "name": "filter",
+                  "expr": {
+                    "kind": "Call",
+                    "target": {
+                      "kind": "Member",
+                      "name": "stream",
+                      "expr": {
+                        "kind": "Member",
+                        "name": "Arrays",
+                        "expr": {
+                          "kind": "Member",
+                          "name": "util",
+                          "expr": {
+                            "kind": "Ident",
+                            "name": "java"
+                          }
+                        }
+                      }
+                    },
+                    "args": [
+                      {
+                        "kind": "Array",
+                        "elems": [
+                          {
+                            "kind": "Literal",
+                            "value": "1"
+                          },
+                          {
+                            "kind": "Literal",
+                            "value": "2"
+                          },
+                          {
+                            "kind": "Literal",
+                            "value": "3"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "args": [
+                  {
+                    "kind": "Lambda",
+                    "expr": {
+                      "kind": "Call",
+                      "target": {
+                        "kind": "Member",
+                        "name": "noneMatch",
+                        "expr": {
+                          "kind": "Call",
+                          "target": {
+                            "kind": "Member",
+                            "name": "stream",
+                            "expr": {
+                              "kind": "Member",
+                              "name": "Arrays",
+                              "expr": {
+                                "kind": "Member",
+                                "name": "util",
+                                "expr": {
+                                  "kind": "Ident",
+                                  "name": "java"
+                                }
+                              }
+                            }
+                          },
+                          "args": [
+                            {
+                              "kind": "Array",
+                              "elems": [
+                                {
+                                  "kind": "Literal",
+                                  "value": "2"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      },
+                      "args": [
+                        {
+                          "kind": "Lambda",
+                          "expr": {
+                            "kind": "Binary",
+                            "left": {
+                              "kind": "Ident",
+                              "name": "x"
+                            },
+                            "right": {
+                              "kind": "Ident",
+                              "name": "v"
+                            },
+                            "op": "EQUAL_TO"
+                          },
+                          "params": [
+                            {
+                              "name": "x"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "params": [
+                      {
+                        "name": "v"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "toString",
+          "expr": {
+            "kind": "Member",
+            "name": "Arrays",
+            "expr": {
+              "kind": "Member",
+              "name": "util",
+              "expr": {
+                "kind": "Ident",
+                "name": "java"
+              }
+            }
+          }
+        },
+        "args": [
+          {
+            "kind": "Call",
+            "target": {
+              "kind": "Member",
+              "name": "toArray",
+              "expr": {
+                "kind": "Call",
+                "target": {
+                  "kind": "Member",
+                  "name": "filter",
+                  "expr": {
+                    "kind": "Call",
+                    "target": {
+                      "kind": "Member",
+                      "name": "stream",
+                      "expr": {
+                        "kind": "Member",
+                        "name": "Arrays",
+                        "expr": {
+                          "kind": "Member",
+                          "name": "util",
+                          "expr": {
+                            "kind": "Ident",
+                            "name": "java"
+                          }
+                        }
+                      }
+                    },
+                    "args": [
+                      {
+                        "kind": "Array",
+                        "elems": [
+                          {
+                            "kind": "Literal",
+                            "value": "1"
+                          },
+                          {
+                            "kind": "Literal",
+                            "value": "2"
+                          },
+                          {
+                            "kind": "Literal",
+                            "value": "3"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "args": [
+                  {
+                    "kind": "Lambda",
+                    "expr": {
+                      "kind": "Call",
+                      "target": {
+                        "kind": "Member",
+                        "name": "anyMatch",
+                        "expr": {
+                          "kind": "Call",
+                          "target": {
+                            "kind": "Member",
+                            "name": "stream",
+                            "expr": {
+                              "kind": "Member",
+                              "name": "Arrays",
+                              "expr": {
+                                "kind": "Member",
+                                "name": "util",
+                                "expr": {
+                                  "kind": "Ident",
+                                  "name": "java"
+                                }
+                              }
+                            }
+                          },
+                          "args": [
+                            {
+                              "kind": "Array",
+                              "elems": [
+                                {
+                                  "kind": "Literal",
+                                  "value": "2"
+                                },
+                                {
+                                  "kind": "Literal",
+                                  "value": "4"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      },
+                      "args": [
+                        {
+                          "kind": "Lambda",
+                          "expr": {
+                            "kind": "Binary",
+                            "left": {
+                              "kind": "Ident",
+                              "name": "x"
+                            },
+                            "right": {
+                              "kind": "Ident",
+                              "name": "v"
+                            },
+                            "op": "EQUAL_TO"
+                          },
+                          "params": [
+                            {
+                              "name": "x"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "params": [
+                      {
+                        "name": "v"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Member",
+        "name": "length",
+        "expr": {
+          "kind": "Call",
+          "target": {
+            "kind": "Member",
+            "name": "toArray",
+            "expr": {
+              "kind": "Call",
+              "target": {
+                "kind": "Member",
+                "name": "concat",
+                "expr": {
+                  "kind": "Member",
+                  "name": "IntStream",
+                  "expr": {
+                    "kind": "Member",
+                    "name": "stream",
+                    "expr": {
+                      "kind": "Member",
+                      "name": "util",
+                      "expr": {
+                        "kind": "Ident",
+                        "name": "java"
+                      }
+                    }
+                  }
+                }
+              },
+              "args": [
+                {
+                  "kind": "Call",
+                  "target": {
+                    "kind": "Member",
+                    "name": "stream",
+                    "expr": {
+                      "kind": "Member",
+                      "name": "Arrays",
+                      "expr": {
+                        "kind": "Member",
+                        "name": "util",
+                        "expr": {
+                          "kind": "Ident",
+                          "name": "java"
+                        }
+                      }
+                    }
+                  },
+                  "args": [
+                    {
+                      "kind": "Array",
+                      "elems": [
+                        {
+                          "kind": "Literal",
+                          "value": "1"
+                        },
+                        {
+                          "kind": "Literal",
+                          "value": "2"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "Call",
+                  "target": {
+                    "kind": "Member",
+                    "name": "stream",
+                    "expr": {
+                      "kind": "Member",
+                      "name": "Arrays",
+                      "expr": {
+                        "kind": "Member",
+                        "name": "util",
+                        "expr": {
+                          "kind": "Ident",
+                          "name": "java"
+                        }
+                      }
+                    }
+                  },
+                  "args": [
+                    {
+                      "kind": "Array",
+                      "elems": [
+                        {
+                          "kind": "Literal",
+                          "value": "2"
+                        },
+                        {
+                          "kind": "Literal",
+                          "value": "3"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  ]
+}

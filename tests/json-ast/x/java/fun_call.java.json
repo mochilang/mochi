@@ -1,0 +1,56 @@
+{
+  "body": [
+    {
+      "kind": "FnDecl",
+      "name": "add",
+      "type": "int",
+      "body": [
+        {
+          "kind": "Return",
+          "expr": {
+            "kind": "Binary",
+            "left": {
+              "kind": "Ident",
+              "name": "a"
+            },
+            "right": {
+              "kind": "Ident",
+              "name": "b"
+            },
+            "op": "PLUS"
+          }
+        }
+      ],
+      "params": [
+        {
+          "name": "a",
+          "type": "int"
+        },
+        {
+          "name": "b",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Ident",
+          "name": "add"
+        },
+        "args": [
+          {
+            "kind": "Literal",
+            "value": "2"
+          },
+          {
+            "kind": "Literal",
+            "value": "3"
+          }
+        ]
+      }
+    }
+  ]
+}

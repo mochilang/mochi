@@ -1,0 +1,50 @@
+{
+  "body": [
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "Add",
+          "expr": {
+            "kind": "Ident",
+            "name": "testpkg"
+          }
+        },
+        "args": [
+          {
+            "kind": "Literal",
+            "value": "2"
+          },
+          {
+            "kind": "Literal",
+            "value": "3"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Member",
+        "name": "Pi",
+        "expr": {
+          "kind": "Ident",
+          "name": "testpkg"
+        }
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Member",
+        "name": "Answer",
+        "expr": {
+          "kind": "Ident",
+          "name": "testpkg"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,160 @@
+{
+  "body": [
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Cond",
+        "cond": {
+          "kind": "Binary",
+          "left": {
+            "kind": "Call",
+            "target": {
+              "kind": "Member",
+              "name": "compareTo",
+              "expr": {
+                "kind": "String",
+                "value": "a"
+              }
+            },
+            "args": [
+              {
+                "kind": "String",
+                "value": "b"
+              }
+            ]
+          },
+          "right": {
+            "kind": "Literal",
+            "value": "0"
+          },
+          "op": "LESS_THAN"
+        },
+        "then": {
+          "kind": "Literal",
+          "value": "1"
+        },
+        "else": {
+          "kind": "Literal",
+          "value": "0"
+        }
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Cond",
+        "cond": {
+          "kind": "Binary",
+          "left": {
+            "kind": "Call",
+            "target": {
+              "kind": "Member",
+              "name": "compareTo",
+              "expr": {
+                "kind": "String",
+                "value": "a"
+              }
+            },
+            "args": [
+              {
+                "kind": "String",
+                "value": "a"
+              }
+            ]
+          },
+          "right": {
+            "kind": "Literal",
+            "value": "0"
+          },
+          "op": "LESS_THAN_EQUAL"
+        },
+        "then": {
+          "kind": "Literal",
+          "value": "1"
+        },
+        "else": {
+          "kind": "Literal",
+          "value": "0"
+        }
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Cond",
+        "cond": {
+          "kind": "Binary",
+          "left": {
+            "kind": "Call",
+            "target": {
+              "kind": "Member",
+              "name": "compareTo",
+              "expr": {
+                "kind": "String",
+                "value": "b"
+              }
+            },
+            "args": [
+              {
+                "kind": "String",
+                "value": "a"
+              }
+            ]
+          },
+          "right": {
+            "kind": "Literal",
+            "value": "0"
+          },
+          "op": "GREATER_THAN"
+        },
+        "then": {
+          "kind": "Literal",
+          "value": "1"
+        },
+        "else": {
+          "kind": "Literal",
+          "value": "0"
+        }
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Cond",
+        "cond": {
+          "kind": "Binary",
+          "left": {
+            "kind": "Call",
+            "target": {
+              "kind": "Member",
+              "name": "compareTo",
+              "expr": {
+                "kind": "String",
+                "value": "b"
+              }
+            },
+            "args": [
+              {
+                "kind": "String",
+                "value": "b"
+              }
+            ]
+          },
+          "right": {
+            "kind": "Literal",
+            "value": "0"
+          },
+          "op": "GREATER_THAN_EQUAL"
+        },
+        "then": {
+          "kind": "Literal",
+          "value": "1"
+        },
+        "else": {
+          "kind": "Literal",
+          "value": "0"
+        }
+      }
+    }
+  ]
+}

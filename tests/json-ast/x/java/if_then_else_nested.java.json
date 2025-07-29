@@ -1,0 +1,67 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "x",
+      "type": "int",
+      "expr": {
+        "kind": "Literal",
+        "value": "8"
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "msg",
+      "type": "String",
+      "expr": {
+        "kind": "Cond",
+        "cond": {
+          "kind": "Binary",
+          "left": {
+            "kind": "Ident",
+            "name": "x"
+          },
+          "right": {
+            "kind": "Literal",
+            "value": "10"
+          },
+          "op": "GREATER_THAN"
+        },
+        "then": {
+          "kind": "String",
+          "value": "big"
+        },
+        "else": {
+          "kind": "Cond",
+          "cond": {
+            "kind": "Binary",
+            "left": {
+              "kind": "Ident",
+              "name": "x"
+            },
+            "right": {
+              "kind": "Literal",
+              "value": "5"
+            },
+            "op": "GREATER_THAN"
+          },
+          "then": {
+            "kind": "String",
+            "value": "medium"
+          },
+          "else": {
+            "kind": "String",
+            "value": "small"
+          }
+        }
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Ident",
+        "name": "msg"
+      }
+    }
+  ]
+}

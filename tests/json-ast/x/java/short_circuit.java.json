@@ -1,0 +1,113 @@
+{
+  "body": [
+    {
+      "kind": "FnDecl",
+      "name": "boom",
+      "type": "boolean",
+      "body": [
+        {
+          "kind": "Print",
+          "expr": {
+            "kind": "String",
+            "value": "boom"
+          }
+        },
+        {
+          "kind": "Return",
+          "expr": {
+            "kind": "Literal",
+            "value": "true"
+          }
+        }
+      ],
+      "params": [
+        {
+          "name": "a",
+          "type": "int"
+        },
+        {
+          "name": "b",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Cond",
+        "cond": {
+          "kind": "Binary",
+          "left": {
+            "kind": "Literal",
+            "value": "false"
+          },
+          "right": {
+            "kind": "Call",
+            "target": {
+              "kind": "Ident",
+              "name": "boom"
+            },
+            "args": [
+              {
+                "kind": "Literal",
+                "value": "1"
+              },
+              {
+                "kind": "Literal",
+                "value": "2"
+              }
+            ]
+          },
+          "op": "CONDITIONAL_AND"
+        },
+        "then": {
+          "kind": "Literal",
+          "value": "1"
+        },
+        "else": {
+          "kind": "Literal",
+          "value": "0"
+        }
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Cond",
+        "cond": {
+          "kind": "Binary",
+          "left": {
+            "kind": "Literal",
+            "value": "true"
+          },
+          "right": {
+            "kind": "Call",
+            "target": {
+              "kind": "Ident",
+              "name": "boom"
+            },
+            "args": [
+              {
+                "kind": "Literal",
+                "value": "1"
+              },
+              {
+                "kind": "Literal",
+                "value": "2"
+              }
+            ]
+          },
+          "op": "CONDITIONAL_OR"
+        },
+        "then": {
+          "kind": "Literal",
+          "value": "1"
+        },
+        "else": {
+          "kind": "Literal",
+          "value": "0"
+        }
+      }
+    }
+  ]
+}

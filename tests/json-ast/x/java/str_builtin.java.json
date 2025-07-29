@@ -1,0 +1,24 @@
+{
+  "body": [
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "valueOf",
+          "expr": {
+            "kind": "Ident",
+            "name": "String"
+          }
+        },
+        "args": [
+          {
+            "kind": "Literal",
+            "value": "123"
+          }
+        ]
+      }
+    }
+  ]
+}

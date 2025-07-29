@@ -1,0 +1,97 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "a",
+      "type": "int",
+      "expr": {
+        "kind": "Binary",
+        "left": {
+          "kind": "Literal",
+          "value": "10"
+        },
+        "right": {
+          "kind": "Literal",
+          "value": "3"
+        },
+        "op": "MINUS"
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "b",
+      "type": "int",
+      "expr": {
+        "kind": "Binary",
+        "left": {
+          "kind": "Literal",
+          "value": "2"
+        },
+        "right": {
+          "kind": "Literal",
+          "value": "2"
+        },
+        "op": "PLUS"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Ident",
+        "name": "a"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Cond",
+        "cond": {
+          "kind": "Binary",
+          "left": {
+            "kind": "Ident",
+            "name": "a"
+          },
+          "right": {
+            "kind": "Literal",
+            "value": "7"
+          },
+          "op": "EQUAL_TO"
+        },
+        "then": {
+          "kind": "Literal",
+          "value": "1"
+        },
+        "else": {
+          "kind": "Literal",
+          "value": "0"
+        }
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Cond",
+        "cond": {
+          "kind": "Binary",
+          "left": {
+            "kind": "Ident",
+            "name": "b"
+          },
+          "right": {
+            "kind": "Literal",
+            "value": "5"
+          },
+          "op": "LESS_THAN"
+        },
+        "then": {
+          "kind": "Literal",
+          "value": "1"
+        },
+        "else": {
+          "kind": "Literal",
+          "value": "0"
+        }
+      }
+    }
+  ]
+}

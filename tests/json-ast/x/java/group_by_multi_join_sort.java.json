@@ -1,0 +1,156 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "nation",
+      "type": "Data1[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "UnknownExpr"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "customer",
+      "type": "Data2[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "UnknownExpr"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "orders",
+      "type": "Data3[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "lineitem",
+      "type": "Data4[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "start_date",
+      "type": "String",
+      "expr": {
+        "kind": "String",
+        "value": "1993-10-01"
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "end_date",
+      "type": "String",
+      "expr": {
+        "kind": "String",
+        "value": "1994-01-01"
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "result",
+      "type": "java.util.List\u003cResult8\u003e",
+      "expr": {
+        "kind": "UnknownExpr"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "collect",
+          "expr": {
+            "kind": "Call",
+            "target": {
+              "kind": "Member",
+              "name": "map",
+              "expr": {
+                "kind": "Call",
+                "target": {
+                  "kind": "Member",
+                  "name": "stream",
+                  "expr": {
+                    "kind": "Cast",
+                    "value": "java.util.List\u003c?\u003e",
+                    "expr": {
+                      "kind": "Ident",
+                      "name": "result"
+                    }
+                  }
+                }
+              }
+            },
+            "args": [
+              {
+                "kind": "UnknownExpr"
+              }
+            ]
+          }
+        },
+        "args": [
+          {
+            "kind": "Call",
+            "target": {
+              "kind": "Member",
+              "name": "joining",
+              "expr": {
+                "kind": "Member",
+                "name": "Collectors",
+                "expr": {
+                  "kind": "Member",
+                  "name": "stream",
+                  "expr": {
+                    "kind": "Member",
+                    "name": "util",
+                    "expr": {
+                      "kind": "Ident",
+                      "name": "java"
+                    }
+                  }
+                }
+              }
+            },
+            "args": [
+              {
+                "kind": "String",
+                "value": " "
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

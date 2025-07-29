@@ -1,0 +1,46 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "data",
+      "type": "int[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "Literal",
+            "value": "1"
+          },
+          {
+            "kind": "Literal",
+            "value": "2"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "flag",
+      "type": "boolean",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Ident",
+          "name": "exists"
+        },
+        "args": [
+          {
+            "kind": "UnknownExpr"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Ident",
+        "name": "flag"
+      }
+    }
+  ]
+}

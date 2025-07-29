@@ -1,0 +1,270 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "data",
+      "type": "Data1[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "groups",
+      "type": "java.util.List\u003cData1\u003e",
+      "expr": {
+        "kind": "UnknownExpr"
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "tmp",
+      "type": "Object[]",
+      "expr": {
+        "kind": "Array"
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "result",
+      "type": "java.util.List\u003cObject\u003e",
+      "expr": {
+        "kind": "UnknownExpr"
+      }
+    },
+    {
+      "kind": "ForEach",
+      "name": "g",
+      "expr": {
+        "kind": "Ident",
+        "name": "groups"
+      },
+      "body": [
+        {
+          "kind": "VarDecl",
+          "name": "total",
+          "type": "int",
+          "expr": {
+            "kind": "Literal",
+            "value": "0"
+          }
+        },
+        {
+          "kind": "ForEach",
+          "name": "x",
+          "expr": {
+            "kind": "Member",
+            "name": "items",
+            "expr": {
+              "kind": "Ident",
+              "name": "g"
+            }
+          },
+          "body": [
+            {
+              "kind": "Assign",
+              "name": "total",
+              "target": {
+                "kind": "Ident",
+                "name": "total"
+              },
+              "expr": {
+                "kind": "Binary",
+                "left": {
+                  "kind": "Ident",
+                  "name": "total"
+                },
+                "right": {
+                  "kind": "Member",
+                  "name": "val",
+                  "expr": {
+                    "kind": "Ident",
+                    "name": "x"
+                  }
+                },
+                "op": "PLUS"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "Assign",
+          "name": "tmp",
+          "target": {
+            "kind": "Ident",
+            "name": "tmp"
+          },
+          "expr": {
+            "kind": "Call",
+            "target": {
+              "kind": "Member",
+              "name": "toArray",
+              "expr": {
+                "kind": "Call",
+                "target": {
+                  "kind": "Member",
+                  "name": "concat",
+                  "expr": {
+                    "kind": "Member",
+                    "name": "Stream",
+                    "expr": {
+                      "kind": "Member",
+                      "name": "stream",
+                      "expr": {
+                        "kind": "Member",
+                        "name": "util",
+                        "expr": {
+                          "kind": "Ident",
+                          "name": "java"
+                        }
+                      }
+                    }
+                  }
+                },
+                "args": [
+                  {
+                    "kind": "Call",
+                    "target": {
+                      "kind": "Member",
+                      "name": "stream",
+                      "expr": {
+                        "kind": "Member",
+                        "name": "Arrays",
+                        "expr": {
+                          "kind": "Member",
+                          "name": "util",
+                          "expr": {
+                            "kind": "Ident",
+                            "name": "java"
+                          }
+                        }
+                      }
+                    },
+                    "args": [
+                      {
+                        "kind": "Ident",
+                        "name": "tmp"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "Call",
+                    "target": {
+                      "kind": "Member",
+                      "name": "of",
+                      "expr": {
+                        "kind": "Member",
+                        "name": "Stream",
+                        "expr": {
+                          "kind": "Member",
+                          "name": "stream",
+                          "expr": {
+                            "kind": "Member",
+                            "name": "util",
+                            "expr": {
+                              "kind": "Ident",
+                              "name": "java"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "args": [
+                      {
+                        "kind": "UnknownExpr"
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "args": [
+              {
+                "kind": "UnknownExpr"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "collect",
+          "expr": {
+            "kind": "Call",
+            "target": {
+              "kind": "Member",
+              "name": "map",
+              "expr": {
+                "kind": "Call",
+                "target": {
+                  "kind": "Member",
+                  "name": "stream",
+                  "expr": {
+                    "kind": "Cast",
+                    "value": "java.util.List\u003c?\u003e",
+                    "expr": {
+                      "kind": "Ident",
+                      "name": "result"
+                    }
+                  }
+                }
+              }
+            },
+            "args": [
+              {
+                "kind": "UnknownExpr"
+              }
+            ]
+          }
+        },
+        "args": [
+          {
+            "kind": "Call",
+            "target": {
+              "kind": "Member",
+              "name": "joining",
+              "expr": {
+                "kind": "Member",
+                "name": "Collectors",
+                "expr": {
+                  "kind": "Member",
+                  "name": "stream",
+                  "expr": {
+                    "kind": "Member",
+                    "name": "util",
+                    "expr": {
+                      "kind": "Ident",
+                      "name": "java"
+                    }
+                  }
+                }
+              }
+            },
+            "args": [
+              {
+                "kind": "String",
+                "value": " "
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "nums",
+      "type": "int[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "Literal",
+            "value": "3"
+          },
+          {
+            "kind": "Literal",
+            "value": "1"
+          },
+          {
+            "kind": "Literal",
+            "value": "4"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Ident",
+          "name": "min"
+        },
+        "args": [
+          {
+            "kind": "Ident",
+            "name": "nums"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Ident",
+          "name": "max"
+        },
+        "args": [
+          {
+            "kind": "Ident",
+            "name": "nums"
+          }
+        ]
+      }
+    }
+  ]
+}

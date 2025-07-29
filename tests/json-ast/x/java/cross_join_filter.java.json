@@ -1,0 +1,100 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "nums",
+      "type": "int[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "Literal",
+            "value": "1"
+          },
+          {
+            "kind": "Literal",
+            "value": "2"
+          },
+          {
+            "kind": "Literal",
+            "value": "3"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "letters",
+      "type": "String[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "String",
+            "value": "A"
+          },
+          {
+            "kind": "String",
+            "value": "B"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "pairs",
+      "type": "java.util.List\u003cResult2\u003e",
+      "expr": {
+        "kind": "UnknownExpr"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "String",
+        "value": "--- Even pairs ---"
+      }
+    },
+    {
+      "kind": "ForEach",
+      "name": "p",
+      "expr": {
+        "kind": "Ident",
+        "name": "pairs"
+      },
+      "body": [
+        {
+          "kind": "Print",
+          "expr": {
+            "kind": "Binary",
+            "left": {
+              "kind": "Binary",
+              "left": {
+                "kind": "Member",
+                "name": "n",
+                "expr": {
+                  "kind": "Ident",
+                  "name": "p"
+                }
+              },
+              "right": {
+                "kind": "String",
+                "value": " "
+              },
+              "op": "PLUS"
+            },
+            "right": {
+              "kind": "Member",
+              "name": "l",
+              "expr": {
+                "kind": "Ident",
+                "name": "p"
+              }
+            },
+            "op": "PLUS"
+          }
+        }
+      ]
+    }
+  ]
+}

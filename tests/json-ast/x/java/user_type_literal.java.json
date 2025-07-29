@@ -1,0 +1,40 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "book",
+      "type": "Book",
+      "expr": {
+        "kind": "UnknownExpr"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Member",
+        "name": "name",
+        "expr": {
+          "kind": "Cast",
+          "value": "Integer",
+          "expr": {
+            "kind": "Call",
+            "target": {
+              "kind": "Member",
+              "name": "get",
+              "expr": {
+                "kind": "Ident",
+                "name": "book"
+              }
+            },
+            "args": [
+              {
+                "kind": "String",
+                "value": "author"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

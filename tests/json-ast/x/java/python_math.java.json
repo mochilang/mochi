@@ -1,0 +1,209 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "r",
+      "type": "double",
+      "expr": {
+        "kind": "Literal",
+        "value": "3.0"
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "area",
+      "type": "double",
+      "expr": {
+        "kind": "Binary",
+        "left": {
+          "kind": "Member",
+          "name": "PI",
+          "expr": {
+            "kind": "Ident",
+            "name": "Math"
+          }
+        },
+        "right": {
+          "kind": "Call",
+          "target": {
+            "kind": "Member",
+            "name": "pow",
+            "expr": {
+              "kind": "Ident",
+              "name": "Math"
+            }
+          },
+          "args": [
+            {
+              "kind": "Ident",
+              "name": "r"
+            },
+            {
+              "kind": "Literal",
+              "value": "2.0"
+            }
+          ]
+        },
+        "op": "MULTIPLY"
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "root",
+      "type": "double",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "sqrt",
+          "expr": {
+            "kind": "Ident",
+            "name": "Math"
+          }
+        },
+        "args": [
+          {
+            "kind": "Literal",
+            "value": "49.0"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "sin45",
+      "type": "double",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "sin",
+          "expr": {
+            "kind": "Ident",
+            "name": "Math"
+          }
+        },
+        "args": [
+          {
+            "kind": "Binary",
+            "left": {
+              "kind": "Member",
+              "name": "PI",
+              "expr": {
+                "kind": "Ident",
+                "name": "Math"
+              }
+            },
+            "right": {
+              "kind": "Literal",
+              "value": "4.0"
+            },
+            "op": "DIVIDE"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "log_e",
+      "type": "double",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "log",
+          "expr": {
+            "kind": "Ident",
+            "name": "Math"
+          }
+        },
+        "args": [
+          {
+            "kind": "Member",
+            "name": "E",
+            "expr": {
+              "kind": "Ident",
+              "name": "Math"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Binary",
+        "left": {
+          "kind": "Binary",
+          "left": {
+            "kind": "Binary",
+            "left": {
+              "kind": "String",
+              "value": "Circle area with r = "
+            },
+            "right": {
+              "kind": "Ident",
+              "name": "r"
+            },
+            "op": "PLUS"
+          },
+          "right": {
+            "kind": "String",
+            "value": " =\u003e "
+          },
+          "op": "PLUS"
+        },
+        "right": {
+          "kind": "Ident",
+          "name": "area"
+        },
+        "op": "PLUS"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Binary",
+        "left": {
+          "kind": "String",
+          "value": "Square root of 49: "
+        },
+        "right": {
+          "kind": "Ident",
+          "name": "root"
+        },
+        "op": "PLUS"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Binary",
+        "left": {
+          "kind": "String",
+          "value": "sin(π/4): "
+        },
+        "right": {
+          "kind": "Ident",
+          "name": "sin45"
+        },
+        "op": "PLUS"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Binary",
+        "left": {
+          "kind": "String",
+          "value": "log(e): "
+        },
+        "right": {
+          "kind": "Ident",
+          "name": "log_e"
+        },
+        "op": "PLUS"
+      }
+    }
+  ]
+}

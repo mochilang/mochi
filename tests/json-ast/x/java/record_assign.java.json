@@ -1,0 +1,55 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "c",
+      "type": "Counter",
+      "expr": {
+        "kind": "UnknownExpr"
+      }
+    },
+    {
+      "kind": "FnDecl",
+      "name": "inc",
+      "type": "void",
+      "body": [
+        {
+          "kind": "Expr"
+        }
+      ],
+      "params": [
+        {
+          "name": "c",
+          "type": "Counter"
+        }
+      ]
+    },
+    {
+      "kind": "Expr"
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Cast",
+        "value": "Integer",
+        "expr": {
+          "kind": "Call",
+          "target": {
+            "kind": "Member",
+            "name": "get",
+            "expr": {
+              "kind": "Ident",
+              "name": "c"
+            }
+          },
+          "args": [
+            {
+              "kind": "String",
+              "value": "n"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

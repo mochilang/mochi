@@ -1,0 +1,99 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "items",
+      "type": "Data1[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "result",
+      "type": "java.util.List\u003cString\u003e",
+      "expr": {
+        "kind": "UnknownExpr"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "collect",
+          "expr": {
+            "kind": "Call",
+            "target": {
+              "kind": "Member",
+              "name": "map",
+              "expr": {
+                "kind": "Call",
+                "target": {
+                  "kind": "Member",
+                  "name": "stream",
+                  "expr": {
+                    "kind": "Cast",
+                    "value": "java.util.List\u003c?\u003e",
+                    "expr": {
+                      "kind": "Ident",
+                      "name": "result"
+                    }
+                  }
+                }
+              }
+            },
+            "args": [
+              {
+                "kind": "UnknownExpr"
+              }
+            ]
+          }
+        },
+        "args": [
+          {
+            "kind": "Call",
+            "target": {
+              "kind": "Member",
+              "name": "joining",
+              "expr": {
+                "kind": "Member",
+                "name": "Collectors",
+                "expr": {
+                  "kind": "Member",
+                  "name": "stream",
+                  "expr": {
+                    "kind": "Member",
+                    "name": "util",
+                    "expr": {
+                      "kind": "Ident",
+                      "name": "java"
+                    }
+                  }
+                }
+              }
+            },
+            "args": [
+              {
+                "kind": "String",
+                "value": " "
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

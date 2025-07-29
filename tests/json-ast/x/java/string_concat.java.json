@@ -1,0 +1,11 @@
+{
+  "body": [
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "String",
+        "value": "hello world"
+      }
+    }
+  ]
+}

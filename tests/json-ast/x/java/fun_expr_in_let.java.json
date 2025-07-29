@@ -1,0 +1,50 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "square",
+      "type": "java.util.function.IntUnaryOperator",
+      "expr": {
+        "kind": "Lambda",
+        "expr": {
+          "kind": "Binary",
+          "left": {
+            "kind": "Ident",
+            "name": "x"
+          },
+          "right": {
+            "kind": "Ident",
+            "name": "x"
+          },
+          "op": "MULTIPLY"
+        },
+        "params": [
+          {
+            "name": "x",
+            "type": "int"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "applyAsInt",
+          "expr": {
+            "kind": "Ident",
+            "name": "square"
+          }
+        },
+        "args": [
+          {
+            "kind": "Literal",
+            "value": "6"
+          }
+        ]
+      }
+    }
+  ]
+}

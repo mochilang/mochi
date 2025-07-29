@@ -1,0 +1,143 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "people",
+      "type": "Person[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "adults",
+      "type": "java.util.List\u003cResult2\u003e",
+      "expr": {
+        "kind": "UnknownExpr"
+      }
+    },
+    {
+      "kind": "FnDecl",
+      "name": "q",
+      "type": "String",
+      "body": [
+        {
+          "kind": "If",
+          "cond": {
+            "kind": "UnknownExpr"
+          },
+          "then": [
+            {
+              "kind": "Return",
+              "expr": {
+                "kind": "Binary",
+                "left": {
+                  "kind": "Binary",
+                  "left": {
+                    "kind": "String",
+                    "value": "'"
+                  },
+                  "right": {
+                    "kind": "Call",
+                    "target": {
+                      "kind": "Member",
+                      "name": "toString",
+                      "expr": {
+                        "kind": "Ident",
+                        "name": "v"
+                      }
+                    }
+                  },
+                  "op": "PLUS"
+                },
+                "right": {
+                  "kind": "String",
+                  "value": "'"
+                },
+                "op": "PLUS"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "Return",
+          "expr": {
+            "kind": "Call",
+            "target": {
+              "kind": "Member",
+              "name": "valueOf",
+              "expr": {
+                "kind": "Ident",
+                "name": "String"
+              }
+            },
+            "args": [
+              {
+                "kind": "Ident",
+                "name": "v"
+              }
+            ]
+          }
+        }
+      ],
+      "params": [
+        {
+          "name": "v",
+          "type": "Object"
+        }
+      ]
+    },
+    {
+      "kind": "ForEach",
+      "name": "a",
+      "expr": {
+        "kind": "Ident",
+        "name": "adults"
+      },
+      "body": [
+        {
+          "kind": "Print",
+          "expr": {
+            "kind": "Binary",
+            "left": {
+              "kind": "Binary",
+              "left": {
+                "kind": "Member",
+                "name": "name",
+                "expr": {
+                  "kind": "Ident",
+                  "name": "a"
+                }
+              },
+              "right": {
+                "kind": "String",
+                "value": " "
+              },
+              "op": "PLUS"
+            },
+            "right": {
+              "kind": "Member",
+              "name": "email",
+              "expr": {
+                "kind": "Ident",
+                "name": "a"
+              }
+            },
+            "op": "PLUS"
+          }
+        }
+      ]
+    }
+  ]
+}

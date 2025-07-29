@@ -1,0 +1,15 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "m",
+      "type": "Data1",
+      "expr": {
+        "kind": "UnknownExpr"
+      }
+    },
+    {
+      "kind": "Expr"
+    }
+  ]
+}

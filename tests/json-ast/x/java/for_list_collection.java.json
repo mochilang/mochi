@@ -1,0 +1,34 @@
+{
+  "body": [
+    {
+      "kind": "ForEach",
+      "name": "n",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "Literal",
+            "value": "1"
+          },
+          {
+            "kind": "Literal",
+            "value": "2"
+          },
+          {
+            "kind": "Literal",
+            "value": "3"
+          }
+        ]
+      },
+      "body": [
+        {
+          "kind": "Print",
+          "expr": {
+            "kind": "Ident",
+            "name": "n"
+          }
+        }
+      ]
+    }
+  ]
+}

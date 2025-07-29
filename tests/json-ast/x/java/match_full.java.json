@@ -1,0 +1,336 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "x",
+      "type": "int",
+      "expr": {
+        "kind": "Literal",
+        "value": "2"
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "label",
+      "type": "String",
+      "expr": {
+        "kind": "Cond",
+        "cond": {
+          "kind": "Binary",
+          "left": {
+            "kind": "Ident",
+            "name": "x"
+          },
+          "right": {
+            "kind": "Literal",
+            "value": "1"
+          },
+          "op": "EQUAL_TO"
+        },
+        "then": {
+          "kind": "String",
+          "value": "one"
+        },
+        "else": {
+          "kind": "Cond",
+          "cond": {
+            "kind": "Binary",
+            "left": {
+              "kind": "Ident",
+              "name": "x"
+            },
+            "right": {
+              "kind": "Literal",
+              "value": "2"
+            },
+            "op": "EQUAL_TO"
+          },
+          "then": {
+            "kind": "String",
+            "value": "two"
+          },
+          "else": {
+            "kind": "Cond",
+            "cond": {
+              "kind": "Binary",
+              "left": {
+                "kind": "Ident",
+                "name": "x"
+              },
+              "right": {
+                "kind": "Literal",
+                "value": "3"
+              },
+              "op": "EQUAL_TO"
+            },
+            "then": {
+              "kind": "String",
+              "value": "three"
+            },
+            "else": {
+              "kind": "String",
+              "value": "unknown"
+            }
+          }
+        }
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "day",
+      "type": "String",
+      "expr": {
+        "kind": "String",
+        "value": "sun"
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "mood",
+      "type": "String",
+      "expr": {
+        "kind": "Cond",
+        "cond": {
+          "kind": "Call",
+          "target": {
+            "kind": "Member",
+            "name": "equals",
+            "expr": {
+              "kind": "Ident",
+              "name": "day"
+            }
+          },
+          "args": [
+            {
+              "kind": "String",
+              "value": "mon"
+            }
+          ]
+        },
+        "then": {
+          "kind": "String",
+          "value": "tired"
+        },
+        "else": {
+          "kind": "Cond",
+          "cond": {
+            "kind": "Call",
+            "target": {
+              "kind": "Member",
+              "name": "equals",
+              "expr": {
+                "kind": "Ident",
+                "name": "day"
+              }
+            },
+            "args": [
+              {
+                "kind": "String",
+                "value": "fri"
+              }
+            ]
+          },
+          "then": {
+            "kind": "String",
+            "value": "excited"
+          },
+          "else": {
+            "kind": "Cond",
+            "cond": {
+              "kind": "Call",
+              "target": {
+                "kind": "Member",
+                "name": "equals",
+                "expr": {
+                  "kind": "Ident",
+                  "name": "day"
+                }
+              },
+              "args": [
+                {
+                  "kind": "String",
+                  "value": "sun"
+                }
+              ]
+            },
+            "then": {
+              "kind": "String",
+              "value": "relaxed"
+            },
+            "else": {
+              "kind": "String",
+              "value": "normal"
+            }
+          }
+        }
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "ok",
+      "type": "boolean",
+      "expr": {
+        "kind": "Literal",
+        "value": "true"
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "status",
+      "type": "String",
+      "expr": {
+        "kind": "Cond",
+        "cond": {
+          "kind": "Binary",
+          "left": {
+            "kind": "Ident",
+            "name": "ok"
+          },
+          "right": {
+            "kind": "Literal",
+            "value": "true"
+          },
+          "op": "EQUAL_TO"
+        },
+        "then": {
+          "kind": "String",
+          "value": "confirmed"
+        },
+        "else": {
+          "kind": "Cond",
+          "cond": {
+            "kind": "Binary",
+            "left": {
+              "kind": "Ident",
+              "name": "ok"
+            },
+            "right": {
+              "kind": "Literal",
+              "value": "false"
+            },
+            "op": "EQUAL_TO"
+          },
+          "then": {
+            "kind": "String",
+            "value": "denied"
+          },
+          "else": {
+            "kind": "String",
+            "value": "denied"
+          }
+        }
+      }
+    },
+    {
+      "kind": "FnDecl",
+      "name": "classify",
+      "type": "String",
+      "body": [
+        {
+          "kind": "Return",
+          "expr": {
+            "kind": "Cond",
+            "cond": {
+              "kind": "Binary",
+              "left": {
+                "kind": "Ident",
+                "name": "n"
+              },
+              "right": {
+                "kind": "Literal",
+                "value": "0"
+              },
+              "op": "EQUAL_TO"
+            },
+            "then": {
+              "kind": "String",
+              "value": "zero"
+            },
+            "else": {
+              "kind": "Cond",
+              "cond": {
+                "kind": "Binary",
+                "left": {
+                  "kind": "Ident",
+                  "name": "n"
+                },
+                "right": {
+                  "kind": "Literal",
+                  "value": "1"
+                },
+                "op": "EQUAL_TO"
+              },
+              "then": {
+                "kind": "String",
+                "value": "one"
+              },
+              "else": {
+                "kind": "String",
+                "value": "many"
+              }
+            }
+          }
+        }
+      ],
+      "params": [
+        {
+          "name": "n",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Ident",
+        "name": "label"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Ident",
+        "name": "mood"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Ident",
+        "name": "status"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Ident",
+          "name": "classify"
+        },
+        "args": [
+          {
+            "kind": "Literal",
+            "value": "0"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Ident",
+          "name": "classify"
+        },
+        "args": [
+          {
+            "kind": "Literal",
+            "value": "5"
+          }
+        ]
+      }
+    }
+  ]
+}

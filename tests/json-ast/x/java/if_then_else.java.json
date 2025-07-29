@@ -1,0 +1,48 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "x",
+      "type": "int",
+      "expr": {
+        "kind": "Literal",
+        "value": "12"
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "msg",
+      "type": "String",
+      "expr": {
+        "kind": "Cond",
+        "cond": {
+          "kind": "Binary",
+          "left": {
+            "kind": "Ident",
+            "name": "x"
+          },
+          "right": {
+            "kind": "Literal",
+            "value": "10"
+          },
+          "op": "GREATER_THAN"
+        },
+        "then": {
+          "kind": "String",
+          "value": "yes"
+        },
+        "else": {
+          "kind": "String",
+          "value": "no"
+        }
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Ident",
+        "name": "msg"
+      }
+    }
+  ]
+}

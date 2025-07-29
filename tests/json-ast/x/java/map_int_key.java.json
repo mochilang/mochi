@@ -1,0 +1,32 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "m",
+      "type": "java.util.Map",
+      "expr": {
+        "kind": "UnknownExpr"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "get",
+          "expr": {
+            "kind": "Ident",
+            "name": "m"
+          }
+        },
+        "args": [
+          {
+            "kind": "Literal",
+            "value": "1"
+          }
+        ]
+      }
+    }
+  ]
+}

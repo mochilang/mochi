@@ -1,0 +1,55 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "nums",
+      "type": "int[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "Literal",
+            "value": "1"
+          },
+          {
+            "kind": "Literal",
+            "value": "2"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "Assign",
+      "name": "nums[1]",
+      "target": {
+        "kind": "Index",
+        "expr": {
+          "kind": "Ident",
+          "name": "nums"
+        },
+        "index": {
+          "kind": "Literal",
+          "value": "1"
+        }
+      },
+      "expr": {
+        "kind": "Literal",
+        "value": "3"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Index",
+        "expr": {
+          "kind": "Ident",
+          "name": "nums"
+        },
+        "index": {
+          "kind": "Literal",
+          "value": "1"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,171 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "t",
+      "type": "Node",
+      "expr": {
+        "kind": "UnknownExpr"
+      }
+    },
+    {
+      "kind": "FnDecl",
+      "name": "sum_tree",
+      "type": "int",
+      "body": [
+        {
+          "kind": "Return",
+          "expr": {
+            "kind": "Cond",
+            "cond": {
+              "kind": "Binary",
+              "left": {
+                "kind": "Ident",
+                "name": "t"
+              },
+              "right": {
+                "kind": "Ident",
+                "name": "Leaf"
+              },
+              "op": "EQUAL_TO"
+            },
+            "then": {
+              "kind": "Literal",
+              "value": "0"
+            },
+            "else": {
+              "kind": "Cond",
+              "cond": {
+                "kind": "Binary",
+                "left": {
+                  "kind": "Ident",
+                  "name": "t"
+                },
+                "right": {
+                  "kind": "Call",
+                  "target": {
+                    "kind": "Ident",
+                    "name": "Node"
+                  },
+                  "args": [
+                    {
+                      "kind": "Ident",
+                      "name": "left"
+                    },
+                    {
+                      "kind": "Ident",
+                      "name": "value"
+                    },
+                    {
+                      "kind": "Ident",
+                      "name": "right"
+                    }
+                  ]
+                },
+                "op": "EQUAL_TO"
+              },
+              "then": {
+                "kind": "Binary",
+                "left": {
+                  "kind": "Binary",
+                  "left": {
+                    "kind": "Call",
+                    "target": {
+                      "kind": "Ident",
+                      "name": "sum_tree"
+                    },
+                    "args": [
+                      {
+                        "kind": "Ident",
+                        "name": "left"
+                      }
+                    ]
+                  },
+                  "right": {
+                    "kind": "Ident",
+                    "name": "value"
+                  },
+                  "op": "PLUS"
+                },
+                "right": {
+                  "kind": "Call",
+                  "target": {
+                    "kind": "Ident",
+                    "name": "sum_tree"
+                  },
+                  "args": [
+                    {
+                      "kind": "Ident",
+                      "name": "right"
+                    }
+                  ]
+                },
+                "op": "PLUS"
+              },
+              "else": {
+                "kind": "Binary",
+                "left": {
+                  "kind": "Binary",
+                  "left": {
+                    "kind": "Call",
+                    "target": {
+                      "kind": "Ident",
+                      "name": "sum_tree"
+                    },
+                    "args": [
+                      {
+                        "kind": "Ident",
+                        "name": "left"
+                      }
+                    ]
+                  },
+                  "right": {
+                    "kind": "Ident",
+                    "name": "value"
+                  },
+                  "op": "PLUS"
+                },
+                "right": {
+                  "kind": "Call",
+                  "target": {
+                    "kind": "Ident",
+                    "name": "sum_tree"
+                  },
+                  "args": [
+                    {
+                      "kind": "Ident",
+                      "name": "right"
+                    }
+                  ]
+                },
+                "op": "PLUS"
+              }
+            }
+          }
+        }
+      ],
+      "params": [
+        {
+          "name": "t",
+          "type": "Tree"
+        }
+      ]
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Ident",
+          "name": "sum_tree"
+        },
+        "args": [
+          {
+            "kind": "Ident",
+            "name": "t"
+          }
+        ]
+      }
+    }
+  ]
+}

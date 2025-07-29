@@ -1,0 +1,53 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "s",
+      "type": "String",
+      "expr": {
+        "kind": "String",
+        "value": "catch"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "contains",
+          "expr": {
+            "kind": "Ident",
+            "name": "s"
+          }
+        },
+        "args": [
+          {
+            "kind": "String",
+            "value": "cat"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "contains",
+          "expr": {
+            "kind": "Ident",
+            "name": "s"
+          }
+        },
+        "args": [
+          {
+            "kind": "String",
+            "value": "dog"
+          }
+        ]
+      }
+    }
+  ]
+}

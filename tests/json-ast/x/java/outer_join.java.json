@@ -1,0 +1,252 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "customers",
+      "type": "Data1[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "orders",
+      "type": "Data2[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "result",
+      "type": "java.util.List\u003cResult4\u003e",
+      "expr": {
+        "kind": "UnknownExpr"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "String",
+        "value": "--- Outer Join using syntax ---"
+      }
+    },
+    {
+      "kind": "ForEach",
+      "name": "row",
+      "expr": {
+        "kind": "Ident",
+        "name": "result"
+      },
+      "body": [
+        {
+          "kind": "If",
+          "cond": {
+            "kind": "Member",
+            "name": "order",
+            "expr": {
+              "kind": "Ident",
+              "name": "row"
+            }
+          },
+          "then": [
+            {
+              "kind": "If",
+              "cond": {
+                "kind": "Member",
+                "name": "customer",
+                "expr": {
+                  "kind": "Ident",
+                  "name": "row"
+                }
+              },
+              "then": [
+                {
+                  "kind": "Print",
+                  "expr": {
+                    "kind": "Binary",
+                    "left": {
+                      "kind": "Binary",
+                      "left": {
+                        "kind": "Binary",
+                        "left": {
+                          "kind": "Binary",
+                          "left": {
+                            "kind": "Binary",
+                            "left": {
+                              "kind": "String",
+                              "value": "Order "
+                            },
+                            "right": {
+                              "kind": "Member",
+                              "name": "id",
+                              "expr": {
+                                "kind": "Member",
+                                "name": "order",
+                                "expr": {
+                                  "kind": "Ident",
+                                  "name": "row"
+                                }
+                              }
+                            },
+                            "op": "PLUS"
+                          },
+                          "right": {
+                            "kind": "String",
+                            "value": " by "
+                          },
+                          "op": "PLUS"
+                        },
+                        "right": {
+                          "kind": "Member",
+                          "name": "name",
+                          "expr": {
+                            "kind": "Member",
+                            "name": "customer",
+                            "expr": {
+                              "kind": "Ident",
+                              "name": "row"
+                            }
+                          }
+                        },
+                        "op": "PLUS"
+                      },
+                      "right": {
+                        "kind": "String",
+                        "value": " - $ "
+                      },
+                      "op": "PLUS"
+                    },
+                    "right": {
+                      "kind": "Member",
+                      "name": "total",
+                      "expr": {
+                        "kind": "Member",
+                        "name": "order",
+                        "expr": {
+                          "kind": "Ident",
+                          "name": "row"
+                        }
+                      }
+                    },
+                    "op": "PLUS"
+                  }
+                }
+              ],
+              "else": [
+                {
+                  "kind": "Print",
+                  "expr": {
+                    "kind": "Binary",
+                    "left": {
+                      "kind": "Binary",
+                      "left": {
+                        "kind": "Binary",
+                        "left": {
+                          "kind": "String",
+                          "value": "Order "
+                        },
+                        "right": {
+                          "kind": "Member",
+                          "name": "id",
+                          "expr": {
+                            "kind": "Member",
+                            "name": "order",
+                            "expr": {
+                              "kind": "Ident",
+                              "name": "row"
+                            }
+                          }
+                        },
+                        "op": "PLUS"
+                      },
+                      "right": {
+                        "kind": "String",
+                        "value": " by Unknown - $ "
+                      },
+                      "op": "PLUS"
+                    },
+                    "right": {
+                      "kind": "Member",
+                      "name": "total",
+                      "expr": {
+                        "kind": "Member",
+                        "name": "order",
+                        "expr": {
+                          "kind": "Ident",
+                          "name": "row"
+                        }
+                      }
+                    },
+                    "op": "PLUS"
+                  }
+                }
+              ]
+            }
+          ],
+          "else": [
+            {
+              "kind": "Print",
+              "expr": {
+                "kind": "Binary",
+                "left": {
+                  "kind": "Binary",
+                  "left": {
+                    "kind": "String",
+                    "value": "Customer "
+                  },
+                  "right": {
+                    "kind": "Member",
+                    "name": "name",
+                    "expr": {
+                      "kind": "Member",
+                      "name": "customer",
+                      "expr": {
+                        "kind": "Ident",
+                        "name": "row"
+                      }
+                    }
+                  },
+                  "op": "PLUS"
+                },
+                "right": {
+                  "kind": "String",
+                  "value": " has no orders"
+                },
+                "op": "PLUS"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
