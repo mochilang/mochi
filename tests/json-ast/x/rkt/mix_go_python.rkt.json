@@ -1,0 +1,400 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        },
+        {
+          "sym": "racket/math"
+        },
+        {
+          "sym": "json"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        [
+          {
+            "sym": "strings_TrimSpace"
+          },
+          {
+            "sym": "s"
+          }
+        ],
+        [
+          {
+            "sym": "string-trim"
+          },
+          {
+            "sym": "s"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        [
+          {
+            "sym": "strings_ToUpper"
+          },
+          {
+            "sym": "s"
+          }
+        ],
+        [
+          {
+            "sym": "string-upcase"
+          },
+          {
+            "sym": "s"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "math_pi"
+        },
+        {
+          "sym": "pi"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "math_e"
+        },
+        [
+          {
+            "sym": "exp"
+          },
+          1
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        [
+          {
+            "sym": "math_sqrt"
+          },
+          {
+            "sym": "x"
+          }
+        ],
+        [
+          {
+            "sym": "sqrt"
+          },
+          {
+            "sym": "x"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        [
+          {
+            "sym": "math_pow"
+          },
+          {
+            "sym": "x"
+          },
+          {
+            "sym": "y"
+          }
+        ],
+        [
+          {
+            "sym": "expt"
+          },
+          {
+            "sym": "x"
+          },
+          {
+            "sym": "y"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        [
+          {
+            "sym": "math_sin"
+          },
+          {
+            "sym": "x"
+          }
+        ],
+        [
+          {
+            "sym": "sin"
+          },
+          {
+            "sym": "x"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        [
+          {
+            "sym": "math_log"
+          },
+          {
+            "sym": "x"
+          }
+        ],
+        [
+          {
+            "sym": "log"
+          },
+          {
+            "sym": "x"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "rawName"
+        },
+        "   alice  "
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "radius"
+        },
+        3
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "name"
+        },
+        [
+          {
+            "sym": "strings_ToUpper"
+          },
+          [
+            {
+              "sym": "strings_TrimSpace"
+            },
+            {
+              "sym": "rawName"
+            }
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "area"
+        },
+        [
+          {
+            "sym": "*"
+          },
+          {
+            "sym": "math_pi"
+          },
+          [
+            {
+              "sym": "math_pow"
+            },
+            {
+              "sym": "radius"
+            },
+            2
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "string-join"
+          },
+          [
+            {
+              "sym": "map"
+            },
+            [
+              {
+                "sym": "lambda"
+              },
+              [
+                {
+                  "sym": "x"
+                }
+              ],
+              [
+                {
+                  "sym": "format"
+                },
+                "~a",
+                {
+                  "sym": "x"
+                }
+              ]
+            ],
+            [
+              {
+                "sym": "list"
+              },
+              "Hello",
+              [
+                {
+                  "sym": "string-append"
+                },
+                {
+                  "sym": "name"
+                },
+                "!"
+              ]
+            ]
+          ],
+          " "
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "string-join"
+          },
+          [
+            {
+              "sym": "map"
+            },
+            [
+              {
+                "sym": "lambda"
+              },
+              [
+                {
+                  "sym": "x"
+                }
+              ],
+              [
+                {
+                  "sym": "format"
+                },
+                "~a",
+                {
+                  "sym": "x"
+                }
+              ]
+            ],
+            [
+              {
+                "sym": "list"
+              },
+              "The area of a circle with radius",
+              {
+                "sym": "radius"
+              },
+              "is",
+              {
+                "sym": "area"
+              }
+            ]
+          ],
+          " "
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

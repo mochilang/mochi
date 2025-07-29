@@ -1,0 +1,270 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        },
+        {
+          "sym": "json"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "x"
+        },
+        2
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "label"
+        },
+        [
+          {
+            "sym": "match"
+          },
+          {
+            "sym": "x"
+          },
+          [
+            1,
+            "one"
+          ],
+          [
+            2,
+            "two"
+          ],
+          [
+            3,
+            "three"
+          ],
+          [
+            {
+              "sym": "_"
+            },
+            "unknown"
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        {
+          "sym": "label"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "day"
+        },
+        "sun"
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "mood"
+        },
+        [
+          {
+            "sym": "match"
+          },
+          {
+            "sym": "day"
+          },
+          [
+            "mon",
+            "tired"
+          ],
+          [
+            "fri",
+            "excited"
+          ],
+          [
+            "sun",
+            "relaxed"
+          ],
+          [
+            {
+              "sym": "_"
+            },
+            "normal"
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        {
+          "sym": "mood"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "ok"
+        },
+        true
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "status"
+        },
+        [
+          {
+            "sym": "match"
+          },
+          {
+            "sym": "ok"
+          },
+          [
+            true,
+            "confirmed"
+          ],
+          [
+            false,
+            "denied"
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        {
+          "sym": "status"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        [
+          {
+            "sym": "classify"
+          },
+          {
+            "sym": "n"
+          }
+        ],
+        [
+          {
+            "sym": "match"
+          },
+          {
+            "sym": "n"
+          },
+          [
+            0,
+            "zero"
+          ],
+          [
+            1,
+            "one"
+          ],
+          [
+            {
+              "sym": "_"
+            },
+            "many"
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "classify"
+          },
+          0
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "classify"
+          },
+          5
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

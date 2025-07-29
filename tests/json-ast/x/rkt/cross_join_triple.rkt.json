@@ -1,0 +1,311 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "nums"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          1,
+          2
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "letters"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          "A",
+          "B"
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "bools"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          true,
+          false
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "combos"
+        },
+        [
+          {
+            "sym": "let"
+          },
+          [
+            [
+              {
+                "sym": "_res"
+              },
+              [
+                {
+                  "sym": "quote"
+                },
+                []
+              ]
+            ]
+          ],
+          [
+            {
+              "sym": "for"
+            },
+            [
+              [
+                {
+                  "sym": "n"
+                },
+                {
+                  "sym": "nums"
+                }
+              ]
+            ],
+            [
+              {
+                "sym": "for"
+              },
+              [
+                [
+                  {
+                    "sym": "l"
+                  },
+                  {
+                    "sym": "letters"
+                  }
+                ]
+              ],
+              [
+                {
+                  "sym": "for"
+                },
+                [
+                  [
+                    {
+                      "sym": "b"
+                    },
+                    {
+                      "sym": "bools"
+                    }
+                  ]
+                ],
+                [
+                  {
+                    "sym": "set!"
+                  },
+                  {
+                    "sym": "_res"
+                  },
+                  [
+                    {
+                      "sym": "append"
+                    },
+                    {
+                      "sym": "_res"
+                    },
+                    [
+                      {
+                        "sym": "list"
+                      },
+                      [
+                        {
+                          "sym": "hash"
+                        },
+                        "n",
+                        {
+                          "sym": "n"
+                        },
+                        "l",
+                        {
+                          "sym": "l"
+                        },
+                        "b",
+                        {
+                          "sym": "b"
+                        }
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          {
+            "sym": "_res"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        "--- Cross Join of three lists ---"
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "for"
+        },
+        [
+          [
+            {
+              "sym": "c"
+            },
+            {
+              "sym": "combos"
+            }
+          ]
+        ],
+        [
+          {
+            "sym": "displayln"
+          },
+          [
+            {
+              "sym": "string-join"
+            },
+            [
+              {
+                "sym": "filter"
+              },
+              [
+                {
+                  "sym": "lambda"
+                },
+                [
+                  {
+                    "sym": "s"
+                  }
+                ],
+                [
+                  {
+                    "sym": "not"
+                  },
+                  [
+                    {
+                      "sym": "string=?"
+                    },
+                    {
+                      "sym": "s"
+                    },
+                    ""
+                  ]
+                ]
+              ],
+              [
+                {
+                  "sym": "list"
+                },
+                [
+                  {
+                    "sym": "format"
+                  },
+                  "~a",
+                  [
+                    {
+                      "sym": "hash-ref"
+                    },
+                    {
+                      "sym": "c"
+                    },
+                    "n"
+                  ]
+                ],
+                [
+                  {
+                    "sym": "format"
+                  },
+                  "~a",
+                  [
+                    {
+                      "sym": "hash-ref"
+                    },
+                    {
+                      "sym": "c"
+                    },
+                    "l"
+                  ]
+                ],
+                [
+                  {
+                    "sym": "format"
+                  },
+                  "~a",
+                  [
+                    {
+                      "sym": "hash-ref"
+                    },
+                    {
+                      "sym": "c"
+                    },
+                    "b"
+                  ]
+                ]
+              ]
+            ],
+            " "
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

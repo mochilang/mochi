@@ -1,0 +1,115 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "struct"
+        },
+        {
+          "sym": "group"
+        },
+        [
+          {
+            "sym": "key"
+          },
+          {
+            "sym": "items"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "nums"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          1,
+          2,
+          3
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "not"
+          },
+          [
+            {
+              "sym": "not"
+            },
+            [
+              {
+                "sym": "member"
+              },
+              2,
+              {
+                "sym": "nums"
+              }
+            ]
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "not"
+          },
+          [
+            {
+              "sym": "not"
+            },
+            [
+              {
+                "sym": "member"
+              },
+              4,
+              {
+                "sym": "nums"
+              }
+            ]
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

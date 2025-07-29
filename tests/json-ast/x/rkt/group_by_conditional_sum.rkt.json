@@ -1,0 +1,595 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        },
+        {
+          "sym": "json"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "items"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          [
+            {
+              "sym": "hash"
+            },
+            "cat",
+            "a",
+            "val",
+            10,
+            "flag",
+            true
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "cat",
+            "a",
+            "val",
+            5,
+            "flag",
+            false
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "cat",
+            "b",
+            "val",
+            20,
+            "flag",
+            true
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "result"
+        },
+        [
+          {
+            "sym": "let"
+          },
+          [
+            [
+              {
+                "sym": "_groups"
+              },
+              [
+                {
+                  "sym": "make-hash"
+                }
+              ]
+            ],
+            [
+              {
+                "sym": "_res"
+              },
+              [
+                {
+                  "sym": "quote"
+                },
+                []
+              ]
+            ]
+          ],
+          [
+            {
+              "sym": "for"
+            },
+            [
+              [
+                {
+                  "sym": "i"
+                },
+                {
+                  "sym": "items"
+                }
+              ]
+            ],
+            [
+              {
+                "sym": "let*"
+              },
+              [
+                [
+                  {
+                    "sym": "_key"
+                  },
+                  [
+                    {
+                      "sym": "hash-ref"
+                    },
+                    {
+                      "sym": "i"
+                    },
+                    "cat"
+                  ]
+                ],
+                [
+                  {
+                    "sym": "_g"
+                  },
+                  [
+                    {
+                      "sym": "hash-ref"
+                    },
+                    {
+                      "sym": "_groups"
+                    },
+                    {
+                      "sym": "_key"
+                    },
+                    [
+                      {
+                        "sym": "lambda"
+                      },
+                      [],
+                      [
+                        {
+                          "sym": "let"
+                        },
+                        [
+                          [
+                            {
+                              "sym": "h"
+                            },
+                            [
+                              {
+                                "sym": "make-hash"
+                              }
+                            ]
+                          ]
+                        ],
+                        [
+                          {
+                            "sym": "hash-set!"
+                          },
+                          {
+                            "sym": "h"
+                          },
+                          "key",
+                          {
+                            "sym": "_key"
+                          }
+                        ],
+                        [
+                          {
+                            "sym": "hash-set!"
+                          },
+                          {
+                            "sym": "h"
+                          },
+                          "items",
+                          [
+                            {
+                              "sym": "quote"
+                            },
+                            []
+                          ]
+                        ],
+                        [
+                          {
+                            "sym": "hash-set!"
+                          },
+                          {
+                            "sym": "_groups"
+                          },
+                          {
+                            "sym": "_key"
+                          },
+                          {
+                            "sym": "h"
+                          }
+                        ],
+                        {
+                          "sym": "h"
+                        }
+                      ]
+                    ]
+                  ]
+                ]
+              ],
+              [
+                {
+                  "sym": "hash-set!"
+                },
+                {
+                  "sym": "_g"
+                },
+                "items",
+                [
+                  {
+                    "sym": "append"
+                  },
+                  [
+                    {
+                      "sym": "hash-ref"
+                    },
+                    {
+                      "sym": "_g"
+                    },
+                    "items"
+                  ],
+                  [
+                    {
+                      "sym": "list"
+                    },
+                    {
+                      "sym": "i"
+                    }
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            {
+              "sym": "for"
+            },
+            [
+              [
+                {
+                  "sym": "g"
+                },
+                [
+                  {
+                    "sym": "hash-values"
+                  },
+                  {
+                    "sym": "_groups"
+                  }
+                ]
+              ]
+            ],
+            [
+              {
+                "sym": "let"
+              },
+              [
+                [
+                  {
+                    "sym": "val"
+                  },
+                  [
+                    {
+                      "sym": "hash"
+                    },
+                    "cat",
+                    [
+                      {
+                        "sym": "hash-ref"
+                      },
+                      {
+                        "sym": "g"
+                      },
+                      "key"
+                    ],
+                    "share",
+                    [
+                      {
+                        "sym": "/"
+                      },
+                      [
+                        {
+                          "sym": "apply"
+                        },
+                        {
+                          "sym": "+"
+                        },
+                        [
+                          {
+                            "sym": "let"
+                          },
+                          [
+                            [
+                              {
+                                "sym": "_res"
+                              },
+                              [
+                                {
+                                  "sym": "quote"
+                                },
+                                []
+                              ]
+                            ]
+                          ],
+                          [
+                            {
+                              "sym": "for"
+                            },
+                            [
+                              [
+                                {
+                                  "sym": "x"
+                                },
+                                [
+                                  {
+                                    "sym": "hash-ref"
+                                  },
+                                  {
+                                    "sym": "g"
+                                  },
+                                  "items"
+                                ]
+                              ]
+                            ],
+                            [
+                              {
+                                "sym": "set!"
+                              },
+                              {
+                                "sym": "_res"
+                              },
+                              [
+                                {
+                                  "sym": "append"
+                                },
+                                {
+                                  "sym": "_res"
+                                },
+                                [
+                                  {
+                                    "sym": "list"
+                                  },
+                                  [
+                                    {
+                                      "sym": "if"
+                                    },
+                                    [
+                                      {
+                                        "sym": "hash-ref"
+                                      },
+                                      {
+                                        "sym": "x"
+                                      },
+                                      "flag"
+                                    ],
+                                    [
+                                      {
+                                        "sym": "hash-ref"
+                                      },
+                                      {
+                                        "sym": "x"
+                                      },
+                                      "val"
+                                    ],
+                                    0
+                                  ]
+                                ]
+                              ]
+                            ]
+                          ],
+                          {
+                            "sym": "_res"
+                          }
+                        ]
+                      ],
+                      [
+                        {
+                          "sym": "apply"
+                        },
+                        {
+                          "sym": "+"
+                        },
+                        [
+                          {
+                            "sym": "let"
+                          },
+                          [
+                            [
+                              {
+                                "sym": "_res"
+                              },
+                              [
+                                {
+                                  "sym": "quote"
+                                },
+                                []
+                              ]
+                            ]
+                          ],
+                          [
+                            {
+                              "sym": "for"
+                            },
+                            [
+                              [
+                                {
+                                  "sym": "x"
+                                },
+                                [
+                                  {
+                                    "sym": "hash-ref"
+                                  },
+                                  {
+                                    "sym": "g"
+                                  },
+                                  "items"
+                                ]
+                              ]
+                            ],
+                            [
+                              {
+                                "sym": "set!"
+                              },
+                              {
+                                "sym": "_res"
+                              },
+                              [
+                                {
+                                  "sym": "append"
+                                },
+                                {
+                                  "sym": "_res"
+                                },
+                                [
+                                  {
+                                    "sym": "list"
+                                  },
+                                  [
+                                    {
+                                      "sym": "hash-ref"
+                                    },
+                                    {
+                                      "sym": "x"
+                                    },
+                                    "val"
+                                  ]
+                                ]
+                              ]
+                            ]
+                          ],
+                          {
+                            "sym": "_res"
+                          }
+                        ]
+                      ]
+                    ]
+                  ]
+                ],
+                [
+                  {
+                    "sym": "key"
+                  },
+                  [
+                    {
+                      "sym": "hash-ref"
+                    },
+                    {
+                      "sym": "g"
+                    },
+                    "key"
+                  ]
+                ]
+              ],
+              [
+                {
+                  "sym": "set!"
+                },
+                {
+                  "sym": "_res"
+                },
+                [
+                  {
+                    "sym": "append"
+                  },
+                  {
+                    "sym": "_res"
+                  },
+                  [
+                    {
+                      "sym": "list"
+                    },
+                    [
+                      {
+                        "sym": "cons"
+                      },
+                      {
+                        "sym": "key"
+                      },
+                      {
+                        "sym": "val"
+                      }
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            {
+              "sym": "set!"
+            },
+            {
+              "sym": "_res"
+            },
+            [
+              {
+                "sym": "sort"
+              },
+              {
+                "sym": "_res"
+              },
+              {
+                "sym": "\u003c"
+              },
+              {
+                "sym": "key"
+              },
+              {
+                "sym": "car"
+              }
+            ]
+          ],
+          [
+            {
+              "sym": "set!"
+            },
+            {
+              "sym": "_res"
+            },
+            [
+              {
+                "sym": "map"
+              },
+              {
+                "sym": "cdr"
+              },
+              {
+                "sym": "_res"
+              }
+            ]
+          ],
+          {
+            "sym": "_res"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        {
+          "sym": "result"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

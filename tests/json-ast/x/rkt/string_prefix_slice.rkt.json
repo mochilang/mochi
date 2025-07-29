@@ -1,0 +1,221 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        },
+        {
+          "sym": "json"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "prefix"
+        },
+        "fore"
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "s1"
+        },
+        "forest"
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "="
+          },
+          [
+            {
+              "sym": "substring"
+            },
+            {
+              "sym": "s1"
+            },
+            0,
+            [
+              {
+                "sym": "cond"
+              },
+              [
+                [
+                  {
+                    "sym": "string?"
+                  },
+                  {
+                    "sym": "prefix"
+                  }
+                ],
+                [
+                  {
+                    "sym": "string-length"
+                  },
+                  {
+                    "sym": "prefix"
+                  }
+                ]
+              ],
+              [
+                [
+                  {
+                    "sym": "hash?"
+                  },
+                  {
+                    "sym": "prefix"
+                  }
+                ],
+                [
+                  {
+                    "sym": "hash-count"
+                  },
+                  {
+                    "sym": "prefix"
+                  }
+                ]
+              ],
+              [
+                {
+                  "sym": "else"
+                },
+                [
+                  {
+                    "sym": "length"
+                  },
+                  {
+                    "sym": "prefix"
+                  }
+                ]
+              ]
+            ]
+          ],
+          {
+            "sym": "prefix"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "s2"
+        },
+        "desert"
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "="
+          },
+          [
+            {
+              "sym": "substring"
+            },
+            {
+              "sym": "s2"
+            },
+            0,
+            [
+              {
+                "sym": "cond"
+              },
+              [
+                [
+                  {
+                    "sym": "string?"
+                  },
+                  {
+                    "sym": "prefix"
+                  }
+                ],
+                [
+                  {
+                    "sym": "string-length"
+                  },
+                  {
+                    "sym": "prefix"
+                  }
+                ]
+              ],
+              [
+                [
+                  {
+                    "sym": "hash?"
+                  },
+                  {
+                    "sym": "prefix"
+                  }
+                ],
+                [
+                  {
+                    "sym": "hash-count"
+                  },
+                  {
+                    "sym": "prefix"
+                  }
+                ]
+              ],
+              [
+                {
+                  "sym": "else"
+                },
+                [
+                  {
+                    "sym": "length"
+                  },
+                  {
+                    "sym": "prefix"
+                  }
+                ]
+              ]
+            ]
+          ],
+          {
+            "sym": "prefix"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

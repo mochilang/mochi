@@ -1,0 +1,78 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        [
+          {
+            "sym": "sum3"
+          },
+          {
+            "sym": "a"
+          },
+          {
+            "sym": "b"
+          },
+          {
+            "sym": "c"
+          }
+        ],
+        [
+          {
+            "sym": "+"
+          },
+          [
+            {
+              "sym": "+"
+            },
+            {
+              "sym": "a"
+            },
+            {
+              "sym": "b"
+            }
+          ],
+          {
+            "sym": "c"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "sum3"
+          },
+          1,
+          2,
+          3
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

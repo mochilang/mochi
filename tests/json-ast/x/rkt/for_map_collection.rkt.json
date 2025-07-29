@@ -1,0 +1,72 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "m"
+        },
+        [
+          {
+            "sym": "hash"
+          },
+          "a",
+          1,
+          "b",
+          2
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "for"
+        },
+        [
+          [
+            {
+              "sym": "k"
+            },
+            [
+              {
+                "sym": "in-hash-keys"
+              },
+              {
+                "sym": "m"
+              }
+            ]
+          ]
+        ],
+        [
+          {
+            "sym": "displayln"
+          },
+          {
+            "sym": "k"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

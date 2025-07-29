@@ -1,0 +1,155 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "numbers"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "for"
+        },
+        [
+          [
+            {
+              "sym": "n"
+            },
+            {
+              "sym": "numbers"
+            }
+          ],
+          {
+            "sym": "break"
+          },
+          [
+            {
+              "sym": "\u003e"
+            },
+            {
+              "sym": "n"
+            },
+            7
+          ],
+          {
+            "sym": "unless"
+          },
+          [
+            {
+              "sym": "="
+            },
+            [
+              {
+                "sym": "modulo"
+              },
+              {
+                "sym": "n"
+              },
+              2
+            ],
+            0
+          ]
+        ],
+        [
+          {
+            "sym": "displayln"
+          },
+          [
+            {
+              "sym": "string-join"
+            },
+            [
+              {
+                "sym": "filter"
+              },
+              [
+                {
+                  "sym": "lambda"
+                },
+                [
+                  {
+                    "sym": "s"
+                  }
+                ],
+                [
+                  {
+                    "sym": "not"
+                  },
+                  [
+                    {
+                      "sym": "string=?"
+                    },
+                    {
+                      "sym": "s"
+                    },
+                    ""
+                  ]
+                ]
+              ],
+              [
+                {
+                  "sym": "list"
+                },
+                [
+                  {
+                    "sym": "format"
+                  },
+                  "~a",
+                  "odd number:"
+                ],
+                [
+                  {
+                    "sym": "format"
+                  },
+                  "~a",
+                  {
+                    "sym": "n"
+                  }
+                ]
+              ]
+            ],
+            " "
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

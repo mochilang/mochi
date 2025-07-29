@@ -1,0 +1,215 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "struct"
+        },
+        {
+          "sym": "group"
+        },
+        [
+          {
+            "sym": "key"
+          },
+          {
+            "sym": "items"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "people"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          [
+            {
+              "sym": "hash"
+            },
+            "name",
+            "Alice",
+            "age",
+            17,
+            "status",
+            "minor"
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "name",
+            "Bob",
+            "age",
+            25,
+            "status",
+            "unknown"
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "name",
+            "Charlie",
+            "age",
+            18,
+            "status",
+            "unknown"
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "name",
+            "Diana",
+            "age",
+            16,
+            "status",
+            "minor"
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "set!"
+        },
+        {
+          "sym": "people"
+        },
+        [
+          {
+            "sym": "for/list"
+          },
+          [
+            [
+              {
+                "sym": "item"
+              },
+              {
+                "sym": "people"
+              }
+            ]
+          ],
+          [
+            {
+              "sym": "begin"
+            },
+            [
+              {
+                "sym": "when"
+              },
+              [
+                {
+                  "sym": "\u003e="
+                },
+                [
+                  {
+                    "sym": "hash-ref"
+                  },
+                  {
+                    "sym": "item"
+                  },
+                  "age"
+                ],
+                18
+              ],
+              [
+                {
+                  "sym": "set!"
+                },
+                {
+                  "sym": "item"
+                },
+                [
+                  {
+                    "sym": "hash-set"
+                  },
+                  {
+                    "sym": "item"
+                  },
+                  "status",
+                  "adult"
+                ]
+              ],
+              [
+                {
+                  "sym": "set!"
+                },
+                {
+                  "sym": "item"
+                },
+                [
+                  {
+                    "sym": "hash-set"
+                  },
+                  {
+                    "sym": "item"
+                  },
+                  "age",
+                  [
+                    {
+                      "sym": "+"
+                    },
+                    [
+                      {
+                        "sym": "hash-ref"
+                      },
+                      {
+                        "sym": "item"
+                      },
+                      "age"
+                    ],
+                    1
+                  ]
+                ]
+              ]
+            ],
+            {
+              "sym": "item"
+            }
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        "ok"
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

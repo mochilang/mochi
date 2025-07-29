@@ -1,0 +1,311 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "struct"
+        },
+        {
+          "sym": "group"
+        },
+        [
+          {
+            "sym": "key"
+          },
+          {
+            "sym": "items"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "xs"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          1,
+          2,
+          3
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "ys"
+        },
+        [
+          {
+            "sym": "let"
+          },
+          [
+            [
+              {
+                "sym": "_res"
+              },
+              [
+                {
+                  "sym": "quote"
+                },
+                []
+              ]
+            ]
+          ],
+          [
+            {
+              "sym": "for"
+            },
+            [
+              [
+                {
+                  "sym": "x"
+                },
+                {
+                  "sym": "xs"
+                }
+              ]
+            ],
+            [
+              {
+                "sym": "when"
+              },
+              [
+                {
+                  "sym": "="
+                },
+                [
+                  {
+                    "sym": "modulo"
+                  },
+                  {
+                    "sym": "x"
+                  },
+                  2
+                ],
+                1
+              ],
+              [
+                {
+                  "sym": "set!"
+                },
+                {
+                  "sym": "_res"
+                },
+                [
+                  {
+                    "sym": "append"
+                  },
+                  {
+                    "sym": "_res"
+                  },
+                  [
+                    {
+                      "sym": "list"
+                    },
+                    {
+                      "sym": "x"
+                    }
+                  ]
+                ]
+              ]
+            ]
+          ],
+          {
+            "sym": "_res"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "not"
+          },
+          [
+            {
+              "sym": "not"
+            },
+            [
+              {
+                "sym": "member"
+              },
+              1,
+              {
+                "sym": "ys"
+              }
+            ]
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "not"
+          },
+          [
+            {
+              "sym": "not"
+            },
+            [
+              {
+                "sym": "member"
+              },
+              2,
+              {
+                "sym": "ys"
+              }
+            ]
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "m"
+        },
+        [
+          {
+            "sym": "hash"
+          },
+          "a",
+          1
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "hash-has-key?"
+          },
+          {
+            "sym": "m"
+          },
+          "a"
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "hash-has-key?"
+          },
+          {
+            "sym": "m"
+          },
+          "b"
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "s"
+        },
+        "hello"
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "string-contains?"
+          },
+          {
+            "sym": "s"
+          },
+          "ell"
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "string-contains?"
+          },
+          {
+            "sym": "s"
+          },
+          "foo"
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

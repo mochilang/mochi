@@ -1,0 +1,701 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "nations"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          [
+            {
+              "sym": "hash"
+            },
+            "id",
+            1,
+            "name",
+            "A"
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "id",
+            2,
+            "name",
+            "B"
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "suppliers"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          [
+            {
+              "sym": "hash"
+            },
+            "id",
+            1,
+            "nation",
+            1
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "id",
+            2,
+            "nation",
+            2
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "partsupp"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          [
+            {
+              "sym": "hash"
+            },
+            "part",
+            100,
+            "supplier",
+            1,
+            "cost",
+            10,
+            "qty",
+            2
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "part",
+            100,
+            "supplier",
+            2,
+            "cost",
+            20,
+            "qty",
+            1
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "part",
+            200,
+            "supplier",
+            1,
+            "cost",
+            5,
+            "qty",
+            3
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "filtered"
+        },
+        [
+          {
+            "sym": "let"
+          },
+          [
+            [
+              {
+                "sym": "_res"
+              },
+              [
+                {
+                  "sym": "quote"
+                },
+                []
+              ]
+            ]
+          ],
+          [
+            {
+              "sym": "for"
+            },
+            [
+              [
+                {
+                  "sym": "ps"
+                },
+                {
+                  "sym": "partsupp"
+                }
+              ]
+            ],
+            [
+              {
+                "sym": "for"
+              },
+              [
+                [
+                  {
+                    "sym": "s"
+                  },
+                  {
+                    "sym": "suppliers"
+                  }
+                ]
+              ],
+              [
+                {
+                  "sym": "for"
+                },
+                [
+                  [
+                    {
+                      "sym": "n"
+                    },
+                    {
+                      "sym": "nations"
+                    }
+                  ]
+                ],
+                [
+                  {
+                    "sym": "when"
+                  },
+                  [
+                    {
+                      "sym": "and"
+                    },
+                    [
+                      {
+                        "sym": "and"
+                      },
+                      [
+                        {
+                          "sym": "="
+                        },
+                        [
+                          {
+                            "sym": "hash-ref"
+                          },
+                          {
+                            "sym": "s"
+                          },
+                          "id"
+                        ],
+                        [
+                          {
+                            "sym": "hash-ref"
+                          },
+                          {
+                            "sym": "ps"
+                          },
+                          "supplier"
+                        ]
+                      ],
+                      [
+                        {
+                          "sym": "="
+                        },
+                        [
+                          {
+                            "sym": "hash-ref"
+                          },
+                          {
+                            "sym": "n"
+                          },
+                          "id"
+                        ],
+                        [
+                          {
+                            "sym": "hash-ref"
+                          },
+                          {
+                            "sym": "s"
+                          },
+                          "nation"
+                        ]
+                      ]
+                    ],
+                    [
+                      {
+                        "sym": "="
+                      },
+                      [
+                        {
+                          "sym": "hash-ref"
+                        },
+                        {
+                          "sym": "n"
+                        },
+                        "name"
+                      ],
+                      "A"
+                    ]
+                  ],
+                  [
+                    {
+                      "sym": "set!"
+                    },
+                    {
+                      "sym": "_res"
+                    },
+                    [
+                      {
+                        "sym": "append"
+                      },
+                      {
+                        "sym": "_res"
+                      },
+                      [
+                        {
+                          "sym": "list"
+                        },
+                        [
+                          {
+                            "sym": "hash"
+                          },
+                          "part",
+                          [
+                            {
+                              "sym": "hash-ref"
+                            },
+                            {
+                              "sym": "ps"
+                            },
+                            "part"
+                          ],
+                          "value",
+                          [
+                            {
+                              "sym": "*"
+                            },
+                            [
+                              {
+                                "sym": "hash-ref"
+                              },
+                              {
+                                "sym": "ps"
+                              },
+                              "cost"
+                            ],
+                            [
+                              {
+                                "sym": "hash-ref"
+                              },
+                              {
+                                "sym": "ps"
+                              },
+                              "qty"
+                            ]
+                          ]
+                        ]
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          {
+            "sym": "_res"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "grouped"
+        },
+        [
+          {
+            "sym": "let"
+          },
+          [
+            [
+              {
+                "sym": "_groups"
+              },
+              [
+                {
+                  "sym": "make-hash"
+                }
+              ]
+            ],
+            [
+              {
+                "sym": "_res"
+              },
+              [
+                {
+                  "sym": "quote"
+                },
+                []
+              ]
+            ]
+          ],
+          [
+            {
+              "sym": "for"
+            },
+            [
+              [
+                {
+                  "sym": "x"
+                },
+                {
+                  "sym": "filtered"
+                }
+              ]
+            ],
+            [
+              {
+                "sym": "let*"
+              },
+              [
+                [
+                  {
+                    "sym": "_key"
+                  },
+                  [
+                    {
+                      "sym": "hash-ref"
+                    },
+                    {
+                      "sym": "x"
+                    },
+                    "part"
+                  ]
+                ],
+                [
+                  {
+                    "sym": "_g"
+                  },
+                  [
+                    {
+                      "sym": "hash-ref"
+                    },
+                    {
+                      "sym": "_groups"
+                    },
+                    {
+                      "sym": "_key"
+                    },
+                    [
+                      {
+                        "sym": "lambda"
+                      },
+                      [],
+                      [
+                        {
+                          "sym": "let"
+                        },
+                        [
+                          [
+                            {
+                              "sym": "h"
+                            },
+                            [
+                              {
+                                "sym": "make-hash"
+                              }
+                            ]
+                          ]
+                        ],
+                        [
+                          {
+                            "sym": "hash-set!"
+                          },
+                          {
+                            "sym": "h"
+                          },
+                          "key",
+                          {
+                            "sym": "_key"
+                          }
+                        ],
+                        [
+                          {
+                            "sym": "hash-set!"
+                          },
+                          {
+                            "sym": "h"
+                          },
+                          "items",
+                          [
+                            {
+                              "sym": "quote"
+                            },
+                            []
+                          ]
+                        ],
+                        [
+                          {
+                            "sym": "hash-set!"
+                          },
+                          {
+                            "sym": "_groups"
+                          },
+                          {
+                            "sym": "_key"
+                          },
+                          {
+                            "sym": "h"
+                          }
+                        ],
+                        {
+                          "sym": "h"
+                        }
+                      ]
+                    ]
+                  ]
+                ]
+              ],
+              [
+                {
+                  "sym": "hash-set!"
+                },
+                {
+                  "sym": "_g"
+                },
+                "items",
+                [
+                  {
+                    "sym": "append"
+                  },
+                  [
+                    {
+                      "sym": "hash-ref"
+                    },
+                    {
+                      "sym": "_g"
+                    },
+                    "items"
+                  ],
+                  [
+                    {
+                      "sym": "list"
+                    },
+                    {
+                      "sym": "x"
+                    }
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            {
+              "sym": "for"
+            },
+            [
+              [
+                {
+                  "sym": "g"
+                },
+                [
+                  {
+                    "sym": "hash-values"
+                  },
+                  {
+                    "sym": "_groups"
+                  }
+                ]
+              ]
+            ],
+            [
+              {
+                "sym": "set!"
+              },
+              {
+                "sym": "_res"
+              },
+              [
+                {
+                  "sym": "append"
+                },
+                {
+                  "sym": "_res"
+                },
+                [
+                  {
+                    "sym": "list"
+                  },
+                  [
+                    {
+                      "sym": "hash"
+                    },
+                    "part",
+                    [
+                      {
+                        "sym": "hash-ref"
+                      },
+                      {
+                        "sym": "g"
+                      },
+                      "key"
+                    ],
+                    "total",
+                    [
+                      {
+                        "sym": "apply"
+                      },
+                      {
+                        "sym": "+"
+                      },
+                      [
+                        {
+                          "sym": "let"
+                        },
+                        [
+                          [
+                            {
+                              "sym": "_res"
+                            },
+                            [
+                              {
+                                "sym": "quote"
+                              },
+                              []
+                            ]
+                          ]
+                        ],
+                        [
+                          {
+                            "sym": "for"
+                          },
+                          [
+                            [
+                              {
+                                "sym": "r"
+                              },
+                              [
+                                {
+                                  "sym": "hash-ref"
+                                },
+                                {
+                                  "sym": "g"
+                                },
+                                "items"
+                              ]
+                            ]
+                          ],
+                          [
+                            {
+                              "sym": "set!"
+                            },
+                            {
+                              "sym": "_res"
+                            },
+                            [
+                              {
+                                "sym": "append"
+                              },
+                              {
+                                "sym": "_res"
+                              },
+                              [
+                                {
+                                  "sym": "list"
+                                },
+                                [
+                                  {
+                                    "sym": "hash-ref"
+                                  },
+                                  {
+                                    "sym": "r"
+                                  },
+                                  "value"
+                                ]
+                              ]
+                            ]
+                          ]
+                        ],
+                        {
+                          "sym": "_res"
+                        }
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          {
+            "sym": "_res"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        {
+          "sym": "grouped"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

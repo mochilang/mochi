@@ -1,0 +1,127 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "struct"
+        },
+        {
+          "sym": "group"
+        },
+        [
+          {
+            "sym": "key"
+          },
+          {
+            "sym": "items"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "cond"
+          },
+          [
+            [
+              {
+                "sym": "string?"
+              },
+              [
+                {
+                  "sym": "list"
+                },
+                1,
+                2,
+                3
+              ]
+            ],
+            [
+              {
+                "sym": "string-length"
+              },
+              [
+                {
+                  "sym": "list"
+                },
+                1,
+                2,
+                3
+              ]
+            ]
+          ],
+          [
+            [
+              {
+                "sym": "hash?"
+              },
+              [
+                {
+                  "sym": "list"
+                },
+                1,
+                2,
+                3
+              ]
+            ],
+            [
+              {
+                "sym": "hash-count"
+              },
+              [
+                {
+                  "sym": "list"
+                },
+                1,
+                2,
+                3
+              ]
+            ]
+          ],
+          [
+            {
+              "sym": "else"
+            },
+            [
+              {
+                "sym": "length"
+              },
+              [
+                {
+                  "sym": "list"
+                },
+                1,
+                2,
+                3
+              ]
+            ]
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

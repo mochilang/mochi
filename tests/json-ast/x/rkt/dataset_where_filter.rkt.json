@@ -1,0 +1,335 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "people"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          [
+            {
+              "sym": "hash"
+            },
+            "name",
+            "Alice",
+            "age",
+            30
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "name",
+            "Bob",
+            "age",
+            15
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "name",
+            "Charlie",
+            "age",
+            65
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "name",
+            "Diana",
+            "age",
+            45
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "adults"
+        },
+        [
+          {
+            "sym": "let"
+          },
+          [
+            [
+              {
+                "sym": "_res"
+              },
+              [
+                {
+                  "sym": "quote"
+                },
+                []
+              ]
+            ]
+          ],
+          [
+            {
+              "sym": "for"
+            },
+            [
+              [
+                {
+                  "sym": "person"
+                },
+                {
+                  "sym": "people"
+                }
+              ]
+            ],
+            [
+              {
+                "sym": "when"
+              },
+              [
+                {
+                  "sym": "\u003e="
+                },
+                [
+                  {
+                    "sym": "hash-ref"
+                  },
+                  {
+                    "sym": "person"
+                  },
+                  "age"
+                ],
+                18
+              ],
+              [
+                {
+                  "sym": "set!"
+                },
+                {
+                  "sym": "_res"
+                },
+                [
+                  {
+                    "sym": "append"
+                  },
+                  {
+                    "sym": "_res"
+                  },
+                  [
+                    {
+                      "sym": "list"
+                    },
+                    [
+                      {
+                        "sym": "hash"
+                      },
+                      "name",
+                      [
+                        {
+                          "sym": "hash-ref"
+                        },
+                        {
+                          "sym": "person"
+                        },
+                        "name"
+                      ],
+                      "age",
+                      [
+                        {
+                          "sym": "hash-ref"
+                        },
+                        {
+                          "sym": "person"
+                        },
+                        "age"
+                      ],
+                      "is_senior",
+                      [
+                        {
+                          "sym": "\u003e="
+                        },
+                        [
+                          {
+                            "sym": "hash-ref"
+                          },
+                          {
+                            "sym": "person"
+                          },
+                          "age"
+                        ],
+                        60
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          {
+            "sym": "_res"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        "--- Adults ---"
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "for"
+        },
+        [
+          [
+            {
+              "sym": "person"
+            },
+            {
+              "sym": "adults"
+            }
+          ]
+        ],
+        [
+          {
+            "sym": "displayln"
+          },
+          [
+            {
+              "sym": "string-join"
+            },
+            [
+              {
+                "sym": "filter"
+              },
+              [
+                {
+                  "sym": "lambda"
+                },
+                [
+                  {
+                    "sym": "s"
+                  }
+                ],
+                [
+                  {
+                    "sym": "not"
+                  },
+                  [
+                    {
+                      "sym": "string=?"
+                    },
+                    {
+                      "sym": "s"
+                    },
+                    ""
+                  ]
+                ]
+              ],
+              [
+                {
+                  "sym": "list"
+                },
+                [
+                  {
+                    "sym": "format"
+                  },
+                  "~a",
+                  [
+                    {
+                      "sym": "hash-ref"
+                    },
+                    {
+                      "sym": "person"
+                    },
+                    "name"
+                  ]
+                ],
+                [
+                  {
+                    "sym": "format"
+                  },
+                  "~a",
+                  "is"
+                ],
+                [
+                  {
+                    "sym": "format"
+                  },
+                  "~a",
+                  [
+                    {
+                      "sym": "hash-ref"
+                    },
+                    {
+                      "sym": "person"
+                    },
+                    "age"
+                  ]
+                ],
+                [
+                  {
+                    "sym": "format"
+                  },
+                  "~a",
+                  [
+                    {
+                      "sym": "if"
+                    },
+                    [
+                      {
+                        "sym": "hash-ref"
+                      },
+                      {
+                        "sym": "person"
+                      },
+                      "is_senior"
+                    ],
+                    " (senior)",
+                    ""
+                  ]
+                ]
+              ]
+            ],
+            " "
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

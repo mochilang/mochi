@@ -1,0 +1,98 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "struct"
+        },
+        {
+          "sym": "group"
+        },
+        [
+          {
+            "sym": "key"
+          },
+          {
+            "sym": "items"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "scores"
+        },
+        [
+          {
+            "sym": "hash"
+          },
+          "alice",
+          1
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "set!"
+        },
+        {
+          "sym": "scores"
+        },
+        [
+          {
+            "sym": "hash-set"
+          },
+          {
+            "sym": "scores"
+          },
+          "bob",
+          2
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "hash-ref"
+          },
+          {
+            "sym": "scores"
+          },
+          "bob"
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

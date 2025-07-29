@@ -1,0 +1,307 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "struct"
+        },
+        {
+          "sym": "group"
+        },
+        [
+          {
+            "sym": "key"
+          },
+          {
+            "sym": "items"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        [
+          {
+            "sym": "twoSum"
+          },
+          {
+            "sym": "nums"
+          },
+          {
+            "sym": "target"
+          }
+        ],
+        [
+          {
+            "sym": "define"
+          },
+          {
+            "sym": "n"
+          },
+          [
+            {
+              "sym": "cond"
+            },
+            [
+              [
+                {
+                  "sym": "string?"
+                },
+                {
+                  "sym": "nums"
+                }
+              ],
+              [
+                {
+                  "sym": "string-length"
+                },
+                {
+                  "sym": "nums"
+                }
+              ]
+            ],
+            [
+              [
+                {
+                  "sym": "hash?"
+                },
+                {
+                  "sym": "nums"
+                }
+              ],
+              [
+                {
+                  "sym": "hash-count"
+                },
+                {
+                  "sym": "nums"
+                }
+              ]
+            ],
+            [
+              {
+                "sym": "else"
+              },
+              [
+                {
+                  "sym": "length"
+                },
+                {
+                  "sym": "nums"
+                }
+              ]
+            ]
+          ]
+        ],
+        [
+          {
+            "sym": "for"
+          },
+          [
+            [
+              {
+                "sym": "i"
+              },
+              [
+                {
+                  "sym": "in-range"
+                },
+                0,
+                {
+                  "sym": "n"
+                }
+              ]
+            ]
+          ],
+          [
+            {
+              "sym": "for"
+            },
+            [
+              [
+                {
+                  "sym": "j"
+                },
+                [
+                  {
+                    "sym": "in-range"
+                  },
+                  [
+                    {
+                      "sym": "+"
+                    },
+                    {
+                      "sym": "i"
+                    },
+                    1
+                  ],
+                  {
+                    "sym": "n"
+                  }
+                ]
+              ]
+            ],
+            [
+              {
+                "sym": "if"
+              },
+              [
+                {
+                  "sym": "="
+                },
+                [
+                  {
+                    "sym": "+"
+                  },
+                  [
+                    {
+                      "sym": "list-ref"
+                    },
+                    {
+                      "sym": "nums"
+                    },
+                    {
+                      "sym": "i"
+                    }
+                  ],
+                  [
+                    {
+                      "sym": "list-ref"
+                    },
+                    {
+                      "sym": "nums"
+                    },
+                    {
+                      "sym": "j"
+                    }
+                  ]
+                ],
+                {
+                  "sym": "target"
+                }
+              ],
+              [
+                {
+                  "sym": "begin"
+                },
+                [
+                  {
+                    "sym": "list"
+                  },
+                  {
+                    "sym": "i"
+                  },
+                  {
+                    "sym": "j"
+                  }
+                ]
+              ]
+            ]
+          ]
+        ],
+        [
+          {
+            "sym": "list"
+          },
+          [
+            {
+              "sym": "-"
+            },
+            1
+          ],
+          [
+            {
+              "sym": "-"
+            },
+            1
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "result"
+        },
+        [
+          {
+            "sym": "twoSum"
+          },
+          [
+            {
+              "sym": "list"
+            },
+            2,
+            7,
+            11,
+            15
+          ],
+          9
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "list-ref"
+          },
+          {
+            "sym": "result"
+          },
+          0
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "list-ref"
+          },
+          {
+            "sym": "result"
+          },
+          1
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}
