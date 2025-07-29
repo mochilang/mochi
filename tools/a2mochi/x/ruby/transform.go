@@ -130,7 +130,6 @@ func convertNode(n Node, level int, out *[]string) {
 			call := n.Children[0]
 			block := n.Children[1]
 			if call.Type == "call" && len(call.Children) == 3 {
-				recv := exprString(call.Children[0])
 				meth := call.Children[2]
 				if meth.Type == "@ident" && meth.Value == "times" {
 					count := exprString(call.Children[0])
@@ -157,6 +156,17 @@ func convertNode(n Node, level int, out *[]string) {
 					return
 				}
 				if meth.Type == "@ident" && meth.Value == "each" {
+					recvNode := call.Children[0]
+					if recvNode.Type == "method_add_arg" && len(recvNode.Children) >= 1 {
+						inner := recvNode.Children[0]
+						if inner.Type == "call" && len(inner.Children) >= 3 {
+							m := inner.Children[2]
+							if m.Type == "@ident" && m.Value == "keys" {
+								recvNode = inner.Children[0]
+							}
+						}
+					}
+					recvExpr := exprString(recvNode)
 					varName := "v"
 					body := block
 					if block.Type == "do_block" && len(block.Children) >= 2 {
@@ -173,7 +183,7 @@ func convertNode(n Node, level int, out *[]string) {
 						}
 						body = block.Children[len(block.Children)-1]
 					}
-					*out = append(*out, idt+"for "+varName+" in "+recv+" {")
+					*out = append(*out, idt+"for "+varName+" in "+recvExpr+" {")
 					convertNode(body, level+1, out)
 					*out = append(*out, idt+"}")
 					return
