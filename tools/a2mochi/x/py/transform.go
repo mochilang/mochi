@@ -274,7 +274,7 @@ func blockComment(src string) string {
 	return "/*\n" + src + "*/\n"
 }
 
-func ConvertSource(n *Node) (string, error) {
+func Print(n *Node) (string, error) {
 	if n == nil {
 		return "", fmt.Errorf("nil node")
 	}
@@ -294,9 +294,9 @@ func ConvertSource(n *Node) (string, error) {
 	return out.String(), nil
 }
 
-// Convert converts a parsed Python AST to a Mochi AST node.
-func Convert(n *Node) (*ast.Node, error) {
-	src, err := ConvertSource(n)
+// Transform converts a parsed Python AST to a Mochi AST node.
+func Transform(n *Node) (*ast.Node, error) {
+	src, err := Print(n)
 	if err != nil {
 		return nil, err
 	}
@@ -307,7 +307,7 @@ func Convert(n *Node) (*ast.Node, error) {
 	return ast.FromProgram(prog), nil
 }
 
-func newConvertError(line int, lines []string, msg string) error {
+func newTransformError(line int, lines []string, msg string) error {
 	start := line - 2
 	if start < 0 {
 		start = 0
@@ -369,7 +369,7 @@ func emitAST(b *strings.Builder, n *Node, indent string, lines []string, seen ma
 		}
 		b.WriteByte('\n')
 	default:
-		return newConvertError(n.Line, lines, "unhandled statement")
+		return newTransformError(n.Line, lines, "unhandled statement")
 	}
 	return nil
 }
@@ -483,14 +483,14 @@ func emitExprStmt(b *strings.Builder, n *Node, lines []string, seen map[string]b
 
 func emitAssignStmt(b *strings.Builder, n *Node, lines []string, seen map[string]bool, structs map[string][]string) error {
 	if len(n.Body) > 0 {
-		return newConvertError(n.Line, lines, "complex assignment")
+		return newTransformError(n.Line, lines, "complex assignment")
 	}
 	targets := n.callArgs()
 	if len(targets) == 0 && len(n.Targets) > 0 {
 		targets = n.Targets
 	}
 	if len(targets) == 0 {
-		return newConvertError(n.Line, lines, "unsupported assignment")
+		return newTransformError(n.Line, lines, "unsupported assignment")
 	}
 	if strings.TrimSpace(string(n.Value)) == "null" {
 		return nil
@@ -538,7 +538,7 @@ func emitAssignStmt(b *strings.Builder, n *Node, lines []string, seen map[string
 
 func emitAugAssignStmt(b *strings.Builder, n *Node, lines []string, seen map[string]bool, structs map[string][]string) error {
 	if n.Target == nil || n.Op == nil {
-		return newConvertError(n.Line, lines, "bad augmented assign")
+		return newTransformError(n.Line, lines, "bad augmented assign")
 	}
 	declared := false
 	if n.Target.Type == "Name" && seen != nil {
@@ -572,7 +572,7 @@ func emitAugAssignStmt(b *strings.Builder, n *Node, lines []string, seen map[str
 	case "Mod":
 		b.WriteByte('%')
 	default:
-		return newConvertError(n.Line, lines, "unhandled aug assign operator")
+		return newTransformError(n.Line, lines, "unhandled aug assign operator")
 	}
 	b.WriteByte(' ')
 	if err := emitExpr(b, n.valueNode(), lines, structs); err != nil {
@@ -647,7 +647,7 @@ func emitWhileStmt(b *strings.Builder, n *Node, indent string, lines []string, s
 
 func emitListCompQuery(b *strings.Builder, n *Node, slice *Node, lines []string, structs map[string][]string) error {
 	if len(n.Generators) == 0 {
-		return newConvertError(n.Line, lines, "unsupported listcomp")
+		return newTransformError(n.Line, lines, "unsupported listcomp")
 	}
 	g := n.Generators[0]
 	b.WriteString("from ")
@@ -987,7 +987,7 @@ func emitExpr(b *strings.Builder, n *Node, lines []string, structs map[string][]
 			case "Mod":
 				b.WriteByte('%')
 			default:
-				return newConvertError(n.Line, lines, "unhandled operator")
+				return newTransformError(n.Line, lines, "unhandled operator")
 			}
 		}
 		b.WriteByte(' ')
@@ -1027,7 +1027,7 @@ func emitExpr(b *strings.Builder, n *Node, lines []string, structs map[string][]
 			return err
 		}
 		if len(n.Ops) == 0 || len(n.Comparators) == 0 {
-			return newConvertError(n.Line, lines, "bad compare")
+			return newTransformError(n.Line, lines, "bad compare")
 		}
 		b.WriteByte(' ')
 		op := n.Ops[0]
@@ -1047,7 +1047,7 @@ func emitExpr(b *strings.Builder, n *Node, lines []string, structs map[string][]
 		case "In":
 			b.WriteString("in")
 		default:
-			return newConvertError(n.Line, lines, "unhandled compare operator")
+			return newTransformError(n.Line, lines, "unhandled compare operator")
 		}
 		b.WriteByte(' ')
 		if err := emitExpr(b, n.Comparators[0], lines, structs); err != nil {
@@ -1158,7 +1158,7 @@ func emitExpr(b *strings.Builder, n *Node, lines []string, structs map[string][]
 					case "Or":
 						b.WriteString(" || ")
 					default:
-						return newConvertError(n.Line, lines, "unhandled bool operator")
+						return newTransformError(n.Line, lines, "unhandled bool operator")
 					}
 				}
 			}
@@ -1218,7 +1218,7 @@ func emitExpr(b *strings.Builder, n *Node, lines []string, structs map[string][]
 				b.WriteByte(')')
 				return nil
 			default:
-				return newConvertError(n.Line, lines, "unhandled unary operator")
+				return newTransformError(n.Line, lines, "unhandled unary operator")
 			}
 		}
 		if err := emitExpr(b, n.Operand, lines, structs); err != nil {
@@ -1226,7 +1226,7 @@ func emitExpr(b *strings.Builder, n *Node, lines []string, structs map[string][]
 		}
 		b.WriteByte(')')
 	default:
-		return newConvertError(n.Line, lines, "unhandled expression")
+		return newTransformError(n.Line, lines, "unhandled expression")
 	}
 	return nil
 }
