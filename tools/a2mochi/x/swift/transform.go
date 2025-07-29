@@ -180,6 +180,16 @@ func extractRange(src string, r offsetRange) string {
 	if end > len(src) {
 		end = len(src)
 	}
+	for end < len(src) && src[end-1] != '\n' {
+		if src[end] == '\n' {
+			end++
+			break
+		}
+		end++
+	}
+	if end > len(src) {
+		end = len(src)
+	}
 	return src[r.Start:end]
 }
 
@@ -213,6 +223,9 @@ func parseStatementsIndent(body string, indent int) []string {
 			l = rewriteRanges(l)
 			l = rewriteStrBuiltin(l)
 			l = rewriteTernary(l)
+			l = rewriteStringArrays(l)
+			l = rewriteContains(l)
+			l = rewriteMapContains(l)
 			l = strings.ReplaceAll(l, ")!", ")")
 			l = strings.ReplaceAll(l, "_append(", "append(")
 			l = strings.ReplaceAll(l, "_values(", "values(")
@@ -259,6 +272,7 @@ func parseStatementsIndent(body string, indent int) []string {
 						name = strings.TrimSpace(name[:colon])
 					}
 					expr := rewriteStructLiteral(strings.TrimSpace(parts[1]))
+					expr = rewriteMapLiteral(expr)
 					out = append(out, strings.Repeat("  ", indent)+keyword+" "+name+" = "+expr)
 				}
 			case l == "break":
@@ -282,6 +296,10 @@ var identMinRE = regexp.MustCompile(`([A-Za-z0-9_]+)\.min\(\)`)
 var parenMaxRE = regexp.MustCompile(`\(([^()]+)\)\.max\(\)`)
 var identMaxRE = regexp.MustCompile(`([A-Za-z0-9_]+)\.max\(\)`)
 var castRE = regexp.MustCompile(`\((.+?)\s+as!\s+[A-Za-z0-9_<>.]+\)`)
+var stringSliceRE = regexp.MustCompile(`^\(?\s*(?:str|String)\(Array\((.+?)\)\[\s*([^\]]+?)\s*\.\.\s*([^\]]+?)\s*\]\)\s*\)?$`)
+var stringIndexRE = regexp.MustCompile(`^\(?\s*(?:str|String)\(Array\((.+?)\)\[\s*([^\]]+?)\s*\]\)\s*\)?$`)
+var containsRE = regexp.MustCompile(`([A-Za-z0-9_]+)\.contains\(([^()]+)\)`)
+var mapContainsRE = regexp.MustCompile(`([A-Za-z0-9_]+)\[([^\]]+)\]\s*!=\s*nil`)
 
 func rewriteMapLiteral(expr string) string {
 	m := mapLitRE.FindStringSubmatch(expr)
@@ -371,6 +389,25 @@ var ternaryBoolRE = regexp.MustCompile(`\(([^()]+)\)\s*\?\s*1\s*:\s*0`)
 
 func rewriteTernary(expr string) string {
 	return ternaryBoolRE.ReplaceAllString(expr, "if $1 then true else false")
+}
+
+func rewriteStringArrays(expr string) string {
+	if m := stringSliceRE.FindStringSubmatch(expr); m != nil {
+		return "substring(" + strings.TrimSpace(m[1]) + ", " + strings.TrimSpace(m[2]) + ", " + strings.TrimSpace(m[3]) + ")"
+	}
+	if m := stringIndexRE.FindStringSubmatch(expr); m != nil {
+		idx := strings.TrimSpace(m[2])
+		return "substring(" + strings.TrimSpace(m[1]) + ", " + idx + ", " + idx + " + 1)"
+	}
+	return expr
+}
+
+func rewriteContains(expr string) string {
+	return containsRE.ReplaceAllString(expr, "$2 in $1")
+}
+
+func rewriteMapContains(expr string) string {
+	return mapContainsRE.ReplaceAllString(expr, "$2 in $1")
 }
 
 func gatherEnumElements(ms []item) []item {

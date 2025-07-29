@@ -87,6 +87,8 @@ func TestTransformGolden(t *testing.T) {
 		"math_ops":            true,
 		"min_max_builtin":     true,
 		"print_hello":         true,
+		"in_operator":         true,
+		"map_in_operator":     true,
 		"string_concat":       true,
 		"str_builtin":         true,
 		"unary_neg":           true,
