@@ -1,41 +1,33 @@
 (program
   (call print
-    (group
-      (binary +
-        (int 1)
-        (group
-          (binary * (int 2) (int 3))
-        )
+    (binary +
+      (int 1)
+      (group
+        (binary * (int 2) (int 3))
       )
     )
   )
   (call print
-    (group
-      (binary *
-        (group
-          (binary + (int 1) (int 2))
-        )
-        (int 3)
+    (binary *
+      (group
+        (binary + (int 1) (int 2))
       )
+      (int 3)
     )
   )
   (call print
-    (group
-      (binary +
-        (group
-          (binary * (int 2) (int 3))
-        )
-        (int 1)
+    (binary +
+      (group
+        (binary * (int 2) (int 3))
       )
+      (int 1)
     )
   )
   (call print
-    (group
-      (binary *
-        (int 2)
-        (group
-          (binary + (int 3) (int 1))
-        )
+    (binary *
+      (int 2)
+      (group
+        (binary + (int 3) (int 1))
       )
     )
   )

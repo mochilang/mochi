@@ -1,63 +1,62 @@
 (program
-  (fun boom (type bool))
+  (fun boom
+    (type bool)
+    (block
+      (call print (string boom))
+    )
+  )
   (call print
-    (group
-      (binary &&
-        (group
-          (binary &&
-            (group
-              (binary < (int 1) (int 2))
-            )
-            (group
-              (binary < (int 2) (int 3))
-            )
+    (binary &&
+      (group
+        (binary &&
+          (group
+            (binary < (int 1) (int 2))
+          )
+          (group
+            (binary < (int 2) (int 3))
           )
         )
-        (group
-          (binary < (int 3) (int 4))
-        )
+      )
+      (group
+        (binary < (int 3) (int 4))
       )
     )
   )
   (call print
-    (group
-      (binary &&
-        (group
-          (binary &&
-            (group
-              (binary < (int 1) (int 2))
-            )
-            (group
-              (binary > (int 2) (int 3))
-            )
+    (binary &&
+      (group
+        (binary &&
+          (group
+            (binary < (int 1) (int 2))
+          )
+          (group
+            (binary > (int 2) (int 3))
           )
         )
-        (call boom)
       )
+      (call boom)
     )
   )
   (call print
-    (group
-      (binary &&
-        (group
-          (binary &&
-            (group
-              (binary &&
-                (group
-                  (binary < (int 1) (int 2))
-                )
-                (group
-                  (binary < (int 2) (int 3))
-                )
+    (binary &&
+      (group
+        (binary &&
+          (group
+            (binary &&
+              (group
+                (binary < (int 1) (int 2))
+              )
+              (group
+                (binary < (int 2) (int 3))
               )
             )
-            (group
-              (binary > (int 3) (int 4))
-            )
+          )
+          (group
+            (binary > (int 3) (int 4))
           )
         )
-        (call boom)
       )
+      (call boom)
     )
   )
 )

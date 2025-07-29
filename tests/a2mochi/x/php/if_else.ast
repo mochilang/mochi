@@ -1,9 +1,7 @@
 (program
   (let x (int 5))
   (if
-    (group
-      (binary > (selector x) (int 3))
-    )
+    (binary > (selector x) (int 3))
     (block
       (call print (string big))
     )

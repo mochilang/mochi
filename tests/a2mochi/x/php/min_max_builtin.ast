@@ -1,5 +1,5 @@
 (program
-  (var nums
+  (let nums
     (list (int 3) (int 1) (int 4))
   )
   (call print

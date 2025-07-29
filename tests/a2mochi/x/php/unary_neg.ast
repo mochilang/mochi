@@ -3,12 +3,10 @@
     (unary - (int 3))
   )
   (call print
-    (group
-      (binary +
-        (int 5)
-        (group
-          (unary - (int 2))
-        )
+    (binary +
+      (int 5)
+      (group
+        (unary - (int 2))
       )
     )
   )
