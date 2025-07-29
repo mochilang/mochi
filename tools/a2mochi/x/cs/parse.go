@@ -270,7 +270,14 @@ func parseSimple(src string) (*Program, error) {
 			continue
 		}
 		if m := fieldRE.FindStringSubmatch(l); m != nil && strings.HasSuffix(l, ";") {
-			f := Field{Name: m[2], Type: strings.TrimSpace(m[1]), Line: i + 1, Doc: strings.Join(pendingDoc, "\n")}
+			fType := strings.TrimSpace(m[1])
+			static := false
+			if strings.Contains(fType, "static") {
+				fType = strings.ReplaceAll(fType, "static", "")
+				fType = strings.TrimSpace(fType)
+				static = true
+			}
+			f := Field{Name: m[2], Type: fType, Line: i + 1, Doc: strings.Join(pendingDoc, "\n"), Static: static}
 			if strings.Contains(l, "public") {
 				f.Access = "public"
 			} else if strings.Contains(l, "protected") {

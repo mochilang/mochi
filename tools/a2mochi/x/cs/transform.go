@@ -293,15 +293,34 @@ func programToNode(p *Program) (*ast.Node, error) {
 					} else if v, err := exprNode(f.Value); err == nil {
 						val = v
 					}
-					if val != nil {
-						n := &ast.Node{Kind: "let", Value: f.Name}
-						if ft := mapType(f.Type); ft != "" {
-							n.Children = append(n.Children, &ast.Node{Kind: "type", Value: ft})
+					ft := mapType(f.Type)
+					useVal := val != nil
+					if useVal && ft != "" {
+						sval := fmt.Sprint(val.Value)
+						switch ft {
+						case "int", "float":
+							if (val.Kind == "int" || val.Kind == "float") && (sval == "0" || sval == "0.0") {
+								useVal = false
+							}
+						case "bool":
+							if val.Kind == "bool" && sval == "false" {
+								useVal = false
+							}
+						case "string":
+							if val.Kind == "string" && sval == "" {
+								useVal = false
+							}
 						}
-						n.Children = append(n.Children, val)
-						root.Children = append(root.Children, n)
-						continue
 					}
+					n := &ast.Node{Kind: "let", Value: f.Name}
+					if ft != "" {
+						n.Children = append(n.Children, &ast.Node{Kind: "type", Value: ft})
+					}
+					if useVal {
+						n.Children = append(n.Children, val)
+					}
+					root.Children = append(root.Children, n)
+					continue
 				}
 				if !f.Static {
 					otherFields = append(otherFields, f)
