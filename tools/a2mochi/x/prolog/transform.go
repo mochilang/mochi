@@ -337,10 +337,6 @@ func convertExpr(expr string) string {
 	expr = strings.ReplaceAll(expr, "@>", ">")
 	expr = strings.ReplaceAll(expr, "@<", "<")
 	expr = strings.ReplaceAll(expr, " = ", " == ")
-	// handle unspaced '=' in comparisons
-	expr = strings.ReplaceAll(expr, "==", "#eq#")
-	expr = strings.ReplaceAll(expr, "=", "==")
-	expr = strings.ReplaceAll(expr, "#eq#", "==")
 	expr = strings.ReplaceAll(expr, "map{", "{")
 	expr = strings.ReplaceAll(expr, "_{", "{")
 	expr = regexp.MustCompile(`^[A-Za-z0-9_]+{`).ReplaceAllStringFunc(expr, func(s string) string {

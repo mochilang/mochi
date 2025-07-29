@@ -1,0 +1,16 @@
+(program
+  (fun main
+    (let _11262
+      (map
+        (entry (string a) (int 1))
+        (entry (string b) (int 2))
+        (entry (string c) (int 3))
+      )
+    )
+    (let _11270
+      (call values (selector _11262))
+    )
+    (call print (selector _11270))
+  )
+  (call main)
+)
