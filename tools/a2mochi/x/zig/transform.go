@@ -103,14 +103,15 @@ func parseDecl(line string) (name, val string, ok bool) {
 
 func isTypedArray(expr string) (string, bool) {
 	expr = strings.TrimSpace(expr)
-	if strings.HasPrefix(expr, "[_]") {
-		open := strings.Index(expr, "{")
-		close := strings.LastIndex(expr, "}")
-		if open >= 0 && close > open {
-			return strings.TrimSpace(expr[open+1 : close]), true
-		}
+	if !strings.HasPrefix(expr, "[") {
+		return "", false
 	}
-	return "", false
+	open := strings.Index(expr, "{")
+	close := strings.LastIndex(expr, "}")
+	if open < 0 || close <= open {
+		return "", false
+	}
+	return strings.TrimSpace(expr[open+1 : close]), true
 }
 
 func isNumber(expr string) bool {
@@ -176,165 +177,6 @@ func parseFuncHeader(src string) (name, params, ret string, ok bool) {
 	return
 }
 
-func convertFunction(lines []string) string {
-	first := strings.TrimSpace(lines[0])
-	name, params, ret, ok := parseFuncHeader(first)
-	if !ok {
-		return ""
-	}
-	params = convertParams(params)
-	ret = mapType(ret)
-
-	var b strings.Builder
-	b.WriteString("fun ")
-	b.WriteString(name)
-	b.WriteByte('(')
-	b.WriteString(params)
-	b.WriteByte(')')
-	if ret != "" {
-		b.WriteString(": ")
-		b.WriteString(ret)
-	}
-	b.WriteString(" {\n")
-
-	if len(lines) > 2 {
-		body := convertLines(lines[1:len(lines)-1], "  ")
-		b.WriteString(body)
-	}
-	b.WriteString("}\n")
-	return b.String()
-}
-
-func convertLoop(lines []string, indent string) string {
-	first := strings.TrimSpace(lines[0])
-	open := strings.Index(first, "(")
-	close := strings.Index(first, ")")
-	if open < 0 || close < open {
-		return ""
-	}
-	rng := strings.TrimSpace(first[open+1 : close])
-	rest := first[close+1:]
-	p1 := strings.Index(rest, "|")
-	if p1 < 0 {
-		return ""
-	}
-	p2 := strings.Index(rest[p1+1:], "|")
-	if p2 < 0 {
-		return ""
-	}
-	varName := strings.TrimSpace(rest[p1+1 : p1+1+p2])
-
-	var b strings.Builder
-	fmt.Fprintf(&b, "%sfor %s in %s {\n", indent, varName, rng)
-	for i := 1; i < len(lines); i++ {
-		t := strings.TrimSpace(lines[i])
-		if i == len(lines)-1 && t == "}" {
-			break
-		}
-		t = strings.TrimSuffix(t, ";")
-		if strings.HasPrefix(t, "for (") && strings.Contains(t, "|") {
-			brace := strings.Count(t, "{") - strings.Count(t, "}")
-			loopLines := []string{t}
-			for brace > 0 && i+1 < len(lines) {
-				i++
-				l := lines[i]
-				loopLines = append(loopLines, l)
-				brace += strings.Count(l, "{") - strings.Count(l, "}")
-			}
-			b.WriteString(convertLoop(loopLines, indent+"  "))
-			continue
-		}
-		if strings.HasPrefix(t, "if (") && strings.HasSuffix(t, ") {") {
-			brace := strings.Count(t, "{") - strings.Count(t, "}")
-			cond := strings.TrimSuffix(strings.TrimPrefix(t, "if ("), ") {")
-			var inner []string
-			for brace > 0 && i+1 < len(lines) {
-				i++
-				l := lines[i]
-				inner = append(inner, l)
-				brace += strings.Count(l, "{") - strings.Count(l, "}")
-			}
-			b.WriteString(indent + "  if " + cond + " {\n")
-			b.WriteString(convertLines(inner[:len(inner)-1], indent+"    "))
-			b.WriteString(indent + "  }\n")
-			continue
-		}
-		if name, val, ok := parseDecl(t); ok {
-			b.WriteString(indent + "  let " + name + " = " + val + "\n")
-			continue
-		}
-		if p := extractPrint(t); p != "" {
-			b.WriteString(indent + "  print(" + p + ")\n")
-			continue
-		}
-		if t == "continue" {
-			b.WriteString(indent + "  continue\n")
-			continue
-		}
-		if t == "break" {
-			b.WriteString(indent + "  break\n")
-			continue
-		}
-		if t == "}" {
-			b.WriteString(indent + "}\n")
-			continue
-		}
-		b.WriteString(indent + "  " + t + "\n")
-	}
-	b.WriteString(indent + "}\n")
-	return b.String()
-}
-
-func convertLines(lines []string, indent string) string {
-	var b strings.Builder
-	for i := 0; i < len(lines); i++ {
-		t := strings.TrimSpace(lines[i])
-		if t == "" || strings.HasPrefix(t, "//") {
-			continue
-		}
-		if strings.HasPrefix(t, "for (") && strings.Contains(t, "|") {
-			brace := strings.Count(t, "{") - strings.Count(t, "}")
-			loopLines := []string{t}
-			for brace > 0 && i+1 < len(lines) {
-				i++
-				l := lines[i]
-				loopLines = append(loopLines, l)
-				brace += strings.Count(l, "{") - strings.Count(l, "}")
-			}
-			b.WriteString(convertLoop(loopLines, indent))
-			continue
-		}
-		if strings.HasPrefix(t, "if (") && strings.HasSuffix(t, ") {") {
-			brace := strings.Count(t, "{") - strings.Count(t, "}")
-			cond := strings.TrimSuffix(strings.TrimPrefix(t, "if ("), ") {")
-			var inner []string
-			for brace > 0 && i+1 < len(lines) {
-				i++
-				l := lines[i]
-				inner = append(inner, l)
-				brace += strings.Count(l, "{") - strings.Count(l, "}")
-			}
-			b.WriteString(indent + "if " + cond + " {\n")
-			b.WriteString(convertLines(inner[:len(inner)-1], indent+"  "))
-			b.WriteString(indent + "}\n")
-			continue
-		}
-		if name, val, ok := parseDecl(t); ok {
-			b.WriteString(indent + "let " + name + " = " + val + "\n")
-			continue
-		}
-		if p := extractPrint(t); p != "" {
-			b.WriteString(indent + "print(" + p + ")\n")
-			continue
-		}
-		if t == "continue" || t == "break" {
-			b.WriteString(indent + t + "\n")
-			continue
-		}
-	}
-	return b.String()
-}
-
 func transformExpr(expr string) string {
 	if inner, ok := isTypedArray(expr); ok {
 		return "[" + inner + "]"
@@ -361,58 +203,128 @@ func extractPrint(line string) string {
 	return transformExpr(expr)
 }
 
+type stmt struct {
+	line     string
+	children []stmt
+}
+
+func parseBlock(lines []string, i *int) []stmt {
+	var res []stmt
+	for *i < len(lines) {
+		t := strings.TrimSpace(lines[*i])
+		*i++
+		if t == "" || strings.HasPrefix(t, "//") || strings.HasPrefix(t, "const std") {
+			continue
+		}
+		if t == "}" {
+			break
+		}
+		if strings.HasSuffix(t, "{") {
+			header := strings.TrimSpace(strings.TrimSuffix(t, "{"))
+			body := parseBlock(lines, i)
+			res = append(res, stmt{line: header, children: body})
+			continue
+		}
+		res = append(res, stmt{line: strings.TrimSuffix(t, ";")})
+	}
+	return res
+}
+
+func parseAssign(line string) (lhs, rhs string, ok bool) {
+	if strings.Contains(line, "==") || strings.Contains(line, "!=") || strings.Contains(line, ">=") || strings.Contains(line, "<=") {
+		return
+	}
+	if strings.Count(line, "=") != 1 {
+		return
+	}
+	parts := strings.SplitN(line, "=", 2)
+	lhs = strings.TrimSpace(parts[0])
+	rhs = strings.TrimSpace(parts[1])
+	if strings.HasPrefix(lhs, "var ") || strings.HasPrefix(lhs, "const ") {
+		return
+	}
+	ok = lhs != "" && rhs != ""
+	return
+}
+
+func gen(st stmt, indent string, b *strings.Builder) {
+	line := strings.TrimSpace(st.line)
+	switch {
+	case strings.HasPrefix(line, "pub fn main") || strings.HasPrefix(line, "fn main"):
+		for _, ch := range st.children {
+			gen(ch, indent, b)
+		}
+	case strings.HasPrefix(line, "fn ") || strings.HasPrefix(line, "pub fn "):
+		name, params, ret, ok := parseFuncHeader(line)
+		if !ok {
+			return
+		}
+		fmt.Fprintf(b, "%sfun %s(%s)", indent, name, convertParams(params))
+		rt := mapType(ret)
+		if rt != "" {
+			fmt.Fprintf(b, ": %s", rt)
+		}
+		b.WriteString(" {\n")
+		for _, ch := range st.children {
+			gen(ch, indent+"  ", b)
+		}
+		fmt.Fprintf(b, "%s}\n", indent)
+	case strings.HasPrefix(line, "for (") && strings.Contains(line, "|"):
+		open := strings.Index(line, "(")
+		close := strings.Index(line, ")")
+		if open < 0 || close < open {
+			return
+		}
+		rng := strings.TrimSpace(line[open+1 : close])
+		rest := line[close+1:]
+		p1 := strings.Index(rest, "|")
+		if p1 < 0 {
+			return
+		}
+		p2 := strings.Index(rest[p1+1:], "|")
+		if p2 < 0 {
+			return
+		}
+		varName := strings.TrimSpace(rest[p1+1 : p1+1+p2])
+		fmt.Fprintf(b, "%sfor %s in %s {\n", indent, varName, rng)
+		for _, ch := range st.children {
+			gen(ch, indent+"  ", b)
+		}
+		fmt.Fprintf(b, "%s}\n", indent)
+	case strings.HasPrefix(line, "if ("):
+		cond := strings.TrimSuffix(strings.TrimPrefix(line, "if ("), ")")
+		fmt.Fprintf(b, "%sif %s {\n", indent, cond)
+		for _, ch := range st.children {
+			gen(ch, indent+"  ", b)
+		}
+		fmt.Fprintf(b, "%s}\n", indent)
+	default:
+		if name, val, ok := parseDecl(line); ok {
+			fmt.Fprintf(b, "%slet %s = %s\n", indent, name, transformExpr(val))
+			return
+		}
+		if lhs, rhs, ok := parseAssign(line); ok {
+			fmt.Fprintf(b, "%s%s = %s\n", indent, lhs, transformExpr(rhs))
+			return
+		}
+		if p := extractPrint(line); p != "" {
+			fmt.Fprintf(b, "%sprint(%s)\n", indent, p)
+			return
+		}
+		if line == "continue" || line == "break" {
+			fmt.Fprintf(b, "%s%s\n", indent, line)
+			return
+		}
+	}
+}
+
 func translate(src string) (string, error) {
 	lines := strings.Split(src, "\n")
+	idx := 0
+	stmts := parseBlock(lines, &idx)
 	var out strings.Builder
-	for i := 0; i < len(lines); i++ {
-		line := strings.TrimSpace(lines[i])
-		if line == "" || strings.HasPrefix(line, "//") || strings.HasPrefix(line, "const ") {
-			continue
-		}
-		if strings.HasPrefix(line, "pub fn main") || strings.HasPrefix(line, "fn main") {
-			brace := strings.Count(line, "{") - strings.Count(line, "}")
-			for brace > 0 && i+1 < len(lines) {
-				i++
-				l := lines[i]
-				brace += strings.Count(l, "{") - strings.Count(l, "}")
-				if p := extractPrint(l); p != "" {
-					out.WriteString("print(" + p + ")\n")
-					continue
-				}
-				t := strings.TrimSpace(strings.TrimSuffix(l, ";"))
-				if name, val, ok := parseDecl(t); ok {
-					if _, ok2 := isTypedArray(val); ok2 || isNumber(val) {
-						val = transformExpr(val)
-						out.WriteString("let " + name + " = " + val + "\n")
-					}
-				}
-			}
-			continue
-		}
-		if strings.HasPrefix(line, "for (") && strings.Contains(line, "|") {
-			brace := strings.Count(line, "{") - strings.Count(line, "}")
-			loopLines := []string{line}
-			for brace > 0 && i+1 < len(lines) {
-				i++
-				l := lines[i]
-				loopLines = append(loopLines, l)
-				brace += strings.Count(l, "{") - strings.Count(l, "}")
-			}
-			out.WriteString(convertLoop(loopLines, ""))
-			continue
-		}
-		if strings.HasPrefix(line, "fn ") || strings.HasPrefix(line, "pub fn ") {
-			brace := strings.Count(line, "{") - strings.Count(line, "}")
-			fnLines := []string{line}
-			for brace > 0 && i+1 < len(lines) {
-				i++
-				l := lines[i]
-				fnLines = append(fnLines, l)
-				brace += strings.Count(l, "{") - strings.Count(l, "}")
-			}
-			out.WriteString(convertFunction(fnLines))
-			continue
-		}
+	for _, st := range stmts {
+		gen(st, "", &out)
 	}
 	res := out.String()
 	if strings.TrimSpace(res) == "" {
@@ -420,3 +332,6 @@ func translate(src string) (string, error) {
 	}
 	return res, nil
 }
+
+// TranslateForTest exposes translate for test helpers.
+func TranslateForTest(src string) (string, error) { return translate(src) }
