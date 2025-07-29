@@ -218,13 +218,13 @@ func convertBodyLine(s string) string {
 	s = convertTernaryPrint(s)
 	s = convertTernary(s)
 	s = convertIsEmpty(s)
-        s = convertSpread(s)
-        s = convertReduce(s)
-        s = convertLength(s)
-        s = convertAvg(s)
-        s = convertAny(s)
-        s = convertJoinPrint(s)
-        return convertQuotes(s)
+	s = convertSpread(s)
+	s = convertReduce(s)
+	s = convertLength(s)
+	s = convertAvg(s)
+	s = convertAny(s)
+	s = convertJoinPrint(s)
+	return convertQuotes(s)
 }
 
 // TestConvert exposes convertBodyLine for tests and debugging.
@@ -246,7 +246,13 @@ func fixUnaryNeg(s string) string {
 
 func convertTernaryPrint(s string) string {
 	if m := printTernaryRe.FindStringSubmatch(s); m != nil {
-		return fmt.Sprintf("print(if %s { %s } else { %s })", strings.TrimSpace(m[1]), strings.TrimSpace(m[2]), strings.TrimSpace(m[3]))
+		cond := strings.TrimSpace(m[1])
+		a := strings.TrimSpace(m[2])
+		b := strings.TrimSpace(m[3])
+		if (a == "1" && b == "0") || (a == "true" && b == "false") {
+			return fmt.Sprintf("print(%s)", cond)
+		}
+		return fmt.Sprintf("print(if %s { %s } else { %s })", cond, a, b)
 	}
 	return s
 }
@@ -255,7 +261,12 @@ var printTernaryRe = regexp.MustCompile(`^\s*print\(([^?]+)\?\s*([^:]+)\s*:\s*(.
 
 var ternaryRe = regexp.MustCompile(`([^?]+)\?\s*([^:]+)\s*:\s*(.+)`)
 
+var boolTernaryRe = regexp.MustCompile(`([^?]+)\?\s*(?:1|true)\s*:\s*(?:0|false)`)
+
 func convertTernary(s string) string {
+	if m := boolTernaryRe.FindStringSubmatch(strings.TrimSpace(s)); m != nil {
+		return strings.TrimSpace(m[1])
+	}
 	if ternaryRe.MatchString(s) {
 		return ternaryRe.ReplaceAllString(s, "if $1 { $2 } else { $3 }")
 	}
