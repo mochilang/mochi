@@ -89,6 +89,39 @@ func sexprToNode(x any) *ast.Node {
 				}
 			}
 			return call
+		case "while":
+			if len(v) >= 3 {
+				cond := sexprToNode(v[1])
+				blk := newNode("block", nil)
+				for _, b := range v[2:] {
+					if n := sexprToNode(b); n != nil {
+						blk.Children = append(blk.Children, n)
+					}
+				}
+				return newNode("while", nil, cond, blk)
+			}
+		case "do":
+			if len(v) >= 2 {
+				blk := newNode("block", nil)
+				for _, b := range v[1:] {
+					if n := sexprToNode(b); n != nil {
+						blk.Children = append(blk.Children, n)
+					}
+				}
+				if len(blk.Children) == 1 {
+					return blk.Children[0]
+				}
+				return blk
+			}
+		case "def":
+			if len(v) == 3 {
+				name, _ := v[1].(string)
+				assign := newNode("assign", sanitizeName(name))
+				if rhs := sexprToNode(v[2]); rhs != nil {
+					assign.Children = append(assign.Children, rhs)
+				}
+				return assign
+			}
 		case "+", "-", "*", "/", "mod", "quot", "<", "<=", ">", ">=", "=":
 			if len(v) == 3 {
 				op := head
