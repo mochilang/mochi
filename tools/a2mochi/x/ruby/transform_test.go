@@ -122,6 +122,7 @@ func TestTransformGolden(t *testing.T) {
 		"let_and_print":       true,
 		"list_assign":         true,
 		"list_index":          true,
+		"list_nested_assign":  true,
 		"map_assign":          true,
 		"map_index":           true,
 		"map_int_key":         true,
