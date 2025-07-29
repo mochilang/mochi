@@ -196,6 +196,8 @@ func TestTransformGolden(t *testing.T) {
 		"list_assign":        true,
 		"list_index":         true,
 		"list_nested_assign": true,
+		"user_type_literal":  true,
+		"values_builtin":     true,
 	}
 
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "ex")

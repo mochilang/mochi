@@ -69,6 +69,12 @@ func translateExpr(expr string) string {
 			inner := translateExpr(m[2])
 			return "\"" + prefix + "\" + " + inner
 		}
+	case regexp.MustCompile(`^Enum\.join\(Enum\.sort\(Map\.values\((.+)\)\),\s*" "\)$`).MatchString(expr):
+		m := regexp.MustCompile(`^Enum\.join\(Enum\.sort\(Map\.values\((.+)\)\),\s*" "\)$`).FindStringSubmatch(expr)
+		if m != nil {
+			inner := translateExpr(strings.TrimSpace(m[1]))
+			return "values(" + inner + ")"
+		}
 	case strings.HasPrefix(expr, "%{") && strings.HasSuffix(expr, "}"):
 		inner := strings.TrimSpace(expr[2 : len(expr)-1])
 		inner = strings.ReplaceAll(inner, "=>", ":")
@@ -167,6 +173,12 @@ func translateExpr(expr string) string {
 	case strings.HasPrefix(expr, "map_size(") && strings.HasSuffix(expr, ")"):
 		inner := expr[len("map_size(") : len(expr)-1]
 		return "len(" + translateExpr(inner) + ")"
+	case strings.HasPrefix(expr, "Map.values(") && strings.HasSuffix(expr, ")"):
+		inner := expr[len("Map.values(") : len(expr)-1]
+		return "values(" + translateExpr(inner) + ")"
+	case strings.HasPrefix(expr, "Enum.sort(") && strings.HasSuffix(expr, ")"):
+		inner := expr[len("Enum.sort(") : len(expr)-1]
+		return "sort(" + translateExpr(inner) + ")"
 	case strings.HasPrefix(expr, "Map.has_key?(") && strings.HasSuffix(expr, ")"):
 		parts := splitArgs(expr[len("Map.has_key?(") : len(expr)-1])
 		if len(parts) == 2 {
