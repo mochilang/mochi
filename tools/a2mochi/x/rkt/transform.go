@@ -22,34 +22,34 @@ func symString(v any) (string, bool) {
 }
 
 func groupIfUnary(n *ast.Node) *ast.Node {
-        if n != nil && n.Kind == "unary" {
-                return &ast.Node{Kind: "group", Children: []*ast.Node{n}}
-        }
-        return n
+	if n != nil && n.Kind == "unary" {
+		return &ast.Node{Kind: "group", Children: []*ast.Node{n}}
+	}
+	return n
 }
 
 func precedence(op string) int {
-        switch op {
-        case "*", "/", "%":
-                return 3
-        case "+", "-":
-                return 2
-        case "<", ">", "<=", ">=", "==":
-                return 1
-        case "&&", "||":
-                return 0
-        }
-        return -1
+	switch op {
+	case "*", "/", "%":
+		return 3
+	case "+", "-":
+		return 2
+	case "<", ">", "<=", ">=", "==":
+		return 1
+	case "&&", "||":
+		return 0
+	}
+	return -1
 }
 
 func groupIfPrecedence(n *ast.Node, op string) *ast.Node {
-        n = groupIfUnary(n)
-        if n != nil && n.Kind == "binary" {
-                if val, ok := n.Value.(string); ok && precedence(val) < precedence(op) {
-                        return &ast.Node{Kind: "group", Children: []*ast.Node{n}}
-                }
-        }
-        return n
+	n = groupIfUnary(n)
+	if n != nil && n.Kind == "binary" {
+		if val, ok := n.Value.(string); ok && precedence(val) < precedence(op) {
+			return &ast.Node{Kind: "group", Children: []*ast.Node{n}}
+		}
+	}
+	return n
 }
 
 func condLen(args []any) *ast.Node {
@@ -454,15 +454,15 @@ func exprNode(d any) *ast.Node {
 			if len(v) == 3 {
 				return &ast.Node{Kind: "binary", Value: "%", Children: []*ast.Node{exprNode(v[1]), exprNode(v[2])}}
 			}
-                case "string-ref", "list-ref":
-                        return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(v[1]), exprNode(v[2])}}
-                case "hash-ref":
-                        if len(v) == 3 {
-                                if s, ok := v[2].(string); ok {
-                                        return &ast.Node{Kind: "selector", Value: s, Children: []*ast.Node{exprNode(v[1])}}
-                                }
-                        }
-                        return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(v[1]), exprNode(v[2])}}
+		case "string-ref", "list-ref":
+			return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(v[1]), exprNode(v[2])}}
+		case "hash-ref":
+			if len(v) == 3 {
+				if s, ok := v[2].(string); ok {
+					return &ast.Node{Kind: "selector", Value: s, Children: []*ast.Node{exprNode(v[1])}}
+				}
+			}
+			return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(v[1]), exprNode(v[2])}}
 		case "substring":
 			n := &ast.Node{Kind: "call", Value: "substring"}
 			n.Children = append(n.Children, exprNode(v[1]), exprNode(v[2]))
@@ -526,6 +526,10 @@ func exprNode(d any) *ast.Node {
 					return &ast.Node{Kind: "call", Value: "str", Children: []*ast.Node{exprNode(v[2])}}
 				}
 			}
+		case "exact->inexact":
+			if len(v) == 2 {
+				return &ast.Node{Kind: "call", Value: "float", Children: []*ast.Node{exprNode(v[1])}}
+			}
 		case "+", "-", "*", "/", "<", ">", "<=", ">=", "=", "and", "or":
 			op := head
 			switch head {
@@ -539,13 +543,13 @@ func exprNode(d any) *ast.Node {
 			if head == "-" && len(args) == 1 {
 				return &ast.Node{Kind: "unary", Value: "-", Children: []*ast.Node{exprNode(args[0])}}
 			}
-                        left := groupIfPrecedence(exprNode(args[0]), op)
-                        right := groupIfPrecedence(exprNode(args[1]), op)
-                        node := &ast.Node{Kind: "binary", Value: op, Children: []*ast.Node{left, right}}
-                        for _, a := range args[2:] {
-                                node = &ast.Node{Kind: "binary", Value: op, Children: []*ast.Node{node, groupIfPrecedence(exprNode(a), op)}}
-                        }
-                        return node
+			left := groupIfPrecedence(exprNode(args[0]), op)
+			right := groupIfPrecedence(exprNode(args[1]), op)
+			node := &ast.Node{Kind: "binary", Value: op, Children: []*ast.Node{left, right}}
+			for _, a := range args[2:] {
+				node = &ast.Node{Kind: "binary", Value: op, Children: []*ast.Node{node, groupIfPrecedence(exprNode(a), op)}}
+			}
+			return node
 		default:
 			n := &ast.Node{Kind: "call", Value: head}
 			for _, e := range args {
