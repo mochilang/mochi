@@ -21,7 +21,7 @@ import (
 
 var update = flag.Bool("update", false, "update golden files")
 
-func findRepoRoot(t *testing.T) string {
+func repoRoot(t *testing.T) string {
 	dir, err := os.Getwd()
 	if err != nil {
 		t.Fatal(err)
@@ -40,7 +40,7 @@ func findRepoRoot(t *testing.T) string {
 	return ""
 }
 
-func runMochi(src string) ([]byte, error) {
+func run(src string) ([]byte, error) {
 	prog, err := parser.ParseString(src)
 	if err != nil {
 		return nil, err
@@ -61,11 +61,11 @@ func runMochi(src string) ([]byte, error) {
 	return bytes.TrimSpace(out.Bytes()), nil
 }
 
-func TestConvert_Golden(t *testing.T) {
+func TestTransformGolden(t *testing.T) {
 	if _, err := exec.LookPath("clojure"); err != nil {
 		t.Skipf("clojure not installed: %v", err)
 	}
-	root := findRepoRoot(t)
+	root := repoRoot(t)
 	pattern := filepath.Join(root, "tests", "transpiler", "x", "clj", "*.clj")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
@@ -89,13 +89,19 @@ func TestConvert_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("parse: %v", err)
 			}
-			node, err := clj.Convert(prog)
+
+			node, err := clj.Transform(prog)
 			if err != nil {
-				t.Fatalf("convert: %v", err)
+				t.Fatalf("transform: %v", err)
+			}
+			mochiSrc, err := clj.Print(node)
+			if err != nil {
+				t.Fatalf("print: %v", err)
 			}
 			astPath := filepath.Join(outDir, name+".ast")
 			if *update {
 				os.WriteFile(astPath, []byte(node.String()), 0o644)
+				os.WriteFile(filepath.Join(outDir, name+".mochi"), []byte(mochiSrc), 0o644)
 			}
 			want, err := os.ReadFile(astPath)
 			if err != nil {
@@ -109,21 +115,24 @@ func TestConvert_Golden(t *testing.T) {
 			if err := ast.Fprint(&buf, node); err != nil {
 				t.Fatalf("print: %v", err)
 			}
-			code := buf.String()
+			_ = buf.String() // ensure printing works
 			mochiPath := filepath.Join(outDir, name+".mochi")
 			if *update {
-				os.WriteFile(mochiPath, []byte(code), 0o644)
+				os.WriteFile(mochiPath, []byte(mochiSrc), 0o644)
 			}
 
-			gotOut, err := runMochi(code)
+			gotOut, err := run(mochiSrc)
 			if err != nil {
 				t.Fatalf("run: %v", err)
+			}
+			if *update {
+				os.WriteFile(filepath.Join(outDir, name+".out"), gotOut, 0o644)
 			}
 			vmSrc, err := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
 			if err != nil {
 				t.Fatalf("missing vm source: %v", err)
 			}
-			wantOut, err := runMochi(string(vmSrc))
+			wantOut, err := run(string(vmSrc))
 			if err != nil {
 				t.Fatalf("run vm: %v", err)
 			}
