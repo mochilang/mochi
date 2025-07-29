@@ -79,85 +79,47 @@ func TestTransform_Golden(t *testing.T) {
 	if len(files) == 0 {
 		t.Fatalf("no files: %s", pattern)
 	}
-	allowed := map[string]bool{
-		"append_builtin":          true,
-		"basic_compare":           true,
-		"binary_precedence":       true,
-		"bool_chain":              true,
-		"break_continue":          true,
-		"cast_string_to_int":      true,
-		"cast_struct":             true,
-		"print_hello":             true,
-		"avg_builtin":             true,
-		"sum_builtin":             true,
-		"closure":                 true,
-		"fun_call":                true,
-		"for_loop":                true,
-		"len_builtin":             true,
-		"len_string":              true,
-		"map_index":               true,
-		"if_else":                 true,
-		"while_loop":              true,
-		"unary_neg":               true,
-		"let_and_print":           true,
-		"list_index":              true,
-		"fun_three_args":          true,
-		"fun_expr_in_let":         true,
-		"string_concat":           true,
-		"string_compare":          true,
-		"string_index":            true,
-		"string_prefix_slice":     true,
-		"slice":                   true,
-		"list_assign":             true,
-		"map_assign":              true,
-		"membership":              true,
-		"map_membership":          true,
-		"count_builtin":           true,
-		"math_ops":                true,
-		"min_max_builtin":         true,
-		"if_then_else":            true,
-		"if_then_else_nested":     true,
-		"len_map":                 true,
-		"map_int_key":             true,
-		"map_literal_dynamic":     true,
-		"exists_builtin":          true,
-		"list_nested_assign":      true,
-		"list_set_ops":            true,
-		"map_in_operator":         true,
-		"map_nested_assign":       true,
-		"string_contains":         true,
-		"string_in_operator":      true,
-		"substring_builtin":       true,
-		"json_builtin":            true,
-		"tail_recursion":          true,
-		"short_circuit":           true,
-		"values_builtin":          true,
-		"var_assignment":          true,
-		"for_list_collection":     true,
-		"for_map_collection":      true,
-		"cross_join":              true,
-		"cross_join_filter":       true,
-		"cross_join_triple":       true,
-		"dataset_sort_take_limit": true,
-		"dataset_where_filter":    true,
-		"in_operator":             true,
-		"in_operator_extended":    true,
-		"match_expr":              true,
-		"str_builtin":             true,
-		"user_type_literal":       true,
-		"test_block":              true,
-		"two-sum":                 true,
-		"go_auto":                 true,
-		"python_auto":             true,
-		"python_math":             true,
-	}
-	outDir := filepath.Join(root, "tests", "a2mochi", "x", "py")
-	os.MkdirAll(outDir, 0o755)
-	for _, src := range files {
-		name := strings.TrimSuffix(filepath.Base(src), ".py")
-		if !allowed[name] {
-			continue
-		}
+       skip := map[string]bool{
+               // programs that currently fail to compile or run
+               "group_by":                true,
+               "group_by_conditional_sum": true,
+               "group_by_having":         true,
+               "group_by_join":           true,
+               "group_by_left_join":      true,
+               "group_by_multi_join":     true,
+               "group_by_multi_join_sort": true,
+               "group_by_multi_sort":     true,
+               "group_by_sort":           true,
+               "group_items_iteration":   true,
+               "inner_join":             true,
+               "join_multi":             true,
+               "left_join":              true,
+               "left_join_multi":        true,
+               "load_jsonl":             true,
+               "load_yaml":              true,
+               "outer_join":             true,
+               "bench_block":           true,
+               "match_full":            true,
+               "order_by_map":          true,
+               "partial_application":   true,
+               "query_sum_select":       true,
+               "record_assign":          true,
+               "right_join":             true,
+               "save_jsonl_stdout":      true,
+               "sort_stable":            true,
+               "tree_sum":              true,
+               "mix_go_python":         true,
+               "typed_let":             true,
+               "typed_var":             true,
+               "update_stmt":            true,
+       }
+       outDir := filepath.Join(root, "tests", "a2mochi", "x", "py")
+       os.MkdirAll(outDir, 0o755)
+       for _, src := range files {
+               name := strings.TrimSuffix(filepath.Base(src), ".py")
+               if skip[name] {
+                       continue
+               }
 		t.Run(name, func(t *testing.T) {
 			data, err := os.ReadFile(src)
 			if err != nil {
