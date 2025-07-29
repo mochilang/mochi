@@ -35,6 +35,22 @@ func isNumber(s string) bool {
 	return false
 }
 
+func isLiteralAtom(s string) bool {
+	if s == "" {
+		return false
+	}
+	if isNumber(s) {
+		return true
+	}
+	if strings.HasPrefix(s, "\"") && strings.HasSuffix(s, "\"") {
+		return true
+	}
+	if strings.HasPrefix(s, ":") {
+		return true
+	}
+	return false
+}
+
 // newNode creates a new AST node with the given kind, value and children.
 func newNode(kind string, val any, children ...*ast.Node) *ast.Node {
 	return &ast.Node{Kind: kind, Value: val, Children: children}
@@ -77,6 +93,15 @@ func sexprToNode(x any) *ast.Node {
 			return nil
 		}
 		head, ok := v[0].(string)
+		if ok && isLiteralAtom(head) {
+			listN := newNode("list", nil)
+			for _, e := range v {
+				if n := sexprToNode(e); n != nil {
+					listN.Children = append(listN.Children, n)
+				}
+			}
+			return listN
+		}
 		if !ok {
 			return nil
 		}
@@ -159,6 +184,49 @@ func sexprToNode(x any) *ast.Node {
 					return newNode("if", nil, cond, thenN, sexprToNode(v[3]))
 				}
 				return newNode("if", nil, cond, thenN)
+			}
+		case "count":
+			if len(v) == 2 {
+				arg := sexprToNode(v[1])
+				return newNode("call", "len", arg)
+			}
+		case "conj":
+			if len(v) == 3 {
+				call := newNode("call", "append")
+				call.Children = append(call.Children, sexprToNode(v[1]))
+				call.Children = append(call.Children, sexprToNode(v[2]))
+				return call
+			}
+		case "reduce":
+			if len(v) == 4 {
+				if op, ok := v[1].(string); ok && op == "+" {
+					if start, ok := v[2].(string); ok && start == "0" {
+						arg := sexprToNode(v[3])
+						return newNode("call", "sum", arg)
+					}
+				}
+			}
+		case "double":
+			if len(v) == 2 {
+				if inner, ok := v[1].([]any); ok && len(inner) == 3 {
+					if op, ok := inner[0].(string); ok && op == "/" {
+						if left, lok := inner[1].([]any); lok && len(left) == 4 {
+							if right, rok := inner[2].([]any); rok && len(right) == 2 {
+								if lhead, ok := left[0].(string); ok && lhead == "reduce" {
+									if rop, ok := right[0].(string); ok && rop == "count" {
+										if op2, ok := left[1].(string); ok && op2 == "+" {
+											if start, ok := left[2].(string); ok && start == "0" {
+												if fmt.Sprint(left[3]) == fmt.Sprint(right[1]) {
+													return newNode("call", "avg", sexprToNode(left[3]))
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		case "dotimes":
 			if len(v) == 3 {
@@ -265,7 +333,15 @@ func Transform(p *Program) (*ast.Node, error) {
 			root.Children = append(root.Children, node)
 		case "expr":
 			if len(f.Body) > 0 {
-				if n := sexprToNode(toSexpr(f.Body[0])); n != nil {
+				sex := toSexpr(f.Body[0])
+				if arr, ok := sex.([]any); ok && len(arr) > 0 {
+					if h, ok := arr[0].(string); ok {
+						if h == "ns" || h == "require" {
+							continue
+						}
+					}
+				}
+				if n := sexprToNode(sex); n != nil {
 					root.Children = append(root.Children, n)
 				}
 			}
