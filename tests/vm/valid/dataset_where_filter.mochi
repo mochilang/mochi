@@ -1,12 +1,25 @@
-let people = [
-  { name: "Alice", age: 30 },
-  { name: "Bob", age: 15 },
-  { name: "Charlie", age: 65 },
-  { name: "Diana", age: 45 }
+// dataset-where-filter.mochi updated
+type People {
+  name: string
+  age: int
+}
+
+let people: list<People> = [
+  People{name: "Alice", age: 30},
+  People{name: "Bob", age: 15},
+  People{name: "Charlie", age: 65},
+  People{name: "Diana", age: 45}
 ]
+
+type Adult {
+  name: string
+  age: int
+  is_senior: bool
+}
+
 let adults = from person in people
              where person.age >= 18
-             select {
+             select Adult{
                name: person.name,
                age: person.age,
                is_senior: person.age >= 60
