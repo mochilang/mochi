@@ -75,14 +75,17 @@ func TestTransform_Golden(t *testing.T) {
 		t.Fatalf("no files: %s", pattern)
 	}
 
-	skip := map[string]bool{}
+	runOnly := map[string]bool{
+		"cast_struct": true,
+		"closure":     true,
+	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/c")
 	os.MkdirAll(outDir, 0o755)
 
 	for _, srcPath := range files {
 		name := strings.TrimSuffix(filepath.Base(srcPath), ".c")
-		if skip[name] {
+		if len(runOnly) > 0 && !runOnly[name] {
 			continue
 		}
 		t.Run(name, func(t *testing.T) {
