@@ -19,7 +19,10 @@ func Print(node *ast.Node) (string, error) {
 		return "", err
 	}
 	var b bytes.Buffer
-	b.Write(meta.Header("//"))
-	b.Write(srcBuf.Bytes())
-	return b.String(), nil
+       b.Write(meta.Header("//"))
+       b.Write(srcBuf.Bytes())
+       if b.Len() == 0 || b.Bytes()[b.Len()-1] != '\n' {
+               b.WriteByte('\n')
+       }
+       return b.String(), nil
 }
