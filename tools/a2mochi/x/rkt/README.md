@@ -9,7 +9,7 @@ The converter does not rely on a language server. It tokenises the input
 and recognises basic forms such as `define`, `struct` and `for`. Only a
 subset of expressions and statements are supported.
 
-Completed programs: 32/104
+Completed programs: 34/104
 
 ## Checklist
 - [x] append_builtin
@@ -44,4 +44,6 @@ Completed programs: 32/104
 - [x] string_compare
 - [x] membership
 - [x] str_builtin
+- [x] math_ops
+- [x] string_contains
 

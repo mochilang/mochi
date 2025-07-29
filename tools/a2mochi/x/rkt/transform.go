@@ -205,6 +205,21 @@ func exprNode(d any) *ast.Node {
 			if len(args) == 2 {
 				return &ast.Node{Kind: "binary", Value: "+", Children: []*ast.Node{exprNode(args[0]), exprNode(args[1])}}
 			}
+		case "string-contains?":
+			if len(v) == 3 {
+				sel := &ast.Node{Kind: "selector", Value: "contains", Children: []*ast.Node{exprNode(v[1])}}
+				return &ast.Node{Kind: "call", Children: []*ast.Node{sel, exprNode(v[2])}}
+			}
+		case "quotient":
+			if len(v) == 3 {
+				div := &ast.Node{Kind: "binary", Value: "/", Children: []*ast.Node{exprNode(v[1]), exprNode(v[2])}}
+				typ := &ast.Node{Kind: "type", Value: "int"}
+				return &ast.Node{Kind: "cast", Children: []*ast.Node{div, typ}}
+			}
+		case "modulo":
+			if len(v) == 3 {
+				return &ast.Node{Kind: "binary", Value: "%", Children: []*ast.Node{exprNode(v[1]), exprNode(v[2])}}
+			}
 		case "string-ref", "list-ref", "hash-ref":
 			return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(v[1]), exprNode(v[2])}}
 		case "substring":

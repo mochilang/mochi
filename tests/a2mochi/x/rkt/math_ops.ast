@@ -1,0 +1,14 @@
+(program
+  (call print
+    (binary * (int 6) (int 7))
+  )
+  (call print
+    (cast
+      (binary / (int 7) (int 2))
+      (type int)
+    )
+  )
+  (call print
+    (binary % (int 7) (int 2))
+  )
+)
