@@ -168,6 +168,16 @@ func interfaceTypeToMochi(t string) string {
 			return "string"
 		}
 	}
+	switch strings.TrimSpace(t) {
+	case "Int":
+		return "int"
+	case "Double", "Float":
+		return "float"
+	case "Bool":
+		return "bool"
+	case "String":
+		return "string"
+	}
 	return ""
 }
 
@@ -480,7 +490,7 @@ func gatherEnumElements(ms []item) []item {
 	return out
 }
 
-var appendExprRE = regexp.MustCompile(`"\[" \+ \(([^+]+) \+ \[([^\]]+)\]\)\.map\{\s*String\(describing: \$0\)\s*\}\.joined\(separator: ","\) \+ "\]"`)
+var appendExprRE = regexp.MustCompile(`"\[" \+ \(([^+]+) \+ \[([^\]]+)\]\)\.map\{[^}]*\}\.joined\(separator: ","\) \+ "\]"`)
 var sumRe = regexp.MustCompile(`\(?([^()]*)\)?\.reduce\(0,\+\)`)
 var avgRe = regexp.MustCompile(`Double\(\(?([^()]*)\)?\.reduce\(0,\+\)\)\s*/\s*Double\(\(?([^()]*)\)?\.count\)`)
 var closureRe = regexp.MustCompile(`^\{\s*\(([^)]*)\)\s*->\s*([A-Za-z0-9_<>.?]+)\s*in\s*(.+)\s*\}$`)
@@ -495,14 +505,14 @@ func rewriteAppendExpr(expr string) string {
 
 func rewriteSum(expr string) string {
 	if m := sumRe.FindStringSubmatch(expr); m != nil {
-		return "sum(" + strings.TrimSpace(m[1]) + ")"
+		return sumRe.ReplaceAllString(expr, "sum($1)")
 	}
 	return expr
 }
 
 func rewriteAvg(expr string) string {
 	if m := avgRe.FindStringSubmatch(expr); m != nil {
-		return "avg(" + strings.TrimSpace(m[1]) + ")"
+		return avgRe.ReplaceAllString(expr, "avg($1)")
 	}
 	return expr
 }
