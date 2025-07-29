@@ -405,6 +405,23 @@ func convertConsole(expr string) string {
 	if strings.HasPrefix(inner, "String(") && strings.HasSuffix(inner, ")") {
 		inner = inner[len("String(") : len(inner)-1]
 	}
+	if strings.HasPrefix(inner, "\"[\"") && strings.Contains(inner, "]).join") && strings.HasSuffix(inner, "]\"") {
+		start := strings.Index(inner, "[...")
+		end := strings.Index(inner, "]")
+		if start >= 0 && end > start {
+			part := inner[start+4 : end]
+			pieces := strings.SplitN(part, ",", 2)
+			if len(pieces) == 2 {
+				list := strings.TrimSpace(pieces[0])
+				val := strings.TrimSpace(pieces[1])
+				conv := fmt.Sprintf("append(%s, %s)", list, val)
+				if postfix != "" {
+					return "print((" + conv + ")" + postfix + ")"
+				}
+				return "print(" + conv + ")"
+			}
+		}
+	}
 	inner = convertExprSimple(inner)
 	if postfix != "" {
 		return "print((" + inner + ")" + postfix + ")"
@@ -428,6 +445,33 @@ func convertExpr(expr string) string {
 
 func convertExprSimple(expr string) string {
 	expr = strings.TrimSpace(expr)
+	if strings.HasPrefix(expr, "\"[\"") && strings.Contains(expr, "].join") && strings.HasSuffix(expr, "]\"") {
+		start := strings.Index(expr, "[...")
+		end := strings.Index(expr, "]")
+		if start >= 0 && end > start {
+			inner := expr[start+4 : end]
+			parts := strings.SplitN(inner, ",", 2)
+			if len(parts) == 2 {
+				list := strings.TrimSpace(parts[0])
+				val := strings.TrimSpace(parts[1])
+				return fmt.Sprintf("append(%s, %s)", list, val)
+			}
+		}
+	}
+	if strings.HasPrefix(expr, "[...") && strings.HasSuffix(expr, "]") {
+		inner := strings.TrimSpace(expr[1 : len(expr)-1])
+		parts := strings.SplitN(inner, ",", 2)
+		if len(parts) == 2 {
+			head := strings.TrimSpace(parts[0])
+			if strings.HasPrefix(head, "...") {
+				list := strings.TrimSpace(head[3:])
+				tail := strings.TrimSpace(parts[1])
+				if list != "" && tail != "" {
+					return fmt.Sprintf("append(%s, %s)", list, tail)
+				}
+			}
+		}
+	}
 	if strings.HasPrefix(expr, "+") {
 		inner := strings.TrimSpace(expr[1:])
 		if strings.HasPrefix(inner, "(") && strings.HasSuffix(inner, ")") {
