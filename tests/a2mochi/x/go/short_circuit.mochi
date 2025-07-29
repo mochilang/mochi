@@ -1,0 +1,6 @@
+fun boom(a: int, b: int): bool {
+  print("boom")
+  return true
+}
+print((false && boom(1, 2)))
+print((true || boom(1, 2)))

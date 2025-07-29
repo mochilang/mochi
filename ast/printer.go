@@ -226,6 +226,8 @@ func writeStmt(b *strings.Builder, n *Node, indent int) {
 			fmt.Fprintf(b, "%s  %s: %s\n", ind, f.Kind, exprString(f.Children[0]))
 		}
 		fmt.Fprintf(b, "%s}\n", ind)
+	case "block":
+		writeBlock(b, n, indent)
 	default:
 		// expression statement
 		fmt.Fprintf(b, "%s%s\n", ind, exprString(n))
