@@ -22,6 +22,9 @@ var substrRe = regexp.MustCompile(`string:substr\(([^,]+),\s*([^,]+?)\s*\+\s*1,\
 var plusNegRe = regexp.MustCompile(`\+\s*-([0-9]+)`)
 var caseIfRe = regexp.MustCompile(`case\s+(.+?)\s+of\s+true\s*->\s*(.+?);\s*(?:_|false)\s*->\s*(.+?)\s*end`)
 var printCallRe = regexp.MustCompile(`io:(?:format|fwrite)\("~[sp]~n",\s*\[(.+?)\]\)`)
+var foreachRe = regexp.MustCompile(`^lists:foreach\(fun\(([^)]*)\)\s*->\s*(.*?)\s*end,\s*(.+)\)$`)
+var lambdaRe = regexp.MustCompile(`^fun\(([^)]*)\)\s*->\s*(.+)\s*end$`)
+var seqRangeRe = regexp.MustCompile(`lists:seq\(1,\s*([^\)]+)\s*-\s*1\)`)
 
 func node(kind string, value any, children ...*ast.Node) *ast.Node {
 	return &ast.Node{Kind: kind, Value: value, Children: children}
@@ -98,9 +101,15 @@ func formatProgram(p *Program) (string, error) {
 			params = nil
 		}
 		boolReturn := false
+		returnType := ""
 		if len(f.Body) > 0 {
 			last := strings.TrimSpace(f.Body[len(f.Body)-1])
-			if last == "true" || last == "false" || strings.HasPrefix(last, "return ") {
+			rewritten := rewriteLine(strings.ReplaceAll(last, "\n", " "), p.Records)
+			if rewritten == "true" || rewritten == "false" {
+				boolReturn = true
+			} else if strings.HasPrefix(rewritten, "return fun(") {
+				returnType = "fun(any): any"
+			} else if strings.HasPrefix(rewritten, "return ") {
 				boolReturn = true
 			}
 		}
@@ -114,7 +123,9 @@ func formatProgram(p *Program) (string, error) {
 			}
 		}
 		funLine += ")"
-		if boolReturn {
+		if returnType != "" {
+			funLine += ": " + returnType
+		} else if boolReturn {
 			funLine += ": bool"
 		} else if len(params) > 0 {
 			funLine += ": any"
@@ -206,6 +217,29 @@ func rewriteLine(ln string, recs []Record) string {
 	}
 	if printCallRe.MatchString(ln) {
 		ln = printCallRe.ReplaceAllString(ln, "print($1)")
+	}
+	if foreachRe.MatchString(ln) {
+		m := foreachRe.FindStringSubmatch(ln)
+		body := strings.TrimSpace(m[2])
+		body = rewriteLine(body, recs)
+		iter := strings.TrimSpace(m[3])
+		if strings.HasPrefix(iter, "maps:keys(") && strings.HasSuffix(iter, ")") {
+			iter = strings.TrimSuffix(strings.TrimPrefix(iter, "maps:keys("), ")")
+		}
+		if seqRangeRe.MatchString(iter) {
+			im := seqRangeRe.FindStringSubmatch(iter)
+			iter = "1.." + strings.TrimSpace(im[1])
+		}
+		ln = fmt.Sprintf("for %s in %s { %s }", strings.TrimSpace(m[1]), iter, body)
+	}
+	if lambdaRe.MatchString(ln) {
+		m := lambdaRe.FindStringSubmatch(ln)
+		param := strings.TrimSpace(m[1])
+		if param != "_" && !strings.Contains(param, ":") {
+			param += ": any"
+		}
+		body := rewriteLine(strings.TrimSpace(m[2]), recs)
+		ln = fmt.Sprintf("return fun(%s): any => %s", param, body)
 	}
 	for caseIfRe.MatchString(ln) {
 		ln = caseIfRe.ReplaceAllStringFunc(ln, func(s string) string {
