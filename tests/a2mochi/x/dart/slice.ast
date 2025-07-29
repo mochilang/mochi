@@ -1,0 +1,52 @@
+(program
+  (fun main
+    (call print
+      (binary +
+        (binary +
+          (string "[")
+          (call
+            (selector join
+              (call
+                (selector sublist
+                  (list (int 1) (int 2) (int 3))
+                )
+                (int 1)
+                (int 3)
+              )
+            )
+            (string ", ")
+          )
+        )
+        (string "]")
+      )
+    )
+    (call print
+      (binary +
+        (binary +
+          (string "[")
+          (call
+            (selector join
+              (call
+                (selector sublist
+                  (list (int 1) (int 2) (int 3))
+                )
+                (int 0)
+                (int 2)
+              )
+            )
+            (string ", ")
+          )
+        )
+        (string "]")
+      )
+    )
+    (call print
+      (call
+        (selector substring (string hello))
+        (int 1)
+        (int 4)
+      )
+    )
+  )
+  (call main)
+)

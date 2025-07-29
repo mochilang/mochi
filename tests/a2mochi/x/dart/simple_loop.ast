@@ -6,11 +6,12 @@
         (list (int 1) (int 2) (int 3))
       )
       (block
-        (assign sum
+        (let sum
           (binary + (selector sum) (selector i))
         )
       )
     )
     (call print (selector sum))
   )
+  (call main)
 )

@@ -97,7 +97,7 @@ func parseStatements(body string) []string {
 				out = append(out, strings.Repeat("  ", indent)+"for "+head+" {")
 			}
 			indent++
-		case !strings.HasPrefix(l, "var ") && !strings.HasPrefix(l, "return ") && typedVarRe.MatchString(l):
+		case !strings.HasPrefix(l, "var ") && !strings.HasPrefix(l, "return ") && strings.Contains(l, " ") && typedVarRe.MatchString(l):
 			m := typedVarRe.FindStringSubmatch(l)
 			typ := strings.TrimSpace(m[1])
 			name := m[2]

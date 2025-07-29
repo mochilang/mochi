@@ -1,0 +1,21 @@
+(program
+  (fun main
+    (let nums
+      (type list (type int))
+      (list (int 1) (int 2) (int 3))
+    )
+    (call print
+      (call
+        (selector contains (selector nums))
+        (int 2)
+      )
+    )
+    (call print
+      (call
+        (selector contains (selector nums))
+        (int 4)
+      )
+    )
+  )
+  (call main)
+)

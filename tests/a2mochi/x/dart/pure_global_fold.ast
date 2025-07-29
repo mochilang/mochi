@@ -1,0 +1,16 @@
+(program
+  (fun inc
+    (param x)
+    (type float)
+    (return
+      (binary + (selector x) (selector k))
+    )
+  )
+  (fun main
+    (let k (type int) (int 2))
+    (call print
+      (call inc (int 3))
+    )
+  )
+  (call main)
+)

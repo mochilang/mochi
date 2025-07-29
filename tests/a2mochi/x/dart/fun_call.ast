@@ -1,0 +1,16 @@
+(program
+  (fun add
+    (param a)
+    (param b)
+    (type float)
+    (return
+      (binary + (selector a) (selector b))
+    )
+  )
+  (fun main
+    (call print
+      (call add (int 2) (int 3))
+    )
+  )
+  (call main)
+)
