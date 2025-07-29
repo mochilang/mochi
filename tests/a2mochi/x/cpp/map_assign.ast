@@ -1,0 +1,19 @@
+(program
+  (var scores
+    (map
+      (entry (string alice) (int 1))
+    )
+  )
+  (fun main
+    (type int)
+    (assign
+      (index (selector scores) (string bob))
+      (int 2)
+    )
+    (call print
+      (index (selector scores) (string bob))
+    )
+    (return (int 0))
+  )
+  (call main)
+)

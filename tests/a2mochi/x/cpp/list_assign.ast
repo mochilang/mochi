@@ -1,0 +1,17 @@
+(program
+  (var nums
+    (list (int 1) (int 2))
+  )
+  (fun main
+    (type int)
+    (assign
+      (index (selector nums) (int 1))
+      (int 3)
+    )
+    (call print
+      (index (selector nums) (int 1))
+    )
+    (return (int 0))
+  )
+  (call main)
+)

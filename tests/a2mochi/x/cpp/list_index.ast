@@ -1,0 +1,13 @@
+(program
+  (var xs
+    (list (int 10) (int 20) (int 30))
+  )
+  (fun main
+    (type int)
+    (call print
+      (index (selector xs) (int 1))
+    )
+    (return (int 0))
+  )
+  (call main)
+)
