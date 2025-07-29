@@ -20,5 +20,6 @@ func Print(n *ast.Node) (string, error) {
 	if err := ast.Fprint(&b, n); err != nil {
 		return "", err
 	}
+	b.WriteByte('\n')
 	return b.String(), nil
 }

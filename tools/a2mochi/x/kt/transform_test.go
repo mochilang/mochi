@@ -143,6 +143,7 @@ func TestTransform_Golden(t *testing.T) {
 		"avg_builtin":         true,
 		"basic_compare":       true,
 		"binary_precedence":   true,
+		"bool_chain":          true,
 		"cast_string_to_int":  true,
 		"for_loop":            true,
 		"for_list_collection": true,

@@ -578,6 +578,26 @@ func parseStmts(lines []string) []Stmt {
 			continue
 		}
 
+		// break/continue/return
+		if l == "break" {
+			stmts = append(stmts, Stmt{Kind: "break"})
+			continue
+		}
+		if l == "continue" {
+			stmts = append(stmts, Stmt{Kind: "continue"})
+			continue
+		}
+		if strings.HasPrefix(l, "return") {
+			expr := strings.TrimSpace(strings.TrimPrefix(l, "return"))
+			if expr != "" {
+				expr = convertExpr(expr)
+				stmts = append(stmts, Stmt{Kind: "return", Expr: expr})
+			} else {
+				stmts = append(stmts, Stmt{Kind: "return"})
+			}
+			continue
+		}
+
 		// assignment
 		if idx := strings.Index(l, "="); idx != -1 && !strings.HasPrefix(l, "for ") {
 			name := strings.TrimSpace(l[:idx])

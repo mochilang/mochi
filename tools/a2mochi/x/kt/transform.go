@@ -116,6 +116,16 @@ func genMochiFromStmts(stmts []Stmt) string {
 			fmt.Fprintf(&b, "for %s in %s {\n", sanitizeName(s.Name), s.Expr)
 			b.WriteString(genMochiFromStmts(s.Body))
 			b.WriteString("}\n")
+		case "return":
+			if s.Expr != "" {
+				fmt.Fprintf(&b, "return %s\n", s.Expr)
+			} else {
+				b.WriteString("return\n")
+			}
+		case "break":
+			b.WriteString("break\n")
+		case "continue":
+			b.WriteString("continue\n")
 		}
 	}
 	return b.String()
