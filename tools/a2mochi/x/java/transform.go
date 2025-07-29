@@ -141,6 +141,16 @@ func exprNode(e Expr) *mochias.Node {
 	case "Call":
 		// special handling for method calls on an object
 		if e.Target != nil && e.Target.Kind == "Member" {
+			if p := memberPath(e.Target); p == "java.util.Arrays.copyOfRange" && len(e.Args) == 3 {
+				return &mochias.Node{Kind: "index", Children: []*mochias.Node{
+					exprNode(e.Args[0]),
+					&mochias.Node{Kind: "start", Children: []*mochias.Node{exprNode(e.Args[1])}},
+					&mochias.Node{Kind: "end", Children: []*mochias.Node{exprNode(e.Args[2])}},
+				}}
+			}
+			if p := memberPath(e.Target); p == "java.util.Arrays.toString" && len(e.Args) == 1 {
+				return &mochias.Node{Kind: "call", Value: "str", Children: []*mochias.Node{exprNode(e.Args[0])}}
+			}
 			switch e.Target.Name {
 			case "length":
 				if len(e.Args) == 0 {
@@ -188,6 +198,11 @@ func exprNode(e Expr) *mochias.Node {
 			arr.Children = append(arr.Children, exprNode(el))
 		}
 		return arr
+	case "Index":
+		if e.Expr != nil && e.Index != nil {
+			return &mochias.Node{Kind: "index", Children: []*mochias.Node{exprNode(*e.Expr), exprNode(*e.Index)}}
+		}
+		return &mochias.Node{Kind: "unknown"}
 	case "Cond":
 		if e.Then != nil && e.Else != nil {
 			// special case for boolean expression encoded as 1/0
@@ -286,4 +301,24 @@ func mergeStrings(nodes []*mochias.Node) []*mochias.Node {
 		}
 	}
 	return merged
+}
+
+func memberPath(e *Expr) string {
+	if e == nil {
+		return ""
+	}
+	switch e.Kind {
+	case "Member":
+		if e.Expr != nil {
+			p := memberPath(e.Expr)
+			if p != "" {
+				return p + "." + e.Name
+			}
+		}
+		return e.Name
+	case "Ident":
+		return e.Name
+	default:
+		return ""
+	}
 }

@@ -98,6 +98,8 @@ func TestTransform_Golden(t *testing.T) {
 		"str_builtin":         true,
 		"substring_builtin":   true,
 		"string_prefix_slice": true,
+		"list_index":          true,
+		"slice":               true,
 	}
 
 	outDir := filepath.Join(rootDir, "tests/a2mochi/x/java")

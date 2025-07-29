@@ -270,6 +270,14 @@ public class AstJson {
             printExpr(ct.getFalseExpression());
             out.print("}");
             break;
+        case ARRAY_ACCESS:
+            ArrayAccessTree aa = (ArrayAccessTree) expr;
+            out.print("{\"kind\":\"Index\",\"expr\":");
+            printExpr(aa.getExpression());
+            out.print(",\"index\":");
+            printExpr(aa.getIndex());
+            out.print("}");
+            break;
         case NEW_ARRAY:
             NewArrayTree nat = (NewArrayTree) expr;
             out.print("{\"kind\":\"Array\",\"elems\":[");
