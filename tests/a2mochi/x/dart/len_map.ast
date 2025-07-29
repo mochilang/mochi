@@ -1,7 +1,7 @@
 (program
   (fun main
     (call print
-      (selector length
+      (call len
         (map
           (entry (string a) (int 1))
           (entry (string b) (int 2))

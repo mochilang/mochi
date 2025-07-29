@@ -173,22 +173,40 @@ func TestTransform_Golden(t *testing.T) {
 		"bool_chain":          true,
 		"break_continue":      true,
 		"cast_string_to_int":  true,
+		"closure":             false,
 		"exists_builtin":      true,
 		"for_list_collection": true,
 		"for_loop":            true,
+		"fun_call":            false,
+		"fun_expr_in_let":     false,
+		"fun_three_args":      false,
+		"go_auto":             false,
 		"in_operator":         true,
-		"let_and_print":       true,
 		"len_builtin":         true,
+		"len_map":             true,
+		"len_string":          true,
+		"let_and_print":       true,
+		"list_assign":         false,
 		"list_index":          true,
+		"map_in_operator":     false,
 		"map_int_key":         true,
 		"membership":          true,
+		"partial_application": false,
 		"print_hello":         true,
+		"pure_fold":           false,
+		"pure_global_fold":    false,
+		"simple_loop":         false,
+		"slice":               false,
+		"str_builtin":         false,
 		"string_concat":       true,
 		"string_contains":     true,
 		"string_in_operator":  true,
 		"string_index":        true,
+		"substring_builtin":   false,
 		"test_block":          true,
 		"two-sum":             true,
+		"typed_let":           false,
+		"typed_var":           false,
 		"unary_neg":           true,
 		"var_assignment":      true,
 		"while_loop":          true,
@@ -220,12 +238,11 @@ func updateReadme() {
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".dart")
 		mark := "[ ]"
-		outPath := filepath.Join(outDir, name+".out")
-		vmOutPath := filepath.Join(root, "tests", "vm", "valid", name+".out")
-		got, gErr := os.ReadFile(outPath)
-		want, wErr := os.ReadFile(vmOutPath)
-		if gErr == nil && wErr == nil {
-			if bytes.Equal(bytes.TrimSpace(got), bytes.TrimSpace(want)) {
+		outBytes, err1 := os.ReadFile(filepath.Join(outDir, name+".out"))
+		vmSrc, err2 := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
+		if err1 == nil && err2 == nil {
+			wantOut, err := runMochi(string(vmSrc))
+			if err == nil && bytes.Equal(bytes.TrimSpace(outBytes), wantOut) {
 				compiled++
 				mark = "[x]"
 			}
