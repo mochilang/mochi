@@ -298,6 +298,9 @@ func rewriteLine(ln string, recs []Record) []string {
 	for divRe.MatchString(ln) {
 		ln = divRe.ReplaceAllString(ln, "int($1 / $2)")
 	}
+	if strings.Contains(ln, "int(print(") {
+		ln = strings.ReplaceAll(ln, "int(print(", "print(int(")
+	}
 	for remRe.MatchString(ln) {
 		ln = remRe.ReplaceAllString(ln, "$1 % $2")
 	}
@@ -469,7 +472,7 @@ func rewriteLine(ln string, recs []Record) []string {
 	return []string{prefix + ln}
 }
 
-var printfRe = regexp.MustCompile(`^"(?:~[sp]~n|~p ~p~n)",\s*\[(.+)\]\)$`)
+var printfRe = regexp.MustCompile(`^"(?:~(?:[sp]|ts)~n|~p ~p~n)",\s*\[(.+)\]\)$`)
 
 func rewritePrint(args string) string {
 	trimmed := strings.TrimSpace(args)

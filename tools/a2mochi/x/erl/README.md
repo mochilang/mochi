@@ -1,7 +1,7 @@
 # a2mochi Erlang Converter
 
-Completed programs: 50/103
-Date: 2025-07-29 21:03 GMT+7
+Completed programs: 52/103
+Date: 2025-07-29 21:30 GMT+7
 
 This directory stores golden files for the Erlang to Mochi converter.
 
@@ -69,7 +69,7 @@ This directory stores golden files for the Erlang to Mochi converter.
 - [x] map_nested_assign
 - [x] match_expr
 - [ ] match_full
-- [ ] math_ops
+- [x] math_ops
 - [x] membership
 - [x] min_max_builtin
 - [ ] nested_function
@@ -98,7 +98,7 @@ This directory stores golden files for the Erlang to Mochi converter.
 - [x] substring_builtin
 - [x] sum_builtin
 - [ ] tail_recursion
-- [ ] test_block
+- [x] test_block
 - [ ] tree_sum
 - [x] two-sum
 - [ ] typed_let

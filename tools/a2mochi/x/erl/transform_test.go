@@ -189,8 +189,8 @@ func TestTransform_Golden(t *testing.T) {
 		"match_expr":          true,
 		"typed_var":           false,
 		"typed_let":           false,
-		"test_block":          false,
-		"math_ops":            false,
+		"test_block":          true,
+		"math_ops":            true,
 		"two-sum":             true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "erl")
