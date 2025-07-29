@@ -43,6 +43,7 @@ type Node struct {
 	StartVal string   `json:"startVal,omitempty"`
 	EndVal   string   `json:"endVal,omitempty"`
 	Cond     string   `json:"cond,omitempty"`
+	Else     string   `json:"else,omitempty"`
 }
 
 // Program is the result of parsing a TypeScript source file.
