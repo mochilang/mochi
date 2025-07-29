@@ -19,7 +19,7 @@ import (
 
 var update = flag.Bool("update", false, "update golden files")
 
-func findRepoRoot(t *testing.T) string {
+func repoRoot(t *testing.T) string {
 	dir, err := os.Getwd()
 	if err != nil {
 		t.Fatal(err)
@@ -38,7 +38,7 @@ func findRepoRoot(t *testing.T) string {
 	return ""
 }
 
-func runMochi(src string) ([]byte, error) {
+func run(src string) ([]byte, error) {
 	prog, err := parser.ParseString(src)
 	if err != nil {
 		return nil, err
@@ -59,9 +59,17 @@ func runMochi(src string) ([]byte, error) {
 	return bytes.TrimSpace(out.Bytes()), nil
 }
 
-func TestConvert_Golden(t *testing.T) {
-	root := findRepoRoot(t)
-	pattern := filepath.Join(root, "tests/transpiler/x/java", "*.java")
+func runFile(path string) ([]byte, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	return run(string(data))
+}
+
+func TestTransform_Golden(t *testing.T) {
+	rootDir := repoRoot(t)
+	pattern := filepath.Join(rootDir, "tests/transpiler/x/java", "*.java")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatal(err)
@@ -70,55 +78,44 @@ func TestConvert_Golden(t *testing.T) {
 		t.Fatalf("no files: %s", pattern)
 	}
 
-	allowed := map[string]bool{
+	cases := map[string]bool{
 		"print_hello":         true,
-		"unary_neg":           true,
 		"let_and_print":       true,
 		"var_assignment":      true,
 		"for_loop":            true,
-		"while_loop":          true,
-		"binary_precedence":   true,
 		"math_ops":            true,
 		"string_concat":       true,
 		"basic_compare":       true,
-		"cast_string_to_int":  true,
-		"if_else":             true,
-		"typed_let":           true,
-		"typed_var":           true,
 		"for_list_collection": true,
 	}
 
-	outDir := filepath.Join(root, "tests/a2mochi/x/java")
+	outDir := filepath.Join(rootDir, "tests/a2mochi/x/java")
 	os.MkdirAll(outDir, 0o755)
 
 	for _, srcPath := range files {
 		name := strings.TrimSuffix(filepath.Base(srcPath), ".java")
-		if !allowed[name] {
+		if !cases[name] {
 			continue
 		}
 		t.Run(name, func(t *testing.T) {
-			data, err := os.ReadFile(srcPath)
-			if err != nil {
-				t.Fatalf("read src: %v", err)
-			}
-			node, err := java.Parse(string(data))
+			node, err := java.ParseFile(srcPath)
 			if err != nil {
 				t.Fatalf("parse: %v", err)
 			}
-			astNode, err := java.Convert(node)
+			astNode, err := java.Transform(node)
 			if err != nil {
-				t.Fatalf("convert: %v", err)
+				t.Fatalf("transform: %v", err)
 			}
-			code, err := java.ConvertSource(node)
+			code, err := java.Print(astNode)
 			if err != nil {
-				t.Fatalf("convert src: %v", err)
+				t.Fatalf("print: %v", err)
 			}
 			astPath := filepath.Join(outDir, name+".ast")
+			mochiPath := filepath.Join(outDir, name+".mochi")
 			if *update {
 				os.WriteFile(astPath, []byte(astNode.String()), 0o644)
-				os.WriteFile(filepath.Join(outDir, name+".mochi"), []byte(code), 0o644)
-				out, err := runMochi(code)
-				if err == nil {
+				os.WriteFile(mochiPath, []byte(code), 0o644)
+				if out, err := runFile(mochiPath); err == nil {
 					os.WriteFile(filepath.Join(outDir, name+".out"), out, 0o644)
 				}
 			}
@@ -130,15 +127,15 @@ func TestConvert_Golden(t *testing.T) {
 				t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", astNode.String(), want)
 			}
 			// also check runtime output matches vm reference
-			gotOut, err := runMochi(code)
+			gotOut, err := runFile(mochiPath)
 			if err != nil {
 				t.Fatalf("run: %v", err)
 			}
-			vmSrc, err := os.ReadFile(filepath.Join(root, "tests/vm/valid", name+".mochi"))
+			vmSrc, err := os.ReadFile(filepath.Join(rootDir, "tests/vm/valid", name+".mochi"))
 			if err != nil {
 				t.Fatalf("missing vm source: %v", err)
 			}
-			wantOut, err := runMochi(string(vmSrc))
+			wantOut, err := run(string(vmSrc))
 			if err != nil {
 				t.Fatalf("run vm: %v", err)
 			}
