@@ -1,13 +1,16 @@
 //go:build slow
 
-package rs
+package rust
 
 import (
+	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 )
 
 // RustASTNode represents a node in the Rust syntax tree.
@@ -28,6 +31,12 @@ type ASTNode struct {
 	Snippet     string     `json:"snippet,omitempty"`
 	Depth       int        `json:"depth,omitempty"`
 	Index       int        `json:"index,omitempty"`
+}
+
+// Program bundles the Rust AST with its original source code.
+type Program struct {
+	Source string   `json:"source"`
+	AST    *ASTNode `json:"ast"`
 }
 
 func position(src string, off int) (line, col int) {
@@ -103,16 +112,22 @@ func ParseAST(src string) (*ASTNode, error) {
 	return toASTNode(src, tree, "", -1, &id, 0, 0), nil
 }
 
-// Parse parses the given Rust source code using rust-analyzer and returns the ASTNode.
-func Parse(src string) (*ASTNode, error) { return ParseAST(src) }
+// Parse parses Rust source code using rust-analyzer and returns a Program.
+func Parse(src string) (*Program, error) {
+	ast, err := ParseAST(src)
+	if err != nil {
+		return nil, err
+	}
+	return &Program{Source: src, AST: ast}, nil
+}
 
 // ParseFile reads the Rust file and parses it.
-func ParseFile(path string) (*ASTNode, error) {
+func ParseFile(path string) (*Program, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return ParseAST(string(data))
+	return Parse(string(data))
 }
 
 // ParseASTFile reads the Rust file and parses it to an ASTNode.
@@ -135,4 +150,21 @@ func lineSnippet(src string, line int) string {
 		return ""
 	}
 	return strings.TrimSpace(lines[line-1])
+}
+
+func runRustAnalyzerParse(cmd, src string) (string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	c := exec.CommandContext(ctx, cmd, "parse")
+	c.Stdin = strings.NewReader(src)
+	var out, stderr bytes.Buffer
+	c.Stdout = &out
+	c.Stderr = &stderr
+	if err := c.Run(); err != nil {
+		if msg := strings.TrimSpace(stderr.String()); msg != "" {
+			return "", fmt.Errorf("%v: %s", err, msg)
+		}
+		return "", err
+	}
+	return out.String(), nil
 }
