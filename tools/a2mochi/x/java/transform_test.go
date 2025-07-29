@@ -90,13 +90,15 @@ func TestTransform_Golden(t *testing.T) {
 		"len_builtin":         true,
 		"len_string":          true,
 		"break_continue":      true,
+		"if_then_else":        true,
+		"if_then_else_nested": true,
 		"string_compare":      true,
-               "string_contains":     true,
-               "string_index":        true,
-               "str_builtin":         true,
-               "substring_builtin":   true,
-               "string_prefix_slice": true,
-       }
+		"string_contains":     true,
+		"string_index":        true,
+		"str_builtin":         true,
+		"substring_builtin":   true,
+		"string_prefix_slice": true,
+	}
 
 	outDir := filepath.Join(rootDir, "tests/a2mochi/x/java")
 	os.MkdirAll(outDir, 0o755)
