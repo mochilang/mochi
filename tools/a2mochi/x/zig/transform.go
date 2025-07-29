@@ -447,6 +447,15 @@ func gen(st stmt, indent string, b *strings.Builder) {
 			fmt.Fprintf(b, "%s%s\n", indent, line)
 			return
 		}
+		if strings.HasPrefix(line, "return") {
+			rest := strings.TrimSpace(strings.TrimPrefix(line, "return"))
+			if rest != "" {
+				fmt.Fprintf(b, "%sreturn %s\n", indent, transformExpr(rest))
+			} else {
+				fmt.Fprintf(b, "%sreturn\n", indent)
+			}
+			return
+		}
 	}
 }
 

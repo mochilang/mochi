@@ -138,6 +138,9 @@ func TestTransform_Golden(t *testing.T) {
 		"if_then_else":        true,
 		"if_then_else_nested": true,
 		"for_list_collection": true,
+		"string_in_operator":  true,
+		"fun_expr_in_let":     true,
+		"count_builtin":       true,
 	}
 
 	if _, err := exec.LookPath("zig"); err != nil {
