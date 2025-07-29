@@ -1,0 +1,67 @@
+(program
+  (fun _now
+    (type any)
+    (block
+      (if
+        (selector now_seeded)
+        (block
+          (let now_seed
+            (binary %
+              (group
+                (binary +
+                  (group
+                    (binary * (selector now_seed) (int 1664525))
+                  )
+                  (int 1013904223)
+                )
+              )
+              (int 2147483647)
+            )
+          )
+          (return (selector now_seed))
+        )
+      )
+    )
+  )
+  (let now_seed (int 0))
+  (let s
+    (call getenv (string "'MOCHI_NOW_SEED'"))
+  )
+  (let __start_mem (call memory_get_usage))
+  (let __start (call _now))
+  (let n (int 1000))
+  (let s (int 0))
+  (let __end (call _now))
+  (let __end_mem (call memory_get_usage))
+  (let __duration
+    (call intdiv
+      (group
+        (binary - (selector __end) (selector __start))
+      )
+      (int 1000)
+    )
+  )
+  (let __mem_diff (int 0))
+  (let __bench
+    (map
+      (entry (string duration_us) (selector __duration))
+      (entry (string memory_bytes) (selector __mem_diff))
+      (entry (string name) (string simple))
+    )
+  )
+  (let __j
+    (call json (selector __bench))
+  )
+  (let __j
+    (call str_replace (string "    ") (string "  ") (selector __j))
+  )
+  (for i
+    (range (int 1) (selector n))
+    (block
+      (let s
+        (binary + (selector s) (selector i))
+      )
+    )
+  )
+  (call print (selector __j))
+)

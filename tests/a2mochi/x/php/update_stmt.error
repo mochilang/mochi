@@ -1,0 +1,5 @@
+error[T024]: cannot assign to `people` (immutable)
+  --> :7:3
+
+help:
+  Use `var` to declare mutable variables.

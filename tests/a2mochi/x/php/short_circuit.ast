@@ -1,0 +1,12 @@
+(program
+  (fun boom
+    (param a (type any))
+    (param b (type any))
+    (type bool)
+    (block
+      (call print (string boom))
+    )
+  )
+  (call print (string False))
+  (call print (string False))
+)

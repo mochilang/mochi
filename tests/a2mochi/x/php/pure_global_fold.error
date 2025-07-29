@@ -1,0 +1,5 @@
+error[T002]: undefined variable: k
+  --> :2:15
+
+help:
+  Check if the variable was declared in this scope.

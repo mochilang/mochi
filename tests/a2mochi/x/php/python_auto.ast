@@ -1,0 +1,14 @@
+(program
+  (call print (float 16))
+  (call print
+    (index
+      (group
+        (cast
+          (selector math)
+          (type map (type string) (type any))
+        )
+      )
+      (string pi)
+    )
+  )
+)

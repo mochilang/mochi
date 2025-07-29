@@ -776,13 +776,28 @@ func simpleExpr(n pnode.Node) (string, bool) {
 		}
 		return fmt.Sprintf("(%s * %s)", left, right), true
 	case *binary.Div:
-		left, ok1 := simpleExpr(v.Left)
-		if !ok1 {
+		left, lok := simpleExpr(v.Left)
+		if !lok {
 			return "", false
 		}
-		right, ok2 := simpleExpr(v.Right)
-		if !ok2 {
+		right, rok := simpleExpr(v.Right)
+		if !rok {
 			return "", false
+		}
+		if lcall, ok := v.Left.(*expr.FunctionCall); ok &&
+			nameString(lcall.Function) == "array_sum" &&
+			lcall.ArgumentList != nil && len(lcall.ArgumentList.Arguments) == 1 {
+			if rcall, ok := v.Right.(*expr.FunctionCall); ok &&
+				nameString(rcall.Function) == "count" &&
+				rcall.ArgumentList != nil && len(rcall.ArgumentList.Arguments) == 1 {
+				larg := lcall.ArgumentList.Arguments[0].(*pnode.Argument).Expr
+				rarg := rcall.ArgumentList.Arguments[0].(*pnode.Argument).Expr
+				if simpleExprEqual(left, rarg) {
+					if argStr, ok := simpleExpr(larg); ok {
+						return fmt.Sprintf("avg(%s)", argStr), true
+					}
+				}
+			}
 		}
 		return fmt.Sprintf("((%s / %s) as int)", left, right), true
 	case *binary.Mod:

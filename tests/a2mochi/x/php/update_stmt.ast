@@ -1,0 +1,76 @@
+(program
+  (let people
+    (list
+      (map
+        (entry (string name) (string Alice))
+        (entry (string age) (int 17))
+        (entry (string status) (string minor))
+      )
+      (map
+        (entry (string name) (string Bob))
+        (entry (string age) (int 25))
+        (entry (string status) (string unknown))
+      )
+      (map
+        (entry (string name) (string Charlie))
+        (entry (string age) (int 18))
+        (entry (string status) (string unknown))
+      )
+      (map
+        (entry (string name) (string Diana))
+        (entry (string age) (int 16))
+        (entry (string status) (string minor))
+      )
+    )
+  )
+  (for item
+    (in (selector people))
+    (block
+      (if
+        (binary >=
+          (index
+            (group
+              (cast
+                (selector item)
+                (type map (type string) (type any))
+              )
+            )
+            (string age)
+          )
+          (int 18)
+        )
+        (block
+          (assign
+            (index (selector item) (string "'status'"))
+            (string adult)
+          )
+          (assign
+            (index (selector item) (string "'age'"))
+            (binary +
+              (group
+                (cast
+                  (index
+                    (group
+                      (cast
+                        (selector item)
+                        (type map (type string) (type any))
+                      )
+                    )
+                    (string age)
+                  )
+                  (type int)
+                )
+              )
+              (int 1)
+            )
+          )
+        )
+      )
+      (assign
+        (index (selector people) (selector idx))
+        (selector item)
+      )
+    )
+  )
+  (call print (string ok))
+)

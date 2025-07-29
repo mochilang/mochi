@@ -1,0 +1,58 @@
+(program
+  (let nums
+    (list (int 1) (int 2))
+  )
+  (let letters
+    (list (string A) (string B))
+  )
+  (let combos (list))
+  (for n
+    (in (selector nums))
+    (block
+      (for l
+        (in (selector letters))
+        (block
+          (for b
+            (in (selector bools))
+            (block)
+          )
+        )
+      )
+    )
+  )
+  (call print (string "--- Cross Join of three lists ---"))
+  (for c
+    (in (selector combos))
+    (block
+      (call print
+        (index
+          (group
+            (cast
+              (selector c)
+              (type map (type string) (type any))
+            )
+          )
+          (string n)
+        )
+        (index
+          (group
+            (cast
+              (selector c)
+              (type map (type string) (type any))
+            )
+          )
+          (string l)
+        )
+        (index
+          (group
+            (cast
+              (selector c)
+              (type map (type string) (type any))
+            )
+          )
+          (string b)
+        )
+      )
+    )
+  )
+)

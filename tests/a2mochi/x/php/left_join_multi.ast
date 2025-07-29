@@ -1,0 +1,136 @@
+(program
+  (let customers
+    (list
+      (map
+        (entry (string id) (int 1))
+        (entry (string name) (string Alice))
+      )
+      (map
+        (entry (string id) (int 2))
+        (entry (string name) (string Bob))
+      )
+    )
+  )
+  (let orders
+    (list
+      (map
+        (entry (string id) (int 100))
+        (entry (string customerId) (int 1))
+      )
+      (map
+        (entry (string id) (int 101))
+        (entry (string customerId) (int 2))
+      )
+    )
+  )
+  (let items
+    (list
+      (map
+        (entry (string orderId) (int 100))
+        (entry (string sku) (string a))
+      )
+    )
+  )
+  (let result (list))
+  (for o
+    (in (selector orders))
+    (block
+      (for c
+        (in (selector customers))
+        (block
+          (for i
+            (in (selector items))
+            (block
+              (if
+                (binary ==
+                  (index
+                    (group
+                      (cast
+                        (selector o)
+                        (type map (type string) (type any))
+                      )
+                    )
+                    (string customerId)
+                  )
+                  (index
+                    (group
+                      (cast
+                        (selector c)
+                        (type map (type string) (type any))
+                      )
+                    )
+                    (string id)
+                  )
+                )
+                (block)
+              )
+            )
+          )
+          (if
+            (unary ! (selector matched))
+            (block
+              (if
+                (binary ==
+                  (index
+                    (group
+                      (cast
+                        (selector o)
+                        (type map (type string) (type any))
+                      )
+                    )
+                    (string customerId)
+                  )
+                  (index
+                    (group
+                      (cast
+                        (selector c)
+                        (type map (type string) (type any))
+                      )
+                    )
+                    (string id)
+                  )
+                )
+                (block)
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (call print (string "--- Left Join Multi ---"))
+  (for r
+    (in (selector result))
+    (block
+      (call print
+        (index
+          (group
+            (cast
+              (selector r)
+              (type map (type string) (type any))
+            )
+          )
+          (string orderId)
+        )
+        (index
+          (group
+            (cast
+              (selector r)
+              (type map (type string) (type any))
+            )
+          )
+          (string name)
+        )
+        (index
+          (group
+            (cast
+              (selector r)
+              (type map (type string) (type any))
+            )
+          )
+          (string item)
+        )
+      )
+    )
+  )
+)

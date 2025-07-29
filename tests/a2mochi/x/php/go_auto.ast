@@ -1,0 +1,24 @@
+(program
+  (call print
+    (index
+      (group
+        (cast
+          (selector testpkg)
+          (type map (type string) (type any))
+        )
+      )
+      (string Pi)
+    )
+  )
+  (call print
+    (index
+      (group
+        (cast
+          (selector testpkg)
+          (type map (type string) (type any))
+        )
+      )
+      (string Answer)
+    )
+  )
+)

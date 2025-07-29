@@ -1,0 +1,44 @@
+(program
+  (fun inc
+    (param c (type any))
+    (type any)
+    (block
+      (assign
+        (index (selector c) (string n))
+        (binary +
+          (group
+            (cast
+              (index
+                (group
+                  (cast
+                    (selector c)
+                    (type map (type string) (type any))
+                  )
+                )
+                (string n)
+              )
+              (type int)
+            )
+          )
+          (int 1)
+        )
+      )
+    )
+  )
+  (let c
+    (map
+      (entry (string n) (int 0))
+    )
+  )
+  (call print
+    (index
+      (group
+        (cast
+          (selector c)
+          (type map (type string) (type any))
+        )
+      )
+      (string n)
+    )
+  )
+)

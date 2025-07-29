@@ -1,0 +1,50 @@
+(program
+  (let xs
+    (list (int 1) (int 2) (int 3))
+  )
+  (let ys (list))
+  (let m
+    (map
+      (entry (string a) (int 1))
+    )
+  )
+  (let s (string hello))
+  (for x
+    (in (selector xs))
+    (block
+      (if
+        (binary ==
+          (group
+            (binary % (selector x) (int 2))
+          )
+          (int 1)
+        )
+        (block)
+      )
+    )
+  )
+  (call print
+    (binary in (int 1) (selector ys))
+  )
+  (call print
+    (binary in (int 2) (selector ys))
+  )
+  (call print
+    (binary in (string a) (selector m))
+  )
+  (call print
+    (binary in (string b) (selector m))
+  )
+  (call print
+    (call
+      (selector contains (selector s))
+      (string ell)
+    )
+  )
+  (call print
+    (call
+      (selector contains (selector s))
+      (string foo)
+    )
+  )
+)
