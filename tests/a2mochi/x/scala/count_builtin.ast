@@ -1,7 +1,7 @@
 (program
   (call print
-    (selector size
-      (call ArrayBuffer (int 1) (int 2) (int 3))
+    (call len
+      (list (int 1) (int 2) (int 3))
     )
   )
 )

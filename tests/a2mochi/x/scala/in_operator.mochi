@@ -1,4 +1,4 @@
-// a2mochi scala v0.10.48 2025-07-29 17:48:14 GMT+7
-let xs = ArrayBuffer(1, 2, 3)
+// a2mochi scala v0.10.48 2025-07-29 18:25:21 GMT+7
+let xs = [1, 2, 3]
 print(xs.contains(2))
 print(!xs.contains(5))

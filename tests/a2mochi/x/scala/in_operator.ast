@@ -1,6 +1,6 @@
 (program
   (let xs
-    (call ArrayBuffer (int 1) (int 2) (int 3))
+    (list (int 1) (int 2) (int 3))
   )
   (call print
     (call

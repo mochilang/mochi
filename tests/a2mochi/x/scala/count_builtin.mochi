@@ -1,2 +1,2 @@
-// a2mochi scala v0.10.48 2025-07-29 17:47:08 GMT+7
-print(ArrayBuffer(1, 2, 3).size)
+// a2mochi scala v0.10.48 2025-07-29 18:24:16 GMT+7
+print(len([1, 2, 3]))
