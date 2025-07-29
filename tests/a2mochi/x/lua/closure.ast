@@ -5,9 +5,7 @@
       (funexpr
         (param x (type int))
         (type int)
-        (group
-          (binary + (selector x) (selector n))
-        )
+        (binary + (selector x) (selector n))
       )
     )
   )

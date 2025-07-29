@@ -1,0 +1,25 @@
+(program
+  (call print
+    (call table.concat
+      (call "fun(lst, s, e) {\n    let r = []\n    for i in (s + 1)..(e) + 1 {\n      r[(len(r) + 1)] = lst.i\n    }\n    return r\n}"
+        (list (int 1) (int 2) (int 3))
+        (int 1)
+        (int 3)
+      )
+      (string " ")
+    )
+  )
+  (call print
+    (call table.concat
+      (call "fun(lst, s, e) {\n    let r = []\n    for i in (s + 1)..(e) + 1 {\n      r[(len(r) + 1)] = lst.i\n    }\n    return r\n}"
+        (list (int 1) (int 2) (int 3))
+        (int 0)
+        (int 2)
+      )
+      (string " ")
+    )
+  )
+  (call print
+    (call substring (string hello) (int 1) (int 4))
+  )
+)

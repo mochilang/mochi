@@ -1,0 +1,85 @@
+(program
+  (let customers
+    (list
+      (map
+        (entry (string id) (int 1))
+        (entry (string name) (string Alice))
+      )
+      (map
+        (entry (string id) (int 2))
+        (entry (string name) (string Bob))
+      )
+      (map
+        (entry (string id) (int 3))
+        (entry (string name) (string Charlie))
+      )
+    )
+  )
+  (let orders
+    (list
+      (map
+        (entry (string id) (int 100))
+        (entry (string customerId) (int 1))
+        (entry (string total) (int 250))
+      )
+      (map
+        (entry (string id) (int 101))
+        (entry (string customerId) (int 2))
+        (entry (string total) (int 125))
+      )
+      (map
+        (entry (string id) (int 102))
+        (entry (string customerId) (int 1))
+        (entry (string total) (int 300))
+      )
+    )
+  )
+  (let result (list))
+  (for o
+    (in (selector orders))
+    (block
+      (for c
+        (in (selector customers))
+        (block
+          (call table.insert
+            (selector result)
+            (map
+              (entry
+                (string orderId)
+                (selector id (selector o))
+              )
+              (entry
+                (string orderCustomerId)
+                (selector customerId (selector o))
+              )
+              (entry
+                (string pairedCustomerName)
+                (selector name (selector c))
+              )
+              (entry
+                (string orderTotal)
+                (selector total (selector o))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (call print (string "--- Cross Join: All order-customer pairs ---"))
+  (for entry
+    (in (selector result))
+    (block
+      (call print
+        (string Order)
+        (selector orderId (selector entry))
+        (string "(customerId:")
+        (selector orderCustomerId (selector entry))
+        (string ", total: $")
+        (selector orderTotal (selector entry))
+        (string ") paired with")
+        (selector pairedCustomerName (selector entry))
+      )
+    )
+  )
+)

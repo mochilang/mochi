@@ -7,9 +7,7 @@
     (block
       (if
         (binary ==
-          (group
-            (binary % (selector n) (int 2))
-          )
+          (binary % (selector n) (int 2))
           (int 0)
         )
         (block (continue))
