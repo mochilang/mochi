@@ -1436,6 +1436,14 @@ func transformExpr(e ast.Expr) *mast.Node {
 			return &mast.Node{Kind: "cast", Children: []*mast.Node{m, transformType(t)}}
 		}
 	case *ast.IndexExpr:
+		if ta, ok := v.X.(*ast.TypeAssertExpr); ok {
+			if _, ok := ta.Type.(*ast.MapType); ok {
+				if bl, ok := v.Index.(*ast.BasicLit); ok && bl.Kind == token.STRING {
+					key, _ := strconv.Unquote(bl.Value)
+					return &mast.Node{Kind: "selector", Value: key, Children: []*mast.Node{transformExpr(ta.X)}}
+				}
+			}
+		}
 		return &mast.Node{Kind: "index", Children: []*mast.Node{transformExpr(v.X), transformExpr(v.Index)}}
 	case *ast.SliceExpr:
 		n := &mast.Node{Kind: "index", Children: []*mast.Node{transformExpr(v.X)}}
@@ -1449,6 +1457,8 @@ func transformExpr(e ast.Expr) *mast.Node {
 		}
 		n.Children = append(n.Children, start, end)
 		return n
+	case *ast.TypeAssertExpr:
+		return transformExpr(v.X)
 	}
 	return &mast.Node{Kind: "unknown"}
 }
