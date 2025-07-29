@@ -1,5 +1,0 @@
-error[T026]: unknown field `issenior` on Adult
-  --> :16:43
-
-help:
-  Check the struct definition for valid fields.
