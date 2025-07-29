@@ -1,6 +1,6 @@
 (program
-  (let s (string mochi))
+  (let s (type string) (string mochi))
   (call print
-    (call s (int 1))
+    (index (selector s) (int 1))
   )
 )
