@@ -1,50 +1,110 @@
 # Elixir AST Conversion
 
-This directory provides a small converter that turns a subset of Elixir source
-code into Mochi AST form. The implementation mirrors the Python and TypeScript
-converters and is mostly regex based.
+This directory provides a small converter that turns a subset of Elixir source code into Mochi AST form. The implementation mirrors the Python and TypeScript converters and is mostly regex based.
 
-Completed programs: 37/104
+Completed programs: 38/102
+Date: 2025-07-29 15:35:14 GMT+7
 
 ## Checklist
 - [x] append_builtin
+- [x] avg_builtin
 - [x] basic_compare
 - [x] binary_precedence
 - [x] bool_chain
 - [x] break_continue
 - [x] cast_string_to_int
-- [x] fun_call
-- [x] fun_three_args
-- [x] let_and_print
-- [x] print_hello
-- [x] unary_neg
+- [ ] cast_struct
+- [ ] closure
 - [x] count_builtin
-- [x] sum_builtin
-- [x] len_builtin
-- [x] len_string
-- [x] string_concat
-- [x] string_compare
-- [x] avg_builtin
-- [x] min_max_builtin
-- [x] string_contains
-- [x] substring_builtin
+- [ ] cross_join
+- [ ] cross_join_filter
+- [ ] cross_join_triple
+- [ ] dataset_sort_take_limit
+- [ ] dataset_where_filter
+- [x] exists_builtin
+- [ ] for_list_collection
 - [x] for_loop
+- [ ] for_map_collection
+- [x] fun_call
+- [ ] fun_expr_in_let
+- [x] fun_three_args
+- [ ] go_auto
+- [ ] group_by
+- [ ] group_by_conditional_sum
+- [ ] group_by_having
+- [ ] group_by_join
+- [ ] group_by_left_join
+- [ ] group_by_multi_join
+- [ ] group_by_multi_join_sort
+- [ ] group_by_multi_sort
+- [ ] group_by_sort
+- [ ] group_items_iteration
 - [x] if_else
-- [x] var_assignment
-- [x] len_map
-- [x] map_in_operator
+- [ ] if_then_else
+- [ ] if_then_else_nested
 - [x] in_operator
-- [x] map_membership
-- [x] map_index
-- [x] string_index
+- [ ] in_operator_extended
+- [ ] inner_join
+- [ ] join_multi
+- [ ] json_builtin
+- [ ] left_join
+- [ ] left_join_multi
+- [x] len_builtin
+- [x] len_map
+- [x] len_string
+- [x] let_and_print
 - [x] list_assign
 - [x] list_index
 - [x] list_nested_assign
+- [ ] list_set_ops
+- [ ] load_jsonl
+- [ ] load_yaml
 - [x] map_assign
+- [x] map_in_operator
+- [x] map_index
+- [ ] map_int_key
+- [ ] map_literal_dynamic
+- [x] map_membership
 - [x] map_nested_assign
+- [ ] match_expr
+- [ ] match_full
+- [ ] math_ops
+- [ ] membership
+- [x] min_max_builtin
+- [ ] nested_function
+- [ ] order_by_map
+- [ ] outer_join
+- [ ] partial_application
+- [x] print_hello
+- [ ] pure_fold
+- [ ] pure_global_fold
+- [ ] python_auto
+- [ ] python_math
+- [ ] query_sum_select
+- [ ] record_assign
+- [ ] right_join
+- [ ] save_jsonl_stdout
+- [ ] short_circuit
+- [ ] slice
+- [ ] sort_stable
+- [ ] str_builtin
+- [x] string_compare
+- [x] string_concat
+- [x] string_contains
+- [ ] string_in_operator
+- [x] string_index
+- [ ] string_prefix_slice
+- [x] substring_builtin
+- [x] sum_builtin
+- [ ] tail_recursion
+- [ ] test_block
+- [ ] tree_sum
+- [ ] two-sum
+- [ ] typed_let
+- [ ] typed_var
+- [x] unary_neg
+- [ ] update_stmt
 - [x] user_type_literal
 - [x] values_builtin
-
-Supported features include basic `def` functions, simple control flow and
-`IO.puts` calls. More advanced Elixir constructs such as macros or pattern
-matching are not handled.
+- [x] var_assignment
+- [ ] while_loop
