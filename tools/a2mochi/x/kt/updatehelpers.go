@@ -15,6 +15,7 @@ func UpdateReadmeForTests() {
 	root := repoRoot()
 	srcDir := filepath.Join(root, "tests", "transpiler", "x", "kt")
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "kt")
+	validDir := filepath.Join(root, "tests", "vm", "valid")
 	readme := filepath.Join(root, "tools", "a2mochi", "x", "kt", "README.md")
 
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.kt"))
@@ -25,16 +26,23 @@ func UpdateReadmeForTests() {
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".kt")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
-			converted++
-			mark = "[x]"
+		outPath := filepath.Join(outDir, name+".out")
+		validPath := filepath.Join(validDir, name+".out")
+		if outData, err1 := os.ReadFile(outPath); err1 == nil {
+			if validData, err2 := os.ReadFile(validPath); err2 == nil {
+				if bytes.Equal(bytes.TrimSpace(outData), bytes.TrimSpace(validData)) {
+					converted++
+					mark = "[x]"
+				}
+			}
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}
 	ts := time.Now().In(time.FixedZone("GMT+7", 7*3600)).Format("2006-01-02 15:04 MST")
 	var buf bytes.Buffer
 	buf.WriteString("# a2mochi Kotlin Converter\n\n")
-	fmt.Fprintf(&buf, "Completed programs: %d/%d\n", converted, total)
+	percent := float64(converted) / float64(total) * 100
+	fmt.Fprintf(&buf, "Completed programs: %d/%d (%.0f%%)\n", converted, total, percent)
 	fmt.Fprintf(&buf, "Date: %s\n\n", ts)
 	buf.WriteString("This directory holds golden outputs for the Kotlin to Mochi converter.\n\n")
 	buf.WriteString("Implemented examples:\n\n")
