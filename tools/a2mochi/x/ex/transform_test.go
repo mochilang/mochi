@@ -186,6 +186,8 @@ func TestTransformGolden(t *testing.T) {
 		"map_in_operator":    true,
 		"map_membership":     true,
 		"map_index":          true,
+		"map_assign":         true,
+		"list_assign":        true,
 		"string_index":       true,
 	}
 

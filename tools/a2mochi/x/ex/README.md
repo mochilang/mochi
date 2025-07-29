@@ -4,7 +4,7 @@ This directory provides a small converter that turns a subset of Elixir source
 code into Mochi AST form. The implementation mirrors the Python and TypeScript
 converters and is mostly regex based.
 
-Completed programs: 27/104
+Completed programs: 29/104
 
 ## Checklist
 - [x] append_builtin
@@ -34,6 +34,8 @@ Completed programs: 27/104
 - [x] map_membership
 - [x] map_index
 - [x] string_index
+- [x] map_assign
+- [x] list_assign
 
 Supported features include basic `def` functions, simple control flow and
 `IO.puts` calls. More advanced Elixir constructs such as macros or pattern

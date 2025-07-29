@@ -71,6 +71,7 @@ func translateExpr(expr string) string {
 		}
 	case strings.HasPrefix(expr, "%{") && strings.HasSuffix(expr, "}"):
 		inner := strings.TrimSpace(expr[2 : len(expr)-1])
+		inner = strings.ReplaceAll(inner, "%{", "{")
 		inner = strings.ReplaceAll(inner, "=>", ":")
 		return "{" + inner + "}"
 	case strings.HasPrefix(expr, "_union(") && strings.HasSuffix(expr, ")"):
@@ -129,6 +130,11 @@ func translateExpr(expr string) string {
 		}
 	case strings.HasPrefix(expr, "String.at(") && strings.HasSuffix(expr, ")"):
 		parts := splitArgs(expr[len("String.at(") : len(expr)-1])
+		if len(parts) == 2 {
+			return translateExpr(parts[0]) + "[" + translateExpr(parts[1]) + "]"
+		}
+	case strings.HasPrefix(expr, "Enum.at(") && strings.HasSuffix(expr, ")"):
+		parts := splitArgs(expr[len("Enum.at(") : len(expr)-1])
 		if len(parts) == 2 {
 			return translateExpr(parts[0]) + "[" + translateExpr(parts[1]) + "]"
 		}
@@ -222,6 +228,14 @@ func translateLine(l string) string {
 	if idx := strings.Index(l, "="); idx > 0 {
 		left := strings.TrimSpace(l[:idx])
 		rawRight := strings.TrimSpace(l[idx+1:])
+		if strings.HasPrefix(rawRight, "List.replace_at(") && strings.HasSuffix(rawRight, ")") {
+			parts := splitArgs(rawRight[len("List.replace_at(") : len(rawRight)-1])
+			if len(parts) == 3 {
+				if strings.TrimSpace(parts[0]) == left {
+					return left + "[" + translateExpr(parts[1]) + "] = " + translateExpr(parts[2])
+				}
+			}
+		}
 		if assign := translateMapPutChain(left, rawRight); assign != "" {
 			return assign
 		}
@@ -229,6 +243,11 @@ func translateLine(l string) string {
 		return left + " = " + right
 	}
 	return translateExpr(l)
+}
+
+// DebugTranslateLine exposes translateLine for testing.
+func DebugTranslateLine(l string) string {
+	return translateLine(l)
 }
 
 func translateMapPutChain(base, expr string) string {
@@ -248,6 +267,11 @@ func translateMapPutChain(base, expr string) string {
 		}
 	}
 	return ""
+}
+
+// DebugTranslateMapPutChain exposes translateMapPutChain for testing.
+func DebugTranslateMapPutChain(base, expr string) string {
+	return translateMapPutChain(base, expr)
 }
 
 func convertSimpleScript(src string) string {
@@ -292,6 +316,51 @@ func convertSimpleScript(src string) string {
 	seg = append(seg, "end")
 	code := convertFunction(Func{Name: "main", Raw: seg})
 	return code + "\nmain()\n"
+}
+
+// SplitLinesForDebug exposes the processed lines used by convertSimpleScript.
+func SplitLinesForDebug(src string) []string {
+	raw := strings.Split(src, "\n")
+	var lines []string
+	enumEach := regexp.MustCompile(`^Enum.each\((.*),\s*fn\s+([a-zA-Z0-9_]+)\s*->$`)
+	for i := 0; i < len(raw); i++ {
+		l := strings.TrimSpace(raw[i])
+		if l == "" || strings.HasPrefix(l, "#") {
+			continue
+		}
+		if m := enumEach.FindStringSubmatch(l); m != nil {
+			coll := strings.TrimSpace(m[1])
+			if hasOuterParens(coll) {
+				coll = strings.TrimSpace(coll[1 : len(coll)-1])
+			}
+			if m2 := regexp.MustCompile(`^1..\((.*) - 1\)$`).FindStringSubmatch(coll); m2 != nil {
+				coll = "1.." + strings.TrimSpace(m2[1])
+			}
+			v := strings.TrimSpace(m[2])
+			lines = append(lines, "for "+v+" <- "+coll+" do")
+			for j := i + 1; j < len(raw); j++ {
+				l2 := strings.TrimSpace(raw[j])
+				if l2 == "end)" {
+					lines = append(lines, "end")
+					i = j
+					break
+				}
+				lines = append(lines, l2)
+			}
+			continue
+		}
+		if l == "end)" {
+			lines = append(lines, "end")
+			continue
+		}
+		lines = append(lines, l)
+	}
+	return lines
+}
+
+// ConvertSimpleScriptForDebug exposes convertSimpleScript for debugging.
+func ConvertSimpleScriptForDebug(src string) string {
+	return convertSimpleScript(src)
 }
 
 func convertFunction(fn Func) string {
@@ -421,7 +490,19 @@ func convertFunction(fn Func) string {
 		case strings.Contains(l, "="):
 			parts := strings.SplitN(l, "=", 2)
 			left := strings.TrimSpace(parts[0])
-			right := translateExpr(strings.TrimSpace(parts[1]))
+			rawRight := strings.TrimSpace(parts[1])
+			if strings.HasPrefix(rawRight, "List.replace_at(") && strings.HasSuffix(rawRight, ")") {
+				rp := splitArgs(rawRight[len("List.replace_at(") : len(rawRight)-1])
+				if len(rp) == 3 && strings.TrimSpace(rp[0]) == left {
+					b.WriteString(strings.Repeat("  ", level) + left + "[" + translateExpr(rp[1]) + "] = " + translateExpr(rp[2]) + "\n")
+					continue
+				}
+			}
+			if assign := translateMapPutChain(left, rawRight); assign != "" {
+				b.WriteString(strings.Repeat("  ", level) + assign + "\n")
+				continue
+			}
+			right := translateExpr(rawRight)
 			if simpleVar.MatchString(left) {
 				if !vars[left] {
 					vars[left] = true
