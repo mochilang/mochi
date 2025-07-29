@@ -238,6 +238,33 @@ func reorderVars(items []Item) []Item {
 func convertExpr(expr string) string {
 	expr = strings.TrimSpace(expr)
 	expr = fixFuncCalls(expr)
+	// convert simple fromIntegral calls anywhere in the expression
+	expr = strings.ReplaceAll(expr, "fromIntegral(", "float(")
+	// handle patterns like "fromIntegral x" by wrapping the next token
+	for strings.Contains(expr, "fromIntegral ") {
+		idx := strings.Index(expr, "fromIntegral ")
+		start := idx + len("fromIntegral ")
+		j := start
+		depth := 0
+		for j < len(expr) {
+			ch := expr[j]
+			if depth == 0 && (ch == ' ' || ch == ')' || ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '%' || ch == ',' || ch == ']') {
+				break
+			}
+			if ch == '(' || ch == '[' {
+				depth++
+			} else if ch == ')' || ch == ']' {
+				if depth > 0 {
+					depth--
+				} else {
+					break
+				}
+			}
+			j++
+		}
+		arg := strings.TrimSpace(expr[start:j])
+		expr = expr[:idx] + "float(" + arg + ")" + expr[j:]
+	}
 	expr = trimOuterParens(expr)
 	if strings.HasPrefix(expr, "\\") && strings.Contains(expr, "->") {
 		idx := strings.Index(expr, "->")
