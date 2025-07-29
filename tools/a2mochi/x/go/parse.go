@@ -21,6 +21,8 @@ func Parse(src string) (*Program, error) {
 	if strings.TrimSpace(src) == "" {
 		return nil, fmt.Errorf("empty source")
 	}
+	src = strings.ReplaceAll(src, "\r\n", "\n")
+	src = stripShebang(src)
 	src = stripBuildTag(src)
 	src = stripGenerated(src)
 	fset := token.NewFileSet()
@@ -63,6 +65,15 @@ func stripGenerated(src string) string {
 			i++
 		}
 		lines = lines[i:]
+	}
+	return strings.Join(lines, "\n")
+}
+
+// stripShebang removes a leading shebang line.
+func stripShebang(src string) string {
+	lines := strings.Split(src, "\n")
+	if len(lines) > 0 && strings.HasPrefix(lines[0], "#!") {
+		lines = lines[1:]
 	}
 	return strings.Join(lines, "\n")
 }

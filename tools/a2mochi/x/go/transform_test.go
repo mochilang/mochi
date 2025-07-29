@@ -163,6 +163,7 @@ func TestTransform_Golden(t *testing.T) {
 		"substring_builtin":   true,
 		"membership":          true,
 		"map_membership":      true,
+		"map_in_operator":     true,
 		"append_builtin":      true,
 		"min_max_builtin":     true,
 		"slice":               true,

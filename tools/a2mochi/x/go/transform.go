@@ -659,6 +659,82 @@ func tryMinMax(fn *ast.FuncLit) *mast.Node {
 	return nil
 }
 
+// tryExists matches patterns like len(func(){ res:=[]T{}; for _,v:=range xs { if v == k { res = append(res,v) } }; return res }()) > 0
+func tryExists(be *ast.BinaryExpr) *mast.Node {
+	if be.Op != token.GTR || !isZeroLit(be.Y) {
+		return nil
+	}
+	call, ok := be.X.(*ast.CallExpr)
+	if !ok || len(call.Args) != 1 {
+		return nil
+	}
+	if id, ok := call.Fun.(*ast.Ident); !ok || id.Name != "len" {
+		return nil
+	}
+	inner, ok := call.Args[0].(*ast.CallExpr)
+	if !ok || len(inner.Args) != 0 {
+		return nil
+	}
+	fn, ok := inner.Fun.(*ast.FuncLit)
+	if !ok || len(fn.Body.List) != 3 {
+		return nil
+	}
+	init, ok := fn.Body.List[0].(*ast.AssignStmt)
+	if !ok || init.Tok != token.DEFINE || len(init.Lhs) != 1 || len(init.Rhs) != 1 {
+		return nil
+	}
+	resIdent, ok := init.Lhs[0].(*ast.Ident)
+	if !ok {
+		return nil
+	}
+	_, ok = init.Rhs[0].(*ast.CompositeLit)
+	if !ok {
+		return nil
+	}
+	rng, ok := fn.Body.List[1].(*ast.RangeStmt)
+	if !ok || rng.Body == nil || len(rng.Body.List) != 1 {
+		return nil
+	}
+	ifs, ok := rng.Body.List[0].(*ast.IfStmt)
+	if !ok || len(ifs.Body.List) != 1 {
+		return nil
+	}
+	assign, ok := ifs.Body.List[0].(*ast.AssignStmt)
+	if !ok || assign.Tok != token.ASSIGN || len(assign.Lhs) != 1 || len(assign.Rhs) != 1 {
+		return nil
+	}
+	if rid, ok := assign.Lhs[0].(*ast.Ident); !ok || rid.Name != resIdent.Name {
+		return nil
+	}
+	if call2, ok := assign.Rhs[0].(*ast.CallExpr); ok {
+		if fn, ok := call2.Fun.(*ast.Ident); !ok || fn.Name != "append" || len(call2.Args) != 2 {
+			return nil
+		}
+	} else {
+		return nil
+	}
+	ret, ok := fn.Body.List[2].(*ast.ReturnStmt)
+	if !ok || len(ret.Results) != 1 {
+		return nil
+	}
+	if id, ok := ret.Results[0].(*ast.Ident); !ok || id.Name != resIdent.Name {
+		return nil
+	}
+	cond, ok := ifs.Cond.(*ast.BinaryExpr)
+	if !ok || cond.Op != token.EQL {
+		return nil
+	}
+	valIdent, ok := rng.Value.(*ast.Ident)
+	if !ok {
+		return nil
+	}
+	lhs, ok := cond.X.(*ast.Ident)
+	if !ok || lhs.Name != valIdent.Name {
+		return nil
+	}
+	return &mast.Node{Kind: "binary", Value: "in", Children: []*mast.Node{transformExpr(cond.Y), transformExpr(rng.X)}}
+}
+
 // astEqual reports whether two expressions refer to the same identifier.
 func astEqual(a, b ast.Expr) bool {
 	ida, ok := a.(*ast.Ident)
@@ -669,6 +745,13 @@ func astEqual(a, b ast.Expr) bool {
 func isIntLit(e ast.Expr) bool {
 	if bl, ok := e.(*ast.BasicLit); ok {
 		return bl.Kind == token.INT
+	}
+	return false
+}
+
+func isZeroLit(e ast.Expr) bool {
+	if bl, ok := e.(*ast.BasicLit); ok && bl.Kind == token.INT {
+		return bl.Value == "0"
 	}
 	return false
 }
@@ -698,6 +781,9 @@ func transformExpr(e ast.Expr) *mast.Node {
 	case *ast.SelectorExpr:
 		return &mast.Node{Kind: "selector", Value: strings.ToLower(v.Sel.Name), Children: []*mast.Node{transformExpr(v.X)}}
 	case *ast.BinaryExpr:
+		if n := tryExists(v); n != nil {
+			return n
+		}
 		if v.Op == token.QUO && isIntLit(v.X) && isIntLit(v.Y) {
 			div := &mast.Node{Kind: "binary", Value: v.Op.String(), Children: []*mast.Node{
 				transformExpr(v.X), transformExpr(v.Y),
