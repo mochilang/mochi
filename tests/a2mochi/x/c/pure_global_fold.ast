@@ -1,9 +1,11 @@
 (program
+  (let k (int 2))
   (fun inc
-    (param x (type int))
     (type int)
-    (return
-      (binary + (selector x) (selector k))
+    (block
+      (return
+        (binary + (selector x) (selector k))
+      )
     )
   )
   (call print

@@ -1,3 +1,1 @@
-(program
-  (call print (string "{\"a\":1,\"b\":2}"))
-)
+(program)

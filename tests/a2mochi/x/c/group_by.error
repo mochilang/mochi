@@ -1,1 +1,1 @@
-parse error: 47:1: unexpected token "print" (expected ")")
+parse error: 46:57: unexpected token ")"

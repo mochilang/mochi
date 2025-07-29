@@ -1,4 +1,7 @@
 (program
+  (let nums
+    (list (int 3) (int 1) (int 4))
+  )
   (call print (int 1))
   (call print (int 4))
 )

@@ -1,5 +1,0 @@
-error[T002]: undefined variable: n_arr
-  --> :19:9
-
-help:
-  Check if the variable was declared in this scope.

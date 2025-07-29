@@ -1,3 +1,1 @@
-(program
-  (call print (string "[{\"city\":\"Paris\",\"num\":4},{\"city\":\"Hanoi\",\"num\":3}]"))
-)
+(program)

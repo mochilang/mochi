@@ -1,0 +1,36 @@
+(program
+  (let nums
+    (list (int 1) (int 2))
+  )
+  (let letters (selector "{ \"A\", \"B\" }"))
+  (let bools
+    (list (int 1) (int 0))
+  )
+  (call print
+    (binary -
+      (selector "\"")
+      (binary -
+        (selector "")
+        (binary -
+          (selector "")
+          (binary -
+            (selector "Cross Join of three lists")
+            (binary -
+              (selector "")
+              (binary - (selector "") (selector "\""))
+            )
+          )
+        )
+      )
+    )
+  )
+  (let c_len
+    (call len (selector c_arr))
+  )
+  (for i
+    (range (int 0) (selector c_len))
+    (block
+      (call print (selector c.b))
+    )
+  )
+)

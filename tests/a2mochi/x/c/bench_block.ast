@@ -1,0 +1,26 @@
+(program
+  (let __start (call _now))
+  (let __mem_start (call _mem))
+  (let n (int 1000))
+  (let s (int 0))
+  (for i
+    (range (int 1) (selector n))
+    (block
+      (assign s
+        (binary + (selector s) (selector i))
+      )
+    )
+  )
+  (let __end (call _now))
+  (let __mem_end (call _mem))
+  (let __dur_us
+    (binary /
+      (binary - (selector __end) (selector __start))
+      (int 1000)
+    )
+  )
+  (let __mem_bytes
+    (binary - (selector __mem_end) (selector __mem_start))
+  )
+  (call print (selector __mem_bytes))
+)

@@ -1,9 +1,10 @@
 (program
   (fun square
-    (param x (type int))
     (type int)
-    (return
-      (binary * (selector x) (selector x))
+    (block
+      (return
+        (binary * (selector x) (selector x))
+      )
     )
   )
   (call print

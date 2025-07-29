@@ -1,1 +1,1 @@
-output mismatch
+parse error: 16:19: lexer: invalid input text "? \"yes\" : \"no\")\n"

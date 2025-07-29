@@ -51,27 +51,35 @@ func Transform(p *Program) (*ast.Node, error) {
 			continue
 		}
 		i++
-		if n := stmtNodeWithAssign(st, assigned); n != nil {
+		if n := stmtNodeWithAssign(st, assigned, false); n != nil {
 			root.Children = append(root.Children, n)
 		}
 	}
 	return root, nil
 }
 
-func stmtNodeWithAssign(s Stmt, assigned map[string]bool) *ast.Node {
+func stmtNodeWithAssign(s Stmt, assigned map[string]bool, inFunc bool) *ast.Node {
 	switch v := s.(type) {
 	case VarDecl:
 		kind := "let"
 		if assigned[v.Name] {
 			kind = "var"
 		}
-		return &ast.Node{Kind: kind, Value: v.Name, Children: []*ast.Node{exprNode(v.Value)}}
+		val := exprNode(v.Value)
+		if name, ok := lenExpr(v.Value); ok {
+			val = &ast.Node{Kind: "call", Value: "len", Children: []*ast.Node{exprNode(name)}}
+		}
+		return &ast.Node{Kind: kind, Value: v.Name, Children: []*ast.Node{val}}
 	case Assign:
-		return &ast.Node{Kind: "assign", Value: v.Name, Children: []*ast.Node{exprNode(v.Expr)}}
+		val := exprNode(v.Expr)
+		if name, ok := lenExpr(v.Expr); ok {
+			val = &ast.Node{Kind: "call", Value: "len", Children: []*ast.Node{exprNode(name)}}
+		}
+		return &ast.Node{Kind: "assign", Value: v.Name, Children: []*ast.Node{val}}
 	case PrintStmt:
 		return &ast.Node{Kind: "call", Value: "print", Children: []*ast.Node{exprNode(v.Expr)}}
 	case While:
-		cond := exprNode(v.Cond)
+		cond := boolify(exprNode(v.Cond))
 		body := blockNode(v.Body, assigned)
 		return &ast.Node{Kind: "while", Children: []*ast.Node{cond, body}}
 	case For:
@@ -82,10 +90,23 @@ func stmtNodeWithAssign(s Stmt, assigned map[string]bool) *ast.Node {
 		n := &ast.Node{Kind: "for", Value: v.Var, Children: []*ast.Node{rng, body}}
 		return n
 	case If:
-		cond := exprNode(v.Cond)
+		cond := boolify(exprNode(v.Cond))
 		thenBlock := blockNode(v.Then, assigned)
 		elseBlock := blockNode(v.Else, assigned)
 		return &ast.Node{Kind: "if", Children: []*ast.Node{cond, thenBlock, elseBlock}}
+	case Return:
+		if !inFunc {
+			return nil
+		}
+		return &ast.Node{Kind: "return", Children: []*ast.Node{exprNode(v.Expr)}}
+	case FunDecl:
+		body := blockNode(v.Body, assigned)
+		n := &ast.Node{Kind: "fun", Value: v.Name}
+		if v.Ret == "int" {
+			n.Children = append(n.Children, &ast.Node{Kind: "type", Value: "int"})
+		}
+		n.Children = append(n.Children, body)
+		return n
 	case Break:
 		return &ast.Node{Kind: "break"}
 	case Continue:
@@ -98,7 +119,7 @@ func stmtNodeWithAssign(s Stmt, assigned map[string]bool) *ast.Node {
 func blockNode(stmts []Stmt, assigned map[string]bool) *ast.Node {
 	blk := &ast.Node{Kind: "block"}
 	for _, s := range stmts {
-		if n := stmtNodeWithAssign(s, assigned); n != nil {
+		if n := stmtNodeWithAssign(s, assigned, true); n != nil {
 			blk.Children = append(blk.Children, n)
 		}
 	}
@@ -108,11 +129,27 @@ func blockNode(stmts []Stmt, assigned map[string]bool) *ast.Node {
 var reBinary = regexp.MustCompile(`^(.+)\s*(==|!=|<=|>=|<|>|\+|\-|\*|/|&&|\|\|)\s*(.+)$`)
 var reCall = regexp.MustCompile(`^([a-zA-Z_][a-zA-Z0-9_]*)\((.*)\)$`)
 var reList = regexp.MustCompile(`^\{\s*([0-9]+(?:\s*,\s*[0-9]+)*)\s*\}$`)
+var reIndex = regexp.MustCompile(`^([a-zA-Z_][a-zA-Z0-9_]*)\[(.+)\]$`)
+var reLen = regexp.MustCompile(`^sizeof\((\w+)\)\s*/\s*sizeof\((\w+)\[0\]\)$`)
 
 func exprNode(expr string) *ast.Node {
 	expr = strings.TrimSpace(expr)
-	if m := reBinary.FindStringSubmatch(expr); m != nil {
-		return &ast.Node{Kind: "binary", Value: m[2], Children: []*ast.Node{exprNode(m[1]), exprNode(m[3])}}
+	for strings.HasPrefix(expr, "(") && strings.HasSuffix(expr, ")") {
+		inner := expr[1 : len(expr)-1]
+		if parenBalanced(inner) {
+			expr = strings.TrimSpace(inner)
+		} else {
+			break
+		}
+	}
+	if l, op, r, ok := splitBinary(expr); ok {
+		left := exprNode(l)
+		right := exprNode(r)
+		if op == "&&" || op == "||" {
+			left = boolify(left)
+			right = boolify(right)
+		}
+		return &ast.Node{Kind: "binary", Value: op, Children: []*ast.Node{left, right}}
 	}
 	if m := reCall.FindStringSubmatch(expr); m != nil {
 		args := splitArgs(m[2])
@@ -125,6 +162,9 @@ func exprNode(expr string) *ast.Node {
 			call.Children = append(call.Children, exprNode(a))
 		}
 		return call
+	}
+	if m := reIndex.FindStringSubmatch(expr); m != nil {
+		return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(m[1]), exprNode(m[2])}}
 	}
 	if strings.HasPrefix(expr, "\"") && strings.HasSuffix(expr, "\"") {
 		if s, err := strconv.Unquote(expr); err == nil {
@@ -163,6 +203,36 @@ func exprNode(expr string) *ast.Node {
 	return &ast.Node{Kind: "selector", Value: expr}
 }
 
+func lenExpr(s string) (string, bool) {
+	if m := reLen.FindStringSubmatch(strings.ReplaceAll(s, " ", "")); m != nil {
+		if m[1] == m[2] {
+			return m[1], true
+		}
+	}
+	return "", false
+}
+
+func boolify(n *ast.Node) *ast.Node {
+	if n == nil {
+		return &ast.Node{Kind: "bool", Value: false}
+	}
+	switch n.Kind {
+	case "bool", "binary":
+		return n
+	case "int":
+		if v, ok := n.Value.(int); ok {
+			if v == 0 {
+				return &ast.Node{Kind: "bool", Value: false}
+			}
+			if v == 1 {
+				return &ast.Node{Kind: "bool", Value: true}
+			}
+		}
+	}
+	zero := &ast.Node{Kind: "int", Value: 0}
+	return &ast.Node{Kind: "binary", Value: "!=", Children: []*ast.Node{n, zero}}
+}
+
 func splitArgs(s string) []string {
 	var args []string
 	depth := 0
@@ -186,4 +256,46 @@ func splitArgs(s string) []string {
 		args = append(args, s[start:])
 	}
 	return args
+}
+
+func parenBalanced(s string) bool {
+	depth := 0
+	for _, r := range s {
+		switch r {
+		case '(':
+			depth++
+		case ')':
+			depth--
+			if depth < 0 {
+				return false
+			}
+		}
+	}
+	return depth == 0
+}
+
+func splitBinary(s string) (string, string, string, bool) {
+	ops := []string{"&&", "||", "==", "!=", "<=", ">=", "<", ">", "+", "-", "*", "/"}
+	depth := 0
+	for i := 0; i < len(s); i++ {
+		switch s[i] {
+		case '(':
+			depth++
+		case ')':
+			if depth > 0 {
+				depth--
+			}
+		default:
+			if depth == 0 {
+				for _, op := range ops {
+					if strings.HasPrefix(s[i:], op) {
+						left := strings.TrimSpace(s[:i])
+						right := strings.TrimSpace(s[i+len(op):])
+						return left, op, right, true
+					}
+				}
+			}
+		}
+	}
+	return "", "", "", false
 }

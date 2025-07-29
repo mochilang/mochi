@@ -1,1 +1,1 @@
-output mismatch
+parse error: 30:21: lexer: invalid input text "? \"one\" : (x == ..."

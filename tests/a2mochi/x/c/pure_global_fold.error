@@ -1,5 +1,5 @@
-error[T003]: unknown function: inc
-  --> :19:7
+error[T002]: undefined variable: x
+  --> :20:11
 
 help:
-  Ensure the function is defined before it's called.
+  Check if the variable was declared in this scope.

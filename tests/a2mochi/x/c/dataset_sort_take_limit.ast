@@ -1,0 +1,29 @@
+(program
+  (call print
+    (binary -
+      (selector "\"")
+      (binary -
+        (selector "")
+        (binary -
+          (selector "")
+          (binary -
+            (selector "Top products (excluding most expensive)")
+            (binary -
+              (selector "")
+              (binary - (selector "") (selector "\""))
+            )
+          )
+        )
+      )
+    )
+  )
+  (let item_len
+    (call len (selector item_arr))
+  )
+  (for i
+    (range (int 0) (selector item_len))
+    (block
+      (call print (selector item.price))
+    )
+  )
+)

@@ -1,0 +1,32 @@
+(program
+  (call print
+    (binary -
+      (selector "\"")
+      (binary -
+        (selector "")
+        (binary -
+          (selector "")
+          (binary -
+            (selector "Cross Join: All order")
+            (binary -
+              (selector "customer pairs")
+              (binary -
+                (selector "")
+                (binary - (selector "") (selector "\""))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (let entry_len
+    (call len (selector entry_arr))
+  )
+  (for i
+    (range (int 0) (selector entry_len))
+    (block
+      (call print (selector entry.pairedCustomerName))
+    )
+  )
+)

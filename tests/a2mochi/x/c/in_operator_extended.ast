@@ -1,0 +1,23 @@
+(program
+  (let xs
+    (list (int 1) (int 2) (int 3))
+  )
+  (let m_len (int 1))
+  (let s (string hello))
+  (for i
+    (range (int 0) (int 3))
+    (block
+      (call print (selector "1)"))
+      (call print (selector "2)"))
+      (call print (int 0))
+      (call print (int 0))
+      (call print
+        (binary != (selector "\"ell\")") (selector NULL))
+      )
+      (call print
+        (binary != (selector "\"foo\")") (selector NULL))
+      )
+      (return (int 0))
+    )
+  )
+)
