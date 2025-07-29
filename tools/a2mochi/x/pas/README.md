@@ -1,7 +1,7 @@
 # a2mochi Pascal Converter
 
-Completed programs: 31/88
-Updated: 2025-07-29 23:52 GMT+7
+Completed programs: 32/88
+Updated: 2025-07-30 00:11 GMT+7
 
 ## Checklist
 - [ ] append_builtin
@@ -36,7 +36,7 @@ Updated: 2025-07-29 23:52 GMT+7
 - [ ] group_by_multi_sort
 - [x] if_else
 - [ ] if_then_else
-- [ ] if_then_else_nested
+- [x] if_then_else_nested
 - [ ] in_operator
 - [ ] in_operator_extended
 - [ ] inner_join

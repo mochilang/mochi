@@ -1,12 +1,12 @@
 (program
-  (var x (type int) (int 0))
-  (var msg (type string) (string ""))
+  (var x (type int))
+  (var msg (type string))
   (assign x (int 8))
   (assign msg
-    (call IfThen
+    (if_expr
       (binary > (selector x) (int 10))
       (string big)
-      (call IfThen
+      (if_expr
         (binary > (selector x) (int 5))
         (string medium)
         (string small)
