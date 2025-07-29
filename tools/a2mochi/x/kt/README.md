@@ -1,7 +1,7 @@
 # a2mochi Kotlin Converter
 
-Completed programs: 33/102
-Date: 2025-07-28
+Completed programs: 38/102
+Date: 2025-07-29
 
 This directory holds golden outputs for the Kotlin to Mochi converter.
 
@@ -40,3 +40,8 @@ Implemented examples:
 - short_circuit
 - typed_let
 - typed_var
+- cast_string_to_int
+- fun_expr_in_let
+- len_map
+- map_in_operator
+- string_contains

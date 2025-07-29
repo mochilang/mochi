@@ -173,6 +173,11 @@ func TestTransform_Golden(t *testing.T) {
 		"short_circuit":       true,
 		"typed_let":           true,
 		"typed_var":           true,
+		"cast_string_to_int":  true,
+		"fun_expr_in_let":     true,
+		"len_map":             true,
+		"map_in_operator":     true,
+		"string_contains":     true,
 	}
 
 	for _, srcPath := range files {
