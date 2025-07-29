@@ -33,8 +33,24 @@ func Transform(p *Program) (*ast.Node, error) {
 	for _, d := range p.Decls {
 		switch d.Kind {
 		case "val":
-			if d.RHS != "" {
-				fmt.Fprintf(&b, "let %s = %s\n", d.Name, d.RHS)
+			rhs := d.RHS
+			if strings.HasPrefix(strings.TrimSpace(rhs), "if (") {
+				rhs = strings.TrimPrefix(strings.TrimSpace(rhs), "if (")
+				parts := strings.SplitN(rhs, ")", 2)
+				if len(parts) == 2 {
+					cond := parts[0]
+					rest := strings.TrimSpace(parts[1])
+					if strings.Contains(rest, " else ") {
+						els := strings.SplitN(rest, " else ", 2)
+						thenPart := strings.TrimPrefix(els[0], "\"")
+						thenPart = strings.TrimSuffix(thenPart, "\"")
+						elsePart := strings.Trim(els[1], "\"")
+						rhs = fmt.Sprintf("if %s then \"%s\" else \"%s\"", cond, thenPart, elsePart)
+					}
+				}
+			}
+			if rhs != "" {
+				fmt.Fprintf(&b, "let %s = %s\n", d.Name, rhs)
 			} else {
 				fmt.Fprintf(&b, "let %s\n", d.Name)
 			}
