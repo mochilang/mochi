@@ -147,7 +147,11 @@ func convertLetStmt(src string, n *node, level int) string {
 				val = rest[eq-colon-1:]
 			}
 			typ := convertRustTypeFromString(typStr)
-			text = name + ": " + typ + val
+			if typ != "any" {
+				text = name + ": " + typ + val
+			} else {
+				text = name + val
+			}
 		}
 	}
 	// sanitize value expression separately to catch vec! and push() usage
@@ -459,6 +463,42 @@ func convertSumIter(code string) (string, bool) {
 	return "", false
 }
 
+func convertAvgIter(code string) (string, bool) {
+	// match pattern: x.iter().map(|x| *x as f64).sum::<f64>() / (x.len() as f64)
+	re := regexp.MustCompile(`^(\w+)\.iter\(\)\.map\(\|x\| \*x as f64\)\.sum::<f64>\(\) / \((\w+)\.len\(\) as f64\)$`)
+	if m := re.FindStringSubmatch(strings.TrimSpace(code)); m != nil && m[1] == m[2] {
+		return "avg(" + m[1] + ")", true
+	}
+	return "", false
+}
+
+func convertAvgBlock(code string) (string, bool) {
+	c := strings.TrimSpace(code)
+	if strings.HasPrefix(c, "{") && strings.HasSuffix(c, "}") {
+		inner := strings.TrimSpace(c[1 : len(c)-1])
+		semi := strings.Index(inner, ";")
+		if semi > 0 {
+			letPart := strings.TrimSpace(inner[:semi])
+			exprPart := strings.TrimSpace(inner[semi+1:])
+			if strings.HasPrefix(letPart, "var ") {
+				parts := strings.SplitN(strings.TrimSpace(letPart[4:]), "=", 2)
+				if len(parts) == 2 {
+					name := strings.TrimSpace(parts[0])
+					val := strings.TrimSpace(parts[1])
+					if v, ok := convertVecMacro(val); ok {
+						val = v
+					}
+					re := regexp.MustCompile(fmt.Sprintf(`^%s\.iter\(\)\.map\(\|x\| \*x as f64\)\.sum::<f64>\(\) / \(%s\.len\(\) as f64\)$`, name, name))
+					if re.MatchString(exprPart) {
+						return fmt.Sprintf("avg(%s)", val), true
+					}
+				}
+			}
+		}
+	}
+	return "", false
+}
+
 func findMatch(s string, openIdx int, open, close rune) int {
 	depth := 0
 	for i, r := range s[openIdx:] {
@@ -560,11 +600,15 @@ func sanitizeExpr(code string) string {
 		code = v
 	} else if v, ok := convertSumIter(code); ok {
 		code = v
+	} else if v, ok := convertAvgIter(code); ok {
+		code = v
+	} else if v, ok := convertAvgBlock(code); ok {
+		code = v
 	}
 	code = strings.ReplaceAll(code, "let ", "var ")
 	code = strings.ReplaceAll(code, "mut ", "")
 	// convert `.len()` calls into `len(expr)` using a regex for common cases
-	reLen := regexp.MustCompile(`(vec!\[[^\]]*\]|\[[^\]]*\]|\([^)]*\)|[A-Za-z0-9_]+)\.len\(\)`)
+	reLen := regexp.MustCompile(`(vec!\[[^\]]*\]|\[[^\]]*\]|\([^)]*\)|[A-Za-z0-9_]+|"[^"]*")\.len\(\)`)
 	for {
 		loc := reLen.FindStringSubmatchIndex(code)
 		if loc == nil {
