@@ -1,2 +1,3 @@
-var xs = [10, 20, 30]
+// a2mochi-swift v0.10.47 on 2025-07-29 10:18 GMT+7
+let xs = [10, 20, 30]
 print(xs[1])

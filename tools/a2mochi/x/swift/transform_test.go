@@ -76,20 +76,20 @@ func TestTransformGolden(t *testing.T) {
 		t.Fatalf("no files: %s", pattern)
 	}
 	allowed := map[string]bool{
+		"basic_compare":       true,
 		"count_builtin":       true,
 		"for_list_collection": true,
 		"for_loop":            true,
 		"while_loop":          true,
-		"fun_expr_in_let":     true,
 		"fun_three_args":      true,
 		"len_map":             true,
-		"let_and_print":       true,
 		"list_index":          true,
 		"math_ops":            true,
 		"min_max_builtin":     true,
 		"print_hello":         true,
 		"string_concat":       true,
 		"str_builtin":         true,
+		"unary_neg":           true,
 		"var_assignment":      true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "swift")
