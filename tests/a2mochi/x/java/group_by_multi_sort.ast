@@ -3,6 +3,31 @@
     (list (unknown) (unknown) (unknown) (unknown))
   )
   (let grouped (unknown))
+  (fun q
+    (param v (type Object))
+    (type string)
+    (block
+      (if
+        (unknown)
+        (block
+          (return
+            (binary +
+              (binary +
+                (string "'")
+                (call
+                  (selector toString (selector v))
+                )
+              )
+              (string "'")
+            )
+          )
+        )
+      )
+      (return
+        (call str (selector v))
+      )
+    )
+  )
   (call print
     (string "[")
     (call

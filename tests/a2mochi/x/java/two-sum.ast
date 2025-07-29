@@ -6,6 +6,46 @@
       (int 9)
     )
   )
+  (fun twoSum
+    (param nums (type "int[]"))
+    (param target (type int))
+    (type "int[]")
+    (block
+      (let n
+        (call len (selector nums))
+      )
+      (for i
+        (range (int 0) (selector n))
+        (block
+          (for j
+            (range
+              (binary + (selector i) (int 1))
+              (selector n)
+            )
+            (block
+              (if
+                (binary ==
+                  (binary +
+                    (index (selector nums) (selector i))
+                    (index (selector nums) (selector j))
+                  )
+                  (selector target)
+                )
+                (block
+                  (return
+                    (list (selector i) (selector j))
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+      (return
+        (list (int -1) (int -1))
+      )
+    )
+  )
   (call print
     (index (selector result) (int 0))
   )

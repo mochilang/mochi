@@ -2,6 +2,16 @@
   (let add5
     (call (selector add) (int 5))
   )
+  (fun add
+    (param a (type int))
+    (param b (type int))
+    (type int)
+    (block
+      (return
+        (binary + (selector a) (selector b))
+      )
+    )
+  )
   (call print
     (call (selector add5) (int 3))
   )

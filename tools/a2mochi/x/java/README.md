@@ -2,8 +2,8 @@
 
 This directory contains helpers and golden files for converting Java programs under `tests/transpiler/x/java` back into Mochi AST form.
 
-Completed programs: 38/103
-Date: 2025-07-29 18:57 GMT+7 GMT+7
+Completed programs: 47/103
+Date: 2025-07-29 21:32 GMT+7 GMT+7
 
 ## Checklist
 - [x] append_builtin
@@ -11,7 +11,7 @@ Date: 2025-07-29 18:57 GMT+7 GMT+7
 - [x] basic_compare
 - [ ] bench_block
 - [x] binary_precedence
-- [ ] bool_chain
+- [x] bool_chain
 - [x] break_continue
 - [x] cast_string_to_int
 - [ ] cast_struct
@@ -26,9 +26,9 @@ Date: 2025-07-29 18:57 GMT+7 GMT+7
 - [x] for_list_collection
 - [x] for_loop
 - [ ] for_map_collection
-- [ ] fun_call
+- [x] fun_call
 - [ ] fun_expr_in_let
-- [ ] fun_three_args
+- [x] fun_three_args
 - [ ] go_auto
 - [ ] group_by
 - [ ] group_by_conditional_sum
@@ -68,24 +68,24 @@ Date: 2025-07-29 18:57 GMT+7 GMT+7
 - [ ] map_membership
 - [ ] map_nested_assign
 - [x] match_expr
-- [ ] match_full
+- [x] match_full
 - [x] math_ops
 - [ ] membership
 - [x] min_max_builtin
 - [ ] nested_function
 - [ ] order_by_map
 - [ ] outer_join
-- [ ] partial_application
+- [x] partial_application
 - [x] print_hello
-- [ ] pure_fold
-- [ ] pure_global_fold
+- [x] pure_fold
+- [x] pure_global_fold
 - [ ] python_auto
 - [ ] python_math
 - [ ] query_sum_select
 - [ ] record_assign
 - [ ] right_join
 - [ ] save_jsonl_stdout
-- [ ] short_circuit
+- [x] short_circuit
 - [x] slice
 - [ ] sort_stable
 - [x] str_builtin
@@ -97,7 +97,7 @@ Date: 2025-07-29 18:57 GMT+7 GMT+7
 - [x] string_prefix_slice
 - [x] substring_builtin
 - [x] sum_builtin
-- [ ] tail_recursion
+- [x] tail_recursion
 - [x] test_block
 - [ ] tree_sum
 - [ ] two-sum

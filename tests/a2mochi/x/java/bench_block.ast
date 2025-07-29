@@ -1,5 +1,47 @@
 (program
   (let _nowSeeded (bool false))
   (var _nowSeed (type int))
+  (fun _now
+    (type int)
+    (block
+      (if
+        (unknown)
+        (block
+          (let s
+            (call
+              (selector getenv (selector System))
+              (string MOCHI_NOW_SEED)
+            )
+          )
+          (if
+            (binary &&
+              (binary != (selector s) (unknown))
+              (unknown)
+            )
+            (block (unknown))
+          )
+        )
+      )
+      (if
+        (selector _nowSeeded)
+        (block
+          (assign (selector _nowSeed) (unknown))
+          (return (selector _nowSeed))
+        )
+      )
+      (return (unknown))
+    )
+  )
+  (fun _mem
+    (type int)
+    (block
+      (let rt
+        (call
+          (selector getRuntime (selector Runtime))
+        )
+      )
+      (return (unknown))
+    )
+  )
   (unknown)
 )

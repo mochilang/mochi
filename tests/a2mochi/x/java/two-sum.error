@@ -1,5 +1,1 @@
-run: error[T003]: unknown function: twoSum
-  --> :2:14
-
-help:
-  Ensure the function is defined before it's called.
+run: parse error: 3:21: unexpected token "[" (expected ")" (":" TypeRef)? "{" Statement* "}")

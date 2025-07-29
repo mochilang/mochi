@@ -2,5 +2,82 @@
   (let people
     (list (unknown) (unknown))
   )
+  (fun asMap
+    (param o (type Object))
+    (type "java.util.Map<String, Object>")
+    (block
+      (if
+        (unknown)
+        (block
+          (let m (unknown))
+          (for e
+            (in
+              (call
+                (selector entrySet (selector mm))
+              )
+            )
+            (block (unknown))
+          )
+          (return (selector m))
+        )
+      )
+      (let m (unknown))
+      (for f
+        (in
+          (call
+            (selector getDeclaredFields
+              (call
+                (selector getClass (selector o))
+              )
+            )
+          )
+        )
+        (block (unknown))
+      )
+      (return (selector m))
+    )
+  )
+  (fun saveJsonl
+    (param list (type "java.util.List<?>"))
+    (block
+      (for obj
+        (in (selector list))
+        (block
+          (let m
+            (call (selector asMap) (selector obj))
+          )
+          (let parts (unknown))
+          (for e
+            (in
+              (call
+                (selector entrySet (selector m))
+              )
+            )
+            (block
+              (let v
+                (call
+                  (selector getValue (selector e))
+                )
+              )
+              (if
+                (unknown)
+                (block (unknown))
+                (block (unknown))
+              )
+            )
+          )
+          (call print
+            (string "{")
+            (call
+              (selector join (selector String))
+              (string ", ")
+              (selector parts)
+            )
+            (string "}")
+          )
+        )
+      )
+    )
+  )
   (unknown)
 )

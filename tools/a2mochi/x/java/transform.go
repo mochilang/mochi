@@ -69,7 +69,11 @@ func stmtNode(s Stmt, mutated map[string]bool) *mochias.Node {
 	case "FnDecl":
 		fn := &mochias.Node{Kind: "fun", Value: s.Name}
 		for _, p := range s.Params {
-			fn.Children = append(fn.Children, &mochias.Node{Kind: "param", Value: p})
+			param := &mochias.Node{Kind: "param", Value: p.Name}
+			if p.Type != "" {
+				param.Children = append(param.Children, &mochias.Node{Kind: "type", Value: normalizeType(p.Type)})
+			}
+			fn.Children = append(fn.Children, param)
 		}
 		if s.Type != "" && s.Type != "void" {
 			fn.Children = append(fn.Children, &mochias.Node{Kind: "type", Value: normalizeType(s.Type)})

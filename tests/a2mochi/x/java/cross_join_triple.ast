@@ -9,6 +9,48 @@
     (list (bool true) (bool false))
   )
   (let combos (unknown))
+  (fun q
+    (param v (type Object))
+    (type string)
+    (block
+      (if
+        (unknown)
+        (block
+          (return
+            (binary +
+              (binary +
+                (string "'")
+                (call
+                  (selector toString (selector v))
+                )
+              )
+              (string "'")
+            )
+          )
+        )
+      )
+      (return
+        (call str (selector v))
+      )
+    )
+  )
+  (fun boolStr
+    (param v (type Object))
+    (type string)
+    (block
+      (if
+        (unknown)
+        (block
+          (return
+            (if_expr (selector b) (string True) (string False))
+          )
+        )
+      )
+      (return
+        (call str (selector v))
+      )
+    )
+  )
   (call print
     (call (selector boolStr) (string "--- Cross Join of three lists ---"))
   )

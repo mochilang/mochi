@@ -1,5 +1,5 @@
-run: error[T003]: unknown function: boolStr
-  --> :2:7
+run: error[T002]: undefined variable: unknown
+  --> :14:19
 
 help:
-  Ensure the function is defined before it's called.
+  Check if the variable was declared in this scope.

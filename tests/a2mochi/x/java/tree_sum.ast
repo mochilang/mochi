@@ -1,5 +1,37 @@
 (program
   (let t (unknown))
+  (fun sum_tree
+    (param t (type Tree))
+    (type int)
+    (block
+      (return
+        (if_expr
+          (binary == (selector t) (selector Leaf))
+          (int 0)
+          (if_expr
+            (binary ==
+              (selector t)
+              (call (selector Node) (selector left) (selector value) (selector right))
+            )
+            (binary +
+              (binary +
+                (call (selector sum_tree) (selector left))
+                (selector value)
+              )
+              (call (selector sum_tree) (selector right))
+            )
+            (binary +
+              (binary +
+                (call (selector sum_tree) (selector left))
+                (selector value)
+              )
+              (call (selector sum_tree) (selector right))
+            )
+          )
+        )
+      )
+    )
+  )
   (call print
     (call (selector sum_tree) (selector t))
   )
