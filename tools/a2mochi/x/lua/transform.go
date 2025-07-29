@@ -90,6 +90,22 @@ func convertStmtsToNodes(stmts []luaast.Stmt, vars map[string]bool, mut map[stri
 				out = append(out, node("return", nil, node("tuple", nil, nodes...)))
 			}
 		case *luaast.FuncCallStmt:
+			if fc, ok := s.Expr.(*luaast.FuncCallExpr); ok {
+				if luaExprString(fc.Func, mut) == "print" && len(fc.Args) == 1 {
+					if inner, ok := fc.Args[0].(*luaast.FuncCallExpr); ok {
+						if luaExprString(inner.Func, mut) == "string.format" && len(inner.Args) == 2 {
+							if str, ok := inner.Args[0].(*luaast.StringExpr); ok {
+								parts := strings.SplitN(str.Value, "%s", 2)
+								if len(parts) == 2 && parts[1] == "" {
+									prefix := strings.TrimSuffix(parts[0], " ")
+									out = append(out, node("call", "print", node("string", prefix), exprToNode(inner.Args[1], mut)))
+									break
+								}
+							}
+						}
+					}
+				}
+			}
 			out = append(out, exprToNode(s.Expr, mut))
 		case *luaast.BreakStmt:
 			out = append(out, node("break", nil))
@@ -190,24 +206,24 @@ func exprToNode(e luaast.Expr, mut map[string]bool) *ast.Node {
 	case *luaast.ArithmeticOpExpr:
 		left := exprToNode(v.Lhs, mut)
 		right := exprToNode(v.Rhs, mut)
-		return node("group", nil, node("binary", v.Operator, left, right))
+		return node("binary", v.Operator, left, right)
 	case *luaast.StringConcatOpExpr:
 		return node("binary", "+", exprToNode(v.Lhs, mut), exprToNode(v.Rhs, mut))
 	case *luaast.LogicalOpExpr:
 		if v.Operator == "or" {
-			// Convert Lua ternary pattern: a and b or c
-			if lhs, ok := v.Lhs.(*luaast.LogicalOpExpr); ok && lhs.Operator == "and" {
-				return node("if_expr", nil,
-					exprToNode(lhs.Lhs, mut),
-					exprToNode(lhs.Rhs, mut),
-					exprToNode(v.Rhs, mut))
-			}
 			if num, ok := v.Rhs.(*luaast.NumberExpr); ok && num.Value == "0" {
 				if lhs, ok := v.Lhs.(*luaast.LogicalOpExpr); ok && lhs.Operator == "and" {
 					if num1, ok := lhs.Rhs.(*luaast.NumberExpr); ok && num1.Value == "1" {
 						return exprToNode(lhs.Lhs, mut)
 					}
 				}
+			}
+			// Convert Lua ternary pattern: a and b or c
+			if lhs, ok := v.Lhs.(*luaast.LogicalOpExpr); ok && lhs.Operator == "and" {
+				return node("if_expr", nil,
+					exprToNode(lhs.Lhs, mut),
+					exprToNode(lhs.Rhs, mut),
+					exprToNode(v.Rhs, mut))
 			}
 		}
 		op := v.Operator
@@ -218,6 +234,21 @@ func exprToNode(e luaast.Expr, mut map[string]bool) *ast.Node {
 		}
 		return node("binary", op, exprToNode(v.Lhs, mut), exprToNode(v.Rhs, mut))
 	case *luaast.RelationalOpExpr:
+		if v.Operator == "~=" {
+			if _, ok := v.Rhs.(*luaast.NilExpr); ok {
+				if call, ok := v.Lhs.(*luaast.FuncCallExpr); ok {
+					if isAttrCall(call.Func, "string", "find") && len(call.Args) >= 4 {
+						if num, ok := call.Args[2].(*luaast.NumberExpr); ok && num.Value == "1" {
+							if _, ok := call.Args[3].(*luaast.TrueExpr); ok {
+								return node("call", "contains",
+									exprToNode(call.Args[0], mut),
+									exprToNode(call.Args[1], mut))
+							}
+						}
+					}
+				}
+			}
+		}
 		return node("binary", v.Operator, exprToNode(v.Lhs, mut), exprToNode(v.Rhs, mut))
 	case *luaast.UnaryMinusOpExpr:
 		return node("binary", "-", node("int", 0), exprToNode(v.Expr, mut))
@@ -292,21 +323,16 @@ func exprToNode(e luaast.Expr, mut map[string]bool) *ast.Node {
 			if len(args) == 3 {
 				return node("index", nil, args[0], node("start", nil, args[1]), node("end", nil, args[2]))
 			}
-		case "string.format":
-			if len(args) == 2 {
-				if s, ok := v.Args[0].(*luaast.StringExpr); ok {
-					parts := strings.SplitN(s.Value, "%s", 2)
-					before := node("string", parts[0])
-					middle := exprToNode(v.Args[1], mut)
-					if len(parts) == 2 {
-						after := node("string", parts[1])
-						if parts[1] != "" {
-							return node("binary", "+", before, node("binary", "+", middle, after))
-						}
+		case "string.sub":
+			if len(v.Args) == 3 {
+				if addStart, ok := v.Args[1].(*luaast.ArithmeticOpExpr); ok && addStart.Operator == "+" {
+					if num, ok := addStart.Rhs.(*luaast.NumberExpr); ok && num.Value == "1" {
+						return node("call", "substring", exprToNode(v.Args[0], mut), exprToNode(addStart.Lhs, mut), exprToNode(v.Args[2], mut))
 					}
-					return node("binary", "+", before, middle)
 				}
+				return node("call", "substring", exprToNode(v.Args[0], mut), exprToNode(v.Args[1], mut), exprToNode(v.Args[2], mut))
 			}
+		case "string.format":
 			callee = "fmt.Sprintf"
 		case "__union_all":
 			if len(args) == 2 {
