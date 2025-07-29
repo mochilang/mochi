@@ -92,23 +92,38 @@ func TestTransform_Golden(t *testing.T) {
 			}
 			prog, err := c.Parse(string(data))
 			if err != nil {
+				if *update {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0644)
+				}
 				t.Fatalf("parse: %v", err)
 			}
 			astNode, err := c.Transform(prog)
 			if err != nil {
+				if *update {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0644)
+				}
 				t.Fatalf("convert: %v", err)
 			}
 			t.Log(astNode.String())
 			code, err := c.Print(prog, astNode)
 			if err != nil {
+				if *update {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0644)
+				}
 				t.Fatalf("convert source: %v", err)
 			}
-			mochiPath := filepath.Join(outDir, name+".mochi")
+
 			if *update {
-				os.WriteFile(mochiPath, []byte(code), 0644)
+				os.Remove(filepath.Join(outDir, name+".error"))
+				os.WriteFile(filepath.Join(outDir, name+".mochi"), []byte(code), 0644)
+				os.WriteFile(filepath.Join(outDir, name+".ast"), []byte(astNode.String()), 0644)
 			}
+
 			gotOut, err := run(code)
 			if err != nil {
+				if *update {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0644)
+				}
 				t.Fatalf("run: %v", err)
 			}
 			if *update {
@@ -123,6 +138,9 @@ func TestTransform_Golden(t *testing.T) {
 				t.Fatalf("run vm: %v", err)
 			}
 			if string(gotOut) != string(wantOut) {
+				if *update {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte("output mismatch"), 0644)
+				}
 				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
 			}
 		})
@@ -143,8 +161,12 @@ func updateReadme() {
 		name := strings.TrimSuffix(filepath.Base(f), ".c")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
-			compiled++
-			mark = "[x]"
+			if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
+				// keep mark unchecked
+			} else if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+				compiled++
+				mark = "[x]"
+			}
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}
