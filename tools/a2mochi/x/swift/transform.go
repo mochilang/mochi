@@ -504,6 +504,8 @@ func rewriteStrBuiltin(expr string) string {
 var ternaryBoolRE = regexp.MustCompile(`\((.+)\)\s*\?\s*1\s*:\s*0`)
 
 func rewriteTernary(expr string) string {
+	expr = trimOuterParens(expr)
+	// collapse boolean ternary expressions like (cond ? 1 : 0) -> cond
 	for {
 		m := ternaryBoolRE.FindStringSubmatchIndex(expr)
 		if m == nil {
@@ -511,7 +513,51 @@ func rewriteTernary(expr string) string {
 		}
 		expr = expr[:m[0]] + expr[m[2]:m[3]] + expr[m[1]:]
 	}
+	// handle general ternary operator
+	if cond, a, b, ok := splitTernary(expr); ok {
+		a = rewriteTernary(strings.TrimSpace(a))
+		b = rewriteTernary(strings.TrimSpace(b))
+		return fmt.Sprintf("if %s then %s else %s", strings.TrimSpace(cond), a, b)
+	}
 	return expr
+}
+
+func splitTernary(expr string) (cond, a, b string, ok bool) {
+	depth := 0
+	q := -1
+	colon := -1
+	inStr := false
+	for i, r := range expr {
+		switch r {
+		case '"':
+			if i == 0 || expr[i-1] != '\\' {
+				inStr = !inStr
+			}
+		case '(':
+			if !inStr {
+				depth++
+			}
+		case ')':
+			if !inStr && depth > 0 {
+				depth--
+			}
+		case '?':
+			if !inStr && depth == 0 && q == -1 {
+				q = i
+			}
+		case ':':
+			if !inStr && depth == 0 && q != -1 && colon == -1 {
+				colon = i
+			}
+		}
+	}
+	if q != -1 && colon != -1 && colon > q {
+		cond = strings.TrimSpace(expr[:q])
+		a = strings.TrimSpace(expr[q+1 : colon])
+		b = strings.TrimSpace(expr[colon+1:])
+		ok = true
+	}
+	return
 }
 
 func rewriteStringArrays(expr string) string {

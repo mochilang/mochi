@@ -123,6 +123,8 @@ func TestTransformGolden(t *testing.T) {
 		"print_hello":         true,
 		"in_operator":         true,
 		"map_in_operator":     true,
+		"if_then_else":        true,
+		"if_then_else_nested": true,
 		"string_concat":       true,
 		"str_builtin":         true,
 		"unary_neg":           true,

@@ -3,9 +3,7 @@
     (funexpr
       (param x (type int))
       (type int)
-      (group
-        (binary * (selector x) (selector x))
-      )
+      (binary * (selector x) (selector x))
     )
   )
   (call print

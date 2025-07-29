@@ -1,0 +1,16 @@
+(program
+  (let x (int 12))
+  (let msg
+    (if_expr
+      (group
+        (binary >
+          (group (selector x))
+          (int 10)
+        )
+      )
+      (string yes)
+      (string no)
+    )
+  )
+  (call print (selector msg))
+)
