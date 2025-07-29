@@ -204,6 +204,12 @@ func exprString(n Node) string {
 			parts = append(parts, exprString(c))
 		}
 		return strings.Join(parts, ", ")
+	case "dot2", "dot3":
+		if len(n.Children) == 2 {
+			left := exprString(n.Children[0])
+			right := exprString(n.Children[1])
+			return left + ".." + right
+		}
 	case "call":
 		if len(n.Children) >= 3 {
 			recv := exprString(n.Children[0])
@@ -219,17 +225,35 @@ func exprString(n Node) string {
 			if call.Type == "call" && len(call.Children) >= 3 {
 				recv := exprString(call.Children[0])
 				meth := call.Children[2]
-				if meth.Type == "@ident" && meth.Value == "include?" {
-					arg := args
-					if arg.Type == "arg_paren" && len(arg.Children) > 0 {
-						arg = arg.Children[0]
+				if meth.Type == "@ident" {
+					if meth.Value == "include?" {
+						arg := args
+						if arg.Type == "arg_paren" && len(arg.Children) > 0 {
+							arg = arg.Children[0]
+						}
+						if arg.Type == "args_add_block" && len(arg.Children) > 0 {
+							arg = arg.Children[0]
+						}
+						return exprString(arg) + " in " + recv
 					}
-					if arg.Type == "args_add_block" && len(arg.Children) > 0 {
-						arg = arg.Children[0]
+					if meth.Value == "call" {
+						a := exprString(args)
+						return recv + "(" + a + ")"
 					}
-					return exprString(arg) + " in " + recv
 				}
 			}
+			if call.Type == "fcall" && len(call.Children) > 0 {
+				nameNode := call.Children[0]
+				if nameNode.Type == "@ident" {
+					return nameNode.Value + "(" + exprString(args) + ")"
+				}
+			}
+		}
+	case "lambda":
+		if len(n.Children) >= 2 {
+			ps := params(n.Children[0])
+			body := exprString(n.Children[len(n.Children)-1])
+			return fmt.Sprintf("fun(%s) => (%s)", ps, body)
 		}
 	case "ifop":
 		if len(n.Children) >= 3 {
