@@ -11,7 +11,6 @@ import (
 	"strings"
 	"testing"
 
-	"mochi/ast"
 	"mochi/parser"
 	"mochi/runtime/vm"
 	"mochi/types"
@@ -21,7 +20,7 @@ import (
 
 var update = flag.Bool("update", false, "update golden files")
 
-func findRepoRoot(t *testing.T) string {
+func repoRoot(t *testing.T) string {
 	dir, err := os.Getwd()
 	if err != nil {
 		t.Fatal(err)
@@ -40,7 +39,7 @@ func findRepoRoot(t *testing.T) string {
 	return ""
 }
 
-func runMochi(src string) ([]byte, error) {
+func run(src string) ([]byte, error) {
 	prog, err := parser.ParseString(src)
 	if err != nil {
 		return nil, err
@@ -61,12 +60,21 @@ func runMochi(src string) ([]byte, error) {
 	return bytes.TrimSpace(out.Bytes()), nil
 }
 
-func TestConvert_Golden(t *testing.T) {
-	if _, err := exec.LookPath("node"); err != nil {
-		t.Skipf("node not installed: %v", err)
+func mustRun(t *testing.T, src string) []byte {
+	t.Helper()
+	out, err := run(src)
+	if err != nil {
+		t.Fatalf("run: %v", err)
+	}
+	return out
+}
+
+func TestTransform_Golden(t *testing.T) {
+	if _, err := exec.LookPath("ocamlc"); err != nil {
+		t.Skipf("ocamlc not installed: %v", err)
 	}
 
-	root := findRepoRoot(t)
+	root := repoRoot(t)
 	pattern := filepath.Join(root, "tests", "transpiler", "x", "ocaml", "*.ml")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
@@ -108,9 +116,9 @@ func TestConvert_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("parse: %v", err)
 			}
-			node, err := ocaml.Convert(prog)
+			node, err := ocaml.Transform(prog)
 			if err != nil {
-				t.Fatalf("convert: %v", err)
+				t.Fatalf("transform: %v", err)
 			}
 			astPath := filepath.Join(outDir, name+".ast")
 			if *update {
@@ -125,19 +133,15 @@ func TestConvert_Golden(t *testing.T) {
 				t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", got, want)
 			}
 
-			var buf bytes.Buffer
-			if err := ast.Fprint(&buf, node); err != nil {
+			code, err := ocaml.Print(node)
+			if err != nil {
 				t.Fatalf("print: %v", err)
 			}
-			code := buf.String()
 			mochiPath := filepath.Join(outDir, name+".mochi")
 			if *update {
 				os.WriteFile(mochiPath, []byte(code), 0o644)
 			}
-			gotOut, err := runMochi(code)
-			if err != nil {
-				t.Fatalf("run: %v", err)
-			}
+			gotOut := mustRun(t, code)
 			if *update {
 				os.WriteFile(filepath.Join(outDir, name+".out"), gotOut, 0o644)
 			}
@@ -145,10 +149,7 @@ func TestConvert_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("missing vm source: %v", err)
 			}
-			wantOut, err := runMochi(string(vmSrc))
-			if err != nil {
-				t.Fatalf("run vm: %v", err)
-			}
+			wantOut := mustRun(t, string(vmSrc))
 			if !bytes.Equal(gotOut, wantOut) {
 				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
 			}
