@@ -23,7 +23,7 @@ func Transform(p *Program) (*ast.Node, error) {
 			case "to-str", "upper", "lower", "fmod":
 				continue
 			}
-			prog.Children = append(prog.Children, newFunc(it.Name, it.Params))
+			prog.Children = append(prog.Children, newFunc(it.Name, it.Params, it.Body))
 		case "var":
 			prog.Children = append(prog.Children, newLet(it.Name, it.Value))
 		case "import":
@@ -43,12 +43,18 @@ func newProgram(children ...*ast.Node) *ast.Node {
 	return &ast.Node{Kind: "program", Children: children}
 }
 
-func newFunc(name string, params []string) *ast.Node {
+func newFunc(name string, params []string, body []interface{}) *ast.Node {
 	fn := &ast.Node{Kind: "fun", Value: sanitizeName(name)}
 	for _, p := range params {
 		fn.Children = append(fn.Children, newParam(p))
 	}
-	fn.Children = append(fn.Children, &ast.Node{Kind: "block"})
+	blk := &ast.Node{Kind: "block"}
+	if len(body) == 1 {
+		if n := exprNode(body[0]); n != nil {
+			blk.Children = append(blk.Children, &ast.Node{Kind: "return", Children: []*ast.Node{n}})
+		}
+	}
+	fn.Children = append(fn.Children, blk)
 	return fn
 }
 
