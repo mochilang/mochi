@@ -50,6 +50,7 @@ var headerRE = regexp.MustCompile(`^(?:pub\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)\s*\
 var printRE = regexp.MustCompile(`print\("\{[^}]+\}\\n",\s*\.\{(.*)\}\)`)
 var declRE = regexp.MustCompile(`^(const|var)\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$`)
 var typedArrRE = regexp.MustCompile(`^\[_\]\w+\{(.*)\}$`)
+var numberRE = regexp.MustCompile(`^\d+(?:\.\d+)?$`)
 var orderRE = regexp.MustCompile(`std\.mem\.order\(u8,\s*([^,]+),\s*([^\)]+)\)\s*([!=]=)\s*\.(lt|gt)`)
 
 func mapType(t string) string {
@@ -242,8 +243,9 @@ func translate(src string) (string, error) {
 				}
 				t := strings.TrimSpace(strings.TrimSuffix(l, ";"))
 				if m := declRE.FindStringSubmatch(t); m != nil {
-					if typedArrRE.MatchString(strings.TrimSpace(m[3])) {
-						val := transformExpr(strings.TrimSpace(m[3]))
+					val := strings.TrimSpace(m[3])
+					if typedArrRE.MatchString(val) || numberRE.MatchString(val) {
+						val = transformExpr(val)
 						out.WriteString("let " + m[2] + " = " + val + "\n")
 					}
 				}
