@@ -1,2 +1,1 @@
-print
-print
+print(number_to_string(123))

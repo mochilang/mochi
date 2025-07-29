@@ -1,9 +1,5 @@
-fun to_str(x: any) {
-}
 let prefix = "fore"
 let s1 = "forest"
-print
-print
+print(if string=_p(substring(s1, 0, string_length(prefix)), prefix) then 1 else 0)
 let s2 = "desert"
-print
-print
+print(if string=_p(substring(s2, 0, string_length(prefix)), prefix) then 1 else 0)

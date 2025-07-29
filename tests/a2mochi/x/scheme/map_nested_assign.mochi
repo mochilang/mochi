@@ -1,3 +1,2 @@
-let data
-print
-print
+let data = alist_to_hash_table([cons("outer", alist_to_hash_table([cons("inner", 1)]))])
+print(cond(else(list_ref(hash_table_ref(data, "outer"), "inner"))))

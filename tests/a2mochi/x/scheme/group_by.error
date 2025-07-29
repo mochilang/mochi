@@ -1,1 +1,5 @@
-parse mochi: parse error: 2:45: unexpected token "let" (expected PostfixExpr)
+check: error[T003]: unknown function: alist_to_hash_table
+  --> :1:15
+
+help:
+  Ensure the function is defined before it's called.

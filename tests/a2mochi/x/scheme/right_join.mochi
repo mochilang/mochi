@@ -1,5 +1,4 @@
-let customers
-let orders
-let result
-print
-print
+let customers = [alist_to_hash_table([cons("id", 1), cons("name", "Alice")]), alist_to_hash_table([cons("id", 2), cons("name", "Bob")]), alist_to_hash_table([cons("id", 3), cons("name", "Charlie")]), alist_to_hash_table([cons("id", 4), cons("name", "Diana")])]
+let orders = [alist_to_hash_table([cons("id", 100), cons("customerId", 1), cons("total", 250)]), alist_to_hash_table([cons("id", 101), cons("customerId", 2), cons("total", 125)]), alist_to_hash_table([cons("id", 102), cons("customerId", 1), cons("total", 300)])]
+let result = res43
+print("--- Right Join using syntax ---")

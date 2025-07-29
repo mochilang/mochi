@@ -82,6 +82,8 @@ func Parse(src string) (*Program, error) {
                             'value (expr->json (cadr b))))
                     (cadr e))
            'body (map expr->json (cddr e)))]
+    [(and (pair? e) (eq? (car e) 'begin))
+     (hash 'begin (map expr->json (cdr e)))]
     [(pair? e)
      (if (symbol? (car e))
          (hash 'call (symbol->string (car e))

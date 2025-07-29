@@ -1,14 +1,14 @@
 # a2mochi Scheme Converter
 
-Completed programs: 26/87
-Date: 2025-07-29 21:30:07 GMT+7
+Completed programs: 31/87
+Date: 2025-07-29 23:58:33 GMT+7
 
 This directory holds golden outputs for converting Scheme source files under `tests/transpiler/x/scheme` back into Mochi form.
 
 ## Checklist
 - [x] append_builtin
 - [ ] avg_builtin
-- [ ] basic_compare
+- [x] basic_compare
 - [ ] bench_block
 - [x] binary_precedence
 - [ ] bool_chain
@@ -49,7 +49,7 @@ This directory holds golden outputs for converting Scheme source files under `te
 - [ ] len_builtin
 - [ ] len_map
 - [ ] len_string
-- [ ] let_and_print
+- [x] let_and_print
 - [x] list_assign
 - [x] list_index
 - [x] list_nested_assign
@@ -69,8 +69,8 @@ This directory holds golden outputs for converting Scheme source files under `te
 - [ ] nested_function
 - [ ] order_by_map
 - [ ] outer_join
-- [x] partial_application
-- [ ] print_hello
+- [ ] partial_application
+- [x] print_hello
 - [ ] pure_fold
 - [ ] pure_global_fold
 - [x] query_sum_select
@@ -85,11 +85,11 @@ This directory holds golden outputs for converting Scheme source files under `te
 - [ ] string_in_operator
 - [ ] string_index
 - [ ] string_prefix_slice
-- [ ] substring_builtin
-- [ ] sum_builtin
+- [x] substring_builtin
+- [x] sum_builtin
 - [ ] tail_recursion
 - [ ] typed_let
 - [ ] typed_var
-- [ ] unary_neg
+- [x] unary_neg
 - [x] var_assignment
 - [ ] while_loop

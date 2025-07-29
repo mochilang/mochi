@@ -1,5 +1,5 @@
 fun boom() {
 }
-print(if(and(and((1 < 2), (2 < 3)), (3 < 4)), true, false))
-print(if(and(and((1 < 2), (2 > 3)), boom()), true, false))
-print(if(and(and(and((1 < 2), (2 < 3)), (3 > 4)), boom()), true, false))
+print(if and(and((1 < 2), (2 < 3)), (3 < 4)) then true else false)
+print(if and(and((1 < 2), (2 > 3)), boom()) then true else false)
+print(if and(and(and((1 < 2), (2 < 3)), (3 > 4)), boom()) then true else false)

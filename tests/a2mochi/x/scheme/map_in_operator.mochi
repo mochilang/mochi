@@ -1,5 +1,3 @@
-let m
-print
-print
-print
-print
+let m = alist_to_hash_table([cons(1, "a"), cons(2, "b")])
+print(if cond(else(if member(1, m) then "true" else "false")) then 1 else 0)
+print(if cond(else(if member(3, m) then "true" else "false")) then 1 else 0)

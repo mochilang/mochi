@@ -1,5 +1,5 @@
-check: error[T003]: unknown function: begin
+check: error[T002]: undefined variable: res3
   --> :4:14
 
 help:
-  Ensure the function is defined before it's called.
+  Check if the variable was declared in this scope.

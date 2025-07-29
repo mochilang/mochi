@@ -1,4 +1,3 @@
 fun outer(x: any) {
 }
-print
-print
+print(outer(3))

@@ -1,3 +1,2 @@
-let matrix
-print
-print
+let matrix = [[1, 2], [3, 4]]
+print(cond(else(list_ref(list_ref(matrix, 1), 0))))

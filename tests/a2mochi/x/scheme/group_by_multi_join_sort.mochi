@@ -1,11 +1,8 @@
-fun to_str(x: any) {
-}
-let nation
-let customer
-let orders
-let lineitem
+let nation = [alist_to_hash_table([cons("n_nationkey", 1), cons("n_name", "BRAZIL")])]
+let customer = [alist_to_hash_table([cons("c_custkey", 1), cons("c_name", "Alice"), cons("c_acctbal", 100), cons("c_nationkey", 1), cons("c_address", "123 St"), cons("c_phone", "123-456"), cons("c_comment", "Loyal")])]
+let orders = [alist_to_hash_table([cons("o_orderkey", 1000), cons("o_custkey", 1), cons("o_orderdate", "1993-10-15")]), alist_to_hash_table([cons("o_orderkey", 2000), cons("o_custkey", 1), cons("o_orderdate", "1994-01-02")])]
+let lineitem = [alist_to_hash_table([cons("l_orderkey", 1000), cons("l_returnflag", "R"), cons("l_extendedprice", 1000), cons("l_discount", 0.1)]), alist_to_hash_table([cons("l_orderkey", 2000), cons("l_returnflag", "N"), cons("l_extendedprice", 500), cons("l_discount", 0)])]
 let start_date = "1993-10-01"
 let end_date = "1994-01-01"
-let result
-print
-print
+let result = res6
+print(result)

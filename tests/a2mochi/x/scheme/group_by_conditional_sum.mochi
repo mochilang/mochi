@@ -1,3 +1,3 @@
 let items = [alist_to_hash_table([cons("cat", "a"), cons("val", 10), cons("flag", "true")]), alist_to_hash_table([cons("cat", "a"), cons("val", 5), cons("flag", "false")]), alist_to_hash_table([cons("cat", "b"), cons("val", 20), cons("flag", "true")])]
-let result = begin(for_each(lambda(i(), set_bang(res14, append(res14, alist_to_hash_table([cons("cat", hash_table_ref(g, "key")), cons("share", quotient(apply(+, begin(for_each(lambda(x(), set_bang(res12, append(res12, if(hash_table_ref(x, "flag"), hash_table_ref(x, "val"), 0)))), "g"), res12)), apply(+, begin(for_each(lambda(x(), set_bang(res13, append(res13, hash_table_ref(x, "val")))), "g"), res13))))])))), items), res14)
+let result = res14
 print(result)

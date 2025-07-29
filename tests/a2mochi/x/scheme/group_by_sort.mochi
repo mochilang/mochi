@@ -1,4 +1,3 @@
-let items
-let grouped
-print
-print
+let items = [alist_to_hash_table([cons("cat", "a"), cons("val", 3)]), alist_to_hash_table([cons("cat", "a"), cons("val", 1)]), alist_to_hash_table([cons("cat", "b"), cons("val", 5)]), alist_to_hash_table([cons("cat", "b"), cons("val", 2)])]
+let grouped = res29
+print(grouped)

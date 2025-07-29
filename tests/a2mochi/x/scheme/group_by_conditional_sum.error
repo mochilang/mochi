@@ -1,1 +1,5 @@
-parse mochi: parse error: 2:160: unexpected token "+" (expected ")")
+check: error[T003]: unknown function: alist_to_hash_table
+  --> :1:14
+
+help:
+  Ensure the function is defined before it's called.

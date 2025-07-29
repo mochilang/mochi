@@ -1,2 +1,1 @@
-print
-print
+print(string_length("mochi"))

@@ -157,6 +157,12 @@ func exprNode(v interface{}) *ast.Node {
 		}
 		return nil
 	}
+	if seq, ok := m["begin"].([]interface{}); ok {
+		if len(seq) > 0 {
+			return exprNode(seq[len(seq)-1])
+		}
+		return nil
+	}
 	if name, ok := m["var"].(string); ok {
 		return &ast.Node{Kind: sanitizeName(name)}
 	}
@@ -172,12 +178,26 @@ func exprNode(v interface{}) *ast.Node {
 	if call, ok := m["call"].(string); ok {
 		argsVal, _ := m["args"].([]interface{})
 		switch call {
+		case "if":
+			if len(argsVal) >= 2 {
+				n := &ast.Node{Kind: "if_expr"}
+				n.Children = append(n.Children, exprNode(argsVal[0]))
+				n.Children = append(n.Children, exprNode(argsVal[1]))
+				if len(argsVal) > 2 {
+					n.Children = append(n.Children, exprNode(argsVal[2]))
+				}
+				return n
+			}
+			return nil
 		case "to-str":
 			if len(argsVal) == 1 {
 				return exprNode(argsVal[0])
 			}
 			return nil
 		case "+", "-", "*", "/", "<", ">", "<=", ">=", "=", "equal?":
+			if call == "-" && len(argsVal) == 1 {
+				return &ast.Node{Kind: "unary", Value: "-", Children: []*ast.Node{exprNode(argsVal[0])}}
+			}
 			if call == "=" || call == "equal?" {
 				call = "=="
 			}

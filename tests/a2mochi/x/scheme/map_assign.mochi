@@ -1,3 +1,2 @@
-let scores
-print
-print
+let scores = alist_to_hash_table([cons("alice", 1)])
+print(hash_table_ref(scores, "bob"))

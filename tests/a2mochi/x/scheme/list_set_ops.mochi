@@ -1,10 +1,4 @@
-fun to_str(x: any) {
-}
-print
-print
-print
-print
-print
-print
-print
-print
+print(delete_duplicates(append([1, 2], 2, 3)))
+print(filter(lambda(x(), not(member(x, [2]))), [1, 2, 3]))
+print(filter(lambda(x(), member(x, [2, 4])), [1, 2, 3]))
+print(length(append([1, 2], 2, 3)))
