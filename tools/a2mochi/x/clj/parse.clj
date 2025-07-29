@@ -6,6 +6,12 @@
 (defn node [expr]
   (let [m (meta expr)]
     (cond
+      (map? expr)
+      {:map (into [] (map (fn [[k v]] [(node k) (node v)]) expr))
+       :line (:line m)
+       :col (:column m)
+       :end-line (:end-line m)
+       :end-col (:end-column m)}
       (sequential? expr)
       {:list (mapv node expr)
        :line (:line m)

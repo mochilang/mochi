@@ -1,0 +1,17 @@
+(program
+  (let m
+    (map
+      (kv (int 1) (selector a))
+      (kv (int 2) (selector b))
+    )
+  )
+  (fun main
+    (block
+      (call print
+        (index (selector m)
+ (int 1))
+      )
+    )
+  )
+  (call main)
+)

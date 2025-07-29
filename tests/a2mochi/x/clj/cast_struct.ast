@@ -1,0 +1,20 @@
+(program
+  (list
+    (selector defrecord)
+    (selector Todo1)
+    (list (selector title))
+  )
+  (let todo
+    (map
+      (kv (selector title) (selector hi))
+    )
+  )
+  (fun main
+    (block
+      (call print
+        (list (selector title) (selector todo))
+      )
+    )
+  )
+  (call main)
+)

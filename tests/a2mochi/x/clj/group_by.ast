@@ -1,0 +1,60 @@
+(program
+  (list
+    (selector defrecord)
+    (selector People)
+    (list (selector name) (selector age) (selector city))
+  )
+  (let people)
+  (let stats
+    (list
+      (selector for)
+      (list
+        (selector g)
+        (list (selector for) (selector g))
+      )
+      (map
+        (kv
+          (selector avg_age)
+          (call avg
+            (list
+              (selector for)
+              (list
+                (selector p)
+                (list (selector items) (selector g))
+              )
+              (list (selector age) (selector p))
+            )
+          )
+        )
+        (kv
+          (selector city)
+          (list (selector key) (selector g))
+        )
+        (kv
+          (selector count)
+          (call len
+            (list (selector items) (selector g))
+          )
+        )
+      )
+    )
+  )
+  (fun main
+    (block
+      (call print (selector " People grouped by city ___"))
+      (for s
+        (in (selector stats))
+        (block
+          (call print
+            (list (selector city) (selector s))
+            (selector " count =")
+            (list (selector count) (selector s))
+            (selector ", avg_age =")
+            (list (selector avg_age) (selector s))
+          )
+        )
+      )
+    )
+  )
+  (call main)
+)

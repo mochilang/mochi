@@ -1,0 +1,28 @@
+(program
+  (let testpkg
+    (map
+      (kv
+        (selector Add)
+        (list
+          (selector fn)
+          (list (selector a) (selector b))
+          (binary + (selector a) (selector b))
+        )
+      )
+      (kv (selector Answer) (int 42))
+      (kv (selector Pi) (float 3.14))
+    )
+  )
+  (fun main
+    (block
+      (call print)
+      (call print
+        (list (selector Pi) (selector testpkg))
+      )
+      (call print
+        (list (selector Answer) (selector testpkg))
+      )
+    )
+  )
+  (call main)
+)

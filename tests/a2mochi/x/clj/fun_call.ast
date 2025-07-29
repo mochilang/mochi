@@ -1,0 +1,17 @@
+(program
+  (fun add
+    (param a (type int))
+    (param b (type int))
+    (block
+      (binary + (selector a) (selector b))
+    )
+  )
+  (fun main
+    (block
+      (call print
+        (call add (int 2) (int 3))
+      )
+    )
+  )
+  (call main)
+)

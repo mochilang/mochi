@@ -1,0 +1,49 @@
+(program
+  (let math
+    (map
+      (kv (selector e) (selector Math_E))
+      (kv
+        (selector log)
+        (list
+          (selector fn)
+          (list (selector x))
+          (list (selector Math_log) (selector x))
+        )
+      )
+      (kv (selector pi) (selector Math_PI))
+      (kv
+        (selector pow)
+        (list
+          (selector fn)
+          (list (selector x) (selector y))
+          (list (selector Math_pow) (selector x) (selector y))
+        )
+      )
+      (kv
+        (selector sin)
+        (list
+          (selector fn)
+          (list (selector x))
+          (list (selector Math_sin) (selector x))
+        )
+      )
+      (kv
+        (selector sqrt)
+        (list
+          (selector fn)
+          (list (selector x))
+          (list (selector Math_sqrt) (selector x))
+        )
+      )
+    )
+  )
+  (fun main
+    (block
+      (call print)
+      (call print
+        (list (selector pi) (selector math))
+      )
+    )
+  )
+  (call main)
+)

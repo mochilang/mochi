@@ -1,0 +1,22 @@
+(program
+  (let x (int 2))
+  (let label
+    (list
+      (selector cond)
+      (binary == (selector x) (int 1))
+      (selector one)
+      (binary == (selector x) (int 2))
+      (selector two)
+      (binary == (selector x) (int 3))
+      (selector three)
+      (bool true)
+      (selector unknown)
+    )
+  )
+  (fun main
+    (block
+      (call print (selector label))
+    )
+  )
+  (call main)
+)

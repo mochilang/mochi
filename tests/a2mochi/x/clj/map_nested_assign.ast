@@ -1,0 +1,35 @@
+(program
+  (list
+    (selector defrecord)
+    (selector Data)
+    (list (selector outer))
+  )
+  (let data
+    (map
+      (kv
+        (selector outer)
+        (map
+          (kv (selector inner) (int 1))
+        )
+      )
+    )
+  )
+  (fun main
+    (block
+      (assign data
+        (list
+          (selector assoc_in)
+          (selector data)
+          (list (selector outer) (selector inner))
+          (int 2)
+        )
+      )
+      (call print
+        (index (index (selector data)
+ (selector outer))
+ (selector inner))
+      )
+    )
+  )
+  (call main)
+)

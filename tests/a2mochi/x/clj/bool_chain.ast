@@ -1,0 +1,43 @@
+(program
+  (fun boom
+    (block
+      (call print (selector boom))
+      (bool true)
+    )
+  )
+  (fun main
+    (block
+      (call print
+        (binary &&
+          (binary &&
+            (binary < (int 1) (int 2))
+            (binary < (int 2) (int 3))
+          )
+          (binary < (int 3) (int 4))
+        )
+      )
+      (call print
+        (binary &&
+          (binary &&
+            (binary < (int 1) (int 2))
+            (binary > (int 2) (int 3))
+          )
+          (call boom)
+        )
+      )
+      (call print
+        (binary &&
+          (binary &&
+            (binary &&
+              (binary < (int 1) (int 2))
+              (binary < (int 2) (int 3))
+            )
+            (binary > (int 3) (int 4))
+          )
+          (call boom)
+        )
+      )
+    )
+  )
+  (call main)
+)

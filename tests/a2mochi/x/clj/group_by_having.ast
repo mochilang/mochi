@@ -1,0 +1,33 @@
+(program
+  (list
+    (selector defrecord)
+    (selector People)
+    (list (selector name) (selector city))
+  )
+  (let people)
+  (let big
+    (list
+      (selector for)
+      (list
+        (selector g)
+        (list (selector for) (selector g))
+      )
+      (map
+        (kv
+          (selector city)
+          (list (selector key) (selector g))
+        )
+        (kv
+          (selector num)
+          (call len
+            (list (selector items) (selector g))
+          )
+        )
+      )
+    )
+  )
+  (fun main
+    (block (call print))
+  )
+  (call main)
+)

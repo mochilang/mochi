@@ -1,0 +1,87 @@
+(program
+  (list
+    (selector defrecord)
+    (selector Items)
+    (list (selector orderId) (selector sku))
+  )
+  (list
+    (selector defrecord)
+    (selector Orders)
+    (list (selector id) (selector customerId))
+  )
+  (list
+    (selector defrecord)
+    (selector Customers)
+    (list (selector id) (selector name))
+  )
+  (let customers)
+  (let orders)
+  (let items)
+  (let result
+    (list
+      (selector for)
+      (list
+        (selector o)
+        (selector orders)
+        (selector c)
+        (selector customers)
+        (selector i)
+        (list
+          (selector let)
+          (list
+            (selector i_tmp)
+            (list
+              (selector filter)
+              (list
+                (selector fn)
+                (list (selector i))
+                (binary ==
+                  (list (selector id) (selector o))
+                  (list (selector orderId) (selector i))
+                )
+              )
+              (selector items)
+            )
+          )
+          (if
+            (list (selector seq) (selector i_tmp))
+            (selector i_tmp)
+            (list (selector _))
+          )
+        )
+        (selector when)
+        (binary ==
+          (list (selector customerId) (selector o))
+          (list (selector id) (selector c))
+        )
+      )
+      (map
+        (kv (selector item) (selector i))
+        (kv
+          (selector name)
+          (list (selector name) (selector c))
+        )
+        (kv
+          (selector orderId)
+          (list (selector id) (selector o))
+        )
+      )
+    )
+  )
+  (fun main
+    (block
+      (call print (selector " Left Join Multi ___"))
+      (for r
+        (in (selector result))
+        (block
+          (call print
+            (list (selector orderId) (selector r))
+            (list (selector name) (selector r))
+            (list (selector item) (selector r))
+          )
+        )
+      )
+    )
+  )
+  (call main)
+)

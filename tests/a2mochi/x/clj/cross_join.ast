@@ -1,0 +1,59 @@
+(program
+  (list
+    (selector defrecord)
+    (selector Orders)
+    (list (selector id) (selector customerId) (selector total))
+  )
+  (list
+    (selector defrecord)
+    (selector Customers)
+    (list (selector id) (selector name))
+  )
+  (let customers)
+  (let orders)
+  (let result
+    (list
+      (selector for)
+      (list (selector o) (selector orders) (selector c) (selector customers))
+      (map
+        (kv
+          (selector orderCustomerId)
+          (list (selector customerId) (selector o))
+        )
+        (kv
+          (selector orderId)
+          (list (selector id) (selector o))
+        )
+        (kv
+          (selector orderTotal)
+          (list (selector total) (selector o))
+        )
+        (kv
+          (selector pairedCustomerName)
+          (list (selector name) (selector c))
+        )
+      )
+    )
+  )
+  (fun main
+    (block
+      (call print (selector " Cross Join: All order_customer pairs ___"))
+      (for entry
+        (in (selector result))
+        (block
+          (call print
+            (selector Order)
+            (list (selector orderId) (selector entry))
+            (selector "(customerId:")
+            (list (selector orderCustomerId) (selector entry))
+            (selector ", total: $")
+            (list (selector orderTotal) (selector entry))
+            (selector ") paired with")
+            (list (selector pairedCustomerName) (selector entry))
+          )
+        )
+      )
+    )
+  )
+  (call main)
+)

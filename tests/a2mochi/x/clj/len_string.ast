@@ -1,0 +1,10 @@
+(program
+  (fun main
+    (block
+      (call print
+        (call len (selector mochi))
+      )
+    )
+  )
+  (call main)
+)

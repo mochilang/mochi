@@ -1,0 +1,38 @@
+(program
+  (let nums
+    (list (int 1) (int 2))
+  )
+  (let letters
+    (list (selector A) (selector B))
+  )
+  (let bools
+    (list (bool true) (bool false))
+  )
+  (let combos
+    (list
+      (selector for)
+      (list (selector n) (selector nums) (selector l) (selector letters) (selector b) (selector bools))
+      (map
+        (kv (selector b) (selector b))
+        (kv (selector l) (selector l))
+        (kv (selector n) (selector n))
+      )
+    )
+  )
+  (fun main
+    (block
+      (call print (selector " Cross Join of three lists ___"))
+      (for c
+        (in (selector combos))
+        (block
+          (call print
+            (list (selector n) (selector c))
+            (list (selector l) (selector c))
+            (list (selector b) (selector c))
+          )
+        )
+      )
+    )
+  )
+  (call main)
+)

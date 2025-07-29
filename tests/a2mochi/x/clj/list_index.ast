@@ -1,0 +1,14 @@
+(program
+  (let xs
+    (list (int 10) (int 20) (int 30))
+  )
+  (fun main
+    (block
+      (call print
+        (index (selector xs)
+ (int 1))
+      )
+    )
+  )
+  (call main)
+)

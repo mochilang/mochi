@@ -4,6 +4,7 @@ package clj
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -111,6 +112,17 @@ func newNode(kind string, val any, children ...*ast.Node) *ast.Node {
 
 // toSexpr converts the parsed node to a simple S-expression representation.
 func toSexpr(n node) any {
+	if len(n.Map) > 0 {
+		m := make(map[string]any, len(n.Map))
+		for _, kv := range n.Map {
+			if len(kv) != 2 {
+				continue
+			}
+			k := fmt.Sprint(toSexpr(kv[0]))
+			m[k] = toSexpr(kv[1])
+		}
+		return m
+	}
 	if len(n.List) > 0 {
 		out := make([]any, len(n.List))
 		for i, c := range n.List {
@@ -141,6 +153,18 @@ func sexprToNode(x any, fns map[string]bool) *ast.Node {
 			v = strings.TrimPrefix(v, ":")
 		}
 		return newNode("selector", sanitizeName(v))
+	case map[string]any:
+		keys := make([]string, 0, len(v))
+		for k := range v {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		mnode := newNode("map", nil)
+		for _, k := range keys {
+			kv := newNode("kv", nil, sexprToNode(k, fns), sexprToNode(v[k], fns))
+			mnode.Children = append(mnode.Children, kv)
+		}
+		return mnode
 	case []any:
 		if len(v) == 0 {
 			return nil

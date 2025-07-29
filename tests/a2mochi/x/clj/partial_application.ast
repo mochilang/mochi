@@ -1,0 +1,20 @@
+(program
+  (fun add
+    (param a (type int))
+    (param b (type int))
+    (block
+      (binary + (selector a) (selector b))
+    )
+  )
+  (let add5
+    (list (selector partial) (selector add) (int 5))
+  )
+  (fun main
+    (block
+      (call print
+        (list (selector add5) (int 3))
+      )
+    )
+  )
+  (call main)
+)

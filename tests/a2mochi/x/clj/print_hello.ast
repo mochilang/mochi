@@ -1,0 +1,8 @@
+(program
+  (fun main
+    (block
+      (call print (selector hello))
+    )
+  )
+  (call main)
+)

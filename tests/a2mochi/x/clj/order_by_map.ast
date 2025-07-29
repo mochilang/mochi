@@ -1,0 +1,31 @@
+(program
+  (list
+    (selector defrecord)
+    (selector Data)
+    (list (selector a) (selector b))
+  )
+  (let data)
+  (let sorted
+    (list
+      (selector for)
+      (list
+        (selector x)
+        (list
+          (selector sort_by)
+          (list
+            (selector fn)
+            (list (selector x))
+          )
+          (selector data)
+        )
+      )
+      (selector x)
+    )
+  )
+  (fun main
+    (block
+      (call print (selector sorted))
+    )
+  )
+  (call main)
+)

@@ -1,0 +1,1 @@
+parse error: 4:5: unexpected token "main" (expected "(" (Param ("," Param)*)? ")" (":" TypeRef)? ("{" Statement* "}")? ("=>" Expr)?)

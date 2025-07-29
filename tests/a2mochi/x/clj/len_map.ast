@@ -1,0 +1,15 @@
+(program
+  (fun main
+    (block
+      (call print
+        (call len
+          (map
+            (kv (selector a) (int 1))
+            (kv (selector b) (int 2))
+          )
+        )
+      )
+    )
+  )
+  (call main)
+)

@@ -1,0 +1,17 @@
+(program
+  (let square
+    (list
+      (selector fn)
+      (list (selector x))
+      (binary * (selector x) (selector x))
+    )
+  )
+  (fun main
+    (block
+      (call print
+        (list (selector square) (int 6))
+      )
+    )
+  )
+  (call main)
+)

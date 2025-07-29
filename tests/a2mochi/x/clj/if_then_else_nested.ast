@@ -1,0 +1,20 @@
+(program
+  (let x (int 8))
+  (let msg
+    (if
+      (binary > (selector x) (int 10))
+      (selector big)
+      (if
+        (binary > (selector x) (int 5))
+        (selector medium)
+        (selector small)
+      )
+    )
+  )
+  (fun main
+    (block
+      (call print (selector msg))
+    )
+  )
+  (call main)
+)

@@ -1,0 +1,28 @@
+(program
+  (list
+    (selector defrecord)
+    (selector Scores)
+    (list (selector alice))
+  )
+  (let scores
+    (map
+      (kv (selector alice) (int 1))
+    )
+  )
+  (fun main
+    (block
+      (assign scores
+        (assign
+          (index (selector scores)
+ (selector bob))
+          (int 2)
+        )
+      )
+      (call print
+        (index (selector scores)
+ (selector bob))
+      )
+    )
+  )
+  (call main)
+)
