@@ -90,6 +90,11 @@ func Transform(p *Program) (*ast.Node, error) {
 }
 
 // --- Parsing helpers below (adapted from archived any2mochi) ---
+type frame struct {
+	block  *ast.Node
+	ifNode *ast.Node
+}
+
 func transformBody(body string) ([]*ast.Node, error) {
 	lines := strings.Split(body, "\n")
 	if len(lines) > 0 && strings.TrimSpace(lines[0]) == "{" {
@@ -98,13 +103,62 @@ func transformBody(body string) ([]*ast.Node, error) {
 	if len(lines) > 0 && strings.TrimSpace(lines[len(lines)-1]) == "}" {
 		lines = lines[:len(lines)-1]
 	}
+
+	for i := 0; i < len(lines); i++ {
+		trimmed := strings.TrimSpace(lines[i])
+		if strings.HasPrefix(trimmed, "} else {") {
+			lines[i] = "}"
+			lines = append(lines[:i+1], append([]string{"else {"}, lines[i+1:]...)...)
+		}
+	}
+
 	var out []*ast.Node
-	for _, l := range lines {
-		l = strings.TrimSpace(l)
+	var stack []frame
+
+	addStmt := func(n *ast.Node) {
+		if len(stack) == 0 {
+			out = append(out, n)
+		} else {
+			stack[len(stack)-1].block.Children = append(stack[len(stack)-1].block.Children, n)
+		}
+	}
+
+	nextLine := func(i int) string {
+		if i+1 < len(lines) {
+			return strings.TrimSpace(lines[i+1])
+		}
+		return ""
+	}
+
+	rangeFor := regexp.MustCompile(`^for \((?:const\s+)?(?:auto|[\w:<>,]+)[\s*&]*([A-Za-z_][A-Za-z0-9_]*)\s*:\s*([^\)]+)\)\s*\{$`)
+	cFor := regexp.MustCompile(`^for \((?:[A-Za-z_][A-Za-z0-9_<>,\s]*\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([^;]+);[^;]+<\s*([^;]+);[^\)]*\)\s*\{$`)
+	whileRe := regexp.MustCompile(`^while \((.*)\)\s*\{$`)
+	ifRe := regexp.MustCompile(`^if \((.*)\)\s*\{$`)
+
+	for i := 0; i < len(lines); i++ {
+		l := strings.TrimSpace(lines[i])
 		l = strings.TrimSuffix(l, ";")
 		if l == "" {
 			continue
 		}
+
+		// handle end of block and optional else
+		if l == "}" {
+			if len(stack) > 0 {
+				fr := stack[len(stack)-1]
+				stack = stack[:len(stack)-1]
+				// else clause follows
+				nl := nextLine(i)
+				if nl == "else {" && fr.ifNode != nil {
+					elseBlock := &ast.Node{Kind: "block"}
+					fr.ifNode.Children = append(fr.ifNode.Children, elseBlock)
+					stack = append(stack, frame{block: elseBlock})
+					i++
+				}
+			}
+			continue
+		}
+
 		switch {
 		case strings.HasPrefix(l, "return"):
 			expr := strings.TrimSpace(strings.TrimPrefix(l, "return"))
@@ -116,26 +170,26 @@ func transformBody(body string) ([]*ast.Node, error) {
 				if err != nil {
 					return nil, err
 				}
-				out = append(out, stmt)
+				addStmt(stmt)
 			} else {
 				stmt, err := parseSingle("return")
 				if err != nil {
 					return nil, err
 				}
-				out = append(out, stmt)
+				addStmt(stmt)
 			}
 		case l == "break":
 			stmt, err := parseSingle("break")
 			if err != nil {
 				return nil, err
 			}
-			out = append(out, stmt)
+			addStmt(stmt)
 		case l == "continue":
 			stmt, err := parseSingle("continue")
 			if err != nil {
 				return nil, err
 			}
-			out = append(out, stmt)
+			addStmt(stmt)
 		case strings.Contains(l, "std::cout") || strings.HasPrefix(l, "cout <<"):
 			_ = strings.Contains(l, "std::boolalpha") || strings.Contains(l, "boolalpha <<")
 			l = strings.TrimPrefix(l, "std::cout <<")
@@ -164,72 +218,48 @@ func transformBody(body string) ([]*ast.Node, error) {
 			if err != nil {
 				return nil, err
 			}
-			out = append(out, stmt)
-		case strings.HasPrefix(l, "for (") && strings.Contains(l, ":"):
-			re := regexp.MustCompile(`^for \((?:const\s+)?(?:auto|[\w:<>,]+)[\s*&]*([A-Za-z_][A-Za-z0-9_]*)\s*:\s*([^\)]+)\)\s*\{?$`)
-			if m := re.FindStringSubmatch(l); m != nil {
-				name := m[1]
-				src := strings.TrimSpace(m[2])
-				stmt, err := parseSingle(fmt.Sprintf("for %s in %s {", name, src))
-				if err != nil {
-					return nil, err
-				}
-				out = append(out, stmt)
-			} else {
-				stmt, err := parseSingle(l)
-				if err != nil {
-					return nil, err
-				}
-				out = append(out, stmt)
+			addStmt(stmt)
+		case rangeFor.MatchString(l):
+			m := rangeFor.FindStringSubmatch(l)
+			stmt, err := parseSingle(fmt.Sprintf("for %s in %s {}", m[1], strings.TrimSpace(m[2])))
+			if err != nil {
+				return nil, err
 			}
-		case strings.HasPrefix(l, "for ("):
-			re := regexp.MustCompile(`^for \((?:[A-Za-z_][A-Za-z0-9_<>,\s]*\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([^;]+);[^;]+<\s*([^;]+);[^\)]*\)\s*\{?$`)
-			if m := re.FindStringSubmatch(l); m != nil {
-				stmt, err := parseSingle(fmt.Sprintf("for %s in %s..%s {", m[1], strings.TrimSpace(m[2]), strings.TrimSpace(m[3])))
-				if err != nil {
-					return nil, err
-				}
-				out = append(out, stmt)
-			} else {
-				stmt, err := parseSingle(l)
-				if err != nil {
-					return nil, err
-				}
-				out = append(out, stmt)
+			addStmt(stmt)
+			blk := stmt.Children[len(stmt.Children)-1]
+			stack = append(stack, frame{block: blk})
+		case cFor.MatchString(l):
+			m := cFor.FindStringSubmatch(l)
+			stmt, err := parseSingle(fmt.Sprintf("for %s in %s..%s {}", m[1], strings.TrimSpace(m[2]), strings.TrimSpace(m[3])))
+			if err != nil {
+				return nil, err
 			}
-		case strings.HasPrefix(l, "while ("):
-			if m := regexp.MustCompile(`^while \((.*)\)\s*\{?$`).FindStringSubmatch(l); m != nil {
-				cond := strings.TrimSpace(m[1])
-				if strings.HasPrefix(cond, "(") && strings.HasSuffix(cond, ")") {
-					cond = strings.TrimSuffix(strings.TrimPrefix(cond, "("), ")")
-				}
-				stmt, err := parseSingle(fmt.Sprintf("while %s {", cond))
-				if err != nil {
-					return nil, err
-				}
-				out = append(out, stmt)
-			} else {
-				stmt, err := parseSingle(l)
-				if err != nil {
-					return nil, err
-				}
-				out = append(out, stmt)
+			addStmt(stmt)
+			blk := stmt.Children[len(stmt.Children)-1]
+			stack = append(stack, frame{block: blk})
+		case whileRe.MatchString(l):
+			m := whileRe.FindStringSubmatch(l)
+			cond := strings.TrimSpace(m[1])
+			if strings.HasPrefix(cond, "(") && strings.HasSuffix(cond, ")") {
+				cond = strings.TrimSuffix(strings.TrimPrefix(cond, "("), ")")
 			}
-		case strings.HasPrefix(l, "if ("):
-			if m := regexp.MustCompile(`^if \((.*)\)\s*\{?$`).FindStringSubmatch(l); m != nil {
-				cond := strings.TrimSpace(m[1])
-				stmt, err := parseSingle(fmt.Sprintf("if %s {", cond))
-				if err != nil {
-					return nil, err
-				}
-				out = append(out, stmt)
-			} else {
-				stmt, err := parseSingle(l)
-				if err != nil {
-					return nil, err
-				}
-				out = append(out, stmt)
+			stmt, err := parseSingle(fmt.Sprintf("while %s {}", cond))
+			if err != nil {
+				return nil, err
 			}
+			addStmt(stmt)
+			blk := stmt.Children[len(stmt.Children)-1]
+			stack = append(stack, frame{block: blk})
+		case ifRe.MatchString(l):
+			m := ifRe.FindStringSubmatch(l)
+			cond := strings.TrimSpace(m[1])
+			stmt, err := parseSingle(fmt.Sprintf("if %s {}", cond))
+			if err != nil {
+				return nil, err
+			}
+			addStmt(stmt)
+			blk := stmt.Children[len(stmt.Children)-1]
+			stack = append(stack, frame{block: blk, ifNode: stmt})
 		default:
 			decl := false
 			if strings.HasPrefix(l, "const ") {
@@ -263,14 +293,74 @@ func transformBody(body string) ([]*ast.Node, error) {
 			if err != nil {
 				return nil, err
 			}
-			out = append(out, stmt)
+			addStmt(stmt)
 		}
+	}
+	if len(stack) != 0 {
+		return nil, fmt.Errorf("unbalanced braces")
 	}
 	return out, nil
 }
 
 func convertExpression(s string) string {
 	s = strings.TrimSpace(s)
+	for {
+		if len(s) >= 2 && s[0] == '(' && s[len(s)-1] == ')' {
+			depth := 0
+			balanced := true
+			for i, r := range s {
+				if r == '(' {
+					depth++
+				} else if r == ')' {
+					depth--
+					if depth == 0 && i < len(s)-1 {
+						balanced = false
+						break
+					}
+				}
+			}
+			if balanced && depth == 0 {
+				s = strings.TrimSpace(s[1 : len(s)-1])
+				continue
+			}
+		}
+		break
+	}
+	// handle ternary operator
+	depth := 0
+	q := -1
+	colon := -1
+	for i, r := range s {
+		switch r {
+		case '?':
+			if depth == 0 && q == -1 {
+				q = i
+			}
+		case ':':
+			if depth == 0 && q != -1 {
+				if i > 0 && s[i-1] == ':' {
+					break
+				}
+				if i+1 < len(s) && s[i+1] == ':' {
+					break
+				}
+				colon = i
+				break
+			}
+		case '(', '[', '{':
+			depth++
+		case ')', ']', '}':
+			if depth > 0 {
+				depth--
+			}
+		}
+	}
+	if q != -1 && colon != -1 {
+		cond := convertExpression(strings.TrimSpace(s[:q]))
+		yes := convertExpression(strings.TrimSpace(s[q+1 : colon]))
+		no := convertExpression(strings.TrimSpace(s[colon+1:]))
+		return fmt.Sprintf("if %s then %s else %s", cond, yes, no)
+	}
 	if strings.HasSuffix(s, ".size()") {
 		inner := strings.TrimSuffix(s, ".size()")
 		inner = convertExpression(inner)
@@ -284,13 +374,13 @@ func convertExpression(s string) string {
 	if strings.HasPrefix(s, "std::string(") && strings.HasSuffix(s, ")") {
 		return strings.TrimSuffix(strings.TrimPrefix(s, "std::string("), ")")
 	}
-	if strings.HasPrefix(s, "std::map") && strings.Contains(s, "{{") && strings.HasSuffix(s, "}}") {
-		start := strings.Index(s, "{{")
-		inner := s[start+1 : len(s)-1]
-		parts := strings.Split(inner, "},")
-		var pairs []string
-		for _, p := range parts {
-			p = strings.TrimSpace(strings.Trim(p, "{}"))
+        if strings.HasPrefix(s, "std::map") && strings.Contains(s, "{{") && strings.HasSuffix(s, "}}") {
+                start := strings.Index(s, "{{")
+                inner := s[start+2 : len(s)-2]
+                parts := strings.Split(inner, "},")
+                var pairs []string
+                for _, p := range parts {
+                        p = strings.TrimSpace(strings.Trim(p, "{}"))
 			kv := strings.SplitN(p, ",", 2)
 			if len(kv) != 2 {
 				continue

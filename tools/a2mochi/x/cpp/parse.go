@@ -224,6 +224,9 @@ func walkAST(n *clangNode, src string, funcs *[]Func, enums *[]Enum, structs *[]
 	}
 	for i := range n.Inner {
 		nextParent := parent
+		if n.Kind == "FunctionDecl" || n.Kind == "CXXMethodDecl" {
+			nextParent = "func"
+		}
 		if n.Kind == "CXXRecordDecl" || n.Kind == "RecordDecl" {
 			if n.Name != "" {
 				nextParent = n.Name
@@ -243,7 +246,18 @@ func parseGlobalDecl(s string) Global {
 	var val string
 	if len(parts) > 1 {
 		val = strings.TrimSpace(parts[1])
-		val = strings.TrimSuffix(strings.TrimPrefix(val, "("), ")")
+		open := strings.Count(val, "(")
+		close := strings.Count(val, ")")
+		for close < open {
+			val += ")"
+			close++
+		}
+		oBrace := strings.Count(val, "{")
+		cBrace := strings.Count(val, "}")
+		for cBrace < oBrace {
+			val += "}"
+			cBrace++
+		}
 	}
 	fields := strings.Fields(left)
 	if len(fields) == 0 {
