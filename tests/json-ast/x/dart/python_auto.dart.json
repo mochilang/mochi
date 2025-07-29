@@ -1,0 +1,16 @@
+{
+  "functions": [
+    {
+      "name": "main",
+      "params": [],
+      "ret": "void",
+      "body": [
+        "  print(math.sqrt(16.0))",
+        "  print(math.pi)"
+      ],
+      "start": 4,
+      "end": 7
+    }
+  ],
+  "classes": []
+}
