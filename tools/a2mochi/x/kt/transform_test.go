@@ -144,4 +144,7 @@ func TestTransform_Golden(t *testing.T) {
 			runCase(t, name, srcPath, outDir, root)
 		})
 	}
+	if *update {
+		kt.UpdateReadmeForTests()
+	}
 }
