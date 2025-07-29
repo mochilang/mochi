@@ -106,7 +106,7 @@ func testFile(t *testing.T, root, outDir, srcPath string) {
 		t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", got, want)
 	}
 
-	code, err := ocaml.Print(node)
+	code, err := ocaml.Print(prog, node)
 	if err != nil {
 		os.WriteFile(errPath, []byte("print: "+err.Error()), 0o644)
 		t.Fatalf("print: %v", err)
@@ -174,6 +174,7 @@ func TestTransform_Golden(t *testing.T) {
 		"list_index":          true,
 		"list_assign":         true,
 		"append_builtin":      true,
+		"count_builtin":       true,
 		"bool_chain":          true,
 		"if_else":             true,
 		"fun_call":            true,

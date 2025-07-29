@@ -15,13 +15,17 @@ import (
 
 // Print emits Mochi source code for the given AST node along with a standard
 // header.
-func Print(n *ast.Node) (string, error) {
+func Print(p *Program, n *ast.Node) (string, error) {
 	var code strings.Builder
 	if err := ast.Fprint(&code, n); err != nil {
 		return "", err
 	}
 	var out strings.Builder
-	out.WriteString(header(""))
+	src := ""
+	if p != nil {
+		src = p.Source
+	}
+	out.WriteString(header(src))
 	out.WriteString(code.String())
 	out.WriteByte('\n')
 	return out.String(), nil
