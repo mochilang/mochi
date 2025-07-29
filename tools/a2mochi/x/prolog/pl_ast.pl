@@ -36,7 +36,7 @@ head_info(Term, Vs, Name, Params) :-
     maplist(arg_name(Vs), Args, Params).
 
 arg_name(Vs, Var, Name) :- var(Var), !,
-    ( member(Name0=Var, Vs) -> Name=Name0 ; Name="_" ).
+    ( member(Name0=Var0, Vs), Var == Var0 -> Name=Name0 ; Name="_" ).
 arg_name(_, Term, Name) :-
     ( number(Term) -> Name = Term
     ; with_output_to(string(S), write_term(Term, [quoted(true),fullstop(false),spacing(next_argument)])),
