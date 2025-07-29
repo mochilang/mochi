@@ -6,7 +6,6 @@ import (
 	"bytes"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -28,23 +27,17 @@ func UpdateReadmeForTests() {
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".pl")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
-			converted++
-			mark = "[x]"
+		outFile := filepath.Join(outDir, name+".out")
+		if _, err := os.Stat(outFile); err == nil {
+			if _, err := os.Stat(filepath.Join(outDir, name+".error")); err != nil {
+				converted++
+				mark = "[x]"
+			}
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}
-	out, err := exec.Command("git", "log", "-1", "--date=iso-strict", "--format=%cd").Output()
-	ts := ""
-	if err == nil {
-		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
-				ts = t.In(loc).Format("2006-01-02 15:04 -0700")
-			} else {
-				ts = t.Format("2006-01-02 15:04 MST")
-			}
-		}
-	}
+	loc := time.FixedZone("GMT+7", 7*3600)
+	ts := time.Now().In(loc).Format("2006-01-02 15:04 MST")
 	var buf bytes.Buffer
 	buf.WriteString("# a2mochi Prolog Converter\n\n")
 	buf.WriteString("This directory contains golden outputs for converting Prolog programs under `tests/transpiler/x/pl` into Mochi AST form.\n\n")

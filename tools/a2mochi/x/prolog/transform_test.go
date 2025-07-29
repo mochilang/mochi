@@ -5,6 +5,7 @@ package prolog_test
 import (
 	"bytes"
 	"flag"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -135,6 +136,7 @@ func TestTransform(t *testing.T) {
 		"min_max_builtin":     true,
 		"if_then_else_nested": true,
 		"string_prefix_slice": true,
+		"list_set_ops":        true,
 	}
 
 	outputDir := filepath.Join(root, "tests/a2mochi/x/prolog")
@@ -149,9 +151,11 @@ func TestTransform(t *testing.T) {
 			code, node := transformFromFile(t, srcFile)
 
 			astPath := filepath.Join(outputDir, name+".ast")
+			errPath := filepath.Join(outputDir, name+".error")
 			if *update {
 				os.WriteFile(astPath, []byte(node.String()), 0o644)
 				os.WriteFile(filepath.Join(outputDir, name+".mochi"), []byte(code), 0o644)
+				os.Remove(errPath)
 			}
 			want, err := os.ReadFile(astPath)
 			if err != nil {
@@ -164,6 +168,9 @@ func TestTransform(t *testing.T) {
 
 			gotOut, err := runMochi(code)
 			if err != nil {
+				if *update {
+					os.WriteFile(errPath, []byte(err.Error()), 0o644)
+				}
 				t.Fatalf("run: %v", err)
 			}
 			if *update {
@@ -178,11 +185,24 @@ func TestTransform(t *testing.T) {
 				t.Fatalf("run vm: %v", err)
 			}
 			if !bytes.Equal(gotOut, wantOut) {
+				if *update {
+					msg := fmt.Sprintf("output mismatch\n-- got --\n%s\n-- want --\n%s", gotOut, wantOut)
+					os.WriteFile(errPath, []byte(msg), 0o644)
+				}
 				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
+			} else if *update {
+				os.Remove(errPath)
 			}
 		})
 	}
-	if *update {
-		prolog.UpdateReadmeForTests()
-	}
+}
+
+func updateReadme() {
+	prolog.UpdateReadmeForTests()
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	os.Exit(code)
 }
