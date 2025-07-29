@@ -3,6 +3,7 @@
 package zig
 
 import (
+	"fmt"
 	"strings"
 
 	"mochi/ast"
@@ -11,14 +12,14 @@ import (
 
 // Print returns the Mochi source for the given AST node with a standard header.
 func Print(n *ast.Node) (string, error) {
-	var code strings.Builder
-	if err := ast.Fprint(&code, n); err != nil {
-		return "", err
+	if n == nil {
+		return "", fmt.Errorf("nil node")
 	}
+	src := n.Source()
 	var b strings.Builder
 	b.Write(meta.Header("//"))
-	b.WriteString(code.String())
-	if !strings.HasSuffix(code.String(), "\n") {
+	b.WriteString(src)
+	if !strings.HasSuffix(src, "\n") {
 		b.WriteByte('\n')
 	}
 	return b.String(), nil
