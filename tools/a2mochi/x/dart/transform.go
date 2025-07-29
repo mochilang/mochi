@@ -149,9 +149,14 @@ func convertQuotes(s string) string {
 
 var forVarRe = regexp.MustCompile(`^(\s*)for \((?:var|final|const) ([A-Za-z_][A-Za-z0-9_]*) in ([^)]*)\)`)
 
+// forRangeRe matches simple numeric for loops like:
+// for (var i = 0; i < n; i++) { ... }
+var forRangeRe = regexp.MustCompile(`^(\s*)for \((?:var\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([^;]+);\s*[A-Za-z_][A-Za-z0-9_]*\s*<\s*([^;]+);\s*[A-Za-z_][A-Za-z0-9_]*\+\+\)`)
+
 func convertBodyLine(s string) string {
 	s = strings.TrimSuffix(s, ";")
 	s = forVarRe.ReplaceAllString(s, "${1}for ${2} in ${3}")
+	s = forRangeRe.ReplaceAllString(s, "${1}for ${2} in ${3}..${4}")
 	if strings.HasPrefix(strings.TrimSpace(s), "let ") {
 		s = strings.Replace(s, "let ", "var ", 1)
 	}
