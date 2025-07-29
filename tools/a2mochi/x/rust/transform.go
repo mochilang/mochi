@@ -776,6 +776,15 @@ func sanitizeExpr(code string) string {
 
 	code = strings.ReplaceAll(code, "Default::default()", "0")
 
+	reIntDiv := regexp.MustCompile(`^([0-9]+) / ([0-9]+)$`)
+	if m := reIntDiv.FindStringSubmatch(code); m != nil {
+		a, _ := strconv.Atoi(m[1])
+		b, _ := strconv.Atoi(m[2])
+		if b != 0 {
+			code = fmt.Sprintf("%d", a/b)
+		}
+	}
+
 	// remove redundant outer parentheses
 	for {
 		if strings.HasPrefix(code, "(") && strings.HasSuffix(code, ")") {
