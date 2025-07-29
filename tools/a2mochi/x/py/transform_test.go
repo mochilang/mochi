@@ -144,6 +144,7 @@ func TestTransform_Golden(t *testing.T) {
 		"match_expr":              true,
 		"str_builtin":             true,
 		"test_block":              true,
+		"two-sum":                 true,
 		"go_auto":                 true,
 		"python_auto":             true,
 	}
@@ -161,17 +162,13 @@ func TestTransform_Golden(t *testing.T) {
 			}
 			n, err := py.Parse(string(data))
 			if err != nil {
-				if *update {
-					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0o644)
-				}
+				os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0o644)
 				t.Errorf("parse: %v", err)
 				return
 			}
 			node, err := py.Transform(n)
 			if err != nil {
-				if *update {
-					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0o644)
-				}
+				os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0o644)
 				t.Errorf("transform: %v", err)
 				return
 			}
@@ -183,9 +180,7 @@ func TestTransform_Golden(t *testing.T) {
 
 			code, err := py.Print(n)
 			if err != nil {
-				if *update {
-					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0o644)
-				}
+				os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0o644)
 				t.Errorf("print source: %v", err)
 				return
 			}
@@ -195,9 +190,7 @@ func TestTransform_Golden(t *testing.T) {
 			}
 			gotOut, err := runMochi(code)
 			if err != nil {
-				if *update {
-					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0o644)
-				}
+				os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0o644)
 				t.Errorf("run: %v", err)
 				return
 			}
@@ -214,9 +207,7 @@ func TestTransform_Golden(t *testing.T) {
 				t.Fatalf("run vm: %v", err)
 			}
 			if !bytes.Equal(gotOut, wantOut) {
-				if *update {
-					os.WriteFile(filepath.Join(outDir, name+".error"), []byte("output mismatch"), 0o644)
-				}
+				os.WriteFile(filepath.Join(outDir, name+".error"), []byte("output mismatch"), 0o644)
 				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
 			}
 		})
