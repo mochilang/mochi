@@ -61,12 +61,13 @@ type PrintStmt struct {
 }
 
 type Func struct {
-	Name      string  `json:"name"`
-	Params    []Param `json:"params"`
-	Return    string  `json:"return,omitempty"`
-	Doc       string  `json:"doc,omitempty"`
-	StartLine int     `json:"start_line"`
-	EndLine   int     `json:"end_line"`
+	Name      string      `json:"name"`
+	Params    []Param     `json:"params"`
+	Return    string      `json:"return,omitempty"`
+	Doc       string      `json:"doc,omitempty"`
+	StartLine int         `json:"start_line"`
+	EndLine   int         `json:"end_line"`
+	Body      []*ast.Node `json:"body,omitempty"`
 }
 
 type Class struct {
@@ -141,7 +142,8 @@ func funcFromFn(fn *stmt.Function) Func {
 	}
 	doc := strings.TrimSpace(fn.PhpDocComment)
 	pos := fn.GetPosition()
-	return Func{Name: name, Params: params, Return: ret, Doc: doc, StartLine: pos.StartLine, EndLine: pos.EndLine}
+	body := parseStmtList(&stmt.StmtList{Stmts: fn.Stmts}, &Program{})
+	return Func{Name: name, Params: params, Return: ret, Doc: doc, StartLine: pos.StartLine, EndLine: pos.EndLine, Body: body}
 }
 
 func classFromNode(c *stmt.Class) Class {
@@ -176,7 +178,11 @@ func methodFromNode(m *stmt.ClassMethod) Func {
 	}
 	doc := strings.TrimSpace(m.PhpDocComment)
 	pos := m.GetPosition()
-	return Func{Name: name, Params: params, Return: ret, Doc: doc, StartLine: pos.StartLine, EndLine: pos.EndLine}
+	var body []*ast.Node
+	if list, ok := m.Stmt.(*stmt.StmtList); ok {
+		body = parseStmtList(list, &Program{})
+	}
+	return Func{Name: name, Params: params, Return: ret, Doc: doc, StartLine: pos.StartLine, EndLine: pos.EndLine, Body: body}
 }
 
 func boolReturn(stmts []pnode.Node) bool {
@@ -643,7 +649,7 @@ func simpleExpr(n pnode.Node) (string, bool) {
 		if !ok2 {
 			return "", false
 		}
-		return fmt.Sprintf("(%s / %s)", left, right), true
+		return fmt.Sprintf("((%s / %s) as int)", left, right), true
 	case *binary.Mod:
 		left, ok1 := simpleExpr(v.Left)
 		if !ok1 {
@@ -842,6 +848,19 @@ func parseStatement(n pnode.Node, p *Program) []*ast.Node {
 		if node := ifNodeFromStmt(s, p); node != nil {
 			return []*ast.Node{node}
 		}
+	case *stmt.Return:
+		if s.Expr == nil {
+			return []*ast.Node{{Kind: "return"}}
+		}
+		val, ok := simpleExpr(s.Expr)
+		if !ok {
+			return nil
+		}
+		node, err := parseExpr(val)
+		if err != nil {
+			return nil
+		}
+		return []*ast.Node{{Kind: "return", Children: []*ast.Node{node}}}
 	case *stmt.Break:
 		return []*ast.Node{{Kind: "break"}}
 	case *stmt.Continue:

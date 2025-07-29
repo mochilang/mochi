@@ -108,6 +108,7 @@ func TestTransform_Golden(t *testing.T) {
 		"string_compare":      true,
 		"binary_precedence":   true,
 		"cast_string_to_int":  true,
+		"cast_struct":         true,
 		"bool_chain":          true,
 		"len_map":             true,
 		"len_string":          true,
@@ -142,6 +143,8 @@ func TestTransform_Golden(t *testing.T) {
 		"in_operator":         true,
 		"map_in_operator":     true,
 		"for_map_collection":  true,
+		"fun_call":            true,
+		"fun_three_args":      true,
 	}
 
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "php")
@@ -181,12 +184,18 @@ func TestTransform_Golden(t *testing.T) {
 			}
 			vmSrc, err := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
 			if err != nil {
-				t.Fatalf("missing vm source: %v", err)
+				vmSrc, err = os.ReadFile(filepath.Join(root, "tests", "vm_extended", "valid", name+".mochi"))
+				if err != nil {
+					t.Fatalf("missing vm source: %v", err)
+				}
 			}
 			wantOut := runMochi(t, string(vmSrc))
 			if !bytes.Equal(gotOut, wantOut) {
 				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
 			}
 		})
+	}
+	if *update {
+		php.UpdateReadmeForTests()
 	}
 }

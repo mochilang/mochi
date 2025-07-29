@@ -3,16 +3,12 @@
     (list (int 1) (int 2) (int 3))
   )
   (call print
-    (group
-      (binary in (int 2) (selector xs))
-    )
+    (binary in (int 2) (selector xs))
   )
   (call print
-    (group
-      (unary !
-        (group
-          (binary in (int 5) (selector xs))
-        )
+    (unary !
+      (group
+        (binary in (int 5) (selector xs))
       )
     )
   )

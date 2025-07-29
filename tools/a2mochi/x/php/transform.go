@@ -77,6 +77,10 @@ func funcNode(f Func) *ast.Node {
 		n.Children = append(n.Children, pn)
 	}
 	n.Children = append(n.Children, typeNode(f.Return))
+	if len(f.Body) > 0 {
+		block := &ast.Node{Kind: "block", Children: f.Body}
+		n.Children = append(n.Children, block)
+	}
 	return n
 }
 
@@ -116,5 +120,9 @@ func parseExpr(expr string) (*ast.Node, error) {
 	if v == nil {
 		return nil, fmt.Errorf("invalid expression")
 	}
-	return ast.FromExpr(v), nil
+	n := ast.FromExpr(v)
+	if n.Kind == "group" && len(n.Children) == 1 {
+		n = n.Children[0]
+	}
+	return n, nil
 }

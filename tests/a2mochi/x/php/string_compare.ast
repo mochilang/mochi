@@ -1,22 +1,14 @@
 (program
   (call print
-    (group
-      (binary < (string a) (string b))
-    )
+    (binary < (string a) (string b))
   )
   (call print
-    (group
-      (binary <= (string a) (string a))
-    )
+    (binary <= (string a) (string a))
   )
   (call print
-    (group
-      (binary > (string b) (string a))
-    )
+    (binary > (string b) (string a))
   )
   (call print
-    (group
-      (binary >= (string b) (string b))
-    )
+    (binary >= (string b) (string b))
   )
 )

@@ -6,20 +6,16 @@
     (in (selector numbers))
     (block
       (if
-        (group
-          (binary ==
-            (group
-              (binary % (selector n) (int 2))
-            )
-            (int 0)
+        (binary ==
+          (group
+            (binary % (selector n) (int 2))
           )
+          (int 0)
         )
         (block (continue))
       )
       (if
-        (group
-          (binary > (selector n) (int 7))
-        )
+        (binary > (selector n) (int 7))
         (block (break))
       )
       (call print (string "odd number:") (selector n))

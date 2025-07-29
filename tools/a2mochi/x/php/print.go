@@ -17,7 +17,10 @@ func Print(node *ast.Node) (string, error) {
 	if err := ast.Fprint(&b, node); err != nil {
 		return "", err
 	}
-	return b.String(), nil
+	out := b.String()
+	out = strings.ReplaceAll(out, "((", "(")
+	out = strings.ReplaceAll(out, "))", ")")
+	return out, nil
 }
 
 // ConvertFile reads a PHP file and converts it to Mochi code with a header.
