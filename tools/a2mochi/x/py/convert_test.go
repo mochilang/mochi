@@ -114,9 +114,16 @@ func TestConvert_Golden(t *testing.T) {
 		"map_int_key":         true,
 		"map_literal_dynamic": true,
 		"exists_builtin":      true,
+		"list_nested_assign":  true,
 		"list_set_ops":        true,
 		"map_in_operator":     true,
 		"map_nested_assign":   true,
+		"string_contains":     true,
+		"string_in_operator":  true,
+		"substring_builtin":   true,
+		"tail_recursion":      true,
+		"values_builtin":      true,
+		"var_assignment":      true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "py")
 	os.MkdirAll(outDir, 0o755)
