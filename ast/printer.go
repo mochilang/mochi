@@ -179,7 +179,11 @@ func writeStmt(b *strings.Builder, n *Node, indent int) {
 			b.WriteString(" {\n")
 			for _, c := range n.Children {
 				if c.Kind == "field" {
-					fmt.Fprintf(b, "%s  %s: %s\n", ind, c.Value, typeString(c.Children[0]))
+					typ := "any"
+					if len(c.Children) > 0 {
+						typ = typeString(c.Children[0])
+					}
+					fmt.Fprintf(b, "%s  %s: %s\n", ind, c.Value, typ)
 				} else {
 					writeStmt(b, c, indent+1)
 				}

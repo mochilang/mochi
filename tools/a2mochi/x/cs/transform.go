@@ -133,6 +133,31 @@ func rewriteExpr(s string) string {
 			s = "avg(" + strings.TrimSpace(before) + ")" + after
 		}
 
+		// ToArray() -> expression
+		if strings.HasSuffix(s, ".ToArray()") {
+			s = strings.TrimSuffix(s, ".ToArray()")
+		}
+
+		// Any() -> exists()
+		if strings.HasSuffix(s, ".Any()") {
+			before := strings.TrimSuffix(s, ".Any()")
+			s = fmt.Sprintf("exists(%s)", stripOuterParens(before))
+		}
+
+		// Add(x) -> append(expr, x)
+		if idx := strings.LastIndex(s, ".Add("); idx != -1 && strings.HasSuffix(s, ")") {
+			before := stripOuterParens(strings.TrimSpace(s[:idx]))
+			arg := strings.TrimSuffix(s[idx+len(".Add("):], ")")
+			if parenBalanced(arg) {
+				s = fmt.Sprintf("append(%s, %s)", before, strings.TrimSpace(arg))
+			}
+		}
+
+		// ToUnixTimeMilliseconds() -> now()
+		if strings.HasSuffix(s, ".ToUnixTimeMilliseconds()") {
+			s = "now()"
+		}
+
 		// ternary operator -> if
 		if q := strings.Index(s, "?"); q != -1 {
 			if c := strings.Index(s[q+1:], ":"); c != -1 {
