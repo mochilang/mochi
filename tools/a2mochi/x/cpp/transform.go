@@ -372,11 +372,12 @@ func convertExpression(s string) string {
 	}
 	if strings.HasPrefix(s, "std::map") && strings.Contains(s, "{{") && strings.HasSuffix(s, "}}") {
 		start := strings.Index(s, "{{")
+		// Trim the surrounding "{{" and "}}" pairs.
 		inner := s[start+1 : len(s)-1]
 		parts := strings.Split(inner, "},")
 		var pairs []string
 		for _, p := range parts {
-			p = strings.TrimSpace(strings.Trim(p, "{}"))
+			p = strings.Trim(strings.TrimSpace(p), "{}")
 			kv := strings.SplitN(p, ",", 2)
 			if len(kv) != 2 {
 				continue

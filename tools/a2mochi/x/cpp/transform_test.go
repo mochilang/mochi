@@ -5,11 +5,14 @@ package cpp_test
 import (
 	"bytes"
 	"flag"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	"mochi/parser"
 	"mochi/runtime/vm"
@@ -139,4 +142,42 @@ func TestTransform_Golden(t *testing.T) {
 			processFile(t, root, outDir, srcPath)
 		})
 	}
+}
+
+func updateReadme() {
+	root := repoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "transpiler", "x", "cpp")
+	outDir := filepath.Join(root, "tests", "a2mochi", "x", "cpp")
+	pattern := filepath.Join(srcDir, "*.cpp")
+	files, _ := filepath.Glob(pattern)
+	sort.Strings(files)
+	total := len(files)
+	compiled := 0
+	var lines []string
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".cpp")
+		mark := "[ ]"
+		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
+			compiled++
+			mark = "[x]"
+		}
+		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+	}
+	tz := time.FixedZone("GMT+7", 7*3600)
+	now := time.Now().In(tz).Format("2006-01-02 15:04:05 MST")
+	var buf bytes.Buffer
+	buf.WriteString("# a2mochi C++ Converter\n\n")
+	buf.WriteString("This directory contains helpers and golden files for converting C++ programs under\n`tests/transpiler/x/cpp` back into Mochi AST form using `clang++`.\n\n")
+	fmt.Fprintf(&buf, "Completed programs: %d/%d\n", compiled, total)
+	fmt.Fprintf(&buf, "Date: %s\n\n", now)
+	buf.WriteString("## Checklist\n")
+	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteByte('\n')
+	_ = os.WriteFile(filepath.Join(root, "tools", "a2mochi", "x", "cpp", "README.md"), buf.Bytes(), 0o644)
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	os.Exit(code)
 }
