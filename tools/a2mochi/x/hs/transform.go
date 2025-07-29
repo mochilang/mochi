@@ -509,37 +509,43 @@ func buildProgramNodeFromItems(items []Item) (*ast.Node, error) {
 			if strings.HasPrefix(body, "do") {
 				body = strings.TrimSpace(strings.TrimPrefix(body, "do"))
 			}
-			body = strings.ReplaceAll(body, "\n", " ")
-			line := strings.TrimSpace(body)
-			if pitem, ok := parseMapM(line, it.Line); ok {
-				node, err := itemToNode(pitem)
-				if err != nil {
-					return nil, err
+			for _, line := range strings.Split(body, "\n") {
+				line = strings.TrimSpace(line)
+				if line == "" {
+					continue
 				}
-				if node != nil {
-					root.Children = append(root.Children, node)
-				}
-				continue
-			}
-			if strings.HasPrefix(line, "print") || strings.HasPrefix(line, "putStrLn") {
-				arg := strings.TrimSpace(strings.TrimPrefix(line, "print"))
-				if strings.HasPrefix(line, "putStrLn") {
-					arg = strings.TrimSpace(strings.TrimPrefix(line, "putStrLn"))
-					if strings.HasPrefix(arg, "show ") {
-						arg = strings.TrimSpace(strings.TrimPrefix(arg, "show "))
-						arg = "str(" + arg + ")"
+				if pitem, ok := parseMapM(line, it.Line); ok {
+					node, err := itemToNode(pitem)
+					if err != nil {
+						return nil, err
 					}
+					if node != nil {
+						root.Children = append(root.Children, node)
+					}
+					continue
 				}
-				arg = strings.Trim(arg, "()")
-				pitem := Item{Kind: "print", Body: arg}
-				node, err := itemToNode(pitem)
-				if err != nil {
-					return nil, err
+				if strings.HasPrefix(line, "print") || strings.HasPrefix(line, "putStrLn") {
+					arg := strings.TrimSpace(strings.TrimPrefix(line, "print"))
+					if strings.HasPrefix(line, "putStrLn") {
+						arg = strings.TrimSpace(strings.TrimPrefix(line, "putStrLn"))
+						if strings.HasPrefix(arg, "show ") {
+							arg = strings.TrimSpace(strings.TrimPrefix(arg, "show "))
+							arg = "str(" + arg + ")"
+						}
+					}
+					if strings.HasPrefix(arg, "(") && strings.HasSuffix(arg, ")") {
+						arg = strings.TrimSuffix(strings.TrimPrefix(arg, "("), ")")
+					}
+					pitem := Item{Kind: "print", Body: arg}
+					node, err := itemToNode(pitem)
+					if err != nil {
+						return nil, err
+					}
+					if node != nil {
+						root.Children = append(root.Children, node)
+					}
+					continue
 				}
-				if node != nil {
-					root.Children = append(root.Children, node)
-				}
-				continue
 			}
 			continue
 		}
@@ -578,6 +584,7 @@ func itemToNode(it Item) (*ast.Node, error) {
 				b.WriteString(", ")
 			}
 			b.WriteString(p)
+			b.WriteString(": int")
 		}
 		b.WriteString(") {")
 		if strings.TrimSpace(it.Body) != "" {
