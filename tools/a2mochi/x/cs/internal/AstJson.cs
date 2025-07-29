@@ -139,6 +139,20 @@ public static class AstJson
                 return new Node { Kind = "literal", Value = lit.Token.ValueText };
             case IdentifierNameSyntax id:
                 return new Node { Kind = "ident", Value = id.Identifier.Text };
+            case ElementAccessExpressionSyntax idx:
+                var target = ParseExpr(idx.Expression);
+                var ie = new Node { Kind = "index", Children = new List<Node> { target } };
+                foreach (var arg in idx.ArgumentList.Arguments)
+                    ie.Children.Add(ParseExpr(arg.Expression));
+                return ie;
+            case ArrayCreationExpressionSyntax arr:
+                var arrNode = new Node { Kind = "array" };
+                if (arr.Initializer != null)
+                {
+                    foreach (var ex in arr.Initializer.Expressions)
+                        arrNode.Children.Add(ParseExpr(ex));
+                }
+                return arrNode;
             case BinaryExpressionSyntax bin:
                 return new Node { Kind = "binary", Value = bin.OperatorToken.Text, Children = new List<Node> { ParseExpr(bin.Left), ParseExpr(bin.Right) } };
             case PrefixUnaryExpressionSyntax pre:
@@ -216,6 +230,10 @@ public static class AstJson
                 var body = ParseBlock(fs.Statement as BlockSyntax);
                 var range = new Node { Kind = "range", Children = new List<Node> { start, end } };
                 return new Node { Kind = "for", Value = name, Children = new List<Node> { range, body } };
+            case ForEachStatementSyntax fe:
+                var fbody = ParseBlock(fe.Statement as BlockSyntax ?? SyntaxFactory.Block(fe.Statement));
+                var frange = new Node { Kind = "range", Children = new List<Node> { ParseExpr(fe.Expression) } };
+                return new Node { Kind = "for", Value = fe.Identifier.Text, Children = new List<Node> { frange, fbody } };
             case WhileStatementSyntax ws:
                 var wcond = ParseExpr(ws.Condition);
                 var wbody = ParseBlock(ws.Statement as BlockSyntax);

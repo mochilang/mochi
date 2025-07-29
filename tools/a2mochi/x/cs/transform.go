@@ -83,6 +83,23 @@ func rewriteExpr(s string) string {
 			}
 		}
 
+		// new Dictionary{ {k,v}, ... } -> {k: v, ...}
+		if strings.HasPrefix(s, "new Dictionary") {
+			re := regexp.MustCompile(`new Dictionary<[^>]+>{(.*)}`)
+			if m := re.FindStringSubmatch(s); m != nil {
+				inner := strings.TrimSuffix(strings.TrimPrefix(strings.TrimSpace(m[1]), "{"), "}")
+				parts := strings.Split(inner, "}, {")
+				kvs := make([]string, 0, len(parts))
+				for _, p := range parts {
+					kv := strings.SplitN(strings.TrimSpace(p), ",", 2)
+					if len(kv) == 2 {
+						kvs = append(kvs, strings.TrimSpace(kv[0])+": "+strings.TrimSpace(kv[1]))
+					}
+				}
+				s = "{" + strings.Join(kvs, ", ") + "}"
+			}
+		}
+
 		// new T[]{...} -> [...]
 		for {
 			start := strings.Index(s, "new ")
@@ -259,6 +276,9 @@ func stmtNode(n *Node) *ast.Node {
 		for _, ch := range n.Children {
 			c.Children = append(c.Children, exprNodeFromAST(ch))
 		}
+		if c.Value == "print" && len(c.Children) == 1 && c.Children[0].Kind == "list" {
+			c.Children = c.Children[0].Children
+		}
 		return c
 	case "for":
 		if len(n.Children) >= 2 {
@@ -298,10 +318,16 @@ func stmtNode(n *Node) *ast.Node {
 }
 
 func rangeNode(n *Node) *ast.Node {
-	if n == nil || n.Kind != "range" || len(n.Children) < 2 {
+	if n == nil || n.Kind != "range" {
 		return &ast.Node{Kind: "range"}
 	}
-	return &ast.Node{Kind: "range", Children: []*ast.Node{exprNodeFromAST(n.Children[0]), exprNodeFromAST(n.Children[1])}}
+	if len(n.Children) == 1 {
+		return &ast.Node{Kind: "range", Children: []*ast.Node{exprNodeFromAST(n.Children[0])}}
+	}
+	if len(n.Children) >= 2 {
+		return &ast.Node{Kind: "range", Children: []*ast.Node{exprNodeFromAST(n.Children[0]), exprNodeFromAST(n.Children[1])}}
+	}
+	return &ast.Node{Kind: "range"}
 }
 
 func blockNode(n *Node) *ast.Node {
@@ -337,12 +363,43 @@ func exprNodeFromAST(n *Node) *ast.Node {
 	case "unary":
 		return &ast.Node{Kind: "unary", Value: n.Value, Children: []*ast.Node{exprNodeFromAST(n.Children[0])}}
 	case "call":
+		if n.Value == "TrimEnd" && len(n.Children) == 1 {
+			return exprNodeFromAST(n.Children[0])
+		}
+		if n.Value == "Join" && len(n.Children) >= 3 {
+			if n.Children[2].Kind == "array" {
+				lst := &ast.Node{Kind: "list"}
+				for _, a := range n.Children[2].Children {
+					lst.Children = append(lst.Children, exprNodeFromAST(a))
+				}
+				return lst
+			}
+			return &ast.Node{Kind: "call", Value: "str", Children: []*ast.Node{exprNodeFromAST(n.Children[2])}}
+		}
 		c := &ast.Node{Kind: "call", Value: n.Value}
 		for _, ch := range n.Children {
 			c.Children = append(c.Children, exprNodeFromAST(ch))
 		}
 		return c
+	case "array":
+		arr := &ast.Node{Kind: "list"}
+		for _, ch := range n.Children {
+			arr.Children = append(arr.Children, exprNodeFromAST(ch))
+		}
+		return arr
+	case "index":
+		if len(n.Children) == 2 {
+			return &ast.Node{Kind: "index", Children: []*ast.Node{exprNodeFromAST(n.Children[0]), exprNodeFromAST(n.Children[1])}}
+		}
+		idx := &ast.Node{Kind: "index"}
+		for _, ch := range n.Children {
+			idx.Children = append(idx.Children, exprNodeFromAST(ch))
+		}
+		return idx
 	case "member":
+		if n.Value == "Keys" && len(n.Children) > 0 {
+			return exprNodeFromAST(n.Children[0])
+		}
 		if len(n.Children) > 0 {
 			return &ast.Node{Kind: "selector", Value: n.Value, Children: []*ast.Node{exprNodeFromAST(n.Children[0])}}
 		}
