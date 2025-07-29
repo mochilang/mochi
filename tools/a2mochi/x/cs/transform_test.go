@@ -5,10 +5,13 @@ package cs_test
 import (
 	"bytes"
 	"flag"
+	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	"mochi/parser"
 	"mochi/runtime/vm"
@@ -126,4 +129,55 @@ func TestTransformGolden(t *testing.T) {
 			}
 		})
 	}
+}
+
+func updateReadme() {
+	root := repoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "transpiler", "x", "cs")
+	outDir := filepath.Join(root, "tests", "a2mochi", "x", "cs")
+	pattern := filepath.Join(srcDir, "*.cs")
+	files, _ := filepath.Glob(pattern)
+	sort.Strings(files)
+	total := len(files)
+	compiled := 0
+	var lines []string
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".cs")
+		mark := "[ ]"
+		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
+			compiled++
+			mark = "[x]"
+		}
+		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+	}
+	readmePath := filepath.Join(root, "tools", "a2mochi", "x", "cs", "README.md")
+	created := ""
+	if data, err := os.ReadFile(readmePath); err == nil {
+		for _, line := range strings.Split(string(data), "\n") {
+			if strings.HasPrefix(line, "Created:") {
+				created = strings.TrimSpace(strings.TrimPrefix(line, "Created:"))
+				break
+			}
+		}
+	}
+	if created == "" {
+		created = time.Now().Format("2006-01-02")
+	}
+	tz := time.FixedZone("GMT+7", 7*60*60)
+	now := time.Now().In(tz).Format("2006-01-02 15:04 MST")
+	var buf bytes.Buffer
+	buf.WriteString("# a2mochi C# Converter\n\n")
+	buf.WriteString("Created: " + created + "\n\n")
+	buf.WriteString("This directory contains helpers and golden files for converting the C# output of the Mochi compiler back into Mochi AST form.\n\n")
+	fmt.Fprintf(&buf, "Completed programs: %d/%d (generated %s)\n\n", compiled, total, now)
+	buf.WriteString("## Checklist\n")
+	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteByte('\n')
+	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	os.Exit(code)
 }
