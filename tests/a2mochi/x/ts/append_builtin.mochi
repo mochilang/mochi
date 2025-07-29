@@ -1,1 +1,2 @@
-let a: list<int>
+let a: list<int> = [1, 2]
+print(append(a, 3))
