@@ -1,0 +1,5 @@
+run: error[T002]: undefined variable: unknown
+  --> :34:24
+
+help:
+  Check if the variable was declared in this scope.

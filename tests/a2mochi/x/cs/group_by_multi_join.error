@@ -1,0 +1,5 @@
+run: error[T008]: type mismatch: expected float, got int
+  --> :42:68
+
+help:
+  Change the value to match the expected type.

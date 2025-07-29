@@ -1,0 +1,5 @@
+run: error[T003]: unknown function: Sum
+  --> :3:19
+
+help:
+  Ensure the function is defined before it's called.
