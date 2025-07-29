@@ -212,6 +212,8 @@ func TestTransformGolden(t *testing.T) {
 		"list_assign":         true,
 		"list_index":          true,
 		"list_nested_assign":  true,
+		"if_then_else":        true,
+		"if_then_else_nested": true,
 		"user_type_literal":   true,
 		"values_builtin":      true,
 		"two-sum":             true,
