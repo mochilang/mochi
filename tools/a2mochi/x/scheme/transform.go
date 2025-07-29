@@ -220,6 +220,26 @@ func exprNode(v interface{}) *ast.Node {
 				}
 			}
 			return n
+		case "apply":
+			if len(argsVal) >= 2 {
+				if m0, ok := argsVal[0].(map[string]interface{}); ok {
+					if fname, ok2 := m0["var"].(string); ok2 {
+						switch fname {
+						case "+":
+							return &ast.Node{Kind: "call", Value: "sum", Children: []*ast.Node{exprNode(argsVal[1])}}
+						case "min", "max":
+							return &ast.Node{Kind: "call", Value: fname, Children: []*ast.Node{exprNode(argsVal[1])}}
+						}
+					}
+				}
+			}
+			n := &ast.Node{Kind: "call", Value: "apply"}
+			for _, a := range argsVal {
+				if c := exprNode(a); c != nil {
+					n.Children = append(n.Children, c)
+				}
+			}
+			return n
 		default:
 			n := &ast.Node{Kind: "call", Value: sanitizeName(call)}
 			for _, a := range argsVal {

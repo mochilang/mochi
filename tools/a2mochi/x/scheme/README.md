@@ -1,7 +1,7 @@
 # a2mochi Scheme Converter
 
-Completed programs: 25/87
-Date: 2025-07-29 20:51:48 GMT+7
+Completed programs: 26/87
+Date: 2025-07-29 21:30:07 GMT+7
 
 This directory holds golden outputs for converting Scheme source files under `tests/transpiler/x/scheme` back into Mochi form.
 
@@ -21,7 +21,7 @@ This directory holds golden outputs for converting Scheme source files under `te
 - [x] cross_join_filter
 - [ ] cross_join_triple
 - [x] dataset_sort_take_limit
-- [ ] dataset_where_filter
+- [x] dataset_where_filter
 - [x] exists_builtin
 - [ ] for_list_collection
 - [ ] for_loop
