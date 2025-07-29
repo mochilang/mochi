@@ -376,7 +376,9 @@ func convertExpression(s string) string {
 		parts := strings.Split(inner, "},")
 		var pairs []string
 		for _, p := range parts {
-			p = strings.TrimSpace(strings.Trim(p, "{}"))
+			p = strings.TrimSpace(p)
+			p = strings.TrimPrefix(p, "{")
+			p = strings.TrimSuffix(p, "}")
 			kv := strings.SplitN(p, ",", 2)
 			if len(kv) != 2 {
 				continue

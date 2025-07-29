@@ -1,0 +1,30 @@
+(program
+  (var data
+    (map
+      (entry
+        (string outer)
+        (map
+          (entry (string inner) (int 1))
+        )
+      )
+    )
+  )
+  (fun main
+    (type int)
+    (assign
+      (index
+        (index (selector data) (string outer))
+        (string inner)
+      )
+      (int 2)
+    )
+    (call print
+      (index
+        (index (selector data) (string outer))
+        (string inner)
+      )
+    )
+    (return (int 0))
+  )
+  (call main)
+)

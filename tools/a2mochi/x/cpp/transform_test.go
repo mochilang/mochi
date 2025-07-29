@@ -139,4 +139,7 @@ func TestTransform_Golden(t *testing.T) {
 			processFile(t, root, outDir, srcPath)
 		})
 	}
+	if *updateGolden {
+		cpp.UpdateReadmeForTests()
+	}
 }
