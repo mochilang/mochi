@@ -3,5 +3,26 @@
     (param n (type int))
     (param acc (type int))
     (type int)
+    (if
+      (group
+        (binary == (selector n) (int 0))
+      )
+      (block
+        (return (selector acc))
+      )
+    )
+    (return
+      (call sum_rec
+        (group
+          (binary - (selector n) (int 1))
+        )
+        (group
+          (binary + (selector acc) (selector n))
+        )
+      )
+    )
+  )
+  (call print
+    (call sum_rec (int 10) (int 0))
   )
 )

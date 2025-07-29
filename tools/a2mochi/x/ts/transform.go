@@ -44,6 +44,12 @@ func nodeFromDecl(d Node) (*ast.Node, error) {
 		src = emitPrint(d)
 	case "expr":
 		src = emitExpr(d)
+	case "return":
+		src = emitReturn(d)
+	case "break":
+		src = "break\n"
+	case "continue":
+		src = "continue\n"
 	case "forof":
 		src = emitForOf(d)
 	case "forin":
@@ -176,6 +182,13 @@ func emitExpr(d Node) string {
 	return convertExpr(d.Expr) + "\n"
 }
 
+func emitReturn(d Node) string {
+	if d.Expr != "" {
+		return fmt.Sprintf("return %s\n", convertExpr(d.Expr))
+	}
+	return "return\n"
+}
+
 func emitForOf(d Node) string {
 	var body string
 	if len(d.BodyNodes) > 0 {
@@ -253,6 +266,12 @@ func emitNode(d Node) string {
 		return emitPrint(d)
 	case "expr":
 		return emitExpr(d)
+	case "return":
+		return emitReturn(d)
+	case "break":
+		return "break\n"
+	case "continue":
+		return "continue\n"
 	case "forof":
 		return emitForOf(d)
 	case "forin":
