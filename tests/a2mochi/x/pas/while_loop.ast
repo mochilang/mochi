@@ -1,5 +1,5 @@
 (program
-  (var i (type int))
+  (var i (type int) (int 0))
   (assign i (int 0))
   (while
     (binary < (selector i) (int 3))

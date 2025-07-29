@@ -11,15 +11,15 @@ type Anon20 {
   name: string
   count: int
 }
-var customers: list<anon18>
-var orders: list<anon19>
-var grp2: list<anon20>
-var idx3: int
-var i4: int
-var stats: list<anon20>
-var o: Anon19
-var c: Anon18
-var s: int
+var customers: list<anon18> = []
+var orders: list<anon19> = []
+var grp2: list<anon20> = []
+var idx3: int = 0
+var i4: int = 0
+var stats: list<anon20> = []
+var o: Anon19 = nil
+var c: Anon18 = nil
+var s: int = 0
 customers = [{id: 1, name: "Alice"}, {id: 2, name: "Bob"}]
 orders = [{id: 100, customerId: 1}, {id: 101, customerId: 1}, {id: 102, customerId: 2}]
 grp2 = []

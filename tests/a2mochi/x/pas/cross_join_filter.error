@@ -3,12 +3,12 @@ type Anon4 {
   n: int
   l: string
 }
-var nums: list<int>
-var letters: list<string>
-var pairs: list<anon4>
-var n: int
-var l: string
-var p: int
+var nums: list<int> = []
+var letters: list<string> = []
+var pairs: list<anon4> = []
+var n: int = 0
+var l: string = ""
+var p: int = 0
 nums = [1, 2, 3]
 letters = ["A", "B"]
 pairs = []

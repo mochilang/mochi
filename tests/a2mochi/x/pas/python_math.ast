@@ -1,9 +1,9 @@
 (program
-  (var r (type float))
-  (var area (type float))
-  (var root (type float))
-  (var sin45 (type float))
-  (var log_e (type float))
+  (var r (type float) (float 0))
+  (var area (type float) (float 0))
+  (var root (type float) (float 0))
+  (var sin45 (type float) (float 0))
+  (var log_e (type float) (float 0))
   (assign r (int 3))
   (assign area
     (binary *

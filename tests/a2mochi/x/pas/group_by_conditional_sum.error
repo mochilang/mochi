@@ -13,12 +13,12 @@ type Anon15 {
   cat: string
   share: float
 }
-var items: list<anon13>
-var grp1: list<anon14>
-var idx2: int
-var i3: int
-var result: list<anon15>
-var i: Anon13
+var items: list<anon13> = []
+var grp1: list<anon14> = []
+var idx2: int = 0
+var i3: int = 0
+var result: list<anon15> = []
+var i: Anon13 = nil
 items = [{cat: "a", val: 10, flag: true}, {cat: "a", val: 5, flag: false}, {cat: "b", val: 20, flag: true}]
 grp1 = []
 for i in items {

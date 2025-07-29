@@ -8,9 +8,9 @@ type Anon8 {
   age: int
   is_senior: bool
 }
-var people: list<anon7>
-var adults: list<anon8>
-var person: Anon7
+var people: list<anon7> = []
+var adults: list<anon8> = []
+var person: Anon7 = nil
 people = [{name: "Alice", age: 30}, {name: "Bob", age: 15}, {name: "Charlie", age: 65}, {name: "Diana", age: 45}]
 adults = []
 for person in people {

@@ -1,6 +1,7 @@
 (program
   (var nums
     (type list (type int))
+    (list)
   )
   (assign nums
     (list (int 1) (int 2))

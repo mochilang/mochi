@@ -3,7 +3,7 @@ type Anon1 {
   name: string
   age: int
 }
-var people: list<anon1>
+var people: list<anon1> = []
 people = [{name: "Alice", age: 30}, {name: "Bob", age: 25}]
 for row in people {
 print(({{{{{{"{" + ""name": "} + """} + row.name} + """} + ", "} + ""age": "} + str(row.age)) + "}")

@@ -12,12 +12,12 @@ type Anon55 {
   order: Anon54
   customer: Anon53
 }
-var customers: list<anon53>
-var orders: list<anon54>
-var result: list<anon55>
-var o: Anon54
-var c: Anon53
-var row: int
+var customers: list<anon53> = []
+var orders: list<anon54> = []
+var result: list<anon55> = []
+var o: Anon54 = nil
+var c: Anon53 = nil
+var row: int = 0
 customers = [{id: 1, name: "Alice"}, {id: 2, name: "Bob"}, {id: 3, name: "Charlie"}, {id: 4, name: "Diana"}]
 orders = [{id: 100, customerId: 1, total: 250}, {id: 101, customerId: 2, total: 125}, {id: 102, customerId: 1, total: 300}, {id: 103, customerId: 5, total: 80}]
 result = []

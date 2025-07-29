@@ -233,6 +233,29 @@ func toMochiType(t string) string {
 	return orig
 }
 
+func zeroValue(t string) string {
+	switch t {
+	case "int":
+		return "0"
+	case "float":
+		return "0.0"
+	case "bool":
+		return "false"
+	case "string":
+		return "\"\""
+	}
+	if strings.HasPrefix(t, "list") {
+		return "[]"
+	}
+	if strings.HasPrefix(t, "map") || strings.HasPrefix(t, "{") {
+		return "{}"
+	}
+	if t != "" {
+		return "nil"
+	}
+	return ""
+}
+
 func parseFuncHeader(l string) (string, string, string) {
 	l = strings.TrimSpace(l)
 	l = strings.TrimSuffix(l, ";")
@@ -422,6 +445,9 @@ func convertFallback(src string) ([]byte, error) {
 									stringVars[name] = true
 								}
 							}
+							if typ != "" {
+								line += " = " + zeroValue(typ)
+							}
 							appendLine(line)
 						}
 					}
@@ -445,6 +471,9 @@ func convertFallback(src string) ([]byte, error) {
 							if typ == "string" {
 								stringVars[nm] = true
 							}
+						}
+						if typ != "" {
+							line += " = " + zeroValue(typ)
 						}
 						appendLine(line)
 					}

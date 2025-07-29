@@ -16,14 +16,14 @@ type Anon44 {
   name: string
   item: Anon43
 }
-var customers: list<anon41>
-var orders: list<anon42>
-var items: list<anon43>
-var result: list<anon44>
-var i: Anon43
-var r: int
-var o: Anon42
-var c: Anon41
+var customers: list<anon41> = []
+var orders: list<anon42> = []
+var items: list<anon43> = []
+var result: list<anon44> = []
+var i: Anon43 = nil
+var r: int = 0
+var o: Anon42 = nil
+var c: Anon41 = nil
 customers = [{id: 1, name: "Alice"}, {id: 2, name: "Bob"}]
 orders = [{id: 100, customerId: 1}, {id: 101, customerId: 2}]
 items = [{orderId: 100, sku: "a"}]

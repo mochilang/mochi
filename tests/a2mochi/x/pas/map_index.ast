@@ -3,7 +3,7 @@
     (field a (type int))
     (field b (type int))
   )
-  (var m (type Anon47))
+  (var m (type Anon47) (selector nil))
   (assign m
     (map
       (entry (selector a) (int 1))

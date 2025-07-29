@@ -2,7 +2,7 @@
   (type Anon46
     (field alice (type int))
   )
-  (var scores (type Anon46))
+  (var scores (type Anon46) (selector nil))
   (assign scores
     (map
       (entry (selector alice) (int 1))

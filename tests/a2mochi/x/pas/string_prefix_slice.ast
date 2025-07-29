@@ -1,7 +1,7 @@
 (program
-  (var prefix (type string))
-  (var s1 (type string))
-  (var s2 (type string))
+  (var prefix (type string) (string ""))
+  (var s1 (type string) (string ""))
+  (var s2 (type string) (string ""))
   (assign prefix (string fore))
   (assign s1 (string forest))
   (assign s2 (string desert))

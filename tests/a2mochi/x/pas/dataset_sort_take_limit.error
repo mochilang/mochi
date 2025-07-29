@@ -1,1 +1,5 @@
-output mismatch
+error[T002]: undefined variable: nil
+  --> :8:16
+
+help:
+  Check if the variable was declared in this scope.

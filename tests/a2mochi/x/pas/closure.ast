@@ -11,7 +11,7 @@
     (type int)
     (return (selector anon0))
   )
-  (var add10 (type int))
+  (var add10 (type int) (int 0))
   (assign add10
     (call makeAdder (int 10))
   )

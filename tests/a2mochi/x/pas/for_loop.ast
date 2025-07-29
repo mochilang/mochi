@@ -1,5 +1,5 @@
 (program
-  (var i (type int))
+  (var i (type int) (int 0))
   (for i
     (range
       (int 1)

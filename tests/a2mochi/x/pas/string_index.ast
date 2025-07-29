@@ -1,5 +1,5 @@
 (program
-  (var s (type string))
+  (var s (type string) (string ""))
   (assign s (string mochi))
   (call print
     (index

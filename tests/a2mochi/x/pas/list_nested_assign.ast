@@ -3,6 +3,7 @@
     (type list
       (type list (type int))
     )
+    (list)
   )
   (assign matrix
     (list

@@ -5,7 +5,7 @@
   (type Anon51
     (field outer (type Anon50))
   )
-  (var data (type Anon51))
+  (var data (type Anon51) (selector nil))
   (assign data
     (map
       (entry

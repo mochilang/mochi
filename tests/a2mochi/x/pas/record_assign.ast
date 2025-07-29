@@ -12,7 +12,7 @@
       )
     )
   )
-  (var c (type Counter))
+  (var c (type Counter) (selector nil))
   (assign
     (selector n (selector c))
     (int 0)

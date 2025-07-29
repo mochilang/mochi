@@ -1,8 +1,8 @@
-parse error: parse error: 4:17: unexpected token ":" (expected "}")
-var _nowSeed: int64 = 0
-var _nowSeeded: boolean = false
+parse error: parse error: 1:25: unexpected token "="
+var _nowSeed: int64 = 0 = nil
+var _nowSeeded: boolean = false = nil
 fun init_now() {
-var s: string; v: int64
+var s: string; v: int64 = nil
 s = GetEnvironmentVariable("MOCHI_NOW_SEED")
 if s != "" {
 Val(s, v)
@@ -18,11 +18,11 @@ return _nowSeed
 return Integer(GetTickCount64())
 }
 }
-var bench_start_0: int
-var bench_dur_0: int
-var n: int
-var s: int
-var i: int
+var bench_start_0: int = 0
+var bench_dur_0: int = 0
+var n: int = 0
+var s: int = 0
+var i: int = 0
 init_now()
 bench_start_0 = _now()
 n = 1000
