@@ -338,6 +338,25 @@ func tryIIFE(c *ast.CallExpr) *mast.Node {
 		}
 	}
 
+	// match formatting wrapper for avg_builtin
+	if len(fn.Body.List) == 3 {
+		if as, ok := fn.Body.List[0].(*ast.AssignStmt); ok && as.Tok == token.DEFINE && len(as.Lhs) == 1 && len(as.Rhs) == 1 {
+			if call, ok := as.Rhs[0].(*ast.CallExpr); ok {
+				if id, ok := call.Fun.(*ast.Ident); ok && id.Name == "float64" && len(call.Args) == 1 {
+					if inner, ok := call.Args[0].(*ast.CallExpr); ok {
+						if n := tryIIFE(inner); n != nil {
+							if _, ok := fn.Body.List[1].(*ast.IfStmt); ok {
+								if _, ok := fn.Body.List[2].(*ast.ReturnStmt); ok {
+									return n
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	if n := tryJSONMarshal(fn); n != nil {
 		return n
 	}
@@ -345,6 +364,9 @@ func tryIIFE(c *ast.CallExpr) *mast.Node {
 		return n
 	}
 	if n := tryMinMax(fn); n != nil {
+		return n
+	}
+	if n := tryAvg(fn); n != nil {
 		return n
 	}
 	return nil
@@ -657,6 +679,74 @@ func tryMinMax(fn *ast.FuncLit) *mast.Node {
 		return &mast.Node{Kind: "call", Value: "max", Children: []*mast.Node{transformExpr(base)}}
 	}
 	return nil
+}
+
+// tryAvg matches `sum := 0; for _, v := range xs { sum += v }; return float64(sum) / float64(len(xs))`.
+func tryAvg(fn *ast.FuncLit) *mast.Node {
+	if len(fn.Body.List) != 3 {
+		return nil
+	}
+	init, ok := fn.Body.List[0].(*ast.AssignStmt)
+	if !ok || init.Tok != token.DEFINE || len(init.Lhs) != 1 || len(init.Rhs) != 1 {
+		return nil
+	}
+	accIdent, ok := init.Lhs[0].(*ast.Ident)
+	if !ok {
+		return nil
+	}
+	if lit, ok := init.Rhs[0].(*ast.BasicLit); !ok || lit.Value != "0" {
+		return nil
+	}
+	rng, ok := fn.Body.List[1].(*ast.RangeStmt)
+	if !ok || rng.Body == nil || len(rng.Body.List) != 1 {
+		return nil
+	}
+	add, ok := rng.Body.List[0].(*ast.AssignStmt)
+	if !ok || add.Tok != token.ADD_ASSIGN || len(add.Lhs) != 1 || len(add.Rhs) != 1 {
+		return nil
+	}
+	if id, ok := add.Lhs[0].(*ast.Ident); !ok || id.Name != accIdent.Name {
+		return nil
+	}
+	ret, ok := fn.Body.List[2].(*ast.ReturnStmt)
+	if !ok || len(ret.Results) != 1 {
+		return nil
+	}
+	be, ok := ret.Results[0].(*ast.BinaryExpr)
+	if !ok || be.Op != token.QUO {
+		return nil
+	}
+	// left operand must be float64(sum)
+	leftCall, ok := be.X.(*ast.CallExpr)
+	if !ok || len(leftCall.Args) != 1 {
+		return nil
+	}
+	if lf, ok := leftCall.Fun.(*ast.Ident); !ok || lf.Name != "float64" {
+		return nil
+	}
+	if arg, ok := leftCall.Args[0].(*ast.Ident); !ok || arg.Name != accIdent.Name {
+		return nil
+	}
+	// right operand must be float64(len(xs))
+	rightCall, ok := be.Y.(*ast.CallExpr)
+	if !ok || len(rightCall.Args) != 1 {
+		return nil
+	}
+	if rf, ok := rightCall.Fun.(*ast.Ident); !ok || rf.Name != "float64" {
+		return nil
+	}
+	inner, ok := rightCall.Args[0].(*ast.CallExpr)
+	if !ok || len(inner.Args) != 1 {
+		return nil
+	}
+	if id, ok := inner.Fun.(*ast.Ident); !ok || id.Name != "len" {
+		return nil
+	}
+	expr := transformExpr(inner.Args[0])
+	if expr == nil {
+		return nil
+	}
+	return &mast.Node{Kind: "call", Value: "avg", Children: []*mast.Node{expr}}
 }
 
 // tryExists matches patterns like len(func(){ res:=[]T{}; for _,v:=range xs { if v == k { res = append(res,v) } }; return res }()) > 0
