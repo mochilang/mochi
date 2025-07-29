@@ -505,8 +505,9 @@ func extractPrint(line string) string {
 }
 
 type stmt struct {
-	line     string
-	children []stmt
+	line       string
+	children   []stmt
+	elseBranch []stmt
 }
 
 func parseBlock(lines []string, i *int) []stmt {
@@ -514,6 +515,11 @@ func parseBlock(lines []string, i *int) []stmt {
 	for *i < len(lines) {
 		t := strings.TrimSpace(lines[*i])
 		*i++
+		if strings.HasPrefix(t, "} else") {
+			*i--
+			lines[*i] = strings.TrimSpace(t[1:])
+			break
+		}
 		if t == "" || strings.HasPrefix(t, "//") || strings.HasPrefix(t, "const std") {
 			continue
 		}
@@ -523,8 +529,20 @@ func parseBlock(lines []string, i *int) []stmt {
 		if strings.HasSuffix(t, "{") {
 			header := strings.TrimSpace(strings.TrimSuffix(t, "{"))
 			body := parseBlock(lines, i)
+			st := stmt{line: header, children: body}
+			if strings.HasPrefix(header, "if ") && *i < len(lines) {
+				next := strings.TrimSpace(lines[*i])
+				if strings.HasPrefix(next, "else") {
+					*i++
+					if strings.HasSuffix(next, "{") {
+						st.elseBranch = parseBlock(lines, i)
+					} else {
+						st.elseBranch = []stmt{{line: strings.TrimSpace(strings.TrimPrefix(next, "else "))}}
+					}
+				}
+			}
 			if !strings.Contains(header, "struct") {
-				res = append(res, stmt{line: header, children: body})
+				res = append(res, st)
 			}
 			continue
 		}
@@ -619,6 +637,13 @@ func gen(st stmt, indent string, b *strings.Builder) {
 			fmt.Fprintf(b, "%sif %s {\n", indent, transformExpr(cond))
 			gen(stmt{line: strings.TrimSpace(rest)}, indent+"  ", b)
 			fmt.Fprintf(b, "%s}\n", indent)
+			if len(st.elseBranch) > 0 {
+				fmt.Fprintf(b, "%selse {\n", indent)
+				for _, ch := range st.elseBranch {
+					gen(ch, indent+"  ", b)
+				}
+				fmt.Fprintf(b, "%s}\n", indent)
+			}
 			return
 		}
 		fallthrough
@@ -629,6 +654,13 @@ func gen(st stmt, indent string, b *strings.Builder) {
 			gen(ch, indent+"  ", b)
 		}
 		fmt.Fprintf(b, "%s}\n", indent)
+		if len(st.elseBranch) > 0 {
+			fmt.Fprintf(b, "%selse {\n", indent)
+			for _, ch := range st.elseBranch {
+				gen(ch, indent+"  ", b)
+			}
+			fmt.Fprintf(b, "%s}\n", indent)
+		}
 	default:
 		if name, val, ok := parseDecl(line); ok {
 			fmt.Fprintf(b, "%slet %s = %s\n", indent, name, transformExpr(val))
