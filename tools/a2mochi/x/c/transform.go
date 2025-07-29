@@ -105,7 +105,8 @@ func blockNode(stmts []Stmt, assigned map[string]bool) *ast.Node {
 	return blk
 }
 
-var reBinary = regexp.MustCompile(`^(.+)\s*(==|!=|<=|>=|<|>|\+|\-|\*|/)\s*(.+)$`)
+var reBinary = regexp.MustCompile(`^(.+)\s*(==|!=|<=|>=|<|>|\+|\-|\*|/|&&|\|\|)\s*(.+)$`)
+var reCall = regexp.MustCompile(`^([a-zA-Z_][a-zA-Z0-9_]*)\((.*)\)$`)
 var reList = regexp.MustCompile(`^\{\s*([0-9]+(?:\s*,\s*[0-9]+)*)\s*\}$`)
 
 func exprNode(expr string) *ast.Node {
@@ -113,8 +114,29 @@ func exprNode(expr string) *ast.Node {
 	if m := reBinary.FindStringSubmatch(expr); m != nil {
 		return &ast.Node{Kind: "binary", Value: m[2], Children: []*ast.Node{exprNode(m[1]), exprNode(m[3])}}
 	}
+	if m := reCall.FindStringSubmatch(expr); m != nil {
+		args := splitArgs(m[2])
+		call := &ast.Node{Kind: "call", Value: m[1]}
+		for _, a := range args {
+			a = strings.TrimSpace(a)
+			if a == "" {
+				continue
+			}
+			call.Children = append(call.Children, exprNode(a))
+		}
+		return call
+	}
 	if strings.HasPrefix(expr, "\"") && strings.HasSuffix(expr, "\"") {
 		if s, err := strconv.Unquote(expr); err == nil {
+			if i, err2 := strconv.Atoi(s); err2 == nil {
+				return &ast.Node{Kind: "int", Value: i}
+			}
+			if f, err2 := strconv.ParseFloat(s, 64); err2 == nil {
+				if f == float64(int64(f)) {
+					return &ast.Node{Kind: "int", Value: int(f)}
+				}
+				return &ast.Node{Kind: "float", Value: f}
+			}
 			return &ast.Node{Kind: "string", Value: s}
 		}
 	}
@@ -132,5 +154,36 @@ func exprNode(expr string) *ast.Node {
 	if i, err := strconv.Atoi(expr); err == nil {
 		return &ast.Node{Kind: "int", Value: i}
 	}
+	if f, err := strconv.ParseFloat(expr, 64); err == nil {
+		if f == float64(int64(f)) {
+			return &ast.Node{Kind: "int", Value: int(f)}
+		}
+		return &ast.Node{Kind: "float", Value: f}
+	}
 	return &ast.Node{Kind: "selector", Value: expr}
+}
+
+func splitArgs(s string) []string {
+	var args []string
+	depth := 0
+	start := 0
+	for i, r := range s {
+		switch r {
+		case '(':
+			depth++
+		case ')':
+			if depth > 0 {
+				depth--
+			}
+		case ',':
+			if depth == 0 {
+				args = append(args, s[start:i])
+				start = i + 1
+			}
+		}
+	}
+	if start <= len(s) {
+		args = append(args, s[start:])
+	}
+	return args
 }

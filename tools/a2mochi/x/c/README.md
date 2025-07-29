@@ -2,13 +2,13 @@
 
 This directory holds golden outputs for converting C source files located in `tests/transpiler/x/c` into Mochi AST form. Each `.c` source has a matching `.mochi` and `.ast` file in this directory.
 
-Completed programs: 28/81
-Date: 2025-07-29 20:01:17 GMT
+Completed programs: 29/81
+Date: 2025-07-29 20:20:41 GMT
 
 ## Checklist
 
 - [x] append_builtin
-- [ ] avg_builtin
+- [x] avg_builtin
 - [x] basic_compare
 - [ ] bench_block
 - [x] binary_precedence
