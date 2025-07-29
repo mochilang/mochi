@@ -1,7 +1,5 @@
 (program
   (call print
-    (group
-      (binary + (string "hello ") (string world))
-    )
+    (binary + (string "hello ") (string world))
   )
 )
