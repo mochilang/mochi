@@ -4,17 +4,12 @@ package cs
 
 import (
 	"fmt"
-	"regexp"
 	"strconv"
 	"strings"
 
 	"mochi/ast"
 	"mochi/parser"
 )
-
-var longLit = regexp.MustCompile(`(\d+)L\b`)
-
-func stripLong(s string) string { return longLit.ReplaceAllString(s, "$1") }
 
 func parenBalanced(s string) bool {
 	depth := 0
@@ -282,8 +277,16 @@ func stmtNode(n *Node) *ast.Node {
 		}
 		return v
 	case "assign":
-		a := &ast.Node{Kind: "assign", Value: n.Value}
-		if len(n.Children) > 0 {
+		a := &ast.Node{Kind: "assign"}
+		if len(n.Children) == 2 {
+			a.Children = append(a.Children, exprNodeFromAST(n.Children[0]))
+			a.Children = append(a.Children, exprNodeFromAST(n.Children[1]))
+		} else if len(n.Children) == 1 {
+			// fallback for older AST format where left side was stored in Value
+			lhs, err := exprNode(n.Value)
+			if err == nil {
+				a.Children = append(a.Children, lhs)
+			}
 			a.Children = append(a.Children, exprNodeFromAST(n.Children[0]))
 		}
 		return a

@@ -4,7 +4,7 @@ Created: 2025-07-28
 
 This directory contains helpers and golden files for converting the C# output of the Mochi compiler back into Mochi AST form.
 
-Completed programs: 25/103
+Completed programs: 30/103
 
 ## Checklist
 - [x] append_builtin
@@ -32,3 +32,8 @@ Completed programs: 25/103
 - [x] fun_expr_in_let
 - [x] fun_three_args
 - [x] count_builtin
+- [x] len_builtin
+- [x] len_map
+- [x] list_assign
+- [x] map_assign
+- [x] map_index
