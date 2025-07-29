@@ -159,6 +159,18 @@ func parseOrder(expr string) (string, bool) {
 	return "", false
 }
 
+func parseLenProp(expr string) (string, bool) {
+	expr = strings.TrimSpace(expr)
+	if !strings.HasSuffix(expr, ".len") {
+		return "", false
+	}
+	base := strings.TrimSpace(expr[:len(expr)-len(".len")])
+	if base == "" {
+		return "", false
+	}
+	return fmt.Sprintf("len(%s)", transformExpr(base)), true
+}
+
 func findClosingBrace(s string, start int) int {
 	depth := 0
 	for i := start; i < len(s); i++ {
@@ -468,6 +480,9 @@ func transformExpr(expr string) string {
 		return res
 	}
 	if res, ok := parseOrder(expr); ok {
+		return res
+	}
+	if res, ok := parseLenProp(expr); ok {
 		return res
 	}
 	return expr
