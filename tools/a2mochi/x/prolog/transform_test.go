@@ -113,6 +113,9 @@ func TestTransform(t *testing.T) {
 		"list_assign":        true,
 		"map_assign":         true,
 		"list_nested_assign": true,
+		"count_builtin":      true,
+		"cast_struct":        true,
+		"map_nested_assign":  true,
 	}
 
 	outputDir := filepath.Join(root, "tests/a2mochi/x/prolog")

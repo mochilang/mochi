@@ -1,0 +1,14 @@
+(program
+  (fun main
+    (let _11308
+      (struct _11300
+        (field title (string hi))
+      )
+    )
+    (let _11318
+      (index (selector _11308) (string title))
+    )
+    (call print (selector _11318))
+  )
+  (call main)
+)
