@@ -106,7 +106,7 @@ var (
 	posRe        = regexp.MustCompile(`Pos\(([^,]+),\s*([^\)]+)\)`)
 	posCmpRe     = regexp.MustCompile(`Pos\(([^,]+),\s*([^\)]+)\)\s*(<>|=)\s*0`)
 	strToIntRe   = regexp.MustCompile(`StrToInt\(([^\)]+)\)`)
-	recordLitRe  = regexp.MustCompile(`([=,\[]\s*)\(([^()]*:[^()]*?)\)`)
+	recordLitRe  = regexp.MustCompile(`(^|[=,\[]\s*)\(([^()]*:[^()]*?)\)`)
 	concatRe     = regexp.MustCompile(`(?i)concat\(([^,]+),\s*([^\)]+)\)`)
 	formatSpecRe = regexp.MustCompile(`:[0-9]+(?::[0-9]+)?`)
 )
@@ -325,9 +325,6 @@ func zeroValue(t string) string {
 	if strings.HasPrefix(t, "map") || strings.HasPrefix(t, "{") {
 		return "{}"
 	}
-	if t != "" {
-		return "nil"
-	}
 	return ""
 }
 
@@ -519,8 +516,10 @@ func convertFallback(src string) ([]byte, error) {
 								if typ == "string" {
 									stringVars[name] = true
 								}
+								if v := zeroValue(typ); v != "" {
+									line += " = " + v
+								}
 							}
-							// leave uninitialised to match VM behaviour
 							appendLine(line)
 						}
 					}
@@ -544,8 +543,10 @@ func convertFallback(src string) ([]byte, error) {
 							if typ == "string" {
 								stringVars[nm] = true
 							}
+							if v := zeroValue(typ); v != "" {
+								line += " = " + v
+							}
 						}
-						// leave uninitialised to match VM behaviour
 						appendLine(line)
 					}
 				}

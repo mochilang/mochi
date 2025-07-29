@@ -25,6 +25,12 @@ func updateReadme() {
 	pas.UpdateReadmeForTests()
 }
 
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	os.Exit(code)
+}
+
 func findRepoRoot(t *testing.T) string {
 	dir, err := os.Getwd()
 	if err != nil {
