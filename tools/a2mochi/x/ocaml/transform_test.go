@@ -87,6 +87,8 @@ func TestTransform_Golden(t *testing.T) {
 		"print_hello":         true,
 		"len_builtin":         true,
 		"len_string":          true,
+		"string_index":        true,
+		"substring_builtin":   true,
 		"basic_compare":       true,
 		"binary_precedence":   true,
 		"string_concat":       true,

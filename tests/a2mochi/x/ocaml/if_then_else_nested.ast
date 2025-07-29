@@ -2,14 +2,10 @@
   (let x (int 8))
   (let msg
     (if_expr
-      (group
-        (binary > (selector x) (int 10))
-      )
+      (binary > (selector x) (int 10))
       (string big)
       (if_expr
-        (group
-          (binary > (selector x) (int 5))
-        )
+        (binary > (selector x) (int 5))
         (string medium)
         (string small)
       )
