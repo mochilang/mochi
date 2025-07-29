@@ -80,7 +80,7 @@ func TestTransform_Golden(t *testing.T) {
 		"cross_join":               true,
 		"cross_join_filter":        true,
 		"cross_join_triple":        true,
-                "dataset_sort_take_limit":  false,
+		"dataset_sort_take_limit":  false,
 		"dataset_where_filter":     true,
 		"for_list_collection":      true,
 		"for_map_collection":       true,
@@ -100,7 +100,7 @@ func TestTransform_Golden(t *testing.T) {
 		// match expressions now handled
 		// "match_expr":               true,
 		// "match_full":               true,
-		"membership": true,
+		"membership": false,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/c")
