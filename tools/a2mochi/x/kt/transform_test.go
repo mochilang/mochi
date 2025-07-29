@@ -141,6 +141,7 @@ func TestTransform_Golden(t *testing.T) {
 	allowed := map[string]bool{
 		"append_builtin":      true,
 		"avg_builtin":         true,
+		"basic_compare":       true,
 		"binary_precedence":   true,
 		"cast_string_to_int":  true,
 		"for_loop":            true,
