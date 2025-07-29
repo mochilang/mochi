@@ -73,7 +73,8 @@ func convertStmtsToNodes(stmts []luaast.Stmt, vars map[string]bool, mut map[stri
 					out = append(out, node(kind, id.Value, val))
 					vars[id.Value] = true
 				} else {
-					out = append(out, node("assign", nameExpr.Value, val))
+					assignNode := node("assign", nil, nameExpr, val)
+					out = append(out, assignNode)
 				}
 			}
 		case *luaast.ReturnStmt:
@@ -194,6 +195,13 @@ func exprToNode(e luaast.Expr, mut map[string]bool) *ast.Node {
 		return node("binary", "+", exprToNode(v.Lhs, mut), exprToNode(v.Rhs, mut))
 	case *luaast.LogicalOpExpr:
 		if v.Operator == "or" {
+			// Convert Lua ternary pattern: a and b or c
+			if lhs, ok := v.Lhs.(*luaast.LogicalOpExpr); ok && lhs.Operator == "and" {
+				return node("if_expr", nil,
+					exprToNode(lhs.Lhs, mut),
+					exprToNode(lhs.Rhs, mut),
+					exprToNode(v.Rhs, mut))
+			}
 			if num, ok := v.Rhs.(*luaast.NumberExpr); ok && num.Value == "0" {
 				if lhs, ok := v.Lhs.(*luaast.LogicalOpExpr); ok && lhs.Operator == "and" {
 					if num1, ok := lhs.Rhs.(*luaast.NumberExpr); ok && num1.Value == "1" {
@@ -1089,6 +1097,10 @@ func collectAssignCounts(stmts []luaast.Stmt, counts map[string]int) {
 			for _, lh := range s.Lhs {
 				if id, ok := lh.(*luaast.IdentExpr); ok {
 					counts[id.Value]++
+				} else if get, ok := lh.(*luaast.AttrGetExpr); ok {
+					if id, ok := get.Object.(*luaast.IdentExpr); ok {
+						counts[id.Value]++
+					}
 				}
 			}
 		case *luaast.FuncDefStmt:
