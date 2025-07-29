@@ -1,5 +1,22 @@
 # 📦 CHANGELOG.md
 
+## [0.10.48] – 2025-07-29T09:06:36+07:00
+
+### Added
+
+* Additional program conversions and builtins across many a2mochi converters
+* Embedded Java parser and function type support for Kotlin transformations
+
+### Changed
+
+* Converter test suites rewritten without JSON round-trips and shared helpers
+* More VM samples pass with refreshed golden files across languages
+
+### Fixed
+
+* Zig output regressions corrected with updated tests
+* Various converter bugs uncovered by new coverage
+
 ## [0.10.43] – 2025-07-28T11:11:30+07:00
 
 ### Added
