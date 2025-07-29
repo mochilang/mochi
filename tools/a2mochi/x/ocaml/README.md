@@ -2,36 +2,110 @@
 
 This directory holds helpers and golden files for converting OCaml programs in `tests/transpiler/x/ocaml` into Mochi AST form.
 
-Completed programs: 28/104
-Date: 2025-07-29
+Completed programs: 29/102
+Date: 2025-07-29 15:25 GMT+7
 
-Currently twenty-eight examples are exercised by the tests.
+Currently 29 examples are exercised by the tests.
 
-- [x] len_builtin
-- [x] len_string
-- [x] print_hello
-- [x] basic_compare
-- [x] binary_precedence
-- [x] string_concat
-- [x] string_compare
-- [x] sum_builtin
-- [x] let_and_print
-- [x] var_assignment
-- [x] unary_neg
-- [x] if_then_else
-- [x] if_then_else_nested
-- [x] test_block
-- [x] string_index
-- [x] substring_builtin
-- [x] list_index
-- [x] avg_builtin
 - [x] append_builtin
+- [x] avg_builtin
+- [x] basic_compare
+- [ ] bench_block
+- [x] binary_precedence
 - [x] bool_chain
+- [ ] break_continue
+- [ ] cast_string_to_int
+- [ ] cast_struct
+- [ ] closure
+- [ ] count_builtin
+- [ ] cross_join
+- [ ] cross_join_filter
+- [ ] cross_join_triple
+- [ ] dataset_sort_take_limit
+- [ ] dataset_where_filter
+- [ ] exists_builtin
+- [ ] for_list_collection
+- [ ] for_loop
+- [ ] for_map_collection
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
-- [x] math_ops
+- [ ] go_auto
+- [ ] group_by
+- [ ] group_by_conditional_sum
+- [ ] group_by_having
+- [ ] group_by_join
+- [ ] group_by_left_join
+- [ ] group_by_multi_join
+- [ ] group_by_multi_sort
+- [ ] group_by_sort
+- [ ] group_items_iteration
+- [ ] if_else
+- [x] if_then_else
+- [x] if_then_else_nested
+- [ ] in_operator
+- [ ] in_operator_extended
+- [ ] inner_join
+- [ ] join_multi
+- [ ] json_builtin
+- [ ] left_join
+- [ ] left_join_multi
+- [x] len_builtin
 - [x] len_map
-- [x] str_builtin
-- [x] min_max_builtin
+- [x] len_string
+- [x] let_and_print
+- [ ] list_assign
+- [x] list_index
+- [ ] list_nested_assign
+- [ ] list_set_ops
+- [ ] load_jsonl
+- [ ] load_yaml
+- [ ] map_assign
+- [x] map_in_operator
+- [ ] map_index
+- [ ] map_int_key
+- [ ] map_literal_dynamic
+- [ ] map_membership
+- [ ] map_nested_assign
+- [ ] match_expr
+- [ ] match_full
+- [x] math_ops
 - [x] membership
+- [x] min_max_builtin
+- [ ] mix_go_python
+- [ ] nested_function
+- [ ] order_by_map
+- [ ] outer_join
+- [ ] partial_application
+- [x] print_hello
+- [ ] pure_fold
+- [ ] pure_global_fold
+- [ ] python_auto
+- [ ] python_math
+- [ ] query_sum_select
+- [ ] record_assign
+- [ ] right_join
+- [ ] save_jsonl_stdout
+- [ ] short_circuit
+- [ ] slice
+- [ ] sort_stable
+- [x] str_builtin
+- [x] string_compare
+- [x] string_concat
+- [ ] string_contains
+- [ ] string_in_operator
+- [x] string_index
+- [ ] string_prefix_slice
+- [x] substring_builtin
+- [x] sum_builtin
+- [ ] tail_recursion
+- [x] test_block
+- [ ] tree_sum
+- [ ] two-sum
+- [ ] typed_let
+- [ ] typed_var
+- [x] unary_neg
+- [ ] user_type_literal
+- [ ] values_builtin
+- [x] var_assignment
+- [ ] while_loop
