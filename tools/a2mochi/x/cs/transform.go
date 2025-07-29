@@ -4,12 +4,20 @@ package cs
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 
 	"mochi/ast"
 	"mochi/parser"
 )
+
+var (
+	longLit   = regexp.MustCompile(`\b([0-9]+)L\b`)
+	varDeclRE = regexp.MustCompile(`^([A-Za-z0-9_<>\[\]]+)\s+([A-Za-z_][A-Za-z0-9_]*)\s*=`)
+)
+
+func stripLong(s string) string { return longLit.ReplaceAllString(s, "$1") }
 
 func parenBalanced(s string) bool {
 	depth := 0
@@ -123,18 +131,18 @@ func rewriteExpr(s string) string {
 				s = fmt.Sprintf("append(%s, %s)", strings.TrimSpace(before), strings.TrimSpace(arg))
 			}
 		}
-                // <x>.Append(y) -> append(x, y)
-                if strings.HasSuffix(s, ")") && strings.Contains(s, ".Append(") {
-                        before := stripOuterParens(strings.TrimSpace(s[:strings.Index(s, ".Append(")]))
-                        rest := s[strings.Index(s, ".Append(")+len(".Append("):]
-                        if idx2 := strings.Index(rest, ")"); idx2 != -1 {
-                                arg := rest[:idx2]
-                                after := strings.TrimSpace(rest[idx2+1:])
-                                if parenBalanced(arg) && after == "" {
-                                        s = fmt.Sprintf("append(%s, %s)", strings.TrimSpace(before), strings.TrimSpace(arg))
-                                }
-                        }
-                }
+		// <x>.Append(y) -> append(x, y)
+		if strings.HasSuffix(s, ")") && strings.Contains(s, ".Append(") {
+			before := stripOuterParens(strings.TrimSpace(s[:strings.Index(s, ".Append(")]))
+			rest := s[strings.Index(s, ".Append(")+len(".Append("):]
+			if idx2 := strings.Index(rest, ")"); idx2 != -1 {
+				arg := rest[:idx2]
+				after := strings.TrimSpace(rest[idx2+1:])
+				if parenBalanced(arg) && after == "" {
+					s = fmt.Sprintf("append(%s, %s)", strings.TrimSpace(before), strings.TrimSpace(arg))
+				}
+			}
+		}
 
 		// new T[]{...} -> [...]
 		for {
@@ -302,7 +310,13 @@ func programToNode(p *Program) (*ast.Node, error) {
 			t.Fields = otherFields
 			for _, m := range t.Methods {
 				if strings.EqualFold(m.Name, "Main") && m.Static {
-					stmts, err := blockToNodes(m.Ast)
+					var stmts []*ast.Node
+					var err error
+					if m.Ast != nil {
+						stmts, err = blockToNodes(m.Ast)
+					} else {
+						stmts, err = blockLinesToNodes(m.Body)
+					}
 					if err != nil {
 						return nil, err
 					}
@@ -360,7 +374,13 @@ func funcToNode(f *Func) (*ast.Node, error) {
 	if rt := mapType(f.Ret); rt != "" {
 		n.Children = append(n.Children, &ast.Node{Kind: "type", Value: rt})
 	}
-	body, err := blockToNodes(f.Ast)
+	var body []*ast.Node
+	var err error
+	if f.Ast != nil {
+		body, err = blockToNodes(f.Ast)
+	} else if len(f.Body) > 0 {
+		body, err = blockLinesToNodes(f.Body)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -608,6 +628,117 @@ func exprNode(expr string) (*ast.Node, error) {
 		return ret.Children[0], nil
 	}
 	return nil, fmt.Errorf("expr parse failed")
+}
+
+// convertBodyLines performs lightweight translation of C# body lines to Mochi statements.
+func convertBodyLines(body []string) []string {
+	var out []string
+	for _, ln := range body {
+		l := strings.TrimSpace(ln)
+		if l == "" {
+			continue
+		}
+		if strings.HasSuffix(l, ";") {
+			l = strings.TrimSuffix(l, ";")
+		}
+		l = stripLong(l)
+		switch {
+		case strings.HasPrefix(l, "Console.WriteLine("):
+			l = "print(" + strings.TrimPrefix(strings.TrimSuffix(l, ")"), "Console.WriteLine(") + ")"
+		case strings.HasPrefix(l, "return "):
+			l = "return " + strings.TrimSpace(strings.TrimPrefix(l, "return "))
+		case strings.HasPrefix(l, "foreach ("):
+			inner := strings.TrimPrefix(l, "foreach (")
+			inner = strings.TrimSuffix(inner, ") {")
+			parts := strings.SplitN(inner, " in ", 2)
+			if len(parts) == 2 {
+				varName := strings.TrimSpace(parts[0])
+				fs := strings.Fields(varName)
+				if len(fs) > 1 {
+					varName = fs[len(fs)-1]
+				}
+				iter := strings.TrimSpace(parts[1])
+				l = fmt.Sprintf("for %s in %s {", varName, iter)
+			}
+		case strings.HasPrefix(l, "for (") && strings.Contains(l, ";") && strings.Contains(l, ")"):
+			l = strings.TrimPrefix(l, "for (")
+			l = strings.TrimSuffix(l, ") {")
+			parts := strings.Split(l, ";")
+			if len(parts) >= 2 {
+				init := strings.TrimSpace(parts[0])
+				cond := strings.TrimSpace(parts[1])
+				if strings.HasPrefix(init, "var ") {
+					init = strings.TrimPrefix(init, "var ")
+				}
+				if eq := strings.Index(init, "="); eq != -1 {
+					name := strings.TrimSpace(init[:eq])
+					startVal := strings.TrimSpace(init[eq+1:])
+					startVal = stripLong(startVal)
+					endVal := ""
+					if idx := strings.Index(cond, "<"); idx != -1 {
+						endVal = strings.TrimSpace(cond[idx+1:])
+						endVal = stripLong(endVal)
+					}
+					l = fmt.Sprintf("for %s in %s..%s {", name, startVal, endVal)
+				}
+			}
+		case strings.HasPrefix(l, "while ("):
+			l = strings.TrimPrefix(l, "while (")
+			l = strings.TrimSpace(strings.TrimSuffix(l, "{"))
+			if strings.HasSuffix(l, ")") {
+				idx := strings.LastIndex(l, ")")
+				l = l[:idx]
+			}
+			l = strings.TrimSpace(l)
+			l = stripLong(l)
+			l = "while " + l + " {"
+		case strings.HasPrefix(l, "if ("):
+			l = strings.TrimPrefix(l, "if (")
+			l = strings.TrimSuffix(l, ") {")
+			l = stripLong(l)
+			l = "if " + l + " {"
+		case l == "}" || l == "} else {":
+			// keep as is
+		default:
+			if m := varDeclRE.FindStringSubmatch(l); m != nil {
+				name := m[2]
+				rest := strings.TrimSpace(l[len(m[0]):])
+				l = "var " + name + " = " + rest
+			} else {
+				for _, t := range []string{"long ", "int ", "float ", "double ", "string ", "bool "} {
+					if strings.HasPrefix(l, t) {
+						l = strings.TrimPrefix(l, t)
+						if strings.HasPrefix(t, "string") {
+							l = "var " + l
+						} else {
+							l = "var " + stripLong(l)
+						}
+						break
+					}
+				}
+				l = stripLong(l)
+			}
+		}
+		out = append(out, l)
+	}
+	return out
+}
+
+func blockLinesToNodes(body []string) ([]*ast.Node, error) {
+	stmts := convertBodyLines(body)
+	if len(stmts) == 0 {
+		return nil, nil
+	}
+	src := strings.Join(stmts, "\n") + "\n"
+	prog, err := parser.ParseString(src)
+	if err != nil {
+		return nil, err
+	}
+	var out []*ast.Node
+	for _, st := range prog.Statements {
+		out = append(out, ast.FromStatement(st))
+	}
+	return out, nil
 }
 
 func mapType(t string) string {
