@@ -355,6 +355,16 @@ func exprNode(d any) *ast.Node {
 				arg = args[0]
 			}
 			return &ast.Node{Kind: "call", Value: "print", Children: []*ast.Node{exprNode(arg)}}
+		case "quote":
+			if len(args) == 1 {
+				if list, ok := args[0].([]any); ok && len(list) == 0 {
+					return &ast.Node{Kind: "list"}
+				}
+				if s, ok := symString(args[0]); ok {
+					return &ast.Node{Kind: "string", Value: s}
+				}
+				return exprNode(args[0])
+			}
 		case "sublist":
 			if len(args) >= 3 {
 				start := &ast.Node{Kind: "start", Children: []*ast.Node{exprNode(args[1])}}
@@ -401,6 +411,10 @@ func exprNode(d any) *ast.Node {
 			if len(args) == 2 {
 				return &ast.Node{Kind: "binary", Value: "+", Children: []*ast.Node{exprNode(args[0]), exprNode(args[1])}}
 			}
+		case "string-join":
+			if len(args) == 2 {
+				return &ast.Node{Kind: "call", Value: "join", Children: []*ast.Node{exprNode(args[0]), exprNode(args[1])}}
+			}
 		case "string-contains?":
 			if len(v) == 3 {
 				sel := &ast.Node{Kind: "selector", Value: "contains", Children: []*ast.Node{exprNode(v[1])}}
@@ -425,6 +439,10 @@ func exprNode(d any) *ast.Node {
 				n.Children = append(n.Children, exprNode(v[3]))
 			}
 			return n
+		case "string=?":
+			if len(v) == 3 {
+				return &ast.Node{Kind: "binary", Value: "==", Children: []*ast.Node{exprNode(v[1]), exprNode(v[2])}}
+			}
 		case "string<?", "string>?", "string<=?", "string>=?":
 			op := map[string]string{"string<?": "<", "string>?": ">", "string<=?": "<=", "string>=?": ">="}[head]
 			return &ast.Node{Kind: "binary", Value: op, Children: []*ast.Node{exprNode(v[1]), exprNode(v[2])}}
