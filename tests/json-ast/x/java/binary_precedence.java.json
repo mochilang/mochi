@@ -1,0 +1,96 @@
+{
+  "body": [
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Binary",
+        "left": {
+          "kind": "Literal",
+          "value": "1"
+        },
+        "right": {
+          "kind": "Binary",
+          "left": {
+            "kind": "Literal",
+            "value": "2"
+          },
+          "right": {
+            "kind": "Literal",
+            "value": "3"
+          },
+          "op": "MULTIPLY"
+        },
+        "op": "PLUS"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Binary",
+        "left": {
+          "kind": "Binary",
+          "left": {
+            "kind": "Literal",
+            "value": "1"
+          },
+          "right": {
+            "kind": "Literal",
+            "value": "2"
+          },
+          "op": "PLUS"
+        },
+        "right": {
+          "kind": "Literal",
+          "value": "3"
+        },
+        "op": "MULTIPLY"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Binary",
+        "left": {
+          "kind": "Binary",
+          "left": {
+            "kind": "Literal",
+            "value": "2"
+          },
+          "right": {
+            "kind": "Literal",
+            "value": "3"
+          },
+          "op": "MULTIPLY"
+        },
+        "right": {
+          "kind": "Literal",
+          "value": "1"
+        },
+        "op": "PLUS"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Binary",
+        "left": {
+          "kind": "Literal",
+          "value": "2"
+        },
+        "right": {
+          "kind": "Binary",
+          "left": {
+            "kind": "Literal",
+            "value": "3"
+          },
+          "right": {
+            "kind": "Literal",
+            "value": "1"
+          },
+          "op": "PLUS"
+        },
+        "op": "MULTIPLY"
+      }
+    }
+  ]
+}

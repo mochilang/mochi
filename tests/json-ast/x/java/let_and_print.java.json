@@ -1,0 +1,37 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "a",
+      "type": "int",
+      "expr": {
+        "kind": "Literal",
+        "value": "10"
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "b",
+      "type": "int",
+      "expr": {
+        "kind": "Literal",
+        "value": "20"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Binary",
+        "left": {
+          "kind": "Ident",
+          "name": "a"
+        },
+        "right": {
+          "kind": "Ident",
+          "name": "b"
+        },
+        "op": "PLUS"
+      }
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "body": [
+    {
+      "kind": "FnDecl",
+      "name": "outer",
+      "type": "int",
+      "body": [
+        {
+          "kind": "VarDecl",
+          "name": "inner",
+          "type": "java.util.function.IntUnaryOperator",
+          "expr": {
+            "kind": "Lambda",
+            "expr": {
+              "kind": "Binary",
+              "left": {
+                "kind": "Ident",
+                "name": "x"
+              },
+              "right": {
+                "kind": "Ident",
+                "name": "y"
+              },
+              "op": "PLUS"
+            },
+            "params": [
+              {
+                "name": "y",
+                "type": "int"
+              }
+            ]
+          }
+        },
+        {
+          "kind": "Return",
+          "expr": {
+            "kind": "Call",
+            "target": {
+              "kind": "Member",
+              "name": "applyAsInt",
+              "expr": {
+                "kind": "Ident",
+                "name": "inner"
+              }
+            },
+            "args": [
+              {
+                "kind": "Literal",
+                "value": "5"
+              }
+            ]
+          }
+        }
+      ],
+      "params": [
+        {
+          "name": "x",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Ident",
+          "name": "outer"
+        },
+        "args": [
+          {
+            "kind": "Literal",
+            "value": "3"
+          }
+        ]
+      }
+    }
+  ]
+}

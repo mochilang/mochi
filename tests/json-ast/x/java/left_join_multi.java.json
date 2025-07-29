@@ -1,0 +1,125 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "customers",
+      "type": "Data1[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "orders",
+      "type": "Data2[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "items",
+      "type": "Data3[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "UnknownExpr"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "result",
+      "type": "java.util.List\u003cResult5\u003e",
+      "expr": {
+        "kind": "UnknownExpr"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "String",
+        "value": "--- Left Join Multi ---"
+      }
+    },
+    {
+      "kind": "ForEach",
+      "name": "r",
+      "expr": {
+        "kind": "Ident",
+        "name": "result"
+      },
+      "body": [
+        {
+          "kind": "Print",
+          "expr": {
+            "kind": "Binary",
+            "left": {
+              "kind": "Binary",
+              "left": {
+                "kind": "Binary",
+                "left": {
+                  "kind": "Binary",
+                  "left": {
+                    "kind": "Member",
+                    "name": "orderId",
+                    "expr": {
+                      "kind": "Ident",
+                      "name": "r"
+                    }
+                  },
+                  "right": {
+                    "kind": "String",
+                    "value": " "
+                  },
+                  "op": "PLUS"
+                },
+                "right": {
+                  "kind": "Member",
+                  "name": "name",
+                  "expr": {
+                    "kind": "Ident",
+                    "name": "r"
+                  }
+                },
+                "op": "PLUS"
+              },
+              "right": {
+                "kind": "String",
+                "value": " "
+              },
+              "op": "PLUS"
+            },
+            "right": {
+              "kind": "Member",
+              "name": "item",
+              "expr": {
+                "kind": "Ident",
+                "name": "r"
+              }
+            },
+            "op": "PLUS"
+          }
+        }
+      ]
+    }
+  ]
+}

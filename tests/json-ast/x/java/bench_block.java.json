@@ -1,0 +1,233 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "_nowSeeded",
+      "type": "boolean",
+      "expr": {
+        "kind": "Literal",
+        "value": "false"
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "_nowSeed",
+      "type": "int"
+    },
+    {
+      "kind": "FnDecl",
+      "name": "_now",
+      "type": "int",
+      "body": [
+        {
+          "kind": "If",
+          "cond": {
+            "kind": "Unary",
+            "expr": {
+              "kind": "Ident",
+              "name": "_nowSeeded"
+            },
+            "op": "LOGICAL_COMPLEMENT"
+          },
+          "then": [
+            {
+              "kind": "VarDecl",
+              "name": "s",
+              "type": "String",
+              "expr": {
+                "kind": "Call",
+                "target": {
+                  "kind": "Member",
+                  "name": "getenv",
+                  "expr": {
+                    "kind": "Ident",
+                    "name": "System"
+                  }
+                },
+                "args": [
+                  {
+                    "kind": "String",
+                    "value": "MOCHI_NOW_SEED"
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "If",
+              "cond": {
+                "kind": "Binary",
+                "left": {
+                  "kind": "Binary",
+                  "left": {
+                    "kind": "Ident",
+                    "name": "s"
+                  },
+                  "right": {
+                    "kind": "UnknownExpr"
+                  },
+                  "op": "NOT_EQUAL_TO"
+                },
+                "right": {
+                  "kind": "Unary",
+                  "expr": {
+                    "kind": "Call",
+                    "target": {
+                      "kind": "Member",
+                      "name": "isEmpty",
+                      "expr": {
+                        "kind": "Ident",
+                        "name": "s"
+                      }
+                    }
+                  },
+                  "op": "LOGICAL_COMPLEMENT"
+                },
+                "op": "CONDITIONAL_AND"
+              },
+              "then": [
+                {
+                  "kind": "Unknown",
+                  "type": "TRY"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "If",
+          "cond": {
+            "kind": "Ident",
+            "name": "_nowSeeded"
+          },
+          "then": [
+            {
+              "kind": "Assign",
+              "name": "_nowSeed",
+              "target": {
+                "kind": "Ident",
+                "name": "_nowSeed"
+              },
+              "expr": {
+                "kind": "Cast",
+                "value": "int",
+                "expr": {
+                  "kind": "Binary",
+                  "left": {
+                    "kind": "Binary",
+                    "left": {
+                      "kind": "Binary",
+                      "left": {
+                        "kind": "Ident",
+                        "name": "_nowSeed"
+                      },
+                      "right": {
+                        "kind": "Literal",
+                        "value": "1664525"
+                      },
+                      "op": "MULTIPLY"
+                    },
+                    "right": {
+                      "kind": "Literal",
+                      "value": "1013904223"
+                    },
+                    "op": "PLUS"
+                  },
+                  "right": {
+                    "kind": "Literal",
+                    "value": "2147483647"
+                  },
+                  "op": "REMAINDER"
+                }
+              }
+            },
+            {
+              "kind": "Return",
+              "expr": {
+                "kind": "Ident",
+                "name": "_nowSeed"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "Return",
+          "expr": {
+            "kind": "Cast",
+            "value": "int",
+            "expr": {
+              "kind": "Call",
+              "target": {
+                "kind": "Member",
+                "name": "currentTimeMillis",
+                "expr": {
+                  "kind": "Ident",
+                  "name": "System"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "kind": "FnDecl",
+      "name": "_mem",
+      "type": "int",
+      "body": [
+        {
+          "kind": "VarDecl",
+          "name": "rt",
+          "type": "Runtime",
+          "expr": {
+            "kind": "Call",
+            "target": {
+              "kind": "Member",
+              "name": "getRuntime",
+              "expr": {
+                "kind": "Ident",
+                "name": "Runtime"
+              }
+            }
+          }
+        },
+        {
+          "kind": "Return",
+          "expr": {
+            "kind": "Cast",
+            "value": "int",
+            "expr": {
+              "kind": "Binary",
+              "left": {
+                "kind": "Call",
+                "target": {
+                  "kind": "Member",
+                  "name": "totalMemory",
+                  "expr": {
+                    "kind": "Ident",
+                    "name": "rt"
+                  }
+                }
+              },
+              "right": {
+                "kind": "Call",
+                "target": {
+                  "kind": "Member",
+                  "name": "freeMemory",
+                  "expr": {
+                    "kind": "Ident",
+                    "name": "rt"
+                  }
+                }
+              },
+              "op": "MINUS"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "kind": "Unknown",
+      "type": "BLOCK"
+    }
+  ]
+}

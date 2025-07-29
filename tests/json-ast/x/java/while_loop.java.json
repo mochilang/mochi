@@ -1,0 +1,57 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "i",
+      "type": "int",
+      "expr": {
+        "kind": "Literal",
+        "value": "0"
+      }
+    },
+    {
+      "kind": "While",
+      "cond": {
+        "kind": "Binary",
+        "left": {
+          "kind": "Ident",
+          "name": "i"
+        },
+        "right": {
+          "kind": "Literal",
+          "value": "3"
+        },
+        "op": "LESS_THAN"
+      },
+      "body": [
+        {
+          "kind": "Print",
+          "expr": {
+            "kind": "Ident",
+            "name": "i"
+          }
+        },
+        {
+          "kind": "Assign",
+          "name": "i",
+          "target": {
+            "kind": "Ident",
+            "name": "i"
+          },
+          "expr": {
+            "kind": "Binary",
+            "left": {
+              "kind": "Ident",
+              "name": "i"
+            },
+            "right": {
+              "kind": "Literal",
+              "value": "1"
+            },
+            "op": "PLUS"
+          }
+        }
+      ]
+    }
+  ]
+}

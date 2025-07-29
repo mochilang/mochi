@@ -1,0 +1,123 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "numbers",
+      "type": "int[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "Literal",
+            "value": "1"
+          },
+          {
+            "kind": "Literal",
+            "value": "2"
+          },
+          {
+            "kind": "Literal",
+            "value": "3"
+          },
+          {
+            "kind": "Literal",
+            "value": "4"
+          },
+          {
+            "kind": "Literal",
+            "value": "5"
+          },
+          {
+            "kind": "Literal",
+            "value": "6"
+          },
+          {
+            "kind": "Literal",
+            "value": "7"
+          },
+          {
+            "kind": "Literal",
+            "value": "8"
+          },
+          {
+            "kind": "Literal",
+            "value": "9"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "ForEach",
+      "name": "n",
+      "expr": {
+        "kind": "Ident",
+        "name": "numbers"
+      },
+      "body": [
+        {
+          "kind": "If",
+          "cond": {
+            "kind": "Binary",
+            "left": {
+              "kind": "Binary",
+              "left": {
+                "kind": "Ident",
+                "name": "n"
+              },
+              "right": {
+                "kind": "Literal",
+                "value": "2"
+              },
+              "op": "REMAINDER"
+            },
+            "right": {
+              "kind": "Literal",
+              "value": "0"
+            },
+            "op": "EQUAL_TO"
+          },
+          "then": [
+            {
+              "kind": "Continue"
+            }
+          ]
+        },
+        {
+          "kind": "If",
+          "cond": {
+            "kind": "Binary",
+            "left": {
+              "kind": "Ident",
+              "name": "n"
+            },
+            "right": {
+              "kind": "Literal",
+              "value": "7"
+            },
+            "op": "GREATER_THAN"
+          },
+          "then": [
+            {
+              "kind": "Break"
+            }
+          ]
+        },
+        {
+          "kind": "Print",
+          "expr": {
+            "kind": "Binary",
+            "left": {
+              "kind": "String",
+              "value": "odd number: "
+            },
+            "right": {
+              "kind": "Ident",
+              "name": "n"
+            },
+            "op": "PLUS"
+          }
+        }
+      ]
+    }
+  ]
+}

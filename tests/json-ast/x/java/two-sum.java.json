@@ -1,0 +1,208 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "result",
+      "type": "int[]",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Ident",
+          "name": "twoSum"
+        },
+        "args": [
+          {
+            "kind": "Array",
+            "elems": [
+              {
+                "kind": "Literal",
+                "value": "2"
+              },
+              {
+                "kind": "Literal",
+                "value": "7"
+              },
+              {
+                "kind": "Literal",
+                "value": "11"
+              },
+              {
+                "kind": "Literal",
+                "value": "15"
+              }
+            ]
+          },
+          {
+            "kind": "Literal",
+            "value": "9"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "FnDecl",
+      "name": "twoSum",
+      "type": "int[]",
+      "body": [
+        {
+          "kind": "VarDecl",
+          "name": "n",
+          "type": "int",
+          "expr": {
+            "kind": "Member",
+            "name": "length",
+            "expr": {
+              "kind": "Ident",
+              "name": "nums"
+            }
+          }
+        },
+        {
+          "kind": "ForRange",
+          "name": "i",
+          "start": {
+            "kind": "Literal",
+            "value": "0"
+          },
+          "end": {
+            "kind": "Ident",
+            "name": "n"
+          },
+          "body": [
+            {
+              "kind": "ForRange",
+              "name": "j",
+              "start": {
+                "kind": "Binary",
+                "left": {
+                  "kind": "Ident",
+                  "name": "i"
+                },
+                "right": {
+                  "kind": "Literal",
+                  "value": "1"
+                },
+                "op": "PLUS"
+              },
+              "end": {
+                "kind": "Ident",
+                "name": "n"
+              },
+              "body": [
+                {
+                  "kind": "If",
+                  "cond": {
+                    "kind": "Binary",
+                    "left": {
+                      "kind": "Binary",
+                      "left": {
+                        "kind": "Index",
+                        "expr": {
+                          "kind": "Ident",
+                          "name": "nums"
+                        },
+                        "index": {
+                          "kind": "Ident",
+                          "name": "i"
+                        }
+                      },
+                      "right": {
+                        "kind": "Index",
+                        "expr": {
+                          "kind": "Ident",
+                          "name": "nums"
+                        },
+                        "index": {
+                          "kind": "Ident",
+                          "name": "j"
+                        }
+                      },
+                      "op": "PLUS"
+                    },
+                    "right": {
+                      "kind": "Ident",
+                      "name": "target"
+                    },
+                    "op": "EQUAL_TO"
+                  },
+                  "then": [
+                    {
+                      "kind": "Return",
+                      "expr": {
+                        "kind": "Array",
+                        "elems": [
+                          {
+                            "kind": "Ident",
+                            "name": "i"
+                          },
+                          {
+                            "kind": "Ident",
+                            "name": "j"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "Return",
+          "expr": {
+            "kind": "Array",
+            "elems": [
+              {
+                "kind": "Literal",
+                "value": "-1"
+              },
+              {
+                "kind": "Literal",
+                "value": "-1"
+              }
+            ]
+          }
+        }
+      ],
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        },
+        {
+          "name": "target",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Index",
+        "expr": {
+          "kind": "Ident",
+          "name": "result"
+        },
+        "index": {
+          "kind": "Literal",
+          "value": "0"
+        }
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Index",
+        "expr": {
+          "kind": "Ident",
+          "name": "result"
+        },
+        "index": {
+          "kind": "Literal",
+          "value": "1"
+        }
+      }
+    }
+  ]
+}

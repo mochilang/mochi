@@ -1,0 +1,32 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "x",
+      "type": "int",
+      "expr": {
+        "kind": "Literal",
+        "value": "1"
+      }
+    },
+    {
+      "kind": "Assign",
+      "name": "x",
+      "target": {
+        "kind": "Ident",
+        "name": "x"
+      },
+      "expr": {
+        "kind": "Literal",
+        "value": "2"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Ident",
+        "name": "x"
+      }
+    }
+  ]
+}

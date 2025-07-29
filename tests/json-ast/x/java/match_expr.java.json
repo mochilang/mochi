@@ -1,0 +1,86 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "x",
+      "type": "int",
+      "expr": {
+        "kind": "Literal",
+        "value": "2"
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "label",
+      "type": "String",
+      "expr": {
+        "kind": "Cond",
+        "cond": {
+          "kind": "Binary",
+          "left": {
+            "kind": "Ident",
+            "name": "x"
+          },
+          "right": {
+            "kind": "Literal",
+            "value": "1"
+          },
+          "op": "EQUAL_TO"
+        },
+        "then": {
+          "kind": "String",
+          "value": "one"
+        },
+        "else": {
+          "kind": "Cond",
+          "cond": {
+            "kind": "Binary",
+            "left": {
+              "kind": "Ident",
+              "name": "x"
+            },
+            "right": {
+              "kind": "Literal",
+              "value": "2"
+            },
+            "op": "EQUAL_TO"
+          },
+          "then": {
+            "kind": "String",
+            "value": "two"
+          },
+          "else": {
+            "kind": "Cond",
+            "cond": {
+              "kind": "Binary",
+              "left": {
+                "kind": "Ident",
+                "name": "x"
+              },
+              "right": {
+                "kind": "Literal",
+                "value": "3"
+              },
+              "op": "EQUAL_TO"
+            },
+            "then": {
+              "kind": "String",
+              "value": "three"
+            },
+            "else": {
+              "kind": "String",
+              "value": "unknown"
+            }
+          }
+        }
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Ident",
+        "name": "label"
+      }
+    }
+  ]
+}

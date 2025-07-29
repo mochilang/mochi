@@ -1,0 +1,156 @@
+{
+  "body": [
+    {
+      "kind": "FnDecl",
+      "name": "q",
+      "type": "String",
+      "body": [
+        {
+          "kind": "If",
+          "cond": {
+            "kind": "UnknownExpr"
+          },
+          "then": [
+            {
+              "kind": "Return",
+              "expr": {
+                "kind": "Binary",
+                "left": {
+                  "kind": "Binary",
+                  "left": {
+                    "kind": "String",
+                    "value": "'"
+                  },
+                  "right": {
+                    "kind": "Call",
+                    "target": {
+                      "kind": "Member",
+                      "name": "toString",
+                      "expr": {
+                        "kind": "Ident",
+                        "name": "v"
+                      }
+                    }
+                  },
+                  "op": "PLUS"
+                },
+                "right": {
+                  "kind": "String",
+                  "value": "'"
+                },
+                "op": "PLUS"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "Return",
+          "expr": {
+            "kind": "Call",
+            "target": {
+              "kind": "Member",
+              "name": "valueOf",
+              "expr": {
+                "kind": "Ident",
+                "name": "String"
+              }
+            },
+            "args": [
+              {
+                "kind": "Ident",
+                "name": "v"
+              }
+            ]
+          }
+        }
+      ],
+      "params": [
+        {
+          "name": "v",
+          "type": "Object"
+        }
+      ]
+    },
+    {
+      "kind": "FnDecl",
+      "name": "boolStr",
+      "type": "String",
+      "body": [
+        {
+          "kind": "If",
+          "cond": {
+            "kind": "UnknownExpr"
+          },
+          "then": [
+            {
+              "kind": "Return",
+              "expr": {
+                "kind": "Cond",
+                "cond": {
+                  "kind": "Ident",
+                  "name": "b"
+                },
+                "then": {
+                  "kind": "String",
+                  "value": "True"
+                },
+                "else": {
+                  "kind": "String",
+                  "value": "False"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "kind": "Return",
+          "expr": {
+            "kind": "Call",
+            "target": {
+              "kind": "Member",
+              "name": "valueOf",
+              "expr": {
+                "kind": "Ident",
+                "name": "String"
+              }
+            },
+            "args": [
+              {
+                "kind": "Ident",
+                "name": "v"
+              }
+            ]
+          }
+        }
+      ],
+      "params": [
+        {
+          "name": "v",
+          "type": "Object"
+        }
+      ]
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Ident",
+          "name": "boolStr"
+        },
+        "args": [
+          {
+            "kind": "Call",
+            "target": {
+              "kind": "Member",
+              "name": "size",
+              "expr": {
+                "kind": "UnknownExpr"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

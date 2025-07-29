@@ -1,0 +1,49 @@
+{
+  "body": [
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Binary",
+        "left": {
+          "kind": "Literal",
+          "value": "6"
+        },
+        "right": {
+          "kind": "Literal",
+          "value": "7"
+        },
+        "op": "MULTIPLY"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Binary",
+        "left": {
+          "kind": "Literal",
+          "value": "7"
+        },
+        "right": {
+          "kind": "Literal",
+          "value": "2"
+        },
+        "op": "DIVIDE"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Binary",
+        "left": {
+          "kind": "Literal",
+          "value": "7"
+        },
+        "right": {
+          "kind": "Literal",
+          "value": "2"
+        },
+        "op": "REMAINDER"
+      }
+    }
+  ]
+}

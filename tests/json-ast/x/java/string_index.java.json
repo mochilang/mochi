@@ -1,0 +1,33 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "s",
+      "type": "String",
+      "expr": {
+        "kind": "String",
+        "value": "mochi"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "charAt",
+          "expr": {
+            "kind": "Ident",
+            "name": "s"
+          }
+        },
+        "args": [
+          {
+            "kind": "Literal",
+            "value": "1"
+          }
+        ]
+      }
+    }
+  ]
+}

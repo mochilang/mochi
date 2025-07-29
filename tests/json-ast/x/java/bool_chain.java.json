@@ -1,0 +1,205 @@
+{
+  "body": [
+    {
+      "kind": "FnDecl",
+      "name": "boom",
+      "type": "boolean",
+      "body": [
+        {
+          "kind": "Print",
+          "expr": {
+            "kind": "String",
+            "value": "boom"
+          }
+        },
+        {
+          "kind": "Return",
+          "expr": {
+            "kind": "Literal",
+            "value": "true"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Cond",
+        "cond": {
+          "kind": "Binary",
+          "left": {
+            "kind": "Binary",
+            "left": {
+              "kind": "Binary",
+              "left": {
+                "kind": "Literal",
+                "value": "1"
+              },
+              "right": {
+                "kind": "Literal",
+                "value": "2"
+              },
+              "op": "LESS_THAN"
+            },
+            "right": {
+              "kind": "Binary",
+              "left": {
+                "kind": "Literal",
+                "value": "2"
+              },
+              "right": {
+                "kind": "Literal",
+                "value": "3"
+              },
+              "op": "LESS_THAN"
+            },
+            "op": "CONDITIONAL_AND"
+          },
+          "right": {
+            "kind": "Binary",
+            "left": {
+              "kind": "Literal",
+              "value": "3"
+            },
+            "right": {
+              "kind": "Literal",
+              "value": "4"
+            },
+            "op": "LESS_THAN"
+          },
+          "op": "CONDITIONAL_AND"
+        },
+        "then": {
+          "kind": "Literal",
+          "value": "1"
+        },
+        "else": {
+          "kind": "Literal",
+          "value": "0"
+        }
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Cond",
+        "cond": {
+          "kind": "Binary",
+          "left": {
+            "kind": "Binary",
+            "left": {
+              "kind": "Binary",
+              "left": {
+                "kind": "Literal",
+                "value": "1"
+              },
+              "right": {
+                "kind": "Literal",
+                "value": "2"
+              },
+              "op": "LESS_THAN"
+            },
+            "right": {
+              "kind": "Binary",
+              "left": {
+                "kind": "Literal",
+                "value": "2"
+              },
+              "right": {
+                "kind": "Literal",
+                "value": "3"
+              },
+              "op": "GREATER_THAN"
+            },
+            "op": "CONDITIONAL_AND"
+          },
+          "right": {
+            "kind": "Call",
+            "target": {
+              "kind": "Ident",
+              "name": "boom"
+            }
+          },
+          "op": "CONDITIONAL_AND"
+        },
+        "then": {
+          "kind": "Literal",
+          "value": "1"
+        },
+        "else": {
+          "kind": "Literal",
+          "value": "0"
+        }
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Cond",
+        "cond": {
+          "kind": "Binary",
+          "left": {
+            "kind": "Binary",
+            "left": {
+              "kind": "Binary",
+              "left": {
+                "kind": "Binary",
+                "left": {
+                  "kind": "Literal",
+                  "value": "1"
+                },
+                "right": {
+                  "kind": "Literal",
+                  "value": "2"
+                },
+                "op": "LESS_THAN"
+              },
+              "right": {
+                "kind": "Binary",
+                "left": {
+                  "kind": "Literal",
+                  "value": "2"
+                },
+                "right": {
+                  "kind": "Literal",
+                  "value": "3"
+                },
+                "op": "LESS_THAN"
+              },
+              "op": "CONDITIONAL_AND"
+            },
+            "right": {
+              "kind": "Binary",
+              "left": {
+                "kind": "Literal",
+                "value": "3"
+              },
+              "right": {
+                "kind": "Literal",
+                "value": "4"
+              },
+              "op": "GREATER_THAN"
+            },
+            "op": "CONDITIONAL_AND"
+          },
+          "right": {
+            "kind": "Call",
+            "target": {
+              "kind": "Ident",
+              "name": "boom"
+            }
+          },
+          "op": "CONDITIONAL_AND"
+        },
+        "then": {
+          "kind": "Literal",
+          "value": "1"
+        },
+        "else": {
+          "kind": "Literal",
+          "value": "0"
+        }
+      }
+    }
+  ]
+}

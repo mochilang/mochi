@@ -1,0 +1,25 @@
+{
+  "body": [
+    {
+      "kind": "ForRange",
+      "name": "i",
+      "start": {
+        "kind": "Literal",
+        "value": "1"
+      },
+      "end": {
+        "kind": "Literal",
+        "value": "4"
+      },
+      "body": [
+        {
+          "kind": "Print",
+          "expr": {
+            "kind": "Ident",
+            "name": "i"
+          }
+        }
+      ]
+    }
+  ]
+}

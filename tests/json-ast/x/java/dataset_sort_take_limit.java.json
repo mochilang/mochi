@@ -1,0 +1,91 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "products",
+      "type": "Data1[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "expensive",
+      "type": "java.util.List\u003cData1\u003e",
+      "expr": {
+        "kind": "UnknownExpr"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "String",
+        "value": "--- Top products (excluding most expensive) ---"
+      }
+    },
+    {
+      "kind": "ForEach",
+      "name": "item",
+      "expr": {
+        "kind": "Ident",
+        "name": "expensive"
+      },
+      "body": [
+        {
+          "kind": "Print",
+          "expr": {
+            "kind": "Binary",
+            "left": {
+              "kind": "Binary",
+              "left": {
+                "kind": "Member",
+                "name": "name",
+                "expr": {
+                  "kind": "Ident",
+                  "name": "item"
+                }
+              },
+              "right": {
+                "kind": "String",
+                "value": " costs $ "
+              },
+              "op": "PLUS"
+            },
+            "right": {
+              "kind": "Member",
+              "name": "price",
+              "expr": {
+                "kind": "Ident",
+                "name": "item"
+              }
+            },
+            "op": "PLUS"
+          }
+        }
+      ]
+    }
+  ]
+}

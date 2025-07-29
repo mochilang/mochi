@@ -1,0 +1,46 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "people",
+      "type": "Data1[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "big",
+      "type": "java.util.List\u003cResult4\u003e",
+      "expr": {
+        "kind": "UnknownExpr"
+      }
+    },
+    {
+      "kind": "Expr"
+    }
+  ]
+}

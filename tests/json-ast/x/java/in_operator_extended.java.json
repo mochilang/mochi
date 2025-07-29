@@ -1,0 +1,171 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "xs",
+      "type": "int[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "Literal",
+            "value": "1"
+          },
+          {
+            "kind": "Literal",
+            "value": "2"
+          },
+          {
+            "kind": "Literal",
+            "value": "3"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "ys",
+      "type": "java.util.List\u003cInteger\u003e",
+      "expr": {
+        "kind": "UnknownExpr"
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "m",
+      "type": "Data1",
+      "expr": {
+        "kind": "UnknownExpr"
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "s",
+      "type": "String",
+      "expr": {
+        "kind": "String",
+        "value": "hello"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "contains",
+          "expr": {
+            "kind": "Ident",
+            "name": "ys"
+          }
+        },
+        "args": [
+          {
+            "kind": "Literal",
+            "value": "1"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "contains",
+          "expr": {
+            "kind": "Ident",
+            "name": "ys"
+          }
+        },
+        "args": [
+          {
+            "kind": "Literal",
+            "value": "2"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "containsKey",
+          "expr": {
+            "kind": "Ident",
+            "name": "m"
+          }
+        },
+        "args": [
+          {
+            "kind": "String",
+            "value": "a"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "containsKey",
+          "expr": {
+            "kind": "Ident",
+            "name": "m"
+          }
+        },
+        "args": [
+          {
+            "kind": "String",
+            "value": "b"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "contains",
+          "expr": {
+            "kind": "Ident",
+            "name": "s"
+          }
+        },
+        "args": [
+          {
+            "kind": "String",
+            "value": "ell"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "contains",
+          "expr": {
+            "kind": "Ident",
+            "name": "s"
+          }
+        },
+        "args": [
+          {
+            "kind": "String",
+            "value": "foo"
+          }
+        ]
+      }
+    }
+  ]
+}

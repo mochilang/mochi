@@ -1,0 +1,52 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "m",
+      "type": "Data1",
+      "expr": {
+        "kind": "UnknownExpr"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "containsKey",
+          "expr": {
+            "kind": "Ident",
+            "name": "m"
+          }
+        },
+        "args": [
+          {
+            "kind": "String",
+            "value": "a"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "containsKey",
+          "expr": {
+            "kind": "Ident",
+            "name": "m"
+          }
+        },
+        "args": [
+          {
+            "kind": "String",
+            "value": "c"
+          }
+        ]
+      }
+    }
+  ]
+}

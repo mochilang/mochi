@@ -1,0 +1,29 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "m",
+      "type": "Data1",
+      "expr": {
+        "kind": "UnknownExpr"
+      }
+    },
+    {
+      "kind": "ForEach",
+      "name": "k",
+      "expr": {
+        "kind": "Ident",
+        "name": "m"
+      },
+      "body": [
+        {
+          "kind": "Print",
+          "expr": {
+            "kind": "Ident",
+            "name": "k"
+          }
+        }
+      ]
+    }
+  ]
+}

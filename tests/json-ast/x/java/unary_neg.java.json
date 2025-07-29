@@ -1,0 +1,26 @@
+{
+  "body": [
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Literal",
+        "value": "-3"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Binary",
+        "left": {
+          "kind": "Literal",
+          "value": "5"
+        },
+        "right": {
+          "kind": "Literal",
+          "value": "-2"
+        },
+        "op": "PLUS"
+      }
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "body": [
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "substring",
+          "expr": {
+            "kind": "String",
+            "value": "mochi"
+          }
+        },
+        "args": [
+          {
+            "kind": "Literal",
+            "value": "1"
+          },
+          {
+            "kind": "Literal",
+            "value": "4"
+          }
+        ]
+      }
+    }
+  ]
+}

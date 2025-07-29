@@ -1,0 +1,260 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "people",
+      "type": "Data1[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "FnDecl",
+      "name": "asMap",
+      "type": "java.util.Map\u003cString, Object\u003e",
+      "body": [
+        {
+          "kind": "If",
+          "cond": {
+            "kind": "UnknownExpr"
+          },
+          "then": [
+            {
+              "kind": "VarDecl",
+              "name": "m",
+              "type": "java.util.LinkedHashMap\u003cString, Object\u003e",
+              "expr": {
+                "kind": "UnknownExpr"
+              }
+            },
+            {
+              "kind": "ForEach",
+              "name": "e",
+              "expr": {
+                "kind": "Call",
+                "target": {
+                  "kind": "Member",
+                  "name": "entrySet",
+                  "expr": {
+                    "kind": "Ident",
+                    "name": "mm"
+                  }
+                }
+              },
+              "body": [
+                {
+                  "kind": "Expr"
+                }
+              ]
+            },
+            {
+              "kind": "Return",
+              "expr": {
+                "kind": "Ident",
+                "name": "m"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "VarDecl",
+          "name": "m",
+          "type": "java.util.LinkedHashMap\u003cString, Object\u003e",
+          "expr": {
+            "kind": "UnknownExpr"
+          }
+        },
+        {
+          "kind": "ForEach",
+          "name": "f",
+          "expr": {
+            "kind": "Call",
+            "target": {
+              "kind": "Member",
+              "name": "getDeclaredFields",
+              "expr": {
+                "kind": "Call",
+                "target": {
+                  "kind": "Member",
+                  "name": "getClass",
+                  "expr": {
+                    "kind": "Ident",
+                    "name": "o"
+                  }
+                }
+              }
+            }
+          },
+          "body": [
+            {
+              "kind": "Unknown",
+              "type": "TRY"
+            }
+          ]
+        },
+        {
+          "kind": "Return",
+          "expr": {
+            "kind": "Ident",
+            "name": "m"
+          }
+        }
+      ],
+      "params": [
+        {
+          "name": "o",
+          "type": "Object"
+        }
+      ]
+    },
+    {
+      "kind": "FnDecl",
+      "name": "saveJsonl",
+      "type": "void",
+      "body": [
+        {
+          "kind": "ForEach",
+          "name": "obj",
+          "expr": {
+            "kind": "Ident",
+            "name": "list"
+          },
+          "body": [
+            {
+              "kind": "VarDecl",
+              "name": "m",
+              "type": "java.util.Map\u003cString, Object\u003e",
+              "expr": {
+                "kind": "Call",
+                "target": {
+                  "kind": "Ident",
+                  "name": "asMap"
+                },
+                "args": [
+                  {
+                    "kind": "Ident",
+                    "name": "obj"
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "VarDecl",
+              "name": "parts",
+              "type": "java.util.List\u003cString\u003e",
+              "expr": {
+                "kind": "UnknownExpr"
+              }
+            },
+            {
+              "kind": "ForEach",
+              "name": "e",
+              "expr": {
+                "kind": "Call",
+                "target": {
+                  "kind": "Member",
+                  "name": "entrySet",
+                  "expr": {
+                    "kind": "Ident",
+                    "name": "m"
+                  }
+                }
+              },
+              "body": [
+                {
+                  "kind": "VarDecl",
+                  "name": "v",
+                  "type": "Object",
+                  "expr": {
+                    "kind": "Call",
+                    "target": {
+                      "kind": "Member",
+                      "name": "getValue",
+                      "expr": {
+                        "kind": "Ident",
+                        "name": "e"
+                      }
+                    }
+                  }
+                },
+                {
+                  "kind": "If",
+                  "cond": {
+                    "kind": "UnknownExpr"
+                  },
+                  "then": [
+                    {
+                      "kind": "Expr"
+                    }
+                  ],
+                  "else": [
+                    {
+                      "kind": "Expr"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "Print",
+              "expr": {
+                "kind": "Binary",
+                "left": {
+                  "kind": "Binary",
+                  "left": {
+                    "kind": "String",
+                    "value": "{"
+                  },
+                  "right": {
+                    "kind": "Call",
+                    "target": {
+                      "kind": "Member",
+                      "name": "join",
+                      "expr": {
+                        "kind": "Ident",
+                        "name": "String"
+                      }
+                    },
+                    "args": [
+                      {
+                        "kind": "String",
+                        "value": ", "
+                      },
+                      {
+                        "kind": "Ident",
+                        "name": "parts"
+                      }
+                    ]
+                  },
+                  "op": "PLUS"
+                },
+                "right": {
+                  "kind": "String",
+                  "value": "}"
+                },
+                "op": "PLUS"
+              }
+            }
+          ]
+        }
+      ],
+      "params": [
+        {
+          "name": "list",
+          "type": "java.util.List\u003c?\u003e"
+        }
+      ]
+    },
+    {
+      "kind": "Expr"
+    }
+  ]
+}

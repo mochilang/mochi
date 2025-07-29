@@ -1,0 +1,132 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "a",
+      "type": "int[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "Literal",
+            "value": "1"
+          },
+          {
+            "kind": "Literal",
+            "value": "2"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "toString",
+          "expr": {
+            "kind": "Member",
+            "name": "Arrays",
+            "expr": {
+              "kind": "Member",
+              "name": "util",
+              "expr": {
+                "kind": "Ident",
+                "name": "java"
+              }
+            }
+          }
+        },
+        "args": [
+          {
+            "kind": "Call",
+            "target": {
+              "kind": "Member",
+              "name": "toArray",
+              "expr": {
+                "kind": "Call",
+                "target": {
+                  "kind": "Member",
+                  "name": "concat",
+                  "expr": {
+                    "kind": "Member",
+                    "name": "IntStream",
+                    "expr": {
+                      "kind": "Member",
+                      "name": "stream",
+                      "expr": {
+                        "kind": "Member",
+                        "name": "util",
+                        "expr": {
+                          "kind": "Ident",
+                          "name": "java"
+                        }
+                      }
+                    }
+                  }
+                },
+                "args": [
+                  {
+                    "kind": "Call",
+                    "target": {
+                      "kind": "Member",
+                      "name": "stream",
+                      "expr": {
+                        "kind": "Member",
+                        "name": "Arrays",
+                        "expr": {
+                          "kind": "Member",
+                          "name": "util",
+                          "expr": {
+                            "kind": "Ident",
+                            "name": "java"
+                          }
+                        }
+                      }
+                    },
+                    "args": [
+                      {
+                        "kind": "Ident",
+                        "name": "a"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "Call",
+                    "target": {
+                      "kind": "Member",
+                      "name": "of",
+                      "expr": {
+                        "kind": "Member",
+                        "name": "IntStream",
+                        "expr": {
+                          "kind": "Member",
+                          "name": "stream",
+                          "expr": {
+                            "kind": "Member",
+                            "name": "util",
+                            "expr": {
+                              "kind": "Ident",
+                              "name": "java"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "args": [
+                      {
+                        "kind": "Literal",
+                        "value": "3"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

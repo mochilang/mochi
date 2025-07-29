@@ -1,0 +1,79 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "add10",
+      "type": "java.util.function.IntUnaryOperator",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Ident",
+          "name": "makeAdder"
+        },
+        "args": [
+          {
+            "kind": "Literal",
+            "value": "10"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "FnDecl",
+      "name": "makeAdder",
+      "type": "java.util.function.IntUnaryOperator",
+      "body": [
+        {
+          "kind": "Return",
+          "expr": {
+            "kind": "Lambda",
+            "expr": {
+              "kind": "Binary",
+              "left": {
+                "kind": "Ident",
+                "name": "x"
+              },
+              "right": {
+                "kind": "Ident",
+                "name": "n"
+              },
+              "op": "PLUS"
+            },
+            "params": [
+              {
+                "name": "x",
+                "type": "int"
+              }
+            ]
+          }
+        }
+      ],
+      "params": [
+        {
+          "name": "n",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "applyAsInt",
+          "expr": {
+            "kind": "Ident",
+            "name": "add10"
+          }
+        },
+        "args": [
+          {
+            "kind": "Literal",
+            "value": "7"
+          }
+        ]
+      }
+    }
+  ]
+}

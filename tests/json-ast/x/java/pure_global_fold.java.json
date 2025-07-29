@@ -1,0 +1,57 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "k",
+      "type": "int",
+      "expr": {
+        "kind": "Literal",
+        "value": "2"
+      }
+    },
+    {
+      "kind": "FnDecl",
+      "name": "inc",
+      "type": "int",
+      "body": [
+        {
+          "kind": "Return",
+          "expr": {
+            "kind": "Binary",
+            "left": {
+              "kind": "Ident",
+              "name": "x"
+            },
+            "right": {
+              "kind": "Ident",
+              "name": "k"
+            },
+            "op": "PLUS"
+          }
+        }
+      ],
+      "params": [
+        {
+          "name": "x",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Ident",
+          "name": "inc"
+        },
+        "args": [
+          {
+            "kind": "Literal",
+            "value": "3"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "y",
+      "type": "int"
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Ident",
+        "name": "y"
+      }
+    }
+  ]
+}

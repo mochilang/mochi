@@ -1,0 +1,40 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "xs",
+      "type": "int[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "Literal",
+            "value": "10"
+          },
+          {
+            "kind": "Literal",
+            "value": "20"
+          },
+          {
+            "kind": "Literal",
+            "value": "30"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Index",
+        "expr": {
+          "kind": "Ident",
+          "name": "xs"
+        },
+        "index": {
+          "kind": "Literal",
+          "value": "1"
+        }
+      }
+    }
+  ]
+}

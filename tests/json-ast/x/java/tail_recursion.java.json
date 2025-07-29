@@ -1,0 +1,101 @@
+{
+  "body": [
+    {
+      "kind": "FnDecl",
+      "name": "sum_rec",
+      "type": "int",
+      "body": [
+        {
+          "kind": "If",
+          "cond": {
+            "kind": "Binary",
+            "left": {
+              "kind": "Ident",
+              "name": "n"
+            },
+            "right": {
+              "kind": "Literal",
+              "value": "0"
+            },
+            "op": "EQUAL_TO"
+          },
+          "then": [
+            {
+              "kind": "Return",
+              "expr": {
+                "kind": "Ident",
+                "name": "acc"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "Return",
+          "expr": {
+            "kind": "Call",
+            "target": {
+              "kind": "Ident",
+              "name": "sum_rec"
+            },
+            "args": [
+              {
+                "kind": "Binary",
+                "left": {
+                  "kind": "Ident",
+                  "name": "n"
+                },
+                "right": {
+                  "kind": "Literal",
+                  "value": "1"
+                },
+                "op": "MINUS"
+              },
+              {
+                "kind": "Binary",
+                "left": {
+                  "kind": "Ident",
+                  "name": "acc"
+                },
+                "right": {
+                  "kind": "Ident",
+                  "name": "n"
+                },
+                "op": "PLUS"
+              }
+            ]
+          }
+        }
+      ],
+      "params": [
+        {
+          "name": "n",
+          "type": "int"
+        },
+        {
+          "name": "acc",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Ident",
+          "name": "sum_rec"
+        },
+        "args": [
+          {
+            "kind": "Literal",
+            "value": "10"
+          },
+          {
+            "kind": "Literal",
+            "value": "0"
+          }
+        ]
+      }
+    }
+  ]
+}

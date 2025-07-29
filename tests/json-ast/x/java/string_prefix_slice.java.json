@@ -1,0 +1,141 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "prefix",
+      "type": "String",
+      "expr": {
+        "kind": "String",
+        "value": "fore"
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "s1",
+      "type": "String",
+      "expr": {
+        "kind": "String",
+        "value": "forest"
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "s2",
+      "type": "String",
+      "expr": {
+        "kind": "String",
+        "value": "desert"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Cond",
+        "cond": {
+          "kind": "Call",
+          "target": {
+            "kind": "Member",
+            "name": "equals",
+            "expr": {
+              "kind": "Call",
+              "target": {
+                "kind": "Member",
+                "name": "substring",
+                "expr": {
+                  "kind": "Ident",
+                  "name": "s1"
+                }
+              },
+              "args": [
+                {
+                  "kind": "Literal",
+                  "value": "0"
+                },
+                {
+                  "kind": "Call",
+                  "target": {
+                    "kind": "Member",
+                    "name": "length",
+                    "expr": {
+                      "kind": "Ident",
+                      "name": "prefix"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "args": [
+            {
+              "kind": "Ident",
+              "name": "prefix"
+            }
+          ]
+        },
+        "then": {
+          "kind": "Literal",
+          "value": "1"
+        },
+        "else": {
+          "kind": "Literal",
+          "value": "0"
+        }
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Cond",
+        "cond": {
+          "kind": "Call",
+          "target": {
+            "kind": "Member",
+            "name": "equals",
+            "expr": {
+              "kind": "Call",
+              "target": {
+                "kind": "Member",
+                "name": "substring",
+                "expr": {
+                  "kind": "Ident",
+                  "name": "s2"
+                }
+              },
+              "args": [
+                {
+                  "kind": "Literal",
+                  "value": "0"
+                },
+                {
+                  "kind": "Call",
+                  "target": {
+                    "kind": "Member",
+                    "name": "length",
+                    "expr": {
+                      "kind": "Ident",
+                      "name": "prefix"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "args": [
+            {
+              "kind": "Ident",
+              "name": "prefix"
+            }
+          ]
+        },
+        "then": {
+          "kind": "Literal",
+          "value": "1"
+        },
+        "else": {
+          "kind": "Literal",
+          "value": "0"
+        }
+      }
+    }
+  ]
+}

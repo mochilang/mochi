@@ -1,0 +1,155 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "nations",
+      "type": "Data1[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "suppliers",
+      "type": "Data2[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "partsupp",
+      "type": "Data3[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "filtered",
+      "type": "java.util.List\u003cResult5\u003e",
+      "expr": {
+        "kind": "UnknownExpr"
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "grouped",
+      "type": "java.util.List\u003cResult8\u003e",
+      "expr": {
+        "kind": "UnknownExpr"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Binary",
+        "left": {
+          "kind": "Binary",
+          "left": {
+            "kind": "String",
+            "value": "["
+          },
+          "right": {
+            "kind": "Call",
+            "target": {
+              "kind": "Member",
+              "name": "collect",
+              "expr": {
+                "kind": "Call",
+                "target": {
+                  "kind": "Member",
+                  "name": "map",
+                  "expr": {
+                    "kind": "Call",
+                    "target": {
+                      "kind": "Member",
+                      "name": "stream",
+                      "expr": {
+                        "kind": "Cast",
+                        "value": "java.util.List\u003c?\u003e",
+                        "expr": {
+                          "kind": "Ident",
+                          "name": "grouped"
+                        }
+                      }
+                    }
+                  }
+                },
+                "args": [
+                  {
+                    "kind": "UnknownExpr"
+                  }
+                ]
+              }
+            },
+            "args": [
+              {
+                "kind": "Call",
+                "target": {
+                  "kind": "Member",
+                  "name": "joining",
+                  "expr": {
+                    "kind": "Member",
+                    "name": "Collectors",
+                    "expr": {
+                      "kind": "Member",
+                      "name": "stream",
+                      "expr": {
+                        "kind": "Member",
+                        "name": "util",
+                        "expr": {
+                          "kind": "Ident",
+                          "name": "java"
+                        }
+                      }
+                    }
+                  }
+                },
+                "args": [
+                  {
+                    "kind": "String",
+                    "value": ", "
+                  }
+                ]
+              }
+            ]
+          },
+          "op": "PLUS"
+        },
+        "right": {
+          "kind": "String",
+          "value": "]"
+        },
+        "op": "PLUS"
+      }
+    }
+  ]
+}

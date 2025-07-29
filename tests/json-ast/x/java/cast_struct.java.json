@@ -1,0 +1,23 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "todo",
+      "type": "Todo",
+      "expr": {
+        "kind": "UnknownExpr"
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Member",
+        "name": "title",
+        "expr": {
+          "kind": "Ident",
+          "name": "todo"
+        }
+      }
+    }
+  ]
+}

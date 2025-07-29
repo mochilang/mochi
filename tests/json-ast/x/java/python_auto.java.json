@@ -1,0 +1,35 @@
+{
+  "body": [
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Call",
+        "target": {
+          "kind": "Member",
+          "name": "sqrt",
+          "expr": {
+            "kind": "Ident",
+            "name": "Math"
+          }
+        },
+        "args": [
+          {
+            "kind": "Literal",
+            "value": "16.0"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "Member",
+        "name": "PI",
+        "expr": {
+          "kind": "Ident",
+          "name": "Math"
+        }
+      }
+    }
+  ]
+}

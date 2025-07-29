@@ -1,0 +1,183 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "people",
+      "type": "Data1[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDecl",
+      "name": "adults",
+      "type": "java.util.List\u003cResult3\u003e",
+      "expr": {
+        "kind": "UnknownExpr"
+      }
+    },
+    {
+      "kind": "FnDecl",
+      "name": "q",
+      "type": "String",
+      "body": [
+        {
+          "kind": "If",
+          "cond": {
+            "kind": "UnknownExpr"
+          },
+          "then": [
+            {
+              "kind": "Return",
+              "expr": {
+                "kind": "Binary",
+                "left": {
+                  "kind": "Binary",
+                  "left": {
+                    "kind": "String",
+                    "value": "'"
+                  },
+                  "right": {
+                    "kind": "Call",
+                    "target": {
+                      "kind": "Member",
+                      "name": "toString",
+                      "expr": {
+                        "kind": "Ident",
+                        "name": "v"
+                      }
+                    }
+                  },
+                  "op": "PLUS"
+                },
+                "right": {
+                  "kind": "String",
+                  "value": "'"
+                },
+                "op": "PLUS"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "Return",
+          "expr": {
+            "kind": "Call",
+            "target": {
+              "kind": "Member",
+              "name": "valueOf",
+              "expr": {
+                "kind": "Ident",
+                "name": "String"
+              }
+            },
+            "args": [
+              {
+                "kind": "Ident",
+                "name": "v"
+              }
+            ]
+          }
+        }
+      ],
+      "params": [
+        {
+          "name": "v",
+          "type": "Object"
+        }
+      ]
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "String",
+        "value": "--- Adults ---"
+      }
+    },
+    {
+      "kind": "ForEach",
+      "name": "person",
+      "expr": {
+        "kind": "Ident",
+        "name": "adults"
+      },
+      "body": [
+        {
+          "kind": "Print",
+          "expr": {
+            "kind": "Binary",
+            "left": {
+              "kind": "Binary",
+              "left": {
+                "kind": "Binary",
+                "left": {
+                  "kind": "Binary",
+                  "left": {
+                    "kind": "Member",
+                    "name": "name",
+                    "expr": {
+                      "kind": "Ident",
+                      "name": "person"
+                    }
+                  },
+                  "right": {
+                    "kind": "String",
+                    "value": " is "
+                  },
+                  "op": "PLUS"
+                },
+                "right": {
+                  "kind": "Member",
+                  "name": "age",
+                  "expr": {
+                    "kind": "Ident",
+                    "name": "person"
+                  }
+                },
+                "op": "PLUS"
+              },
+              "right": {
+                "kind": "String",
+                "value": " "
+              },
+              "op": "PLUS"
+            },
+            "right": {
+              "kind": "Cond",
+              "cond": {
+                "kind": "Member",
+                "name": "is_senior",
+                "expr": {
+                  "kind": "Ident",
+                  "name": "person"
+                }
+              },
+              "then": {
+                "kind": "String",
+                "value": " (senior)"
+              },
+              "else": {
+                "kind": "String"
+              }
+            },
+            "op": "PLUS"
+          }
+        }
+      ]
+    }
+  ]
+}

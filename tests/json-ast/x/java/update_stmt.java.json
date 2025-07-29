@@ -1,0 +1,150 @@
+{
+  "body": [
+    {
+      "kind": "VarDecl",
+      "name": "people",
+      "type": "Person[]",
+      "expr": {
+        "kind": "Array",
+        "elems": [
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          },
+          {
+            "kind": "UnknownExpr"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "ForRange",
+      "name": "i",
+      "start": {
+        "kind": "Literal",
+        "value": "0"
+      },
+      "end": {
+        "kind": "Member",
+        "name": "length",
+        "expr": {
+          "kind": "Ident",
+          "name": "people"
+        }
+      },
+      "body": [
+        {
+          "kind": "VarDecl",
+          "name": "item",
+          "expr": {
+            "kind": "Index",
+            "expr": {
+              "kind": "Ident",
+              "name": "people"
+            },
+            "index": {
+              "kind": "Ident",
+              "name": "i"
+            }
+          }
+        },
+        {
+          "kind": "If",
+          "cond": {
+            "kind": "Binary",
+            "left": {
+              "kind": "Member",
+              "name": "age",
+              "expr": {
+                "kind": "Ident",
+                "name": "item"
+              }
+            },
+            "right": {
+              "kind": "Literal",
+              "value": "18"
+            },
+            "op": "GREATER_THAN_EQUAL"
+          },
+          "then": [
+            {
+              "kind": "Assign",
+              "name": "item.status",
+              "target": {
+                "kind": "Member",
+                "name": "status",
+                "expr": {
+                  "kind": "Ident",
+                  "name": "item"
+                }
+              },
+              "expr": {
+                "kind": "String",
+                "value": "adult"
+              }
+            },
+            {
+              "kind": "Assign",
+              "name": "item.age",
+              "target": {
+                "kind": "Member",
+                "name": "age",
+                "expr": {
+                  "kind": "Ident",
+                  "name": "item"
+                }
+              },
+              "expr": {
+                "kind": "Binary",
+                "left": {
+                  "kind": "Member",
+                  "name": "age",
+                  "expr": {
+                    "kind": "Ident",
+                    "name": "item"
+                  }
+                },
+                "right": {
+                  "kind": "Literal",
+                  "value": "1"
+                },
+                "op": "PLUS"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "Assign",
+          "name": "people[i]",
+          "target": {
+            "kind": "Index",
+            "expr": {
+              "kind": "Ident",
+              "name": "people"
+            },
+            "index": {
+              "kind": "Ident",
+              "name": "i"
+            }
+          },
+          "expr": {
+            "kind": "Ident",
+            "name": "item"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "Print",
+      "expr": {
+        "kind": "String",
+        "value": "ok"
+      }
+    }
+  ]
+}
