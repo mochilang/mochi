@@ -1,8 +1,8 @@
 (program
   (fun main
-    (let S (string catch))
+    (let _11828 (string catch))
     (if
-      (call contains (selector S) (string cat))
+      (call contains (selector _11828) (string cat))
       (block
         (call print (bool true))
       )
@@ -11,7 +11,7 @@
       )
     )
     (if
-      (call contains (selector S) (string dog))
+      (call contains (selector _11828) (string dog))
       (block
         (call print (bool true))
       )
@@ -20,4 +20,5 @@
       )
     )
   )
+  (call main)
 )

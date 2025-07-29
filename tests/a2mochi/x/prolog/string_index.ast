@@ -1,9 +1,10 @@
 (program
   (fun main
-    (let S (string mochi))
-    (let R1
-      (call substr (selector S) (int 1) (int 1))
+    (let _11246 (string mochi))
+    (let _11260
+      (call substr (selector _11246) (int 1) (int 1))
     )
-    (call print (selector R1))
+    (call print (selector _11260))
   )
+  (call main)
 )

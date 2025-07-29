@@ -1,10 +1,11 @@
 (program
   (fun main
-    (let A (int 10))
-    (let B (int 20))
-    (let R2
-      (binary + (selector A) (selector B))
+    (let _11204 (int 10))
+    (let _11210 (int 20))
+    (let _11222
+      (binary + (selector _11204) (selector _11210))
     )
-    (call print (selector R2))
+    (call print (selector _11222))
   )
+  (call main)
 )

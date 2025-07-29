@@ -1,14 +1,15 @@
 (program
   (fun main
-    (let A
+    (let _11200
       (list (int 1) (int 2))
     )
-    (let R1
+    (let _11218
       (call append
-        (selector A)
+        (selector _11200)
         (list (int 3))
       )
     )
-    (call print (selector R1))
+    (call print (selector _11218))
   )
+  (call main)
 )

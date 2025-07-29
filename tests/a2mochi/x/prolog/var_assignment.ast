@@ -1,5 +1,6 @@
 (program
   (fun main
+    (let _11036 (int 2))
     (call print (int 2))
   )
   (call main)

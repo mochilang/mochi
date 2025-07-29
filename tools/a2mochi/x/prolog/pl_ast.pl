@@ -20,7 +20,7 @@ read_terms(_, []).
 
 clause_ast((Head :- Body), Vs, Start, End, Dict) :-
     head_info(Head, Vs, Name, Params),
-    with_output_to(string(BStr0), write_term(Body, [fullstop(false),spacing(next_argument)])),
+    with_output_to(string(BStr0), write_term(Body, [quoted(true),fullstop(false),spacing(next_argument)])),
     normalize_space(atom(BStr), BStr0),
     stream_position_data(char_count, Start, StartChar),
     stream_position_data(char_count, End, EndChar),
@@ -38,8 +38,8 @@ head_info(Term, Vs, Name, Params) :-
 arg_name(Vs, Var, Name) :- var(Var), !,
     ( member(Name0=Var, Vs) -> Name=Name0 ; Name="_" ).
 arg_name(_, Term, Name) :-
-    ( atomic(Term) -> Name = Term
-    ; with_output_to(string(S), write_term(Term, [quoted(true),numbervars(true),fullstop(false),spacing(next_argument)])),
+    ( number(Term) -> Name = Term
+    ; with_output_to(string(S), write_term(Term, [quoted(true),fullstop(false),spacing(next_argument)])),
       normalize_space(atom(Name), S)
     ).
 
