@@ -77,7 +77,11 @@ for (let i = 0; i < tree.rootNode.namedChildren.length; i++) {
     for (const c of binding.namedChildren) {
       if (c.type === "parameter") {
         const pat = c.namedChildren.find((n) => n.type === "value_pattern");
-        if (pat) params.push(text(pat));
+        if (pat) {
+          params.push(text(pat));
+        } else {
+          params.push(text(c));
+        }
       }
     }
     const eqIdx = binding.children.findIndex((c) => c.type === "=");
