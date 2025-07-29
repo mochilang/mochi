@@ -20,7 +20,7 @@ import (
 
 var update = flag.Bool("update", false, "update golden files")
 
-func findRepoRoot(t *testing.T) string {
+func repoRoot(t *testing.T) string {
 	dir, err := os.Getwd()
 	if err != nil {
 		t.Fatal(err)
@@ -39,7 +39,7 @@ func findRepoRoot(t *testing.T) string {
 	return ""
 }
 
-func runMochi(src string) ([]byte, error) {
+func run(src string) ([]byte, error) {
 	prog, err := parser.ParseString(src)
 	if err != nil {
 		return nil, err
@@ -60,12 +60,12 @@ func runMochi(src string) ([]byte, error) {
 	return bytes.TrimSpace(out.Bytes()), nil
 }
 
-func TestConvert_Golden(t *testing.T) {
+func TestTransform_Golden(t *testing.T) {
 	if _, err := exec.LookPath("clang"); err != nil {
 		t.Skipf("clang not installed: %v", err)
 	}
 
-	root := findRepoRoot(t)
+	root := repoRoot(t)
 	pattern := filepath.Join(root, "tests/transpiler/x/c", "*.c")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
@@ -116,16 +116,16 @@ func TestConvert_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("read src: %v", err)
 			}
-			node, err := c.Parse(string(data))
+			prog, err := c.Parse(string(data))
 			if err != nil {
 				t.Fatalf("parse: %v", err)
 			}
-			astNode, err := c.ConvertFromNode(string(data), node)
+			astNode, err := c.Transform(prog)
 			if err != nil {
 				t.Fatalf("convert: %v", err)
 			}
 			t.Log(astNode.String())
-			code, err := c.ConvertSourceFromNode(string(data), node)
+			code, err := c.Print(astNode)
 			if err != nil {
 				t.Fatalf("convert source: %v", err)
 			}
@@ -133,7 +133,7 @@ func TestConvert_Golden(t *testing.T) {
 			if *update {
 				os.WriteFile(mochiPath, []byte(code), 0644)
 			}
-			gotOut, err := runMochi(code)
+			gotOut, err := run(code)
 			if err != nil {
 				t.Fatalf("run: %v", err)
 			}
@@ -144,7 +144,7 @@ func TestConvert_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("missing vm source: %v", err)
 			}
-			wantOut, err := runMochi(string(vmSrc))
+			wantOut, err := run(string(vmSrc))
 			if err != nil {
 				t.Fatalf("run vm: %v", err)
 			}
