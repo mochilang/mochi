@@ -40,7 +40,7 @@ type If struct {
 }
 
 var (
-	reVar    = regexp.MustCompile(`^int\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^;]+);`)
+	reVar    = regexp.MustCompile(`^(?:int|long\s+long)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^;]+);`)
 	reAssign = regexp.MustCompile(`^([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^;]+);`)
 	reFor    = regexp.MustCompile(`^for\s*\(int\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^;]+);\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*<\s*([^;]+);.*\)\s*{`)
 	reWhile  = regexp.MustCompile(`^while\s*\(([^\)]+)\)\s*{`)
