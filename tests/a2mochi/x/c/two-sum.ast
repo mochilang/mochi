@@ -1,0 +1,34 @@
+(program
+  (let nums
+    (list (int 2) (int 7) (int 11) (int 15))
+  )
+  (let n (int 4))
+  (let result0 (int -1))
+  (let result1 (int -1))
+  (for i
+    (range (int 0) (selector n))
+    (block
+      (for j
+        (range
+          (binary + (selector i) (int 1))
+          (selector n)
+        )
+        (block
+          (if
+            (binary ==
+              (binary + (selector "nums[i]") (selector "nums[j]"))
+              (int 9)
+            )
+            (block
+              (assign result0 (selector i))
+              (assign result1 (selector j))
+            )
+            (block)
+          )
+        )
+      )
+    )
+  )
+  (call print (selector result0))
+  (call print (selector result1))
+)

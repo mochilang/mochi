@@ -2,8 +2,8 @@
 
 This directory holds golden outputs for converting C source files located in `tests/transpiler/x/c` into Mochi AST form. Each `.c` source has a matching `.mochi` and `.ast` file in this directory.
 
-Completed programs: 29/81
-Date: 2025-07-29 20:20:41 GMT
+Completed programs: 29/82
+Date: 2025-07-29 20:35:54 GMT
 
 ## Checklist
 
@@ -35,7 +35,7 @@ Date: 2025-07-29 20:20:41 GMT
 - [ ] group_by_conditional_sum
 - [ ] group_by_having
 - [ ] group_by_join
-- [x] group_by_left_join
+- [ ] group_by_left_join
 - [ ] group_by_multi_join
 - [ ] group_by_multi_join_sort
 - [ ] group_by_sort
@@ -45,7 +45,7 @@ Date: 2025-07-29 20:20:41 GMT
 - [ ] in_operator
 - [ ] in_operator_extended
 - [ ] inner_join
-- [x] join_multi
+- [ ] join_multi
 - [ ] json_builtin
 - [ ] left_join
 - [ ] left_join_multi
@@ -69,7 +69,7 @@ Date: 2025-07-29 20:20:41 GMT
 - [ ] pure_global_fold
 - [ ] record_assign
 - [ ] short_circuit
-- [ ] slice
+- [x] slice
 - [x] str_builtin
 - [ ] string_compare
 - [x] string_concat
@@ -81,6 +81,7 @@ Date: 2025-07-29 20:20:41 GMT
 - [x] sum_builtin
 - [ ] tail_recursion
 - [x] test_block
+- [x] two-sum
 - [ ] typed_let
 - [ ] typed_var
 - [x] unary_neg
