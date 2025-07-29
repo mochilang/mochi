@@ -101,6 +101,14 @@ func translateExpr(expr string) string {
 		rep := translateExpr(strings.TrimSpace(m[1])) + "[" + translateExpr(strings.TrimSpace(m[2])) + "]"
 		expr = strings.Replace(expr, m[0], rep, 1)
 	}
+	if m := regexp.MustCompile(`^fn\s+([a-zA-Z_][a-zA-Z0-9_,\s]*)\s*->\s*(.+)\s*end$`).FindStringSubmatch(expr); m != nil {
+		params := strings.Split(strings.TrimSpace(m[1]), ",")
+		for i, p := range params {
+			params[i] = strings.TrimSpace(p) + ": any"
+		}
+		body := translateExpr(strings.TrimSpace(m[2]))
+		return "fun(" + strings.Join(params, ", ") + ") { return " + body + " }"
+	}
 	if fb := translateForBlock(expr); fb != "" {
 		return fb
 	}
