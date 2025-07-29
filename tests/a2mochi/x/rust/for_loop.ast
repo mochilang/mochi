@@ -1,10 +1,3 @@
-(program
-  (fun main
-    (for i
-      (range (int 1) (int 4))
-      (block
-        (call print (selector i))
-      )
-    )
-  )
-)
+for i in 1..4 {
+  print(i)
+}

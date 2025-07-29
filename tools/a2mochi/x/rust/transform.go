@@ -132,6 +132,8 @@ func convertParams(src string, n *node) []string {
 func convertLetStmt(src string, n *node, level int) string {
 	text := strings.TrimSpace(src[n.start:n.end])
 	text = strings.TrimSuffix(text, ";")
+	isMut := strings.Contains(text, "mut ")
+	defaultInit := strings.Contains(text, "Default::default()")
 	text = strings.Replace(text, "let ", "var ", 1)
 	text = strings.Replace(text, "mut ", "", 1)
 	// convert type annotation if present
@@ -162,6 +164,15 @@ func convertLetStmt(src string, n *node, level int) string {
 		text = before + " = " + expr
 	}
 	text = sanitizeExpr(text)
+
+	if defaultInit && strings.HasSuffix(text, "= 0") {
+		nameType := strings.TrimSpace(strings.TrimSuffix(text, "= 0"))
+		if isMut {
+			text = nameType
+		} else {
+			text = strings.Replace(nameType, "var ", "let ", 1)
+		}
+	}
 	return indent(level) + text
 }
 
@@ -764,6 +775,31 @@ func sanitizeExpr(code string) string {
 	}
 
 	code = strings.ReplaceAll(code, "Default::default()", "0")
+
+	// remove redundant outer parentheses
+	for {
+		if strings.HasPrefix(code, "(") && strings.HasSuffix(code, ")") {
+			inner := code[1 : len(code)-1]
+			depth := 0
+			balanced := true
+			for _, r := range inner {
+				if r == '(' {
+					depth++
+				} else if r == ')' {
+					depth--
+					if depth < 0 {
+						balanced = false
+						break
+					}
+				}
+			}
+			if balanced && depth == 0 {
+				code = strings.TrimSpace(inner)
+				continue
+			}
+		}
+		break
+	}
 
 	return code
 }
