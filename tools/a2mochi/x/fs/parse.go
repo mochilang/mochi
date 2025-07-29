@@ -182,6 +182,8 @@ func ParseFile(path string) (*Program, error) {
 
 var (
 	reLet      = regexp.MustCompile(`^let\s+(mutable\s+)?([a-zA-Z_][\w]*)?(?::\s*([^=]+))?\s*=\s*(.+)$`)
+	reFunLine  = regexp.MustCompile(`^let\s+(?:rec\s+)?([a-zA-Z_][\w]*)\s+([^=]+)\s*=\s*(.+)$`)
+	reFunStart = regexp.MustCompile(`^let\s+(?:rec\s+)?([a-zA-Z_][\w]*)\s*([^=]*)=\s*$`)
 	rePrint    = regexp.MustCompile(`^printfn\s+"[^"]*"\s*(.*)$`)
 	reAssign   = regexp.MustCompile(`^([a-zA-Z_][\w]*(?:\.[^\[]*\[[^\]]+\])*)\s*<-\s*(.+)$`)
 	reForRange = regexp.MustCompile(`^for\s+([a-zA-Z_][\w]*)\s+in\s+(.+)\s+\.\.\s+(.+)\s+do$`)
@@ -198,6 +200,55 @@ func parseFallback(src string) (*Program, error) {
 	for i := 0; i < len(lines); i++ {
 		line := strings.TrimSpace(lines[i])
 		if line == "" || strings.HasPrefix(line, "//") {
+			continue
+		}
+		if m := reFunLine.FindStringSubmatch(line); m != nil && !strings.Contains(line, "mutable") {
+			params := strings.Fields(strings.TrimSpace(m[2]))
+			var fields []Field
+			for _, pstr := range params {
+				pstr = strings.Trim(pstr, "()")
+				if pstr == "" {
+					continue
+				}
+				fields = append(fields, Field{Name: pstr})
+			}
+			bodyLine := strings.TrimSpace(m[3])
+			bodyStmt := parseLine(bodyLine)
+			body := []Stmt{}
+			if bodyStmt != nil {
+				body = append(body, bodyStmt)
+			}
+			p.Stmts = append(p.Stmts, Fun{Name: m[1], Params: fields, Body: body})
+			continue
+		}
+		if m := reFunStart.FindStringSubmatch(line); m != nil && !strings.Contains(line, "mutable") {
+			params := strings.Fields(strings.TrimSpace(m[2]))
+			var fields []Field
+			for _, pstr := range params {
+				pstr = strings.Trim(pstr, "()")
+				if pstr == "" {
+					continue
+				}
+				fields = append(fields, Field{Name: pstr})
+			}
+			var body []Stmt
+			for i+1 < len(lines) {
+				nextRaw := lines[i+1]
+				if strings.TrimSpace(nextRaw) == "" {
+					i++
+					continue
+				}
+				if len(nextRaw) > 0 && (nextRaw[0] == ' ' || nextRaw[0] == '\t') {
+					stmt := parseLine(strings.TrimSpace(nextRaw))
+					if stmt != nil {
+						body = append(body, stmt)
+					}
+					i++
+					continue
+				}
+				break
+			}
+			p.Stmts = append(p.Stmts, Fun{Name: m[1], Params: fields, Body: body})
 			continue
 		}
 		if m := reLet.FindStringSubmatch(line); m != nil {
@@ -370,5 +421,5 @@ func parseLine(line string) Stmt {
 	if m := reLet.FindStringSubmatch(line); m != nil {
 		return Var{Name: m[2], Mutable: m[1] != "", Type: strings.TrimSpace(m[3]), Expr: strings.TrimSpace(m[4])}
 	}
-	return nil
+	return Return{Expr: line}
 }
