@@ -1,0 +1,557 @@
+{
+  "module": {
+    "_type": "Module",
+    "body": [
+      {
+        "_type": "Import",
+        "lineno": 3,
+        "end_lineno": 3,
+        "end_col_offset": 11
+      },
+      {
+        "_type": "Assign",
+        "targets": [
+          {
+            "_type": "Name",
+            "id": "r",
+            "lineno": 5,
+            "end_lineno": 5,
+            "end_col_offset": 1
+          }
+        ],
+        "value": {
+          "_type": "Constant",
+          "value": 3.0,
+          "kind": null,
+          "lineno": 5,
+          "end_lineno": 5,
+          "col_offset": 4,
+          "end_col_offset": 7
+        },
+        "lineno": 5,
+        "end_lineno": 5,
+        "end_col_offset": 7
+      },
+      {
+        "_type": "Assign",
+        "targets": [
+          {
+            "_type": "Name",
+            "id": "area",
+            "lineno": 6,
+            "end_lineno": 6,
+            "end_col_offset": 4
+          }
+        ],
+        "value": {
+          "_type": "BinOp",
+          "left": {
+            "_type": "Attribute",
+            "value": {
+              "_type": "Name",
+              "id": "math",
+              "ctx": {
+                "_type": "Load"
+              },
+              "lineno": 6,
+              "end_lineno": 6,
+              "col_offset": 7,
+              "end_col_offset": 11
+            },
+            "attr": "pi",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 6,
+            "end_lineno": 6,
+            "col_offset": 7,
+            "end_col_offset": 14
+          },
+          "op": {
+            "_type": "Mult"
+          },
+          "right": {
+            "_type": "Call",
+            "func": {
+              "_type": "Attribute",
+              "value": {
+                "_type": "Name",
+                "id": "math",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 6,
+                "end_lineno": 6,
+                "col_offset": 17,
+                "end_col_offset": 21
+              },
+              "attr": "pow",
+              "ctx": {
+                "_type": "Load"
+              },
+              "lineno": 6,
+              "end_lineno": 6,
+              "col_offset": 17,
+              "end_col_offset": 25
+            },
+            "args": [
+              {
+                "_type": "Name",
+                "id": "r",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 6,
+                "end_lineno": 6,
+                "col_offset": 26,
+                "end_col_offset": 27
+              },
+              {
+                "_type": "Constant",
+                "value": 2.0,
+                "kind": null,
+                "lineno": 6,
+                "end_lineno": 6,
+                "col_offset": 29,
+                "end_col_offset": 32
+              }
+            ],
+            "keywords": [],
+            "lineno": 6,
+            "end_lineno": 6,
+            "col_offset": 17,
+            "end_col_offset": 33
+          },
+          "lineno": 6,
+          "end_lineno": 6,
+          "col_offset": 7,
+          "end_col_offset": 33
+        },
+        "lineno": 6,
+        "end_lineno": 6,
+        "end_col_offset": 33
+      },
+      {
+        "_type": "Assign",
+        "targets": [
+          {
+            "_type": "Name",
+            "id": "root",
+            "lineno": 7,
+            "end_lineno": 7,
+            "end_col_offset": 4
+          }
+        ],
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Attribute",
+            "value": {
+              "_type": "Name",
+              "id": "math",
+              "ctx": {
+                "_type": "Load"
+              },
+              "lineno": 7,
+              "end_lineno": 7,
+              "col_offset": 7,
+              "end_col_offset": 11
+            },
+            "attr": "sqrt",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 7,
+            "end_lineno": 7,
+            "col_offset": 7,
+            "end_col_offset": 16
+          },
+          "args": [
+            {
+              "_type": "Constant",
+              "value": 49.0,
+              "kind": null,
+              "lineno": 7,
+              "end_lineno": 7,
+              "col_offset": 17,
+              "end_col_offset": 21
+            }
+          ],
+          "keywords": [],
+          "lineno": 7,
+          "end_lineno": 7,
+          "col_offset": 7,
+          "end_col_offset": 22
+        },
+        "lineno": 7,
+        "end_lineno": 7,
+        "end_col_offset": 22
+      },
+      {
+        "_type": "Assign",
+        "targets": [
+          {
+            "_type": "Name",
+            "id": "sin45",
+            "lineno": 8,
+            "end_lineno": 8,
+            "end_col_offset": 5
+          }
+        ],
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Attribute",
+            "value": {
+              "_type": "Name",
+              "id": "math",
+              "ctx": {
+                "_type": "Load"
+              },
+              "lineno": 8,
+              "end_lineno": 8,
+              "col_offset": 8,
+              "end_col_offset": 12
+            },
+            "attr": "sin",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 8,
+            "end_lineno": 8,
+            "col_offset": 8,
+            "end_col_offset": 16
+          },
+          "args": [
+            {
+              "_type": "BinOp",
+              "left": {
+                "_type": "Attribute",
+                "value": {
+                  "_type": "Name",
+                  "id": "math",
+                  "ctx": {
+                    "_type": "Load"
+                  },
+                  "lineno": 8,
+                  "end_lineno": 8,
+                  "col_offset": 17,
+                  "end_col_offset": 21
+                },
+                "attr": "pi",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 8,
+                "end_lineno": 8,
+                "col_offset": 17,
+                "end_col_offset": 24
+              },
+              "op": {
+                "_type": "Div"
+              },
+              "right": {
+                "_type": "Constant",
+                "value": 4.0,
+                "kind": null,
+                "lineno": 8,
+                "end_lineno": 8,
+                "col_offset": 27,
+                "end_col_offset": 30
+              },
+              "lineno": 8,
+              "end_lineno": 8,
+              "col_offset": 17,
+              "end_col_offset": 30
+            }
+          ],
+          "keywords": [],
+          "lineno": 8,
+          "end_lineno": 8,
+          "col_offset": 8,
+          "end_col_offset": 31
+        },
+        "lineno": 8,
+        "end_lineno": 8,
+        "end_col_offset": 31
+      },
+      {
+        "_type": "Assign",
+        "targets": [
+          {
+            "_type": "Name",
+            "id": "log_e",
+            "lineno": 9,
+            "end_lineno": 9,
+            "end_col_offset": 5
+          }
+        ],
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Attribute",
+            "value": {
+              "_type": "Name",
+              "id": "math",
+              "ctx": {
+                "_type": "Load"
+              },
+              "lineno": 9,
+              "end_lineno": 9,
+              "col_offset": 8,
+              "end_col_offset": 12
+            },
+            "attr": "log",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 9,
+            "end_lineno": 9,
+            "col_offset": 8,
+            "end_col_offset": 16
+          },
+          "args": [
+            {
+              "_type": "Attribute",
+              "value": {
+                "_type": "Name",
+                "id": "math",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 9,
+                "end_lineno": 9,
+                "col_offset": 17,
+                "end_col_offset": 21
+              },
+              "attr": "e",
+              "ctx": {
+                "_type": "Load"
+              },
+              "lineno": 9,
+              "end_lineno": 9,
+              "col_offset": 17,
+              "end_col_offset": 23
+            }
+          ],
+          "keywords": [],
+          "lineno": 9,
+          "end_lineno": 9,
+          "col_offset": 8,
+          "end_col_offset": 24
+        },
+        "lineno": 9,
+        "end_lineno": 9,
+        "end_col_offset": 24
+      },
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 10,
+            "end_lineno": 10,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "Constant",
+              "value": "Circle area with r =",
+              "kind": null,
+              "lineno": 10,
+              "end_lineno": 10,
+              "col_offset": 6,
+              "end_col_offset": 28
+            },
+            {
+              "_type": "Name",
+              "id": "r",
+              "ctx": {
+                "_type": "Load"
+              },
+              "lineno": 10,
+              "end_lineno": 10,
+              "col_offset": 30,
+              "end_col_offset": 31
+            },
+            {
+              "_type": "Constant",
+              "value": "=\u003e",
+              "kind": null,
+              "lineno": 10,
+              "end_lineno": 10,
+              "col_offset": 33,
+              "end_col_offset": 37
+            },
+            {
+              "_type": "Name",
+              "id": "area",
+              "ctx": {
+                "_type": "Load"
+              },
+              "lineno": 10,
+              "end_lineno": 10,
+              "col_offset": 39,
+              "end_col_offset": 43
+            }
+          ],
+          "keywords": [],
+          "lineno": 10,
+          "end_lineno": 10,
+          "col_offset": 0,
+          "end_col_offset": 44
+        },
+        "lineno": 10,
+        "end_lineno": 10,
+        "end_col_offset": 44
+      },
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 11,
+            "end_lineno": 11,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "Constant",
+              "value": "Square root of 49:",
+              "kind": null,
+              "lineno": 11,
+              "end_lineno": 11,
+              "col_offset": 6,
+              "end_col_offset": 26
+            },
+            {
+              "_type": "Name",
+              "id": "root",
+              "ctx": {
+                "_type": "Load"
+              },
+              "lineno": 11,
+              "end_lineno": 11,
+              "col_offset": 28,
+              "end_col_offset": 32
+            }
+          ],
+          "keywords": [],
+          "lineno": 11,
+          "end_lineno": 11,
+          "col_offset": 0,
+          "end_col_offset": 33
+        },
+        "lineno": 11,
+        "end_lineno": 11,
+        "end_col_offset": 33
+      },
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 12,
+            "end_lineno": 12,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "Constant",
+              "value": "sin(\u03c0/4):",
+              "kind": null,
+              "lineno": 12,
+              "end_lineno": 12,
+              "col_offset": 6,
+              "end_col_offset": 18
+            },
+            {
+              "_type": "Name",
+              "id": "sin45",
+              "ctx": {
+                "_type": "Load"
+              },
+              "lineno": 12,
+              "end_lineno": 12,
+              "col_offset": 20,
+              "end_col_offset": 25
+            }
+          ],
+          "keywords": [],
+          "lineno": 12,
+          "end_lineno": 12,
+          "col_offset": 0,
+          "end_col_offset": 26
+        },
+        "lineno": 12,
+        "end_lineno": 12,
+        "end_col_offset": 26
+      },
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 13,
+            "end_lineno": 13,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "Constant",
+              "value": "log(e):",
+              "kind": null,
+              "lineno": 13,
+              "end_lineno": 13,
+              "col_offset": 6,
+              "end_col_offset": 15
+            },
+            {
+              "_type": "Name",
+              "id": "log_e",
+              "ctx": {
+                "_type": "Load"
+              },
+              "lineno": 13,
+              "end_lineno": 13,
+              "col_offset": 17,
+              "end_col_offset": 22
+            }
+          ],
+          "keywords": [],
+          "lineno": 13,
+          "end_lineno": 13,
+          "col_offset": 0,
+          "end_col_offset": 23
+        },
+        "lineno": 13,
+        "end_lineno": 13,
+        "end_col_offset": 23
+      }
+    ]
+  }
+}

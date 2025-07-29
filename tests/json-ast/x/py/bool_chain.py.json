@@ -1,0 +1,567 @@
+{
+  "module": {
+    "_type": "Module",
+    "body": [
+      {
+        "_type": "FunctionDef",
+        "name": "boom",
+        "body": [
+          {
+            "_type": "Expr",
+            "value": {
+              "_type": "Call",
+              "func": {
+                "_type": "Name",
+                "id": "print",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 4,
+                "end_lineno": 4,
+                "col_offset": 4,
+                "end_col_offset": 9
+              },
+              "args": [
+                {
+                  "_type": "Constant",
+                  "value": "boom",
+                  "kind": null,
+                  "lineno": 4,
+                  "end_lineno": 4,
+                  "col_offset": 10,
+                  "end_col_offset": 16
+                }
+              ],
+              "keywords": [],
+              "lineno": 4,
+              "end_lineno": 4,
+              "col_offset": 4,
+              "end_col_offset": 17
+            },
+            "lineno": 4,
+            "end_lineno": 4,
+            "col_offset": 4,
+            "end_col_offset": 17
+          },
+          {
+            "_type": "Return",
+            "value": {
+              "_type": "Constant",
+              "value": true,
+              "kind": null,
+              "lineno": 5,
+              "end_lineno": 5,
+              "col_offset": 11,
+              "end_col_offset": 15
+            },
+            "lineno": 5,
+            "end_lineno": 5,
+            "col_offset": 4,
+            "end_col_offset": 15
+          }
+        ],
+        "args": {
+          "_type": "arguments",
+          "posonlyargs": [],
+          "args": [],
+          "vararg": null,
+          "kwonlyargs": [],
+          "kw_defaults": [],
+          "kwarg": null,
+          "defaults": []
+        },
+        "lineno": 3,
+        "end_lineno": 5,
+        "end_col_offset": 15
+      },
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 6,
+            "end_lineno": 6,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "IfExp",
+              "test": {
+                "_type": "BoolOp",
+                "op": {
+                  "_type": "And"
+                },
+                "values": [
+                  {
+                    "_type": "Compare",
+                    "left": {
+                      "_type": "Constant",
+                      "value": 1,
+                      "kind": null,
+                      "lineno": 6,
+                      "end_lineno": 6,
+                      "col_offset": 12,
+                      "end_col_offset": 13
+                    },
+                    "ops": [
+                      {
+                        "_type": "Lt"
+                      }
+                    ],
+                    "comparators": [
+                      {
+                        "_type": "Constant",
+                        "value": 2,
+                        "kind": null,
+                        "lineno": 6,
+                        "end_lineno": 6,
+                        "col_offset": 16,
+                        "end_col_offset": 17
+                      }
+                    ],
+                    "lineno": 6,
+                    "end_lineno": 6,
+                    "col_offset": 12,
+                    "end_col_offset": 17
+                  },
+                  {
+                    "_type": "Compare",
+                    "left": {
+                      "_type": "Constant",
+                      "value": 2,
+                      "kind": null,
+                      "lineno": 6,
+                      "end_lineno": 6,
+                      "col_offset": 22,
+                      "end_col_offset": 23
+                    },
+                    "ops": [
+                      {
+                        "_type": "Lt"
+                      }
+                    ],
+                    "comparators": [
+                      {
+                        "_type": "Constant",
+                        "value": 3,
+                        "kind": null,
+                        "lineno": 6,
+                        "end_lineno": 6,
+                        "col_offset": 26,
+                        "end_col_offset": 27
+                      }
+                    ],
+                    "lineno": 6,
+                    "end_lineno": 6,
+                    "col_offset": 22,
+                    "end_col_offset": 27
+                  },
+                  {
+                    "_type": "Compare",
+                    "left": {
+                      "_type": "Constant",
+                      "value": 3,
+                      "kind": null,
+                      "lineno": 6,
+                      "end_lineno": 6,
+                      "col_offset": 32,
+                      "end_col_offset": 33
+                    },
+                    "ops": [
+                      {
+                        "_type": "Lt"
+                      }
+                    ],
+                    "comparators": [
+                      {
+                        "_type": "Constant",
+                        "value": 4,
+                        "kind": null,
+                        "lineno": 6,
+                        "end_lineno": 6,
+                        "col_offset": 36,
+                        "end_col_offset": 37
+                      }
+                    ],
+                    "lineno": 6,
+                    "end_lineno": 6,
+                    "col_offset": 32,
+                    "end_col_offset": 37
+                  }
+                ],
+                "lineno": 6,
+                "end_lineno": 6,
+                "col_offset": 12,
+                "end_col_offset": 37
+              },
+              "body": {
+                "_type": "Constant",
+                "value": 1,
+                "kind": null,
+                "lineno": 6,
+                "end_lineno": 6,
+                "col_offset": 7,
+                "end_col_offset": 8
+              },
+              "orelse": {
+                "_type": "Constant",
+                "value": 0,
+                "kind": null,
+                "lineno": 6,
+                "end_lineno": 6,
+                "col_offset": 43,
+                "end_col_offset": 44
+              },
+              "lineno": 6,
+              "end_lineno": 6,
+              "col_offset": 7,
+              "end_col_offset": 44
+            }
+          ],
+          "keywords": [],
+          "lineno": 6,
+          "end_lineno": 6,
+          "col_offset": 0,
+          "end_col_offset": 46
+        },
+        "lineno": 6,
+        "end_lineno": 6,
+        "end_col_offset": 46
+      },
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 7,
+            "end_lineno": 7,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "IfExp",
+              "test": {
+                "_type": "BoolOp",
+                "op": {
+                  "_type": "And"
+                },
+                "values": [
+                  {
+                    "_type": "Compare",
+                    "left": {
+                      "_type": "Constant",
+                      "value": 1,
+                      "kind": null,
+                      "lineno": 7,
+                      "end_lineno": 7,
+                      "col_offset": 12,
+                      "end_col_offset": 13
+                    },
+                    "ops": [
+                      {
+                        "_type": "Lt"
+                      }
+                    ],
+                    "comparators": [
+                      {
+                        "_type": "Constant",
+                        "value": 2,
+                        "kind": null,
+                        "lineno": 7,
+                        "end_lineno": 7,
+                        "col_offset": 16,
+                        "end_col_offset": 17
+                      }
+                    ],
+                    "lineno": 7,
+                    "end_lineno": 7,
+                    "col_offset": 12,
+                    "end_col_offset": 17
+                  },
+                  {
+                    "_type": "Compare",
+                    "left": {
+                      "_type": "Constant",
+                      "value": 2,
+                      "kind": null,
+                      "lineno": 7,
+                      "end_lineno": 7,
+                      "col_offset": 22,
+                      "end_col_offset": 23
+                    },
+                    "ops": [
+                      {
+                        "_type": "Gt"
+                      }
+                    ],
+                    "comparators": [
+                      {
+                        "_type": "Constant",
+                        "value": 3,
+                        "kind": null,
+                        "lineno": 7,
+                        "end_lineno": 7,
+                        "col_offset": 26,
+                        "end_col_offset": 27
+                      }
+                    ],
+                    "lineno": 7,
+                    "end_lineno": 7,
+                    "col_offset": 22,
+                    "end_col_offset": 27
+                  },
+                  {
+                    "_type": "Call",
+                    "func": {
+                      "_type": "Name",
+                      "id": "boom",
+                      "ctx": {
+                        "_type": "Load"
+                      },
+                      "lineno": 7,
+                      "end_lineno": 7,
+                      "col_offset": 32,
+                      "end_col_offset": 36
+                    },
+                    "args": [],
+                    "keywords": [],
+                    "lineno": 7,
+                    "end_lineno": 7,
+                    "col_offset": 32,
+                    "end_col_offset": 38
+                  }
+                ],
+                "lineno": 7,
+                "end_lineno": 7,
+                "col_offset": 12,
+                "end_col_offset": 38
+              },
+              "body": {
+                "_type": "Constant",
+                "value": 1,
+                "kind": null,
+                "lineno": 7,
+                "end_lineno": 7,
+                "col_offset": 7,
+                "end_col_offset": 8
+              },
+              "orelse": {
+                "_type": "Constant",
+                "value": 0,
+                "kind": null,
+                "lineno": 7,
+                "end_lineno": 7,
+                "col_offset": 44,
+                "end_col_offset": 45
+              },
+              "lineno": 7,
+              "end_lineno": 7,
+              "col_offset": 7,
+              "end_col_offset": 45
+            }
+          ],
+          "keywords": [],
+          "lineno": 7,
+          "end_lineno": 7,
+          "col_offset": 0,
+          "end_col_offset": 47
+        },
+        "lineno": 7,
+        "end_lineno": 7,
+        "end_col_offset": 47
+      },
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 8,
+            "end_lineno": 8,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "IfExp",
+              "test": {
+                "_type": "BoolOp",
+                "op": {
+                  "_type": "And"
+                },
+                "values": [
+                  {
+                    "_type": "Compare",
+                    "left": {
+                      "_type": "Constant",
+                      "value": 1,
+                      "kind": null,
+                      "lineno": 8,
+                      "end_lineno": 8,
+                      "col_offset": 12,
+                      "end_col_offset": 13
+                    },
+                    "ops": [
+                      {
+                        "_type": "Lt"
+                      }
+                    ],
+                    "comparators": [
+                      {
+                        "_type": "Constant",
+                        "value": 2,
+                        "kind": null,
+                        "lineno": 8,
+                        "end_lineno": 8,
+                        "col_offset": 16,
+                        "end_col_offset": 17
+                      }
+                    ],
+                    "lineno": 8,
+                    "end_lineno": 8,
+                    "col_offset": 12,
+                    "end_col_offset": 17
+                  },
+                  {
+                    "_type": "Compare",
+                    "left": {
+                      "_type": "Constant",
+                      "value": 2,
+                      "kind": null,
+                      "lineno": 8,
+                      "end_lineno": 8,
+                      "col_offset": 22,
+                      "end_col_offset": 23
+                    },
+                    "ops": [
+                      {
+                        "_type": "Lt"
+                      }
+                    ],
+                    "comparators": [
+                      {
+                        "_type": "Constant",
+                        "value": 3,
+                        "kind": null,
+                        "lineno": 8,
+                        "end_lineno": 8,
+                        "col_offset": 26,
+                        "end_col_offset": 27
+                      }
+                    ],
+                    "lineno": 8,
+                    "end_lineno": 8,
+                    "col_offset": 22,
+                    "end_col_offset": 27
+                  },
+                  {
+                    "_type": "Compare",
+                    "left": {
+                      "_type": "Constant",
+                      "value": 3,
+                      "kind": null,
+                      "lineno": 8,
+                      "end_lineno": 8,
+                      "col_offset": 32,
+                      "end_col_offset": 33
+                    },
+                    "ops": [
+                      {
+                        "_type": "Gt"
+                      }
+                    ],
+                    "comparators": [
+                      {
+                        "_type": "Constant",
+                        "value": 4,
+                        "kind": null,
+                        "lineno": 8,
+                        "end_lineno": 8,
+                        "col_offset": 36,
+                        "end_col_offset": 37
+                      }
+                    ],
+                    "lineno": 8,
+                    "end_lineno": 8,
+                    "col_offset": 32,
+                    "end_col_offset": 37
+                  },
+                  {
+                    "_type": "Call",
+                    "func": {
+                      "_type": "Name",
+                      "id": "boom",
+                      "ctx": {
+                        "_type": "Load"
+                      },
+                      "lineno": 8,
+                      "end_lineno": 8,
+                      "col_offset": 42,
+                      "end_col_offset": 46
+                    },
+                    "args": [],
+                    "keywords": [],
+                    "lineno": 8,
+                    "end_lineno": 8,
+                    "col_offset": 42,
+                    "end_col_offset": 48
+                  }
+                ],
+                "lineno": 8,
+                "end_lineno": 8,
+                "col_offset": 12,
+                "end_col_offset": 48
+              },
+              "body": {
+                "_type": "Constant",
+                "value": 1,
+                "kind": null,
+                "lineno": 8,
+                "end_lineno": 8,
+                "col_offset": 7,
+                "end_col_offset": 8
+              },
+              "orelse": {
+                "_type": "Constant",
+                "value": 0,
+                "kind": null,
+                "lineno": 8,
+                "end_lineno": 8,
+                "col_offset": 54,
+                "end_col_offset": 55
+              },
+              "lineno": 8,
+              "end_lineno": 8,
+              "col_offset": 7,
+              "end_col_offset": 55
+            }
+          ],
+          "keywords": [],
+          "lineno": 8,
+          "end_lineno": 8,
+          "col_offset": 0,
+          "end_col_offset": 57
+        },
+        "lineno": 8,
+        "end_lineno": 8,
+        "end_col_offset": 57
+      }
+    ]
+  }
+}

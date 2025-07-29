@@ -1,0 +1,97 @@
+{
+  "module": {
+    "_type": "Module",
+    "body": [
+      {
+        "_type": "For",
+        "body": [
+          {
+            "_type": "Expr",
+            "value": {
+              "_type": "Call",
+              "func": {
+                "_type": "Name",
+                "id": "print",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 4,
+                "end_lineno": 4,
+                "col_offset": 4,
+                "end_col_offset": 9
+              },
+              "args": [
+                {
+                  "_type": "Name",
+                  "id": "i",
+                  "ctx": {
+                    "_type": "Load"
+                  },
+                  "lineno": 4,
+                  "end_lineno": 4,
+                  "col_offset": 10,
+                  "end_col_offset": 11
+                }
+              ],
+              "keywords": [],
+              "lineno": 4,
+              "end_lineno": 4,
+              "col_offset": 4,
+              "end_col_offset": 12
+            },
+            "lineno": 4,
+            "end_lineno": 4,
+            "col_offset": 4,
+            "end_col_offset": 12
+          }
+        ],
+        "target": {
+          "_type": "Name",
+          "id": "i",
+          "lineno": 3,
+          "end_lineno": 3,
+          "col_offset": 4,
+          "end_col_offset": 5
+        },
+        "iter": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "range",
+            "lineno": 3,
+            "end_lineno": 3,
+            "col_offset": 9,
+            "end_col_offset": 14
+          },
+          "args": [
+            {
+              "_type": "Constant",
+              "value": 1,
+              "kind": null,
+              "lineno": 3,
+              "end_lineno": 3,
+              "col_offset": 15,
+              "end_col_offset": 16
+            },
+            {
+              "_type": "Constant",
+              "value": 4,
+              "kind": null,
+              "lineno": 3,
+              "end_lineno": 3,
+              "col_offset": 18,
+              "end_col_offset": 19
+            }
+          ],
+          "lineno": 3,
+          "end_lineno": 3,
+          "col_offset": 9,
+          "end_col_offset": 20
+        },
+        "lineno": 3,
+        "end_lineno": 4,
+        "end_col_offset": 12
+      }
+    ]
+  }
+}

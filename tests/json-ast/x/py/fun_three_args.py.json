@@ -1,0 +1,192 @@
+{
+  "module": {
+    "_type": "Module",
+    "body": [
+      {
+        "_type": "FunctionDef",
+        "name": "sum3",
+        "body": [
+          {
+            "_type": "Return",
+            "value": {
+              "_type": "BinOp",
+              "left": {
+                "_type": "BinOp",
+                "left": {
+                  "_type": "Name",
+                  "id": "a",
+                  "ctx": {
+                    "_type": "Load"
+                  },
+                  "lineno": 4,
+                  "end_lineno": 4,
+                  "col_offset": 11,
+                  "end_col_offset": 12
+                },
+                "op": {
+                  "_type": "Add"
+                },
+                "right": {
+                  "_type": "Name",
+                  "id": "b",
+                  "ctx": {
+                    "_type": "Load"
+                  },
+                  "lineno": 4,
+                  "end_lineno": 4,
+                  "col_offset": 15,
+                  "end_col_offset": 16
+                },
+                "lineno": 4,
+                "end_lineno": 4,
+                "col_offset": 11,
+                "end_col_offset": 16
+              },
+              "op": {
+                "_type": "Add"
+              },
+              "right": {
+                "_type": "Name",
+                "id": "c",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 4,
+                "end_lineno": 4,
+                "col_offset": 19,
+                "end_col_offset": 20
+              },
+              "lineno": 4,
+              "end_lineno": 4,
+              "col_offset": 11,
+              "end_col_offset": 20
+            },
+            "lineno": 4,
+            "end_lineno": 4,
+            "col_offset": 4,
+            "end_col_offset": 20
+          }
+        ],
+        "args": {
+          "_type": "arguments",
+          "posonlyargs": [],
+          "args": [
+            {
+              "_type": "arg",
+              "arg": "a",
+              "annotation": null,
+              "type_comment": null,
+              "lineno": 3,
+              "end_lineno": 3,
+              "col_offset": 9,
+              "end_col_offset": 10
+            },
+            {
+              "_type": "arg",
+              "arg": "b",
+              "annotation": null,
+              "type_comment": null,
+              "lineno": 3,
+              "end_lineno": 3,
+              "col_offset": 12,
+              "end_col_offset": 13
+            },
+            {
+              "_type": "arg",
+              "arg": "c",
+              "annotation": null,
+              "type_comment": null,
+              "lineno": 3,
+              "end_lineno": 3,
+              "col_offset": 15,
+              "end_col_offset": 16
+            }
+          ],
+          "vararg": null,
+          "kwonlyargs": [],
+          "kw_defaults": [],
+          "kwarg": null,
+          "defaults": []
+        },
+        "lineno": 3,
+        "end_lineno": 4,
+        "end_col_offset": 20
+      },
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 5,
+            "end_lineno": 5,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "Call",
+              "func": {
+                "_type": "Name",
+                "id": "sum3",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 5,
+                "end_lineno": 5,
+                "col_offset": 6,
+                "end_col_offset": 10
+              },
+              "args": [
+                {
+                  "_type": "Constant",
+                  "value": 1,
+                  "kind": null,
+                  "lineno": 5,
+                  "end_lineno": 5,
+                  "col_offset": 11,
+                  "end_col_offset": 12
+                },
+                {
+                  "_type": "Constant",
+                  "value": 2,
+                  "kind": null,
+                  "lineno": 5,
+                  "end_lineno": 5,
+                  "col_offset": 14,
+                  "end_col_offset": 15
+                },
+                {
+                  "_type": "Constant",
+                  "value": 3,
+                  "kind": null,
+                  "lineno": 5,
+                  "end_lineno": 5,
+                  "col_offset": 17,
+                  "end_col_offset": 18
+                }
+              ],
+              "keywords": [],
+              "lineno": 5,
+              "end_lineno": 5,
+              "col_offset": 6,
+              "end_col_offset": 19
+            }
+          ],
+          "keywords": [],
+          "lineno": 5,
+          "end_lineno": 5,
+          "col_offset": 0,
+          "end_col_offset": 20
+        },
+        "lineno": 5,
+        "end_lineno": 5,
+        "end_col_offset": 20
+      }
+    ]
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "module": {
+    "_type": "Module",
+    "body": [
+      {
+        "_type": "Assign",
+        "targets": [
+          {
+            "_type": "Name",
+            "id": "x",
+            "lineno": 4,
+            "end_lineno": 4,
+            "end_col_offset": 1
+          }
+        ],
+        "value": {
+          "_type": "BinOp",
+          "left": {
+            "_type": "Constant",
+            "value": 1,
+            "kind": null,
+            "lineno": 4,
+            "end_lineno": 4,
+            "col_offset": 4,
+            "end_col_offset": 5
+          },
+          "op": {
+            "_type": "Add"
+          },
+          "right": {
+            "_type": "Constant",
+            "value": 2,
+            "kind": null,
+            "lineno": 4,
+            "end_lineno": 4,
+            "col_offset": 8,
+            "end_col_offset": 9
+          },
+          "lineno": 4,
+          "end_lineno": 4,
+          "col_offset": 4,
+          "end_col_offset": 9
+        },
+        "lineno": 4,
+        "end_lineno": 4,
+        "end_col_offset": 9
+      },
+      {
+        "_type": "Assert",
+        "test": {
+          "_type": "Compare",
+          "left": {
+            "_type": "Name",
+            "id": "x",
+            "lineno": 5,
+            "end_lineno": 5,
+            "col_offset": 7,
+            "end_col_offset": 8
+          },
+          "ops": [
+            {
+              "_type": "Eq"
+            }
+          ],
+          "comparators": [
+            {
+              "_type": "Constant",
+              "value": 3,
+              "lineno": 5,
+              "end_lineno": 5,
+              "col_offset": 12,
+              "end_col_offset": 13
+            }
+          ],
+          "lineno": 5,
+          "end_lineno": 5,
+          "col_offset": 7,
+          "end_col_offset": 13
+        },
+        "lineno": 5,
+        "end_lineno": 5,
+        "end_col_offset": 13
+      },
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 6,
+            "end_lineno": 6,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "Constant",
+              "value": "ok",
+              "kind": null,
+              "lineno": 6,
+              "end_lineno": 6,
+              "col_offset": 6,
+              "end_col_offset": 10
+            }
+          ],
+          "keywords": [],
+          "lineno": 6,
+          "end_lineno": 6,
+          "col_offset": 0,
+          "end_col_offset": 11
+        },
+        "lineno": 6,
+        "end_lineno": 6,
+        "end_col_offset": 11
+      }
+    ]
+  }
+}

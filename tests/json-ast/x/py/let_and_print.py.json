@@ -1,0 +1,114 @@
+{
+  "module": {
+    "_type": "Module",
+    "body": [
+      {
+        "_type": "Assign",
+        "targets": [
+          {
+            "_type": "Name",
+            "id": "a",
+            "lineno": 3,
+            "end_lineno": 3,
+            "end_col_offset": 1
+          }
+        ],
+        "value": {
+          "_type": "Constant",
+          "value": 10,
+          "kind": null,
+          "lineno": 3,
+          "end_lineno": 3,
+          "col_offset": 4,
+          "end_col_offset": 6
+        },
+        "lineno": 3,
+        "end_lineno": 3,
+        "end_col_offset": 6
+      },
+      {
+        "_type": "Assign",
+        "targets": [
+          {
+            "_type": "Name",
+            "id": "b",
+            "lineno": 4,
+            "end_lineno": 4,
+            "end_col_offset": 1
+          }
+        ],
+        "value": {
+          "_type": "Constant",
+          "value": 20,
+          "kind": null,
+          "lineno": 4,
+          "end_lineno": 4,
+          "col_offset": 4,
+          "end_col_offset": 6
+        },
+        "lineno": 4,
+        "end_lineno": 4,
+        "end_col_offset": 6
+      },
+      {
+        "_type": "Expr",
+        "value": {
+          "_type": "Call",
+          "func": {
+            "_type": "Name",
+            "id": "print",
+            "ctx": {
+              "_type": "Load"
+            },
+            "lineno": 5,
+            "end_lineno": 5,
+            "col_offset": 0,
+            "end_col_offset": 5
+          },
+          "args": [
+            {
+              "_type": "BinOp",
+              "left": {
+                "_type": "Name",
+                "id": "a",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 5,
+                "end_lineno": 5,
+                "col_offset": 6,
+                "end_col_offset": 7
+              },
+              "op": {
+                "_type": "Add"
+              },
+              "right": {
+                "_type": "Name",
+                "id": "b",
+                "ctx": {
+                  "_type": "Load"
+                },
+                "lineno": 5,
+                "end_lineno": 5,
+                "col_offset": 10,
+                "end_col_offset": 11
+              },
+              "lineno": 5,
+              "end_lineno": 5,
+              "col_offset": 6,
+              "end_col_offset": 11
+            }
+          ],
+          "keywords": [],
+          "lineno": 5,
+          "end_lineno": 5,
+          "col_offset": 0,
+          "end_col_offset": 12
+        },
+        "lineno": 5,
+        "end_lineno": 5,
+        "end_col_offset": 12
+      }
+    ]
+  }
+}
