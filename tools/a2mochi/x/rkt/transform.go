@@ -4,6 +4,7 @@ package rkt
 
 import (
 	"fmt"
+	"reflect"
 
 	"mochi/ast"
 )
@@ -23,6 +24,85 @@ func symString(v any) (string, bool) {
 func groupIfUnary(n *ast.Node) *ast.Node {
 	if n != nil && n.Kind == "unary" {
 		return &ast.Node{Kind: "group", Children: []*ast.Node{n}}
+	}
+	return n
+}
+
+func condLen(args []any) *ast.Node {
+	if len(args) != 3 {
+		return nil
+	}
+	c1, ok1 := args[0].([]any)
+	c2, ok2 := args[1].([]any)
+	c3, ok3 := args[2].([]any)
+	if !ok1 || !ok2 || !ok3 {
+		return nil
+	}
+	if len(c1) != 2 || len(c2) != 2 || len(c3) != 2 {
+		return nil
+	}
+	t1, ok := c1[0].([]any)
+	if !ok || len(t1) != 2 {
+		return nil
+	}
+	t2, ok := c2[0].([]any)
+	if !ok || len(t2) != 2 {
+		return nil
+	}
+	h1, _ := symString(t1[0])
+	h2, _ := symString(t2[0])
+	if h1 != "string?" || h2 != "hash?" {
+		return nil
+	}
+	e1 := t1[1]
+	e2 := t2[1]
+	if !reflect.DeepEqual(e1, e2) {
+		return nil
+	}
+	b1, ok := c1[1].([]any)
+	if !ok || len(b1) != 2 {
+		return nil
+	}
+	b2, ok := c2[1].([]any)
+	if !ok || len(b2) != 2 {
+		return nil
+	}
+	b3, ok := c3[1].([]any)
+	if !ok || len(b3) != 2 {
+		return nil
+	}
+	h1b, _ := symString(b1[0])
+	h2b, _ := symString(b2[0])
+	h3, _ := symString(c3[0])
+	if h1b != "string-length" || h2b != "hash-count" || h3 != "else" {
+		return nil
+	}
+	e1b := b1[1]
+	e2b := b2[1]
+	e3 := b3[1]
+	if reflect.DeepEqual(e1b, e2b) && reflect.DeepEqual(e1b, e3) {
+		return &ast.Node{Kind: "call", Value: "len", Children: []*ast.Node{exprNode(e1)}}
+	}
+	return nil
+}
+
+func condExpr(args []any) *ast.Node {
+	if len(args) == 0 {
+		return &ast.Node{Kind: "unknown"}
+	}
+	clause, ok := args[0].([]any)
+	if !ok || len(clause) < 2 {
+		return exprNode(clause)
+	}
+	head, _ := symString(clause[0])
+	if head == "else" {
+		return exprNode(clause[1])
+	}
+	cond := exprNode(clause[0])
+	thenExpr := exprNode(clause[1])
+	n := &ast.Node{Kind: "if_expr", Children: []*ast.Node{cond, thenExpr}}
+	if len(args) > 1 {
+		n.Children = append(n.Children, condExpr(args[1:]))
 	}
 	return n
 }
@@ -61,6 +141,16 @@ func formNodeWithMut(d any, mutated map[string]bool) *ast.Node {
 	switch head {
 	case "require", "struct":
 		return nil
+	case "when":
+		if len(list) >= 2 {
+			block := &ast.Node{Kind: "block"}
+			for _, st := range list[2:] {
+				if c := formNodeWithMut(st, mutated); c != nil {
+					block.Children = append(block.Children, c)
+				}
+			}
+			return &ast.Node{Kind: "if", Children: []*ast.Node{exprNode(list[1]), block}}
+		}
 	case "define":
 		if fn, ok := list[1].([]any); ok {
 			var name string
@@ -263,6 +353,13 @@ func exprNode(d any) *ast.Node {
 					n.Children = append(n.Children, exprNode(args[2]))
 				}
 				return n
+			}
+		case "cond":
+			if len(args) > 0 {
+				if n := condLen(args); n != nil {
+					return n
+				}
+				return condExpr(args)
 			}
 		case "apply":
 			if len(v) == 3 {
