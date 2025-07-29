@@ -1,0 +1,5 @@
+// a2mochi scala v0.10.48 2025-07-29 17:50:09 GMT+7
+print(("a" < "b"))
+print(("a" <= "a"))
+print(("b" > "a"))
+print(("b" >= "b"))

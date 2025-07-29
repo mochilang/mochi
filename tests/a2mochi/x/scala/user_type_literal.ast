@@ -1,0 +1,13 @@
+(program
+  (let book
+    (call Book
+      (string Go)
+      (call Person (string Bob) (int 42))
+    )
+  )
+  (call print
+    (selector name
+      (selector author (selector book))
+    )
+  )
+)

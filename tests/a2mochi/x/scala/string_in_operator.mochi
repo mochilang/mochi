@@ -1,0 +1,4 @@
+// a2mochi scala v0.10.48 2025-07-29 17:50:17 GMT+7
+let s = "catch"
+print(s.contains("cat"))
+print(s.contains("dog"))

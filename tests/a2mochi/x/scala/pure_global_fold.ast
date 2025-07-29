@@ -1,0 +1,12 @@
+(program
+  (fun inc
+    (param x)
+    (return
+      (binary + (selector x) (selector k))
+    )
+  )
+  (let k (int 2))
+  (call print
+    (call inc (int 3))
+  )
+)

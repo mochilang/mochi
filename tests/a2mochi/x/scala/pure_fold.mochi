@@ -1,0 +1,5 @@
+// a2mochi scala v0.10.48 2025-07-29 17:49:39 GMT+7
+fun triple(x) {
+  return (x * 3)
+}
+print(triple((1 + 2)))

@@ -1,0 +1,14 @@
+(program
+  (call print
+    (binary < (string a) (string b))
+  )
+  (call print
+    (binary <= (string a) (string a))
+  )
+  (call print
+    (binary > (string b) (string a))
+  )
+  (call print
+    (binary >= (string b) (string b))
+  )
+)

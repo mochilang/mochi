@@ -1,0 +1,19 @@
+(program
+  (let xs
+    (call ArrayBuffer (int 1) (int 2) (int 3))
+  )
+  (call print
+    (call
+      (selector contains (selector xs))
+      (int 2)
+    )
+  )
+  (call print
+    (unary !
+      (call
+        (selector contains (selector xs))
+        (int 5)
+      )
+    )
+  )
+)

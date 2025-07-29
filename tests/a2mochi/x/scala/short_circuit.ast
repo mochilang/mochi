@@ -1,0 +1,20 @@
+(program
+  (fun boom
+    (param a)
+    (param b)
+    (call print (string boom))
+    (return (bool true))
+  )
+  (call print
+    (binary &&
+      (bool false)
+      (call boom (int 1) (int 2))
+    )
+  )
+  (call print
+    (binary ||
+      (bool true)
+      (call boom (int 1) (int 2))
+    )
+  )
+)

@@ -1,0 +1,6 @@
+// a2mochi scala v0.10.48 2025-07-29 17:50:22 GMT+7
+let prefix = "fore"
+let s1 = "forest"
+print((s1.slice(0, prefix.size) == prefix))
+let s2 = "desert"
+print((s2.slice(0, prefix.size) == prefix))

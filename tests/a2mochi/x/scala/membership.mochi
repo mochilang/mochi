@@ -1,0 +1,4 @@
+// a2mochi scala v0.10.48 2025-07-29 17:49:21 GMT+7
+let nums = ArrayBuffer(1, 2, 3)
+print(nums.contains(2))
+print(nums.contains(4))

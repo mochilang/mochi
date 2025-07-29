@@ -1,0 +1,10 @@
+// a2mochi scala v0.10.48 2025-07-29 17:49:46 GMT+7
+let r = 3.0
+let area = (math.Pi * math.pow(r, 2.0))
+let root = math.sqrt(49.0)
+let sin45 = math.sin((math.Pi / 4.0))
+let log_e = math.log(math.E)
+print(List("Circle area with r =", r, "=>", area).mkString(" "))
+print(List("Square root of 49:", root).mkString(" "))
+print(List("sin(π/4):", sin45).mkString(" "))
+print(List("log(e):", log_e).mkString(" "))

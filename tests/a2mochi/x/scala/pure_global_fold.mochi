@@ -1,0 +1,6 @@
+// a2mochi scala v0.10.48 2025-07-29 17:49:41 GMT+7
+fun inc(x) {
+  return (x + k)
+}
+let k = 2
+print(inc(3))
