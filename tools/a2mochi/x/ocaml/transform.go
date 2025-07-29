@@ -203,6 +203,11 @@ func convertExpr(expr string) []string {
 		if p == "" {
 			continue
 		}
+		if strings.HasPrefix(p, "let ") && strings.Contains(p, " in ") {
+			sub := convertExpr(p)
+			lines = append(lines, sub...)
+			continue
+		}
 		if strings.Contains(p, ":=") {
 			fs := strings.SplitN(p, ":=", 2)
 			left := strings.TrimSpace(fs[0])
@@ -333,9 +338,9 @@ func simplify(e string) string {
 
 	// string contains/in operator pattern
 	if strings.Contains(e, "String.sub") && strings.Contains(e, "aux 0") {
-		re := regexp.MustCompile(`len ([A-Za-z0-9_]+) and len_sub = len "([^"]+)"`)
+		re := regexp.MustCompile(`len\(([^\)]+)\)\s+and\s+len_sub\s*=\s*len\("([^"]+)"\)`)
 		if m := re.FindStringSubmatch(e); m != nil {
-			e = fmt.Sprintf("%s.contains(\"%s\")", m[1], m[2])
+			e = fmt.Sprintf("%s.contains(\"%s\")", simplify(strings.TrimSpace(m[1])), m[2])
 		}
 	}
 	re = regexp.MustCompile(`if \(([^\)]*\.contains\("[^"\)]+"\))\) then true else false`)
