@@ -26,7 +26,7 @@ func Transform(p *Program) (*ast.Node, error) {
 func stmtNode(s Stmt) *ast.Node {
 	switch v := s.(type) {
 	case VarDecl:
-		return &ast.Node{Kind: "assign", Value: v.Name, Children: []*ast.Node{exprNode(v.Value)}}
+		return &ast.Node{Kind: "let", Value: v.Name, Children: []*ast.Node{exprNode(v.Value)}}
 	case Assign:
 		return &ast.Node{Kind: "assign", Value: v.Name, Children: []*ast.Node{exprNode(v.Expr)}}
 	case PrintStmt:
@@ -38,10 +38,9 @@ func stmtNode(s Stmt) *ast.Node {
 	case For:
 		start := exprNode(v.Start)
 		end := exprNode(v.End)
-		rangeCall := &ast.Node{Kind: "call", Value: "range", Children: []*ast.Node{start, end}}
-		inNode := &ast.Node{Kind: "in", Children: []*ast.Node{rangeCall}}
+		rng := &ast.Node{Kind: "range", Children: []*ast.Node{start, end}}
 		body := blockNode(v.Body)
-		n := &ast.Node{Kind: "for", Value: v.Var, Children: []*ast.Node{inNode, body}}
+		n := &ast.Node{Kind: "for", Value: v.Var, Children: []*ast.Node{rng, body}}
 		return n
 	case If:
 		cond := exprNode(v.Cond)

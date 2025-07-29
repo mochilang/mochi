@@ -53,14 +53,19 @@ var (
 func Parse(src string) (*Program, error) {
 	lines := strings.Split(src, "\n")
 	var body []string
+	var preStmts []Stmt
 	started := false
 	braces := 0
 	for _, ln := range lines {
+		trimmed := strings.TrimSpace(ln)
 		if !started {
 			if strings.Contains(ln, "main") && strings.Contains(ln, "{") {
 				started = true
 				braces = strings.Count(ln, "{") - strings.Count(ln, "}")
 				continue
+			}
+			if m := reVar.FindStringSubmatch(trimmed); m != nil {
+				preStmts = append(preStmts, VarDecl{Name: m[1], Value: m[2]})
 			}
 			continue
 		}
@@ -76,6 +81,7 @@ func Parse(src string) (*Program, error) {
 	}
 	idx := 0
 	stmts := parseBlock(body, &idx)
+	stmts = append(preStmts, stmts...)
 	return &Program{Stmts: stmts, Source: src}, nil
 }
 
