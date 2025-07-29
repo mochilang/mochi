@@ -138,6 +138,7 @@ func TestTransformGolden(t *testing.T) {
 		"string_in_operator":  true,
 		"append_builtin":      true,
 		"avg_builtin":         true,
+		"sum_builtin":         true,
 		"let_and_print":       true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "swift")
