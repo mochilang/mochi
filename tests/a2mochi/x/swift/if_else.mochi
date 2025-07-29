@@ -1,0 +1,7 @@
+// a2mochi-swift v0.10.47 on 2025-07-29 15:20 GMT+7
+let x = 5
+if ((x > 3)) {
+  print("big")
+} else {
+  print("small")
+}

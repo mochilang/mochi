@@ -1,0 +1,5 @@
+// a2mochi-swift v0.10.47 on 2025-07-29 15:20 GMT+7
+fun add(a: int, b: int): int {
+  return ((a + b))
+}
+print(add(2, 3))

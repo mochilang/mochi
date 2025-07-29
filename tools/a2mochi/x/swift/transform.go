@@ -215,6 +215,8 @@ func parseStatementsIndent(body string, indent int) []string {
 				continue
 			}
 			l = strings.TrimSuffix(l, ";")
+			l = rewriteAvg(l)
+			l = rewriteSum(l)
 			l = rewriteMapLiteral(l)
 			l = rewriteStructLiteral(l)
 			l = rewriteCasts(l)
@@ -258,9 +260,12 @@ func parseStatementsIndent(body string, indent int) []string {
 				indent++
 			case strings.HasPrefix(l, "return "):
 				expr := strings.TrimSpace(l[len("return "):])
+				expr = rewriteClosure(expr)
 				expr = rewriteStructLiteral(expr)
 				expr = rewriteMapLiteral(expr)
 				expr = rewriteCasts(expr)
+				expr = rewriteAvg(expr)
+				expr = rewriteSum(expr)
 				expr = rewriteCount(expr)
 				expr = rewriteMinMax(expr)
 				expr = rewriteRanges(expr)
@@ -272,9 +277,13 @@ func parseStatementsIndent(body string, indent int) []string {
 				out = append(out, strings.Repeat("  ", indent)+"return "+expr)
 			case strings.HasPrefix(l, "print(") && strings.HasSuffix(l, ")"):
 				expr := strings.TrimSpace(l[len("print(") : len(l)-1])
+				expr = rewriteClosure(expr)
+				expr = rewriteAppendExpr(expr)
 				expr = rewriteStructLiteral(expr)
 				expr = rewriteMapLiteral(expr)
 				expr = rewriteCasts(expr)
+				expr = rewriteAvg(expr)
+				expr = rewriteSum(expr)
 				expr = rewriteCount(expr)
 				expr = rewriteMinMax(expr)
 				expr = rewriteRanges(expr)
@@ -297,8 +306,21 @@ func parseStatementsIndent(body string, indent int) []string {
 					if colon := strings.Index(name, ":"); colon != -1 {
 						name = strings.TrimSpace(name[:colon])
 					}
-					expr := rewriteStructLiteral(strings.TrimSpace(parts[1]))
+					expr := rewriteClosure(strings.TrimSpace(parts[1]))
+					expr = rewriteAppendExpr(expr)
+					expr = rewriteStructLiteral(expr)
 					expr = rewriteMapLiteral(expr)
+					expr = rewriteCasts(expr)
+					expr = rewriteAvg(expr)
+					expr = rewriteSum(expr)
+					expr = rewriteCount(expr)
+					expr = rewriteMinMax(expr)
+					expr = rewriteRanges(expr)
+					expr = rewriteStrBuiltin(expr)
+					expr = rewriteTernary(expr)
+					expr = rewriteStringArrays(expr)
+					expr = rewriteContains(expr)
+					expr = rewriteMapContains(expr)
 					out = append(out, strings.Repeat("  ", indent)+keyword+" "+name+" = "+expr)
 				}
 			case l == "break":
@@ -447,4 +469,75 @@ func gatherEnumElements(ms []item) []item {
 		}
 	}
 	return out
+}
+
+var appendExprRE = regexp.MustCompile(`"\[" \+ \(([^+]+) \+ \[([^\]]+)\]\)\.map\{\s*String\(describing: \$0\)\s*\}\.joined\(separator: ","\) \+ "\]"`)
+var sumRe = regexp.MustCompile(`\(?([^()]*)\)?\.reduce\(0,\+\)`)
+var avgRe = regexp.MustCompile(`Double\(\(?([^()]*)\)?\.reduce\(0,\+\)\)\s*/\s*Double\(\(?([^()]*)\)?\.count\)`)
+var closureRe = regexp.MustCompile(`^\{\s*\(([^)]*)\)\s*->\s*([A-Za-z0-9_<>.?]+)\s*in\s*(.+)\s*\}$`)
+
+func rewriteAppendExpr(expr string) string {
+	m := appendExprRE.FindStringSubmatch(expr)
+	if len(m) == 3 {
+		return fmt.Sprintf("append(%s, %s)", strings.TrimSpace(m[1]), strings.TrimSpace(m[2]))
+	}
+	return expr
+}
+
+func rewriteSum(expr string) string {
+	if m := sumRe.FindStringSubmatch(expr); m != nil {
+		return "sum(" + strings.TrimSpace(m[1]) + ")"
+	}
+	return expr
+}
+
+func rewriteAvg(expr string) string {
+	if m := avgRe.FindStringSubmatch(expr); m != nil {
+		return "avg(" + strings.TrimSpace(m[1]) + ")"
+	}
+	return expr
+}
+
+func rewriteClosure(expr string) string {
+	m := closureRe.FindStringSubmatch(expr)
+	if len(m) != 4 {
+		return expr
+	}
+	params := []string{}
+	for _, p := range strings.Split(strings.TrimSpace(m[1]), ",") {
+		p = strings.TrimSpace(p)
+		if p == "" {
+			continue
+		}
+		parts := strings.SplitN(p, ":", 2)
+		name := strings.TrimSpace(parts[0])
+		typ := ""
+		if len(parts) == 2 {
+			typ = interfaceTypeToMochi(strings.TrimSpace(parts[1]))
+		}
+		if typ != "" {
+			params = append(params, name+": "+typ)
+		} else {
+			params = append(params, name)
+		}
+	}
+	body := strings.TrimSpace(m[3])
+	body = rewriteStructLiteral(body)
+	body = rewriteMapLiteral(body)
+	body = rewriteCasts(body)
+	body = rewriteAvg(body)
+	body = rewriteSum(body)
+	body = rewriteCount(body)
+	body = rewriteMinMax(body)
+	body = rewriteRanges(body)
+	body = rewriteStrBuiltin(body)
+	body = rewriteTernary(body)
+	body = rewriteStringArrays(body)
+	body = rewriteContains(body)
+	body = rewriteMapContains(body)
+	ret := interfaceTypeToMochi(m[2])
+	if ret == "" {
+		ret = "any"
+	}
+	return fmt.Sprintf("fun(%s): %s { %s }", strings.Join(params, ", "), ret, body)
 }
