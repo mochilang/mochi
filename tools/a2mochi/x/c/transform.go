@@ -34,12 +34,12 @@ func Transform(p *Program) (*ast.Node, error) {
 			next = p.Stmts[i+1]
 		}
 		if ps, ok := st.(PrintStmt); ok {
-			exprs := []string{ps.Expr}
+			exprs := append([]string{}, ps.Exprs...)
 			newline := ps.Newline
 			j := i + 1
 			for !newline && j < len(p.Stmts) {
 				if next, ok := p.Stmts[j].(PrintStmt); ok {
-					exprs = append(exprs, next.Expr)
+					exprs = append(exprs, next.Exprs...)
 					newline = next.Newline
 					j++
 				} else {
@@ -95,7 +95,11 @@ func stmtNodeWithAssign(s Stmt, assigned map[string]bool, inFunc bool, next Stmt
 		}
 		return &ast.Node{Kind: "assign", Value: v.Name, Children: []*ast.Node{val}}
 	case PrintStmt:
-		return &ast.Node{Kind: "call", Value: "print", Children: []*ast.Node{exprNode(v.Expr)}}
+		call := &ast.Node{Kind: "call", Value: "print"}
+		for _, e := range v.Exprs {
+			call.Children = append(call.Children, exprNode(e))
+		}
+		return call
 	case While:
 		cond := boolify(exprNode(v.Cond))
 		body := blockNode(v.Body, assigned)
@@ -156,7 +160,7 @@ func blockNode(stmts []Stmt, assigned map[string]bool) *ast.Node {
 	return blk
 }
 
-var reBinary = regexp.MustCompile(`^(.+)\s*(==|!=|<=|>=|<|>|\+|\-|\*|/|&&|\|\|)\s*(.+)$`)
+var reBinary = regexp.MustCompile(`^(.+)\s*(==|!=|<=|>=|<|>|\+|\-|\*|/|%|&&|\|\|)\s*(.+)$`)
 var reCall = regexp.MustCompile(`^([a-zA-Z_][a-zA-Z0-9_]*)\((.*)\)$`)
 var reList = regexp.MustCompile(`^\{\s*([0-9]+(?:\s*,\s*[0-9]+)*)\s*\}$`)
 var reIndex = regexp.MustCompile(`^([a-zA-Z_][a-zA-Z0-9_]*)\[(.+)\]$`)
@@ -320,24 +324,40 @@ func parenBalanced(s string) bool {
 }
 
 func splitBinary(s string) (string, string, string, bool) {
-	ops := []string{"&&", "||", "==", "!=", "<=", ">=", "<", ">", "+", "-", "*", "/"}
-	depth := 0
-	for i := 0; i < len(s); i++ {
-		switch s[i] {
-		case '(':
-			depth++
-		case ')':
-			if depth > 0 {
-				depth--
+	groups := [][]string{
+		{"||"},
+		{"&&"},
+		{"==", "!="},
+		{"<=", ">=", "<", ">"},
+		{"+", "-"},
+		{"*", "/", "%"},
+	}
+	for _, ops := range groups {
+		depth := 0
+		for i := len(s) - 1; i >= 0; i-- {
+			switch s[i] {
+			case ')':
+				depth++
+			case '(':
+				if depth > 0 {
+					depth--
+				}
 			}
-		default:
-			if depth == 0 {
-				for _, op := range ops {
-					if strings.HasPrefix(s[i:], op) {
-						left := strings.TrimSpace(s[:i])
-						right := strings.TrimSpace(s[i+len(op):])
-						return left, op, right, true
+			if depth != 0 {
+				continue
+			}
+			for _, op := range ops {
+				if i-len(op)+1 < 0 {
+					continue
+				}
+				if s[i-len(op)+1:i+1] == op {
+					// ignore unary + or -
+					if (op == "-" || op == "+") && (i-len(op)+1 == 0 || strings.ContainsRune("+-*/%(<>=", rune(s[i-len(op)]))) {
+						continue
 					}
+					left := strings.TrimSpace(s[:i-len(op)+1])
+					right := strings.TrimSpace(s[i+1:])
+					return left, op, right, true
 				}
 			}
 		}

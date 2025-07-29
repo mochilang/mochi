@@ -3,12 +3,8 @@
     (list (int 2) (int 7) (int 11) (int 15))
   )
   (let n (int 4))
-  (let result0
-    (binary - (selector "") (int 1))
-  )
-  (let result1
-    (binary - (selector "") (int 1))
-  )
+  (let result0 (int -1))
+  (let result1 (int -1))
   (for i
     (range (int 0) (selector n))
     (block
@@ -19,12 +15,12 @@
         )
         (block
           (if
-            (binary +
-              (index (selector nums) (selector i))
-              (binary ==
+            (binary ==
+              (binary +
+                (index (selector nums) (selector i))
                 (index (selector nums) (selector j))
-                (int 9)
               )
+              (int 9)
             )
             (block
               (assign result0 (selector i))
