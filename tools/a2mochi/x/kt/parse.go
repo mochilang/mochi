@@ -374,6 +374,7 @@ func parseNaive(src string) (*Program, error) {
 				current.Stmts = parseStmts(body)
 				current = nil
 				body = nil
+				depth--
 				continue
 			}
 			body = append(body, trimmed)
