@@ -1,5 +1,0 @@
-error[T008]: type mismatch: expected bool, got bigint
-  --> :9:23
-
-help:
-  Change the value to match the expected type.

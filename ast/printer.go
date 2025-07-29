@@ -414,7 +414,11 @@ func exprString(n *Node) string {
 					sb.WriteString(exprString(c.Children[1].Children[0]))
 				}
 			case "where", "sort", "skip", "take":
-				fmt.Fprintf(&sb, "%s %s", c.Kind, exprString(c.Children[0]))
+				expr := flatExprString(c.Children[0])
+				if strings.HasPrefix(expr, "(") && strings.HasSuffix(expr, ")") && parenBalanced(expr) {
+					expr = expr[1 : len(expr)-1]
+				}
+				fmt.Fprintf(&sb, "%s %s", c.Kind, expr)
 			case "group_by":
 				fmt.Fprintf(&sb, "group by %s into %s", exprString(c.Children[0]), c.Children[1].Value)
 			case "select":
@@ -529,4 +533,30 @@ func structString(n *Node) string {
 
 func isTypeNode(n *Node) bool {
 	return n.Kind == "type" || n.Kind == "typefun" || (n.Kind == "struct" && len(n.Children) > 0 && isTypeNode(n.Children[0]))
+}
+
+func flatExprString(n *Node) string {
+	switch n.Kind {
+	case "binary":
+		return fmt.Sprintf("%s %s %s", flatExprString(n.Children[0]), n.Value, flatExprString(n.Children[1]))
+	case "unary":
+		return fmt.Sprintf("%s%s", n.Value, flatExprString(n.Children[0]))
+	default:
+		return exprString(n)
+	}
+}
+
+func parenBalanced(s string) bool {
+	depth := 0
+	for i, r := range s {
+		if r == '(' {
+			depth++
+		} else if r == ')' {
+			depth--
+			if depth == 0 && i < len(s)-1 {
+				return false
+			}
+		}
+	}
+	return depth == 0
 }
