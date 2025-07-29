@@ -432,15 +432,8 @@ func toStr(part string) string {
 
 func stripStringCall(expr string) string {
 	trimmed := strings.TrimSpace(expr)
+	trimmed = stripOuterParens(trimmed)
 	for {
-		// remove surrounding parentheses
-		for strings.HasPrefix(trimmed, "(") && strings.HasSuffix(trimmed, ")") {
-			inner := strings.TrimSpace(trimmed[1 : len(trimmed)-1])
-			if inner == trimmed {
-				break
-			}
-			trimmed = inner
-		}
 		var changed bool
 		if strings.HasPrefix(trimmed, "string (") && strings.HasSuffix(trimmed, ")") {
 			trimmed = strings.TrimSpace(trimmed[len("string (") : len(trimmed)-1])
@@ -452,11 +445,42 @@ func stripStringCall(expr string) string {
 			trimmed = strings.TrimSpace(trimmed[len("string "):])
 			changed = true
 		}
-		if !changed {
+		if changed {
+			trimmed = stripOuterParens(trimmed)
+		} else {
 			break
 		}
 	}
 	return trimmed
+}
+
+func stripOuterParens(s string) string {
+	for {
+		t := strings.TrimSpace(s)
+		if len(t) >= 2 && t[0] == '(' && t[len(t)-1] == ')' {
+			if balancedParens(t[1 : len(t)-1]) {
+				s = strings.TrimSpace(t[1 : len(t)-1])
+				continue
+			}
+		}
+		break
+	}
+	return s
+}
+
+func balancedParens(s string) bool {
+	depth := 0
+	for _, r := range s {
+		if r == '(' {
+			depth++
+		} else if r == ')' {
+			depth--
+			if depth < 0 {
+				return false
+			}
+		}
+	}
+	return depth == 0
 }
 
 func convertEquality(expr string) string {

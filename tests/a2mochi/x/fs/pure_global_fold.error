@@ -1,0 +1,5 @@
+error[T005]: parameter `x` is missing a type
+  --> :3:1
+
+help:
+  Add a type like `x: int` to this parameter.
