@@ -1,0 +1,15 @@
+(program
+  (fun main
+    (let i (type int) (int 0))
+    (while
+      (binary < (selector i) (int 3))
+      (block
+        (call print (selector i))
+        (let i
+          (binary + (selector i) (int 1))
+        )
+      )
+    )
+  )
+  (call main)
+)

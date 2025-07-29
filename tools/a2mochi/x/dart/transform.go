@@ -217,8 +217,11 @@ func convertBodyLine(s string) string {
 	}
 	s = fixUnaryNeg(s)
 	s = convertArrowFunc(s)
+	s = convertWhile(s)
+	s = convertIf(s)
 	s = convertTernaryPrint(s)
 	s = convertTernary(s)
+	s = convertContains(s)
 	s = convertIsEmpty(s)
 	s = convertSpread(s)
 	s = convertReduce(s)
@@ -341,6 +344,26 @@ func convertJoinPrint(s string) string {
 		}
 		return m
 	})
+}
+
+var whileRe = regexp.MustCompile(`^(\s*)while\s*\(([^)]+)\)`)
+
+func convertWhile(s string) string {
+	return whileRe.ReplaceAllString(s, "${1}while ${2}")
+}
+
+var ifRe = regexp.MustCompile(`(^|\belse\s+)if\s*\(([^)]*)\)`)
+
+func convertIf(s string) string {
+	return ifRe.ReplaceAllString(s, "$1if $2")
+}
+
+var notContainsRe = regexp.MustCompile(`!\s*([A-Za-z_][A-Za-z0-9_]*)\.contains\(([^)]+)\)`)
+var containsRe = regexp.MustCompile(`([A-Za-z_][A-Za-z0-9_]*)\.contains\(([^)]+)\)`)
+
+func convertContains(s string) string {
+	s = notContainsRe.ReplaceAllString(s, "!($2 in $1)")
+	return containsRe.ReplaceAllString(s, "$2 in $1")
 }
 
 func splitArgs(s string) []string {
