@@ -2,7 +2,6 @@ package c
 
 import (
 	"fmt"
-	"regexp"
 	"strconv"
 	"strings"
 
@@ -15,7 +14,7 @@ func Transform(p *Program) (*ast.Node, error) {
 		return nil, fmt.Errorf("nil program")
 	}
 	prints := findPrints(p.Root)
-	prints = append(prints, parseArrayLoops(p.Source)...)
+	prints = append(prints, parseArrayLoops(p)...)
 	root := &ast.Node{Kind: "program"}
 	for _, pr := range prints {
 		arg := valueNode(pr)
@@ -187,35 +186,76 @@ func valueNode(v string) *ast.Node {
 	return &ast.Node{Kind: "unknown", Value: v}
 }
 
-func parseArrayLoops(src string) []string {
-	arrDecl := regexp.MustCompile(`(?m)(?:int|const char\*|char\s*\*)\s+(\w+)_arr\s*\[]\s*=\s*{([^}]*)}`)
+func parseArrayLoops(p *Program) []string {
 	arrays := make(map[string][]string)
-	for _, m := range arrDecl.FindAllStringSubmatch(src, -1) {
-		name := m[1]
-		elems := strings.Split(m[2], ",")
-		vals := make([]string, 0, len(elems))
-		for _, e := range elems {
-			e = strings.TrimSpace(e)
-			if e == "" {
-				continue
-			}
-			vals = append(vals, e)
-		}
-		arrays[name] = vals
-	}
 
-	loopRe := regexp.MustCompile(`(?s)for\s*\(size_t i = 0; i < (\w+)_len; i\+\+\)\s*{([^}]*)}`)
-	prints := make([]string, 0)
-	for _, m := range loopRe.FindAllStringSubmatch(src, -1) {
-		name := m[1]
-		arr, ok := arrays[name]
-		if !ok || len(arr) == 0 {
-			continue
+	var walkArrays func(*Node)
+	walkArrays = func(n *Node) {
+		if n.Kind == "VarDecl" && strings.HasSuffix(n.Name, "_arr") {
+			if len(n.Inner) > 0 && n.Inner[0].Kind == "InitListExpr" {
+				vals := make([]string, 0, len(n.Inner[0].Inner))
+				for i := range n.Inner[0].Inner {
+					v := n.Inner[0].Inner[i]
+					switch v.Kind {
+					case "IntegerLiteral", "FloatingLiteral", "StringLiteral":
+						vals = append(vals, strings.TrimSpace(v.Value))
+					}
+				}
+				if len(vals) > 0 {
+					name := strings.TrimSuffix(n.Name, "_arr")
+					arrays[name] = vals
+				}
+			}
 		}
-		body := m[2]
-		if strings.Contains(body, "printf") || strings.Contains(body, "puts") {
-			prints = append(prints, arr...)
+		for i := range n.Inner {
+			walkArrays(&n.Inner[i])
 		}
 	}
+	walkArrays(p.Root)
+
+	var prints []string
+
+	var walkLoops func(*Node)
+	walkLoops = func(n *Node) {
+		if n.Kind == "ForStmt" && len(n.Inner) >= 5 {
+			init := &n.Inner[0]
+			cond := &n.Inner[2]
+			body := &n.Inner[len(n.Inner)-1]
+			if len(init.Inner) > 0 {
+				vd := init.Inner[0]
+				if vd.Kind == "VarDecl" && len(vd.Inner) > 0 {
+					if cond.Kind == "BinaryOperator" && len(cond.Inner) == 2 {
+						right := walkName(&cond.Inner[1])
+						if strings.HasSuffix(right, "_len") {
+							arrName := strings.TrimSuffix(right, "_len")
+							if arr, ok := arrays[arrName]; ok {
+								if containsPrint(body) {
+									prints = append(prints, arr...)
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		for i := range n.Inner {
+			walkLoops(&n.Inner[i])
+		}
+	}
+	walkLoops(p.Root)
 	return prints
+}
+
+func containsPrint(n *Node) bool {
+	if n.Kind == "CallExpr" {
+		if callee := calleeName(n); callee == "printf" || callee == "puts" {
+			return true
+		}
+	}
+	for i := range n.Inner {
+		if containsPrint(&n.Inner[i]) {
+			return true
+		}
+	}
+	return false
 }
