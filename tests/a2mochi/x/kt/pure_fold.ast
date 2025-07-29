@@ -1,0 +1,7 @@
+(program
+  (fun triple
+    (param x (type int))
+    (type int)
+  )
+  (fun main)
+)

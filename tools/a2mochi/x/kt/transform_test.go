@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"flag"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -121,10 +120,6 @@ func runCase(t *testing.T, name, srcPath, outDir, root string) {
 }
 
 func TestTransform_Golden(t *testing.T) {
-	if _, err := exec.LookPath("kotlinc"); err != nil {
-		t.Skipf("kotlinc not installed: %v", err)
-	}
-
 	t.Setenv("MOCHI_HEADER_TIME", "2006-01-02T15:04:05Z")
 
 	root := repoRoot(t)
@@ -139,52 +134,12 @@ func TestTransform_Golden(t *testing.T) {
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/kt")
 	os.MkdirAll(outDir, 0o755)
-	allowed := map[string]bool{
-		"print_hello":         true,
-		"append_builtin":      true,
-		"basic_compare":       true,
-		"avg_builtin":         true,
-		"let_and_print":       true,
-		"list_index":          true,
-		"while_loop":          true,
-		"fun_three_args":      true,
-		"binary_precedence":   true,
-		"bool_chain":          true,
-		"fun_call":            true,
-		"len_builtin":         true,
-		"len_string":          true,
-		"string_concat":       true,
-		"unary_neg":           true,
-		"count_builtin":       true,
-		"for_loop":            true,
-		"if_else":             true,
-		"string_compare":      true,
-		"var_assignment":      true,
-		"sum_builtin":         true,
-		"list_assign":         true,
-		"map_assign":          true,
-		"slice":               true,
-		"str_builtin":         true,
-		"string_prefix_slice": true,
-		"closure":             true,
-		"cast_struct":         true,
-		"group_by":            true,
-		"break_continue":      true,
-		"short_circuit":       true,
-		"typed_let":           true,
-		"typed_var":           true,
-		"cast_string_to_int":  true,
-		"fun_expr_in_let":     true,
-		"len_map":             true,
-		"map_in_operator":     true,
-		"string_contains":     true,
+	if matches, _ := filepath.Glob(filepath.Join(outDir, "*.mochi")); len(matches) == 0 && !*update {
+		t.Skip("golden files not present")
 	}
 
 	for _, srcPath := range files {
 		name := strings.TrimSuffix(filepath.Base(srcPath), ".kt")
-		if !allowed[name] {
-			continue
-		}
 		t.Run(name, func(t *testing.T) {
 			runCase(t, name, srcPath, outDir, root)
 		})

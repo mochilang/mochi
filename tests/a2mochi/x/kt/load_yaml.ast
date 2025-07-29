@@ -1,0 +1,21 @@
+(program
+  (fun _load
+    (param path (type string))
+    (param opts (type "map<string, any>"))
+    (type "list<map<string, any>>")
+  )
+  (fun loadYamlSimple
+    (param lines (type list<string>))
+    (type "list<map<string, any>>")
+  )
+  (fun parseSimpleValue
+    (param s (type string))
+    (type any)
+  )
+  (type Person
+    (field name (type string))
+    (field age (type int))
+    (field email (type string))
+  )
+  (fun main)
+)

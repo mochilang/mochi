@@ -1,0 +1,12 @@
+(program
+  (fun _expect
+    (param cond (type bool))
+  )
+  (type Person
+    (field name (type string))
+    (field age (type int))
+    (field status (type string))
+  )
+  (fun test_update_adult_status)
+  (fun main)
+)

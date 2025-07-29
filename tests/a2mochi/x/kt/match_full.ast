@@ -1,0 +1,7 @@
+(program
+  (fun classify
+    (param n (type int))
+    (type string)
+  )
+  (fun main)
+)

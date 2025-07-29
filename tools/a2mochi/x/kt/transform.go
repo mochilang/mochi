@@ -4,6 +4,7 @@ package kt
 
 import (
 	"fmt"
+	"strings"
 
 	"mochi/ast"
 )
@@ -44,7 +45,7 @@ func varNode(n Node) *ast.Node {
 	if n.Kind == "var" {
 		kind = "var"
 	}
-	v := &ast.Node{Kind: kind, Value: n.Name}
+	v := &ast.Node{Kind: kind, Value: sanitizeName(n.Name)}
 	if n.Ret != "" {
 		if tn := typeNode(n.Ret); tn != nil {
 			v.Children = append(v.Children, tn)
@@ -54,9 +55,9 @@ func varNode(n Node) *ast.Node {
 }
 
 func funcNode(n Node) *ast.Node {
-	fn := &ast.Node{Kind: "fun", Value: n.Name}
+	fn := &ast.Node{Kind: "fun", Value: sanitizeName(n.Name)}
 	for _, prm := range n.Params {
-		pn := &ast.Node{Kind: "param", Value: prm.Name}
+		pn := &ast.Node{Kind: "param", Value: sanitizeName(prm.Name)}
 		if prm.Typ != "" {
 			if tn := typeNode(prm.Typ); tn != nil {
 				pn.Children = append(pn.Children, tn)
@@ -73,9 +74,9 @@ func funcNode(n Node) *ast.Node {
 }
 
 func typeDeclNode(n Node) *ast.Node {
-	typ := &ast.Node{Kind: "type", Value: n.Name}
+	typ := &ast.Node{Kind: "type", Value: sanitizeName(n.Name)}
 	for _, f := range n.Fields {
-		fld := &ast.Node{Kind: "field", Value: f.Name}
+		fld := &ast.Node{Kind: "field", Value: sanitizeName(f.Name)}
 		if f.Typ != "" {
 			if tn := typeNode(f.Typ); tn != nil {
 				fld.Children = append(fld.Children, tn)
@@ -84,4 +85,55 @@ func typeDeclNode(n Node) *ast.Node {
 		typ.Children = append(typ.Children, fld)
 	}
 	return typ
+}
+
+func sanitizeName(s string) string {
+	s = strings.ReplaceAll(s, "-", "_")
+	s = strings.ReplaceAll(s, "?", "_p")
+	s = strings.ReplaceAll(s, "!", "_bang")
+	if reserved[s] {
+		s = "_" + s
+	}
+	if s == "" {
+		return "_"
+	}
+	if s[0] >= '0' && s[0] <= '9' {
+		s = "_" + s
+	}
+	return s
+}
+
+var reserved = map[string]bool{
+	"expect":    true,
+	"test":      true,
+	"agent":     true,
+	"intention": true,
+	"stream":    true,
+	"emit":      true,
+	"type":      true,
+	"fun":       true,
+	"extern":    true,
+	"import":    true,
+	"return":    true,
+	"break":     true,
+	"continue":  true,
+	"let":       true,
+	"var":       true,
+	"if":        true,
+	"else":      true,
+	"then":      true,
+	"for":       true,
+	"while":     true,
+	"in":        true,
+	"generate":  true,
+	"match":     true,
+	"fetch":     true,
+	"load":      true,
+	"save":      true,
+	"package":   true,
+	"export":    true,
+	"fact":      true,
+	"rule":      true,
+	"all":       true,
+	"null":      true,
 }

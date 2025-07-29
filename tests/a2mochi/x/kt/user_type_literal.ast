@@ -1,0 +1,11 @@
+(program
+  (type Person
+    (field name (type string))
+    (field age (type int))
+  )
+  (type Book
+    (field title (type string))
+    (field author (type Person))
+  )
+  (fun main)
+)

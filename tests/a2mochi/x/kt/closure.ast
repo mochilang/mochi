@@ -1,7 +1,7 @@
 (program
   (fun makeAdder
     (param n (type int))
-    (typefun (type int) (type int))
+    (type "fun(int): int")
   )
   (fun main)
 )
