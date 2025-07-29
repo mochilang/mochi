@@ -1,0 +1,64 @@
+(program
+  (var prefix (type string))
+  (var s1 (type string))
+  (var s2 (type string))
+  (assign prefix (string fore))
+  (assign s1 (string forest))
+  (assign s2 (string desert))
+  (call print
+    (binary ==
+      (call substring
+        (selector s1)
+        (binary -
+          (group
+            (binary + (int 0) (int 1))
+          )
+          (int 1)
+        )
+        (binary +
+          (binary -
+            (group
+              (binary + (int 0) (int 1))
+            )
+            (int 1)
+          )
+          (group
+            (binary -
+              (call len (selector prefix))
+              (group (int 0))
+            )
+          )
+        )
+      )
+      (selector prefix)
+    )
+  )
+  (call print
+    (binary ==
+      (call substring
+        (selector s2)
+        (binary -
+          (group
+            (binary + (int 0) (int 1))
+          )
+          (int 1)
+        )
+        (binary +
+          (binary -
+            (group
+              (binary + (int 0) (int 1))
+            )
+            (int 1)
+          )
+          (group
+            (binary -
+              (call len (selector prefix))
+              (group (int 0))
+            )
+          )
+        )
+      )
+      (selector prefix)
+    )
+  )
+)

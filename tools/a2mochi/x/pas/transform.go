@@ -28,7 +28,7 @@ func Transform(n *Node) (*ast.Node, error) {
 	}
 	prog, err := parser.ParseString(string(out))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("parse error: %v\n%s", err, out)
 	}
 	node := &ast.Node{Kind: "program"}
 	if prog.Package != "" {
@@ -71,9 +71,18 @@ func convertStringLits(s string) string {
 	return b.String()
 }
 
+var (
+	andRe = regexp.MustCompile(`\band\b`)
+	orRe  = regexp.MustCompile(`\bor\b`)
+	notRe = regexp.MustCompile(`\bnot\b`)
+)
+
 func convertOps(s string) string {
 	s = strings.ReplaceAll(s, "<>", "!=")
 	s = strings.ReplaceAll(s, " = ", " == ")
+	s = andRe.ReplaceAllString(s, "&&")
+	s = orRe.ReplaceAllString(s, "||")
+	s = notRe.ReplaceAllString(s, "!")
 	return s
 }
 
@@ -85,6 +94,13 @@ func convertExpr(s string) string {
 	return s
 }
 
+var (
+	highRe   = regexp.MustCompile(`High\(([^\)]+)\)`)
+	copyRe   = regexp.MustCompile(`copy\(([^,]+),\s*([^,]+),\s*([^\)]+)\)`)
+	posRe    = regexp.MustCompile(`Pos\(([^,]+),\s*([^\)]+)\)`)
+	posCmpRe = regexp.MustCompile(`Pos\(([^,]+),\s*([^\)]+)\)\s*(<>|=)\s*0`)
+)
+
 func convertBuiltins(s string) string {
 	s = strings.ReplaceAll(s, "Length(", "len(")
 	s = strings.ReplaceAll(s, "length(", "len(")
@@ -93,6 +109,39 @@ func convertBuiltins(s string) string {
 		inner := s[len("BoolToStr(") : len(s)-len(", True)")]
 		s = inner
 	}
+	s = highRe.ReplaceAllString(s, "len($1) - 1")
+	s = posCmpRe.ReplaceAllStringFunc(s, func(m string) string {
+		parts := posCmpRe.FindStringSubmatch(m)
+		if len(parts) < 4 {
+			return m
+		}
+		sub := strings.TrimSpace(parts[1])
+		str := strings.TrimSpace(parts[2])
+		op := parts[3]
+		if op == "<>" {
+			return fmt.Sprintf("%s.contains(%s)", str, sub)
+		}
+		return fmt.Sprintf("!%s.contains(%s)", str, sub)
+	})
+	s = copyRe.ReplaceAllStringFunc(s, func(m string) string {
+		parts := copyRe.FindStringSubmatch(m)
+		if len(parts) < 4 {
+			return m
+		}
+		src := strings.TrimSpace(parts[1])
+		start := strings.TrimSpace(parts[2])
+		length := strings.TrimSpace(parts[3])
+		return fmt.Sprintf("substring(%s, (%s)-1, (%s)-1 + %s)", src, start, start, length)
+	})
+	s = posRe.ReplaceAllStringFunc(s, func(m string) string {
+		parts := posRe.FindStringSubmatch(m)
+		if len(parts) < 3 {
+			return m
+		}
+		sub := strings.TrimSpace(parts[1])
+		str := strings.TrimSpace(parts[2])
+		return fmt.Sprintf("%s.contains(%s)", str, sub)
+	})
 	return s
 }
 
@@ -206,6 +255,7 @@ func convertFallback(src string) ([]byte, error) {
 	var out []string
 	inBody := false
 	inFunc := false
+	funcName := ""
 	loopDepth := 0
 	ifDepth := 0
 	inRepeat := false
@@ -373,6 +423,7 @@ func convertFallback(src string) ([]byte, error) {
 					continue
 				}
 				inFunc = true
+				funcName = name
 				if ret != "" {
 					appendLine(fmt.Sprintf("fun %s(%s): %s {", name, params, ret))
 				} else {
@@ -484,7 +535,8 @@ func convertFallback(src string) ([]byte, error) {
 			waitingBegin = true
 
 		case strings.HasPrefix(lowerStmt, "writeln("):
-			expr := convertExpr(strings.TrimSuffix(strings.TrimPrefix(stmt, "writeln("), ")"))
+			expr := strings.TrimSuffix(strings.TrimPrefix(stmt, "writeln("), ");")
+			expr = convertExpr(expr)
 			appendLine(fmt.Sprintf("print(%s)", expr))
 
 		case strings.HasPrefix(lowerStmt, "setlength("):
@@ -498,7 +550,11 @@ func convertFallback(src string) ([]byte, error) {
 			parts := strings.SplitN(stmt, ":=", 2)
 			name := strings.TrimSpace(parts[0])
 			expr := convertExpr(strings.TrimSuffix(strings.TrimSpace(parts[1]), ";"))
-			appendLine(fmt.Sprintf("%s = %s", name, expr))
+			if inFunc && name == funcName {
+				appendLine(fmt.Sprintf("return %s", expr))
+			} else {
+				appendLine(fmt.Sprintf("%s = %s", name, expr))
+			}
 
 		case lowerStmt == "exit" && inFunc:
 			appendLine("return")
