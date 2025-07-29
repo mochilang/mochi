@@ -1,5 +1,5 @@
 (program
-  (var n (type int))
+  (var n (type int) (int 0))
   (for n
     (in
       (list (int 1) (int 2) (int 3))

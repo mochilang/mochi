@@ -1,5 +1,5 @@
-error[T002]: undefined variable: of
+error[T001]: assignment to undeclared variable: of
   --> :4:1
 
 help:
-  Check if the variable was declared in this scope.
+  Declare `of` first using `let`.

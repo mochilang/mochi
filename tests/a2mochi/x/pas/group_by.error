@@ -14,14 +14,14 @@ type Anon12 {
   count: int
   avg_age: float
 }
-var people: list<anon10>
-var grp1: list<anon11>
-var idx2: int
-var i3: int
-var sum4: int
-var stats: list<anon12>
-var person: Anon10
-var s: int
+var people: list<anon10> = []
+var grp1: list<anon11> = []
+var idx2: int = 0
+var i3: int = 0
+var sum4: int = 0
+var stats: list<anon12> = []
+var person: Anon10 = nil
+var s: int = 0
 people = [{name: "Alice", age: 30, city: "Paris"}, {name: "Bob", age: 15, city: "Hanoi"}, {name: "Charlie", age: 65, city: "Paris"}, {name: "Diana", age: 45, city: "Hanoi"}, {name: "Eve", age: 70, city: "Paris"}, {name: "Frank", age: 22, city: "Hanoi"}]
 grp1 = []
 for person in people {

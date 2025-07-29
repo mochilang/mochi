@@ -1,5 +1,5 @@
-error[T008]: type mismatch: expected Anon46, got {string: int}
-  --> :6:10
+error[T002]: undefined variable: nil
+  --> :5:22
 
 help:
-  Change the value to match the expected type.
+  Check if the variable was declared in this scope.

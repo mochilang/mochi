@@ -45,20 +45,20 @@ for x in arr1 {
 Result = Result + (x.l.l_extendedprice * (1 - x.l.l_discount))
 }
 }
-var nation: list<anon1>
-var customer: list<anon2>
-var orders: list<anon3>
-var lineitem: list<anon4>
-var start_date: string
-var end_date: string
-var i6: int
-var j7: int
-var tmp8: Anon5
-var result: list<anon5>
-var c: Anon2
-var l: Anon4
-var o: Anon3
-var n: Anon1
+var nation: list<anon1> = []
+var customer: list<anon2> = []
+var orders: list<anon3> = []
+var lineitem: list<anon4> = []
+var start_date: string = ""
+var end_date: string = ""
+var i6: int = 0
+var j7: int = 0
+var tmp8: Anon5 = nil
+var result: list<anon5> = []
+var c: Anon2 = nil
+var l: Anon4 = nil
+var o: Anon3 = nil
+var n: Anon1 = nil
 nation = [{n_nationkey: 1, n_name: "BRAZIL"}]
 customer = [{c_custkey: 1, c_name: "Alice", c_acctbal: 100, c_nationkey: 1, c_address: "123 St", c_phone: "123-456", c_comment: "Loyal"}]
 orders = [{o_orderkey: 1000, o_custkey: 1, o_orderdate: "1993-10-15"}, {o_orderkey: 2000, o_custkey: 1, o_orderdate: "1994-01-02"}]

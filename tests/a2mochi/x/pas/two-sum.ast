@@ -59,12 +59,13 @@
       )
     )
   )
-  (var n (type int))
+  (var n (type int) (int 0))
   (var result
     (type list (type int))
+    (list)
   )
-  (var j (type int))
-  (var i (type int))
+  (var j (type int) (int 0))
+  (var i (type int) (int 0))
   (assign n
     (call len (selector nums))
   )

@@ -1,6 +1,6 @@
 (program
-  (var a (type int))
-  (var b (type int))
+  (var a (type int) (int 0))
+  (var b (type int) (int 0))
   (assign a
     (binary - (int 10) (int 3))
   )

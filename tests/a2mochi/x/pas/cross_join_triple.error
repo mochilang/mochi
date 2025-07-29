@@ -4,14 +4,14 @@ type Anon5 {
   l: string
   b: bool
 }
-var nums: list<int>
-var letters: list<string>
-var bools: list<bool>
-var combos: list<anon5>
-var c: int
-var n: int
-var l: string
-var b: bool
+var nums: list<int> = []
+var letters: list<string> = []
+var bools: list<bool> = []
+var combos: list<anon5> = []
+var c: int = 0
+var n: int = 0
+var l: string = ""
+var b: bool = false
 nums = [1, 2]
 letters = ["A", "B"]
 bools = [true, false]

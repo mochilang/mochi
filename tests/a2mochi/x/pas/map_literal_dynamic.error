@@ -3,9 +3,9 @@ type Anon48 {
   a
   b
 }
-var x: int
-var y: int
-var m: Anon48
+var x: int = 0
+var y: int = 0
+var m: Anon48 = nil
 x = 3
 y = 4
 m = {a: x, b: y}

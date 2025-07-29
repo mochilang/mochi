@@ -1,5 +1,5 @@
 (program
-  (var x (type int))
+  (var x (type int) (int 0))
   (assign x (int 5))
   (if
     (binary > (selector x) (int 3))

@@ -5,11 +5,13 @@
   )
   (var items
     (type list (type anon60))
+    (list)
   )
   (var result
     (type list (type string))
+    (list)
   )
-  (var i (type Anon60))
+  (var i (type Anon60) (selector nil))
   (assign items
     (list
       (map

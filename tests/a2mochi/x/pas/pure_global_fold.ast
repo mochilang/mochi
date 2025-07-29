@@ -6,7 +6,7 @@
       (binary + (selector x) (selector k))
     )
   )
-  (var k (type int))
+  (var k (type int) (int 0))
   (assign k (int 2))
   (call print
     (call inc (int 3))

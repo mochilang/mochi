@@ -6,7 +6,7 @@
       (binary * (selector x) (selector x))
     )
   )
-  (var square (type int))
+  (var square (type int) (int 0))
   (assign square (selector anon0))
   (call print
     (call square (int 6))

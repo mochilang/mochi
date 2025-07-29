@@ -8,10 +8,10 @@ type Anon1 {
   name: string
   email: string
 }
-var people: list<person>
-var adults: list<anon1>
-var p: Person
-var a: int
+var people: list<person> = []
+var adults: list<anon1> = []
+var p: Person = nil
+var a: int = 0
 people = [{name: "Alice", age: 30, email: "alice@example.com"}, {name: "Bob", age: 15, email: "bob@example.com"}, {name: "Charlie", age: 20, email: "charlie@example.com"}]
 adults = []
 for p in people {

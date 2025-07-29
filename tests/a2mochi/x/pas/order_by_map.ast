@@ -5,11 +5,13 @@
   )
   (var data
     (type list (type anon52))
+    (list)
   )
   (var sorted
     (type list (type anon52))
+    (list)
   )
-  (var x (type Anon52))
+  (var x (type Anon52) (selector nil))
   (assign data
     (list
       (map

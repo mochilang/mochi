@@ -5,12 +5,14 @@
   )
   (var products
     (type list (type anon6))
+    (list)
   )
   (var expensive
     (type list (type anon6))
+    (list)
   )
-  (var p (type Anon6))
-  (var item (type int))
+  (var p (type Anon6) (selector nil))
+  (var item (type int) (int 0))
   (assign products
     (list
       (map

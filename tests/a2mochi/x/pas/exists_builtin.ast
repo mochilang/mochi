@@ -1,12 +1,14 @@
 (program
   (var data
     (type list (type int))
+    (list)
   )
   (var tmp1
     (type list (type int))
+    (list)
   )
-  (var flag (type bool))
-  (var x (type int))
+  (var flag (type bool) (bool false))
+  (var x (type int) (int 0))
   (assign data
     (list (int 1) (int 2))
   )

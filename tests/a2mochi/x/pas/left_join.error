@@ -13,13 +13,13 @@ type Anon40 {
   customer: Anon38
   total: int
 }
-var customers: list<anon38>
-var orders: list<anon39>
-var matched2: bool
-var result: list<anon40>
-var o: Anon39
-var c: Anon38
-var entry: int
+var customers: list<anon38> = []
+var orders: list<anon39> = []
+var matched2: bool = false
+var result: list<anon40> = []
+var o: Anon39 = nil
+var c: Anon38 = nil
+var entry: int = 0
 customers = [{id: 1, name: "Alice"}, {id: 2, name: "Bob"}]
 orders = [{id: 100, customerId: 1, total: 250}, {id: 101, customerId: 3, total: 80}]
 result = []
