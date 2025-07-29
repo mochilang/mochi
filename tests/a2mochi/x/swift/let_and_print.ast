@@ -1,7 +1,10 @@
 (program
-  (var a (int 10))
-  (var b (int 20))
+  (let a (int 10))
+  (let b (int 20))
   (call print
-    (binary + (selector a) (selector b))
+    (binary +
+      (selector a)
+      (group (selector b))
+    )
   )
 )

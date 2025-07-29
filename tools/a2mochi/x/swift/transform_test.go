@@ -5,11 +5,14 @@ package swift_test
 import (
 	"bytes"
 	"flag"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	"mochi/parser"
 	"mochi/runtime/vm"
@@ -40,26 +43,47 @@ func repoRoot(t *testing.T) string {
 	return ""
 }
 
-func runMochi(t *testing.T, src string) []byte {
+func runMochi(t *testing.T, src string) ([]byte, error) {
 	t.Helper()
 	prog, err := parser.ParseString(src)
 	if err != nil {
-		t.Fatal(err)
+		return nil, err
 	}
 	env := types.NewEnv(nil)
 	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatal(errs[0])
+		return nil, errs[0]
 	}
 	p, err := vm.Compile(prog, env)
 	if err != nil {
-		t.Fatal(err)
+		return nil, err
 	}
 	var out bytes.Buffer
 	m := vm.New(p, &out)
 	if err := m.Run(); err != nil {
-		t.Fatal(err)
+		return nil, err
 	}
-	return bytes.TrimSpace(out.Bytes())
+	return bytes.TrimSpace(out.Bytes()), nil
+}
+
+func runMochiNoTest(src string) ([]byte, error) {
+	prog, err := parser.ParseString(src)
+	if err != nil {
+		return nil, err
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		return nil, errs[0]
+	}
+	p, err := vm.Compile(prog, env)
+	if err != nil {
+		return nil, err
+	}
+	var out bytes.Buffer
+	m := vm.New(p, &out)
+	if err := m.Run(); err != nil {
+		return nil, err
+	}
+	return bytes.TrimSpace(out.Bytes()), nil
 }
 
 func TestTransformGolden(t *testing.T) {
@@ -112,6 +136,9 @@ func TestTransformGolden(t *testing.T) {
 		"string_index":        true,
 		"substring_builtin":   true,
 		"string_in_operator":  true,
+		"append_builtin":      true,
+		"avg_builtin":         true,
+		"let_and_print":       true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "swift")
 	os.MkdirAll(outDir, 0o755)
@@ -125,23 +152,33 @@ func TestTransformGolden(t *testing.T) {
 		})
 	}
 	if *updateGolden {
-		swift.UpdateReadmeForTests()
+		updateReadme()
 	}
 }
 
 func testFile(t *testing.T, root, outDir, src string) {
 	t.Helper()
 	name := strings.TrimSuffix(filepath.Base(src), ".swift")
+	errPath := filepath.Join(outDir, name+".error")
 	data, err := os.ReadFile(src)
 	if err != nil {
+		if *updateGolden {
+			os.WriteFile(errPath, []byte("read: "+err.Error()), 0o644)
+		}
 		t.Fatalf("read: %v", err)
 	}
 	prog, err := swift.Parse(string(data))
 	if err != nil {
+		if *updateGolden {
+			os.WriteFile(errPath, []byte("parse: "+err.Error()), 0o644)
+		}
 		t.Fatalf("parse: %v", err)
 	}
 	node, err := swift.Transform(prog)
 	if err != nil {
+		if *updateGolden {
+			os.WriteFile(errPath, []byte("convert: "+err.Error()), 0o644)
+		}
 		t.Fatalf("convert: %v", err)
 	}
 	astPath := filepath.Join(outDir, name+".ast")
@@ -158,13 +195,22 @@ func testFile(t *testing.T, root, outDir, src string) {
 	}
 	code, err := swift.Print(node)
 	if err != nil {
+		if *updateGolden {
+			os.WriteFile(errPath, []byte("print: "+err.Error()), 0o644)
+		}
 		t.Fatalf("print: %v", err)
 	}
 	mochiPath := filepath.Join(outDir, name+".mochi")
 	if *updateGolden {
 		os.WriteFile(mochiPath, []byte(code), 0o644)
 	}
-	gotOut := runMochi(t, code)
+	gotOut, err := runMochi(t, code)
+	if err != nil {
+		if *updateGolden {
+			os.WriteFile(errPath, []byte("run: "+err.Error()), 0o644)
+		}
+		t.Fatalf("run: %v", err)
+	}
 	if *updateGolden {
 		os.WriteFile(filepath.Join(outDir, name+".out"), gotOut, 0o644)
 	}
@@ -172,8 +218,58 @@ func testFile(t *testing.T, root, outDir, src string) {
 	if err != nil {
 		t.Fatalf("missing vm source: %v", err)
 	}
-	wantOut := runMochi(t, string(vmSrc))
+	wantOut, err := runMochi(t, string(vmSrc))
+	if err != nil {
+		t.Fatalf("vm run: %v", err)
+	}
 	if !bytes.Equal(gotOut, wantOut) {
+		if *updateGolden {
+			os.WriteFile(errPath, []byte("output mismatch\nGot: "+string(gotOut)+"\nWant: "+string(wantOut)), 0o644)
+		}
 		t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
 	}
+	_ = os.Remove(errPath)
+}
+
+func updateReadme() {
+	root := repoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "transpiler", "x", "swift")
+	outDir := filepath.Join(root, "tests", "a2mochi", "x", "swift")
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.swift"))
+	sort.Strings(files)
+	total := len(files)
+	passed := 0
+	var lines []string
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".swift")
+		mark := "[ ]"
+		outPath := filepath.Join(outDir, name+".out")
+		if outData, err := os.ReadFile(outPath); err == nil {
+			vmSrc, err2 := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
+			if err2 == nil {
+				want, err3 := runMochiNoTest(string(vmSrc))
+				if err3 == nil && bytes.Equal(bytes.TrimSpace(outData), want) {
+					passed++
+					mark = "[x]"
+				}
+			}
+		}
+		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+	}
+	tz := time.FixedZone("GMT+7", 7*60*60)
+	var buf bytes.Buffer
+	buf.WriteString("# a2mochi Swift Converter\n\n")
+	fmt.Fprintf(&buf, "Completed programs: %d/%d\n", passed, total)
+	fmt.Fprintf(&buf, "Date: %s\n\n", time.Now().In(tz).Format("2006-01-02 15:04 MST"))
+	buf.WriteString("This directory holds golden outputs for the Swift to Mochi converter. Each `.swift` source in `tests/transpiler/x/swift` has a matching `.mochi` and `.ast` file generated by the tests.\n\n")
+	buf.WriteString("## Checklist\n")
+	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteByte('\n')
+	_ = os.WriteFile(filepath.Join(root, "tools", "a2mochi", "x", "swift", "README.md"), buf.Bytes(), 0o644)
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	os.Exit(code)
 }
