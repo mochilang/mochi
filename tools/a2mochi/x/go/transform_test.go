@@ -191,6 +191,7 @@ func TestTransform_Golden(t *testing.T) {
 		"in_operator":         true,
 		"json_builtin":        true,
 		"test_block":          true,
+		"update_stmt":         true,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/go")

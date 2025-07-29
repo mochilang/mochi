@@ -187,6 +187,32 @@ func transformStmt(st ast.Stmt) []*mast.Node {
 		if id, ok := s.Value.(*ast.Ident); ok {
 			varName = id.Name
 		}
+		// handle "for i, v := range slice" by translating to an index
+		// based loop: for i in range(0, len(slice)) { v := slice[i]; ... }
+		if key, ok := s.Key.(*ast.Ident); ok && key.Name != "_" && s.Value != nil {
+			iter := transformExpr(s.X)
+			rng := &mast.Node{Kind: "range", Children: []*mast.Node{
+				{Kind: "int", Value: 0},
+				{Kind: "call", Value: "len", Children: []*mast.Node{iter}},
+			}}
+			body := transformBlock(s.Body)
+			idx := &mast.Node{Kind: "index", Children: []*mast.Node{
+				transformExpr(s.X),
+				&mast.Node{Kind: "selector", Value: key.Name},
+			}}
+			if varName != "_" {
+				body.Children = append([]*mast.Node{{
+					Kind:     "let",
+					Value:    varName,
+					Children: []*mast.Node{idx},
+				}}, body.Children...)
+			}
+			return []*mast.Node{{
+				Kind:     "for",
+				Value:    key.Name,
+				Children: []*mast.Node{rng, body},
+			}}
+		}
 		iterExpr := s.X
 		if call, ok := s.X.(*ast.CallExpr); ok {
 			if fn, ok := call.Fun.(*ast.FuncLit); ok {
