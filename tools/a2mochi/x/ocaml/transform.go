@@ -136,7 +136,7 @@ func convertExpr(expr string) []string {
 	var lines []string
 
 	// handle leading let-bindings: let x = ... in ...
-	reLet := regexp.MustCompile(`(?s)^let\s+([A-Za-z0-9_']+)\s*=\s*(.*?)\s+in\s*(.*)$`)
+	reLet := regexp.MustCompile(`(?s)^let\s+([A-Za-z0-9_']+)(?:\s*:[^=]+)?\s*=\s*(.*?)\s+in\s*(.*)$`)
 	for {
 		m := reLet.FindStringSubmatch(expr)
 		if m == nil {

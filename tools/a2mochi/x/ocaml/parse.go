@@ -53,6 +53,7 @@ type Field struct {
 // The script is implemented using tree-sitter and shipped with the repository,
 // so no external tools are required other than Node.js.
 func Parse(src string) (*Program, error) {
+	src = stripGenerated(src)
 	tmp, err := os.CreateTemp("", "ocaml-*.ml")
 	if err != nil {
 		return nil, err
@@ -86,4 +87,16 @@ func Parse(src string) (*Program, error) {
 	}
 	prog.Source = src
 	return &prog, nil
+}
+
+func stripGenerated(src string) string {
+	lines := strings.Split(src, "\n")
+	if len(lines) > 0 && strings.HasPrefix(strings.TrimSpace(lines[0]), "(* Generated") {
+		i := 1
+		for i < len(lines) && strings.TrimSpace(lines[i]) == "" {
+			i++
+		}
+		lines = lines[i:]
+	}
+	return strings.Join(lines, "\n")
 }
