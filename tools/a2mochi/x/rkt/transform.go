@@ -231,6 +231,23 @@ func formNodeWithMut(d any, mutated map[string]bool) *ast.Node {
 			arg = list[1]
 		}
 		return &ast.Node{Kind: "call", Value: "print", Children: []*ast.Node{exprNode(arg)}}
+	case "if":
+		if len(list) >= 3 {
+			cond := exprNode(list[1])
+			thenBlock := &ast.Node{Kind: "block"}
+			if c := formNodeWithMut(list[2], mutated); c != nil {
+				thenBlock.Children = append(thenBlock.Children, c)
+			}
+			n := &ast.Node{Kind: "if", Children: []*ast.Node{cond, thenBlock}}
+			if len(list) >= 4 {
+				elseBlock := &ast.Node{Kind: "block"}
+				if c := formNodeWithMut(list[3], mutated); c != nil {
+					elseBlock.Children = append(elseBlock.Children, c)
+				}
+				n.Children = append(n.Children, elseBlock)
+			}
+			return n
+		}
 	case "let":
 		if len(list) == 4 {
 			if name, ok := symString(list[1]); ok {
@@ -332,6 +349,42 @@ func exprNode(d any) *ast.Node {
 		head, _ := symString(v[0])
 		args := v[1:]
 		switch head {
+		case "displayln":
+			var arg any
+			if len(args) > 0 {
+				arg = args[0]
+			}
+			return &ast.Node{Kind: "call", Value: "print", Children: []*ast.Node{exprNode(arg)}}
+		case "sublist":
+			if len(args) >= 3 {
+				start := &ast.Node{Kind: "start", Children: []*ast.Node{exprNode(args[1])}}
+				end := &ast.Node{Kind: "end", Children: []*ast.Node{exprNode(args[2])}}
+				return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(args[0]), start, end}}
+			}
+		case "lambda":
+			if len(args) >= 1 {
+				fn := &ast.Node{Kind: "funexpr"}
+				if params, ok := args[0].([]any); ok {
+					for _, p := range params {
+						if s, ok := symString(p); ok {
+							fn.Children = append(fn.Children, &ast.Node{Kind: "param", Value: s, Children: []*ast.Node{{Kind: "type", Value: "int"}}})
+						}
+					}
+				}
+				retType := "int"
+				if len(args) > 1 {
+					if _, ok := args[len(args)-1].(bool); ok {
+						retType = "bool"
+					}
+					fn.Children = append(fn.Children, &ast.Node{Kind: "type", Value: retType})
+					fn.Children = append(fn.Children, exprNode(args[len(args)-1]))
+				}
+				return fn
+			}
+		case "begin":
+			if len(args) > 0 {
+				return exprNode(args[len(args)-1])
+			}
 		case "list":
 			n := &ast.Node{Kind: "list"}
 			for _, e := range args {
@@ -366,7 +419,7 @@ func exprNode(d any) *ast.Node {
 		case "string-ref", "list-ref", "hash-ref":
 			return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(v[1]), exprNode(v[2])}}
 		case "substring":
-			n := &ast.Node{Kind: "call", Value: "substr"}
+			n := &ast.Node{Kind: "call", Value: "substring"}
 			n.Children = append(n.Children, exprNode(v[1]), exprNode(v[2]))
 			if len(v) > 3 {
 				n.Children = append(n.Children, exprNode(v[3]))
