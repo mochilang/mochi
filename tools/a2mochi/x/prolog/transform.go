@@ -95,11 +95,35 @@ func parseBodyNodes(body string) ([]*ast.Node, error) {
 			if err != nil {
 				return nil, err
 			}
-			out = append(out, node("if", nil,
-				condNode,
-				node("block", nil, thenNodes...),
-				node("block", nil, elseNodes...),
-			))
+			if len(thenNodes) == 1 && thenNodes[0].Kind == "let" {
+				varName := fmt.Sprint(thenNodes[0].Value)
+				init, _ := parseExpr("\"\"")
+				for i, n := range thenNodes {
+					if n.Kind == "let" && n.Value == varName {
+						thenNodes[i] = node("assign", varName, n.Children[0])
+					}
+				}
+				if len(elseNodes) >= 1 && elseNodes[0].Kind == "var" && elseNodes[0].Value == varName {
+					elseNodes = elseNodes[1:]
+				}
+				for i, n := range elseNodes {
+					if n.Kind == "let" && n.Value == varName {
+						elseNodes[i] = node("assign", varName, n.Children[0])
+					}
+				}
+				out = append(out, node("var", varName, init))
+				out = append(out, node("if", nil,
+					condNode,
+					node("block", nil, thenNodes...),
+					node("block", nil, elseNodes...),
+				))
+			} else {
+				out = append(out, node("if", nil,
+					condNode,
+					node("block", nil, thenNodes...),
+					node("block", nil, elseNodes...),
+				))
+			}
 		case strings.Contains(c, "->") && strings.Contains(c, ";"):
 			parts := strings.SplitN(c, "->", 2)
 			condStr := convertExpr(strings.TrimSpace(parts[0]))
@@ -119,11 +143,35 @@ func parseBodyNodes(body string) ([]*ast.Node, error) {
 			if err != nil {
 				return nil, err
 			}
-			out = append(out, node("if", nil,
-				condNode,
-				node("block", nil, thenNodes...),
-				node("block", nil, elseNodes...),
-			))
+			if len(thenNodes) == 1 && thenNodes[0].Kind == "let" {
+				varName := fmt.Sprint(thenNodes[0].Value)
+				init, _ := parseExpr("\"\"")
+				for i, n := range thenNodes {
+					if n.Kind == "let" && n.Value == varName {
+						thenNodes[i] = node("assign", varName, n.Children[0])
+					}
+				}
+				if len(elseNodes) >= 1 && elseNodes[0].Kind == "var" && elseNodes[0].Value == varName {
+					elseNodes = elseNodes[1:]
+				}
+				for i, n := range elseNodes {
+					if n.Kind == "let" && n.Value == varName {
+						elseNodes[i] = node("assign", varName, n.Children[0])
+					}
+				}
+				out = append(out, node("var", varName, init))
+				out = append(out, node("if", nil,
+					condNode,
+					node("block", nil, thenNodes...),
+					node("block", nil, elseNodes...),
+				))
+			} else {
+				out = append(out, node("if", nil,
+					condNode,
+					node("block", nil, thenNodes...),
+					node("block", nil, elseNodes...),
+				))
+			}
 		case strings.HasPrefix(c, "(") && strings.Contains(c, "->"):
 			expr := strings.TrimSuffix(strings.TrimPrefix(c, "("), ")")
 			parts := strings.SplitN(expr, "->", 2)
@@ -372,6 +420,8 @@ func convertExpr(expr string) string {
 	expr = strings.ReplaceAll(expr, "@>", ">")
 	expr = strings.ReplaceAll(expr, "@<", "<")
 	expr = strings.ReplaceAll(expr, " = ", " == ")
+	eqRe := regexp.MustCompile(`([^<>!:=\-])=([^=])`)
+	expr = eqRe.ReplaceAllString(expr, `$1==$2`)
 	expr = strings.ReplaceAll(expr, "map{", "{")
 	expr = strings.ReplaceAll(expr, "_{", "{")
 	expr = regexp.MustCompile(`^[A-Za-z0-9_]+{`).ReplaceAllStringFunc(expr, func(s string) string {

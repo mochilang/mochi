@@ -1,0 +1,25 @@
+(program
+  (fun main
+    (let _11486 (int 8))
+    (var _11504 (string ""))
+    (if
+      (binary > (selector _11486) (int 10))
+      (block
+        (assign _11504 (string big))
+      )
+      (block
+        (if
+          (binary > (selector _11486) (int 5))
+          (block
+            (assign _11504 (string medium))
+          )
+          (block
+            (assign _11504 (string small))
+          )
+        )
+      )
+    )
+    (call print (selector _11504))
+  )
+  (call main)
+)
