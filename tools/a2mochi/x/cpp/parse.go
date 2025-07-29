@@ -239,10 +239,13 @@ func walkAST(n *clangNode, src string, funcs *[]Func, enums *[]Enum, structs *[]
 	}
 	for i := range n.Inner {
 		nextParent := parent
-		if n.Kind == "CXXRecordDecl" || n.Kind == "RecordDecl" {
+		switch n.Kind {
+		case "CXXRecordDecl", "RecordDecl":
 			if n.Name != "" {
 				nextParent = n.Name
 			}
+		case "FunctionDecl", "CXXMethodDecl":
+			nextParent = "<func>"
 		}
 		if n.Inner[i].Kind == "CXXMethodDecl" {
 			continue

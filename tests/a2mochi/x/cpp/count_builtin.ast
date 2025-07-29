@@ -1,11 +1,9 @@
 (program
-  (var a (int 10))
-  (var b (type int) (int 20))
   (fun main
     (type int)
     (call print
-      (group
-        (binary + (selector a) (selector b))
+      (call len
+        (list (int 1) (int 2) (int 3))
       )
     )
     (return (int 0))

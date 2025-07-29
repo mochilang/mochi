@@ -1,9 +1,8 @@
 (program
+  (var auto)
   (fun main
     (type int)
-    (call print
-      (cast (string 1995) (type int))
-    )
+    (call json (selector m))
     (return (int 0))
   )
   (call main)
