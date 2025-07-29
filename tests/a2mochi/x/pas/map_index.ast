@@ -1,0 +1,16 @@
+(program
+  (type Anon47
+    (field a (type int))
+    (field b (type int))
+  )
+  (var m (type Anon47))
+  (assign m
+    (map
+      (entry (selector a) (int 1))
+      (entry (selector b) (int 2))
+    )
+  )
+  (call print
+    (index (selector m) (string b))
+  )
+)

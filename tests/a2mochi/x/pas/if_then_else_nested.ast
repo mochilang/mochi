@@ -1,0 +1,17 @@
+(program
+  (var x (type int))
+  (var msg (type string))
+  (assign x (int 8))
+  (assign msg
+    (call IfThen
+      (binary > (selector x) (int 10))
+      (string big)
+      (call IfThen
+        (binary > (selector x) (int 5))
+        (string medium)
+        (string small)
+      )
+    )
+  )
+  (call print (selector msg))
+)

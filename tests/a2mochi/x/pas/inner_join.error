@@ -1,0 +1,35 @@
+parse error: parse error: 27:23: unexpected token "," (expected ":" Expr)
+type Anon30 {
+  id: int
+  name: string
+}
+type Anon31 {
+  id: int
+  customerId: int
+  total: int
+}
+type Anon32 {
+  orderId: int
+  customerName: string
+  total: int
+}
+var customers: list<anon30>
+var orders: list<anon31>
+var result: list<anon32>
+var o: Anon31
+var c: Anon30
+var entry: int
+customers = [{id: 1, name: "Alice"}, {id: 2, name: "Bob"}, {id: 3, name: "Charlie"}]
+orders = [{id: 100, customerId: 1, total: 250}, {id: 101, customerId: 2, total: 125}, {id: 102, customerId: 1, total: 300}, {id: 103, customerId: 4, total: 80}]
+result = []
+for o in orders {
+for c in customers {
+if o.customerId == c.id {
+result = concat{result, [{orderId: o.id, customerName: c.name, total: o.total}]}
+}
+}
+}
+print("--- Orders with customer info ---")
+for entry in result {
+print("Order", entry.orderId, "by", entry.customerName, "- $", entry.total)
+}

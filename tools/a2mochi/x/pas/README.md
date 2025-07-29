@@ -1,18 +1,48 @@
 # a2mochi Pascal Converter
 
-Completed programs: 34/104
+Completed programs: 30/88
+Updated: 2025-07-29 20:50 GMT+7
 
 ## Checklist
+- [ ] append_builtin
+- [ ] avg_builtin
+- [ ] basic_compare
+- [ ] bench_block
 - [x] binary_precedence
-- [x] bool_chain
+- [ ] bool_chain
 - [x] break_continue
 - [x] cast_string_to_int
+- [ ] closure
 - [x] count_builtin
+- [ ] cross_join
+- [ ] cross_join_filter
+- [ ] cross_join_triple
+- [ ] dataset_sort_take_limit
+- [ ] dataset_where_filter
+- [x] exists_builtin
+- [x] for_list_collection
 - [x] for_loop
+- [ ] for_map_collection
 - [x] fun_call
+- [ ] fun_expr_in_let
 - [x] fun_three_args
 - [x] go_auto
+- [ ] group_by
+- [ ] group_by_conditional_sum
+- [ ] group_by_join
+- [ ] group_by_left_join
+- [ ] group_by_multi_join
+- [ ] group_by_multi_join_sort
+- [ ] group_by_multi_sort
 - [x] if_else
+- [ ] if_then_else
+- [ ] if_then_else_nested
+- [ ] in_operator
+- [ ] in_operator_extended
+- [ ] inner_join
+- [ ] join_multi
+- [ ] left_join
+- [ ] left_join_multi
 - [x] len_builtin
 - [x] len_map
 - [x] len_string
@@ -20,22 +50,45 @@ Completed programs: 34/104
 - [x] list_assign
 - [x] list_index
 - [x] list_nested_assign
-- [x] math_ops
+- [ ] load_yaml
+- [ ] map_assign
+- [ ] map_index
+- [ ] map_literal_dynamic
+- [ ] map_membership
+- [ ] map_nested_assign
+- [ ] math_ops
+- [ ] membership
+- [ ] min_max_builtin
+- [ ] order_by_map
+- [ ] outer_join
+- [ ] partial_application
 - [x] print_hello
-- [x] short_circuit
+- [x] pure_fold
+- [ ] pure_global_fold
+- [ ] python_auto
+- [ ] python_math
+- [ ] query_sum_select
+- [ ] record_assign
+- [ ] right_join
+- [ ] save_jsonl_stdout
+- [ ] short_circuit
+- [ ] slice
+- [ ] sort_stable
 - [x] str_builtin
-- [x] string_compare
+- [ ] string_compare
 - [x] string_concat
-- [x] string_contains
-- [x] string_in_operator
+- [ ] string_contains
+- [ ] string_in_operator
 - [x] string_index
-- [x] string_prefix_slice
+- [ ] string_prefix_slice
 - [x] substring_builtin
 - [x] sum_builtin
-- [x] typed_let
-- [x] typed_var
+- [x] tail_recursion
+- [x] test_block
+- [ ] two-sum
+- [ ] typed_let
+- [ ] typed_var
 - [x] unary_neg
+- [ ] values_builtin
 - [x] var_assignment
 - [x] while_loop
-
-Updated: 2025-07-29 15:41:01 GMT+7

@@ -1,0 +1,37 @@
+(program
+  (var data
+    (type list (type int))
+  )
+  (var tmp1
+    (type list (type int))
+  )
+  (var flag (type bool))
+  (var x (type int))
+  (assign data
+    (list (int 1) (int 2))
+  )
+  (assign tmp1 (list))
+  (for x
+    (in (selector data))
+    (block
+      (if
+        (binary == (selector x) (int 1))
+        (block
+          (assign tmp1
+            (call concat
+              (selector tmp1)
+              (list (selector x))
+            )
+          )
+        )
+      )
+    )
+  )
+  (assign flag
+    (binary >
+      (call len (selector tmp1))
+      (int 0)
+    )
+  )
+  (call print (selector flag))
+)

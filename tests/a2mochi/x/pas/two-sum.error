@@ -1,0 +1,5 @@
+error[T001]: assignment to undeclared variable: n
+  --> :3:3
+
+help:
+  Declare `n` first using `let`.

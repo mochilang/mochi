@@ -1,0 +1,24 @@
+(program
+  (type Counter
+    (field n (type int))
+  )
+  (fun inc
+    (param c (type Counter))
+    (assign
+      (selector n (selector c))
+      (binary +
+        (selector n (selector c))
+        (int 1)
+      )
+    )
+  )
+  (var c (type Counter))
+  (assign
+    (selector n (selector c))
+    (int 0)
+  )
+  (call inc (selector c))
+  (call print
+    (selector n (selector c))
+  )
+)

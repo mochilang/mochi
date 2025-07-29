@@ -1,0 +1,5 @@
+error[T002]: undefined variable: of
+  --> :4:1
+
+help:
+  Check if the variable was declared in this scope.

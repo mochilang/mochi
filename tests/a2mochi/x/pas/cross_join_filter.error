@@ -1,0 +1,25 @@
+parse error: parse error: 17:21: unexpected token "," (expected ":" Expr)
+type Anon4 {
+  n: int
+  l: string
+}
+var nums: list<int>
+var letters: list<string>
+var pairs: list<anon4>
+var n: int
+var l: string
+var p: int
+nums = [1, 2, 3]
+letters = ["A", "B"]
+pairs = []
+for n in nums {
+for l in letters {
+if (n % 2) == 0 {
+pairs = concat{pairs, [{n: n, l: l}]}
+}
+}
+}
+print("--- Even pairs ---")
+for p in pairs {
+print(p.n, p.l)
+}

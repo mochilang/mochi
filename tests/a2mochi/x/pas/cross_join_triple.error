@@ -1,0 +1,29 @@
+parse error: parse error: 21:23: unexpected token "," (expected ":" Expr)
+type Anon5 {
+  n: int
+  l: string
+  b: bool
+}
+var nums: list<int>
+var letters: list<string>
+var bools: list<bool>
+var combos: list<anon5>
+var c: int
+var n: int
+var l: string
+var b: bool
+nums = [1, 2]
+letters = ["A", "B"]
+bools = [true, false]
+combos = []
+for n in nums {
+for l in letters {
+for b in bools {
+combos = concat{combos, [{n: n, l: l, b: b}]}
+}
+}
+}
+print("--- Cross Join of three lists ---")
+for c in combos {
+print(c.n, c.l, c.b)
+}

@@ -1,0 +1,32 @@
+(program
+  (type Anon50
+    (field inner (type int))
+  )
+  (type Anon51
+    (field outer (type Anon50))
+  )
+  (var data (type Anon51))
+  (assign data
+    (map
+      (entry
+        (selector outer)
+        (map
+          (entry (selector inner) (int 1))
+        )
+      )
+    )
+  )
+  (assign
+    (index
+      (index (selector data) (string outer))
+      (string inner)
+    )
+    (int 2)
+  )
+  (call print
+    (index
+      (index (selector data) (string outer))
+      (string inner)
+    )
+  )
+)

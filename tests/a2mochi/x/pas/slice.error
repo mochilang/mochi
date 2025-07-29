@@ -1,0 +1,5 @@
+error[T008]: type mismatch: expected string, got [int]
+  --> :2:17
+
+help:
+  Change the value to match the expected type.

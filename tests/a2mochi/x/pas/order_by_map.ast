@@ -1,0 +1,42 @@
+(program
+  (type Anon52
+    (field a (type int))
+    (field b (type int))
+  )
+  (var data
+    (type list (type anon52))
+  )
+  (var sorted
+    (type list (type anon52))
+  )
+  (var x (type Anon52))
+  (assign data
+    (list
+      (map
+        (entry (selector a) (int 1))
+        (entry (selector b) (int 2))
+      )
+      (map
+        (entry (selector a) (int 1))
+        (entry (selector b) (int 1))
+      )
+      (map
+        (entry (selector a) (int 0))
+        (entry (selector b) (int 5))
+      )
+    )
+  )
+  (assign sorted (list))
+  (for x
+    (in (selector data))
+    (block
+      (assign sorted
+        (call concat
+          (selector sorted)
+          (list (selector x))
+        )
+      )
+    )
+  )
+  (call print (selector sorted))
+)
