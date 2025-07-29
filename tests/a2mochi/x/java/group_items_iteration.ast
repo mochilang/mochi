@@ -1,0 +1,87 @@
+(program
+  (let data
+    (list (unknown) (unknown) (unknown))
+  )
+  (let groups (unknown))
+  (var tmp (list))
+  (let result (unknown))
+  (for g
+    (in (selector groups))
+    (block
+      (var total (int 0))
+      (for x
+        (in
+          (selector items (selector g))
+        )
+        (block
+          (assign
+            (selector total)
+            (binary +
+              (selector total)
+              (selector val (selector x))
+            )
+          )
+        )
+      )
+      (assign
+        (selector tmp)
+        (call
+          (selector toArray
+            (call
+              (selector concat
+                (selector Stream
+                  (selector stream
+                    (selector util (selector java))
+                  )
+                )
+              )
+              (call
+                (selector stream
+                  (selector Arrays
+                    (selector util (selector java))
+                  )
+                )
+                (selector tmp)
+              )
+              (call
+                (selector of
+                  (selector Stream
+                    (selector stream
+                      (selector util (selector java))
+                    )
+                  )
+                )
+                (unknown)
+              )
+            )
+          )
+          (unknown)
+        )
+      )
+    )
+  )
+  (call print
+    (call
+      (selector collect
+        (call
+          (selector map
+            (call
+              (selector stream (unknown))
+            )
+          )
+          (unknown)
+        )
+      )
+      (call
+        (selector joining
+          (selector Collectors
+            (selector stream
+              (selector util (selector java))
+            )
+          )
+        )
+        (string " ")
+      )
+    )
+  )
+)

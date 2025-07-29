@@ -1,0 +1,9 @@
+(program
+  (let m (unknown))
+  (for k
+    (in (selector m))
+    (block
+      (call print (selector k))
+    )
+  )
+)

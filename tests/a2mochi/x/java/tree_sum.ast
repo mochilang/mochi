@@ -1,0 +1,6 @@
+(program
+  (let t (unknown))
+  (call print
+    (call (selector sum_tree) (selector t))
+  )
+)

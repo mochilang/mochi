@@ -1,0 +1,60 @@
+(program
+  (let customers
+    (list (unknown) (unknown) (unknown) (unknown))
+  )
+  (let orders
+    (list (unknown) (unknown) (unknown) (unknown))
+  )
+  (let result (unknown))
+  (call print (string "--- Outer Join using syntax ---"))
+  (for row
+    (in (selector result))
+    (block
+      (if
+        (selector order (selector row))
+        (block
+          (if
+            (selector customer (selector row))
+            (block
+              (call print
+                (string Order)
+                (selector id
+                  (selector order (selector row))
+                )
+                (string " by ")
+                (selector name
+                  (selector customer (selector row))
+                )
+                (string " - $ ")
+                (selector total
+                  (selector order (selector row))
+                )
+              )
+            )
+            (block
+              (call print
+                (string Order)
+                (selector id
+                  (selector order (selector row))
+                )
+                (string " by Unknown - $ ")
+                (selector total
+                  (selector order (selector row))
+                )
+              )
+            )
+          )
+        )
+        (block
+          (call print
+            (string Customer)
+            (selector name
+              (selector customer (selector row))
+            )
+            (string " has no orders")
+          )
+        )
+      )
+    )
+  )
+)

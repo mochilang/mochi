@@ -1,0 +1,19 @@
+(program
+  (let x (int 2))
+  (let label
+    (if_expr
+      (binary == (selector x) (int 1))
+      (string one)
+      (if_expr
+        (binary == (selector x) (int 2))
+        (string two)
+        (if_expr
+          (binary == (selector x) (int 3))
+          (string three)
+          (string unknown)
+        )
+      )
+    )
+  )
+  (call print (selector label))
+)

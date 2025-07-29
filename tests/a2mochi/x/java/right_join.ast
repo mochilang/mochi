@@ -1,0 +1,39 @@
+(program
+  (let customers
+    (list (unknown) (unknown) (unknown) (unknown))
+  )
+  (let orders
+    (list (unknown) (unknown) (unknown))
+  )
+  (let result (unknown))
+  (call print (string "--- Right Join using syntax ---"))
+  (for entry
+    (in (selector result))
+    (block
+      (if
+        (selector order (selector entry))
+        (block
+          (call print
+            (string Customer)
+            (selector customerName (selector entry))
+            (string " has order ")
+            (selector id
+              (selector order (selector entry))
+            )
+            (string " - $ ")
+            (selector total
+              (selector order (selector entry))
+            )
+          )
+        )
+        (block
+          (call print
+            (string Customer)
+            (selector customerName (selector entry))
+            (string " has no orders")
+          )
+        )
+      )
+    )
+  )
+)

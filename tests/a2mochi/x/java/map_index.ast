@@ -1,0 +1,6 @@
+(program
+  (let m (unknown))
+  (call print
+    (index (selector m) (string b))
+  )
+)

@@ -1,0 +1,40 @@
+(program
+  (var people
+    (list (unknown) (unknown) (unknown) (unknown))
+  )
+  (for i
+    (range
+      (int 0)
+      (call len (selector people))
+    )
+    (block
+      (var item
+        (index (selector people) (selector i))
+      )
+      (if
+        (binary >=
+          (selector age (selector item))
+          (int 18)
+        )
+        (block
+          (assign
+            (selector status (selector item))
+            (string adult)
+          )
+          (assign
+            (selector age (selector item))
+            (binary +
+              (selector age (selector item))
+              (int 1)
+            )
+          )
+        )
+      )
+      (assign
+        (index (selector people) (selector i))
+        (selector item)
+      )
+    )
+  )
+  (call print (string ok))
+)

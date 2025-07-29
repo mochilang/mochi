@@ -1,0 +1,23 @@
+(program
+  (let customers
+    (list (unknown) (unknown))
+  )
+  (let orders
+    (list (unknown) (unknown))
+  )
+  (let result (unknown))
+  (call print (string "--- Left Join ---"))
+  (for entry
+    (in (selector result))
+    (block
+      (call print
+        (string Order)
+        (selector orderId (selector entry))
+        (string " customer ")
+        (selector customer (selector entry))
+        (string " total ")
+        (selector total (selector entry))
+      )
+    )
+  )
+)

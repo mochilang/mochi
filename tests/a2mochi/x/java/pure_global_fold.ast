@@ -1,0 +1,6 @@
+(program
+  (let k (int 2))
+  (call print
+    (call (selector inc) (int 3))
+  )
+)

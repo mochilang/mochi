@@ -1,0 +1,25 @@
+(program
+  (let customers
+    (list (unknown) (unknown) (unknown))
+  )
+  (let orders
+    (list (unknown) (unknown) (unknown))
+  )
+  (let result (unknown))
+  (call print (string "--- Cross Join: All order-customer pairs ---"))
+  (for entry
+    (in (selector result))
+    (block
+      (call print
+        (string Order)
+        (selector orderId (selector entry))
+        (string " (customerId: ")
+        (selector orderCustomerId (selector entry))
+        (string " , total: $ ")
+        (selector orderTotal (selector entry))
+        (string " ) paired with ")
+        (selector pairedCustomerName (selector entry))
+      )
+    )
+  )
+)

@@ -1,0 +1,5 @@
+(program
+  (call print
+    (call (selector add) (int 2) (int 3))
+  )
+)

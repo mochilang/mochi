@@ -1,0 +1,5 @@
+(program
+  (call print
+    (call (selector sum_rec) (int 10) (int 0))
+  )
+)

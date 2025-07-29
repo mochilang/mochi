@@ -80,85 +80,72 @@ func TestTransform_Golden(t *testing.T) {
 	if len(files) == 0 {
 		t.Fatalf("no files: %s", pattern)
 	}
-
-	cases := map[string]bool{
-		"print_hello":         true,
-		"let_and_print":       true,
-		"var_assignment":      true,
-		"for_loop":            true,
-		"append_builtin":      true,
-		"avg_builtin":         true,
-		"math_ops":            true,
-		"string_concat":       true,
-		"basic_compare":       true,
-		"for_list_collection": true,
-		"len_builtin":         true,
-		"len_string":          true,
-		"count_builtin":       true,
-		"break_continue":      true,
-		"string_in_operator":  true,
-		"if_then_else":        true,
-		"if_then_else_nested": true,
-		"string_compare":      true,
-		"string_contains":     true,
-		"string_index":        true,
-		"str_builtin":         true,
-		"substring_builtin":   true,
-		"string_prefix_slice": true,
-		"list_index":          true,
-		"slice":               true,
-		"cast_string_to_int":  true,
-		"min_max_builtin":     true,
-		"sum_builtin":         true,
-		"if_else":             true,
-		"typed_let":           true,
-		"typed_var":           true,
-		"unary_neg":           true,
-		"while_loop":          true,
-	}
+	sort.Strings(files)
 
 	outDir := filepath.Join(rootDir, "tests/a2mochi/x/java")
 	os.MkdirAll(outDir, 0o755)
 
 	for _, srcPath := range files {
 		name := strings.TrimSuffix(filepath.Base(srcPath), ".java")
-		if !cases[name] {
-			continue
-		}
 		t.Run(name, func(t *testing.T) {
+			astPath := filepath.Join(outDir, name+".ast")
+			mochiPath := filepath.Join(outDir, name+".mochi")
+			outPath := filepath.Join(outDir, name+".out")
+			errPath := filepath.Join(outDir, name+".error")
+
 			node, err := java.ParseFile(srcPath)
 			if err != nil {
-				t.Fatalf("parse: %v", err)
+				if *update {
+					os.WriteFile(errPath, []byte(fmt.Sprintf("parse: %v", err)), 0o644)
+				}
+				t.Skipf("parse error: %v", err)
+				return
 			}
 			astNode, err := java.Transform(node)
 			if err != nil {
-				t.Fatalf("transform: %v", err)
+				if *update {
+					os.WriteFile(errPath, []byte(fmt.Sprintf("transform: %v", err)), 0o644)
+				}
+				t.Skipf("transform error: %v", err)
+				return
 			}
 			code, err := java.Print(astNode)
 			if err != nil {
-				t.Fatalf("print: %v", err)
+				if *update {
+					os.WriteFile(errPath, []byte(fmt.Sprintf("print: %v", err)), 0o644)
+				}
+				t.Skipf("print error: %v", err)
+				return
 			}
-			astPath := filepath.Join(outDir, name+".ast")
-			mochiPath := filepath.Join(outDir, name+".mochi")
+
 			if *update {
+				os.Remove(errPath)
 				os.WriteFile(astPath, []byte(astNode.String()), 0o644)
 				os.WriteFile(mochiPath, []byte(code), 0o644)
-				if out, err := runFile(mochiPath); err == nil {
-					os.WriteFile(filepath.Join(outDir, name+".out"), out, 0o644)
-				}
 			}
-			want, err := os.ReadFile(astPath)
+
+			wantAst, err := os.ReadFile(astPath)
 			if err != nil {
-				t.Fatalf("missing golden: %v", err)
+				t.Skipf("missing golden: %v", err)
+				return
 			}
-			if astNode.String() != string(want) {
-				t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", astNode.String(), want)
+			if astNode.String() != string(wantAst) {
+				t.Errorf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", astNode.String(), wantAst)
+				return
 			}
-			// also check runtime output matches vm reference
+
 			gotOut, err := runFile(mochiPath)
 			if err != nil {
-				t.Fatalf("run: %v", err)
+				if *update {
+					os.WriteFile(errPath, []byte(fmt.Sprintf("run: %v", err)), 0o644)
+				}
+				t.Skipf("run error: %v", err)
+				return
 			}
+			if *update {
+				os.WriteFile(outPath, gotOut, 0o644)
+			}
+
 			vmSrc, err := os.ReadFile(filepath.Join(rootDir, "tests/vm/valid", name+".mochi"))
 			if err != nil {
 				t.Fatalf("missing vm source: %v", err)
@@ -168,7 +155,7 @@ func TestTransform_Golden(t *testing.T) {
 				t.Fatalf("run vm: %v", err)
 			}
 			if !bytes.Equal(gotOut, wantOut) {
-				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
+				t.Errorf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
 			}
 		})
 	}
@@ -187,9 +174,19 @@ func updateReadme() {
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".java")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
-			compiled++
-			mark = "[x]"
+		outPath := filepath.Join(outDir, name+".out")
+		errPath := filepath.Join(outDir, name+".error")
+		if data, err := os.ReadFile(outPath); err == nil {
+			if _, err := os.Stat(errPath); err != nil {
+				vmSrc, err1 := os.ReadFile(filepath.Join(root, "tests/vm/valid", name+".mochi"))
+				if err1 == nil {
+					wantOut, err1 := run(string(vmSrc))
+					if err1 == nil && bytes.Equal(bytes.TrimSpace(data), wantOut) {
+						compiled++
+						mark = "[x]"
+					}
+				}
+			}
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}

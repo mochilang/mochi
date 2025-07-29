@@ -1,0 +1,9 @@
+(program
+  (let data
+    (list (int 1) (int 2))
+  )
+  (let flag
+    (call (selector exists) (unknown))
+  )
+  (call print (selector flag))
+)

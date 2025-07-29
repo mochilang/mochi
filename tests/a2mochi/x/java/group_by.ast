@@ -1,0 +1,19 @@
+(program
+  (let people
+    (list (unknown) (unknown) (unknown) (unknown) (unknown) (unknown))
+  )
+  (let stats (unknown))
+  (call print (string "--- People grouped by city ---"))
+  (for s
+    (in (selector stats))
+    (block
+      (call print
+        (selector city (selector s))
+        (string " : count = ")
+        (selector count (selector s))
+        (string " , avg_age = ")
+        (selector avg_age (selector s))
+      )
+    )
+  )
+)

@@ -1,0 +1,8 @@
+(program
+  (call print
+    (call
+      (selector triple)
+      (binary + (int 1) (int 2))
+    )
+  )
+)

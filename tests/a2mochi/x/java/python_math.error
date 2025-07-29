@@ -1,0 +1,5 @@
+run: error[T002]: undefined variable: Math
+  --> :3:13
+
+help:
+  Check if the variable was declared in this scope.

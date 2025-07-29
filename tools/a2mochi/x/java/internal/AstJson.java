@@ -86,9 +86,12 @@ public class AstJson {
             ExpressionTree e = est.getExpression();
             if (e.getKind() == Tree.Kind.ASSIGNMENT) {
                 AssignmentTree at = (AssignmentTree) e;
-                out.print("{\"kind\":\"Assign\",\"name\":\"");
+                out.print("{\"kind\":\"Assign\",");
+                out.print("\"name\":\"");
                 out.print(at.getVariable());
-                out.print("\",\"expr\":");
+                out.print("\",\"target\":");
+                printExpr(at.getVariable());
+                out.print(",\"expr\":");
                 printExpr(at.getExpression());
                 out.print("}");
                 break;

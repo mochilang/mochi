@@ -1,0 +1,11 @@
+(program
+  (call print
+    (call
+      (selector sqrt (selector Math))
+      (float 16)
+    )
+  )
+  (call print
+    (selector PI (selector Math))
+  )
+)

@@ -1,0 +1,8 @@
+(program
+  (let add5
+    (call (selector add) (int 5))
+  )
+  (call print
+    (call (selector add5) (int 3))
+  )
+)

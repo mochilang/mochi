@@ -1,0 +1,15 @@
+(program
+  (let m (unknown))
+  (call print
+    (call
+      (selector containsKey (selector m))
+      (int 1)
+    )
+  )
+  (call print
+    (call
+      (selector containsKey (selector m))
+      (int 3)
+    )
+  )
+)

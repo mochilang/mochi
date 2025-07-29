@@ -1,0 +1,1 @@
+run: parse error: 2:21: unexpected token "stream" (expected <ident>)

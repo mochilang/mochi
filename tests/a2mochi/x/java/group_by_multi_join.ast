@@ -1,0 +1,39 @@
+(program
+  (let nations
+    (list (unknown) (unknown))
+  )
+  (let suppliers
+    (list (unknown) (unknown))
+  )
+  (let partsupp
+    (list (unknown) (unknown) (unknown))
+  )
+  (let filtered (unknown))
+  (let grouped (unknown))
+  (call print
+    (string "[")
+    (call
+      (selector collect
+        (call
+          (selector map
+            (call
+              (selector stream (unknown))
+            )
+          )
+          (unknown)
+        )
+      )
+      (call
+        (selector joining
+          (selector Collectors
+            (selector stream
+              (selector util (selector java))
+            )
+          )
+        )
+        (string ", ")
+      )
+    )
+    (string "]")
+  )
+)

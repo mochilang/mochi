@@ -1,0 +1,15 @@
+(program
+  (let people
+    (list (unknown) (unknown) (unknown))
+  )
+  (let adults (unknown))
+  (for a
+    (in (selector adults))
+    (block
+      (call print
+        (selector name (selector a))
+        (selector email (selector a))
+      )
+    )
+  )
+)

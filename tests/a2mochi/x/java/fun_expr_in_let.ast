@@ -1,0 +1,9 @@
+(program
+  (let square (unknown))
+  (call print
+    (call
+      (selector applyAsInt (selector square))
+      (int 6)
+    )
+  )
+)

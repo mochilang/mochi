@@ -1,0 +1,14 @@
+(program
+  (call print
+    (binary &&
+      (bool false)
+      (call (selector boom) (int 1) (int 2))
+    )
+  )
+  (call print
+    (binary ||
+      (bool true)
+      (call (selector boom) (int 1) (int 2))
+    )
+  )
+)

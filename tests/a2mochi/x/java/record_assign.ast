@@ -1,0 +1,5 @@
+(program
+  (let c (unknown))
+  (unknown)
+  (call print (unknown))
+)
