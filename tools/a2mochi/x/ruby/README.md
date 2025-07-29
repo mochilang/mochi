@@ -1,49 +1,112 @@
 # a2mochi Ruby Converter
 
-This directory contains a minimal converter that translates simple Ruby
-programs back into Mochi form. It uses Ruby's built in `ripper` library to
-obtain an s-expression AST which is then converted to Mochi code. The
-implementation mirrors the Python and TypeScript converters and is only
-powerful enough for the examples under `tests/transpiler/x/rb`.
+This directory contains a minimal converter that translates simple Ruby programs back into Mochi form. It uses Ruby's built in `ripper` library to obtain an s-expression AST which is then converted to Mochi code. The implementation mirrors the Python and TypeScript converters and is only powerful enough for the examples under `tests/transpiler/x/rb`.
 
-Completed programs: 40/104
+Completed programs: 33/104
+Date: 2025-07-29 15:22 +07
 
 ## Checklist
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
-- [x] binary_precedence
-- [x] bool_chain
+- [ ] bench_block
+- [ ] binary_precedence
+- [ ] bool_chain
 - [x] break_continue
 - [x] cast_string_to_int
-- [x] closure
+- [ ] cast_struct
+- [ ] closure
 - [x] count_builtin
+- [ ] cross_join
+- [ ] cross_join_filter
+- [ ] cross_join_triple
+- [ ] dataset_sort_take_limit
+- [ ] dataset_where_filter
+- [ ] exists_builtin
 - [x] for_list_collection
-- [x] for_loop
+- [ ] for_loop
 - [x] for_map_collection
-- [x] fun_call
+- [ ] fun_call
+- [ ] fun_expr_in_let
+- [ ] fun_three_args
+- [ ] go_auto
+- [ ] group_by
+- [ ] group_by_conditional_sum
+- [ ] group_by_having
+- [ ] group_by_join
+- [ ] group_by_left_join
+- [ ] group_by_multi_join
+- [ ] group_by_multi_join_sort
+- [ ] group_by_multi_sort
+- [ ] group_by_sort
+- [ ] group_items_iteration
 - [x] if_else
+- [ ] if_then_else
+- [ ] if_then_else_nested
+- [ ] in_operator
+- [ ] in_operator_extended
+- [ ] inner_join
+- [ ] join_multi
+- [ ] json_builtin
+- [ ] left_join
+- [ ] left_join_multi
 - [x] len_builtin
 - [x] len_map
 - [x] len_string
 - [x] let_and_print
 - [x] list_assign
 - [x] list_index
+- [ ] list_nested_assign
+- [ ] list_set_ops
+- [ ] load_jsonl
+- [ ] load_yaml
 - [x] map_assign
+- [x] map_in_operator
 - [x] map_index
 - [x] map_int_key
 - [x] map_literal_dynamic
 - [x] map_membership
 - [x] map_nested_assign
+- [ ] match_expr
+- [ ] match_full
+- [ ] math_ops
 - [x] membership
+- [ ] min_max_builtin
+- [ ] mix_go_python
+- [ ] nested_function
+- [ ] order_by_map
+- [ ] outer_join
+- [ ] partial_application
 - [x] print_hello
+- [ ] pure_fold
+- [ ] pure_global_fold
+- [ ] python_auto
+- [ ] python_math
+- [ ] query_sum_select
+- [ ] record_assign
+- [ ] right_join
+- [ ] save_jsonl_stdout
+- [ ] short_circuit
+- [ ] slice
+- [ ] sort_stable
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat
 - [x] string_contains
 - [x] string_in_operator
 - [x] string_index
+- [ ] string_prefix_slice
+- [ ] substring_builtin
 - [x] sum_builtin
-- [x] unary_neg
+- [ ] tail_recursion
+- [ ] test_block
+- [ ] tree_sum
+- [ ] two-sum
+- [ ] typed_let
+- [ ] typed_var
+- [ ] unary_neg
+- [ ] update_stmt
+- [ ] user_type_literal
+- [ ] values_builtin
 - [x] var_assignment
 - [x] while_loop
