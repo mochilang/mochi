@@ -185,10 +185,11 @@ var (
 	rePrint    = regexp.MustCompile(`^printfn\s+"[^"]*"\s*(.*)$`)
 	reAssign   = regexp.MustCompile(`^([a-zA-Z_][\w]*(?:\.[^\[]*\[[^\]]+\])*)\s*<-\s*(.+)$`)
 	reForRange = regexp.MustCompile(`^for\s+([a-zA-Z_][\w]*)\s+in\s+(.+)\s+\.\.\s+(.+)\s+do$`)
-	reForIn    = regexp.MustCompile(`^for\s+([a-zA-Z_][\w]*)\s+in\s+(.+)\s+do$`)
-	reWhile    = regexp.MustCompile(`^while\s+(.+)\s+do$`)
-	reIf       = regexp.MustCompile(`^if\s+(.+)\s+then$`)
-	reElse     = regexp.MustCompile(`^else$`)
+	// support simple identifier or KeyValue(k, _) pattern
+	reForIn = regexp.MustCompile(`^for\s+(.+)\s+in\s+(.+)\s+do$`)
+	reWhile = regexp.MustCompile(`^while\s+(.+)\s+do$`)
+	reIf    = regexp.MustCompile(`^if\s+(.+)\s+then$`)
+	reElse  = regexp.MustCompile(`^else$`)
 )
 
 func parseFallback(src string) (*Program, error) {
@@ -227,41 +228,48 @@ func parseFallback(src string) (*Program, error) {
 			p.Stmts = append(p.Stmts, Assign{Name: name, Index: idx, Expr: strings.TrimSpace(m[2])})
 			continue
 		}
-                if m := reForRange.FindStringSubmatch(line); m != nil {
-                        var body []Stmt
-                        for i+1 < len(lines) {
-                                next := strings.TrimSpace(lines[i+1])
-                                if next == "" || reIf.MatchString(next) || reForRange.MatchString(next) || reForIn.MatchString(next) || reWhile.MatchString(next) {
-                                        break
-                                }
-                                if st := parseLine(next); st != nil {
-                                        body = append(body, st)
-                                }
-                                i++
-                        }
-                        p.Stmts = append(p.Stmts, ForRange{Var: m[1], Start: strings.TrimSpace(m[2]), End: strings.TrimSpace(m[3]), Body: body})
-                        continue
-                }
-                if m := reForIn.FindStringSubmatch(line); m != nil {
-                        var body []Stmt
-                        for i+1 < len(lines) {
-                                next := strings.TrimSpace(lines[i+1])
-                                if next == "" || reIf.MatchString(next) || reForRange.MatchString(next) || reForIn.MatchString(next) || reWhile.MatchString(next) {
-                                        break
-                                }
-                                if st := parseLine(next); st != nil {
-                                        body = append(body, st)
-                                }
-                                i++
-                        }
-                        p.Stmts = append(p.Stmts, ForIn{Var: m[1], Expr: strings.TrimSpace(m[2]), Body: body})
-                        continue
-                }
+		if m := reForRange.FindStringSubmatch(line); m != nil {
+			var body []Stmt
+			for i+1 < len(lines) {
+				next := strings.TrimSpace(lines[i+1])
+				if next == "" || reForRange.MatchString(next) || reForIn.MatchString(next) || reWhile.MatchString(next) {
+					break
+				}
+				if st := parseLine(next); st != nil {
+					body = append(body, st)
+				}
+				i++
+			}
+			p.Stmts = append(p.Stmts, ForRange{Var: m[1], Start: strings.TrimSpace(m[2]), End: strings.TrimSpace(m[3]), Body: body})
+			continue
+		}
+		if m := reForIn.FindStringSubmatch(line); m != nil {
+			varName := strings.TrimSpace(m[1])
+			if strings.HasPrefix(varName, "KeyValue(") {
+				inner := strings.TrimPrefix(varName, "KeyValue(")
+				if idx := strings.Index(inner, ","); idx != -1 {
+					varName = strings.TrimSpace(inner[:idx])
+				}
+			}
+			var body []Stmt
+			for i+1 < len(lines) {
+				next := strings.TrimSpace(lines[i+1])
+				if next == "" || reForRange.MatchString(next) || reForIn.MatchString(next) || reWhile.MatchString(next) {
+					break
+				}
+				if st := parseLine(next); st != nil {
+					body = append(body, st)
+				}
+				i++
+			}
+			p.Stmts = append(p.Stmts, ForIn{Var: varName, Expr: strings.TrimSpace(m[2]), Body: body})
+			continue
+		}
 		if m := reWhile.FindStringSubmatch(line); m != nil {
 			var body []Stmt
 			for i+1 < len(lines) {
 				next := strings.TrimSpace(lines[i+1])
-				if next == "" || reIf.MatchString(next) || reForRange.MatchString(next) || reForIn.MatchString(next) || reWhile.MatchString(next) {
+				if next == "" || reForRange.MatchString(next) || reForIn.MatchString(next) || reWhile.MatchString(next) {
 					break
 				}
 				if st := parseLine(next); st != nil {
@@ -296,18 +304,18 @@ func parseFallback(src string) (*Program, error) {
 }
 
 func parseLine(line string) Stmt {
-        if line == "" {
-                return nil
-        }
-        if line == "break" {
-                return Break{}
-        }
-        if line == "continue" {
-                return Continue{}
-        }
-        if m := rePrint.FindStringSubmatch(line); m != nil {
-                return PrintStmt{Expr: strings.TrimSpace(m[1])}
-        }
+	if line == "" {
+		return nil
+	}
+	if line == "break" {
+		return Break{}
+	}
+	if line == "continue" {
+		return Continue{}
+	}
+	if m := rePrint.FindStringSubmatch(line); m != nil {
+		return PrintStmt{Expr: strings.TrimSpace(m[1])}
+	}
 	if m := reAssign.FindStringSubmatch(line); m != nil {
 		name := m[1]
 		idx := ""

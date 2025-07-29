@@ -94,7 +94,8 @@ func stmtNode(s Stmt) (*ast.Node, error) {
 		if err != nil {
 			return nil, err
 		}
-		end, err := exprNode(v.End)
+		adjEnd := v.End + " + 1"
+		end, err := exprNode(adjEnd)
 		if err != nil {
 			return nil, err
 		}
@@ -357,6 +358,15 @@ func convertBuiltins(expr string) string {
 		if idx := strings.Index(expr, prefix); idx != -1 {
 			arg := strings.TrimSpace(expr[idx+len(prefix):])
 			expr = expr[:idx] + name + "(" + arg + ")"
+		}
+	}
+	if strings.HasPrefix(expr, "String.concat \" \" [") && strings.HasSuffix(expr, "]") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(expr, "String.concat \" \" ["), "]")
+		parts := strings.Split(inner, ";")
+		if len(parts) == 2 {
+			a := strings.TrimSpace(parts[0])
+			b := strings.TrimSpace(parts[1])
+			expr = a + " + \" \" + " + b
 		}
 	}
 	return expr
