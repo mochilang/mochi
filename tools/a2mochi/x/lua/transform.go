@@ -93,12 +93,21 @@ func convertStmtsToNodes(stmts []luaast.Stmt, vars map[string]bool, mut map[stri
 			if fc, ok := s.Expr.(*luaast.FuncCallExpr); ok {
 				if luaExprString(fc.Func, mut) == "print" && len(fc.Args) == 1 {
 					if inner, ok := fc.Args[0].(*luaast.FuncCallExpr); ok {
-						if luaExprString(inner.Func, mut) == "string.format" && len(inner.Args) == 2 {
+						if luaExprString(inner.Func, mut) == "string.format" && len(inner.Args) >= 1 {
 							if str, ok := inner.Args[0].(*luaast.StringExpr); ok {
-								parts := strings.SplitN(str.Value, "%s", 2)
-								if len(parts) == 2 && parts[1] == "" {
-									prefix := strings.TrimSuffix(parts[0], " ")
-									out = append(out, node("call", "print", node("string", prefix), exprToNode(inner.Args[1], mut)))
+								parts := strings.Split(str.Value, "%s")
+								if len(parts) == len(inner.Args) {
+									var args []*ast.Node
+									for i := 1; i < len(inner.Args); i++ {
+										if trimmed := strings.TrimSpace(parts[i-1]); trimmed != "" {
+											args = append(args, node("string", trimmed))
+										}
+										args = append(args, exprToNode(inner.Args[i], mut))
+									}
+									if trimmed := strings.TrimSpace(parts[len(parts)-1]); trimmed != "" {
+										args = append(args, node("string", trimmed))
+									}
+									out = append(out, node("call", "print", args...))
 									break
 								}
 							}
@@ -238,7 +247,8 @@ func exprToNode(e luaast.Expr, mut map[string]bool) *ast.Node {
 		}
 		return node("binary", op, exprToNode(v.Lhs, mut), exprToNode(v.Rhs, mut))
 	case *luaast.RelationalOpExpr:
-		if v.Operator == "~=" {
+		op := v.Operator
+		if op == "~=" {
 			if _, ok := v.Rhs.(*luaast.NilExpr); ok {
 				if call, ok := v.Lhs.(*luaast.FuncCallExpr); ok {
 					if isAttrCall(call.Func, "string", "find") && len(call.Args) >= 4 {
@@ -252,8 +262,9 @@ func exprToNode(e luaast.Expr, mut map[string]bool) *ast.Node {
 					}
 				}
 			}
+			op = "!="
 		}
-		return node("binary", v.Operator, exprToNode(v.Lhs, mut), exprToNode(v.Rhs, mut))
+		return node("binary", op, exprToNode(v.Lhs, mut), exprToNode(v.Rhs, mut))
 	case *luaast.UnaryMinusOpExpr:
 		return node("binary", "-", node("int", 0), exprToNode(v.Expr, mut))
 	case *luaast.UnaryNotOpExpr:
@@ -718,7 +729,8 @@ func luaExprString(e luaast.Expr, mut map[string]bool) string {
 		}
 		return luaExprString(v.Lhs, mut) + " " + op + " " + luaExprString(v.Rhs, mut)
 	case *luaast.RelationalOpExpr:
-		if v.Operator == "~=" {
+		op := v.Operator
+		if op == "~=" {
 			if _, ok := v.Rhs.(*luaast.NilExpr); ok {
 				if call, ok := v.Lhs.(*luaast.FuncCallExpr); ok {
 					if isAttrCall(call.Func, "string", "find") && len(call.Args) >= 4 {
@@ -732,8 +744,9 @@ func luaExprString(e luaast.Expr, mut map[string]bool) string {
 					}
 				}
 			}
+			op = "!="
 		}
-		return luaExprString(v.Lhs, mut) + " " + v.Operator + " " + luaExprString(v.Rhs, mut)
+		return luaExprString(v.Lhs, mut) + " " + op + " " + luaExprString(v.Rhs, mut)
 	case *luaast.UnaryMinusOpExpr:
 		return "-" + luaExprString(v.Expr, mut)
 	case *luaast.UnaryNotOpExpr:
