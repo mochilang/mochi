@@ -1,7 +1,12 @@
 (program
   (call print
-    (call avg
-      (list (int 1) (int 2) (int 3))
+    (binary /
+      (call sum
+        (list (int 1) (int 2) (int 3))
+      )
+      (call len
+        (list (int 1) (int 2) (int 3))
+      )
     )
   )
 )

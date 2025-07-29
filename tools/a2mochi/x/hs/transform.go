@@ -238,9 +238,38 @@ func reorderVars(items []Item) []Item {
 func convertExpr(expr string) string {
 	expr = strings.TrimSpace(expr)
 	expr = fixFuncCalls(expr)
-	// convert simple fromIntegral calls anywhere in the expression
-	expr = strings.ReplaceAll(expr, "fromIntegral(", "float(")
-	// handle patterns like "fromIntegral x" by wrapping the next token
+	if strings.HasPrefix(expr, "fromIntegral(sum(") && strings.Contains(expr, ")) / fromIntegral(length(") {
+		start := len("fromIntegral(sum(")
+		rest := expr[start:]
+		mid := strings.Index(rest, ")) / fromIntegral(length(")
+		if mid != -1 {
+			list1 := rest[:mid+1]
+			rest2 := rest[mid+len(")/fromIntegral(length("):]
+			if strings.HasSuffix(rest2, "))") {
+				list2 := rest2[:len(rest2)-2]
+				if list1 == list2 {
+					return "avg(" + convertExpr(list1) + ")"
+				}
+			}
+		}
+	}
+	// handle patterns like "fromIntegral x" by stripping the call
+	for strings.Contains(expr, "fromIntegral(") {
+		idx := strings.Index(expr, "fromIntegral(")
+		depth := 1
+		j := idx + len("fromIntegral(")
+		for j < len(expr) && depth > 0 {
+			switch expr[j] {
+			case '(':
+				depth++
+			case ')':
+				depth--
+			}
+			j++
+		}
+		inner := expr[idx+len("fromIntegral(") : j-1]
+		expr = expr[:idx] + inner + expr[j:]
+	}
 	for strings.Contains(expr, "fromIntegral ") {
 		idx := strings.Index(expr, "fromIntegral ")
 		start := idx + len("fromIntegral ")
@@ -263,7 +292,32 @@ func convertExpr(expr string) string {
 			j++
 		}
 		arg := strings.TrimSpace(expr[start:j])
-		expr = expr[:idx] + "float(" + arg + ")" + expr[j:]
+		expr = expr[:idx] + arg + expr[j:]
+	}
+	expr = strings.ReplaceAll(expr, "length(", "len(")
+	for strings.Contains(expr, "length ") {
+		idx := strings.Index(expr, "length ")
+		start := idx + len("length ")
+		j := start
+		depth := 0
+		for j < len(expr) {
+			ch := expr[j]
+			if depth == 0 && (ch == ' ' || ch == ')' || ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '%' || ch == ',' || ch == ']') {
+				break
+			}
+			if ch == '(' || ch == '[' {
+				depth++
+			} else if ch == ')' || ch == ']' {
+				if depth > 0 {
+					depth--
+				} else {
+					break
+				}
+			}
+			j++
+		}
+		arg := strings.TrimSpace(expr[start:j])
+		expr = expr[:idx] + "len(" + arg + ")" + expr[j:]
 	}
 	expr = trimOuterParens(expr)
 	if strings.HasPrefix(expr, "\\") && strings.Contains(expr, "->") {
@@ -311,11 +365,11 @@ func convertExpr(expr string) string {
 	}
 	if strings.HasPrefix(expr, "fromEnum(") && strings.HasSuffix(expr, ")") {
 		inner := strings.TrimSuffix(strings.TrimPrefix(expr, "fromEnum("), ")")
-		return convertExpr(inner)
+		return "int(" + convertExpr(inner) + ")"
 	}
 	if strings.HasPrefix(expr, "fromEnum ") {
 		inner := strings.TrimSpace(strings.TrimPrefix(expr, "fromEnum "))
-		return convertExpr(inner)
+		return "int(" + convertExpr(inner) + ")"
 	}
 	if strings.HasPrefix(expr, "read ") && strings.Contains(expr, "::") {
 		parts := strings.SplitN(strings.TrimPrefix(expr, "read "), "::", 2)
@@ -509,8 +563,13 @@ func buildProgramNodeFromItems(items []Item) (*ast.Node, error) {
 			if strings.HasPrefix(body, "do") {
 				body = strings.TrimSpace(strings.TrimPrefix(body, "do"))
 			}
-			for _, line := range strings.Split(body, "\n") {
-				line = strings.TrimSpace(line)
+			lines := strings.Split(body, "\n")
+			for i := 0; i < len(lines); i++ {
+				line := strings.TrimSpace(lines[i])
+				for i+1 < len(lines) && strings.HasPrefix(lines[i+1], " ") {
+					line += " " + strings.TrimSpace(lines[i+1])
+					i++
+				}
 				if line == "" {
 					continue
 				}
@@ -586,7 +645,7 @@ func itemToNode(it Item) (*ast.Node, error) {
 			b.WriteString(p)
 			b.WriteString(": int")
 		}
-		b.WriteString(") {")
+		b.WriteString("): any {")
 		if strings.TrimSpace(it.Body) != "" {
 			b.WriteString(" return ")
 			b.WriteString(convertExpr(it.Body))

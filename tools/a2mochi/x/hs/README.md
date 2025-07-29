@@ -2,13 +2,13 @@
 
 This package provides a small Haskell frontend for the `a2mochi` tool. It parses very simple Haskell programs and converts them into Mochi AST form. Only a tiny subset of the language is recognised – single line function declarations, variable bindings and trivial `main` blocks built from `putStrLn`, `print` and `mapM_` loops.
 
-Completed programs: 18/96
-Last updated: 2025-07-29 21:04 GMT+7
+Completed programs: 17/96
+Last updated: 2025-07-29 21:37 GMT+7
 
 - [x] append_builtin
-- [ ] avg_builtin
-- [x] basic_compare
-- [x] binary_precedence
+- [x] avg_builtin
+- [ ] basic_compare
+- [ ] binary_precedence
 - [ ] bool_chain
 - [ ] break_continue
 - [x] cast_string_to_int
@@ -24,9 +24,9 @@ Last updated: 2025-07-29 21:04 GMT+7
 - [x] for_list_collection
 - [x] for_loop
 - [x] for_map_collection
-- [ ] fun_call
-- [ ] fun_expr_in_let
-- [ ] fun_three_args
+- [x] fun_call
+- [x] fun_expr_in_let
+- [x] fun_three_args
 - [ ] go_auto
 - [ ] group_by
 - [ ] group_by_conditional_sum
@@ -85,9 +85,9 @@ Last updated: 2025-07-29 21:04 GMT+7
 - [ ] slice
 - [ ] sort_stable
 - [ ] str_builtin
-- [x] string_compare
+- [ ] string_compare
 - [ ] string_concat
-- [x] string_contains
+- [ ] string_contains
 - [ ] string_in_operator
 - [ ] string_index
 - [ ] substring_builtin
@@ -97,7 +97,7 @@ Last updated: 2025-07-29 21:04 GMT+7
 - [ ] two-sum
 - [ ] typed_let
 - [ ] typed_var
-- [x] unary_neg
+- [ ] unary_neg
 - [ ] values_builtin
 - [x] var_assignment
 - [ ] while_loop

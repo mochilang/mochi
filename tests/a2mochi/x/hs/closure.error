@@ -1,5 +1,5 @@
-run: error[T008]: type mismatch: expected void, got fun(int): int
-  --> :4:10
+run: error[T004]: `add10` is not callable
+  --> :7:7
 
 help:
-  Change the value to match the expected type.
+  Use a function or closure in this position.
