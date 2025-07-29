@@ -1,14 +1,6 @@
 (program
-  (var msg
-    (if_expr
-      (binary > (selector x) (int 10))
-      (string big)
-      (if_expr
-        (binary > (selector x) (int 5))
-        (string medium)
-        (string small)
-      )
-    )
+  (let x (int 8))
+  (let msg
+    (binary > (selector x) (selector "10 ? \"big\" : (x > 5 ? \"medium\" : \"small\")"))
   )
-  (call print (selector msg))
 )

@@ -1,0 +1,17 @@
+(program
+  (let n_arr
+    (list (int 1) (int 2) (int 3))
+  )
+  (let n_len
+    (call len (selector n_arr))
+  )
+  (for i
+    (range (int 0) (selector n_len))
+    (block
+      (let n
+        (index (selector n_arr) (selector i))
+      )
+      (call print (selector n))
+    )
+  )
+)

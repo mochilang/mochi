@@ -1,1 +1,1 @@
-parse error: 32:9: unexpected token ")"
+parse error: 36:11: unexpected token ")" (expected "}")

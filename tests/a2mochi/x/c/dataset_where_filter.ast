@@ -1,0 +1,31 @@
+(program
+  (for i
+    (range (int 0) (int 4))
+    (block
+      (call print
+        (binary -
+          (selector "\"")
+          (binary -
+            (selector "")
+            (binary -
+              (selector "")
+              (binary -
+                (selector Adults)
+                (binary -
+                  (selector "")
+                  (binary - (selector "") (selector "\""))
+                )
+              )
+            )
+          )
+        )
+      )
+      (for i
+        (range (int 0) (selector adults_len))
+        (block
+          (return (int 0))
+        )
+      )
+    )
+  )
+)

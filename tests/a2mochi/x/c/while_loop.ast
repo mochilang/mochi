@@ -1,4 +1,5 @@
 (program
+  (let i (int 0))
   (while
     (binary < (selector i) (int 3))
     (block

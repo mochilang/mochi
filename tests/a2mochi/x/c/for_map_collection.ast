@@ -1,0 +1,14 @@
+(program
+  (let k_arr (selector "{\"a\", \"b\"}"))
+  (let k_len
+    (call len (selector k_arr))
+  )
+  (for i
+    (range (int 0) (selector k_len))
+    (block
+      (let k
+        (index (selector k_arr) (selector i))
+      )
+    )
+  )
+)

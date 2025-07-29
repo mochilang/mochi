@@ -1,5 +1,1 @@
-error[T002]: undefined variable: nums
-  --> :15:7
-
-help:
-  Check if the variable was declared in this scope.
+output mismatch

@@ -1,0 +1,29 @@
+(program
+  (call print
+    (binary -
+      (selector "\"")
+      (binary -
+        (selector "")
+        (binary -
+          (selector "")
+          (binary -
+            (selector "Orders per customer")
+            (binary -
+              (selector "")
+              (binary - (selector "") (selector "\""))
+            )
+          )
+        )
+      )
+    )
+  )
+  (let s_len
+    (call len (selector s_arr))
+  )
+  (for i
+    (range (int 0) (selector s_len))
+    (block
+      (call print (selector s.count))
+    )
+  )
+)

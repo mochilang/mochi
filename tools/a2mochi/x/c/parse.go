@@ -43,17 +43,26 @@ type If struct {
 	Then []Stmt
 	Else []Stmt
 }
+type Return struct {
+	Expr string
+}
+type FunDecl struct {
+	Name string
+	Ret  string
+	Body []Stmt
+}
 type Break struct{}
 type Continue struct{}
 
 var (
-	reVar    = regexp.MustCompile(`^(?:int|long\s+long)\s+([a-zA-Z_][a-zA-Z0-9_]*)(?:\[\])?\s*=\s*([^;]+);`)
+	reVar    = regexp.MustCompile(`^(?:int|long\s+long|size_t|const\s+char\s*\*)\s+([a-zA-Z_][a-zA-Z0-9_]*)(?:\[\])?\s*=\s*([^;]+);`)
 	reAssign = regexp.MustCompile(`^([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^;]+);`)
 	reFor    = regexp.MustCompile(`^for\s*\((?:int|size_t)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^;]+);\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*<\s*([^;]+);.*\)\s*{`)
 	reWhile  = regexp.MustCompile(`^while\s*\(([^\)]+)\)\s*{`)
 	reIf     = regexp.MustCompile(`^if\s*\(([^\)]+)\)\s*{`)
 	rePrintf = regexp.MustCompile(`printf\s*\((.*)\);`)
 	rePuts   = regexp.MustCompile(`puts\s*\("([^\"]*)"\);`)
+	reFunc   = regexp.MustCompile(`^(int|void)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\([^\)]*\)\s*{`)
 )
 
 // Parse parses a limited subset of C needed for simple tests.
@@ -63,12 +72,19 @@ func Parse(src string) (*Program, error) {
 	var preStmts []Stmt
 	started := false
 	braces := 0
-	for _, ln := range lines {
+	for i := 0; i < len(lines); i++ {
+		ln := lines[i]
 		trimmed := strings.TrimSpace(ln)
 		if !started {
 			if strings.Contains(ln, "main") && strings.Contains(ln, "{") {
 				started = true
 				braces = strings.Count(ln, "{") - strings.Count(ln, "}")
+				continue
+			}
+			if m := reFunc.FindStringSubmatch(trimmed); m != nil {
+				i++
+				body := parseBlock(lines, &i)
+				preStmts = append(preStmts, FunDecl{Name: m[2], Ret: m[1], Body: body})
 				continue
 			}
 			if m := reVar.FindStringSubmatch(trimmed); m != nil {
@@ -152,6 +168,12 @@ func parseBlock(lines []string, idx *int) []Stmt {
 		}
 		if ln == "continue;" {
 			out = append(out, Continue{})
+			(*idx)++
+			continue
+		}
+		if strings.HasPrefix(ln, "return") {
+			expr := strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(ln, "return"), ";"))
+			out = append(out, Return{Expr: expr})
 			(*idx)++
 			continue
 		}

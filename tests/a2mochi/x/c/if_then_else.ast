@@ -1,10 +1,6 @@
 (program
-  (var msg
-    (if_expr
-      (binary > (selector x) (int 10))
-      (string yes)
-      (string no)
-    )
+  (let x (int 12))
+  (let msg
+    (binary > (selector x) (selector "10 ? \"yes\" : \"no\""))
   )
-  (call print (selector msg))
 )

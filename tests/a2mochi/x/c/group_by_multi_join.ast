@@ -1,0 +1,19 @@
+(program
+  (for i
+    (range (int 0) (int 3))
+    (block
+      (for i
+        (range (int 0) (selector filtered_len))
+        (block
+          (for i
+            (range (int 0) (selector grouped_len))
+            (block
+              (call print (string ""))
+              (return (int 0))
+            )
+          )
+        )
+      )
+    )
+  )
+)

@@ -1,4 +1,7 @@
 (program
+  (let prefix (string fore))
+  (let s1 (string forest))
+  (let s2 (string desert))
   (call print (int 1))
   (call print (int 0))
 )

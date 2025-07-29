@@ -1,4 +1,7 @@
 (program
-  (var flag (int 0))
+  (let data
+    (list (int 1) (int 2))
+  )
+  (let flag (int 0))
   (call print (selector flag))
 )

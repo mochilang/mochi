@@ -1,15 +1,4 @@
 (program
-  (fun inc
-    (param c (type Counter))
-    (type int)
-    (assign c
-      (binary +
-        (selector n (selector c))
-        (int 1)
-      )
-    )
-  )
-  (call print
-    (selector n (selector c))
-  )
+  (fun inc (type int) (block))
+  (call print (selector c.n))
 )

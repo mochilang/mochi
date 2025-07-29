@@ -1,18 +1,6 @@
 (program
-  (var label
-    (if_expr
-      (binary == (selector x) (int 1))
-      (string one)
-      (if_expr
-        (binary == (selector x) (int 2))
-        (string two)
-        (if_expr
-          (binary == (selector x) (int 3))
-          (string three)
-          (string unknown)
-        )
-      )
-    )
+  (let x (int 2))
+  (let label
+    (binary == (selector x) (selector "1 ? \"one\" : (x == 2 ? \"two\" : (x == 3 ? \"three\" : \"unknown\"))"))
   )
-  (call print (selector label))
 )

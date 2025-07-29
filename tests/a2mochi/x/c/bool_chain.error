@@ -1,5 +1,0 @@
-error[T020]: operator `&&` cannot be used on types int and int
-  --> :19:10
-
-help:
-  Choose an operator that supports these operand types.

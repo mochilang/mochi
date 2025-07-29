@@ -1,14 +1,9 @@
 (program
+  (let s (string catch))
   (call print
-    (binary !=
-      (call strstr (selector s) (string cat))
-      (selector NULL)
-    )
+    (binary != (selector "\"cat\")") (selector NULL))
   )
   (call print
-    (binary !=
-      (call strstr (selector s) (string dog))
-      (selector NULL)
-    )
+    (binary != (selector "\"dog\")") (selector NULL))
   )
 )

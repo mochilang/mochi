@@ -1,4 +1,6 @@
 (program
+  (let a (int 7))
+  (let b (int 4))
   (call print (selector a))
   (call print
     (binary == (selector a) (int 7))

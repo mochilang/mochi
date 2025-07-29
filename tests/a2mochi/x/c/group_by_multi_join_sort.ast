@@ -1,0 +1,44 @@
+(program
+  (let start_date
+    (binary -
+      (selector "\"1993")
+      (binary - (int 10) (selector "01\""))
+    )
+  )
+  (let end_date
+    (binary -
+      (selector "\"1994")
+      (binary - (int 1) (selector "01\""))
+    )
+  )
+  (for i
+    (range (int 0) (int 1))
+    (block
+      (for j
+        (range (int 0) (int 2))
+        (block
+          (for k
+            (range (int 0) (int 2))
+            (block
+              (for m
+                (range (int 0) (int 1))
+                (block
+                  (let idx (int 0))
+                  (if
+                    (binary != (selector found) (int 0))
+                    (block)
+                    (block)
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+      (for a
+        (range (int 0) (selector result_len))
+        (block)
+      )
+    )
+  )
+)
