@@ -1,0 +1,5 @@
+error[T003]: unknown function: _now
+  --> :54:15
+
+help:
+  Ensure the function is defined before it's called.
