@@ -107,16 +107,20 @@ func parseRoslyn(src string) (*Program, error) {
 }
 
 func ensureHelper() error {
-	helperOnce.Do(func() {
-		if _, err := exec.LookPath("dotnet"); err != nil {
-			helperErr = fmt.Errorf("dotnet not installed")
-			return
-		}
-		dir, err := os.MkdirTemp("", "a2mochi-cshelper-")
-		if err != nil {
-			helperErr = err
-			return
-		}
+        helperOnce.Do(func() {
+                dotnet := os.Getenv("A2MOCHI_DOTNET")
+                if dotnet == "" {
+                        dotnet, _ = exec.LookPath("dotnet")
+                }
+                if dotnet == "" {
+                        helperErr = fmt.Errorf("dotnet not installed")
+                        return
+                }
+                dir, err := os.MkdirTemp("", "a2mochi-cshelper-")
+                if err != nil {
+                        helperErr = err
+                        return
+                }
 		csPath := filepath.Join(dir, "AstJson.cs")
 		projPath := filepath.Join(dir, "AstJson.csproj")
 		if data, err := helperFS.ReadFile("internal/AstJson.cs"); err == nil {
@@ -131,7 +135,7 @@ func ensureHelper() error {
 			helperErr = err
 			return
 		}
-		cmd := exec.Command("dotnet", "publish", "-c", "Release", "-o", dir)
+                cmd := exec.Command(dotnet, "publish", "-c", "Release", "-o", dir)
 		cmd.Dir = dir
 		if out, err := cmd.CombinedOutput(); err != nil {
 			helperErr = fmt.Errorf("dotnet publish: %v: %s", err, out)
