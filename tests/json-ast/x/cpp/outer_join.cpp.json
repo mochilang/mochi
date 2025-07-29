@@ -1,0 +1,3625 @@
+{
+  "funcs": [
+    {
+      "Name": "__addressof",
+      "Params": [
+        {
+          "Name": "__r",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": "al = 80}};\nstd::vector\u003cResultItem\u003e "
+    },
+    {
+      "Name": "forward",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "typename std::remove_reference\u003c_Tp\u003e::type"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": " o, .customer = c}); }\n        }\n "
+    },
+    {
+      "Name": "forward",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "typename std::remove_reference\u003c_Tp\u003e::type"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": "erId == c.id)) { __matched = true; break; }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c);\n    "
+    },
+    {
+      "Name": "move",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "typename std::remove_reference\u003c_Tp\u003e::type",
+      "Body": "             std::cout \u003c\u003c std::string(\"Order\");\n                std::cou"
+    },
+    {
+      "Name": "move_if_noexcept",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "__conditional_t\u003c__move_if_noexcept_cond\u003c_Tp\u003e::value, const _Tp \u0026, _Tp \u0026\u0026\u003e",
+      "Body": "\u003c std::string(\"Unknown\");"
+    },
+    {
+      "Name": "operator==",
+      "Params": [
+        {
+          "Name": "__v",
+          "Typ": "partial_ordering"
+        },
+        {
+          "Name": "",
+          "Typ": "__cmp_cat::__unspec"
+        }
+      ],
+      "Ret": "bool",
+      "Body": "   for (auto o : orders) {\n "
+    },
+    {
+      "Name": "operator\u003c",
+      "Params": [
+        {
+          "Name": "__v",
+          "Typ": "partial_ordering"
+        },
+        {
+          "Name": "",
+          "Typ": "__cmp_cat::__unspec"
+        }
+      ],
+      "Ret": "bool",
+      "Body": "back(ResultItem{.order = o, ."
+    },
+    {
+      "Name": "operator\u003e",
+      "Params": [
+        {
+          "Name": "__v",
+          "Typ": "partial_ordering"
+        },
+        {
+          "Name": "",
+          "Typ": "__cmp_cat::__unspec"
+        }
+      ],
+      "Ret": "bool",
+      "Body": "---\");\n    std::cout \u003c\u003c std:"
+    },
+    {
+      "Name": "operator\u003c=",
+      "Params": [
+        {
+          "Name": "__v",
+          "Typ": "partial_ordering"
+        },
+        {
+          "Name": "",
+          "Typ": "__cmp_cat::__unspec"
+        }
+      ],
+      "Ret": "bool",
+      "Body": "d::cout \u003c\u003c std::string(\"Orde"
+    },
+    {
+      "Name": "operator\u003e=",
+      "Params": [
+        {
+          "Name": "__v",
+          "Typ": "partial_ordering"
+        },
+        {
+          "Name": "",
+          "Typ": "__cmp_cat::__unspec"
+        }
+      ],
+      "Ret": "bool",
+      "Body": "               std::cout \u003c\u003c std::string(\"by\");\n             "
+    },
+    {
+      "Name": "operator\u003c",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__cmp_cat::__unspec"
+        },
+        {
+          "Name": "__v",
+          "Typ": "partial_ordering"
+        }
+      ],
+      "Ret": "bool",
+      "Body": "  std::cout \u003c\u003c std::string(\""
+    },
+    {
+      "Name": "operator\u003e",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__cmp_cat::__unspec"
+        },
+        {
+          "Name": "__v",
+          "Typ": "partial_ordering"
+        }
+      ],
+      "Ret": "bool",
+      "Body": "td::endl;\n            } else "
+    },
+    {
+      "Name": "operator\u003c=",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__cmp_cat::__unspec"
+        },
+        {
+          "Name": "__v",
+          "Typ": "partial_ordering"
+        }
+      ],
+      "Ret": "bool",
+      "Body": "w.order-\u003eid;\n                std::cout \u003c\u003c \" \";\n             "
+    },
+    {
+      "Name": "operator\u003e=",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__cmp_cat::__unspec"
+        },
+        {
+          "Name": "__v",
+          "Typ": "partial_ordering"
+        }
+      ],
+      "Ret": "bool",
+      "Body": "\");\n                std::cou"
+    },
+    {
+      "Name": "operator\u003c=\u003e",
+      "Params": [
+        {
+          "Name": "__v",
+          "Typ": "partial_ordering"
+        },
+        {
+          "Name": "",
+          "Typ": "__cmp_cat::__unspec"
+        }
+      ],
+      "Ret": "partial_ordering",
+      "Body": "-\u003etotal;\n     "
+    },
+    {
+      "Name": "operator\u003c=\u003e",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__cmp_cat::__unspec"
+        },
+        {
+          "Name": "__v",
+          "Typ": "partial_ordering"
+        }
+      ],
+      "Ret": "partial_ordering",
+      "Body": "::cout \u003c\u003c \" \";\n            std::cout \u003c\u003c row.customer-\u003ename;\n            std::cout \u003c\u003c \" \";\n            std::cout \u003c\u003c s"
+    },
+    {
+      "Name": "__distance",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "_InputIterator"
+        },
+        {
+          "Name": "__last",
+          "Typ": "_InputIterator"
+        },
+        {
+          "Name": "",
+          "Typ": "input_iterator_tag"
+        }
+      ],
+      "Ret": "typename iterator_traits\u003c_InputIterator\u003e::difference_type",
+      "Body": "::string(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.customer-\u003ename;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003etotal;\n"
+    },
+    {
+      "Name": "__distance",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "_RandomAccessIterator"
+        },
+        {
+          "Name": "__last",
+          "Typ": "_RandomAccessIterator"
+        },
+        {
+          "Name": "",
+          "Typ": "random_access_iterator_tag"
+        }
+      ],
+      "Ret": "typename iterator_traits\u003c_RandomAccessIterator\u003e::difference_type",
+      "Body": "             std::cout \u003c\u003c std::string(\"Unknown\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c"
+    },
+    {
+      "Name": "__distance",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "string"
+        },
+        {
+          "Name": "__last",
+          "Typ": "string"
+        },
+        {
+          "Name": "",
+          "Typ": "random_access_iterator_tag"
+        }
+      ],
+      "Ret": "typename iterator_traits\u003cconst char *\u003e::difference_type",
+      "Body": "             std::cout \u003c\u003c std::string(\"Unknown\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c"
+    },
+    {
+      "Name": "__distance",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "CustomersItem"
+        },
+        {
+          "Name": "__last",
+          "Typ": "CustomersItem"
+        },
+        {
+          "Name": "",
+          "Typ": "random_access_iterator_tag"
+        }
+      ],
+      "Ret": "typename iterator_traits\u003cconst CustomersItem *\u003e::difference_type",
+      "Body": "             std::cout \u003c\u003c std::string(\"Unknown\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c"
+    },
+    {
+      "Name": "__distance",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "string"
+        },
+        {
+          "Name": "__last",
+          "Typ": "string"
+        },
+        {
+          "Name": "",
+          "Typ": "random_access_iterator_tag"
+        }
+      ],
+      "Ret": "typename iterator_traits\u003cchar *\u003e::difference_type",
+      "Body": "             std::cout \u003c\u003c std::string(\"Unknown\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c"
+    },
+    {
+      "Name": "__distance",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "OrdersItem"
+        },
+        {
+          "Name": "__last",
+          "Typ": "OrdersItem"
+        },
+        {
+          "Name": "",
+          "Typ": "random_access_iterator_tag"
+        }
+      ],
+      "Ret": "typename iterator_traits\u003cconst OrdersItem *\u003e::difference_type",
+      "Body": "             std::cout \u003c\u003c std::string(\"Unknown\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c"
+    },
+    {
+      "Name": "__distance",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "__last",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "",
+          "Typ": "random_access_iterator_tag"
+        }
+      ],
+      "Ret": "typename iterator_traits\u003cwchar_t *\u003e::difference_type",
+      "Body": "             std::cout \u003c\u003c std::string(\"Unknown\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c"
+    },
+    {
+      "Name": "__distance",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "__last",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "",
+          "Typ": "random_access_iterator_tag"
+        }
+      ],
+      "Ret": "typename iterator_traits\u003cconst wchar_t *\u003e::difference_type",
+      "Body": "             std::cout \u003c\u003c std::string(\"Unknown\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c"
+    },
+    {
+      "Name": "__distance",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "char8_t"
+        },
+        {
+          "Name": "__last",
+          "Typ": "char8_t"
+        },
+        {
+          "Name": "",
+          "Typ": "random_access_iterator_tag"
+        }
+      ],
+      "Ret": "typename iterator_traits\u003cconst char8_t *\u003e::difference_type",
+      "Body": "             std::cout \u003c\u003c std::string(\"Unknown\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c"
+    },
+    {
+      "Name": "__distance",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "string"
+        },
+        {
+          "Name": "__last",
+          "Typ": "string"
+        },
+        {
+          "Name": "",
+          "Typ": "random_access_iterator_tag"
+        }
+      ],
+      "Ret": "typename iterator_traits\u003cconst char16_t *\u003e::difference_type",
+      "Body": "             std::cout \u003c\u003c std::string(\"Unknown\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c"
+    },
+    {
+      "Name": "__distance",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "string"
+        },
+        {
+          "Name": "__last",
+          "Typ": "string"
+        },
+        {
+          "Name": "",
+          "Typ": "random_access_iterator_tag"
+        }
+      ],
+      "Ret": "typename iterator_traits\u003cconst char32_t *\u003e::difference_type",
+      "Body": "             std::cout \u003c\u003c std::string(\"Unknown\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c"
+    },
+    {
+      "Name": "destroy_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "",
+      "Body": "       std::cout \u003c\u003c row.customer-\u003ename;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c"
+    },
+    {
+      "Name": "destroy_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "CustomersItem"
+        }
+      ],
+      "Ret": "",
+      "Body": "       std::cout \u003c\u003c row.customer-\u003ename;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c"
+    },
+    {
+      "Name": "destroy_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "OrdersItem"
+        }
+      ],
+      "Ret": "",
+      "Body": "       std::cout \u003c\u003c row.customer-\u003ename;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c"
+    },
+    {
+      "Name": "destroy_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "ResultItem"
+        }
+      ],
+      "Ret": "",
+      "Body": "       std::cout \u003c\u003c row.customer-\u003ename;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "_Tp"
+        },
+        {
+          "Name": "__args",
+          "Typ": "_Args \u0026\u0026..."
+        }
+      ],
+      "Ret": "",
+      "Body": "g(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "string"
+        },
+        {
+          "Name": "__args",
+          "Typ": "string"
+        }
+      ],
+      "Ret": "",
+      "Body": "g(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "string"
+        },
+        {
+          "Name": "__args",
+          "Typ": "string"
+        }
+      ],
+      "Ret": "",
+      "Body": "g(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "__args",
+          "Typ": "wchar_t"
+        }
+      ],
+      "Ret": "",
+      "Body": "g(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "__args",
+          "Typ": "wchar_t"
+        }
+      ],
+      "Ret": "",
+      "Body": "g(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "char8_t"
+        },
+        {
+          "Name": "__args",
+          "Typ": "char8_t"
+        }
+      ],
+      "Ret": "",
+      "Body": "g(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "char8_t"
+        },
+        {
+          "Name": "__args",
+          "Typ": "char8_t"
+        }
+      ],
+      "Ret": "",
+      "Body": "g(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "string"
+        },
+        {
+          "Name": "__args",
+          "Typ": "string"
+        }
+      ],
+      "Ret": "",
+      "Body": "g(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "string"
+        },
+        {
+          "Name": "__args",
+          "Typ": "string"
+        }
+      ],
+      "Ret": "",
+      "Body": "g(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "CustomersItem"
+        },
+        {
+          "Name": "__args",
+          "Typ": "CustomersItem"
+        }
+      ],
+      "Ret": "",
+      "Body": "g(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "OrdersItem"
+        },
+        {
+          "Name": "__args",
+          "Typ": "OrdersItem"
+        }
+      ],
+      "Ret": "",
+      "Body": "g(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "ResultItem"
+        },
+        {
+          "Name": "__args",
+          "Typ": "ResultItem"
+        }
+      ],
+      "Ret": "",
+      "Body": "g(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "CustomersItem"
+        },
+        {
+          "Name": "__args",
+          "Typ": "CustomersItem"
+        }
+      ],
+      "Ret": "",
+      "Body": "g(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c"
+    },
+    {
+      "Name": "__convert_from_v",
+      "Params": [
+        {
+          "Name": "__cloc",
+          "Typ": "__c_locale"
+        },
+        {
+          "Name": "__out",
+          "Typ": "string"
+        },
+        {
+          "Name": "__size",
+          "Typ": "int"
+        },
+        {
+          "Name": "__fmt",
+          "Typ": "string"
+        }
+      ],
+      "Ret": "int",
+      "Body": "_matched = false;\n    for (auto o : orders) {\n        if((o.customerId == c.id)) { __matched = true; break; }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c);\n        auto c = c_opt;\n        __items.push_back(ResultItem{.order = o, .customer = c});\n    }\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c std::string(\"--- Outer Join using syntax ---\");\n    std::cout \u003c\u003c std::endl;\n    for (ResultItem row : result) {\n        if (row.order) {\n            if (row.customer) {\n                std::cout \u003c\u003c std::string(\"Order\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003eid;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.customer-\u003ename;\n                std::cout \u003c\u003c \" \";\n                "
+    },
+    {
+      "Name": "__is_single_threaded",
+      "Params": null,
+      "Ret": "bool",
+      "Body": ", OrdersItem{.id = 101, .customerId = 2, .total = 125}, OrdersItem{.id = 102, .customerId = 1, .total = 300}, OrdersItem{.id = 103, .customerId = 5, .total = 80}};\nstd::"
+    },
+    {
+      "Name": "__exchange_and_add",
+      "Params": [
+        {
+          "Name": "__mem",
+          "Typ": "volatile _Atomic_word"
+        },
+        {
+          "Name": "__val",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "_Atomic_word",
+      "Body": "t;\n            auto c = c_opt;\n            __items.push_back("
+    },
+    {
+      "Name": "__atomic_add",
+      "Params": [
+        {
+          "Name": "__mem",
+          "Typ": "volatile _Atomic_word"
+        },
+        {
+          "Name": "__val",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "",
+      "Body": "em\u003e c = std::nullopt;\n        { std::optional\u003cOrdersIt"
+    },
+    {
+      "Name": "__exchange_and_add_single",
+      "Params": [
+        {
+          "Name": "__mem",
+          "Typ": "_Atomic_word"
+        },
+        {
+          "Name": "__val",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "_Atomic_word",
+      "Body": "nal\u003cOrdersItem\u003e o = std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c);\n "
+    },
+    {
+      "Name": "__atomic_add_single",
+      "Params": [
+        {
+          "Name": "__mem",
+          "Typ": "_Atomic_word"
+        },
+        {
+          "Name": "__val",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "",
+      "Body": "s; }());\n\nint main("
+    },
+    {
+      "Name": "__exchange_and_add_dispatch",
+      "Params": [
+        {
+          "Name": "__mem",
+          "Typ": "_Atomic_word"
+        },
+        {
+          "Name": "__val",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "_Atomic_word",
+      "Body": "lt) {\n        if (row.order) {\n            if (row.customer) {\n                std::cout \u003c\u003c std::string(\"Order\");\n                std::cout \u003c\u003c \" \""
+    },
+    {
+      "Name": "__atomic_add_dispatch",
+      "Params": [
+        {
+          "Name": "__mem",
+          "Typ": "_Atomic_word"
+        },
+        {
+          "Name": "__val",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "",
+      "Body": ":string(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.customer-\u003ename;\n                std::c"
+    },
+    {
+      "Name": "__ostream_write",
+      "Params": [
+        {
+          "Name": "__out",
+          "Typ": "basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__s",
+          "Typ": "_CharT"
+        },
+        {
+          "Name": "__n",
+          "Typ": "streamsize"
+        }
+      ],
+      "Ret": "",
+      "Body": "tomerId = 1, .total = 300}, OrdersItem{.id = 103, .customerId = 5, .total = 80}};\nstd::vector\u003cResultItem\u003e result = ([]{ std::vector\u003cResultItem\u003e __items;\nfor (auto o : orders) {\n    bool __matched = false;\n    for (auto c : customers) {\n        if((o.customerId == c.i"
+    },
+    {
+      "Name": "__ostream_fill",
+      "Params": [
+        {
+          "Name": "__out",
+          "Typ": "basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__n",
+          "Typ": "streamsize"
+        }
+      ],
+      "Ret": "",
+      "Body": " = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .customer = c}); }\n    }\n}\nfor (auto c : customers) {\n    bool __matched = false;\n    for (auto o : orders"
+    },
+    {
+      "Name": "__ostream_insert",
+      "Params": [
+        {
+          "Name": "__out",
+          "Typ": "basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__s",
+          "Typ": "_CharT"
+        },
+        {
+          "Name": "__n",
+          "Typ": "streamsize"
+        }
+      ],
+      "Ret": "basic_ostream\u003c_CharT, _Traits\u003e",
+      "Body": ");\n        auto c = c_opt;\n        __items.push_back(ResultItem{.order = o, .customer = c});\n    }\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c std::string(\"--- Outer Join using syntax ---\");\n    std::cout \u003c\u003c std::endl;\n    for (ResultItem row : result) {\n        if (row.order) {\n            if (row.customer) {\n                std::cout \u003c\u003c std::string(\"Order\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003eid;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.customer-\u003ename;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003etotal;\n                std::cout \u003c\u003c std::endl;\n            } else {\n                std::cout \u003c\u003c std::string(\"Order\");\n   "
+    },
+    {
+      "Name": "__is_null_pointer",
+      "Params": [
+        {
+          "Name": "__ptr",
+          "Typ": "_Type"
+        }
+      ],
+      "Ret": "bool",
+      "Body": "                std::"
+    },
+    {
+      "Name": "__is_null_pointer",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "_Type"
+        }
+      ],
+      "Ret": "bool",
+      "Body": "          std::c"
+    },
+    {
+      "Name": "__is_null_pointer",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "std::nullptr_t"
+        }
+      ],
+      "Ret": "bool",
+      "Body": ";\n            s"
+    },
+    {
+      "Name": "__find_uniq_type_in_pack",
+      "Params": null,
+      "Ret": "int",
+      "Body": "  std::cout \u003c\u003c row.order-\u003eid;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"Unknown\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c \" \";\n                std::"
+    },
+    {
+      "Name": "__iter_less_iter",
+      "Params": null,
+      "Ret": "_Iter_less_iter",
+      "Body": "ustomerId = 1, .total = 300}"
+    },
+    {
+      "Name": "__iter_less_val",
+      "Params": null,
+      "Ret": "_Iter_less_val",
+      "Body": "er = o, .customer = c}); }\n"
+    },
+    {
+      "Name": "__iter_comp_val",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "_Iter_less_iter"
+        }
+      ],
+      "Ret": "_Iter_less_val",
+      "Body": "opt;\n        { std::optiona"
+    },
+    {
+      "Name": "__val_less_iter",
+      "Params": null,
+      "Ret": "_Val_less_iter",
+      "Body": "});\n    }\n}\nreturn __items;"
+    },
+    {
+      "Name": "__val_comp_iter",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "_Iter_less_iter"
+        }
+      ],
+      "Ret": "_Val_less_iter",
+      "Body": "   std::cout \u003c\u003c std::endl;\n"
+    },
+    {
+      "Name": "__iter_equal_to_iter",
+      "Params": null,
+      "Ret": "_Iter_equal_to_iter",
+      "Body": "            std::cout \u003c\u003c \" \";\n  "
+    },
+    {
+      "Name": "__iter_equal_to_val",
+      "Params": null,
+      "Ret": "_Iter_equal_to_val",
+      "Body": "cout \u003c\u003c std::string(\"Order\");\n "
+    },
+    {
+      "Name": "__iter_comp_val",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "_Iter_equal_to_iter"
+        }
+      ],
+      "Ret": "_Iter_equal_to_val",
+      "Body": "d::cout \u003c\u003c \" \";\n               "
+    },
+    {
+      "Name": "__iter_comp_iter",
+      "Params": [
+        {
+          "Name": "__comp",
+          "Typ": "_Compare"
+        }
+      ],
+      "Ret": "_Iter_comp_iter\u003c_Compare\u003e",
+      "Body": "ders\");\n            std::cout \u003c\u003c std::endl;\n        }\n    }"
+    },
+    {
+      "Name": "bit_cast",
+      "Params": [
+        {
+          "Name": "__from",
+          "Typ": "_From"
+        }
+      ],
+      "Ret": "_To",
+      "Body": "o o : orders) {\n        if((o.customerId == c.id)) {"
+    },
+    {
+      "Name": "__memcmp",
+      "Params": [
+        {
+          "Name": "__first1",
+          "Typ": "_Tp"
+        },
+        {
+          "Name": "__first2",
+          "Typ": "_Up"
+        },
+        {
+          "Name": "__num",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "  std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003etotal;\n                std::cout \u003c\u003c std::endl;\n            } else {\n                std::cout \u003c\u003c std::string(\"Order\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003eid;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"by\");\n                std::cout \u003c\u003c \" \";\n             "
+    },
+    {
+      "Name": "__invfwd",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "typename remove_reference\u003c_Tp\u003e::type"
+        }
+      ],
+      "Ret": "_Up",
+      "Body": "ool __matched = false;\n    for (au"
+    },
+    {
+      "Name": "__invoke_impl",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__invoke_other"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_Fn"
+        },
+        {
+          "Name": "__args",
+          "Typ": "_Args \u0026\u0026..."
+        }
+      ],
+      "Ret": "_Res",
+      "Body": "l\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n          "
+    },
+    {
+      "Name": "__invoke_impl",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__invoke_memfun_ref"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_MemFun"
+        },
+        {
+          "Name": "__t",
+          "Typ": "_Tp"
+        },
+        {
+          "Name": "__args",
+          "Typ": "_Args \u0026\u0026..."
+        }
+      ],
+      "Ret": "_Res",
+      "Body": " std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_ba"
+    },
+    {
+      "Name": "__invoke_impl",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__invoke_memfun_deref"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_MemFun"
+        },
+        {
+          "Name": "__t",
+          "Typ": "_Tp"
+        },
+        {
+          "Name": "__args",
+          "Typ": "_Args \u0026\u0026..."
+        }
+      ],
+      "Ret": "_Res",
+      "Body": "eak; }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;"
+    },
+    {
+      "Name": "__invoke_impl",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__invoke_memobj_ref"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_MemPtr"
+        },
+        {
+          "Name": "__t",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "_Res",
+      "Body": "urn __items; }());\n\nint main() {\n "
+    },
+    {
+      "Name": "__invoke_impl",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__invoke_memobj_deref"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_MemPtr"
+        },
+        {
+          "Name": "__t",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "_Res",
+      "Body": "{\n            if (row.customer) {\n       "
+    },
+    {
+      "Name": "__invoke",
+      "Params": [
+        {
+          "Name": "__fn",
+          "Typ": "_Callable"
+        },
+        {
+          "Name": "__args",
+          "Typ": "_Args \u0026\u0026..."
+        }
+      ],
+      "Ret": "typename __invoke_result\u003c_Callable, _Args...\u003e::type",
+      "Body": ".customer-\u003ename;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003etotal;\n                std::cout \u003c\u003c std::endl;\n            } else {\n                std::cout \u003c\u003c std::string(\"O"
+    },
+    {
+      "Name": "begin",
+      "Params": [
+        {
+          "Name": "__ils",
+          "Typ": "initializer_list\u003c_Tp\u003e"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": "       std::optional\u003cOrd"
+    },
+    {
+      "Name": "end",
+      "Params": [
+        {
+          "Name": "__ils",
+          "Typ": "initializer_list\u003c_Tp\u003e"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": "::endl;\n    for (Resul"
+    },
+    {
+      "Name": "begin",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        }
+      ],
+      "Ret": "",
+      "Body": "omers) {\n        if((o.cu"
+    },
+    {
+      "Name": "begin",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        }
+      ],
+      "Ret": "",
+      "Body": "Item\u003e c = std::nullopt;\n "
+    },
+    {
+      "Name": "end",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        }
+      ],
+      "Ret": "",
+      "Body": "ersItem\u003e o = std::nullo"
+    },
+    {
+      "Name": "end",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        }
+      ],
+      "Ret": "",
+      "Body": "           if (row.cust"
+    },
+    {
+      "Name": "begin",
+      "Params": [
+        {
+          "Name": "__arr",
+          "Typ": "_Tp (\u0026)[_Nm]"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": "customer-\u003ename;\n"
+    },
+    {
+      "Name": "end",
+      "Params": [
+        {
+          "Name": "__arr",
+          "Typ": "_Tp (\u0026)[_Nm]"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": " \";\n                st"
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "__max_size_type"
+        }
+      ],
+      "Ret": "__max_size_type",
+      "Body": "   for (auto c"
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "__max_diff_type"
+        }
+      ],
+      "Ret": "__max_size_type",
+      "Body": "     { std::optional\u003cOrdersItem"
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "",
+      "Body": "c_opt;\n            __items.push_back(ResultItem{."
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "__int128"
+        }
+      ],
+      "Ret": "__int128",
+      "Body": "nal\u003cOrdersItem"
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "__int128"
+        }
+      ],
+      "Ret": "__int128",
+      "Body": "}\nfor (auto c "
+    },
+    {
+      "Name": "__sv_check",
+      "Params": [
+        {
+          "Name": "__size",
+          "Typ": "int"
+        },
+        {
+          "Name": "__pos",
+          "Typ": "int"
+        },
+        {
+          "Name": "__s",
+          "Typ": "string"
+        }
+      ],
+      "Ret": "int",
+      "Body": "l\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n"
+    },
+    {
+      "Name": "__sv_limit",
+      "Params": [
+        {
+          "Name": "__size",
+          "Typ": "int"
+        },
+        {
+          "Name": "__pos",
+          "Typ": "int"
+        },
+        {
+          "Name": "__off",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": " .customer = c}); }\n    }\n}\nfor (auto c : customers) {\n    bool __matched = false;\n    for (auto o : "
+    },
+    {
+      "Name": "__bswap_16",
+      "Params": [
+        {
+          "Name": "__bsx",
+          "Typ": "__uint16_t"
+        }
+      ],
+      "Ret": "__uint16_t",
+      "Body": "= 1, .name = std::string(\"Alice\")}, CustomersItem{.id = 2, .name = std::string(\"Bob\")}, CustomersItem{.id = 3, .na"
+    },
+    {
+      "Name": "__bswap_32",
+      "Params": [
+        {
+          "Name": "__bsx",
+          "Typ": "__uint32_t"
+        }
+      ],
+      "Ret": "__uint32_t",
+      "Body": ", .customerId = 1, .total = 300}, OrdersItem{.id = 103, .customerId = 5, .total = 80}};\nstd::vector\u003cResultItem\u003e re"
+    },
+    {
+      "Name": "__bswap_64",
+      "Params": [
+        {
+          "Name": "__bsx",
+          "Typ": "__uint64_t"
+        }
+      ],
+      "Ret": "__uint64_t",
+      "Body": "pt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .custom"
+    },
+    {
+      "Name": "__uint16_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint16_t"
+        }
+      ],
+      "Ret": "__uint16_t",
+      "Body": "name = std::stri"
+    },
+    {
+      "Name": "__uint32_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint32_t"
+        }
+      ],
+      "Ret": "__uint32_t",
+      "Body": " CustomersItem{."
+    },
+    {
+      "Name": "__uint64_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint64_t"
+        }
+      ],
+      "Ret": "__uint64_t",
+      "Body": "name = std::stri"
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__i",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "erId = 5, .total = 80}};\nstd::"
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "long long"
+        }
+      ],
+      "Ret": "long long",
+      "Body": "orders) {\n    bool __matched = f"
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "float"
+        }
+      ],
+      "Ret": "float",
+      "Body": "        }\n    }\n    if(!__matc"
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "float"
+        }
+      ],
+      "Ret": "float",
+      "Body": "lopt;\n        { std::optional\u003cO"
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "long double"
+        }
+      ],
+      "Ret": "long double",
+      "Body": "rder = o, .customer = c}); }\n  "
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "_TRet (*)(const _CharT *, _CharT **, _Base...)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "_CharT"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__base",
+          "Typ": "_Base..."
+        }
+      ],
+      "Ret": "_Ret",
+      "Body": "erId == c.id)) {\n            __matched = true;\n            { std::optional\u003cOrdersItem\u003e o_opt(o); std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .customer = c}); }\n    }\n}\nfor (auto c : customers) {\n    bool __matched = false;\n    for (auto o : orders) {\n        if((o.customerId == c.id)) { __matched = true; break; }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c);\n        auto c = c_opt;\n        __items.push_back(ResultItem{.order = o, .customer = c});\n    }\n}\nreturn __items; }());\n\nint main("
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "long (*)(const char *, char **, int)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "string"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "erId == c.id)) {\n            __matched = true;\n            { std::optional\u003cOrdersItem\u003e o_opt(o); std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .customer = c}); }\n    }\n}\nfor (auto c : customers) {\n    bool __matched = false;\n    for (auto o : orders) {\n        if((o.customerId == c.id)) { __matched = true; break; }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c);\n        auto c = c_opt;\n        __items.push_back(ResultItem{.order = o, .customer = c});\n    }\n}\nreturn __items; }());\n\nint main("
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "long (*)(const char *, char **, int)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "string"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "erId == c.id)) {\n            __matched = true;\n            { std::optional\u003cOrdersItem\u003e o_opt(o); std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .customer = c}); }\n    }\n}\nfor (auto c : customers) {\n    bool __matched = false;\n    for (auto o : orders) {\n        if((o.customerId == c.id)) { __matched = true; break; }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c);\n        auto c = c_opt;\n        __items.push_back(ResultItem{.order = o, .customer = c});\n    }\n}\nreturn __items; }());\n\nint main("
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "long (*)(const char *, char **, int)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "string"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "erId == c.id)) {\n            __matched = true;\n            { std::optional\u003cOrdersItem\u003e o_opt(o); std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .customer = c}); }\n    }\n}\nfor (auto c : customers) {\n    bool __matched = false;\n    for (auto o : orders) {\n        if((o.customerId == c.id)) { __matched = true; break; }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c);\n        auto c = c_opt;\n        __items.push_back(ResultItem{.order = o, .customer = c});\n    }\n}\nreturn __items; }());\n\nint main("
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "long long (*)(const char *, char **, int)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "string"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "long long",
+      "Body": "erId == c.id)) {\n            __matched = true;\n            { std::optional\u003cOrdersItem\u003e o_opt(o); std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .customer = c}); }\n    }\n}\nfor (auto c : customers) {\n    bool __matched = false;\n    for (auto o : orders) {\n        if((o.customerId == c.id)) { __matched = true; break; }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c);\n        auto c = c_opt;\n        __items.push_back(ResultItem{.order = o, .customer = c});\n    }\n}\nreturn __items; }());\n\nint main("
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "long long (*)(const char *, char **, int)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "string"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "long long",
+      "Body": "erId == c.id)) {\n            __matched = true;\n            { std::optional\u003cOrdersItem\u003e o_opt(o); std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .customer = c}); }\n    }\n}\nfor (auto c : customers) {\n    bool __matched = false;\n    for (auto o : orders) {\n        if((o.customerId == c.id)) { __matched = true; break; }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c);\n        auto c = c_opt;\n        __items.push_back(ResultItem{.order = o, .customer = c});\n    }\n}\nreturn __items; }());\n\nint main("
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "float (*)(const char *, char **)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "string"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        }
+      ],
+      "Ret": "float",
+      "Body": "erId == c.id)) {\n            __matched = true;\n            { std::optional\u003cOrdersItem\u003e o_opt(o); std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .customer = c}); }\n    }\n}\nfor (auto c : customers) {\n    bool __matched = false;\n    for (auto o : orders) {\n        if((o.customerId == c.id)) { __matched = true; break; }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c);\n        auto c = c_opt;\n        __items.push_back(ResultItem{.order = o, .customer = c});\n    }\n}\nreturn __items; }());\n\nint main("
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "double (*)(const char *, char **)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "string"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        }
+      ],
+      "Ret": "float",
+      "Body": "erId == c.id)) {\n            __matched = true;\n            { std::optional\u003cOrdersItem\u003e o_opt(o); std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .customer = c}); }\n    }\n}\nfor (auto c : customers) {\n    bool __matched = false;\n    for (auto o : orders) {\n        if((o.customerId == c.id)) { __matched = true; break; }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c);\n        auto c = c_opt;\n        __items.push_back(ResultItem{.order = o, .customer = c});\n    }\n}\nreturn __items; }());\n\nint main("
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "long double (*)(const char *, char **)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "string"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        }
+      ],
+      "Ret": "long double",
+      "Body": "erId == c.id)) {\n            __matched = true;\n            { std::optional\u003cOrdersItem\u003e o_opt(o); std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .customer = c}); }\n    }\n}\nfor (auto c : customers) {\n    bool __matched = false;\n    for (auto o : orders) {\n        if((o.customerId == c.id)) { __matched = true; break; }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c);\n        auto c = c_opt;\n        __items.push_back(ResultItem{.order = o, .customer = c});\n    }\n}\nreturn __items; }());\n\nint main("
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "long (*)(const wchar_t *, wchar_t **, int)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "erId == c.id)) {\n            __matched = true;\n            { std::optional\u003cOrdersItem\u003e o_opt(o); std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .customer = c}); }\n    }\n}\nfor (auto c : customers) {\n    bool __matched = false;\n    for (auto o : orders) {\n        if((o.customerId == c.id)) { __matched = true; break; }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c);\n        auto c = c_opt;\n        __items.push_back(ResultItem{.order = o, .customer = c});\n    }\n}\nreturn __items; }());\n\nint main("
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "long (*)(const wchar_t *, wchar_t **, int)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "erId == c.id)) {\n            __matched = true;\n            { std::optional\u003cOrdersItem\u003e o_opt(o); std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .customer = c}); }\n    }\n}\nfor (auto c : customers) {\n    bool __matched = false;\n    for (auto o : orders) {\n        if((o.customerId == c.id)) { __matched = true; break; }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c);\n        auto c = c_opt;\n        __items.push_back(ResultItem{.order = o, .customer = c});\n    }\n}\nreturn __items; }());\n\nint main("
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "long (*)(const wchar_t *, wchar_t **, int)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "erId == c.id)) {\n            __matched = true;\n            { std::optional\u003cOrdersItem\u003e o_opt(o); std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .customer = c}); }\n    }\n}\nfor (auto c : customers) {\n    bool __matched = false;\n    for (auto o : orders) {\n        if((o.customerId == c.id)) { __matched = true; break; }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c);\n        auto c = c_opt;\n        __items.push_back(ResultItem{.order = o, .customer = c});\n    }\n}\nreturn __items; }());\n\nint main("
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "long long (*)(const wchar_t *, wchar_t **, int)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "long long",
+      "Body": "erId == c.id)) {\n            __matched = true;\n            { std::optional\u003cOrdersItem\u003e o_opt(o); std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .customer = c}); }\n    }\n}\nfor (auto c : customers) {\n    bool __matched = false;\n    for (auto o : orders) {\n        if((o.customerId == c.id)) { __matched = true; break; }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c);\n        auto c = c_opt;\n        __items.push_back(ResultItem{.order = o, .customer = c});\n    }\n}\nreturn __items; }());\n\nint main("
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "long long (*)(const wchar_t *, wchar_t **, int)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "long long",
+      "Body": "erId == c.id)) {\n            __matched = true;\n            { std::optional\u003cOrdersItem\u003e o_opt(o); std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .customer = c}); }\n    }\n}\nfor (auto c : customers) {\n    bool __matched = false;\n    for (auto o : orders) {\n        if((o.customerId == c.id)) { __matched = true; break; }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c);\n        auto c = c_opt;\n        __items.push_back(ResultItem{.order = o, .customer = c});\n    }\n}\nreturn __items; }());\n\nint main("
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "float (*)(const wchar_t *, wchar_t **)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        }
+      ],
+      "Ret": "float",
+      "Body": "erId == c.id)) {\n            __matched = true;\n            { std::optional\u003cOrdersItem\u003e o_opt(o); std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .customer = c}); }\n    }\n}\nfor (auto c : customers) {\n    bool __matched = false;\n    for (auto o : orders) {\n        if((o.customerId == c.id)) { __matched = true; break; }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c);\n        auto c = c_opt;\n        __items.push_back(ResultItem{.order = o, .customer = c});\n    }\n}\nreturn __items; }());\n\nint main("
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "double (*)(const wchar_t *, wchar_t **)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        }
+      ],
+      "Ret": "float",
+      "Body": "erId == c.id)) {\n            __matched = true;\n            { std::optional\u003cOrdersItem\u003e o_opt(o); std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .customer = c}); }\n    }\n}\nfor (auto c : customers) {\n    bool __matched = false;\n    for (auto o : orders) {\n        if((o.customerId == c.id)) { __matched = true; break; }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c);\n        auto c = c_opt;\n        __items.push_back(ResultItem{.order = o, .customer = c});\n    }\n}\nreturn __items; }());\n\nint main("
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "long double (*)(const wchar_t *, wchar_t **)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        }
+      ],
+      "Ret": "long double",
+      "Body": "erId == c.id)) {\n            __matched = true;\n            { std::optional\u003cOrdersItem\u003e o_opt(o); std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .customer = c}); }\n    }\n}\nfor (auto c : customers) {\n    bool __matched = false;\n    for (auto o : orders) {\n        if((o.customerId == c.id)) { __matched = true; break; }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c);\n        auto c = c_opt;\n        __items.push_back(ResultItem{.order = o, .customer = c});\n    }\n}\nreturn __items; }());\n\nint main("
+    },
+    {
+      "Name": "__to_xstring",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "int (*)(_CharT *, std::size_t, const _CharT *, __va_list_tag *)"
+        },
+        {
+          "Name": "__n",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__fmt",
+          "Typ": "_CharT"
+        }
+      ],
+      "Ret": "_String",
+      "Body": "std::cout \u003c\u003c row.order-\u003eid;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.customer-\u003ename;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003etotal;\n                std::cout \u003c\u003c std::endl;\n            } else {\n                std::cou"
+    },
+    {
+      "Name": "__to_xstring",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "int (*)(char *, std::size_t, const char *, __va_list_tag *)"
+        },
+        {
+          "Name": "__n",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__fmt",
+          "Typ": "string"
+        }
+      ],
+      "Ret": "std::basic_string\u003cchar\u003e",
+      "Body": "std::cout \u003c\u003c row.order-\u003eid;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.customer-\u003ename;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003etotal;\n                std::cout \u003c\u003c std::endl;\n            } else {\n                std::cou"
+    },
+    {
+      "Name": "__to_xstring",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "int (*)(wchar_t *, std::size_t, const wchar_t *, __va_list_tag *)"
+        },
+        {
+          "Name": "__n",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__fmt",
+          "Typ": "wchar_t"
+        }
+      ],
+      "Ret": "std::basic_string\u003cwchar_t\u003e",
+      "Body": "std::cout \u003c\u003c row.order-\u003eid;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.customer-\u003ename;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003etotal;\n                std::cout \u003c\u003c std::endl;\n            } else {\n                std::cou"
+    },
+    {
+      "Name": "__to_chars_len",
+      "Params": [
+        {
+          "Name": "__value",
+          "Typ": "_Tp"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "omers) {\n        if((o.customerId == c.id)) {\n            __matched = true;\n            { std::optional\u003cOrdersItem\u003e o_opt(o); std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .customer = c}"
+    },
+    {
+      "Name": "__to_chars_len",
+      "Params": [
+        {
+          "Name": "__value",
+          "Typ": "int"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "omers) {\n        if((o.customerId == c.id)) {\n            __matched = true;\n            { std::optional\u003cOrdersItem\u003e o_opt(o); std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .customer = c}"
+    },
+    {
+      "Name": "__to_chars_len",
+      "Params": [
+        {
+          "Name": "__value",
+          "Typ": "int"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "omers) {\n        if((o.customerId == c.id)) {\n            __matched = true;\n            { std::optional\u003cOrdersItem\u003e o_opt(o); std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .customer = c}"
+    },
+    {
+      "Name": "__to_chars_len",
+      "Params": [
+        {
+          "Name": "__value",
+          "Typ": "long long"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "omers) {\n        if((o.customerId == c.id)) {\n            __matched = true;\n            { std::optional\u003cOrdersItem\u003e o_opt(o); std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .customer = c}"
+    },
+    {
+      "Name": "__to_chars_10_impl",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "string"
+        },
+        {
+          "Name": "__len",
+          "Typ": "int"
+        },
+        {
+          "Name": "__val",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "",
+      "Body": "Item{.order = o, .customer = c});\n    }\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c std::string(\"--- Outer Join using syntax ---\");\n    std::cout \u003c\u003c std::endl;\n    for (ResultItem row : result) {\n        if (row.order) {\n            if (row.customer) {\n                std::cout \u003c\u003c std::string(\"Order\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003eid;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.customer-\u003ename;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003etotal;\n                std::cout \u003c\u003c std::endl;\n           "
+    },
+    {
+      "Name": "__to_chars_10_impl",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "string"
+        },
+        {
+          "Name": "__len",
+          "Typ": "int"
+        },
+        {
+          "Name": "__val",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "",
+      "Body": "Item{.order = o, .customer = c});\n    }\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c std::string(\"--- Outer Join using syntax ---\");\n    std::cout \u003c\u003c std::endl;\n    for (ResultItem row : result) {\n        if (row.order) {\n            if (row.customer) {\n                std::cout \u003c\u003c std::string(\"Order\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003eid;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.customer-\u003ename;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003etotal;\n                std::cout \u003c\u003c std::endl;\n           "
+    },
+    {
+      "Name": "__to_chars_10_impl",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "string"
+        },
+        {
+          "Name": "__len",
+          "Typ": "int"
+        },
+        {
+          "Name": "__val",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "",
+      "Body": "Item{.order = o, .customer = c});\n    }\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c std::string(\"--- Outer Join using syntax ---\");\n    std::cout \u003c\u003c std::endl;\n    for (ResultItem row : result) {\n        if (row.order) {\n            if (row.customer) {\n                std::cout \u003c\u003c std::string(\"Order\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003eid;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.customer-\u003ename;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003etotal;\n                std::cout \u003c\u003c std::endl;\n           "
+    },
+    {
+      "Name": "__to_chars_10_impl",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "string"
+        },
+        {
+          "Name": "__len",
+          "Typ": "int"
+        },
+        {
+          "Name": "__val",
+          "Typ": "long long"
+        }
+      ],
+      "Ret": "",
+      "Body": "Item{.order = o, .customer = c});\n    }\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c std::string(\"--- Outer Join using syntax ---\");\n    std::cout \u003c\u003c std::endl;\n    for (ResultItem row : result) {\n        if (row.order) {\n            if (row.customer) {\n                std::cout \u003c\u003c std::string(\"Order\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003eid;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.customer-\u003ename;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003etotal;\n                std::cout \u003c\u003c std::endl;\n           "
+    },
+    {
+      "Name": "uses_allocator_construction_args",
+      "Params": [
+        {
+          "Name": "__a",
+          "Typ": "_Alloc"
+        },
+        {
+          "Name": "__args",
+          "Typ": "_Args \u0026\u0026..."
+        }
+      ],
+      "Ret": "",
+      "Body": "          auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .customer = c}); }\n    }\n}\nfor (auto c : customers) {\n    bool __matched = false;\n    for (auto o : orders) {\n        if((o.customerId == c.id)) { __matched = true; break; }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c);\n        auto c = c_opt;\n        __items.push_back(ResultItem{.order = o, .customer = c});\n    }\n}\nreturn __items; }("
+    },
+    {
+      "Name": "operator==",
+      "Params": [
+        {
+          "Name": "__a",
+          "Typ": "memory_resource"
+        },
+        {
+          "Name": "__b",
+          "Typ": "memory_resource"
+        }
+      ],
+      "Ret": "bool",
+      "Body": " \u003c\u003c \" \";\n                std::cout \u003c\u003c std::s"
+    },
+    {
+      "Name": "erase_if",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "basic_string\u003c_CharT, _Traits, _Alloc\u003e"
+        },
+        {
+          "Name": "__pred",
+          "Typ": "_Predicate"
+        }
+      ],
+      "Ret": "typename basic_string\u003c_CharT, _Traits, _Alloc\u003e::size_type",
+      "Body": "row.customer) {\n                std::cout \u003c\u003c std::string(\"Order\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003eid;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.custo"
+    },
+    {
+      "Name": "erase",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "basic_string\u003c_CharT, _Traits, _Alloc\u003e"
+        },
+        {
+          "Name": "__value",
+          "Typ": "_Up"
+        }
+      ],
+      "Ret": "typename basic_string\u003c_CharT, _Traits, _Alloc\u003e::size_type",
+      "Body": "::cout \u003c\u003c std::string(\"Order\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003eid;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"Unknown\");\n                s"
+    },
+    {
+      "Name": "operator\u0026",
+      "Params": [
+        {
+          "Name": "__a",
+          "Typ": "_Ios_Fmtflags"
+        },
+        {
+          "Name": "__b",
+          "Typ": "_Ios_Fmtflags"
+        }
+      ],
+      "Ret": "_Ios_Fmtflags",
+      "Body": "__items.push_back(ResultItem{.order = o, .customer = c});\n    }\n}\nretur"
+    },
+    {
+      "Name": "operator|",
+      "Params": [
+        {
+          "Name": "__a",
+          "Typ": "_Ios_Fmtflags"
+        },
+        {
+          "Name": "__b",
+          "Typ": "_Ios_Fmtflags"
+        }
+      ],
+      "Ret": "_Ios_Fmtflags",
+      "Body": "   std::cout \u003c\u003c std::endl;\n    for (ResultItem row : result) {\n        "
+    },
+    {
+      "Name": "operator^",
+      "Params": [
+        {
+          "Name": "__a",
+          "Typ": "_Ios_Fmtflags"
+        },
+        {
+          "Name": "__b",
+          "Typ": "_Ios_Fmtflags"
+        }
+      ],
+      "Ret": "_Ios_Fmtflags",
+      "Body": ");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.o"
+    },
+    {
+      "Name": "operator~",
+      "Params": [
+        {
+          "Name": "__a",
+          "Typ": "_Ios_Fmtflags"
+        }
+      ],
+      "Ret": "_Ios_Fmtflags",
+      "Body": "string(\"by\");\n                std::cout \u003c\u003c \" \";\n"
+    },
+    {
+      "Name": "operator|=",
+      "Params": [
+        {
+          "Name": "__a",
+          "Typ": "_Ios_Fmtflags"
+        },
+        {
+          "Name": "__b",
+          "Typ": "_Ios_Fmtflags"
+        }
+      ],
+      "Ret": "_Ios_Fmtflags",
+      "Body": "            std::cout \u003c\u003c s"
+    },
+    {
+      "Name": "operator\u0026=",
+      "Params": [
+        {
+          "Name": "__a",
+          "Typ": "_Ios_Fmtflags"
+        },
+        {
+          "Name": "__b",
+          "Typ": "_Ios_Fmtflags"
+        }
+      ],
+      "Ret": "_Ios_Fmtflags",
+      "Body": "rder-\u003etotal;\n             "
+    },
+    {
+      "Name": "operator^=",
+      "Params": [
+        {
+          "Name": "__a",
+          "Typ": "_Ios_Fmtflags"
+        },
+        {
+          "Name": "__b",
+          "Typ": "_Ios_Fmtflags"
+        }
+      ],
+      "Ret": "_Ios_Fmtflags",
+      "Body": "g(\"Order\");\n              "
+    },
+    {
+      "Name": "operator\u0026",
+      "Params": [
+        {
+          "Name": "__a",
+          "Typ": "_Ios_Openmode"
+        },
+        {
+          "Name": "__b",
+          "Typ": "_Ios_Openmode"
+        }
+      ],
+      "Ret": "_Ios_Openmode",
+      "Body": "      }\n        } else {\n            std::cout \u003c\u003c std::string(\"Customer"
+    },
+    {
+      "Name": "operator|",
+      "Params": [
+        {
+          "Name": "__a",
+          "Typ": "_Ios_Openmode"
+        },
+        {
+          "Name": "__b",
+          "Typ": "_Ios_Openmode"
+        }
+      ],
+      "Ret": "_Ios_Openmode",
+      "Body": "out \u003c\u003c \" \";\n            std::cout \u003c\u003c std::string(\"has no orders\");\n    "
+    },
+    {
+      "Name": "__copy_streambufs_eof",
+      "Params": [
+        {
+          "Name": "__sbin",
+          "Typ": "basic_streambuf\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__sbout",
+          "Typ": "basic_streambuf\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__ineof",
+          "Typ": "bool"
+        }
+      ],
+      "Ret": "streamsize",
+      "Body": ":cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003etotal;\n                std::cout \u003c\u003c std::endl;\n            } else {\n                std::cout \u003c\u003c std::string(\"Order\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003eid;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::c"
+    },
+    {
+      "Name": "__copy_streambufs",
+      "Params": [
+        {
+          "Name": "__sbin",
+          "Typ": "basic_streambuf\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__sbout",
+          "Typ": "basic_streambuf\u003c_CharT, _Traits\u003e"
+        }
+      ],
+      "Ret": "streamsize",
+      "Body": "tal;\n                std::cout \u003c\u003c std::endl;\n            }\n        } else {\n            "
+    },
+    {
+      "Name": "__write",
+      "Params": [
+        {
+          "Name": "__s",
+          "Typ": "ostreambuf_iterator\u003c_CharT\u003e"
+        },
+        {
+          "Name": "__ws",
+          "Typ": "_CharT"
+        },
+        {
+          "Name": "__len",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "ostreambuf_iterator\u003c_CharT\u003e",
+      "Body": "           std::cout \u003c\u003c \" \";\n            std::cout \u003c\u003c r"
+    },
+    {
+      "Name": "__check_facet",
+      "Params": [
+        {
+          "Name": "__f",
+          "Typ": "_Facet"
+        }
+      ],
+      "Ret": "_Facet",
+      "Body": "customerId = 2, .total = 125}, OrdersItem{.id = 102, .customer"
+    },
+    {
+      "Name": "__check_facet",
+      "Params": [
+        {
+          "Name": "__f",
+          "Typ": "std::ctype\u003cchar\u003e"
+        }
+      ],
+      "Ret": "std::ctype\u003cchar\u003e",
+      "Body": "customerId = 2, .total = 125}, OrdersItem{.id = 102, .customer"
+    },
+    {
+      "Name": "__check_constructible",
+      "Params": null,
+      "Ret": "bool",
+      "Body": "---\");\n    std::cout \u003c\u003c std::endl;\n    for (ResultItem row : result) {\n        if (row.order) {\n            if (row.customer) {\n                std::cout \u003c\u003c std::string(\"Order\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003eid;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.customer-\u003ename;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n "
+    },
+    {
+      "Name": "__check_constructible",
+      "Params": null,
+      "Ret": "bool",
+      "Body": "---\");\n    std::cout \u003c\u003c std::endl;\n    for (ResultItem row : result) {\n        if (row.order) {\n            if (row.customer) {\n                std::cout \u003c\u003c std::string(\"Order\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003eid;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.customer-\u003ename;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n "
+    },
+    {
+      "Name": "__check_constructible",
+      "Params": null,
+      "Ret": "bool",
+      "Body": "---\");\n    std::cout \u003c\u003c std::endl;\n    for (ResultItem row : result) {\n        if (row.order) {\n            if (row.customer) {\n                std::cout \u003c\u003c std::string(\"Order\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003eid;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.customer-\u003ename;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n "
+    },
+    {
+      "Name": "erase_if",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "vector\u003c_Tp, _Alloc\u003e"
+        },
+        {
+          "Name": "__pred",
+          "Typ": "_Predicate"
+        }
+      ],
+      "Ret": "typename vector\u003c_Tp, _Alloc\u003e::size_type",
+      "Body": "                std::cout \u003c\u003c row.order-\u003eid;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"Unknown\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003etotal;\n                std::cout \u003c\u003c std::endl;\n            }\n        } else {\n       "
+    },
+    {
+      "Name": "__erase_nodes_if",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        },
+        {
+          "Name": "__ucont",
+          "Typ": "_UnsafeContainer"
+        },
+        {
+          "Name": "__pred",
+          "Typ": "_Predicate"
+        }
+      ],
+      "Ret": "typename _Container::size_type",
+      "Body": "{.id = 103, .customerId = 5, .total = 80}};\nstd::vector\u003cResultItem\u003e result = ([]{ std::vector\u003cResultItem\u003e __items;\nfor (auto o : orders) {\n    bool __matched = false;\n    for (auto c : customers) {\n        if((o.customerId == c.id)) {\n            __matched = true;\n            "
+    },
+    {
+      "Name": "erase_if",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "map\u003c_Key,_Tp, _Compare, _Alloc\u003e"
+        },
+        {
+          "Name": "__pred",
+          "Typ": "_Predicate"
+        }
+      ],
+      "Ret": "typename map\u003c_Key, _Tp, _Compare, _Alloc\u003e::size_type",
+      "Body": "     std::cout \u003c\u003c std::endl;\n            } else {\n                std::cout \u003c\u003c std::string(\"Order\");\n                std::cout \u003c\u003c \" \";\n           "
+    },
+    {
+      "Name": "erase_if",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "multimap\u003c_Key, _Tp, _Compare, _Alloc\u003e"
+        },
+        {
+          "Name": "__pred",
+          "Typ": "_Predicate"
+        }
+      ],
+      "Ret": "typename multimap\u003c_Key, _Tp, _Compare, _Alloc\u003e::size_type",
+      "Body": ":cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003etotal;\n                std::cout \u003c\u003c std::endl;\n "
+    },
+    {
+      "Name": "__throw_bad_optional_access",
+      "Params": null,
+      "Ret": "",
+      "Body": "out \u003c\u003c row.order-\u003eid;\n                std::cout \u003c\u003c"
+    },
+    {
+      "Name": "__do_str_codecvt",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "_InChar"
+        },
+        {
+          "Name": "__last",
+          "Typ": "_InChar"
+        },
+        {
+          "Name": "__outstr",
+          "Typ": "_OutStr"
+        },
+        {
+          "Name": "__cvt",
+          "Typ": "_Codecvt"
+        },
+        {
+          "Name": "__state",
+          "Typ": "_State"
+        },
+        {
+          "Name": "__count",
+          "Typ": "int"
+        },
+        {
+          "Name": "__fn",
+          "Typ": "_Fn"
+        }
+      ],
+      "Ret": "bool",
+      "Body": "ol __matched = false;\n    for (auto c : customers) {\n        if((o.customerId == c.id)) {\n            __matched = true;\n            { std::optional\u003cOrdersItem\u003e o_opt(o); std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .customer = c}); }\n    }\n}\nfor (auto c : customers) {\n    bool __matched = false;\n    for (auto o : orders) {\n        if((o.customerId == c.id)) { __matched = true; break; }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c);\n        auto c = c_opt;\n        __items.push_back(ResultItem{.order = o, .customer = c});\n    }\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c std::string(\"--- Outer Join using syntax ---\");\n    std::cout \u003c\u003c std::endl;\n    for (ResultItem row : result) {\n        if (row.order) {\n            if (row.customer) {\n                std::cout \u003c\u003c std::string(\"Order\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003eid;\n        "
+    },
+    {
+      "Name": "__str_codecvt_in",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "string"
+        },
+        {
+          "Name": "__last",
+          "Typ": "string"
+        },
+        {
+          "Name": "__outstr",
+          "Typ": "basic_string\u003c_CharT, _Traits, _Alloc\u003e"
+        },
+        {
+          "Name": "__cvt",
+          "Typ": "codecvt\u003c_CharT, char, _State\u003e"
+        },
+        {
+          "Name": "__state",
+          "Typ": "_State"
+        },
+        {
+          "Name": "__count",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "bool",
+      "Body": ";\n            } else {\n                std::cout \u003c\u003c std::string(\"Order\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003eid;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"Unknown\");\n                std::cout \u003c\u003c \" \";\n        "
+    },
+    {
+      "Name": "__str_codecvt_in",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "string"
+        },
+        {
+          "Name": "__last",
+          "Typ": "string"
+        },
+        {
+          "Name": "__outstr",
+          "Typ": "basic_string\u003c_CharT, _Traits, _Alloc\u003e"
+        },
+        {
+          "Name": "__cvt",
+          "Typ": "codecvt\u003c_CharT, char, _State\u003e"
+        }
+      ],
+      "Ret": "bool",
+      "Body": "\n            std::cout \u003c\u003c \" \";\n            std::cout \u003c\u003c std::string(\"has no orders\");\n            std::cout \u003c\u003c std::endl;\n        "
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "__os",
+          "Typ": "std::basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__str",
+          "Typ": "_Quoted_string\u003cconst _CharT *, _CharT\u003e"
+        }
+      ],
+      "Ret": "std::basic_ostream\u003c_CharT, _Traits\u003e",
+      "Body": "td::cout \u003c\u003c std::string(\"--- Outer Join using syntax ---\");\n    std::cout \u003c\u003c std::endl;\n    for (ResultItem row : result) {\n        if (row.order) {\n            if (row.customer) {\n                std::cout \u003c\u003c std::string(\"Order\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003eid;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"by\");\n                std::cout \u003c"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "__os",
+          "Typ": "std::basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__str",
+          "Typ": "_Quoted_string\u003c_String, _CharT\u003e"
+        }
+      ],
+      "Ret": "std::basic_ostream\u003c_CharT, _Traits\u003e",
+      "Body": "g(\"Order\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003eid;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"Unknown\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c \" \";\n                st"
+    },
+    {
+      "Name": "resetiosflags",
+      "Params": [
+        {
+          "Name": "__mask",
+          "Typ": "ios_base::fmtflags"
+        }
+      ],
+      "Ret": "_Resetiosflags",
+      "Body": " { std::optional\u003cOrde"
+    },
+    {
+      "Name": "operator\u003e\u003e",
+      "Params": [
+        {
+          "Name": "__is",
+          "Typ": "basic_istream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_Resetiosflags"
+        }
+      ],
+      "Ret": "basic_istream\u003c_CharT, _Traits\u003e",
+      "Body": "stomer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCus"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "__os",
+          "Typ": "basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_Resetiosflags"
+        }
+      ],
+      "Ret": "basic_ostream\u003c_CharT, _Traits\u003e",
+      "Body": " c : customers) {\n    bool __matched = false;\n    for (auto o : orders) {\n    "
+    },
+    {
+      "Name": "setiosflags",
+      "Params": [
+        {
+          "Name": "__mask",
+          "Typ": "ios_base::fmtflags"
+        }
+      ],
+      "Ret": "_Setiosflags",
+      "Body": "in() {\n    std::cout "
+    },
+    {
+      "Name": "operator\u003e\u003e",
+      "Params": [
+        {
+          "Name": "__is",
+          "Typ": "basic_istream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_Setiosflags"
+        }
+      ],
+      "Ret": "basic_istream\u003c_CharT, _Traits\u003e",
+      "Body": "r) {\n                std::cout \u003c\u003c std::string(\"Order\");"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "__os",
+          "Typ": "basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_Setiosflags"
+        }
+      ],
+      "Ret": "basic_ostream\u003c_CharT, _Traits\u003e",
+      "Body": "          std::cout \u003c\u003c \" \";\n                std::cout \u003c"
+    },
+    {
+      "Name": "setbase",
+      "Params": [
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "_Setbase",
+      "Body": " std::cout \u003c\u003c \" \";\n  "
+    },
+    {
+      "Name": "operator\u003e\u003e",
+      "Params": [
+        {
+          "Name": "__is",
+          "Typ": "basic_istream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_Setbase"
+        }
+      ],
+      "Ret": "basic_istream\u003c_CharT, _Traits\u003e",
+      "Body": " \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003etotal;\n                std::cout \u003c\u003c std::endl;\n            }\n        } el"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "os",
+          "Typ": "std::ostream"
+        },
+        {
+          "Name": "v",
+          "Typ": "CustomersItem"
+        }
+      ],
+      "Ret": "std::ostream",
+      "Body": "{\n    os \u003c\u003c '{' \u003c\u003c \"'id': \"\u003c\u003c v.id\n \u003c\u003c \", \" \u003c\u003c \"'name': \"\u003c\u003c \"'\" \u003c\u003c v.name \u003c\u003c \"'\"\n \u003c\u003c '}';\n    return os;\n"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "os",
+          "Typ": "std::ostream"
+        },
+        {
+          "Name": "v",
+          "Typ": "OrdersItem"
+        }
+      ],
+      "Ret": "std::ostream",
+      "Body": "{\n    os \u003c\u003c '{' \u003c\u003c \"'id': \"\u003c\u003c v.id\n \u003c\u003c \", \" \u003c\u003c \"'customerId': \"\u003c\u003c v.customerId\n \u003c\u003c \", \" \u003c\u003c \"'total': \"\u003c\u003c v.total\n \u003c\u003c '}';\n    return os;\n"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "os",
+          "Typ": "std::ostream"
+        },
+        {
+          "Name": "v",
+          "Typ": "ResultItem"
+        }
+      ],
+      "Ret": "std::ostream",
+      "Body": "{\n    os \u003c\u003c '{' \u003c\u003c \"'order': \"; if(v.order) os \u003c\u003c *v.order; else os \u003c\u003c \"None\"; os\n \u003c\u003c \", \" \u003c\u003c \"'customer': \"; if(v.customer) os \u003c\u003c *v.customer; else os \u003c\u003c \"None\"; os\n \u003c\u003c '}';\n    return os;\n"
+    },
+    {
+      "Name": "main",
+      "Params": null,
+      "Ret": "int",
+      "Body": "{\n    std::cout \u003c\u003c std::string(\"--- Outer Join using syntax ---\");\n    std::cout \u003c\u003c std::endl;\n    for (ResultItem row : result) {\n        if (row.order) {\n            if (row.customer) {\n                std::cout \u003c\u003c std::string(\"Order\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003eid;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.customer-\u003ename;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003etotal;\n                std::cout \u003c\u003c std::endl;\n            } else {\n                std::cout \u003c\u003c std::string(\"Order\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003eid;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"Unknown\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003etotal;\n                std::cout \u003c\u003c std::endl;\n            }\n        } else {\n            std::cout \u003c\u003c std::string(\"Customer\");\n            std::cout \u003c\u003c \" \";\n            std::cout \u003c\u003c row.customer-\u003ename;\n            std::cout \u003c\u003c \" \";\n            std::cout \u003c\u003c std::string(\"has no orders\");\n            std::cout \u003c\u003c std::endl;\n        }\n    }\n    return 0;\n"
+    }
+  ],
+  "enums": [
+    {
+      "Name": "_Ord",
+      "Variants": [
+        "equivalent",
+        "less",
+        "greater"
+      ]
+    },
+    {
+      "Name": "_Ncmp",
+      "Variants": [
+        "_Unordered"
+      ]
+    },
+    {
+      "Name": "_Ios_Fmtflags",
+      "Variants": [
+        "_S_boolalpha",
+        "_S_dec",
+        "_S_fixed",
+        "_S_hex",
+        "_S_internal",
+        "_S_left",
+        "_S_oct",
+        "_S_right",
+        "_S_scientific",
+        "_S_showbase",
+        "_S_showpoint",
+        "_S_showpos",
+        "_S_skipws",
+        "_S_unitbuf",
+        "_S_uppercase",
+        "_S_adjustfield",
+        "_S_basefield",
+        "_S_floatfield",
+        "_S_ios_fmtflags_end",
+        "_S_ios_fmtflags_max",
+        "_S_ios_fmtflags_min"
+      ]
+    },
+    {
+      "Name": "_Ios_Openmode",
+      "Variants": [
+        "_S_app",
+        "_S_ate",
+        "_S_bin",
+        "_S_in",
+        "_S_out",
+        "_S_trunc",
+        "_S_noreplace",
+        "_S_ios_openmode_end",
+        "_S_ios_openmode_max",
+        "_S_ios_openmode_min"
+      ]
+    },
+    {
+      "Name": "_Rb_tree_color",
+      "Variants": [
+        "_S_red",
+        "_S_black"
+      ]
+    },
+    {
+      "Name": "_Construct",
+      "Variants": [
+        "_Token"
+      ]
+    },
+    {
+      "Name": "dateorder",
+      "Variants": [
+        "no_order",
+        "dmy",
+        "mdy",
+        "ymd",
+        "ydm"
+      ]
+    },
+    {
+      "Name": "result",
+      "Variants": [
+        "ok",
+        "partial",
+        "error",
+        "noconv"
+      ]
+    }
+  ],
+  "structs": [
+    {
+      "Name": "CustomersItem",
+      "Fields": [
+        {
+          "Name": "id",
+          "Typ": "int"
+        },
+        {
+          "Name": "name",
+          "Typ": "string"
+        }
+      ]
+    },
+    {
+      "Name": "OrdersItem",
+      "Fields": [
+        {
+          "Name": "id",
+          "Typ": "int"
+        },
+        {
+          "Name": "customerId",
+          "Typ": "int"
+        },
+        {
+          "Name": "total",
+          "Typ": "int"
+        }
+      ]
+    },
+    {
+      "Name": "ResultItem",
+      "Fields": [
+        {
+          "Name": "order",
+          "Typ": "std::optional\u003cOrdersItem\u003e"
+        },
+        {
+          "Name": "customer",
+          "Typ": "std::optional\u003cCustomersItem\u003e"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "Name": "{",
+      "Typ": "\u003c\u003c std::endl; } } else",
+      "Value": ""
+    },
+    {
+      "Name": "{",
+      "Typ": "\u003c\u003c std::endl; } } else",
+      "Value": ""
+    },
+    {
+      "Name": "{",
+      "Typ": "\u003c\u003c std::endl; } } else",
+      "Value": ""
+    },
+    {
+      "Name": "{",
+      "Typ": "\u003c\u003c std::endl; } } else",
+      "Value": ""
+    },
+    {
+      "Name": "{",
+      "Typ": "\u003c\u003c std::endl; } } else",
+      "Value": ""
+    },
+    {
+      "Name": "c",
+      "Typ": "o",
+      "Value": "c_opt;\n        __"
+    },
+    {
+      "Name": "__matched",
+      "Typ": "",
+      "Value": "false;\n    for (auto c : customer"
+    },
+    {
+      "Name": "__matched",
+      "Typ": "",
+      "Value": "false;\n    for (auto c : customer"
+    },
+    {
+      "Name": "__matched",
+      "Typ": "",
+      "Value": "false;\n    for (auto c :"
+    },
+    {
+      "Name": "__matched",
+      "Typ": "",
+      "Value": "false;\n    for (auto c :"
+    },
+    {
+      "Name": "std::c",
+      "Typ": "::cout \u003c\u003c \" \";",
+      "Value": ""
+    },
+    {
+      "Name": "std::co",
+      "Typ": "std::cout \u003c\u003c row.customer-\u003ename;",
+      "Value": ""
+    },
+    {
+      "Name": "*v.",
+      "Typ": "r) os \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::option",
+      "Typ": "} if(!__matched) {",
+      "Value": ""
+    },
+    {
+      "Name": "o",
+      "Typ": "Item\u003e",
+      "Value": "std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c"
+    },
+    {
+      "Name": "---\")",
+      "Typ": "return __items; }()); int main() { std::cout \u003c\u003c std::string(\"--- Outer Join using syntax",
+      "Value": ""
+    },
+    {
+      "Name": "std::string(\"Order\")",
+      "Typ": "ut \u003c\u003c std::endl; for (ResultItem row : result) { if (row.order) { if (row.customer) { std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::option",
+      "Typ": "} if(!__matched) {",
+      "Value": ""
+    },
+    {
+      "Name": "o",
+      "Typ": "Item\u003e",
+      "Value": "std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c"
+    },
+    {
+      "Name": "---\")",
+      "Typ": "return __items; }()); int main() { std::cout \u003c\u003c std::string(\"--- Outer Join using syntax",
+      "Value": ""
+    },
+    {
+      "Name": "std::string(\"Order\")",
+      "Typ": "ut \u003c\u003c std::endl; for (ResultItem row : result) { if (row.order) { if (row.customer) { std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::option",
+      "Typ": "} if(!__matched) {",
+      "Value": ""
+    },
+    {
+      "Name": "o",
+      "Typ": "Item\u003e",
+      "Value": "std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c"
+    },
+    {
+      "Name": "---\")",
+      "Typ": "return __items; }()); int main() { std::cout \u003c\u003c std::string(\"--- Outer Join using syntax",
+      "Value": ""
+    },
+    {
+      "Name": "std::string(\"Order\")",
+      "Typ": "ut \u003c\u003c std::endl; for (ResultItem row : result) { if (row.order) { if (row.customer) { std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::option",
+      "Typ": "} if(!__matched) {",
+      "Value": ""
+    },
+    {
+      "Name": "o",
+      "Typ": "Item\u003e",
+      "Value": "std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c"
+    },
+    {
+      "Name": "---\")",
+      "Typ": "return __items; }()); int main() { std::cout \u003c\u003c std::string(\"--- Outer Join using syntax",
+      "Value": ""
+    },
+    {
+      "Name": "std::string(\"Order\")",
+      "Typ": "ut \u003c\u003c std::endl; for (ResultItem row : result) { if (row.order) { if (row.customer) { std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::option",
+      "Typ": "} if(!__matched) {",
+      "Value": ""
+    },
+    {
+      "Name": "o",
+      "Typ": "Item\u003e",
+      "Value": "std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c"
+    },
+    {
+      "Name": "---\")",
+      "Typ": "return __items; }()); int main() { std::cout \u003c\u003c std::string(\"--- Outer Join using syntax",
+      "Value": ""
+    },
+    {
+      "Name": "std::string(\"Order\")",
+      "Typ": "ut \u003c\u003c std::endl; for (ResultItem row : result) { if (row.order) { if (row.customer) { std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::option",
+      "Typ": "} if(!__matched) {",
+      "Value": ""
+    },
+    {
+      "Name": "o",
+      "Typ": "Item\u003e",
+      "Value": "std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c"
+    },
+    {
+      "Name": "---\")",
+      "Typ": "return __items; }()); int main() { std::cout \u003c\u003c std::string(\"--- Outer Join using syntax",
+      "Value": ""
+    },
+    {
+      "Name": "std::string(\"Order\")",
+      "Typ": "ut \u003c\u003c std::endl; for (ResultItem row : result) { if (row.order) { if (row.customer) { std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::option",
+      "Typ": "} if(!__matched) {",
+      "Value": ""
+    },
+    {
+      "Name": "o",
+      "Typ": "Item\u003e",
+      "Value": "std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c"
+    },
+    {
+      "Name": "---\")",
+      "Typ": "return __items; }()); int main() { std::cout \u003c\u003c std::string(\"--- Outer Join using syntax",
+      "Value": ""
+    },
+    {
+      "Name": "std::string(\"Order\")",
+      "Typ": "ut \u003c\u003c std::endl; for (ResultItem row : result) { if (row.order) { if (row.customer) { std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::option",
+      "Typ": "} if(!__matched) {",
+      "Value": ""
+    },
+    {
+      "Name": "o",
+      "Typ": "Item\u003e",
+      "Value": "std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c"
+    },
+    {
+      "Name": "---\")",
+      "Typ": "return __items; }()); int main() { std::cout \u003c\u003c std::string(\"--- Outer Join using syntax",
+      "Value": ""
+    },
+    {
+      "Name": "std::string(\"Order\")",
+      "Typ": "ut \u003c\u003c std::endl; for (ResultItem row : result) { if (row.order) { if (row.customer) { std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::string(\"Order\")",
+      "Typ": "{ if (row.customer) { std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "row.order-\u003eid",
+      "Typ": "std::cout \u003c\u003c \" \"; std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::string(\"by\")",
+      "Typ": "std::cout \u003c\u003c \" \"; std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "row.customer-\u003ename",
+      "Typ": ":cout \u003c\u003c \" \"; std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::string(\"by\")",
+      "Typ": "std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "row.customer-\u003ename",
+      "Typ": "std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "row.order-\u003eid",
+      "Typ": "; std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::string(\"by\")",
+      "Typ": "std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "row.customer-\u003ename",
+      "Typ": "std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "row.order-\u003eid",
+      "Typ": "; std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::string(\"by\")",
+      "Typ": "std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "row.customer-\u003ename",
+      "Typ": "std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "row.order-\u003eid",
+      "Typ": "; std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::string(\"by\")",
+      "Typ": "std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "row.customer-\u003ename",
+      "Typ": "std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "row.order-\u003eid",
+      "Typ": "; std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::string(\"by\")",
+      "Typ": "std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "row.customer-\u003ename",
+      "Typ": "std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "row.order-\u003eid",
+      "Typ": "; std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::string(\"by\")",
+      "Typ": "std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "row.customer-\u003ename",
+      "Typ": "std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "row.order-\u003eid",
+      "Typ": "; std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::string(\"Order\")",
+      "Typ": ") { std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::string(\"by\")",
+      "Typ": "std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "row.customer-\u003ename",
+      "Typ": "std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "row.order-\u003eid",
+      "Typ": "; std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::string(\"by\")",
+      "Typ": "std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "row.customer-\u003ename",
+      "Typ": "std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "row.order-\u003eid",
+      "Typ": "; std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::string(\"Order\")",
+      "Typ": ") { std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::string(\"Order\")",
+      "Typ": ") { std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::o",
+      "Typ": "true; break; } } if(!__matched) {",
+      "Value": ""
+    },
+    {
+      "Name": "operator\u003c",
+      "Typ": "// Generated by Mochi transpiler v0.10.35 on 2025-07-22 13:04:37 GMT+7 #include \u003ciostream\u003e #include \u003cstring\u003e #include \u003cvector\u003e #include \u003cmap\u003e #include \u003coptional\u003e #include \u003csstream\u003e #include \u003ciomanip\u003e struct CustomersItem { int id; std::string name; auto",
+      "Value": "\u003e(const CustomersItem\u0026) const = default;\n};\n\nstruct OrdersItem {\n    int id;\n    int customerId;\n    int total;\n    auto operator\u003c=\u003e(const OrdersItem\u0026) const = default;\n};\n\nstruct ResultItem {\n    std::optional\u003cOrdersItem\u003e order;\n    std::optional\u003cCustomersItem\u003e customer;\n    auto operator\u003c=\u003e(const ResultItem\u0026) const = default;\n};\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const CustomersItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'id': \"\u003c\u003c v.id\n \u003c\u003c \", \" \u003c\u003c \"'name': \"\u003c\u003c \"'\" \u003c\u003c v.name \u003c\u003c \"'\"\n \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const OrdersItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'id': \"\u003c\u003c v.id\n \u003c\u003c \", \" \u003c\u003c \"'customerId': \"\u003c\u003c v.customerId\n \u003c\u003c \", \" \u003c\u003c \"'total': \"\u003c\u003c v.total\n \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const ResultItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'order': \"; if(v.order) os \u003c\u003c *v.order; else os \u003c\u003c \"None\"; os\n \u003c\u003c \", \" \u003c\u003c \"'customer': \"; if(v.customer) os \u003c\u003c *v.customer; else os \u003c\u003c \"None\"; os\n \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cCustomersItem\u003e customers = std::vector{CustomersItem{.id = 1, .name = std::string(\"Alice\")}, CustomersItem{.id = 2, .name = std::string(\"Bob\")}, CustomersItem{.id = 3, .name = std::string(\"Charlie\")}, CustomersItem{.id = 4, .name = std::string(\"Diana\")}};\nstd::vector\u003cOrdersItem\u003e orders = std::vector{OrdersItem{.id = 100, .customerId = 1, .total = 250}, OrdersItem{.id = 101, .customerId = 2, .total = 125}, OrdersItem{.id = 102, .customerId = 1, .total = 300}, OrdersItem{.id = 103, .customerId = 5, .total = 80}};\nstd::vector\u003cResultItem\u003e result = ([]{ std::vector\u003cResultItem\u003e __items;\nfor (auto o : orders) {\n    bool __matched = false;\n    for (auto c : customers) {\n        if((o.customerId == c.id)) {\n            __matched = true;\n            { std::optional\u003cOrdersItem\u003e o_opt(o); std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .customer = c}); }\n    }\n}\nfor (auto c : customers) {\n    bool __matched = false;\n    for (auto o : orders) {\n        if((o.customerId == c.id)) { __matched = true; break; }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c);\n        auto c = c_opt;\n        __items.push_back(ResultItem{.order = o, .customer = c});\n    }\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c std::string(\"--- Outer Join using syntax ---\");\n    std::cout \u003c\u003c std::endl;\n    for (ResultItem row : result) {\n        if (row.order) {\n            if (row.customer) {\n                std::cout \u003c\u003c std::string(\"Order\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003eid;\n                std::cout \u003c\u003c \" \""
+    },
+    {
+      "Name": "o_opt(o)",
+      "Typ": "; { std::optional\u003cOrdersItem\u003e",
+      "Value": ""
+    },
+    {
+      "Name": "OrdersItem{.id",
+      "Typ": "00},",
+      "Value": "103, .customerId = 5, .total = 80}};\nstd::vector\u003cResultItem\u003e result = ([]{"
+    },
+    {
+      "Name": "__matched",
+      "Typ": "orders) { bool",
+      "Value": "false;\n    for (auto c : customers) {\n        if((o.customerId == c.id)) {\n            __matched = true"
+    },
+    {
+      "Name": "o",
+      "Typ": "std::optional\u003cOrdersItem\u003e o_opt(o); std::optional\u003cCustomersItem\u003e c_opt(c); auto",
+      "Value": "o_opt"
+    },
+    {
+      "Name": "__items.push_back(ResultItem{.order",
+      "Typ": "",
+      "Value": "o, .customer = c}); }\n        }\n    }\n    if(!__matched) {"
+    },
+    {
+      "Name": "o",
+      "Typ": ":nullopt; { std::optional\u003cOrdersItem\u003e o_opt(o); auto",
+      "Value": "o_opt; __items.push_back(ResultItem{.order = o, .customer = c}"
+    },
+    {
+      "Name": "__matched",
+      "Typ": ": customers) { bool",
+      "Value": "false;\n    for (auto o : orders) {\n        if((o.customerId == c.id)) { __matched = true"
+    },
+    {
+      "Name": "o",
+      "Typ": "tched) { std::optional\u003cOrdersItem\u003e",
+      "Value": "std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c"
+    },
+    {
+      "Name": ".push_back(ResultItem{.order",
+      "Typ": "",
+      "Value": "o, .customer = c});\n    }\n}\nreturn __items; }());\n\nint main() {\n    s"
+    },
+    {
+      "Name": "std::string(\"Order\")",
+      "Typ": "yntax ---\"); std::cout \u003c\u003c std::endl; for (ResultItem row : result) { if (row.order) { if (row.customer) { std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "r",
+      "Typ": "std::cout \u003c\u003c std::string(\"Order\"); std::cout \u003c\u003c \" \"; std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::cou",
+      "Typ": "std::cout \u003c\u003c std::string(\"by\"); std::cout \u003c\u003c \" \";",
+      "Value": ""
+    },
+    {
+      "Name": "\u003c\u003c",
+      "Typ": "std::cout \u003c\u003c std::string(\"- $\"); std::cout \u003c\u003c \" \"; std::cout",
+      "Value": ""
+    },
+    {
+      "Name": "row.order-\u003eid",
+      "Typ": "else { std::cout \u003c\u003c std::string(\"Order\"); std::cout \u003c\u003c \" \"; std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "row.order-\u003eid",
+      "Typ": "std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::co",
+      "Typ": "std::cout \u003c\u003c \" \";",
+      "Value": ""
+    },
+    {
+      "Name": "\u003c\u003c",
+      "Typ": "std::string(\"by\"); std::cout",
+      "Value": ""
+    },
+    {
+      "Name": "std::strin",
+      "Typ": "std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "\"",
+      "Typ": "known\"); std::cout \u003c\u003c \"",
+      "Value": ""
+    },
+    {
+      "Name": "s",
+      "Typ": "std::cout \u003c\u003c std::string(\"- $\");",
+      "Value": ""
+    },
+    {
+      "Name": "r",
+      "Typ": "out \u003c\u003c \" \"; std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std",
+      "Typ": "der-\u003etotal; std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "{",
+      "Typ": "l; } } else",
+      "Value": ""
+    },
+    {
+      "Name": "s",
+      "Typ": "cout \u003c\u003c std::string(\"Customer\");",
+      "Value": ""
+    },
+    {
+      "Name": "row.customer-\u003enam",
+      "Typ": "out \u003c\u003c \" \"; std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::cou",
+      "Typ": "std::cout \u003c\u003c \" \";",
+      "Value": ""
+    },
+    {
+      "Name": "orders\")",
+      "Typ": "std::string(\"has no",
+      "Value": ""
+    },
+    {
+      "Name": ".total",
+      "Typ": "",
+      "Value": "125}, OrdersItem{.id = 102, .custom"
+    },
+    {
+      "Name": "id",
+      "Typ": "",
+      "Value": "103, .customerId = 5, .total = 80}};\nstd:"
+    },
+    {
+      "Name": "std::string(\"Unknown\"",
+      "Typ": "ut \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::string(\"Unknown\"",
+      "Typ": "ut \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::string(\"Unknown\"",
+      "Typ": "ut \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::string(\"Unknown\"",
+      "Typ": "ut \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::string(\"Unknown\"",
+      "Typ": "ut \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::co",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "std::string(\"",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "id",
+      "Typ": "",
+      "Value": "4, .name"
+    },
+    {
+      "Name": "std::vector",
+      "Typ": ";",
+      "Value": ""
+    },
+    {
+      "Name": "rId",
+      "Typ": "",
+      "Value": "2, .total = 125}, OrdersItem{.id = 102, .customerId = 1, .total = 300}, OrdersIt"
+    },
+    {
+      "Name": "__matched",
+      "Typ": "([]{ std::vector\u003cResultItem\u003e __items; for (auto o : orders) { bool",
+      "Value": "false;\n    for (auto c : customers) {\n        if((o.customerId == c.id)) {\n            __matched = true"
+    },
+    {
+      "Name": "__matched",
+      "Typ": "bool",
+      "Value": "false;\n    for (auto c : customers) {\n        if((o.customerId == c.id)) {\n            __matched = true"
+    },
+    {
+      "Name": "operator\u003c",
+      "Typ": "// Generated by Mochi transpiler v0.10.35 on 2025-07-22 13:04:37 GMT+7 #include \u003ciostream\u003e #include \u003cstring\u003e #include \u003cvector\u003e #include \u003cmap\u003e #include \u003coptional\u003e #include \u003csstream\u003e #include \u003ciomanip\u003e struct CustomersItem { int id; std::string name; auto",
+      "Value": "\u003e(const CustomersItem\u0026) const = default;\n};\n\nstruct OrdersItem {\n    int id;\n    int customerId;\n    int total;\n    auto operator\u003c=\u003e(const OrdersItem\u0026) const = default;\n};\n\nstruct ResultItem {\n    std::optional\u003cOrdersItem\u003e order;\n    std::optional\u003cCustomersItem\u003e customer;\n    auto operator\u003c=\u003e(const ResultItem\u0026) const = default;\n};\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const CustomersItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'id': \"\u003c\u003c v.id\n \u003c\u003c \", \" \u003c\u003c \"'name': \"\u003c\u003c \"'\" \u003c\u003c v.name \u003c\u003c \"'\"\n \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const OrdersItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'id': \"\u003c\u003c v.id\n \u003c\u003c \", \" \u003c\u003c \"'customerId': \"\u003c\u003c v.customerId\n \u003c\u003c \", \" \u003c\u003c \"'total': \"\u003c\u003c v.total\n \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const ResultItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'order': \"; if(v.order) os \u003c\u003c *v.order; else os \u003c\u003c \"None\"; os\n \u003c\u003c \", \" \u003c\u003c \"'customer': \"; if(v.customer) os \u003c\u003c *v.customer; else os \u003c\u003c \"None\"; os\n \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cCustomersItem\u003e customers = std::vector{CustomersItem{.id = 1, .name = std::string(\"Alice\")}, CustomersItem{.id = 2, .name = std::string(\"Bob\")}, CustomersItem{.id = 3, .name = std::string(\"Charlie\")}, CustomersItem{.id = 4, .name = std::string(\"Diana\")}};\nstd::vector\u003cOrdersItem\u003e orders = std::vector{OrdersItem{.id = 100, .customerId = 1, .total = 250}, OrdersItem{.id = 101, .customerId = 2, .total = 125}, OrdersItem{.id = 102, .customerId = 1, .total = 300}, OrdersItem{.id = 103, .customerId = 5, .total = 80}};\nstd::vector\u003cResultItem\u003e result = ([]{ std::vector\u003cResultItem\u003e __items;\nfor (auto o : orders) {\n    bool __matched = false;\n    for (auto c : customers) {\n        if((o.customerId == c.id)) {\n            __matched = true;\n            { std::optional\u003cOrdersItem\u003e o_opt(o); std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}"
+    },
+    {
+      "Name": "o",
+      "Typ": "tomersItem\u003e c_opt(c); auto",
+      "Value": "o_opt;\n            auto c = c_opt"
+    },
+    {
+      "Name": "tItem{.order",
+      "Typ": "",
+      "Value": "o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std:"
+    },
+    {
+      "Name": "__matched",
+      "Typ": "auto o : orders) { bool",
+      "Value": "false"
+    },
+    {
+      "Name": "if((o.customerId",
+      "Typ": "for (auto c : customers) {",
+      "Value": "= c.id)) {\n            __matched = true"
+    },
+    {
+      "Name": "customerId",
+      "Typ": "",
+      "Value": "= c.id)) {\n            __matched = true"
+    },
+    {
+      "Name": "matched",
+      "Typ": "",
+      "Value": "true;\n            { std::optional\u003cOrdersItem\u003e o_opt(o"
+    },
+    {
+      "Name": "o_opt",
+      "Typ": "dersItem\u003e",
+      "Value": ""
+    },
+    {
+      "Name": "t(c)",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "c_opt",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "er",
+      "Typ": "",
+      "Value": "c}); }"
+    },
+    {
+      "Name": ":nullopt",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "o",
+      "Typ": "",
+      "Value": "o_opt"
+    },
+    {
+      "Name": ".customer",
+      "Typ": ",",
+      "Value": "c}"
+    },
+    {
+      "Name": "atched",
+      "Typ": "",
+      "Value": "false"
+    },
+    {
+      "Name": "merId",
+      "Typ": "",
+      "Value": "= c.id)) { __matched = true; break; }\n    }\n    if(!__matche"
+    },
+    {
+      "Name": "if((o.customerId",
+      "Typ": "uto c : customers) {",
+      "Value": "= c.id)) {\n            __matched = true"
+    },
+    {
+      "Name": "if((o.customerId",
+      "Typ": "uto c : customers) {",
+      "Value": "= c.id)) {\n            __matched = true"
+    },
+    {
+      "Name": "c",
+      "Typ": "std::optional\u003cCustomersItem\u003e",
+      "Value": "std::"
+    },
+    {
+      "Name": "o_opt(o)",
+      "Typ": "t; { std::optional\u003cOrdersItem\u003e",
+      "Value": ""
+    },
+    {
+      "Name": "o_opt(o)",
+      "Typ": "{ std::optional\u003cOrdersItem\u003e",
+      "Value": ""
+    },
+    {
+      "Name": "std::co",
+      "Typ": "} else {",
+      "Value": ""
+    },
+    {
+      "Name": ":string(\"Order\")",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "customers",
+      "Typ": "list\u003cCustomersItem\u003e",
+      "Value": "std::vector{CustomersItem{.id = 1, .name = std::string(\"Alice\")}, CustomersItem{.id = 2, .name = std::string(\"Bob\")}, CustomersItem{.id = 3, .name = std::string(\"Charlie\")}, CustomersItem{.id = 4, .name = std::string(\"Diana\")}}"
+    },
+    {
+      "Name": "orders",
+      "Typ": "list\u003cOrdersItem\u003e",
+      "Value": "std::vector{OrdersItem{.id = 100, .customerId = 1, .total = 250}, OrdersItem{.id = 101, .customerId = 2, .total = 125}, OrdersItem{.id = 102, .customerId = 1, .total = 300}, OrdersItem{.id = 103, .customerId = 5, .total = 80}}"
+    },
+    {
+      "Name": "result",
+      "Typ": "list\u003cResultItem\u003e",
+      "Value": "[]{ std::vector\u003cResultItem\u003e __items;\nfor (auto o : orders) {\n    bool __matched = false;\n    for (auto c : customers) {\n        if((o.customerId == c.id)) {\n            __matched = true;\n            { std::optional\u003cOrdersItem\u003e o_opt(o); std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .customer = c}); }\n    }\n}\nfor (auto c : customers) {\n    bool __matched = false;\n    for (auto o : orders) {\n        if((o.customerId == c.id)) { __matched = true; break; }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c);\n        auto c = c_opt;\n        __items.push_back(ResultItem{.order = o, .customer = c});\n    }\n}\nreturn __items; }("
+    },
+    {
+      "Name": "std::vector\u003cResultItem\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "o",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "__matched",
+      "Typ": "bool",
+      "Value": ""
+    },
+    {
+      "Name": "c",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "o_opt(o",
+      "Typ": "std::optional\u003cOrdersItem\u003e",
+      "Value": ""
+    },
+    {
+      "Name": "c_opt(c",
+      "Typ": "std::optional\u003cCustomersItem\u003e",
+      "Value": ""
+    },
+    {
+      "Name": "o",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "c",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "c",
+      "Typ": "std::optional\u003cCustomersItem\u003e",
+      "Value": "std::"
+    },
+    {
+      "Name": "o_opt(o",
+      "Typ": "std::optional\u003cOrdersItem\u003e",
+      "Value": ""
+    },
+    {
+      "Name": "o",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "c",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "__matched",
+      "Typ": "bool",
+      "Value": ""
+    },
+    {
+      "Name": "o",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "o",
+      "Typ": "std::optional\u003cOrdersItem\u003e",
+      "Value": "std::"
+    },
+    {
+      "Name": "c_opt(c",
+      "Typ": "std::optional\u003cCustomersItem\u003e",
+      "Value": ""
+    },
+    {
+      "Name": "c",
+      "Typ": "",
+      "Value": ""
+    }
+  ],
+  "source": "// Generated by Mochi transpiler v0.10.35 on 2025-07-22 13:04:37 GMT+7\n#include \u003ciostream\u003e\n#include \u003cstring\u003e\n#include \u003cvector\u003e\n#include \u003cmap\u003e\n#include \u003coptional\u003e\n#include \u003csstream\u003e\n#include \u003ciomanip\u003e\n\n\nstruct CustomersItem {\n    int id;\n    std::string name;\n    auto operator\u003c=\u003e(const CustomersItem\u0026) const = default;\n};\n\nstruct OrdersItem {\n    int id;\n    int customerId;\n    int total;\n    auto operator\u003c=\u003e(const OrdersItem\u0026) const = default;\n};\n\nstruct ResultItem {\n    std::optional\u003cOrdersItem\u003e order;\n    std::optional\u003cCustomersItem\u003e customer;\n    auto operator\u003c=\u003e(const ResultItem\u0026) const = default;\n};\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const CustomersItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'id': \"\u003c\u003c v.id\n \u003c\u003c \", \" \u003c\u003c \"'name': \"\u003c\u003c \"'\" \u003c\u003c v.name \u003c\u003c \"'\"\n \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const OrdersItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'id': \"\u003c\u003c v.id\n \u003c\u003c \", \" \u003c\u003c \"'customerId': \"\u003c\u003c v.customerId\n \u003c\u003c \", \" \u003c\u003c \"'total': \"\u003c\u003c v.total\n \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const ResultItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'order': \"; if(v.order) os \u003c\u003c *v.order; else os \u003c\u003c \"None\"; os\n \u003c\u003c \", \" \u003c\u003c \"'customer': \"; if(v.customer) os \u003c\u003c *v.customer; else os \u003c\u003c \"None\"; os\n \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cCustomersItem\u003e customers = std::vector{CustomersItem{.id = 1, .name = std::string(\"Alice\")}, CustomersItem{.id = 2, .name = std::string(\"Bob\")}, CustomersItem{.id = 3, .name = std::string(\"Charlie\")}, CustomersItem{.id = 4, .name = std::string(\"Diana\")}};\nstd::vector\u003cOrdersItem\u003e orders = std::vector{OrdersItem{.id = 100, .customerId = 1, .total = 250}, OrdersItem{.id = 101, .customerId = 2, .total = 125}, OrdersItem{.id = 102, .customerId = 1, .total = 300}, OrdersItem{.id = 103, .customerId = 5, .total = 80}};\nstd::vector\u003cResultItem\u003e result = ([]{ std::vector\u003cResultItem\u003e __items;\nfor (auto o : orders) {\n    bool __matched = false;\n    for (auto c : customers) {\n        if((o.customerId == c.id)) {\n            __matched = true;\n            { std::optional\u003cOrdersItem\u003e o_opt(o); std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto o = o_opt;\n            auto c = c_opt;\n            __items.push_back(ResultItem{.order = o, .customer = c}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        { std::optional\u003cOrdersItem\u003e o_opt(o); auto o = o_opt; __items.push_back(ResultItem{.order = o, .customer = c}); }\n    }\n}\nfor (auto c : customers) {\n    bool __matched = false;\n    for (auto o : orders) {\n        if((o.customerId == c.id)) { __matched = true; break; }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        std::optional\u003cCustomersItem\u003e c_opt(c);\n        auto c = c_opt;\n        __items.push_back(ResultItem{.order = o, .customer = c});\n    }\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c std::string(\"--- Outer Join using syntax ---\");\n    std::cout \u003c\u003c std::endl;\n    for (ResultItem row : result) {\n        if (row.order) {\n            if (row.customer) {\n                std::cout \u003c\u003c std::string(\"Order\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003eid;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.customer-\u003ename;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003etotal;\n                std::cout \u003c\u003c std::endl;\n            } else {\n                std::cout \u003c\u003c std::string(\"Order\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003eid;\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"by\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"Unknown\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c std::string(\"- $\");\n                std::cout \u003c\u003c \" \";\n                std::cout \u003c\u003c row.order-\u003etotal;\n                std::cout \u003c\u003c std::endl;\n            }\n        } else {\n            std::cout \u003c\u003c std::string(\"Customer\");\n            std::cout \u003c\u003c \" \";\n            std::cout \u003c\u003c row.customer-\u003ename;\n            std::cout \u003c\u003c \" \";\n            std::cout \u003c\u003c std::string(\"has no orders\");\n            std::cout \u003c\u003c std::endl;\n        }\n    }\n    return 0;\n}\n"
+}

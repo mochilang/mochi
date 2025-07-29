@@ -1,0 +1,3864 @@
+{
+  "funcs": [
+    {
+      "Name": "__addressof",
+      "Params": [
+        {
+          "Name": "__r",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": "st FilteredItem\u0026 v) {\n    os \u003c\u003c '{'"
+    },
+    {
+      "Name": "forward",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "typename std::remove_reference\u003c_Tp\u003e::type"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": "   return os;\n}\n\nstd::vector\u003cNatio"
+    },
+    {
+      "Name": "forward",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "typename std::remove_reference\u003c_Tp\u003e::type"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": "{.part = 100, .supplier = 1, .cost = 10.0, .qty = 2}, PartsuppItem{.part = 100, .supplier = 2, .cost = 20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5.0, "
+    },
+    {
+      "Name": "move",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "typename std::remove_reference\u003c_Tp\u003e::type",
+      "Body": "e = (ps.cost * ps.qty)});\n    }\n}\n}\n}\nreturn __items; }());\nstd::vector\u003c"
+    },
+    {
+      "Name": "move_if_noexcept",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "__conditional_t\u003c__move_if_noexcept_cond\u003c_Tp\u003e::value, const _Tp \u0026, _Tp \u0026\u0026\u003e",
+      "Body": "tems; }()); return std::a"
+    },
+    {
+      "Name": "operator==",
+      "Params": [
+        {
+          "Name": "__v",
+          "Typ": "partial_ordering"
+        },
+        {
+          "Name": "",
+          "Typ": "__cmp_cat::__unspec"
+        }
+      ],
+      "Ret": "bool",
+      "Body": "rtsuppItem\u003e partsupp = std::"
+    },
+    {
+      "Name": "operator\u003c",
+      "Params": [
+        {
+          "Name": "__v",
+          "Typ": "partial_ordering"
+        },
+        {
+          "Name": "",
+          "Typ": "__cmp_cat::__unspec"
+        }
+      ],
+      "Ret": "bool",
+      "Body": "tered = ([]{ std::vector\u003cFilt"
+    },
+    {
+      "Name": "operator\u003e",
+      "Params": [
+        {
+          "Name": "__v",
+          "Typ": "partial_ordering"
+        },
+        {
+          "Name": "",
+          "Typ": "__cmp_cat::__unspec"
+        }
+      ],
+      "Ret": "bool",
+      "Body": "std::string(\"A\")) \u0026\u0026 (s.id ="
+    },
+    {
+      "Name": "operator\u003c=",
+      "Params": [
+        {
+          "Name": "__v",
+          "Typ": "partial_ordering"
+        },
+        {
+          "Name": "",
+          "Typ": "__cmp_cat::__unspec"
+        }
+      ],
+      "Ret": "bool",
+      "Body": "ps.qty)});\n    }\n}\n}\n}\nretur"
+    },
+    {
+      "Name": "operator\u003e=",
+      "Params": [
+        {
+          "Name": "__v",
+          "Typ": "partial_ordering"
+        },
+        {
+          "Name": "",
+          "Typ": "__cmp_cat::__unspec"
+        }
+      ],
+      "Ret": "bool",
+      "Body": "s;\nstd::unordered_map\u003cint, size_t\u003e __idx;\nfor (auto x : filt"
+    },
+    {
+      "Name": "operator\u003c",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__cmp_cat::__unspec"
+        },
+        {
+          "Name": "__v",
+          "Typ": "partial_ordering"
+        }
+      ],
+      "Ret": "bool",
+      "Body": "GGroup __g{__key, {}};\n     "
+    },
+    {
+      "Name": "operator\u003e",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__cmp_cat::__unspec"
+        },
+        {
+          "Name": "__v",
+          "Typ": "partial_ordering"
+        }
+      ],
+      "Ret": "bool",
+      "Body": "  } else {\n            __grou"
+    },
+    {
+      "Name": "operator\u003c=",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__cmp_cat::__unspec"
+        },
+        {
+          "Name": "__v",
+          "Typ": "partial_ordering"
+        }
+      ],
+      "Ret": "bool",
+      "Body": "roupedItem{.part = g.key, .total = ([\u0026]{ auto __tmp = ([\u0026]{ "
+    },
+    {
+      "Name": "operator\u003e=",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__cmp_cat::__unspec"
+        },
+        {
+          "Name": "__v",
+          "Typ": "partial_ordering"
+        }
+      ],
+      "Ret": "bool",
+      "Body": "::accumulate(__tmp.begin(), "
+    },
+    {
+      "Name": "__distance",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "_InputIterator"
+        },
+        {
+          "Name": "__last",
+          "Typ": "_InputIterator"
+        },
+        {
+          "Name": "",
+          "Typ": "input_iterator_tag"
+        }
+      ],
+      "Ret": "typename iterator_traits\u003c_InputIterator\u003e::difference_type",
+      "Body": "_t\u003e __idx;\nfor (auto x : filtered) {\n        auto __key = x.part;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(x);\n            __idx[__key] = __groups.size();\n            _"
+    },
+    {
+      "Name": "__distance",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "_RandomAccessIterator"
+        },
+        {
+          "Name": "__last",
+          "Typ": "_RandomAccessIterator"
+        },
+        {
+          "Name": "",
+          "Typ": "random_access_iterator_tag"
+        }
+      ],
+      "Ret": "typename iterator_traits\u003c_RandomAccessIterator\u003e::difference_type",
+      "Body": "k(r.value);\n}\nreturn __items; }()); return std::accumulate(__tmp.begin(), __tmp.end(), 0.0); }())});\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c group"
+    },
+    {
+      "Name": "__distance",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "string"
+        },
+        {
+          "Name": "__last",
+          "Typ": "string"
+        },
+        {
+          "Name": "",
+          "Typ": "random_access_iterator_tag"
+        }
+      ],
+      "Ret": "typename iterator_traits\u003cconst char *\u003e::difference_type",
+      "Body": "k(r.value);\n}\nreturn __items; }()); return std::accumulate(__tmp.begin(), __tmp.end(), 0.0); }())});\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c group"
+    },
+    {
+      "Name": "__distance",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "NationsItem"
+        },
+        {
+          "Name": "__last",
+          "Typ": "NationsItem"
+        },
+        {
+          "Name": "",
+          "Typ": "random_access_iterator_tag"
+        }
+      ],
+      "Ret": "typename iterator_traits\u003cconst NationsItem *\u003e::difference_type",
+      "Body": "k(r.value);\n}\nreturn __items; }()); return std::accumulate(__tmp.begin(), __tmp.end(), 0.0); }())});\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c group"
+    },
+    {
+      "Name": "__distance",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "string"
+        },
+        {
+          "Name": "__last",
+          "Typ": "string"
+        },
+        {
+          "Name": "",
+          "Typ": "random_access_iterator_tag"
+        }
+      ],
+      "Ret": "typename iterator_traits\u003cchar *\u003e::difference_type",
+      "Body": "k(r.value);\n}\nreturn __items; }()); return std::accumulate(__tmp.begin(), __tmp.end(), 0.0); }())});\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c group"
+    },
+    {
+      "Name": "__distance",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "SuppliersItem"
+        },
+        {
+          "Name": "__last",
+          "Typ": "SuppliersItem"
+        },
+        {
+          "Name": "",
+          "Typ": "random_access_iterator_tag"
+        }
+      ],
+      "Ret": "typename iterator_traits\u003cconst SuppliersItem *\u003e::difference_type",
+      "Body": "k(r.value);\n}\nreturn __items; }()); return std::accumulate(__tmp.begin(), __tmp.end(), 0.0); }())});\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c group"
+    },
+    {
+      "Name": "__distance",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "PartsuppItem"
+        },
+        {
+          "Name": "__last",
+          "Typ": "PartsuppItem"
+        },
+        {
+          "Name": "",
+          "Typ": "random_access_iterator_tag"
+        }
+      ],
+      "Ret": "typename iterator_traits\u003cconst PartsuppItem *\u003e::difference_type",
+      "Body": "k(r.value);\n}\nreturn __items; }()); return std::accumulate(__tmp.begin(), __tmp.end(), 0.0); }())});\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c group"
+    },
+    {
+      "Name": "__distance",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "__last",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "",
+          "Typ": "random_access_iterator_tag"
+        }
+      ],
+      "Ret": "typename iterator_traits\u003cwchar_t *\u003e::difference_type",
+      "Body": "k(r.value);\n}\nreturn __items; }()); return std::accumulate(__tmp.begin(), __tmp.end(), 0.0); }())});\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c group"
+    },
+    {
+      "Name": "__distance",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "__last",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "",
+          "Typ": "random_access_iterator_tag"
+        }
+      ],
+      "Ret": "typename iterator_traits\u003cconst wchar_t *\u003e::difference_type",
+      "Body": "k(r.value);\n}\nreturn __items; }()); return std::accumulate(__tmp.begin(), __tmp.end(), 0.0); }())});\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c group"
+    },
+    {
+      "Name": "__distance",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "char8_t"
+        },
+        {
+          "Name": "__last",
+          "Typ": "char8_t"
+        },
+        {
+          "Name": "",
+          "Typ": "random_access_iterator_tag"
+        }
+      ],
+      "Ret": "typename iterator_traits\u003cconst char8_t *\u003e::difference_type",
+      "Body": "k(r.value);\n}\nreturn __items; }()); return std::accumulate(__tmp.begin(), __tmp.end(), 0.0); }())});\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c group"
+    },
+    {
+      "Name": "__distance",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "string"
+        },
+        {
+          "Name": "__last",
+          "Typ": "string"
+        },
+        {
+          "Name": "",
+          "Typ": "random_access_iterator_tag"
+        }
+      ],
+      "Ret": "typename iterator_traits\u003cconst char16_t *\u003e::difference_type",
+      "Body": "k(r.value);\n}\nreturn __items; }()); return std::accumulate(__tmp.begin(), __tmp.end(), 0.0); }())});\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c group"
+    },
+    {
+      "Name": "__distance",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "string"
+        },
+        {
+          "Name": "__last",
+          "Typ": "string"
+        },
+        {
+          "Name": "",
+          "Typ": "random_access_iterator_tag"
+        }
+      ],
+      "Ret": "typename iterator_traits\u003cconst char32_t *\u003e::difference_type",
+      "Body": "k(r.value);\n}\nreturn __items; }()); return std::accumulate(__tmp.begin(), __tmp.end(), 0.0); }())});\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c group"
+    },
+    {
+      "Name": "destroy_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "",
+      "Body": ".part;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(x);\n            __idx[__key] = __groups.s"
+    },
+    {
+      "Name": "destroy_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "NationsItem"
+        }
+      ],
+      "Ret": "",
+      "Body": ".part;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(x);\n            __idx[__key] = __groups.s"
+    },
+    {
+      "Name": "destroy_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "SuppliersItem"
+        }
+      ],
+      "Ret": "",
+      "Body": ".part;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(x);\n            __idx[__key] = __groups.s"
+    },
+    {
+      "Name": "destroy_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "PartsuppItem"
+        }
+      ],
+      "Ret": "",
+      "Body": ".part;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(x);\n            __idx[__key] = __groups.s"
+    },
+    {
+      "Name": "destroy_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "FilteredItem"
+        }
+      ],
+      "Ret": "",
+      "Body": ".part;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(x);\n            __idx[__key] = __groups.s"
+    },
+    {
+      "Name": "destroy_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "GroupedItem"
+        }
+      ],
+      "Ret": "",
+      "Body": ".part;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(x);\n            __idx[__key] = __groups.s"
+    },
+    {
+      "Name": "destroy_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "GGroup"
+        }
+      ],
+      "Ret": "",
+      "Body": ".part;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(x);\n            __idx[__key] = __groups.s"
+    },
+    {
+      "Name": "destroy_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "float"
+        }
+      ],
+      "Ret": "",
+      "Body": ".part;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(x);\n            __idx[__key] = __groups.s"
+    },
+    {
+      "Name": "destroy_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "std::pair\u003cconst int, unsigned long\u003e"
+        }
+      ],
+      "Ret": "",
+      "Body": ".part;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(x);\n            __idx[__key] = __groups.s"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "_Tp"
+        },
+        {
+          "Name": "__args",
+          "Typ": "_Args \u0026\u0026..."
+        }
+      ],
+      "Ret": "",
+      "Body": "s;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nreturn __it"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "string"
+        },
+        {
+          "Name": "__args",
+          "Typ": "string"
+        }
+      ],
+      "Ret": "",
+      "Body": "s;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nreturn __it"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "string"
+        },
+        {
+          "Name": "__args",
+          "Typ": "string"
+        }
+      ],
+      "Ret": "",
+      "Body": "s;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nreturn __it"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "__args",
+          "Typ": "wchar_t"
+        }
+      ],
+      "Ret": "",
+      "Body": "s;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nreturn __it"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "__args",
+          "Typ": "wchar_t"
+        }
+      ],
+      "Ret": "",
+      "Body": "s;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nreturn __it"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "char8_t"
+        },
+        {
+          "Name": "__args",
+          "Typ": "char8_t"
+        }
+      ],
+      "Ret": "",
+      "Body": "s;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nreturn __it"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "char8_t"
+        },
+        {
+          "Name": "__args",
+          "Typ": "char8_t"
+        }
+      ],
+      "Ret": "",
+      "Body": "s;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nreturn __it"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "string"
+        },
+        {
+          "Name": "__args",
+          "Typ": "string"
+        }
+      ],
+      "Ret": "",
+      "Body": "s;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nreturn __it"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "string"
+        },
+        {
+          "Name": "__args",
+          "Typ": "string"
+        }
+      ],
+      "Ret": "",
+      "Body": "s;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nreturn __it"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "NationsItem"
+        },
+        {
+          "Name": "__args",
+          "Typ": "NationsItem"
+        }
+      ],
+      "Ret": "",
+      "Body": "s;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nreturn __it"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "SuppliersItem"
+        },
+        {
+          "Name": "__args",
+          "Typ": "SuppliersItem"
+        }
+      ],
+      "Ret": "",
+      "Body": "s;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nreturn __it"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "PartsuppItem"
+        },
+        {
+          "Name": "__args",
+          "Typ": "PartsuppItem"
+        }
+      ],
+      "Ret": "",
+      "Body": "s;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nreturn __it"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "FilteredItem"
+        },
+        {
+          "Name": "__args",
+          "Typ": "FilteredItem"
+        }
+      ],
+      "Ret": "",
+      "Body": "s;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nreturn __it"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "FilteredItem"
+        },
+        {
+          "Name": "__args",
+          "Typ": "FilteredItem"
+        }
+      ],
+      "Ret": "",
+      "Body": "s;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nreturn __it"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "GGroup"
+        },
+        {
+          "Name": "__args",
+          "Typ": "GGroup"
+        }
+      ],
+      "Ret": "",
+      "Body": "s;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nreturn __it"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "GGroup"
+        },
+        {
+          "Name": "__args",
+          "Typ": "GGroup"
+        }
+      ],
+      "Ret": "",
+      "Body": "s;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nreturn __it"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "float"
+        },
+        {
+          "Name": "__args",
+          "Typ": "float"
+        }
+      ],
+      "Ret": "",
+      "Body": "s;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nreturn __it"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "float"
+        },
+        {
+          "Name": "__args",
+          "Typ": "float"
+        }
+      ],
+      "Ret": "",
+      "Body": "s;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nreturn __it"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "GroupedItem"
+        },
+        {
+          "Name": "__args",
+          "Typ": "GroupedItem"
+        }
+      ],
+      "Ret": "",
+      "Body": "s;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nreturn __it"
+    },
+    {
+      "Name": "construct_at",
+      "Params": [
+        {
+          "Name": "__location",
+          "Typ": "std::pair\u003cconst int, unsigned long\u003e"
+        },
+        {
+          "Name": "__args",
+          "Typ": "std::piecewise_construct_t"
+        },
+        {
+          "Name": "__args",
+          "Typ": "std::tuple\u003cconst int \u0026\u003e"
+        },
+        {
+          "Name": "__args",
+          "Typ": "std::tuple\u003c\u003e"
+        }
+      ],
+      "Ret": "",
+      "Body": "s;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nreturn __it"
+    },
+    {
+      "Name": "__convert_from_v",
+      "Params": [
+        {
+          "Name": "__cloc",
+          "Typ": "__c_locale"
+        },
+        {
+          "Name": "__out",
+          "Typ": "string"
+        },
+        {
+          "Name": "__size",
+          "Typ": "int"
+        },
+        {
+          "Name": "__fmt",
+          "Typ": "string"
+        }
+      ],
+      "Ret": "int",
+      "Body": "2}};\nstd::vector\u003cPartsuppItem\u003e partsupp = std::vector{PartsuppItem{.part = 100, .supplier = 1, .cost = 10.0, .qty = 2}, PartsuppItem{.part = 100, .supplier = 2, .cost = 20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}};\nstd::vector\u003cFilteredItem\u003e filtered = ([]{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto s : suppliers) {\nfor (auto n : nations) {\n    if((((n.name == std::string(\"A\")) \u0026\u0026 (s.id == ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)});\n    }\n}\n}\n}\nreturn __items; }());\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cint, size_t\u003e __idx;\nfor (auto x : filtered) {\n        auto __key = x.part;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GG"
+    },
+    {
+      "Name": "__is_single_threaded",
+      "Params": null,
+      "Ret": "bool",
+      "Body": "': \" \u003c\u003c v.supplier \u003c\u003c \", \" \u003c\u003c \"'cost': \" \u003c\u003c v.cost \u003c\u003c \", \" \u003c\u003c \"'qty': \" \u003c\u003c v.qty \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const FilteredItem\u0026"
+    },
+    {
+      "Name": "__exchange_and_add",
+      "Params": [
+        {
+          "Name": "__mem",
+          "Typ": "volatile _Atomic_word"
+        },
+        {
+          "Name": "__val",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "_Atomic_word",
+      "Body": "   os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c"
+    },
+    {
+      "Name": "__atomic_add",
+      "Params": [
+        {
+          "Name": "__mem",
+          "Typ": "volatile _Atomic_word"
+        },
+        {
+          "Name": "__val",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "",
+      "Body": "std::string(\"A\")}, NationsItem{.id = 2, .name = std::s"
+    },
+    {
+      "Name": "__exchange_and_add_single",
+      "Params": [
+        {
+          "Name": "__mem",
+          "Typ": "_Atomic_word"
+        },
+        {
+          "Name": "__val",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "_Atomic_word",
+      "Body": " = 2, .cost = 20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5."
+    },
+    {
+      "Name": "__atomic_add_single",
+      "Params": [
+        {
+          "Name": "__mem",
+          "Typ": "_Atomic_word"
+        },
+        {
+          "Name": "__val",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "",
+      "Body": "tsupp) {\nfor (auto "
+    },
+    {
+      "Name": "__exchange_and_add_dispatch",
+      "Params": [
+        {
+          "Name": "__mem",
+          "Typ": "_Atomic_word"
+        },
+        {
+          "Name": "__val",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "_Atomic_word",
+      "Body": ")) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)});\n    }\n}\n}\n}\nreturn __items; }());\nstd::vector\u003cGroupedI"
+    },
+    {
+      "Name": "__atomic_add_dispatch",
+      "Params": [
+        {
+          "Name": "__mem",
+          "Typ": "_Atomic_word"
+        },
+        {
+          "Name": "__val",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "",
+      "Body": "t\u003e __idx;\nfor (auto x : filtered) {\n        auto __key = x.part;\n        auto it = __idx.find(__key);\n        if(it == _"
+    },
+    {
+      "Name": "__ostream_write",
+      "Params": [
+        {
+          "Name": "__out",
+          "Typ": "basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__s",
+          "Typ": "_CharT"
+        },
+        {
+          "Name": "__n",
+          "Typ": "streamsize"
+        }
+      ],
+      "Ret": "",
+      "Body": "\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const FilteredItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'value': \" \u003c\u003c v.value \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GGroup\u0026 v) {\n    os \u003c\u003c '{' "
+    },
+    {
+      "Name": "__ostream_fill",
+      "Params": [
+        {
+          "Name": "__out",
+          "Typ": "basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__n",
+          "Typ": "streamsize"
+        }
+      ],
+      "Ret": "",
+      "Body": " v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = 1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}};\nstd::vector\u003cPartsuppItem\u003e partsupp = "
+    },
+    {
+      "Name": "__ostream_insert",
+      "Params": [
+        {
+          "Name": "__out",
+          "Typ": "basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__s",
+          "Typ": "_CharT"
+        },
+        {
+          "Name": "__n",
+          "Typ": "streamsize"
+        }
+      ],
+      "Ret": "basic_ostream\u003c_CharT, _Traits\u003e",
+      "Body": "= 5.0, .qty = 3}};\nstd::vector\u003cFilteredItem\u003e filtered = ([]{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto s : suppliers) {\nfor (auto n : nations) {\n    if((((n.name == std::string(\"A\")) \u0026\u0026 (s.id == ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)});\n    }\n}\n}\n}\nreturn __items; }());\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cint, size_t\u003e __idx;\nfor (auto x : filtered) {\n        auto __key = x.part;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(x);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_back(x);\n        }\n}\nfor(auto "
+    },
+    {
+      "Name": "__find_uniq_type_in_pack",
+      "Params": null,
+      "Ret": "int",
+      "Body": "items.push_back(GroupedItem{.part = g.key, .total = ([\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cdouble\u003e __items;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nreturn __items; }()); return std::accumulate(__tmp.begin(), __tmp.end(), 0.0); }())});\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c grouped \u003c\u003c std::endl;\n    return"
+    },
+    {
+      "Name": "__iter_less_iter",
+      "Params": null,
+      "Ret": "_Iter_less_iter",
+      "Body": " \u003c\u003c '}';\n    return os;\n}\n\ns"
+    },
+    {
+      "Name": "__iter_less_val",
+      "Params": null,
+      "Ret": "_Iter_less_val",
+      "Body": "';\n    return os;\n}\n\nstd::v"
+    },
+    {
+      "Name": "__iter_comp_val",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "_Iter_less_iter"
+        }
+      ],
+      "Ret": "_Iter_less_val",
+      "Body": ", NationsItem{.id = 2, .nam"
+    },
+    {
+      "Name": "__val_less_iter",
+      "Params": null,
+      "Ret": "_Val_less_iter",
+      "Body": "items;\nfor (auto ps : parts"
+    },
+    {
+      "Name": "__val_comp_iter",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "_Iter_less_iter"
+        }
+      ],
+      "Ret": "_Val_less_iter",
+      "Body": "ing(\"A\")) \u0026\u0026 (s.id == ps.su"
+    },
+    {
+      "Name": "__iter_equal_to_iter",
+      "Params": null,
+      "Ret": "_Iter_equal_to_iter",
+      "Body": " x : filtered) {\n        auto __"
+    },
+    {
+      "Name": "__iter_equal_to_val",
+      "Params": null,
+      "Ret": "_Iter_equal_to_val",
+      "Body": "sh_back(x);\n        }\n}\nfor(aut"
+    },
+    {
+      "Name": "__iter_comp_val",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "_Iter_equal_to_iter"
+        }
+      ],
+      "Ret": "_Iter_equal_to_val",
+      "Body": "l = ([\u0026]{ auto __tmp = ([\u0026]{ st"
+    },
+    {
+      "Name": "bit_cast",
+      "Params": [
+        {
+          "Name": "__from",
+          "Typ": "_From"
+        }
+      ],
+      "Ret": "_To",
+      "Body": " partsupp = std::vector{PartsuppItem{.part = 100, .s"
+    },
+    {
+      "Name": "__memcmp",
+      "Params": [
+        {
+          "Name": "__first1",
+          "Typ": "_Tp"
+        },
+        {
+          "Name": "__first2",
+          "Typ": "_Up"
+        },
+        {
+          "Name": "__num",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "GGroup __g{__key, {}};\n            __g.items.push_back(x);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_back(x);\n        }\n}\nfor(auto \u0026__g : __groups) {\n    GGroup g = __g;\n    __items.push_back(GroupedItem{.part = g.key, .total = ([\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cdouble\u003e __items;\nfor (auto r : g) {\n        __items.push_back(r.value)"
+    },
+    {
+      "Name": "__invfwd",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "typename remove_reference\u003c_Tp\u003e::type"
+        }
+      ],
+      "Ret": "_Up",
+      "Body": "n os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c("
+    },
+    {
+      "Name": "__invoke_impl",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__invoke_other"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_Fn"
+        },
+        {
+          "Name": "__args",
+          "Typ": "_Args \u0026\u0026..."
+        }
+      ],
+      "Ret": "_Res",
+      "Body": "erator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' "
+    },
+    {
+      "Name": "__invoke_impl",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__invoke_memfun_ref"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_MemFun"
+        },
+        {
+          "Name": "__t",
+          "Typ": "_Tp"
+        },
+        {
+          "Name": "__args",
+          "Typ": "_Args \u0026\u0026..."
+        }
+      ],
+      "Ret": "_Res",
+      "Body": ".id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e supp"
+    },
+    {
+      "Name": "__invoke_impl",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__invoke_memfun_deref"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_MemFun"
+        },
+        {
+          "Name": "__t",
+          "Typ": "_Tp"
+        },
+        {
+          "Name": "__args",
+          "Typ": "_Args \u0026\u0026..."
+        }
+      ],
+      "Ret": "_Res",
+      "Body": "10.0, .qty = 2}, PartsuppItem{.part = 100, .supplier = 2, .cost = 20.0, .qty = 1}, Pa"
+    },
+    {
+      "Name": "__invoke_impl",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__invoke_memobj_ref"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_MemPtr"
+        },
+        {
+          "Name": "__t",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "_Res",
+      "Body": "o ps : partsupp) {\nfor (auto s : s"
+    },
+    {
+      "Name": "__invoke_impl",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__invoke_memobj_deref"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_MemPtr"
+        },
+        {
+          "Name": "__t",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "_Res",
+      "Body": "k(FilteredItem{.part = ps.part, .value = "
+    },
+    {
+      "Name": "__invoke",
+      "Params": [
+        {
+          "Name": "__fn",
+          "Typ": "_Callable"
+        },
+        {
+          "Name": "__args",
+          "Typ": "_Args \u0026\u0026..."
+        }
+      ],
+      "Ret": "typename __invoke_result\u003c_Callable, _Args...\u003e::type",
+      "Body": "= __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(x);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_back(x);\n        }\n"
+    },
+    {
+      "Name": "begin",
+      "Params": [
+        {
+          "Name": "__ils",
+          "Typ": "initializer_list\u003c_Tp\u003e"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": " = 100, .supplier = 2, ."
+    },
+    {
+      "Name": "end",
+      "Params": [
+        {
+          "Name": "__ils",
+          "Typ": "initializer_list\u003c_Tp\u003e"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": "== ps.supplier)) \u0026\u0026 (n"
+    },
+    {
+      "Name": "begin",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        }
+      ],
+      "Ret": "",
+      "Body": "m\u0026 os, const GGroup\u0026 v) {"
+    },
+    {
+      "Name": "begin",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        }
+      ],
+      "Ret": "",
+      "Body": "= std::string(\"A\")}, Nati"
+    },
+    {
+      "Name": "end",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        }
+      ],
+      "Ret": "",
+      "Body": "cost = 20.0, .qty = 1},"
+    },
+    {
+      "Name": "end",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        }
+      ],
+      "Ret": "",
+      "Body": "ilteredItem{.part = ps."
+    },
+    {
+      "Name": "begin",
+      "Params": [
+        {
+          "Name": "__arr",
+          "Typ": "_Tp (\u0026)[_Nm]"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": " __idx.find(__ke"
+    },
+    {
+      "Name": "end",
+      "Params": [
+        {
+          "Name": "__arr",
+          "Typ": "_Tp (\u0026)[_Nm]"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": "up g = __g;\n    __item"
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "__max_size_type"
+        }
+      ],
+      "Ret": "__max_size_type",
+      "Body": "perator\u003c\u003c(std:"
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "__max_diff_type"
+        }
+      ],
+      "Ret": "__max_size_type",
+      "Body": "\" \u003c\u003c v.items \u003c\u003c '}';\n    return"
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "",
+      "Body": " \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c"
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "__int128"
+        }
+      ],
+      "Ret": "__int128",
+      "Body": "ame = std::str"
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "__int128"
+        }
+      ],
+      "Ret": "__int128",
+      "Body": "= 1}, Supplier"
+    },
+    {
+      "Name": "__sv_check",
+      "Params": [
+        {
+          "Name": "__size",
+          "Typ": "int"
+        },
+        {
+          "Name": "__pos",
+          "Typ": "int"
+        },
+        {
+          "Name": "__s",
+          "Typ": "string"
+        }
+      ],
+      "Ret": "int",
+      "Body": "erator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNati"
+    },
+    {
+      "Name": "__sv_limit",
+      "Params": [
+        {
+          "Name": "__size",
+          "Typ": "int"
+        },
+        {
+          "Name": "__pos",
+          "Typ": "int"
+        },
+        {
+          "Name": "__off",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "iersItem{.id = 1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}};\nstd::vector\u003cPartsuppItem\u003e parts"
+    },
+    {
+      "Name": "__bswap_16",
+      "Params": [
+        {
+          "Name": "__bsx",
+          "Typ": "__uint16_t"
+        }
+      ],
+      "Ret": "__uint16_t",
+      "Body": "\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const SuppliersItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'id': \" \u003c\u003c v.id \u003c\u003c \", \""
+    },
+    {
+      "Name": "__bswap_32",
+      "Params": [
+        {
+          "Name": "__bsx",
+          "Typ": "__uint32_t"
+        }
+      ],
+      "Ret": "__uint32_t",
+      "Body": ".qty \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const FilteredItem\u0026 v) {\n    os \u003c\u003c '{' \u003c"
+    },
+    {
+      "Name": "__bswap_64",
+      "Params": [
+        {
+          "Name": "__bsx",
+          "Typ": "__uint64_t"
+        }
+      ],
+      "Ret": "__uint64_t",
+      "Body": " NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem"
+    },
+    {
+      "Name": "__uint16_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint16_t"
+        }
+      ],
+      "Ret": "__uint16_t",
+      "Body": "d::ostream\u0026 oper"
+    },
+    {
+      "Name": "__uint32_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint32_t"
+        }
+      ],
+      "Ret": "__uint32_t",
+      "Body": "\u003c\u003c \"'id': \" \u003c\u003c v"
+    },
+    {
+      "Name": "__uint64_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint64_t"
+        }
+      ],
+      "Ret": "__uint64_t",
+      "Body": "\nstd::ostream\u0026 o"
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__i",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "tream\u0026 os, const FilteredItem\u0026"
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "long long"
+        }
+      ],
+      "Ret": "long long",
+      "Body": " '}';\n    return os;\n}\n\nstd::ost"
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "float"
+        }
+      ],
+      "Ret": "float",
+      "Body": "ector\u003cNationsItem\u003e nations = s"
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "float"
+        }
+      ],
+      "Ret": "float",
+      "Body": "}, NationsItem{.id = 2, .name ="
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "long double"
+        }
+      ],
+      "Ret": "long double",
+      "Body": "tor{SuppliersItem{.id = 1, .nat"
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "_TRet (*)(const _CharT *, _CharT **, _Base...)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "_CharT"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__base",
+          "Typ": "_Base..."
+        }
+      ],
+      "Ret": "_Ret",
+      "Body": " os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = 1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}};\nstd::vector\u003cPartsuppItem\u003e partsupp = std::vector{PartsuppItem{.part = 100, .supplier = 1, .cost = 10.0, .qty = 2}, PartsuppItem{.part = 100, .supplier = 2, .cost = 20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}};\nstd::vector\u003cFilteredItem\u003e filtered = ([]{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto "
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "long (*)(const char *, char **, int)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "string"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": " os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = 1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}};\nstd::vector\u003cPartsuppItem\u003e partsupp = std::vector{PartsuppItem{.part = 100, .supplier = 1, .cost = 10.0, .qty = 2}, PartsuppItem{.part = 100, .supplier = 2, .cost = 20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}};\nstd::vector\u003cFilteredItem\u003e filtered = ([]{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto "
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "long (*)(const char *, char **, int)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "string"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": " os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = 1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}};\nstd::vector\u003cPartsuppItem\u003e partsupp = std::vector{PartsuppItem{.part = 100, .supplier = 1, .cost = 10.0, .qty = 2}, PartsuppItem{.part = 100, .supplier = 2, .cost = 20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}};\nstd::vector\u003cFilteredItem\u003e filtered = ([]{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto "
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "long (*)(const char *, char **, int)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "string"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": " os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = 1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}};\nstd::vector\u003cPartsuppItem\u003e partsupp = std::vector{PartsuppItem{.part = 100, .supplier = 1, .cost = 10.0, .qty = 2}, PartsuppItem{.part = 100, .supplier = 2, .cost = 20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}};\nstd::vector\u003cFilteredItem\u003e filtered = ([]{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto "
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "long long (*)(const char *, char **, int)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "string"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "long long",
+      "Body": " os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = 1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}};\nstd::vector\u003cPartsuppItem\u003e partsupp = std::vector{PartsuppItem{.part = 100, .supplier = 1, .cost = 10.0, .qty = 2}, PartsuppItem{.part = 100, .supplier = 2, .cost = 20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}};\nstd::vector\u003cFilteredItem\u003e filtered = ([]{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto "
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "long long (*)(const char *, char **, int)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "string"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "long long",
+      "Body": " os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = 1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}};\nstd::vector\u003cPartsuppItem\u003e partsupp = std::vector{PartsuppItem{.part = 100, .supplier = 1, .cost = 10.0, .qty = 2}, PartsuppItem{.part = 100, .supplier = 2, .cost = 20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}};\nstd::vector\u003cFilteredItem\u003e filtered = ([]{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto "
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "float (*)(const char *, char **)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "string"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        }
+      ],
+      "Ret": "float",
+      "Body": " os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = 1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}};\nstd::vector\u003cPartsuppItem\u003e partsupp = std::vector{PartsuppItem{.part = 100, .supplier = 1, .cost = 10.0, .qty = 2}, PartsuppItem{.part = 100, .supplier = 2, .cost = 20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}};\nstd::vector\u003cFilteredItem\u003e filtered = ([]{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto "
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "double (*)(const char *, char **)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "string"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        }
+      ],
+      "Ret": "float",
+      "Body": " os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = 1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}};\nstd::vector\u003cPartsuppItem\u003e partsupp = std::vector{PartsuppItem{.part = 100, .supplier = 1, .cost = 10.0, .qty = 2}, PartsuppItem{.part = 100, .supplier = 2, .cost = 20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}};\nstd::vector\u003cFilteredItem\u003e filtered = ([]{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto "
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "long double (*)(const char *, char **)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "string"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        }
+      ],
+      "Ret": "long double",
+      "Body": " os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = 1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}};\nstd::vector\u003cPartsuppItem\u003e partsupp = std::vector{PartsuppItem{.part = 100, .supplier = 1, .cost = 10.0, .qty = 2}, PartsuppItem{.part = 100, .supplier = 2, .cost = 20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}};\nstd::vector\u003cFilteredItem\u003e filtered = ([]{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto "
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "long (*)(const wchar_t *, wchar_t **, int)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": " os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = 1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}};\nstd::vector\u003cPartsuppItem\u003e partsupp = std::vector{PartsuppItem{.part = 100, .supplier = 1, .cost = 10.0, .qty = 2}, PartsuppItem{.part = 100, .supplier = 2, .cost = 20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}};\nstd::vector\u003cFilteredItem\u003e filtered = ([]{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto "
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "long (*)(const wchar_t *, wchar_t **, int)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": " os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = 1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}};\nstd::vector\u003cPartsuppItem\u003e partsupp = std::vector{PartsuppItem{.part = 100, .supplier = 1, .cost = 10.0, .qty = 2}, PartsuppItem{.part = 100, .supplier = 2, .cost = 20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}};\nstd::vector\u003cFilteredItem\u003e filtered = ([]{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto "
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "long (*)(const wchar_t *, wchar_t **, int)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": " os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = 1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}};\nstd::vector\u003cPartsuppItem\u003e partsupp = std::vector{PartsuppItem{.part = 100, .supplier = 1, .cost = 10.0, .qty = 2}, PartsuppItem{.part = 100, .supplier = 2, .cost = 20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}};\nstd::vector\u003cFilteredItem\u003e filtered = ([]{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto "
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "long long (*)(const wchar_t *, wchar_t **, int)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "long long",
+      "Body": " os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = 1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}};\nstd::vector\u003cPartsuppItem\u003e partsupp = std::vector{PartsuppItem{.part = 100, .supplier = 1, .cost = 10.0, .qty = 2}, PartsuppItem{.part = 100, .supplier = 2, .cost = 20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}};\nstd::vector\u003cFilteredItem\u003e filtered = ([]{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto "
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "long long (*)(const wchar_t *, wchar_t **, int)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "long long",
+      "Body": " os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = 1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}};\nstd::vector\u003cPartsuppItem\u003e partsupp = std::vector{PartsuppItem{.part = 100, .supplier = 1, .cost = 10.0, .qty = 2}, PartsuppItem{.part = 100, .supplier = 2, .cost = 20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}};\nstd::vector\u003cFilteredItem\u003e filtered = ([]{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto "
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "float (*)(const wchar_t *, wchar_t **)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        }
+      ],
+      "Ret": "float",
+      "Body": " os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = 1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}};\nstd::vector\u003cPartsuppItem\u003e partsupp = std::vector{PartsuppItem{.part = 100, .supplier = 1, .cost = 10.0, .qty = 2}, PartsuppItem{.part = 100, .supplier = 2, .cost = 20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}};\nstd::vector\u003cFilteredItem\u003e filtered = ([]{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto "
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "double (*)(const wchar_t *, wchar_t **)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        }
+      ],
+      "Ret": "float",
+      "Body": " os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = 1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}};\nstd::vector\u003cPartsuppItem\u003e partsupp = std::vector{PartsuppItem{.part = 100, .supplier = 1, .cost = 10.0, .qty = 2}, PartsuppItem{.part = 100, .supplier = 2, .cost = 20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}};\nstd::vector\u003cFilteredItem\u003e filtered = ([]{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto "
+    },
+    {
+      "Name": "__stoa",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "long double (*)(const wchar_t *, wchar_t **)"
+        },
+        {
+          "Name": "__name",
+          "Typ": "string"
+        },
+        {
+          "Name": "__str",
+          "Typ": "wchar_t"
+        },
+        {
+          "Name": "__idx",
+          "Typ": "std::size_t"
+        }
+      ],
+      "Ret": "long double",
+      "Body": " os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = 1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}};\nstd::vector\u003cPartsuppItem\u003e partsupp = std::vector{PartsuppItem{.part = 100, .supplier = 1, .cost = 10.0, .qty = 2}, PartsuppItem{.part = 100, .supplier = 2, .cost = 20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}};\nstd::vector\u003cFilteredItem\u003e filtered = ([]{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto "
+    },
+    {
+      "Name": "__to_xstring",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "int (*)(_CharT *, std::size_t, const _CharT *, __va_list_tag *)"
+        },
+        {
+          "Name": "__n",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__fmt",
+          "Typ": "_CharT"
+        }
+      ],
+      "Ret": "_String",
+      "Body": "{ std::vector\u003cGroupedItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cint, size_t\u003e __idx;\nfor (auto x : filtered) {\n        auto __key = x.part;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(x);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_"
+    },
+    {
+      "Name": "__to_xstring",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "int (*)(char *, std::size_t, const char *, __va_list_tag *)"
+        },
+        {
+          "Name": "__n",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__fmt",
+          "Typ": "string"
+        }
+      ],
+      "Ret": "std::basic_string\u003cchar\u003e",
+      "Body": "{ std::vector\u003cGroupedItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cint, size_t\u003e __idx;\nfor (auto x : filtered) {\n        auto __key = x.part;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(x);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_"
+    },
+    {
+      "Name": "__to_xstring",
+      "Params": [
+        {
+          "Name": "__convf",
+          "Typ": "int (*)(wchar_t *, std::size_t, const wchar_t *, __va_list_tag *)"
+        },
+        {
+          "Name": "__n",
+          "Typ": "std::size_t"
+        },
+        {
+          "Name": "__fmt",
+          "Typ": "wchar_t"
+        }
+      ],
+      "Ret": "std::basic_string\u003cwchar_t\u003e",
+      "Body": "{ std::vector\u003cGroupedItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cint, size_t\u003e __idx;\nfor (auto x : filtered) {\n        auto __key = x.part;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(x);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_"
+    },
+    {
+      "Name": "__to_chars_len",
+      "Params": [
+        {
+          "Name": "__value",
+          "Typ": "_Tp"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "m\u0026 os, const GGroup\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = "
+    },
+    {
+      "Name": "__to_chars_len",
+      "Params": [
+        {
+          "Name": "__value",
+          "Typ": "int"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "m\u0026 os, const GGroup\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = "
+    },
+    {
+      "Name": "__to_chars_len",
+      "Params": [
+        {
+          "Name": "__value",
+          "Typ": "int"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "m\u0026 os, const GGroup\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = "
+    },
+    {
+      "Name": "__to_chars_len",
+      "Params": [
+        {
+          "Name": "__value",
+          "Typ": "long long"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "m\u0026 os, const GGroup\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = "
+    },
+    {
+      "Name": "__to_chars_10_impl",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "string"
+        },
+        {
+          "Name": "__len",
+          "Typ": "int"
+        },
+        {
+          "Name": "__val",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "",
+      "Body": "{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto s : suppliers) {\nfor (auto n : nations) {\n    if((((n.name == std::string(\"A\")) \u0026\u0026 (s.id == ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)});\n    }\n}\n}\n}\nreturn __items; }());\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cint, size_t\u003e __idx;\nfor (auto x : filtered) {\n        auto __key = x.part;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(x);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n          "
+    },
+    {
+      "Name": "__to_chars_10_impl",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "string"
+        },
+        {
+          "Name": "__len",
+          "Typ": "int"
+        },
+        {
+          "Name": "__val",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "",
+      "Body": "{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto s : suppliers) {\nfor (auto n : nations) {\n    if((((n.name == std::string(\"A\")) \u0026\u0026 (s.id == ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)});\n    }\n}\n}\n}\nreturn __items; }());\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cint, size_t\u003e __idx;\nfor (auto x : filtered) {\n        auto __key = x.part;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(x);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n          "
+    },
+    {
+      "Name": "__to_chars_10_impl",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "string"
+        },
+        {
+          "Name": "__len",
+          "Typ": "int"
+        },
+        {
+          "Name": "__val",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "",
+      "Body": "{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto s : suppliers) {\nfor (auto n : nations) {\n    if((((n.name == std::string(\"A\")) \u0026\u0026 (s.id == ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)});\n    }\n}\n}\n}\nreturn __items; }());\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cint, size_t\u003e __idx;\nfor (auto x : filtered) {\n        auto __key = x.part;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(x);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n          "
+    },
+    {
+      "Name": "__to_chars_10_impl",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "string"
+        },
+        {
+          "Name": "__len",
+          "Typ": "int"
+        },
+        {
+          "Name": "__val",
+          "Typ": "long long"
+        }
+      ],
+      "Ret": "",
+      "Body": "{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto s : suppliers) {\nfor (auto n : nations) {\n    if((((n.name == std::string(\"A\")) \u0026\u0026 (s.id == ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)});\n    }\n}\n}\n}\nreturn __items; }());\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cint, size_t\u003e __idx;\nfor (auto x : filtered) {\n        auto __key = x.part;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(x);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n          "
+    },
+    {
+      "Name": "uses_allocator_construction_args",
+      "Params": [
+        {
+          "Name": "__a",
+          "Typ": "_Alloc"
+        },
+        {
+          "Name": "__args",
+          "Typ": "_Args \u0026\u0026..."
+        }
+      ],
+      "Ret": "",
+      "Body": " \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = 1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}};\nstd::vector\u003cPartsuppItem\u003e partsupp = std::vector{PartsuppItem{.part = 100, .supplier = 1, .cost = 10.0, .qty = 2}, PartsuppItem{.part = 100, .supplier = 2, .cost = 20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}};\nstd::vector\u003cFilteredItem\u003e filtered = ([]{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp"
+    },
+    {
+      "Name": "operator==",
+      "Params": [
+        {
+          "Name": "__a",
+          "Typ": "memory_resource"
+        },
+        {
+          "Name": "__b",
+          "Typ": "memory_resource"
+        }
+      ],
+      "Ret": "bool",
+      "Body": "x.end()) {\n            GGroup __g{__key, {}}"
+    },
+    {
+      "Name": "erase_if",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "basic_string\u003c_CharT, _Traits, _Alloc\u003e"
+        },
+        {
+          "Name": "__pred",
+          "Typ": "_Predicate"
+        }
+      ],
+      "Ret": "typename basic_string\u003c_CharT, _Traits, _Alloc\u003e::size_type",
+      "Body": "rt = ps.part, .value = (ps.cost * ps.qty)});\n    }\n}\n}\n}\nreturn __items; }());\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cint, size_t\u003e __idx;\nfor (auto x : filtered) {\n        auto __key = x.part;\n        auto it = __id"
+    },
+    {
+      "Name": "erase",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "basic_string\u003c_CharT, _Traits, _Alloc\u003e"
+        },
+        {
+          "Name": "__value",
+          "Typ": "_Up"
+        }
+      ],
+      "Ret": "typename basic_string\u003c_CharT, _Traits, _Alloc\u003e::size_type",
+      "Body": "push_back(x);\n        }\n}\nfor(auto \u0026__g : __groups) {\n    GGroup g = __g;\n    __items.push_back(GroupedItem{.part = g.key, .total = ([\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cdouble\u003e __items;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nreturn __items; }()); return std::accumulate(__tmp.be"
+    },
+    {
+      "Name": "operator\u0026",
+      "Params": [
+        {
+          "Name": "__a",
+          "Typ": "_Ios_Fmtflags"
+        },
+        {
+          "Name": "__b",
+          "Typ": "_Ios_Fmtflags"
+        }
+      ],
+      "Ret": "_Ios_Fmtflags",
+      "Body": "eredItem\u003e filtered = ([]{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto "
+    },
+    {
+      "Name": "operator|",
+      "Params": [
+        {
+          "Name": "__a",
+          "Typ": "_Ios_Fmtflags"
+        },
+        {
+          "Name": "__b",
+          "Typ": "_Ios_Fmtflags"
+        }
+      ],
+      "Ret": "_Ios_Fmtflags",
+      "Body": "ing(\"A\")) \u0026\u0026 (s.id == ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        _"
+    },
+    {
+      "Name": "operator^",
+      "Params": [
+        {
+          "Name": "__a",
+          "Typ": "_Ios_Fmtflags"
+        },
+        {
+          "Name": "__b",
+          "Typ": "_Ios_Fmtflags"
+        }
+      ],
+      "Ret": "_Ios_Fmtflags",
+      "Body": "__items; }());\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGrou"
+    },
+    {
+      "Name": "operator~",
+      "Params": [
+        {
+          "Name": "__a",
+          "Typ": "_Ios_Fmtflags"
+        }
+      ],
+      "Ret": "_Ios_Fmtflags",
+      "Body": "\u003e __idx;\nfor (auto x : filtered) {\n        auto "
+    },
+    {
+      "Name": "operator|=",
+      "Params": [
+        {
+          "Name": "__a",
+          "Typ": "_Ios_Fmtflags"
+        },
+        {
+          "Name": "__b",
+          "Typ": "_Ios_Fmtflags"
+        }
+      ],
+      "Ret": "_Ios_Fmtflags",
+      "Body": "          GGroup __g{__key"
+    },
+    {
+      "Name": "operator\u0026=",
+      "Params": [
+        {
+          "Name": "__a",
+          "Typ": "_Ios_Fmtflags"
+        },
+        {
+          "Name": "__b",
+          "Typ": "_Ios_Fmtflags"
+        }
+      ],
+      "Ret": "_Ios_Fmtflags",
+      "Body": "            __groups.push_"
+    },
+    {
+      "Name": "operator^=",
+      "Params": [
+        {
+          "Name": "__a",
+          "Typ": "_Ios_Fmtflags"
+        },
+        {
+          "Name": "__b",
+          "Typ": "_Ios_Fmtflags"
+        }
+      ],
+      "Ret": "_Ios_Fmtflags",
+      "Body": "  }\n}\nfor(auto \u0026__g : __gr"
+    },
+    {
+      "Name": "__copy_streambufs_eof",
+      "Params": [
+        {
+          "Name": "__sbin",
+          "Typ": "basic_streambuf\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__sbout",
+          "Typ": "basic_streambuf\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__ineof",
+          "Typ": "bool"
+        }
+      ],
+      "Ret": "streamsize",
+      "Body": "x);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_back(x);\n        }\n}\nfor(auto \u0026__g : __groups) {\n    GGroup g = __g;\n    __items.push_back(GroupedItem{.part = g.key, .total = ([\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cdouble\u003e __items;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nretur"
+    },
+    {
+      "Name": "__check_facet",
+      "Params": [
+        {
+          "Name": "__f",
+          "Typ": "_Facet"
+        }
+      ],
+      "Ret": "_Facet",
+      "Body": "\" \u003c\u003c \"'cost': \" \u003c\u003c v.cost \u003c\u003c \", \" \u003c\u003c \"'qty': \" \u003c\u003c v.qty \u003c\u003c '}'"
+    },
+    {
+      "Name": "__check_facet",
+      "Params": [
+        {
+          "Name": "__f",
+          "Typ": "std::ctype\u003cchar\u003e"
+        }
+      ],
+      "Ret": "std::ctype\u003cchar\u003e",
+      "Body": "\" \u003c\u003c \"'cost': \" \u003c\u003c v.cost \u003c\u003c \", \" \u003c\u003c \"'qty': \" \u003c\u003c v.qty \u003c\u003c '}'"
+    },
+    {
+      "Name": "__check_constructible",
+      "Params": null,
+      "Ret": "bool",
+      "Body": "std::string(\"A\")) \u0026\u0026 (s.id == ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)});\n    }\n}\n}\n}\nreturn __items; }());\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cint, size_t\u003e __idx;\nfor (auto x : filtered) {\n        auto __key = x.part;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            _"
+    },
+    {
+      "Name": "__check_constructible",
+      "Params": null,
+      "Ret": "bool",
+      "Body": "std::string(\"A\")) \u0026\u0026 (s.id == ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)});\n    }\n}\n}\n}\nreturn __items; }());\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cint, size_t\u003e __idx;\nfor (auto x : filtered) {\n        auto __key = x.part;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            _"
+    },
+    {
+      "Name": "__check_constructible",
+      "Params": null,
+      "Ret": "bool",
+      "Body": "std::string(\"A\")) \u0026\u0026 (s.id == ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)});\n    }\n}\n}\n}\nreturn __items; }());\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cint, size_t\u003e __idx;\nfor (auto x : filtered) {\n        auto __key = x.part;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            _"
+    },
+    {
+      "Name": "__check_constructible",
+      "Params": null,
+      "Ret": "bool",
+      "Body": "std::string(\"A\")) \u0026\u0026 (s.id == ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)});\n    }\n}\n}\n}\nreturn __items; }());\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cint, size_t\u003e __idx;\nfor (auto x : filtered) {\n        auto __key = x.part;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            _"
+    },
+    {
+      "Name": "__check_constructible",
+      "Params": null,
+      "Ret": "bool",
+      "Body": "std::string(\"A\")) \u0026\u0026 (s.id == ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)});\n    }\n}\n}\n}\nreturn __items; }());\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cint, size_t\u003e __idx;\nfor (auto x : filtered) {\n        auto __key = x.part;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            _"
+    },
+    {
+      "Name": "__erase_nodes_if",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        },
+        {
+          "Name": "__ucont",
+          "Typ": "_UnsafeContainer"
+        },
+        {
+          "Name": "__pred",
+          "Typ": "_Predicate"
+        }
+      ],
+      "Ret": "typename _Container::size_type",
+      "Body": " operator\u003c\u003c(std::ostream\u0026 os, const FilteredItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'value': \" \u003c\u003c v.value \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GGroup\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c "
+    },
+    {
+      "Name": "erase_if",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "map\u003c_Key,_Tp, _Compare, _Alloc\u003e"
+        },
+        {
+          "Name": "__pred",
+          "Typ": "_Predicate"
+        }
+      ],
+      "Ret": "typename map\u003c_Key, _Tp, _Compare, _Alloc\u003e::size_type",
+      "Body": "h_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_back(x);\n        }\n}\nfor(auto \u0026__g : __groups) {\n    GGroup g = __g;\n   "
+    },
+    {
+      "Name": "iota",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "_ForwardIterator"
+        },
+        {
+          "Name": "__last",
+          "Typ": "_ForwardIterator"
+        },
+        {
+          "Name": "__value",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "",
+      "Body": "o x : filtered) {\n        auto __key = x.part;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(x);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_back(x);\n        }\n}\nfor(auto \u0026__g : __groups) {\n    GGroup g "
+    },
+    {
+      "Name": "__abs_r",
+      "Params": [
+        {
+          "Name": "__val",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "_Res",
+      "Body": "dx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(x);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_back(x);\n        }\n}\nfor(auto \u0026__g : __groups) {\n    GGroup g = __g;\n    __items.push_back(GroupedItem{.part = g.key, .total = ([\u0026]{ auto __tmp = ([\u0026]"
+    },
+    {
+      "Name": "__distance_fw",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "_Iterator"
+        },
+        {
+          "Name": "__last",
+          "Typ": "_Iterator"
+        },
+        {
+          "Name": "",
+          "Typ": "std::input_iterator_tag"
+        }
+      ],
+      "Ret": "typename std::iterator_traits\u003c_Iterator\u003e::difference_type",
+      "Body": " = ([]{ std::vector\u003cFilteredItem\u003e __"
+    },
+    {
+      "Name": "__distance_fw",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "_Iterator"
+        },
+        {
+          "Name": "__last",
+          "Typ": "_Iterator"
+        },
+        {
+          "Name": "",
+          "Typ": "std::forward_iterator_tag"
+        }
+      ],
+      "Ret": "typename std::iterator_traits\u003c_Iterator\u003e::difference_type",
+      "Body": "ush_back(FilteredItem{.part = ps.part, .v"
+    },
+    {
+      "Name": "__distance_fw",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "_Iterator"
+        },
+        {
+          "Name": "__last",
+          "Typ": "_Iterator"
+        }
+      ],
+      "Ret": "typename std::iterator_traits\u003c_Iterator\u003e::difference_type",
+      "Body": "ups;\nstd::unordered_map\u003cint, size_t\u003e __idx;\nfor (auto x : filtered) {\n        auto"
+    },
+    {
+      "Name": "erase_if",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "map\u003c_Key,_Tp, _Hash, _CPred, _Alloc\u003e"
+        },
+        {
+          "Name": "__pred",
+          "Typ": "_Predicate"
+        }
+      ],
+      "Ret": "typename unordered_map\u003c_Key, _Tp, _Hash, _CPred, _Alloc\u003e::size_type",
+      "Body": "supplier = 1, .cost = 5.0, .qty = 3}};\nstd::vector\u003cFilteredItem\u003e filtered = ([]{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto s : suppl"
+    },
+    {
+      "Name": "erase_if",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "unordered_multimap\u003c_Key, _Tp, _Hash, _CPred, _Alloc\u003e"
+        },
+        {
+          "Name": "__pred",
+          "Typ": "_Predicate"
+        }
+      ],
+      "Ret": "typename unordered_multimap\u003c_Key, _Tp, _Hash, _CPred, _Alloc\u003e::size_type",
+      "Body": "ems;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cint, size_t\u003e __idx;\nfor (auto x : filtered) {\n        auto __key = x.part;\n        auto it = __idx.find(__key);\n "
+    },
+    {
+      "Name": "__do_str_codecvt",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "_InChar"
+        },
+        {
+          "Name": "__last",
+          "Typ": "_InChar"
+        },
+        {
+          "Name": "__outstr",
+          "Typ": "_OutStr"
+        },
+        {
+          "Name": "__cvt",
+          "Typ": "_Codecvt"
+        },
+        {
+          "Name": "__state",
+          "Typ": "_State"
+        },
+        {
+          "Name": "__count",
+          "Typ": "int"
+        },
+        {
+          "Name": "__fn",
+          "Typ": "_Fn"
+        }
+      ],
+      "Ret": "bool",
+      "Body": " os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GGroup\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = 1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}};\nstd::vector\u003cPartsuppItem\u003e partsupp = std::vector{PartsuppItem{.part = 100, .supplier = 1, .cost = 10.0, .qty = 2}, PartsuppItem{.part = 100, .supplier = 2, .cost = 20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}};\nstd::vector\u003cFilteredItem\u003e filtered = ([]{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto s : suppliers) {\nfor (auto n : nations) {\n    if((((n.name == std::string(\"A\")) \u0026\u0026 (s.id == ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)});\n    }\n}\n}\n}\nreturn __items; }());\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\n"
+    },
+    {
+      "Name": "__str_codecvt_in",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "string"
+        },
+        {
+          "Name": "__last",
+          "Typ": "string"
+        },
+        {
+          "Name": "__outstr",
+          "Typ": "basic_string\u003c_CharT, _Traits, _Alloc\u003e"
+        },
+        {
+          "Name": "__cvt",
+          "Typ": "codecvt\u003c_CharT, char, _State\u003e"
+        },
+        {
+          "Name": "__state",
+          "Typ": "_State"
+        },
+        {
+          "Name": "__count",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "bool",
+      "Body": " {\n            __groups[it-\u003esecond].items.push_back(x);\n        }\n}\nfor(auto \u0026__g : __groups) {\n    GGroup g = __g;\n    __items.push_back(GroupedItem{.part = g.key, .total = ([\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cdouble\u003e __items;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nreturn __items; }()); return std::accumulate(__tmp.begin(), __tmp.end(), 0.0);"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "__os",
+          "Typ": "std::basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__str",
+          "Typ": "_Quoted_string\u003cconst _CharT *, _CharT\u003e"
+        }
+      ],
+      "Ret": "std::basic_ostream\u003c_CharT, _Traits\u003e",
+      "Body": "iers) {\nfor (auto n : nations) {\n    if((((n.name == std::string(\"A\")) \u0026\u0026 (s.id == ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)});\n    }\n}\n}\n}\nreturn __items; }());\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cint, size_t\u003e __idx;\nfor (auto x : filtered) {\n      "
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "__os",
+          "Typ": "std::basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__str",
+          "Typ": "_Quoted_string\u003c_String, _CharT\u003e"
+        }
+      ],
+      "Ret": "std::basic_ostream\u003c_CharT, _Traits\u003e",
+      "Body": "  }\n}\nfor(auto \u0026__g : __groups) {\n    GGroup g = __g;\n    __items.push_back(GroupedItem{.part = g.key, .total = ([\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cdouble\u003e __items;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nreturn __items; }()); return std::accumulate(__tmp.begin(), __tmp.end(), 0.0); }())});\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c grouped \u003c\u003c std::endl;\n    ret"
+    },
+    {
+      "Name": "resetiosflags",
+      "Params": [
+        {
+          "Name": "__mask",
+          "Typ": "ios_base::fmtflags"
+        }
+      ],
+      "Ret": "_Resetiosflags",
+      "Body": " v.items \u003c\u003c '}';\n    "
+    },
+    {
+      "Name": "operator\u003e\u003e",
+      "Params": [
+        {
+          "Name": "__is",
+          "Typ": "basic_istream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_Resetiosflags"
+        }
+      ],
+      "Ret": "basic_istream\u003c_CharT, _Traits\u003e",
+      "Body": "rn os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, "
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "__os",
+          "Typ": "basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_Resetiosflags"
+        }
+      ],
+      "Ret": "basic_ostream\u003c_CharT, _Traits\u003e",
+      "Body": "iersItem{.id = 2, .nation = 2}};\nstd::vector\u003cPartsuppItem\u003e partsupp = std::vec"
+    },
+    {
+      "Name": "setiosflags",
+      "Params": [
+        {
+          "Name": "__mask",
+          "Typ": "ios_base::fmtflags"
+        }
+      ],
+      "Ret": "_Setiosflags",
+      "Body": "to s : suppliers) {\nf"
+    },
+    {
+      "Name": "operator\u003e\u003e",
+      "Params": [
+        {
+          "Name": "__is",
+          "Typ": "basic_istream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_Setiosflags"
+        }
+      ],
+      "Ret": "basic_istream\u003c_CharT, _Traits\u003e",
+      "Body": "t, .value = (ps.cost * ps.qty)});\n    }\n}\n}\n}\nreturn __"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "__os",
+          "Typ": "basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_Setiosflags"
+        }
+      ],
+      "Ret": "basic_ostream\u003c_CharT, _Traits\u003e",
+      "Body": " : filtered) {\n        auto __key = x.part;\n        aut"
+    },
+    {
+      "Name": "setbase",
+      "Params": [
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "_Setbase",
+      "Body": "otal = ([\u0026]{ auto __t"
+    },
+    {
+      "Name": "__throw_bad_optional_access",
+      "Params": null,
+      "Ret": "",
+      "Body": ":vector\u003cGroupedItem\u003e __items;\nstd::vector\u003cGGroup\u003e "
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "os",
+          "Typ": "std::ostream"
+        },
+        {
+          "Name": "v",
+          "Typ": "std::optional\u003cT\u003e"
+        }
+      ],
+      "Ret": "std::ostream",
+      "Body": "{\n    if(v) os \u003c\u003c *v; else os \u003c\u003c \"None\";\n    return os;\n"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "os",
+          "Typ": "std::ostream"
+        },
+        {
+          "Name": "v",
+          "Typ": "list\u003cT\u003e"
+        }
+      ],
+      "Ret": "std::ostream",
+      "Body": "{\n    os \u003c\u003c '[';\n    bool first = true;\n    for(const auto\u0026 x : v) { if(!first) os \u003c\u003c \", \"; first = false; os \u003c\u003c x; }\n    os \u003c\u003c ']';\n    return os;\n"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "os",
+          "Typ": "std::ostream"
+        },
+        {
+          "Name": "v",
+          "Typ": "list\u003cFilteredItem\u003e"
+        }
+      ],
+      "Ret": "std::ostream",
+      "Body": "{\n    os \u003c\u003c '[';\n    bool first = true;\n    for(const auto\u0026 x : v) { if(!first) os \u003c\u003c \", \"; first = false; os \u003c\u003c x; }\n    os \u003c\u003c ']';\n    return os;\n"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "os",
+          "Typ": "std::ostream"
+        },
+        {
+          "Name": "v",
+          "Typ": "list\u003cGroupedItem\u003e"
+        }
+      ],
+      "Ret": "std::ostream",
+      "Body": "{\n    os \u003c\u003c '[';\n    bool first = true;\n    for(const auto\u0026 x : v) { if(!first) os \u003c\u003c \", \"; first = false; os \u003c\u003c x; }\n    os \u003c\u003c ']';\n    return os;\n"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "os",
+          "Typ": "std::ostream"
+        },
+        {
+          "Name": "v",
+          "Typ": "NationsItem"
+        }
+      ],
+      "Ret": "std::ostream",
+      "Body": "{\n    os \u003c\u003c '{' \u003c\u003c \"'id': \" \u003c\u003c v.id \u003c\u003c \", \" \u003c\u003c \"'name': '\" \u003c\u003c v.name \u003c\u003c \"'\" \u003c\u003c '}';\n    return os;\n"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "os",
+          "Typ": "std::ostream"
+        },
+        {
+          "Name": "v",
+          "Typ": "SuppliersItem"
+        }
+      ],
+      "Ret": "std::ostream",
+      "Body": "{\n    os \u003c\u003c '{' \u003c\u003c \"'id': \" \u003c\u003c v.id \u003c\u003c \", \" \u003c\u003c \"'nation': \" \u003c\u003c v.nation \u003c\u003c '}';\n    return os;\n"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "os",
+          "Typ": "std::ostream"
+        },
+        {
+          "Name": "v",
+          "Typ": "PartsuppItem"
+        }
+      ],
+      "Ret": "std::ostream",
+      "Body": "{\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'supplier': \" \u003c\u003c v.supplier \u003c\u003c \", \" \u003c\u003c \"'cost': \" \u003c\u003c v.cost \u003c\u003c \", \" \u003c\u003c \"'qty': \" \u003c\u003c v.qty \u003c\u003c '}';\n    return os;\n"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "os",
+          "Typ": "std::ostream"
+        },
+        {
+          "Name": "v",
+          "Typ": "FilteredItem"
+        }
+      ],
+      "Ret": "std::ostream",
+      "Body": "{\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'value': \" \u003c\u003c v.value \u003c\u003c '}';\n    return os;\n"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "os",
+          "Typ": "std::ostream"
+        },
+        {
+          "Name": "v",
+          "Typ": "GGroup"
+        }
+      ],
+      "Ret": "std::ostream",
+      "Body": "{\n    os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "os",
+          "Typ": "std::ostream"
+        },
+        {
+          "Name": "v",
+          "Typ": "GroupedItem"
+        }
+      ],
+      "Ret": "std::ostream",
+      "Body": "{\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n"
+    },
+    {
+      "Name": "main",
+      "Params": null,
+      "Ret": "int",
+      "Body": "{\n    std::cout \u003c\u003c grouped \u003c\u003c std::endl;\n    return 0;\n"
+    }
+  ],
+  "enums": [
+    {
+      "Name": "_Ord",
+      "Variants": [
+        "equivalent",
+        "less",
+        "greater"
+      ]
+    },
+    {
+      "Name": "_Ncmp",
+      "Variants": [
+        "_Unordered"
+      ]
+    },
+    {
+      "Name": "_Ios_Fmtflags",
+      "Variants": [
+        "_S_boolalpha",
+        "_S_dec",
+        "_S_fixed",
+        "_S_hex",
+        "_S_internal",
+        "_S_left",
+        "_S_oct",
+        "_S_right",
+        "_S_scientific",
+        "_S_showbase",
+        "_S_showpoint",
+        "_S_showpos",
+        "_S_skipws",
+        "_S_unitbuf",
+        "_S_uppercase",
+        "_S_adjustfield",
+        "_S_basefield",
+        "_S_floatfield",
+        "_S_ios_fmtflags_end",
+        "_S_ios_fmtflags_max",
+        "_S_ios_fmtflags_min"
+      ]
+    },
+    {
+      "Name": "_Ios_Openmode",
+      "Variants": [
+        "_S_app",
+        "_S_ate",
+        "_S_bin",
+        "_S_in",
+        "_S_out",
+        "_S_trunc",
+        "_S_noreplace",
+        "_S_ios_openmode_end",
+        "_S_ios_openmode_max",
+        "_S_ios_openmode_min"
+      ]
+    },
+    {
+      "Name": "_Rb_tree_color",
+      "Variants": [
+        "_S_red",
+        "_S_black"
+      ]
+    },
+    {
+      "Name": "dateorder",
+      "Variants": [
+        "no_order",
+        "dmy",
+        "mdy",
+        "ymd",
+        "ydm"
+      ]
+    },
+    {
+      "Name": "result",
+      "Variants": [
+        "ok",
+        "partial",
+        "error",
+        "noconv"
+      ]
+    },
+    {
+      "Name": "_Construct",
+      "Variants": [
+        "_Token"
+      ]
+    }
+  ],
+  "structs": [
+    {
+      "Name": "NationsItem",
+      "Fields": [
+        {
+          "Name": "id",
+          "Typ": "int"
+        },
+        {
+          "Name": "name",
+          "Typ": "string"
+        }
+      ]
+    },
+    {
+      "Name": "SuppliersItem",
+      "Fields": [
+        {
+          "Name": "id",
+          "Typ": "int"
+        },
+        {
+          "Name": "nation",
+          "Typ": "int"
+        }
+      ]
+    },
+    {
+      "Name": "PartsuppItem",
+      "Fields": [
+        {
+          "Name": "part",
+          "Typ": "int"
+        },
+        {
+          "Name": "supplier",
+          "Typ": "int"
+        },
+        {
+          "Name": "cost",
+          "Typ": "float"
+        },
+        {
+          "Name": "qty",
+          "Typ": "int"
+        }
+      ]
+    },
+    {
+      "Name": "FilteredItem",
+      "Fields": [
+        {
+          "Name": "part",
+          "Typ": "int"
+        },
+        {
+          "Name": "value",
+          "Typ": "float"
+        }
+      ]
+    },
+    {
+      "Name": "GGroup",
+      "Fields": [
+        {
+          "Name": "key",
+          "Typ": "int"
+        },
+        {
+          "Name": "items",
+          "Typ": "list\u003cFilteredItem\u003e"
+        }
+      ]
+    },
+    {
+      "Name": "GroupedItem",
+      "Fields": [
+        {
+          "Name": "part",
+          "Typ": "int"
+        },
+        {
+          "Name": "total",
+          "Typ": "float"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "Name": "std::vector\u003cFilter",
+      "Typ": "3}};",
+      "Value": ""
+    },
+    {
+      "Name": "o",
+      "Typ": "s; } std::ostream\u0026 operator\u003c\u003c(std::ostream",
+      "Value": ""
+    },
+    {
+      "Name": "o",
+      "Typ": "s; } std::ostream\u0026 operator\u003c\u003c(std::ostream",
+      "Value": ""
+    },
+    {
+      "Name": "operator\u003c\u003c(std::os",
+      "Typ": "s; } std::ostream",
+      "Value": ""
+    },
+    {
+      "Name": "operator\u003c\u003c(std::os",
+      "Typ": "s; } std::ostream",
+      "Value": ""
+    },
+    {
+      "Name": "return",
+      "Typ": "\u003c\u003c grouped \u003c\u003c std::endl;",
+      "Value": ""
+    },
+    {
+      "Name": "suppliers",
+      "Typ": "ctor\u003cSuppliersItem\u003e",
+      "Value": "std::vector{SuppliersItem{.id = 1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}}"
+    },
+    {
+      "Name": "Grou",
+      "Typ": "struct",
+      "Value": ""
+    },
+    {
+      "Name": ".qty",
+      "Typ": "",
+      "Value": "2}, PartsuppItem{.part = 100, .supplier"
+    },
+    {
+      "Name": "t",
+      "Typ": "",
+      "Value": "20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5"
+    },
+    {
+      "Name": "if((((n.name",
+      "Typ": "(auto ps : partsupp) { for (auto s : suppliers) { for (auto n : nations) {",
+      "Value": "= std::string(\"A\")) \u0026\u0026 (s.id == ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)}"
+    },
+    {
+      "Name": "(s.id",
+      "Typ": "",
+      "Value": "= ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)}"
+    },
+    {
+      "Name": ".qty",
+      "Typ": "",
+      "Value": "2}, PartsuppItem{.part = 100, .supplier"
+    },
+    {
+      "Name": "t",
+      "Typ": "",
+      "Value": "20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5"
+    },
+    {
+      "Name": "if((((n.name",
+      "Typ": "(auto ps : partsupp) { for (auto s : suppliers) { for (auto n : nations) {",
+      "Value": "= std::string(\"A\")) \u0026\u0026 (s.id == ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)}"
+    },
+    {
+      "Name": "(s.id",
+      "Typ": "",
+      "Value": "= ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)}"
+    },
+    {
+      "Name": ".qty",
+      "Typ": "",
+      "Value": "2}, PartsuppItem{.part = 100, .supplier"
+    },
+    {
+      "Name": "t",
+      "Typ": "",
+      "Value": "20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5"
+    },
+    {
+      "Name": "if((((n.name",
+      "Typ": "(auto ps : partsupp) { for (auto s : suppliers) { for (auto n : nations) {",
+      "Value": "= std::string(\"A\")) \u0026\u0026 (s.id == ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)}"
+    },
+    {
+      "Name": "(s.id",
+      "Typ": "",
+      "Value": "= ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)}"
+    },
+    {
+      "Name": ".qty",
+      "Typ": "",
+      "Value": "2}, PartsuppItem{.part = 100, .supplier"
+    },
+    {
+      "Name": "t",
+      "Typ": "",
+      "Value": "20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5"
+    },
+    {
+      "Name": "if((((n.name",
+      "Typ": "(auto ps : partsupp) { for (auto s : suppliers) { for (auto n : nations) {",
+      "Value": "= std::string(\"A\")) \u0026\u0026 (s.id == ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)}"
+    },
+    {
+      "Name": "(s.id",
+      "Typ": "",
+      "Value": "= ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)}"
+    },
+    {
+      "Name": ".qty",
+      "Typ": "",
+      "Value": "2}, PartsuppItem{.part = 100, .supplier"
+    },
+    {
+      "Name": "t",
+      "Typ": "",
+      "Value": "20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5"
+    },
+    {
+      "Name": "if((((n.name",
+      "Typ": "(auto ps : partsupp) { for (auto s : suppliers) { for (auto n : nations) {",
+      "Value": "= std::string(\"A\")) \u0026\u0026 (s.id == ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)}"
+    },
+    {
+      "Name": "(s.id",
+      "Typ": "",
+      "Value": "= ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)}"
+    },
+    {
+      "Name": ".qty",
+      "Typ": "",
+      "Value": "2}, PartsuppItem{.part = 100, .supplier"
+    },
+    {
+      "Name": "t",
+      "Typ": "",
+      "Value": "20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5"
+    },
+    {
+      "Name": "if((((n.name",
+      "Typ": "(auto ps : partsupp) { for (auto s : suppliers) { for (auto n : nations) {",
+      "Value": "= std::string(\"A\")) \u0026\u0026 (s.id == ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)}"
+    },
+    {
+      "Name": "(s.id",
+      "Typ": "",
+      "Value": "= ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)}"
+    },
+    {
+      "Name": ".qty",
+      "Typ": "",
+      "Value": "2}, PartsuppItem{.part = 100, .supplier"
+    },
+    {
+      "Name": "t",
+      "Typ": "",
+      "Value": "20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5"
+    },
+    {
+      "Name": "if((((n.name",
+      "Typ": "(auto ps : partsupp) { for (auto s : suppliers) { for (auto n : nations) {",
+      "Value": "= std::string(\"A\")) \u0026\u0026 (s.id == ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)}"
+    },
+    {
+      "Name": "(s.id",
+      "Typ": "",
+      "Value": "= ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)}"
+    },
+    {
+      "Name": ".qty",
+      "Typ": "",
+      "Value": "2}, PartsuppItem{.part = 100, .supplier"
+    },
+    {
+      "Name": "t",
+      "Typ": "",
+      "Value": "20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5"
+    },
+    {
+      "Name": "if((((n.name",
+      "Typ": "(auto ps : partsupp) { for (auto s : suppliers) { for (auto n : nations) {",
+      "Value": "= std::string(\"A\")) \u0026\u0026 (s.id == ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)}"
+    },
+    {
+      "Name": "(s.id",
+      "Typ": "",
+      "Value": "= ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)}"
+    },
+    {
+      "Name": "k(FilteredItem{.part",
+      "Typ": "",
+      "Value": "ps.part, .value = (ps.cost * ps.qty)});\n    }\n}\n}\n}\nre"
+    },
+    {
+      "Name": "grouped",
+      "Typ": "ms; }()); std::vector\u003cGroupedItem\u003e",
+      "Value": "[]{ std::vector\u003cGroupedItem\u003e __"
+    },
+    {
+      "Name": "(auto",
+      "Typ": "::vector\u003cGGroup\u003e __groups; std::unordered_map\u003cint, size_t\u003e __idx; for",
+      "Value": ""
+    },
+    {
+      "Name": "__key",
+      "Typ": "",
+      "Value": "x.part;\n        auto it = __idx.find(__key"
+    },
+    {
+      "Name": "(auto",
+      "Typ": "::unordered_map\u003cint, size_t\u003e __idx; for",
+      "Value": ""
+    },
+    {
+      "Name": "it",
+      "Typ": "",
+      "Value": "__idx.find(__key"
+    },
+    {
+      "Name": "grouped",
+      "Typ": "tem\u003e",
+      "Value": "[]{ std::vector\u003cGroupedItem\u003e __items"
+    },
+    {
+      "Name": "(auto",
+      "Typ": "::unordered_map\u003cint, size_t\u003e __idx; for",
+      "Value": ""
+    },
+    {
+      "Name": "it",
+      "Typ": "",
+      "Value": "__idx.find(__key"
+    },
+    {
+      "Name": "grouped",
+      "Typ": "tem\u003e",
+      "Value": "[]{ std::vector\u003cGroupedItem\u003e __items"
+    },
+    {
+      "Name": "(auto",
+      "Typ": "::unordered_map\u003cint, size_t\u003e __idx; for",
+      "Value": ""
+    },
+    {
+      "Name": "it",
+      "Typ": "",
+      "Value": "__idx.find(__key"
+    },
+    {
+      "Name": "grouped",
+      "Typ": "tem\u003e",
+      "Value": "[]{ std::vector\u003cGroupedItem\u003e __items"
+    },
+    {
+      "Name": "(auto",
+      "Typ": "::unordered_map\u003cint, size_t\u003e __idx; for",
+      "Value": ""
+    },
+    {
+      "Name": "it",
+      "Typ": "",
+      "Value": "__idx.find(__key"
+    },
+    {
+      "Name": "grouped",
+      "Typ": "tem\u003e",
+      "Value": "[]{ std::vector\u003cGroupedItem\u003e __items"
+    },
+    {
+      "Name": "(auto",
+      "Typ": "::unordered_map\u003cint, size_t\u003e __idx; for",
+      "Value": ""
+    },
+    {
+      "Name": "it",
+      "Typ": "",
+      "Value": "__idx.find(__key"
+    },
+    {
+      "Name": "grouped",
+      "Typ": "tem\u003e",
+      "Value": "[]{ std::vector\u003cGroupedItem\u003e __items"
+    },
+    {
+      "Name": "(auto",
+      "Typ": "::unordered_map\u003cint, size_t\u003e __idx; for",
+      "Value": ""
+    },
+    {
+      "Name": "it",
+      "Typ": "",
+      "Value": "__idx.find(__key"
+    },
+    {
+      "Name": "grouped",
+      "Typ": "tem\u003e",
+      "Value": "[]{ std::vector\u003cGroupedItem\u003e __items"
+    },
+    {
+      "Name": ".value",
+      "Typ": ",",
+      "Value": "ps.cost * ps.qty)});\n    }\n}\n}\n}\nre"
+    },
+    {
+      "Name": "(auto",
+      "Typ": "::unordered_map\u003cint, size_t\u003e __idx; for",
+      "Value": ""
+    },
+    {
+      "Name": "it",
+      "Typ": "",
+      "Value": "__idx.find(__key"
+    },
+    {
+      "Name": "grouped",
+      "Typ": "tem\u003e",
+      "Value": "[]{ std::vector\u003cGroupedItem\u003e __items"
+    },
+    {
+      "Name": "(auto",
+      "Typ": "::unordered_map\u003cint, size_t\u003e __idx; for",
+      "Value": ""
+    },
+    {
+      "Name": "it",
+      "Typ": "",
+      "Value": "__idx.find(__key"
+    },
+    {
+      "Name": "grouped",
+      "Typ": "tem\u003e",
+      "Value": "[]{ std::vector\u003cGroupedItem\u003e __items"
+    },
+    {
+      "Name": ".value",
+      "Typ": ",",
+      "Value": "ps.cost * ps.qty)});\n    }\n}\n}\n}\nre"
+    },
+    {
+      "Name": ".value",
+      "Typ": ",",
+      "Value": "ps.cost * ps.qty)});\n    }\n}\n}\n}\nre"
+    },
+    {
+      "Name": ".cost",
+      "Typ": "",
+      "Value": "10.0, .qty = 2}, PartsuppItem{.part = 100, .supp"
+    },
+    {
+      "Name": "first",
+      "Typ": "// Generated by Mochi transpiler v0.10.34 on 2025-07-21 22:59:36 GMT+7 #include \u003ciostream\u003e #include \u003cstring\u003e #include \u003cvector\u003e #include \u003cmap\u003e #include \u003cnumeric\u003e #include \u003cunordered_map\u003e #include \u003csstream\u003e #include \u003ciomanip\u003e #include \u003coptional\u003e template\u003ctypename T\u003e std::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const std::optional\u003cT\u003e\u0026 v) { if(v) os \u003c\u003c *v; else os \u003c\u003c \"None\"; return os; } template\u003ctypename T\u003e std::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const std::vector\u003cT\u003e\u0026 v) { os \u003c\u003c '['; bool",
+      "Value": "true;\n    for(const auto\u0026 x : v) { if(!first) os \u003c\u003c \", \"; first = false; os \u003c\u003c x; }\n    os \u003c\u003c ']';\n    return os;\n}\n\nstruct NationsItem {\n    int id;\n    std::string name;\n};\n\nstruct SuppliersItem {\n    int id;\n    int nation;\n};\n\nstruct PartsuppItem {\n    int part;\n    int supplier;\n    double cost;\n    int qty;\n};\n\nstruct FilteredItem {\n    int part;\n    double value;\n};\n\nstruct GGroup {\n    int key;\n    std::vector\u003cFilteredItem\u003e items;\n    auto begin() { return items.begin(); }\n    auto end() { return items.end(); }\n    size_t size() const { return items.size(); }\n};\n\nstruct GroupedItem {\n    int part;\n    double total;\n};\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const NationsItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'id': \" \u003c\u003c v.id \u003c\u003c \", \" \u003c\u003c \"'name': '\" \u003c\u003c v.name \u003c\u003c \"'\" \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const SuppliersItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'id': \" \u003c\u003c v.id \u003c\u003c \", \" \u003c\u003c \"'nation': \" \u003c\u003c v.nation \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const PartsuppItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'supplier': \" \u003c\u003c v.supplier \u003c\u003c \", \" \u003c\u003c \"'cost': \" \u003c\u003c v.cost \u003c\u003c \", \" \u003c\u003c \"'qty': \" \u003c\u003c v.qty \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const FilteredItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'value': \" \u003c\u003c v.value \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GGroup\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = 1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}};\nstd::vector\u003cPartsuppItem\u003e partsupp = std::vector{PartsuppItem{.part = 100, .supplier = 1, .cost = 10.0, .qty = 2}, PartsuppItem{.part = 100, .supplier = 2, .cost = 20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}};\nstd::vector\u003cFilteredItem\u003e filtered = ([]{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto s : suppliers) {\nfor (auto n : nations) {\n    if((((n.name == std::string(\"A\")) \u0026\u0026 (s.id == ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)});\n    }\n}\n}\n}\nreturn __items; }());\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups"
+    },
+    {
+      "Name": "ationsItem{.id",
+      "Typ": "",
+      "Value": "2, .name = std::string(\"B\")}}"
+    },
+    {
+      "Name": "'}'",
+      "Typ": "std::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const FilteredItem\u0026 v) { os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'value': \" \u003c\u003c v.value \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "\u003c",
+      "Typ": "'}'; return os; } std::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GGroup\u0026 v) { os \u003c\u003c '{'",
+      "Value": ""
+    },
+    {
+      "Name": "{",
+      "Typ": ".items \u003c\u003c '}'; return os; } std::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v)",
+      "Value": ""
+    },
+    {
+      "Name": "nations",
+      "Typ": "\" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}'; return os; } std::vector\u003cNationsItem\u003e",
+      "Value": "std::vect"
+    },
+    {
+      "Name": "NationsItem{.id",
+      "Typ": "\"A\")},",
+      "Value": "2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::ve"
+    },
+    {
+      "Name": "sItem{.id",
+      "Typ": "",
+      "Value": "2, .nation = 2}};\nstd::vector\u003cPartsuppItem\u003e partsupp = std::vector{PartsuppItem{.part = 100, .supplier = 1, .cost = 10.0, .qty = 2}, PartsuppItem{.part = 100, .supplier = 2, .cost = 20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}}"
+    },
+    {
+      "Name": "Item{.part",
+      "Typ": "",
+      "Value": "100, .supplier = 2, .cost = 20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}}"
+    },
+    {
+      "Name": "filtered",
+      "Typ": "m\u003e",
+      "Value": "[]{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto s : suppliers) {\nfor (auto n : nations) {\n    if((((n.name == std::string(\"A\")) \u0026\u0026 (s.id == ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)}"
+    },
+    {
+      "Name": "me",
+      "Typ": "",
+      "Value": "= std::string(\"A\")) \u0026\u0026 (s.id == ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)}"
+    },
+    {
+      "Name": "grouped",
+      "Typ": "t * ps.qty)}); } } } } return __items; }()); std::vector\u003cGroupedItem\u003e",
+      "Value": "[]{ std::vector\u003c"
+    },
+    {
+      "Name": "__key",
+      "Typ": "s; std::unordered_map\u003cint, size_t\u003e __idx; for (auto x : filtered) { auto",
+      "Value": "x.part;\n        auto it = __idx.find(__key"
+    },
+    {
+      "Name": "__idx[__key]",
+      "Typ": "GGroup __g{__key, {}}; __g.items.push_back(x);",
+      "Value": "__groups.siz"
+    },
+    {
+      "Name": "g",
+      "Typ": "__groups[it-\u003esecond].items.push_back(x); } } for(auto \u0026__g : __groups) { GGroup",
+      "Value": "__g"
+    },
+    {
+      "Name": "__items.push_back(GroupedItem{.part",
+      "Typ": "",
+      "Value": "g.key, .total = ([\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cdouble\u003e __items"
+    },
+    {
+      "Name": ".total",
+      "Typ": ",",
+      "Value": "[\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cdouble\u003e __items"
+    },
+    {
+      "Name": "__items.push_back(r.value)",
+      "Typ": "ble\u003e __items; for (auto r : g) {",
+      "Value": ""
+    },
+    {
+      "Name": "}())",
+      "Typ": "_back(r.value); } return __items;",
+      "Value": ""
+    },
+    {
+      "Name": "0.",
+      "Typ": "n std::accumulate(__tmp.begin(), __tmp.end(),",
+      "Value": ""
+    },
+    {
+      "Name": "std::co",
+      "Typ": "())}); } return __items; }()); int main() {",
+      "Value": ""
+    },
+    {
+      "Name": "'",
+      "Typ": "\u003c\u003c v.cost \u003c\u003c \", \" \u003c\u003c \"'qty': \" \u003c\u003c v.qty \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "FilteredItem",
+      "Typ": "perator\u003c\u003c(std::ostream\u0026 os, const",
+      "Value": ""
+    },
+    {
+      "Name": "std:",
+      "Typ": "__items; }()); return",
+      "Value": ""
+    },
+    {
+      "Name": "std:",
+      "Typ": "__items; }()); return",
+      "Value": ""
+    },
+    {
+      "Name": "std:",
+      "Typ": "__items; }()); return",
+      "Value": ""
+    },
+    {
+      "Name": "std:",
+      "Typ": "__items; }()); return",
+      "Value": ""
+    },
+    {
+      "Name": "std:",
+      "Typ": "__items; }()); return",
+      "Value": ""
+    },
+    {
+      "Name": "__it",
+      "Typ": "__g;",
+      "Value": ""
+    },
+    {
+      "Name": ".total",
+      "Typ": "y,",
+      "Value": ""
+    },
+    {
+      "Name": "__items",
+      "Typ": "le\u003e",
+      "Value": ""
+    },
+    {
+      "Name": "std",
+      "Typ": "rn os; }",
+      "Value": ""
+    },
+    {
+      "Name": "os",
+      "Typ": "::ostream",
+      "Value": ""
+    },
+    {
+      "Name": "std::ostrea",
+      "Typ": "cost': \" \u003c\u003c v.cost \u003c\u003c \", \" \u003c\u003c \"'qty': \" \u003c\u003c v.qty \u003c\u003c '}'; return os; }",
+      "Value": ""
+    },
+    {
+      "Name": "v.ke",
+      "Typ": "t': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'value': \" \u003c\u003c v.value \u003c\u003c '}'; return os; } std::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GGroup\u0026 v) { os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "'}'",
+      "Typ": "urn os; } std::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GGroup\u0026 v) { os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "first",
+      "Typ": "// Generated by Mochi transpiler v0.10.34 on 2025-07-21 22:59:36 GMT+7 #include \u003ciostream\u003e #include \u003cstring\u003e #include \u003cvector\u003e #include \u003cmap\u003e #include \u003cnumeric\u003e #include \u003cunordered_map\u003e #include \u003csstream\u003e #include \u003ciomanip\u003e #include \u003coptional\u003e template\u003ctypename T\u003e std::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const std::optional\u003cT\u003e\u0026 v) { if(v) os \u003c\u003c *v; else os \u003c\u003c \"None\"; return os; } template\u003ctypename T\u003e std::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const std::vector\u003cT\u003e\u0026 v) { os \u003c\u003c '['; bool",
+      "Value": "true;\n    for(const auto\u0026 x : v) { if(!first) os \u003c\u003c \", \"; first = false; os \u003c\u003c x; }\n    os \u003c\u003c ']';\n    return os;\n}\n\nstruct NationsItem {\n    int id;\n    std::string name;\n};\n\nstruct SuppliersItem {\n    int id;\n    int nation;\n};\n\nstruct PartsuppItem {\n    int part;\n    int supplier;\n    double cost;\n    int qty;\n};\n\nstruct FilteredItem {\n    int part;\n    double value;\n};\n\nstruct GGroup {\n    int key;\n    std::vector\u003cFilteredItem\u003e items;\n    auto begin() { return items.begin(); }\n    auto end() { return items.end(); }\n    size_t size() const { return items.size(); }\n};\n\nstruct GroupedItem {\n    int part;\n    double total;\n};\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const NationsItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'id': \" \u003c\u003c v.id \u003c\u003c \", \" \u003c\u003c \"'name': '\" \u003c\u003c v.name \u003c\u003c \"'\" \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const SuppliersItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'id': \" \u003c\u003c v.id \u003c\u003c \", \" \u003c\u003c \"'nation': \" \u003c\u003c v.nation \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const PartsuppItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'supplier': \" \u003c\u003c v.supplier \u003c\u003c \", \" \u003c\u003c \"'cost': \" \u003c\u003c v.cost \u003c\u003c \", \" \u003c\u003c \"'qty': \" \u003c\u003c v.qty \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const FilteredItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'value': \" \u003c\u003c v.value \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GGroup\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}'"
+    },
+    {
+      "Name": "'}'",
+      "Typ": "r\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) { os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "nations",
+      "Typ": "otal \u003c\u003c '}'; return os; } std::vector\u003cNationsItem\u003e",
+      "Value": "std::vector{NationsI"
+    },
+    {
+      "Name": "\"",
+      "Typ": "': \" \u003c\u003c v.cost \u003c\u003c \", \" \u003c\u003c \"'qty':",
+      "Value": ""
+    },
+    {
+      "Name": "std::ostr",
+      "Typ": ".value \u003c\u003c '}'; return os; }",
+      "Value": ""
+    },
+    {
+      "Name": "GGr",
+      "Typ": "erator\u003c\u003c(std::ostream\u0026 os, const",
+      "Value": ""
+    },
+    {
+      "Name": "'}'",
+      "Typ": "{ os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "return",
+      "Typ": "y \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';",
+      "Value": ""
+    },
+    {
+      "Name": "}",
+      "Typ": "return os;",
+      "Value": ""
+    },
+    {
+      "Name": "Gro",
+      "Typ": "\u0026 os, const",
+      "Value": ""
+    },
+    {
+      "Name": "\u003c\u003c",
+      "Typ": "\" \u003c\u003c v.part",
+      "Value": ""
+    },
+    {
+      "Name": "std::vect",
+      "Typ": "s; }",
+      "Value": ""
+    },
+    {
+      "Name": "NationsIt",
+      "Typ": "\"A\")},",
+      "Value": ""
+    },
+    {
+      "Name": "std::vector\u003cSup",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "liersItem{.id",
+      "Typ": "",
+      "Value": "1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}}"
+    },
+    {
+      "Name": "std::vector\u003cP",
+      "Typ": "};",
+      "Value": ""
+    },
+    {
+      "Name": "first",
+      "Typ": "// Generated by Mochi transpiler v0.10.34 on 2025-07-21 22:59:36 GMT+7 #include \u003ciostream\u003e #include \u003cstring\u003e #include \u003cvector\u003e #include \u003cmap\u003e #include \u003cnumeric\u003e #include \u003cunordered_map\u003e #include \u003csstream\u003e #include \u003ciomanip\u003e #include \u003coptional\u003e template\u003ctypename T\u003e std::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const std::optional\u003cT\u003e\u0026 v) { if(v) os \u003c\u003c *v; else os \u003c\u003c \"None\"; return os; } template\u003ctypename T\u003e std::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const std::vector\u003cT\u003e\u0026 v) { os \u003c\u003c '['; bool",
+      "Value": "true;\n    for(const auto\u0026 x : v) { if(!first) os \u003c\u003c \", \"; first = false; os \u003c\u003c x; }\n    os \u003c\u003c ']';\n    return os;\n}\n\nstruct NationsItem {\n    int id;\n    std::string name;\n};\n\nstruct SuppliersItem {\n    int id;\n    int nation;\n};\n\nstruct PartsuppItem {\n    int part;\n    int supplier;\n    double cost;\n    int qty;\n};\n\nstruct FilteredItem {\n    int part;\n    double value;\n};\n\nstruct GGroup {\n    int key;\n    std::vector\u003cFilteredItem\u003e items;\n    auto begin() { return items.begin(); }\n    auto end() { return items.end(); }\n    size_t size() const { return items.size(); }\n};\n\nstruct GroupedItem {\n    int part;\n    double total;\n};\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const NationsItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'id': \" \u003c\u003c v.id \u003c\u003c \", \" \u003c\u003c \"'name': '\" \u003c\u003c v.name \u003c\u003c \"'\" \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const SuppliersItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'id': \" \u003c\u003c v.id \u003c\u003c \", \" \u003c\u003c \"'nation': \" \u003c\u003c v.nation \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const PartsuppItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'supplier': \" \u003c\u003c v.supplier \u003c\u003c \", \" \u003c\u003c \"'cost': \" \u003c\u003c v.cost \u003c\u003c \", \" \u003c\u003c \"'qty': \" \u003c\u003c v.qty \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const FilteredItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'value': \" \u003c\u003c v.value \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GGroup\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}}"
+    },
+    {
+      "Name": "first",
+      "Typ": "// Generated by Mochi transpiler v0.10.34 on 2025-07-21 22:59:36 GMT+7 #include \u003ciostream\u003e #include \u003cstring\u003e #include \u003cvector\u003e #include \u003cmap\u003e #include \u003cnumeric\u003e #include \u003cunordered_map\u003e #include \u003csstream\u003e #include \u003ciomanip\u003e #include \u003coptional\u003e template\u003ctypename T\u003e std::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const std::optional\u003cT\u003e\u0026 v) { if(v) os \u003c\u003c *v; else os \u003c\u003c \"None\"; return os; } template\u003ctypename T\u003e std::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const std::vector\u003cT\u003e\u0026 v) { os \u003c\u003c '['; bool",
+      "Value": "true;\n    for(const auto\u0026 x : v) { if(!first) os \u003c\u003c \", \"; first = false; os \u003c\u003c x; }\n    os \u003c\u003c ']';\n    return os;\n}\n\nstruct NationsItem {\n    int id;\n    std::string name;\n};\n\nstruct SuppliersItem {\n    int id;\n    int nation;\n};\n\nstruct PartsuppItem {\n    int part;\n    int supplier;\n    double cost;\n    int qty;\n};\n\nstruct FilteredItem {\n    int part;\n    double value;\n};\n\nstruct GGroup {\n    int key;\n    std::vector\u003cFilteredItem\u003e items;\n    auto begin() { return items.begin(); }\n    auto end() { return items.end(); }\n    size_t size() const { return items.size(); }\n};\n\nstruct GroupedItem {\n    int part;\n    double total;\n};\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const NationsItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'id': \" \u003c\u003c v.id \u003c\u003c \", \" \u003c\u003c \"'name': '\" \u003c\u003c v.name \u003c\u003c \"'\" \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const SuppliersItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'id': \" \u003c\u003c v.id \u003c\u003c \", \" \u003c\u003c \"'nation': \" \u003c\u003c v.nation \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const PartsuppItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'supplier': \" \u003c\u003c v.supplier \u003c\u003c \", \" \u003c\u003c \"'cost': \" \u003c\u003c v.cost \u003c\u003c \", \" \u003c\u003c \"'qty': \" \u003c\u003c v.qty \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const FilteredItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'value': \" \u003c\u003c v.value \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GGroup\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}}"
+    },
+    {
+      "Name": "first",
+      "Typ": "// Generated by Mochi transpiler v0.10.34 on 2025-07-21 22:59:36 GMT+7 #include \u003ciostream\u003e #include \u003cstring\u003e #include \u003cvector\u003e #include \u003cmap\u003e #include \u003cnumeric\u003e #include \u003cunordered_map\u003e #include \u003csstream\u003e #include \u003ciomanip\u003e #include \u003coptional\u003e template\u003ctypename T\u003e std::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const std::optional\u003cT\u003e\u0026 v) { if(v) os \u003c\u003c *v; else os \u003c\u003c \"None\"; return os; } template\u003ctypename T\u003e std::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const std::vector\u003cT\u003e\u0026 v) { os \u003c\u003c '['; bool",
+      "Value": "true;\n    for(const auto\u0026 x : v) { if(!first) os \u003c\u003c \", \"; first = false; os \u003c\u003c x; }\n    os \u003c\u003c ']';\n    return os;\n}\n\nstruct NationsItem {\n    int id;\n    std::string name;\n};\n\nstruct SuppliersItem {\n    int id;\n    int nation;\n};\n\nstruct PartsuppItem {\n    int part;\n    int supplier;\n    double cost;\n    int qty;\n};\n\nstruct FilteredItem {\n    int part;\n    double value;\n};\n\nstruct GGroup {\n    int key;\n    std::vector\u003cFilteredItem\u003e items;\n    auto begin() { return items.begin(); }\n    auto end() { return items.end(); }\n    size_t size() const { return items.size(); }\n};\n\nstruct GroupedItem {\n    int part;\n    double total;\n};\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const NationsItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'id': \" \u003c\u003c v.id \u003c\u003c \", \" \u003c\u003c \"'name': '\" \u003c\u003c v.name \u003c\u003c \"'\" \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const SuppliersItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'id': \" \u003c\u003c v.id \u003c\u003c \", \" \u003c\u003c \"'nation': \" \u003c\u003c v.nation \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const PartsuppItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'supplier': \" \u003c\u003c v.supplier \u003c\u003c \", \" \u003c\u003c \"'cost': \" \u003c\u003c v.cost \u003c\u003c \", \" \u003c\u003c \"'qty': \" \u003c\u003c v.qty \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const FilteredItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'value': \" \u003c\u003c v.value \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GGroup\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = 1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}}"
+    },
+    {
+      "Name": "first",
+      "Typ": "// Generated by Mochi transpiler v0.10.34 on 2025-07-21 22:59:36 GMT+7 #include \u003ciostream\u003e #include \u003cstring\u003e #include \u003cvector\u003e #include \u003cmap\u003e #include \u003cnumeric\u003e #include \u003cunordered_map\u003e #include \u003csstream\u003e #include \u003ciomanip\u003e #include \u003coptional\u003e template\u003ctypename T\u003e std::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const std::optional\u003cT\u003e\u0026 v) { if(v) os \u003c\u003c *v; else os \u003c\u003c \"None\"; return os; } template\u003ctypename T\u003e std::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const std::vector\u003cT\u003e\u0026 v) { os \u003c\u003c '['; bool",
+      "Value": "true;\n    for(const auto\u0026 x : v) { if(!first) os \u003c\u003c \", \"; first = false; os \u003c\u003c x; }\n    os \u003c\u003c ']';\n    return os;\n}\n\nstruct NationsItem {\n    int id;\n    std::string name;\n};\n\nstruct SuppliersItem {\n    int id;\n    int nation;\n};\n\nstruct PartsuppItem {\n    int part;\n    int supplier;\n    double cost;\n    int qty;\n};\n\nstruct FilteredItem {\n    int part;\n    double value;\n};\n\nstruct GGroup {\n    int key;\n    std::vector\u003cFilteredItem\u003e items;\n    auto begin() { return items.begin(); }\n    auto end() { return items.end(); }\n    size_t size() const { return items.size(); }\n};\n\nstruct GroupedItem {\n    int part;\n    double total;\n};\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const NationsItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'id': \" \u003c\u003c v.id \u003c\u003c \", \" \u003c\u003c \"'name': '\" \u003c\u003c v.name \u003c\u003c \"'\" \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const SuppliersItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'id': \" \u003c\u003c v.id \u003c\u003c \", \" \u003c\u003c \"'nation': \" \u003c\u003c v.nation \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const PartsuppItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'supplier': \" \u003c\u003c v.supplier \u003c\u003c \", \" \u003c\u003c \"'cost': \" \u003c\u003c v.cost \u003c\u003c \", \" \u003c\u003c \"'qty': \" \u003c\u003c v.qty \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const FilteredItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'value': \" \u003c\u003c v.value \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GGroup\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = 1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}}"
+    },
+    {
+      "Name": "grouped",
+      "Typ": "ps.qty)}); } } } } return __items; }()); std::vector\u003cGroupedItem\u003e",
+      "Value": "[]{"
+    },
+    {
+      "Name": "'}'",
+      "Typ": "(std::ostream\u0026 os, const GGroup\u0026 v) { os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "'}'",
+      "Typ": "(std::ostream\u0026 os, const GGroup\u0026 v) { os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "or{NationsItem{.id",
+      "Typ": "",
+      "Value": "1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}}"
+    },
+    {
+      "Name": "NationsItem{.id",
+      "Typ": "",
+      "Value": "2, .name = std::string(\"B\")}}"
+    },
+    {
+      "Name": "'}'",
+      "Typ": "\u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "retu",
+      "Typ": "\u003c\u003c v.items \u003c\u003c '}';",
+      "Value": ""
+    },
+    {
+      "Name": "__groups[it-\u003esecond].items.push_back(x)",
+      "Typ": "{",
+      "Value": ""
+    },
+    {
+      "Name": ":",
+      "Typ": "} } for(auto \u0026__g",
+      "Value": ""
+    },
+    {
+      "Name": "m{.part",
+      "Typ": "",
+      "Value": "100, .supplier = 1, .cost = 10.0, .qty = 2}, PartsuppItem"
+    },
+    {
+      "Name": "nations",
+      "Typ": "list\u003cNationsItem\u003e",
+      "Value": "std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}}"
+    },
+    {
+      "Name": "suppliers",
+      "Typ": "list\u003cSuppliersItem\u003e",
+      "Value": "std::vector{SuppliersItem{.id = 1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}}"
+    },
+    {
+      "Name": "partsupp",
+      "Typ": "list\u003cPartsuppItem\u003e",
+      "Value": "std::vector{PartsuppItem{.part = 100, .supplier = 1, .cost = 10.0, .qty = 2}, PartsuppItem{.part = 100, .supplier = 2, .cost = 20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}}"
+    },
+    {
+      "Name": "filtered",
+      "Typ": "list\u003cFilteredItem\u003e",
+      "Value": "[]{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto s : suppliers) {\nfor (auto n : nations) {\n    if((((n.name == std::string(\"A\")) \u0026\u0026 (s.id == ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)});\n    }\n}\n}\n}\nreturn __items; }("
+    },
+    {
+      "Name": "std::vector\u003cFilteredItem\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "ps",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "s",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "n",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "grouped",
+      "Typ": "list\u003cGroupedItem\u003e",
+      "Value": "[]{ std::vector\u003cGroupedItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cint, size_t\u003e __idx;\nfor (auto x : filtered) {\n        auto __key = x.part;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(x);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_back(x);\n        }\n}\nfor(auto \u0026__g : __groups) {\n    GGroup g = __g;\n    __items.push_back(GroupedItem{.part = g.key, .total = ([\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cdouble\u003e __items;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nreturn __items; }()); return std::accumulate(__tmp.begin(), __tmp.end(), 0.0); }())});\n}\nreturn __items; }("
+    },
+    {
+      "Name": "std::vector\u003cGroupedItem\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "std::vector\u003cGGroup\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "size_t\u003e",
+      "Typ": "std::unordered_map\u003cint,",
+      "Value": ""
+    },
+    {
+      "Name": "x",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "__key",
+      "Typ": "",
+      "Value": "x."
+    },
+    {
+      "Name": "it",
+      "Typ": "",
+      "Value": "__idx.find(__key"
+    },
+    {
+      "Name": "{}}",
+      "Typ": "GGroup __g{__key,",
+      "Value": ""
+    },
+    {
+      "Name": "\u0026__g",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "g",
+      "Typ": "GGroup",
+      "Value": ""
+    },
+    {
+      "Name": "__tmp",
+      "Typ": "",
+      "Value": "[\u0026]{ std::vector\u003cdouble\u003e __items;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nreturn __items; }("
+    },
+    {
+      "Name": "std::vector\u003cdouble\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "r",
+      "Typ": "",
+      "Value": ""
+    }
+  ],
+  "source": "// Generated by Mochi transpiler v0.10.34 on 2025-07-21 22:59:36 GMT+7\n#include \u003ciostream\u003e\n#include \u003cstring\u003e\n#include \u003cvector\u003e\n#include \u003cmap\u003e\n#include \u003cnumeric\u003e\n#include \u003cunordered_map\u003e\n#include \u003csstream\u003e\n#include \u003ciomanip\u003e\n#include \u003coptional\u003e\n\n\ntemplate\u003ctypename T\u003e\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const std::optional\u003cT\u003e\u0026 v) {\n    if(v) os \u003c\u003c *v; else os \u003c\u003c \"None\";\n    return os;\n}\n\ntemplate\u003ctypename T\u003e\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const std::vector\u003cT\u003e\u0026 v) {\n    os \u003c\u003c '[';\n    bool first = true;\n    for(const auto\u0026 x : v) { if(!first) os \u003c\u003c \", \"; first = false; os \u003c\u003c x; }\n    os \u003c\u003c ']';\n    return os;\n}\n\nstruct NationsItem {\n    int id;\n    std::string name;\n};\n\nstruct SuppliersItem {\n    int id;\n    int nation;\n};\n\nstruct PartsuppItem {\n    int part;\n    int supplier;\n    double cost;\n    int qty;\n};\n\nstruct FilteredItem {\n    int part;\n    double value;\n};\n\nstruct GGroup {\n    int key;\n    std::vector\u003cFilteredItem\u003e items;\n    auto begin() { return items.begin(); }\n    auto end() { return items.end(); }\n    size_t size() const { return items.size(); }\n};\n\nstruct GroupedItem {\n    int part;\n    double total;\n};\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const NationsItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'id': \" \u003c\u003c v.id \u003c\u003c \", \" \u003c\u003c \"'name': '\" \u003c\u003c v.name \u003c\u003c \"'\" \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const SuppliersItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'id': \" \u003c\u003c v.id \u003c\u003c \", \" \u003c\u003c \"'nation': \" \u003c\u003c v.nation \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const PartsuppItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'supplier': \" \u003c\u003c v.supplier \u003c\u003c \", \" \u003c\u003c \"'cost': \" \u003c\u003c v.cost \u003c\u003c \", \" \u003c\u003c \"'qty': \" \u003c\u003c v.qty \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const FilteredItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'value': \" \u003c\u003c v.value \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GGroup\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'key': \" \u003c\u003c v.key \u003c\u003c \", \" \u003c\u003c \"'items': \" \u003c\u003c v.items \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'part': \" \u003c\u003c v.part \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cNationsItem\u003e nations = std::vector{NationsItem{.id = 1, .name = std::string(\"A\")}, NationsItem{.id = 2, .name = std::string(\"B\")}};\nstd::vector\u003cSuppliersItem\u003e suppliers = std::vector{SuppliersItem{.id = 1, .nation = 1}, SuppliersItem{.id = 2, .nation = 2}};\nstd::vector\u003cPartsuppItem\u003e partsupp = std::vector{PartsuppItem{.part = 100, .supplier = 1, .cost = 10.0, .qty = 2}, PartsuppItem{.part = 100, .supplier = 2, .cost = 20.0, .qty = 1}, PartsuppItem{.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}};\nstd::vector\u003cFilteredItem\u003e filtered = ([]{ std::vector\u003cFilteredItem\u003e __items;\nfor (auto ps : partsupp) {\nfor (auto s : suppliers) {\nfor (auto n : nations) {\n    if((((n.name == std::string(\"A\")) \u0026\u0026 (s.id == ps.supplier)) \u0026\u0026 (n.id == s.nation))) {\n        __items.push_back(FilteredItem{.part = ps.part, .value = (ps.cost * ps.qty)});\n    }\n}\n}\n}\nreturn __items; }());\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cint, size_t\u003e __idx;\nfor (auto x : filtered) {\n        auto __key = x.part;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(x);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_back(x);\n        }\n}\nfor(auto \u0026__g : __groups) {\n    GGroup g = __g;\n    __items.push_back(GroupedItem{.part = g.key, .total = ([\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cdouble\u003e __items;\nfor (auto r : g) {\n        __items.push_back(r.value);\n}\nreturn __items; }()); return std::accumulate(__tmp.begin(), __tmp.end(), 0.0); }())});\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c grouped \u003c\u003c std::endl;\n    return 0;\n}\n"
+}

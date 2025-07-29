@@ -1,0 +1,1124 @@
+{
+  "funcs": [
+    {
+      "Name": "__addressof",
+      "Params": [
+        {
+          "Name": "__r",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": "cltype(c)\u003e, std::string\u003e) { return "
+    },
+    {
+      "Name": "forward",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "typename std::remove_reference\u003c_Tp\u003e::type"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": "(requires { c.find(v); }) { return"
+    },
+    {
+      "Name": "operator==",
+      "Params": [
+        {
+          "Name": "__v",
+          "Typ": "partial_ordering"
+        },
+        {
+          "Name": "",
+          "Typ": "__cmp_cat::__unspec"
+        }
+      ],
+      "Ret": "bool",
+      "Body": "!= std::string::npos; } else"
+    },
+    {
+      "Name": "__is_single_threaded",
+      "Params": null,
+      "Ret": "bool",
+      "Body": ", v) != c.end(); } })(m, std::string(\"a\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std:"
+    },
+    {
+      "Name": "__exchange_and_add",
+      "Params": [
+        {
+          "Name": "__mem",
+          "Typ": "volatile _Atomic_word"
+        },
+        {
+          "Name": "__val",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "_Atomic_word",
+      "Body": "(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; "
+    },
+    {
+      "Name": "__atomic_add",
+      "Params": [
+        {
+          "Name": "__mem",
+          "Typ": "volatile _Atomic_word"
+        },
+        {
+          "Name": "__val",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "",
+      "Body": " c.end(), v) != c.end(); } })(s, std::string(\"ell\")) \u003c"
+    },
+    {
+      "Name": "__ostream_write",
+      "Params": [
+        {
+          "Name": "__out",
+          "Typ": "basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__s",
+          "Typ": "_CharT"
+        },
+        {
+          "Name": "__n",
+          "Typ": "streamsize"
+        }
+      ],
+      "Ret": "",
+      "Body": "st auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c"
+    },
+    {
+      "Name": "__ostream_fill",
+      "Params": [
+        {
+          "Name": "__out",
+          "Typ": "basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__n",
+          "Typ": "streamsize"
+        }
+      ],
+      "Ret": "",
+      "Body": "ecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(s, std::string(\"ell\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; }"
+    },
+    {
+      "Name": "__iter_less_iter",
+      "Params": null,
+      "Ret": "_Iter_less_iter",
+      "Body": "onst auto\u0026 c, const auto\u0026 v)"
+    },
+    {
+      "Name": "__iter_less_val",
+      "Params": null,
+      "Ret": "_Iter_less_val",
+      "Body": "expr(requires { c.find(v); "
+    },
+    {
+      "Name": "__iter_comp_val",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "_Iter_less_iter"
+        }
+      ],
+      "Ret": "_Iter_less_val",
+      "Body": ".end(); } })(s, std::string"
+    },
+    {
+      "Name": "bit_cast",
+      "Params": [
+        {
+          "Name": "__from",
+          "Typ": "_From"
+        }
+      ],
+      "Ret": "_To",
+      "Body": "ing::npos; } else if constexpr(requires { c.find(v);"
+    },
+    {
+      "Name": "__invfwd",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "typename remove_reference\u003c_Tp\u003e::type"
+        }
+      ],
+      "Ret": "_Up",
+      "Body": " { return c.find(v) != c.end(); } "
+    },
+    {
+      "Name": "__invoke_impl",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__invoke_other"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_Fn"
+        },
+        {
+          "Name": "__args",
+          "Typ": "_Args \u0026\u0026..."
+        }
+      ],
+      "Ret": "_Res",
+      "Body": "){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::st"
+    },
+    {
+      "Name": "__invoke_impl",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__invoke_memfun_ref"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_MemFun"
+        },
+        {
+          "Name": "__t",
+          "Typ": "_Tp"
+        },
+        {
+          "Name": "__args",
+          "Typ": "_Args \u0026\u0026..."
+        }
+      ],
+      "Ret": "_Res",
+      "Body": ", std::string(\"ell\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto"
+    },
+    {
+      "Name": "__invoke_impl",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__invoke_memfun_deref"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_MemFun"
+        },
+        {
+          "Name": "__t",
+          "Typ": "_Tp"
+        },
+        {
+          "Name": "__args",
+          "Typ": "_Args \u0026\u0026..."
+        }
+      ],
+      "Ret": "_Res",
+      "Body": ") != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(s, st"
+    },
+    {
+      "Name": "begin",
+      "Params": [
+        {
+          "Name": "__ils",
+          "Typ": "initializer_list\u003c_Tp\u003e"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": "find(c.begin(), c.end(),"
+    },
+    {
+      "Name": "begin",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        }
+      ],
+      "Ret": "",
+      "Body": "rn std::find(c.begin(), c"
+    },
+    {
+      "Name": "begin",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        }
+      ],
+      "Ret": "",
+      "Body": "), c.end(), v) != c.end()"
+    },
+    {
+      "Name": "end",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        }
+      ],
+      "Ret": "",
+      "Body": " v) != c.end(); } })(s,"
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "__max_size_type"
+        }
+      ],
+      "Ret": "__max_size_type",
+      "Body": ".end(); } else"
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "__max_diff_type"
+        }
+      ],
+      "Ret": "__max_size_type",
+      "Body": "ndl;\n    std::cout \u003c\u003c ([\u0026](cons"
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "",
+      "Body": "turn c.find(v) != std::string::npos; } else if co"
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "__int128"
+        }
+      ],
+      "Ret": "__int128",
+      "Body": "ng(\"ell\")) \u003c\u003c "
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "__int128"
+        }
+      ],
+      "Ret": "__int128",
+      "Body": "d::decay_t\u003cdec"
+    },
+    {
+      "Name": "__sv_check",
+      "Params": [
+        {
+          "Name": "__size",
+          "Typ": "int"
+        },
+        {
+          "Name": "__pos",
+          "Typ": "int"
+        },
+        {
+          "Name": "__s",
+          "Typ": "string"
+        }
+      ],
+      "Ret": "int",
+      "Body": "){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { retur"
+    },
+    {
+      "Name": "__sv_limit",
+      "Params": [
+        {
+          "Name": "__size",
+          "Typ": "int"
+        },
+        {
+          "Name": "__pos",
+          "Typ": "int"
+        },
+        {
+          "Name": "__off",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "onstexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::n"
+    },
+    {
+      "Name": "__bswap_16",
+      "Params": [
+        {
+          "Name": "__bsx",
+          "Typ": "__uint16_t"
+        }
+      ],
+      "Ret": "__uint16_t",
+      "Body": "\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltyp"
+    },
+    {
+      "Name": "__bswap_32",
+      "Params": [
+        {
+          "Name": "__bsx",
+          "Typ": "__uint32_t"
+        }
+      ],
+      "Ret": "__uint32_t",
+      "Body": "\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c."
+    },
+    {
+      "Name": "__bswap_64",
+      "Params": [
+        {
+          "Name": "__bsx",
+          "Typ": "__uint64_t"
+        }
+      ],
+      "Ret": "__uint64_t",
+      "Body": "end(); } })(s, std::string(\"ell\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr"
+    },
+    {
+      "Name": "__uint16_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint16_t"
+        }
+      ],
+      "Ret": "__uint16_t",
+      "Body": ":endl;\n    std::"
+    },
+    {
+      "Name": "__uint32_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint32_t"
+        }
+      ],
+      "Ret": "__uint32_t",
+      "Body": "same_v\u003cstd::deca"
+    },
+    {
+      "Name": "__uint64_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint64_t"
+        }
+      ],
+      "Ret": "__uint64_t",
+      "Body": "::npos; } else i"
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__i",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "td::decay_t\u003cdecltype(c)\u003e, std:"
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "long long"
+        }
+      ],
+      "Ret": "long long",
+      "Body": "{ c.find(v); }) { return c.find("
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "float"
+        }
+      ],
+      "Ret": "float",
+      "Body": "}) { return c.find(v) != c.end"
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "float"
+        }
+      ],
+      "Ret": "float",
+      "Body": "c.end(); } })(s, std::string(\"e"
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "long double"
+        }
+      ],
+      "Ret": "long double",
+      "Body": " v){ if constexpr(std::is_same_"
+    },
+    {
+      "Name": "__to_chars_len",
+      "Params": [
+        {
+          "Name": "__value",
+          "Typ": "_Tp"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "rn std::find(c.begin(), c.end(), v) != c.end(); } })(m, std::string(\"b\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(s, std::string(\"ell\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::i"
+    },
+    {
+      "Name": "__to_chars_len",
+      "Params": [
+        {
+          "Name": "__value",
+          "Typ": "int"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "rn std::find(c.begin(), c.end(), v) != c.end(); } })(m, std::string(\"b\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(s, std::string(\"ell\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::i"
+    },
+    {
+      "Name": "__to_chars_len",
+      "Params": [
+        {
+          "Name": "__value",
+          "Typ": "int"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "rn std::find(c.begin(), c.end(), v) != c.end(); } })(m, std::string(\"b\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(s, std::string(\"ell\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::i"
+    },
+    {
+      "Name": "__to_chars_len",
+      "Params": [
+        {
+          "Name": "__value",
+          "Typ": "long long"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "rn std::find(c.begin(), c.end(), v) != c.end(); } })(m, std::string(\"b\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(s, std::string(\"ell\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::i"
+    },
+    {
+      "Name": "__check_facet",
+      "Params": [
+        {
+          "Name": "__f",
+          "Typ": "_Facet"
+        }
+      ],
+      "Ret": "_Facet",
+      "Body": "std::string(\"a\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const au"
+    },
+    {
+      "Name": "__check_facet",
+      "Params": [
+        {
+          "Name": "__f",
+          "Typ": "std::ctype\u003cchar\u003e"
+        }
+      ],
+      "Ret": "std::ctype\u003cchar\u003e",
+      "Body": "std::string(\"a\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const au"
+    },
+    {
+      "Name": "resetiosflags",
+      "Params": [
+        {
+          "Name": "__mask",
+          "Typ": "ios_base::fmtflags"
+        }
+      ],
+      "Ret": "_Resetiosflags",
+      "Body": "\n    std::cout \u003c\u003c ([\u0026"
+    },
+    {
+      "Name": "operator\u003e\u003e",
+      "Params": [
+        {
+          "Name": "__is",
+          "Typ": "basic_istream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_Resetiosflags"
+        }
+      ],
+      "Ret": "basic_istream\u003c_CharT, _Traits\u003e",
+      "Body": "es { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c."
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "__os",
+          "Typ": "basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_Resetiosflags"
+        }
+      ],
+      "Ret": "basic_ostream\u003c_CharT, _Traits\u003e",
+      "Body": "decltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if"
+    },
+    {
+      "Name": "_Power_of_2",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "bool",
+      "Body": "d::string\u003e) { return c.find(v) != std::s"
+    },
+    {
+      "Name": "__make_comp_proj",
+      "Params": [
+        {
+          "Name": "__comp",
+          "Typ": "_Comp"
+        },
+        {
+          "Name": "__proj",
+          "Typ": "_Proj"
+        }
+      ],
+      "Ret": "",
+      "Body": " { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(m, std::string(\"b\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if con"
+    },
+    {
+      "Name": "__make_pred_proj",
+      "Params": [
+        {
+          "Name": "__pred",
+          "Typ": "_Pred"
+        },
+        {
+          "Name": "__proj",
+          "Typ": "_Proj"
+        }
+      ],
+      "Ret": "",
+      "Body": "ires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(s, std::string(\"ell\")) \u003c\u003c std::endl;\n"
+    },
+    {
+      "Name": "__erase_nodes_if",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        },
+        {
+          "Name": "__ucont",
+          "Typ": "_UnsafeContainer"
+        },
+        {
+          "Name": "__pred",
+          "Typ": "_Predicate"
+        }
+      ],
+      "Ret": "typename _Container::size_type",
+      "Body": "pr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(m, std::string(\"b\")) \u003c\u003c std::endl;\n"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "os",
+          "Typ": "std::ostream"
+        },
+        {
+          "Name": "v",
+          "Typ": "std::optional\u003cT\u003e"
+        }
+      ],
+      "Ret": "std::ostream",
+      "Body": "{\n    if(v) os \u003c\u003c *v; else os \u003c\u003c \"None\";\n    return os;\n"
+    },
+    {
+      "Name": "main",
+      "Params": null,
+      "Ret": "int",
+      "Body": "{\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(ys, 1) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(ys, 2) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(m, std::string(\"a\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(m, std::string(\"b\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(s, std::string(\"ell\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(s, std::string(\"foo\")) \u003c\u003c std::endl;\n    return 0;\n"
+    }
+  ],
+  "enums": [
+    {
+      "Name": "_Ord",
+      "Variants": [
+        "equivalent",
+        "less",
+        "greater"
+      ]
+    },
+    {
+      "Name": "_Ncmp",
+      "Variants": [
+        "_Unordered"
+      ]
+    },
+    {
+      "Name": "_Ios_Fmtflags",
+      "Variants": [
+        "_S_boolalpha",
+        "_S_dec",
+        "_S_fixed",
+        "_S_hex",
+        "_S_internal",
+        "_S_left",
+        "_S_oct",
+        "_S_right",
+        "_S_scientific",
+        "_S_showbase",
+        "_S_showpoint",
+        "_S_showpos",
+        "_S_skipws",
+        "_S_unitbuf",
+        "_S_uppercase",
+        "_S_adjustfield",
+        "_S_basefield",
+        "_S_floatfield",
+        "_S_ios_fmtflags_end",
+        "_S_ios_fmtflags_max",
+        "_S_ios_fmtflags_min"
+      ]
+    },
+    {
+      "Name": "dateorder",
+      "Variants": [
+        "no_order",
+        "dmy",
+        "mdy",
+        "ymd",
+        "ydm"
+      ]
+    },
+    {
+      "Name": "result",
+      "Variants": [
+        "ok",
+        "partial",
+        "error",
+        "noconv"
+      ]
+    },
+    {
+      "Name": "_Construct",
+      "Variants": [
+        "_Token"
+      ]
+    }
+  ],
+  "structs": null,
+  "globals": [
+    {
+      "Name": "!",
+      "Typ": "return c.find(v)",
+      "Value": "c.end(); } else { return s"
+    },
+    {
+      "Name": "!",
+      "Typ": "return c.find(v)",
+      "Value": "c.end(); } else { return s"
+    },
+    {
+      "Name": "!",
+      "Typ": "return c.find(v)",
+      "Value": "c.end(); } else {"
+    },
+    {
+      "Name": "!",
+      "Typ": "return c.find(v)",
+      "Value": "c.end(); } else {"
+    },
+    {
+      "Name": "!",
+      "Typ": ":cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v)",
+      "Value": "std::string::npos"
+    },
+    {
+      "Name": "t\u003cdecltype(c",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "c.",
+      "Typ": ".end(); } else { return std::find(c.begin(),",
+      "Value": ""
+    },
+    {
+      "Name": "!",
+      "Typ": "",
+      "Value": "c.end(); } })(s, std::string(\"foo\")) \u003c\u003c std::endl;\n    return 0;\n}"
+    },
+    {
+      "Name": "c.",
+      "Typ": ".end(); } else { return std::find(c.begin(),",
+      "Value": ""
+    },
+    {
+      "Name": "!",
+      "Typ": "",
+      "Value": "c.end(); } })(s, std::string(\"foo\")) \u003c\u003c std::endl;\n    return 0;\n}"
+    },
+    {
+      "Name": "c.",
+      "Typ": ".end(); } else { return std::find(c.begin(),",
+      "Value": ""
+    },
+    {
+      "Name": "!",
+      "Typ": "",
+      "Value": "c.end(); } })(s, std::string(\"foo\")) \u003c\u003c std::endl;\n    return 0;\n}"
+    },
+    {
+      "Name": "c.",
+      "Typ": ".end(); } else { return std::find(c.begin(),",
+      "Value": ""
+    },
+    {
+      "Name": "!",
+      "Typ": "",
+      "Value": "c.end(); } })(s, std::string(\"foo\")) \u003c\u003c std::endl;\n    return 0;\n}"
+    },
+    {
+      "Name": "c.",
+      "Typ": ".end(); } else { return std::find(c.begin(),",
+      "Value": ""
+    },
+    {
+      "Name": "!",
+      "Typ": "",
+      "Value": "c.end(); } })(s, std::string(\"foo\")) \u003c\u003c std::endl;\n    return 0;\n}"
+    },
+    {
+      "Name": "c.",
+      "Typ": ".end(); } else { return std::find(c.begin(),",
+      "Value": ""
+    },
+    {
+      "Name": "!",
+      "Typ": "",
+      "Value": "c.end(); } })(s, std::string(\"foo\")) \u003c\u003c std::endl;\n    return 0;\n}"
+    },
+    {
+      "Name": "c.",
+      "Typ": ".end(); } else { return std::find(c.begin(),",
+      "Value": ""
+    },
+    {
+      "Name": "!",
+      "Typ": "",
+      "Value": "c.end(); } })(s, std::string(\"foo\")) \u003c\u003c std::endl;\n    return 0;\n}"
+    },
+    {
+      "Name": "c.",
+      "Typ": ".end(); } else { return std::find(c.begin(),",
+      "Value": ""
+    },
+    {
+      "Name": "!",
+      "Typ": "",
+      "Value": "c.end(); } })(s, std::string(\"foo\")) \u003c\u003c std::endl;\n    return 0;\n}"
+    },
+    {
+      "Name": "!",
+      "Typ": "c.find(v)",
+      "Value": "c.end(); } else { return std::find(c.begin("
+    },
+    {
+      "Name": "std::en",
+      "Typ": "d(); } })(s, std::string(\"ell\")) \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "!",
+      "Typ": "v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v)",
+      "Value": "std::string::npos"
+    },
+    {
+      "Name": "!",
+      "Typ": "{ c.find(v); }) { return c.find(v)",
+      "Value": "c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end("
+    },
+    {
+      "Name": "!",
+      "Typ": "std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v)",
+      "Value": "std::string::npos"
+    },
+    {
+      "Name": "!",
+      "Typ": "td::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v)",
+      "Value": "c.end(); } el"
+    },
+    {
+      "Name": "!",
+      "Typ": "",
+      "Value": "c.end(); } })(s, std::string(\"ell\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto"
+    },
+    {
+      "Name": "!",
+      "Typ": "ltype(c)\u003e, std::string\u003e) { return c.find(v)",
+      "Value": "std::string::npos; } else if constexpr(requires { c.find(v"
+    },
+    {
+      "Name": "!",
+      "Typ": "turn std::find(c.begin(), c.end(), v)",
+      "Value": "c.end(); } })(s, std::string(\"foo\")) \u003c\u003c std::endl;\n    ret"
+    },
+    {
+      "Name": "([\u0026](const",
+      "Typ": ") \u003c\u003c std::endl; std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std",
+      "Typ": "(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e,",
+      "Value": ""
+    },
+    {
+      "Name": "d::string::np",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "c.find(v)",
+      "Typ": "equires {",
+      "Value": ""
+    },
+    {
+      "Name": "!",
+      "Typ": "ring(\"a\")) \u003c\u003c std::endl; std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v)",
+      "Value": "std::string::npos"
+    },
+    {
+      "Name": "!",
+      "Typ": "",
+      "Value": "std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(m, std:"
+    },
+    {
+      "Name": "!",
+      "Typ": "}) { return c.find(v)",
+      "Value": "c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(m, std:"
+    },
+    {
+      "Name": "xs",
+      "Typ": "// Generated by Mochi transpiler v0.10.34 on 2025-07-21 21:02:50 GMT+7 #include \u003ciostream\u003e #include \u003cstring\u003e #include \u003cvector\u003e #include \u003csstream\u003e #include \u003ciomanip\u003e #include \u003calgorithm\u003e #include \u003ctype_traits\u003e #include \u003cmap\u003e #include \u003coptional\u003e template\u003ctypename T\u003e std::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const std::optional\u003cT\u003e\u0026 v) { if(v) os \u003c\u003c *v; else os \u003c\u003c \"None\"; return os; } auto",
+      "Value": "std::vector{1, 2, 3};\nstd::vector\u003cint\u003e ys = ([]{ std::vector\u003cint\u003e __items;\nfor (auto x : xs) {\n    if(((x % 2) == 1)) {\n        __items.push_back(x);\n    }\n}\nreturn __items; }());\nauto m = std::map\u003cstd::string, int\u003e{{\"a\", 1}};\nauto s = std::string(\"hello\");\n\nint main() {\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(ys, 1) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(ys, 2) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(m, std::string(\"a\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(m, std::string(\"b\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v"
+    },
+    {
+      "Name": "!",
+      "Typ": "constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v)",
+      "Value": "std::string::npos"
+    },
+    {
+      "Name": "!",
+      "Typ": "e if constexpr(requires { c.find(v); }) { return c.find(v)",
+      "Value": "c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end("
+    },
+    {
+      "Name": "\u003c",
+      "Typ": "(\"a\")) \u003c\u003c std::endl; std::cout",
+      "Value": ""
+    },
+    {
+      "Name": "!",
+      "Typ": "requires { c.find(v); }) { return c.find(v)",
+      "Value": "c.end("
+    },
+    {
+      "Name": "std::find(c.b",
+      "Typ": "end(); } else { return",
+      "Value": ""
+    },
+    {
+      "Name": "!",
+      "Typ": "c.end(), v)",
+      "Value": "c.end(); } }"
+    },
+    {
+      "Name": "([\u0026](cons",
+      "Typ": ":string(\"b\")) \u003c\u003c std::endl; std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "auto\u0026",
+      "Typ": "[\u0026](const",
+      "Value": ""
+    },
+    {
+      "Name": "is_same_v\u003cstd::",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "c.find(v)",
+      "Typ": "turn",
+      "Value": ""
+    },
+    {
+      "Name": "})",
+      "Typ": "c.find(v);",
+      "Value": ""
+    },
+    {
+      "Name": "!",
+      "Typ": "",
+      "Value": "c.end(); } }"
+    },
+    {
+      "Name": "\u003c\u003c",
+      "Typ": "std::cout",
+      "Value": ""
+    },
+    {
+      "Name": "constexpr(std::i",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "c.find(v)",
+      "Typ": "return",
+      "Value": ""
+    },
+    {
+      "Name": "!",
+      "Typ": "else { return std::find(c.begin(), c.end(), v)",
+      "Value": "c.end("
+    },
+    {
+      "Name": "!",
+      "Typ": "else { return std::find(c.begin(), c.end(), v)",
+      "Value": "c.end("
+    },
+    {
+      "Name": "!",
+      "Typ": "se { return std::find(c.begin(), c.end(), v)",
+      "Value": "c.end("
+    },
+    {
+      "Name": "std::string(\"e",
+      "Typ": "nd(); } })(s,",
+      "Value": ""
+    },
+    {
+      "Name": "!",
+      "Typ": "v)",
+      "Value": "c.end(); } })(m, std::string(\"b\")) \u003c\u003c s"
+    },
+    {
+      "Name": "([\u0026](co",
+      "Typ": "dl; std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "!",
+      "Typ": "ltype(c)\u003e, std::string\u003e) { return c.find(v)",
+      "Value": "std::string::npos"
+    },
+    {
+      "Name": "!",
+      "Typ": "[\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v)",
+      "Value": "std::string::npos"
+    },
+    {
+      "Name": "!",
+      "Typ": "",
+      "Value": "c.end(); } else { return std::find(c.beg"
+    },
+    {
+      "Name": "xs",
+      "Typ": "// Generated by Mochi transpiler v0.10.34 on 2025-07-21 21:02:50 GMT+7 #include \u003ciostream\u003e #include \u003cstring\u003e #include \u003cvector\u003e #include \u003csstream\u003e #include \u003ciomanip\u003e #include \u003calgorithm\u003e #include \u003ctype_traits\u003e #include \u003cmap\u003e #include \u003coptional\u003e template\u003ctypename T\u003e std::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const std::optional\u003cT\u003e\u0026 v) { if(v) os \u003c\u003c *v; else os \u003c\u003c \"None\"; return os; } auto",
+      "Value": "std::vector{1, 2, 3};\nstd::vector\u003cint\u003e ys = ([]{ std::vector\u003cint\u003e __items;\nfor (auto x : xs) {\n    if(((x % 2) == 1)) {\n        __items.push_back(x);\n    }\n}\nreturn __items; }());\nauto m = std::map\u003cstd::string, int\u003e{{\"a\", 1}};\nauto s = std::string(\"hello\");\n\nint main() {\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(ys, 1) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(ys, 2) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(m, std::string(\"a\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(m, std::string(\"b\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end("
+    },
+    {
+      "Name": "xs",
+      "Typ": "// Generated by Mochi transpiler v0.10.34 on 2025-07-21 21:02:50 GMT+7 #include \u003ciostream\u003e #include \u003cstring\u003e #include \u003cvector\u003e #include \u003csstream\u003e #include \u003ciomanip\u003e #include \u003calgorithm\u003e #include \u003ctype_traits\u003e #include \u003cmap\u003e #include \u003coptional\u003e template\u003ctypename T\u003e std::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const std::optional\u003cT\u003e\u0026 v) { if(v) os \u003c\u003c *v; else os \u003c\u003c \"None\"; return os; } auto",
+      "Value": "std::vector{1, 2, 3};\nstd::vector\u003cint\u003e ys = ([]{ std::vector\u003cint\u003e __items;\nfor (auto x : xs) {\n    if(((x % 2) == 1)) {\n        __items.push_back(x);\n    }\n}\nreturn __items; }());\nauto m = std::map\u003cstd::string, int\u003e{{\"a\", 1}};\nauto s = std::string(\"hello\");\n\nint main() {\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(ys, 1) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(ys, 2) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(m, std::string(\"a\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(m, std::string(\"b\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(s, std::string(\"ell\")) \u003c\u003c std::endl"
+    },
+    {
+      "Name": "xs",
+      "Typ": "// Generated by Mochi transpiler v0.10.34 on 2025-07-21 21:02:50 GMT+7 #include \u003ciostream\u003e #include \u003cstring\u003e #include \u003cvector\u003e #include \u003csstream\u003e #include \u003ciomanip\u003e #include \u003calgorithm\u003e #include \u003ctype_traits\u003e #include \u003cmap\u003e #include \u003coptional\u003e template\u003ctypename T\u003e std::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const std::optional\u003cT\u003e\u0026 v) { if(v) os \u003c\u003c *v; else os \u003c\u003c \"None\"; return os; } auto",
+      "Value": "std::vector{1, 2, 3};\nstd::vector\u003cint\u003e ys = ([]{ std::vector\u003cint\u003e __items;\nfor (auto x : xs) {\n    if(((x % 2) == 1)) {\n        __items.push_back(x);\n    }\n}\nreturn __items; }());\nauto m = std::map\u003cstd::string, int\u003e{{\"a\", 1}};\nauto s = std::string(\"hello\");\n\nint main() {\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(ys, 1) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(ys, 2) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(m, std::string(\"a\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(m, std::string(\"b\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(s, std::string(\"ell\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos"
+    },
+    {
+      "Name": "xs",
+      "Typ": "// Generated by Mochi transpiler v0.10.34 on 2025-07-21 21:02:50 GMT+7 #include \u003ciostream\u003e #include \u003cstring\u003e #include \u003cvector\u003e #include \u003csstream\u003e #include \u003ciomanip\u003e #include \u003calgorithm\u003e #include \u003ctype_traits\u003e #include \u003cmap\u003e #include \u003coptional\u003e template\u003ctypename T\u003e std::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const std::optional\u003cT\u003e\u0026 v) { if(v) os \u003c\u003c *v; else os \u003c\u003c \"None\"; return os; } auto",
+      "Value": "std::vector{1, 2, 3};\nstd::vector\u003cint\u003e ys = ([]{ std::vector\u003cint\u003e __items;\nfor (auto x : xs) {\n    if(((x % 2) == 1)) {\n        __items.push_back(x);\n    }\n}\nreturn __items; }());\nauto m = std::map\u003cstd::string, int\u003e{{\"a\", 1}};\nauto s = std::string(\"hello\");\n\nint main() {\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(ys, 1) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(ys, 2) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(m, std::string(\"a\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(m, std::string(\"b\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(s, std::string(\"ell\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos"
+    },
+    {
+      "Name": "!",
+      "Typ": "ires { c.find(v); }) { return c.find(v)",
+      "Value": "c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end("
+    },
+    {
+      "Name": "xs",
+      "Typ": "",
+      "Value": "std::vector{1, 2, 3}"
+    },
+    {
+      "Name": "ys",
+      "Typ": "list\u003cint\u003e",
+      "Value": "[]{ std::vector\u003cint\u003e __items;\nfor (auto x : xs) {\n    if(((x % 2) == 1)) {\n        __items.push_back(x);\n    }\n}\nreturn __items; }("
+    },
+    {
+      "Name": "std::vector\u003cint\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "x",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "m",
+      "Typ": "",
+      "Value": "std::map\u003cstd::string, int\u003e{{\"a\", 1}}"
+    },
+    {
+      "Name": "s",
+      "Typ": "",
+      "Value": "std::string(\"hello\""
+    }
+  ],
+  "source": "// Generated by Mochi transpiler v0.10.34 on 2025-07-21 21:02:50 GMT+7\n#include \u003ciostream\u003e\n#include \u003cstring\u003e\n#include \u003cvector\u003e\n#include \u003csstream\u003e\n#include \u003ciomanip\u003e\n#include \u003calgorithm\u003e\n#include \u003ctype_traits\u003e\n#include \u003cmap\u003e\n#include \u003coptional\u003e\n\n\ntemplate\u003ctypename T\u003e\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const std::optional\u003cT\u003e\u0026 v) {\n    if(v) os \u003c\u003c *v; else os \u003c\u003c \"None\";\n    return os;\n}\n\nauto xs = std::vector{1, 2, 3};\nstd::vector\u003cint\u003e ys = ([]{ std::vector\u003cint\u003e __items;\nfor (auto x : xs) {\n    if(((x % 2) == 1)) {\n        __items.push_back(x);\n    }\n}\nreturn __items; }());\nauto m = std::map\u003cstd::string, int\u003e{{\"a\", 1}};\nauto s = std::string(\"hello\");\n\nint main() {\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(ys, 1) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(ys, 2) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(m, std::string(\"a\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(m, std::string(\"b\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(s, std::string(\"ell\")) \u003c\u003c std::endl;\n    std::cout \u003c\u003c ([\u0026](const auto\u0026 c, const auto\u0026 v){ if constexpr(std::is_same_v\u003cstd::decay_t\u003cdecltype(c)\u003e, std::string\u003e) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(s, std::string(\"foo\")) \u003c\u003c std::endl;\n    return 0;\n}\n"
+}

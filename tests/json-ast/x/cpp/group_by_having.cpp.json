@@ -1,0 +1,235 @@
+{
+  "funcs": [
+    {
+      "Name": "__iter_less_iter",
+      "Params": null,
+      "Ret": "_Iter_less_iter",
+      "Body": "\n}\nreturn __items; }());\n\nin"
+    },
+    {
+      "Name": "__bswap_16",
+      "Params": [
+        {
+          "Name": "__bsx",
+          "Typ": "__uint16_t"
+        }
+      ],
+      "Ret": "__uint16_t",
+      "Body": "       if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(p);\n            "
+    },
+    {
+      "Name": "__uint16_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint16_t"
+        }
+      ],
+      "Ret": "__uint16_t",
+      "Body": " if(it == __idx."
+    },
+    {
+      "Name": "__uint32_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint32_t"
+        }
+      ],
+      "Ret": "__uint32_t",
+      "Body": ".push_back(p);\n "
+    },
+    {
+      "Name": "__uint64_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint64_t"
+        }
+      ],
+      "Ret": "__uint64_t",
+      "Body": "ush_back(__g);\n "
+    },
+    {
+      "Name": "__check_facet",
+      "Params": [
+        {
+          "Name": "__f",
+          "Typ": "_Facet"
+        }
+      ],
+      "Ret": "_Facet",
+      "Body": "ems.push_back(BigItem{.city = g.key, .num = g.size()});\n}\nretu"
+    },
+    {
+      "Name": "main",
+      "Params": null,
+      "Ret": "int",
+      "Body": "{\n    json(big);\n    return 0;\n"
+    }
+  ],
+  "enums": [
+    {
+      "Name": "_Ord",
+      "Variants": [
+        "equivalent",
+        "less",
+        "greater"
+      ]
+    },
+    {
+      "Name": "_Ncmp",
+      "Variants": [
+        "_Unordered"
+      ]
+    },
+    {
+      "Name": "dateorder",
+      "Variants": [
+        "no_order",
+        "dmy",
+        "mdy",
+        "ymd",
+        "ydm"
+      ]
+    },
+    {
+      "Name": "result",
+      "Variants": [
+        "ok",
+        "partial",
+        "error",
+        "noconv"
+      ]
+    }
+  ],
+  "structs": [
+    {
+      "Name": "PeopleItem",
+      "Fields": [
+        {
+          "Name": "name",
+          "Typ": "string"
+        },
+        {
+          "Name": "city",
+          "Typ": "string"
+        }
+      ]
+    },
+    {
+      "Name": "GGroup",
+      "Fields": [
+        {
+          "Name": "key",
+          "Typ": "string"
+        },
+        {
+          "Name": "items",
+          "Typ": "list\u003cPeopleItem\u003e"
+        }
+      ]
+    },
+    {
+      "Name": "BigItem",
+      "Fields": [
+        {
+          "Name": "city",
+          "Typ": "string"
+        },
+        {
+          "Name": "num",
+          "Typ": "int"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "Name": "or\u003cBigItem\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "gItem{.city",
+      "Typ": "",
+      "Value": "g.key, .num = g.size()});\n}\nre"
+    },
+    {
+      "Name": "_groups.push_",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "__groups[it-\u003esecond].items.push_back(p)",
+      "Typ": "{",
+      "Value": ""
+    },
+    {
+      "Name": "h_back(BigItem{.city",
+      "Typ": "",
+      "Value": "g.key, .num = g.size()});\n}\nreturn __items; }());\n\nint main() {"
+    },
+    {
+      "Name": "ck(BigItem{.city",
+      "Typ": "",
+      "Value": "g.key, .num = g.size()}"
+    },
+    {
+      "Name": "people",
+      "Typ": "list\u003cPeopleItem\u003e",
+      "Value": "std::vector{PeopleItem{.name = std::string(\"Alice\"), .city = std::string(\"Paris\")}, PeopleItem{.name = std::string(\"Bob\"), .city = std::string(\"Hanoi\")}, PeopleItem{.name = std::string(\"Charlie\"), .city = std::string(\"Paris\")}, PeopleItem{.name = std::string(\"Diana\"), .city = std::string(\"Hanoi\")}, PeopleItem{.name = std::string(\"Eve\"), .city = std::string(\"Paris\")}, PeopleItem{.name = std::string(\"Frank\"), .city = std::string(\"Hanoi\")}, PeopleItem{.name = std::string(\"George\"), .city = std::string(\"Paris\")}}"
+    },
+    {
+      "Name": "big",
+      "Typ": "list\u003cBigItem\u003e",
+      "Value": "[]{ std::vector\u003cBigItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cstd::string, size_t\u003e __idx;\nfor (auto p : people) {\n        auto __key = p.city;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(p);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_back(p);\n        }\n}\nfor(auto \u0026__g : __groups) {\n    GGroup g = __g;\n    __items.push_back(BigItem{.city = g.key, .num = g.size()});\n}\nreturn __items; }("
+    },
+    {
+      "Name": "std::vector\u003cBigItem\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "std::vector\u003cGGroup\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "size_t\u003e",
+      "Typ": "std::unordered_map\u003cstd::string,",
+      "Value": ""
+    },
+    {
+      "Name": "p",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "__key",
+      "Typ": "",
+      "Value": "p."
+    },
+    {
+      "Name": "it",
+      "Typ": "",
+      "Value": "__idx.find(__key"
+    },
+    {
+      "Name": "{}}",
+      "Typ": "GGroup __g{__key,",
+      "Value": ""
+    },
+    {
+      "Name": "\u0026__g",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "g",
+      "Typ": "GGroup",
+      "Value": ""
+    }
+  ],
+  "source": "// Generated by Mochi transpiler v0.10.33 on 2025-07-21 18:19:55 GMT+7\n#include \u003ciostream\u003e\n#include \u003cstring\u003e\n#include \u003cvector\u003e\n#include \u003cmap\u003e\n#include \u003cunordered_map\u003e\n#include \u003csstream\u003e\n#include \u003ciomanip\u003e\n\n\nstruct PeopleItem {\n    std::string name;\n    std::string city;\n};\n\nstruct GGroup {\n    std::string key;\n    std::vector\u003cPeopleItem\u003e items;\n    auto begin() { return items.begin(); }\n    auto end() { return items.end(); }\n    size_t size() const { return items.size(); }\n};\n\nstruct BigItem {\n    std::string city;\n    int num;\n};\n\nstd::vector\u003cPeopleItem\u003e people = std::vector{PeopleItem{.name = std::string(\"Alice\"), .city = std::string(\"Paris\")}, PeopleItem{.name = std::string(\"Bob\"), .city = std::string(\"Hanoi\")}, PeopleItem{.name = std::string(\"Charlie\"), .city = std::string(\"Paris\")}, PeopleItem{.name = std::string(\"Diana\"), .city = std::string(\"Hanoi\")}, PeopleItem{.name = std::string(\"Eve\"), .city = std::string(\"Paris\")}, PeopleItem{.name = std::string(\"Frank\"), .city = std::string(\"Hanoi\")}, PeopleItem{.name = std::string(\"George\"), .city = std::string(\"Paris\")}};\nstd::vector\u003cBigItem\u003e big = ([]{ std::vector\u003cBigItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cstd::string, size_t\u003e __idx;\nfor (auto p : people) {\n        auto __key = p.city;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(p);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_back(p);\n        }\n}\nfor(auto \u0026__g : __groups) {\n    GGroup g = __g;\n    __items.push_back(BigItem{.city = g.key, .num = g.size()});\n}\nreturn __items; }());\n\nint main() {\n    json(big);\n    return 0;\n}\n"
+}
