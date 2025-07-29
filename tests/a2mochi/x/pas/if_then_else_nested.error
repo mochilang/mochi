@@ -1,5 +1,0 @@
-error[T003]: unknown function: IfThen
-  --> :5:7
-
-help:
-  Ensure the function is defined before it's called.

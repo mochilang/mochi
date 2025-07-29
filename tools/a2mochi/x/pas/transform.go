@@ -107,7 +107,7 @@ var (
 	posCmpRe     = regexp.MustCompile(`Pos\(([^,]+),\s*([^\)]+)\)\s*(<>|=)\s*0`)
 	strToIntRe   = regexp.MustCompile(`StrToInt\(([^\)]+)\)`)
 	recordLitRe  = regexp.MustCompile(`([=,\[]\s*)\(([^()]*:[^()]*?)\)`)
-	ifThenRe     = regexp.MustCompile(`IfThen\(([^,]+),\s*([^,]+),\s*([^\)]+)\)`)
+	concatRe     = regexp.MustCompile(`(?i)concat\(([^,]+),\s*([^\)]+)\)`)
 	formatSpecRe = regexp.MustCompile(`:[0-9]+(?::[0-9]+)?`)
 )
 
@@ -153,15 +153,15 @@ func convertBuiltins(s string) string {
 		str := strings.TrimSpace(parts[2])
 		return fmt.Sprintf("%s.contains(%s)", str, sub)
 	})
-	s = ifThenRe.ReplaceAllStringFunc(s, func(m string) string {
-		parts := ifThenRe.FindStringSubmatch(m)
-		if len(parts) < 4 {
+	s = convertIfThen(s)
+	s = concatRe.ReplaceAllStringFunc(s, func(m string) string {
+		parts := concatRe.FindStringSubmatch(m)
+		if len(parts) < 3 {
 			return m
 		}
-		cond := strings.TrimSpace(parts[1])
-		yes := strings.TrimSpace(parts[2])
-		no := strings.TrimSpace(parts[3])
-		return fmt.Sprintf("if %s { %s } else { %s }", cond, yes, no)
+		arr := strings.TrimSpace(parts[1])
+		val := strings.TrimSpace(parts[2])
+		return fmt.Sprintf("append(%s, %s)", arr, val)
 	})
 	return s
 }
@@ -189,6 +189,68 @@ func convertRecordLit(s string) string {
 		})
 	}
 	return s
+}
+
+func convertIfThen(s string) string {
+	for {
+		idx := strings.Index(s, "IfThen(")
+		if idx == -1 {
+			break
+		}
+		start := idx + len("IfThen(")
+		depth := 0
+		end := -1
+		for i := start; i < len(s); i++ {
+			switch s[i] {
+			case '(':
+				depth++
+			case ')':
+				if depth == 0 {
+					end = i
+					i = len(s)
+				} else {
+					depth--
+				}
+			}
+		}
+		if end == -1 {
+			break
+		}
+		inner := s[start:end]
+		args := splitArgs(inner)
+		if len(args) != 3 {
+			break
+		}
+		cond := strings.TrimSpace(args[0])
+		yes := strings.TrimSpace(args[1])
+		no := strings.TrimSpace(args[2])
+		repl := fmt.Sprintf("if %s { %s } else { %s }", cond, yes, no)
+		s = s[:idx] + repl + s[end+1:]
+	}
+	return s
+}
+
+func splitArgs(s string) []string {
+	var out []string
+	depth := 0
+	start := 0
+	for i := 0; i < len(s); i++ {
+		switch s[i] {
+		case '(':
+			depth++
+		case ')':
+			if depth > 0 {
+				depth--
+			}
+		case ',':
+			if depth == 0 {
+				out = append(out, s[start:i])
+				start = i + 1
+			}
+		}
+	}
+	out = append(out, s[start:])
+	return out
 }
 
 func convertStringIndex(s string) string {
