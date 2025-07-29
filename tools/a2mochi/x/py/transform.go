@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -405,6 +406,15 @@ func emitAST(b *strings.Builder, n *Node, indent string, lines []string, seen ma
 		return emitWhileStmt(b, n, indent, lines, seen, structs, imports)
 	case "If":
 		return emitIfStmt(b, n, indent, lines, seen, structs, imports)
+	case "Try":
+		for _, st := range n.Body {
+			if err := emitAST(b, st, indent, lines, seen, structs, imports); err != nil {
+				return err
+			}
+		}
+		return nil
+	case "Pass":
+		return nil
 	case "Continue":
 		b.WriteString("continue\n")
 	case "Break":
@@ -1019,6 +1029,12 @@ func emitExpr(b *strings.Builder, n *Node, lines []string, structs map[string][]
 		switch vv := v.(type) {
 		case string:
 			fmt.Fprintf(b, "%q", vv)
+		case float64:
+			if math.Mod(vv, 1) == 0 {
+				fmt.Fprintf(b, "%d", int64(vv))
+			} else {
+				fmt.Fprintf(b, "%v", vv)
+			}
 		case nil:
 			b.WriteString("nil")
 		default:
