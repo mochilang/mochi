@@ -232,6 +232,62 @@ func parseBodyNodes(body string) ([]*ast.Node, error) {
 			}
 			idxNode := node("index", nil, n1, n2)
 			out = append(out, node("let", outVar, idxNode))
+		case func() bool { _, _, _, ok := parseUnion(c); return ok }():
+			left, right, outVar, _ := parseUnion(c)
+			n1, err := parseExpr(convertExpr(left))
+			if err != nil {
+				return nil, err
+			}
+			n2, err := parseExpr(convertExpr(right))
+			if err != nil {
+				return nil, err
+			}
+			bin := node("binary", "union", n1, n2)
+			out = append(out, node("let", outVar, bin))
+		case func() bool { _, _, _, ok := parseSubtract(c); return ok }():
+			left, right, outVar, _ := parseSubtract(c)
+			n1, err := parseExpr(convertExpr(left))
+			if err != nil {
+				return nil, err
+			}
+			n2, err := parseExpr(convertExpr(right))
+			if err != nil {
+				return nil, err
+			}
+			bin := node("binary", "except", n1, n2)
+			out = append(out, node("let", outVar, bin))
+		case func() bool { _, _, _, ok := parseIntersection(c); return ok }():
+			left, right, outVar, _ := parseIntersection(c)
+			n1, err := parseExpr(convertExpr(left))
+			if err != nil {
+				return nil, err
+			}
+			n2, err := parseExpr(convertExpr(right))
+			if err != nil {
+				return nil, err
+			}
+			bin := node("binary", "intersect", n1, n2)
+			out = append(out, node("let", outVar, bin))
+		case func() bool { _, _, _, ok := parseAppend(c); return ok }():
+			left, right, outVar, _ := parseAppend(c)
+			n1, err := parseExpr(convertExpr(left))
+			if err != nil {
+				return nil, err
+			}
+			n2, err := parseExpr(convertExpr(right))
+			if err != nil {
+				return nil, err
+			}
+			bin := node("binary", "union all", n1, n2)
+			out = append(out, node("let", outVar, bin))
+		case func() bool { _, _, ok := parseLength(c); return ok }():
+			listExpr, outVar, _ := parseLength(c)
+			n1, err := parseExpr(convertExpr(listExpr))
+			if err != nil {
+				return nil, err
+			}
+			call := node("call", "len", n1)
+			out = append(out, node("let", outVar, call))
 		case func() bool { _, _, _, ok := parseCallAssign(c); return ok }():
 			name, args, outVar, _ := parseCallAssign(c)
 			var argNodes []*ast.Node
@@ -336,6 +392,9 @@ func splitClauses(body string) []string {
 	return clauses
 }
 
+// ParseBodyNodesForTest exposes parseBodyNodes for testing a single clause list.
+func ParseBodyNodesForTest(body string) ([]*ast.Node, error) { return parseBodyNodes(body) }
+
 func convertExpr(expr string) string {
 	if key, dict, outVar, ok := parseGetDict(expr); ok {
 		dict = convertExpr(dict)
@@ -361,6 +420,30 @@ func convertExpr(expr string) string {
 	expr = strings.ReplaceAll(expr, "@>", ">")
 	expr = strings.ReplaceAll(expr, "@<", "<")
 	expr = strings.ReplaceAll(expr, " = ", " == ")
+	if strings.Contains(expr, "=") {
+		var b strings.Builder
+		for i := 0; i < len(expr); i++ {
+			ch := expr[i]
+			if ch == '=' {
+				prev := byte(0)
+				if i > 0 {
+					prev = expr[i-1]
+				}
+				next := byte(0)
+				if i+1 < len(expr) {
+					next = expr[i+1]
+				}
+				if prev == '=' || prev == ':' || prev == '!' || prev == '<' || prev == '>' || next == '=' {
+					b.WriteByte(ch)
+				} else {
+					b.WriteString("==")
+				}
+			} else {
+				b.WriteByte(ch)
+			}
+		}
+		expr = b.String()
+	}
 	expr = strings.ReplaceAll(expr, "map{", "{")
 	expr = strings.ReplaceAll(expr, "_{", "{")
 	expr = regexp.MustCompile(`^[A-Za-z0-9_]+{`).ReplaceAllStringFunc(expr, func(s string) string {
@@ -377,17 +460,47 @@ func convertExpr(expr string) string {
 func parseArgs(s string) []string {
 	var args []string
 	depth := 0
+	brack := 0
+	brace := 0
+	inSingle := false
+	inDouble := false
 	start := 0
 	for i, r := range s {
 		switch r {
+		case '\'':
+			if !inDouble {
+				inSingle = !inSingle
+			}
+		case '"':
+			if !inSingle {
+				inDouble = !inDouble
+			}
 		case '(':
-			depth++
+			if !inSingle && !inDouble {
+				depth++
+			}
 		case ')':
-			if depth > 0 {
+			if !inSingle && !inDouble && depth > 0 {
 				depth--
 			}
+		case '[':
+			if !inSingle && !inDouble {
+				brack++
+			}
+		case ']':
+			if !inSingle && !inDouble && brack > 0 {
+				brack--
+			}
+		case '{':
+			if !inSingle && !inDouble {
+				brace++
+			}
+		case '}':
+			if !inSingle && !inDouble && brace > 0 {
+				brace--
+			}
 		case ',':
-			if depth == 0 {
+			if !inSingle && !inDouble && depth == 0 && brack == 0 && brace == 0 {
 				args = append(args, strings.TrimSpace(s[start:i]))
 				start = i + 1
 			}
@@ -538,6 +651,90 @@ func parseGetDict(s string) (key, dict, outVar string, ok bool) {
 	return
 }
 
+func parseUnion(s string) (left, right, outVar string, ok bool) {
+	s = strings.TrimSpace(s)
+	if !strings.HasPrefix(s, "union(") {
+		return
+	}
+	inner := strings.TrimSuffix(strings.TrimPrefix(s, "union("), ")")
+	parts := parseArgs(inner)
+	if len(parts) != 3 {
+		return
+	}
+	left = parts[0]
+	right = parts[1]
+	outVar = parts[2]
+	ok = true
+	return
+}
+
+func parseSubtract(s string) (left, right, outVar string, ok bool) {
+	s = strings.TrimSpace(s)
+	if !strings.HasPrefix(s, "subtract(") {
+		return
+	}
+	inner := strings.TrimSuffix(strings.TrimPrefix(s, "subtract("), ")")
+	parts := parseArgs(inner)
+	if len(parts) != 3 {
+		return
+	}
+	left = parts[0]
+	right = parts[1]
+	outVar = parts[2]
+	ok = true
+	return
+}
+
+func parseIntersection(s string) (left, right, outVar string, ok bool) {
+	s = strings.TrimSpace(s)
+	if !strings.HasPrefix(s, "intersection(") {
+		return
+	}
+	inner := strings.TrimSuffix(strings.TrimPrefix(s, "intersection("), ")")
+	parts := parseArgs(inner)
+	if len(parts) != 3 {
+		return
+	}
+	left = parts[0]
+	right = parts[1]
+	outVar = parts[2]
+	ok = true
+	return
+}
+
+func parseAppend(s string) (left, right, outVar string, ok bool) {
+	s = strings.TrimSpace(s)
+	if !strings.HasPrefix(s, "append(") {
+		return
+	}
+	inner := strings.TrimSuffix(strings.TrimPrefix(s, "append("), ")")
+	parts := parseArgs(inner)
+	if len(parts) != 3 {
+		return
+	}
+	left = parts[0]
+	right = parts[1]
+	outVar = parts[2]
+	ok = true
+	return
+}
+
+func parseLength(s string) (list, outVar string, ok bool) {
+	s = strings.TrimSpace(s)
+	if !strings.HasPrefix(s, "length(") {
+		return
+	}
+	inner := strings.TrimSuffix(strings.TrimPrefix(s, "length("), ")")
+	parts := parseArgs(inner)
+	if len(parts) != 2 {
+		return
+	}
+	list = parts[0]
+	outVar = parts[1]
+	ok = true
+	return
+}
+
 func quoteAtom(s string) string {
 	s = strings.Trim(s, " \t")
 	if strings.HasPrefix(s, "'") && strings.HasSuffix(s, "'") {
@@ -550,6 +747,14 @@ func quoteAtom(s string) string {
 		return "\"" + s + "\""
 	}
 	return s
+}
+
+// SplitClausesForTest exposes splitClauses for testing.
+func SplitClausesForTest(body string) []string { return splitClauses(body) }
+
+// TestConvert exposes convertExpr for tests.
+func TestConvert(s string) string {
+	return convertExpr(s)
 }
 
 func replaceTopLevelCommas(s string) string {

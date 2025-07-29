@@ -1,0 +1,36 @@
+(program
+  (fun main
+    (let _12124
+      (binary union
+        (list (int 1) (int 2))
+        (list (int 2) (int 3))
+      )
+    )
+    (call print (selector _12124))
+    (let _12164
+      (binary except
+        (list (int 1) (int 2) (int 3))
+        (list (int 2))
+      )
+    )
+    (call print (selector _12164))
+    (let _12210
+      (binary intersect
+        (list (int 1) (int 2) (int 3))
+        (list (int 2) (int 4))
+      )
+    )
+    (call print (selector _12210))
+    (let _12250
+      (binary "union all"
+        (list (int 1) (int 2))
+        (list (int 2) (int 3))
+      )
+    )
+    (let _12256
+      (call len (selector _12250))
+    )
+    (call print (selector _12256))
+  )
+  (call main)
+)
