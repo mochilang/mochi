@@ -1,0 +1,5 @@
+run: error[T005]: parameter `c` is missing a type
+  --> :8:1
+
+help:
+  Add a type like `x: int` to this parameter.

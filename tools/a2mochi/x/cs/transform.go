@@ -182,6 +182,16 @@ func rewriteExpr(s string) string {
 			s = fmt.Sprintf("sum(%s)", stripOuterParens(before))
 		}
 
+		// Count() -> len()
+		if strings.HasSuffix(s, ".Count()") {
+			before := strings.TrimSuffix(s, ".Count()")
+			s = fmt.Sprintf("len(%s)", stripOuterParens(before))
+		}
+		if strings.HasPrefix(s, "Count(") && strings.HasSuffix(s, ")") {
+			inner := strings.TrimSuffix(strings.TrimPrefix(s, "Count("), ")")
+			s = fmt.Sprintf("len(%s)", stripOuterParens(inner))
+		}
+
 		// Contains(x) -> x in expr
 		if idx := strings.LastIndex(s, ".Contains("); idx != -1 && strings.HasSuffix(s, ")") {
 			before := stripOuterParens(strings.TrimSpace(s[:idx]))
