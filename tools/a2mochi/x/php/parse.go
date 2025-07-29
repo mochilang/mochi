@@ -892,7 +892,15 @@ func foreachNodeFromStmt(f *stmt.Foreach, p *Program) *ast.Node {
 	if !ok {
 		return nil
 	}
-	srcStr, ok := simpleExpr(f.Expr)
+	exprSrc := f.Expr
+	if call, ok := f.Expr.(*expr.FunctionCall); ok {
+		if nameString(call.Function) == "array_keys" && call.ArgumentList != nil && len(call.ArgumentList.Arguments) == 1 {
+			if arg, ok := call.ArgumentList.Arguments[0].(*pnode.Argument); ok {
+				exprSrc = arg.Expr
+			}
+		}
+	}
+	srcStr, ok := simpleExpr(exprSrc)
 	if !ok {
 		return nil
 	}

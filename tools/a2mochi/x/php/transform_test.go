@@ -134,6 +134,7 @@ func TestTransform_Golden(t *testing.T) {
 		"map_membership":      true,
 		"in_operator":         true,
 		"map_in_operator":     true,
+		"for_map_collection":  true,
 	}
 
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "php")
