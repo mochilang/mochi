@@ -2,6 +2,7 @@ package c
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -14,6 +15,7 @@ func Transform(p *Program) (*ast.Node, error) {
 		return nil, fmt.Errorf("nil program")
 	}
 	prints := findPrints(p.Root)
+	prints = append(prints, parseArrayLoops(p.Source)...)
 	root := &ast.Node{Kind: "program"}
 	for _, pr := range prints {
 		arg := valueNode(pr)
@@ -183,4 +185,37 @@ func valueNode(v string) *ast.Node {
 		return &ast.Node{Kind: "bool", Value: v == "true"}
 	}
 	return &ast.Node{Kind: "unknown", Value: v}
+}
+
+func parseArrayLoops(src string) []string {
+	arrDecl := regexp.MustCompile(`(?m)(?:int|const char\*|char\s*\*)\s+(\w+)_arr\s*\[]\s*=\s*{([^}]*)}`)
+	arrays := make(map[string][]string)
+	for _, m := range arrDecl.FindAllStringSubmatch(src, -1) {
+		name := m[1]
+		elems := strings.Split(m[2], ",")
+		vals := make([]string, 0, len(elems))
+		for _, e := range elems {
+			e = strings.TrimSpace(e)
+			if e == "" {
+				continue
+			}
+			vals = append(vals, e)
+		}
+		arrays[name] = vals
+	}
+
+	loopRe := regexp.MustCompile(`(?s)for\s*\(size_t i = 0; i < (\w+)_len; i\+\+\)\s*{([^}]*)}`)
+	prints := make([]string, 0)
+	for _, m := range loopRe.FindAllStringSubmatch(src, -1) {
+		name := m[1]
+		arr, ok := arrays[name]
+		if !ok || len(arr) == 0 {
+			continue
+		}
+		body := m[2]
+		if strings.Contains(body, "printf") || strings.Contains(body, "puts") {
+			prints = append(prints, arr...)
+		}
+	}
+	return prints
 }
