@@ -157,6 +157,19 @@ func convertBodyLine(s string) string {
 	s = strings.TrimSuffix(s, ";")
 	s = forVarRe.ReplaceAllString(s, "${1}for ${2} in ${3}")
 	s = forRangeRe.ReplaceAllString(s, "${1}for ${2} in ${3}..${4}")
+	if m := typedVarRe.FindStringSubmatch(strings.TrimSpace(s)); m != nil {
+		typ := toMochiType(strings.TrimSpace(m[1]))
+		name := m[2]
+		val := strings.TrimSpace(strings.TrimPrefix(m[3], "="))
+		stmt := "var " + name
+		if typ != "" && typ != "any" {
+			stmt += ": " + typ
+		}
+		if val != "" {
+			stmt += " = " + val
+		}
+		s = stmt
+	}
 	if strings.HasPrefix(strings.TrimSpace(s), "let ") {
 		s = strings.Replace(s, "let ", "var ", 1)
 	}
@@ -166,6 +179,9 @@ func convertBodyLine(s string) string {
 	s = convertTernary(s)
 	s = convertSpread(s)
 	s = convertLength(s)
+	s = convertIsEmpty(s)
+	s = convertContains(s)
+	s = convertCompareTo(s)
 	return convertQuotes(s)
 }
 
@@ -214,6 +230,35 @@ var lengthRe = regexp.MustCompile(`([A-Za-z0-9_\]\)]+)\.length`)
 
 func convertLength(s string) string {
 	return lengthRe.ReplaceAllString(s, "len($1)")
+}
+
+var isEmptyNotRe = regexp.MustCompile(`!\s*([A-Za-z0-9_\]\)]+)\.isEmpty`)
+var isEmptyRe = regexp.MustCompile(`([A-Za-z0-9_\]\)]+)\.isEmpty`)
+
+func convertIsEmpty(s string) string {
+	s = isEmptyNotRe.ReplaceAllString(s, "len($1) != 0")
+	return isEmptyRe.ReplaceAllString(s, "len($1) == 0")
+}
+
+var containsNotRe = regexp.MustCompile(`!\s*([A-Za-z0-9_]+)\.contains(?:Key)?\(([^)]+)\)`)
+var containsRe = regexp.MustCompile(`([A-Za-z0-9_]+)\.contains(?:Key)?\(([^)]+)\)`)
+
+func convertContains(s string) string {
+	s = containsNotRe.ReplaceAllString(s, "!($2 in $1)")
+	return containsRe.ReplaceAllString(s, "$2 in $1")
+}
+
+var cmpLTRe = regexp.MustCompile(`([\"A-Za-z0-9_]+)\.compareTo\(([\"A-Za-z0-9_]+)\)\s*<\s*0`)
+var cmpLERe = regexp.MustCompile(`([\"A-Za-z0-9_]+)\.compareTo\(([\"A-Za-z0-9_]+)\)\s*<=\s*0`)
+var cmpGTRe = regexp.MustCompile(`([\"A-Za-z0-9_]+)\.compareTo\(([\"A-Za-z0-9_]+)\)\s*>\s*0`)
+var cmpGERe = regexp.MustCompile(`([\"A-Za-z0-9_]+)\.compareTo\(([\"A-Za-z0-9_]+)\)\s*>=\s*0`)
+
+func convertCompareTo(s string) string {
+	s = cmpLERe.ReplaceAllString(s, "$1 <= $2")
+	s = cmpLTRe.ReplaceAllString(s, "$1 < $2")
+	s = cmpGERe.ReplaceAllString(s, "$1 >= $2")
+	s = cmpGTRe.ReplaceAllString(s, "$1 > $2")
+	return s
 }
 
 func splitArgs(s string) []string {
