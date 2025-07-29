@@ -1,0 +1,33 @@
+(program
+  (type Person
+    (field name (type string))
+    (field age (type int))
+  )
+  (type Book
+    (field title (type string))
+    (field author (type Person))
+  )
+  (var book
+    (cast
+      (map
+        (entry (string title) (string Go))
+        (entry
+          (string author)
+          (cast
+            (map
+              (entry (string name) (string Bob))
+              (entry (string age) (int 42))
+            )
+            (type Person)
+          )
+        )
+      )
+      (type Book)
+    )
+  )
+  (call print
+    (selector name
+      (selector author (selector book))
+    )
+  )
+)
