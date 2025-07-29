@@ -1,5 +1,3 @@
-//go:build slow
-
 package scheme
 
 import (
@@ -214,6 +212,38 @@ func exprNode(v interface{}) *ast.Node {
 				}
 			}
 			return n
+		case "and", "or":
+			if len(argsVal) >= 2 {
+				op := "&&"
+				if call == "or" {
+					op = "||"
+				}
+				left := exprNode(argsVal[0])
+				for _, a := range argsVal[1:] {
+					right := exprNode(a)
+					left = &ast.Node{Kind: "binary", Value: op, Children: []*ast.Node{left, right}}
+				}
+				return left
+			}
+			return nil
+		case "length", "string-length", "hash-table-size":
+			n := &ast.Node{Kind: "call", Value: "len"}
+			for _, a := range argsVal {
+				if c := exprNode(a); c != nil {
+					n.Children = append(n.Children, c)
+				}
+			}
+			return n
+		case "string->number":
+			if len(argsVal) == 1 {
+				return &ast.Node{Kind: "call", Value: "int", Children: []*ast.Node{exprNode(argsVal[0])}}
+			}
+			return nil
+		case "exact->inexact", "inexact->exact":
+			if len(argsVal) == 1 {
+				return exprNode(argsVal[0])
+			}
+			return nil
 		case "append":
 			n := &ast.Node{Kind: "call", Value: "append"}
 			if len(argsVal) > 0 {
