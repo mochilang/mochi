@@ -1,5 +1,1 @@
-(program
-  (fun main
-    (call print (string hello))
-  )
-)
+print("hello")

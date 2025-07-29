@@ -513,6 +513,9 @@ func convertIfExpr(code string) (string, bool) {
 	}
 	thenPart = sanitizeExpr(thenPart)
 	elsePart = sanitizeExpr(elsePart)
+	if thenPart == "1" && elsePart == "0" {
+		return cond, true
+	}
 	return fmt.Sprintf("if %s then %s else %s", cond, thenPart, elsePart), true
 }
 
@@ -572,19 +575,7 @@ func sanitizeExpr(code string) string {
 		code = code[:loc[0]] + repl + code[loc[1]:]
 	}
 
-	// convert `expr.contains(arg)` to `strings.Contains(expr, arg)`
-	reContains := regexp.MustCompile(`([A-Za-z0-9_]+)\.contains\(([^)]*)\)`)
-	for {
-		loc := reContains.FindStringSubmatchIndex(code)
-		if loc == nil {
-			break
-		}
-		parts := reContains.FindStringSubmatch(code[loc[0]:loc[1]])
-		expr := parts[1]
-		arg := strings.TrimSpace(parts[2])
-		repl := fmt.Sprintf("strings.Contains(%s, %s)", expr, arg)
-		code = code[:loc[0]] + repl + code[loc[1]:]
-	}
+	// convert `expr.contains(arg)` only for map or list when needed (disabled for strings)
 
 	// convert `String::from(&expr[start..end])` to `substring(expr, start, end)`
 	reSubstr := regexp.MustCompile(`String::from\(&?([^\[]+)\[(\d+)\s+as\s+usize\s*\.\.\s*(\d+)\s+as\s+usize\]\)`)
