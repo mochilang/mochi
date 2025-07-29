@@ -70,14 +70,23 @@ func Parse(src string) (*Program, error) {
 (define (item f)
   (cond
     [(and (pair? f) (eq? (car f) 'define))
-     (let ([d (cadr f)])
+     (let ([name (cadr f)]
+           [body (cddr f)])
        (cond
-         [(and (pair? d) (list? d))
+         [(and (pair? name) (list? name))
           (hash 'kind "func"
-                'name (symbol->string (car d))
-                'params (map symbol->string (cdr d)))]
-         [(symbol? d)
-          (hash 'kind "var" 'name (symbol->string d))]
+                'name (symbol->string (car name))
+                'params (map symbol->string (cdr name)))]
+         [(and (symbol? name)
+               (= (length body) 1)
+               (pair? (car body))
+               (eq? (caar body) 'lambda)
+               (list? (cadar body)))
+          (hash 'kind "func"
+                'name (symbol->string name)
+                'params (map symbol->string (cadar body)))]
+         [(symbol? name)
+          (hash 'kind "var" 'name (symbol->string name))]
          [else #f]))]
     [(and (pair? f) (eq? (car f) 'import))
      (for/list ([s (cdr f)] #:when (module-name s))
