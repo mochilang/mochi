@@ -27,32 +27,26 @@
       (kv (selector a) (int 1))
     )
   )
-  (let s (selector hello))
+  (let s (string hello))
   (fun main
     (block
       (call print
-        (list
-          (selector boolean)
-          (list (selector some) (selector "#{1}") (selector ys))
-        )
+        (binary in (int 1) (selector ys))
       )
       (call print
-        (list
-          (selector boolean)
-          (list (selector some) (selector "#{2}") (selector ys))
-        )
+        (binary in (int 2) (selector ys))
       )
       (call print
-        (binary in (selector a) (selector m))
+        (binary in (string a) (selector m))
       )
       (call print
-        (binary in (selector b) (selector m))
+        (binary in (string b) (selector m))
       )
       (call print
-        (list (selector clojure_string_includes_p) (selector s) (selector ell))
+        (list (selector clojure_string_includes_p) (selector s) (string ell))
       )
       (call print
-        (list (selector clojure_string_includes_p) (selector s) (selector foo))
+        (list (selector clojure_string_includes_p) (selector s) (string foo))
       )
     )
   )

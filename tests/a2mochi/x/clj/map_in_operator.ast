@@ -1,8 +1,8 @@
 (program
   (let m
     (map
-      (kv (int 1) (selector a))
-      (kv (int 2) (selector b))
+      (kv (int 1) (string a))
+      (kv (int 2) (string b))
     )
   )
   (fun main

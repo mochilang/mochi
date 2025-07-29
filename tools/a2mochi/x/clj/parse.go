@@ -86,6 +86,7 @@ const (
 	tokenRBrack
 	tokenLBrace
 	tokenRBrace
+	tokenSetStart
 	tokenQuote
 	tokenString
 	tokenSymbol
@@ -191,6 +192,13 @@ func (l *lexer) lex() []token {
 			toks = append(toks, token{typ: tokenLBrace})
 		case '}':
 			toks = append(toks, token{typ: tokenRBrace})
+		case '#':
+			if l.peek() == '{' {
+				l.next()
+				toks = append(toks, token{typ: tokenSetStart})
+			} else {
+				toks = append(toks, token{typ: tokenSymbol, val: l.readSymbol('#')})
+			}
 		case '\'':
 			toks = append(toks, token{typ: tokenQuote})
 		case '"':
@@ -199,7 +207,8 @@ func (l *lexer) lex() []token {
 				toks = append(toks, token{typ: tokenEOF})
 				return toks
 			}
-			toks = append(toks, token{typ: tokenString, val: str})
+			// Keep quotes so we can distinguish strings from symbols
+			toks = append(toks, token{typ: tokenString, val: "\"" + str + "\""})
 		default:
 			if r == 0 {
 				toks = append(toks, token{typ: tokenEOF})
@@ -286,6 +295,22 @@ func (p *parser) parseExpr() (node, error) {
 			p.next()
 		}
 		return node{Map: pairs}, nil
+	case tokenSetStart:
+		var items []node
+		for p.peek().typ != tokenRBrace && p.peek().typ != tokenEOF {
+			n, err := p.parseExpr()
+			if err != nil {
+				return node{}, err
+			}
+			items = append(items, n)
+		}
+		if p.peek().typ == tokenRBrace {
+			p.next()
+		}
+		// Represent set as a list prefixed with :set for simplicity
+		setList := []node{{Atom: "set"}}
+		setList = append(setList, items...)
+		return node{List: setList}, nil
 	case tokenString, tokenSymbol:
 		return node{Atom: tok.val}, nil
 	default:
