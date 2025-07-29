@@ -1,0 +1,17 @@
+(program
+  (let k (int 2))
+  (fun inc
+    (param x (type int))
+    (block
+      (binary + (selector x) (selector k))
+    )
+  )
+  (fun main
+    (block
+      (call print
+        (call inc (int 3))
+      )
+    )
+  )
+  (call main)
+)

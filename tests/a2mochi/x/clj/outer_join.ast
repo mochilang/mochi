@@ -1,0 +1,131 @@
+(program
+  (list
+    (selector defrecord)
+    (selector Orders)
+    (list (selector id) (selector customerId) (selector total))
+  )
+  (list
+    (selector defrecord)
+    (selector Customers)
+    (list (selector id) (selector name))
+  )
+  (let customers)
+  (let orders)
+  (let result
+    (list
+      (selector concat)
+      (list
+        (selector for)
+        (list
+          (selector o)
+          (selector orders)
+          (selector let)
+          (list
+            (selector c)
+            (list
+              (selector some)
+              (list
+                (selector fn)
+                (list (selector c))
+                (call when
+                  (binary ==
+                    (list (selector customerId) (selector o))
+                    (list (selector id) (selector c))
+                  )
+                  (selector c)
+                )
+              )
+              (selector customers)
+            )
+          )
+        )
+        (map
+          (kv (selector customer) (selector c))
+          (kv (selector order) (selector o))
+        )
+      )
+      (list
+        (selector for)
+        (list
+          (selector c)
+          (selector customers)
+          (selector when)
+          (list
+            (selector not_any_p)
+            (list
+              (selector fn)
+              (list (selector o))
+              (binary ==
+                (list (selector customerId) (selector o))
+                (list (selector id) (selector c))
+              )
+            )
+            (selector orders)
+          )
+          (selector let)
+          (list (selector o) (selector _))
+        )
+        (map
+          (kv (selector customer) (selector c))
+          (kv (selector order) (selector o))
+        )
+      )
+    )
+  )
+  (fun main
+    (block
+      (call print (selector " Outer Join using syntax ___"))
+      (for row
+        (in (selector result))
+        (block
+          (if
+            (list (selector order) (selector row))
+            (if
+              (list (selector customer) (selector row))
+              (call print
+                (selector Order)
+                (list
+                  (selector id)
+                  (list (selector order) (selector row))
+                )
+                (selector by)
+                (list
+                  (selector name)
+                  (list (selector customer) (selector row))
+                )
+                (selector " $")
+                (list
+                  (selector total)
+                  (list (selector order) (selector row))
+                )
+              )
+              (call print
+                (selector Order)
+                (list
+                  (selector id)
+                  (list (selector order) (selector row))
+                )
+                (selector by)
+                (selector Unknown)
+                (selector " $")
+                (list
+                  (selector total)
+                  (list (selector order) (selector row))
+                )
+              )
+            )
+            (call print
+              (selector Customer)
+              (list
+                (selector name)
+                (list (selector customer) (selector row))
+              )
+              (selector "has no orders")
+            )
+          )
+        )
+      )
+    )
+  )
+  (call main)
+)

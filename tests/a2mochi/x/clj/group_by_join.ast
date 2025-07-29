@@ -1,0 +1,51 @@
+(program
+  (list
+    (selector defrecord)
+    (selector Orders)
+    (list (selector id) (selector customerId))
+  )
+  (list
+    (selector defrecord)
+    (selector Customers)
+    (list (selector id) (selector name))
+  )
+  (let customers)
+  (let orders)
+  (let stats
+    (list
+      (selector for)
+      (list
+        (selector g)
+        (list (selector for) (selector g))
+      )
+      (map
+        (kv
+          (selector count)
+          (call len
+            (list (selector items) (selector g))
+          )
+        )
+        (kv
+          (selector name)
+          (list (selector key) (selector g))
+        )
+      )
+    )
+  )
+  (fun main
+    (block
+      (call print (selector " Orders per customer ___"))
+      (for s
+        (in (selector stats))
+        (block
+          (call print
+            (list (selector name) (selector s))
+            (selector "orders:")
+            (list (selector count) (selector s))
+          )
+        )
+      )
+    )
+  )
+  (call main)
+)

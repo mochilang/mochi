@@ -1,0 +1,41 @@
+(program
+  (let people)
+  (let adults
+    (list
+      (selector for)
+      (list
+        (selector p)
+        (selector people)
+        (selector when)
+        (binary >=
+          (list (selector age) (selector p))
+          (int 18)
+        )
+      )
+      (map
+        (kv
+          (selector email)
+          (list (selector email) (selector p))
+        )
+        (kv
+          (selector name)
+          (list (selector name) (selector p))
+        )
+      )
+    )
+  )
+  (fun main
+    (block
+      (for a
+        (in (selector adults))
+        (block
+          (call print
+            (list (selector name) (selector a))
+            (list (selector email) (selector a))
+          )
+        )
+      )
+    )
+  )
+  (call main)
+)

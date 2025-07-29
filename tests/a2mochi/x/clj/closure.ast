@@ -1,0 +1,23 @@
+(program
+  (fun makeAdder
+    (param n (type int))
+    (block
+      (list
+        (selector fn)
+        (list (selector x))
+        (binary + (selector x) (selector n))
+      )
+    )
+  )
+  (let add10
+    (call makeAdder (int 10))
+  )
+  (fun main
+    (block
+      (call print
+        (list (selector add10) (int 7))
+      )
+    )
+  )
+  (call main)
+)

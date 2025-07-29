@@ -1,0 +1,61 @@
+(program
+  (list
+    (selector defrecord)
+    (selector Items)
+    (list (selector cat) (selector val))
+  )
+  (let items)
+  (let grouped
+    (list
+      (selector for)
+      (list
+        (selector g)
+        (list
+          (selector sort_by)
+          (list
+            (selector fn)
+            (list (selector g))
+            (call _
+              (call sum
+                (list
+                  (selector for)
+                  (list
+                    (selector x)
+                    (list (selector items) (selector g))
+                  )
+                  (list (selector val) (selector x))
+                )
+              )
+            )
+          )
+          (list (selector for) (selector g))
+        )
+      )
+      (map
+        (kv
+          (selector cat)
+          (list (selector key) (selector g))
+        )
+        (kv
+          (selector total)
+          (call sum
+            (list
+              (selector for)
+              (list
+                (selector x)
+                (list (selector items) (selector g))
+              )
+              (list (selector val) (selector x))
+            )
+          )
+        )
+      )
+    )
+  )
+  (fun main
+    (block
+      (call print (selector grouped))
+    )
+  )
+  (call main)
+)

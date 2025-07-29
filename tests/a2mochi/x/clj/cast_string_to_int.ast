@@ -1,0 +1,10 @@
+(program
+  (fun main
+    (block
+      (call print
+        (list (selector Integer_parseInt) (int 1995))
+      )
+    )
+  )
+  (call main)
+)

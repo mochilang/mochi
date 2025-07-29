@@ -35,12 +35,13 @@ type form struct {
 }
 
 type node struct {
-	Atom    string `json:"atom,omitempty"`
-	List    []node `json:"list,omitempty"`
-	Line    int    `json:"line,omitempty"`
-	Col     int    `json:"col,omitempty"`
-	EndLine int    `json:"end-line,omitempty"`
-	EndCol  int    `json:"end-col,omitempty"`
+	Atom    string   `json:"atom,omitempty"`
+	List    []node   `json:"list,omitempty"`
+	Map     [][]node `json:"map,omitempty"`
+	Line    int      `json:"line,omitempty"`
+	Col     int      `json:"col,omitempty"`
+	EndLine int      `json:"end-line,omitempty"`
+	EndCol  int      `json:"end-col,omitempty"`
 }
 
 // Parse reads Clojure source code using the parse.clj helper script.

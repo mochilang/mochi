@@ -1,0 +1,31 @@
+(program
+  (fun main
+    (block
+      (call print
+        (binary *
+          (binary + (int 1) (int 2))
+          (int 3)
+        )
+      )
+      (call print
+        (binary *
+          (binary + (int 1) (int 2))
+          (int 3)
+        )
+      )
+      (call print
+        (binary +
+          (binary * (int 2) (int 3))
+          (int 1)
+        )
+      )
+      (call print
+        (binary *
+          (int 2)
+          (binary + (int 3) (int 1))
+        )
+      )
+    )
+  )
+  (call main)
+)

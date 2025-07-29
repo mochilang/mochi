@@ -1,0 +1,68 @@
+(program
+  (let x (int 2))
+  (let label
+    (list
+      (selector cond)
+      (binary == (selector x) (int 1))
+      (selector one)
+      (binary == (selector x) (int 2))
+      (selector two)
+      (binary == (selector x) (int 3))
+      (selector three)
+      (bool true)
+      (selector unknown)
+    )
+  )
+  (let day (selector sun))
+  (let mood
+    (list
+      (selector cond)
+      (binary == (selector day) (selector mon))
+      (selector tired)
+      (binary == (selector day) (selector fri))
+      (selector excited)
+      (binary == (selector day) (selector sun))
+      (selector relaxed)
+      (bool true)
+      (selector normal)
+    )
+  )
+  (let ok (bool true))
+  (let status
+    (list
+      (selector cond)
+      (binary == (selector ok) (bool true))
+      (selector confirmed)
+      (binary == (selector ok) (bool false))
+      (selector denied)
+    )
+  )
+  (fun classify
+    (param n (type int))
+    (block
+      (list
+        (selector cond)
+        (binary == (selector n) (int 0))
+        (selector zero)
+        (binary == (selector n) (int 1))
+        (selector one)
+        (bool true)
+        (selector many)
+      )
+    )
+  )
+  (fun main
+    (block
+      (call print (selector label))
+      (call print (selector mood))
+      (call print (selector status))
+      (call print
+        (call classify (int 0))
+      )
+      (call print
+        (call classify (int 5))
+      )
+    )
+  )
+  (call main)
+)

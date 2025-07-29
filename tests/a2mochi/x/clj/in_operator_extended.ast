@@ -1,0 +1,60 @@
+(program
+  (list
+    (selector defrecord)
+    (selector M)
+    (list (selector a))
+  )
+  (let xs
+    (list (int 1) (int 2) (int 3))
+  )
+  (let ys
+    (list
+      (selector for)
+      (list
+        (selector x)
+        (selector xs)
+        (selector when)
+        (binary ==
+          (binary % (selector x) (int 2))
+          (int 1)
+        )
+      )
+      (selector x)
+    )
+  )
+  (let m
+    (map
+      (kv (selector a) (int 1))
+    )
+  )
+  (let s (selector hello))
+  (fun main
+    (block
+      (call print
+        (list
+          (selector boolean)
+          (list (selector some) (selector "#{1}") (selector ys))
+        )
+      )
+      (call print
+        (list
+          (selector boolean)
+          (list (selector some) (selector "#{2}") (selector ys))
+        )
+      )
+      (call print
+        (binary in (selector a) (selector m))
+      )
+      (call print
+        (binary in (selector b) (selector m))
+      )
+      (call print
+        (list (selector clojure_string_includes_p) (selector s) (selector ell))
+      )
+      (call print
+        (list (selector clojure_string_includes_p) (selector s) (selector foo))
+      )
+    )
+  )
+  (call main)
+)

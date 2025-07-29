@@ -1,0 +1,12 @@
+(program
+  (let a (int 10))
+  (let b (int 20))
+  (fun main
+    (block
+      (call print
+        (binary + (selector a) (selector b))
+      )
+    )
+  )
+  (call main)
+)

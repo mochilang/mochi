@@ -1,0 +1,24 @@
+(program
+  (let xs
+    (list (int 1) (int 2) (int 3))
+  )
+  (fun main
+    (block
+      (call print
+        (list
+          (selector boolean)
+          (list (selector some) (selector "#{2}") (selector xs))
+        )
+      )
+      (call print
+        (unary !
+          (list
+            (selector boolean)
+            (list (selector some) (selector "#{5}") (selector xs))
+          )
+        )
+      )
+    )
+  )
+  (call main)
+)

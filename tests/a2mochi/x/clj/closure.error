@@ -1,0 +1,5 @@
+error[T002]: undefined variable: fn
+  --> :3:4
+
+help:
+  Check if the variable was declared in this scope.

@@ -1,0 +1,22 @@
+(program
+  (let nums
+    (list (int 1) (int 2) (int 3))
+  )
+  (fun main
+    (block
+      (call print
+        (list
+          (selector boolean)
+          (list (selector some) (selector "#{2}") (selector nums))
+        )
+      )
+      (call print
+        (list
+          (selector boolean)
+          (list (selector some) (selector "#{4}") (selector nums))
+        )
+      )
+    )
+  )
+  (call main)
+)

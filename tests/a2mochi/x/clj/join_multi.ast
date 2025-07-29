@@ -1,0 +1,70 @@
+(program
+  (list
+    (selector defrecord)
+    (selector Items)
+    (list (selector orderId) (selector sku))
+  )
+  (list
+    (selector defrecord)
+    (selector Orders)
+    (list (selector id) (selector customerId))
+  )
+  (list
+    (selector defrecord)
+    (selector Customers)
+    (list (selector id) (selector name))
+  )
+  (let customers)
+  (let orders)
+  (let items)
+  (let result
+    (list
+      (selector for)
+      (list
+        (selector o)
+        (selector orders)
+        (selector c)
+        (selector customers)
+        (selector i)
+        (selector items)
+        (selector when)
+        (binary &&
+          (binary ==
+            (list (selector customerId) (selector o))
+            (list (selector id) (selector c))
+          )
+          (binary ==
+            (list (selector id) (selector o))
+            (list (selector orderId) (selector i))
+          )
+        )
+      )
+      (map
+        (kv
+          (selector name)
+          (list (selector name) (selector c))
+        )
+        (kv
+          (selector sku)
+          (list (selector sku) (selector i))
+        )
+      )
+    )
+  )
+  (fun main
+    (block
+      (call print (selector " Multi Join ___"))
+      (for r
+        (in (selector result))
+        (block
+          (call print
+            (list (selector name) (selector r))
+            (selector "bought item")
+            (list (selector sku) (selector r))
+          )
+        )
+      )
+    )
+  )
+  (call main)
+)

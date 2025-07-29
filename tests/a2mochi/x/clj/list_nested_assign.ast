@@ -1,0 +1,21 @@
+(program
+  (let matrix)
+  (fun main
+    (block
+      (assign matrix
+        (list
+          (selector assoc_in)
+          (selector matrix)
+          (list (int 1) (int 0))
+          (int 5)
+        )
+      )
+      (call print
+        (index (index (selector matrix)
+ (int 1))
+ (int 0))
+      )
+    )
+  )
+  (call main)
+)

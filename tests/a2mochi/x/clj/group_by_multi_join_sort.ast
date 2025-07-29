@@ -1,0 +1,150 @@
+(program
+  (list
+    (selector defrecord)
+    (selector Lineitem)
+    (list (selector l_orderkey) (selector l_returnflag) (selector l_extendedprice) (selector l_discount))
+  )
+  (list
+    (selector defrecord)
+    (selector Orders)
+    (list (selector o_orderkey) (selector o_custkey) (selector o_orderdate))
+  )
+  (list
+    (selector defrecord)
+    (selector Customer)
+    (list (selector c_custkey) (selector c_name) (selector c_acctbal) (selector c_nationkey) (selector c_address) (selector c_phone) (selector c_comment))
+  )
+  (list
+    (selector defrecord)
+    (selector Nation)
+    (list (selector n_nationkey) (selector n_name))
+  )
+  (let nation)
+  (let customer)
+  (let orders)
+  (let lineitem)
+  (let start_date (selector _1993_10_01))
+  (let end_date (selector _1994_01_01))
+  (let result
+    (list
+      (selector for)
+      (list
+        (selector g)
+        (list
+          (selector sort_by)
+          (list
+            (selector fn)
+            (list (selector g))
+            (call _
+              (call sum
+                (list
+                  (selector for)
+                  (list
+                    (selector x)
+                    (list (selector items) (selector g))
+                  )
+                  (binary *
+                    (list
+                      (selector l_extendedprice)
+                      (list (selector l) (selector x))
+                    )
+                    (binary -
+                      (int 1)
+                      (list
+                        (selector l_discount)
+                        (list (selector l) (selector x))
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+          (list (selector for) (selector g))
+        )
+      )
+      (map
+        (kv
+          (selector c_acctbal)
+          (list
+            (selector c_acctbal)
+            (list (selector key) (selector g))
+          )
+        )
+        (kv
+          (selector c_address)
+          (list
+            (selector c_address)
+            (list (selector key) (selector g))
+          )
+        )
+        (kv
+          (selector c_comment)
+          (list
+            (selector c_comment)
+            (list (selector key) (selector g))
+          )
+        )
+        (kv
+          (selector c_custkey)
+          (list
+            (selector c_custkey)
+            (list (selector key) (selector g))
+          )
+        )
+        (kv
+          (selector c_name)
+          (list
+            (selector c_name)
+            (list (selector key) (selector g))
+          )
+        )
+        (kv
+          (selector c_phone)
+          (list
+            (selector c_phone)
+            (list (selector key) (selector g))
+          )
+        )
+        (kv
+          (selector n_name)
+          (list
+            (selector n_name)
+            (list (selector key) (selector g))
+          )
+        )
+        (kv
+          (selector revenue)
+          (call sum
+            (list
+              (selector for)
+              (list
+                (selector x)
+                (list (selector items) (selector g))
+              )
+              (binary *
+                (list
+                  (selector l_extendedprice)
+                  (list (selector l) (selector x))
+                )
+                (binary -
+                  (int 1)
+                  (list
+                    (selector l_discount)
+                    (list (selector l) (selector x))
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (fun main
+    (block
+      (call print (selector result))
+    )
+  )
+  (call main)
+)

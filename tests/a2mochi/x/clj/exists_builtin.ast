@@ -1,0 +1,28 @@
+(program
+  (let data
+    (list (int 1) (int 2))
+  )
+  (let flag
+    (binary >
+      (call len
+        (list
+          (selector for)
+          (list
+            (selector x)
+            (selector data)
+            (selector when)
+            (binary == (selector x) (int 1))
+          )
+          (selector x)
+        )
+      )
+      (int 0)
+    )
+  )
+  (fun main
+    (block
+      (call print (selector flag))
+    )
+  )
+  (call main)
+)

@@ -1,0 +1,63 @@
+(program
+  (list
+    (selector defrecord)
+    (selector Orders)
+    (list (selector id) (selector customerId) (selector total))
+  )
+  (list
+    (selector defrecord)
+    (selector Customers)
+    (list (selector id) (selector name))
+  )
+  (let customers)
+  (let orders)
+  (let result
+    (list
+      (selector for)
+      (list
+        (selector o)
+        (selector orders)
+        (selector c)
+        (selector customers)
+        (selector when)
+        (binary ==
+          (list (selector customerId) (selector o))
+          (list (selector id) (selector c))
+        )
+      )
+      (map
+        (kv
+          (selector customerName)
+          (list (selector name) (selector c))
+        )
+        (kv
+          (selector orderId)
+          (list (selector id) (selector o))
+        )
+        (kv
+          (selector total)
+          (list (selector total) (selector o))
+        )
+      )
+    )
+  )
+  (fun main
+    (block
+      (call print (selector " Orders with customer info ___"))
+      (for entry
+        (in (selector result))
+        (block
+          (call print
+            (selector Order)
+            (list (selector orderId) (selector entry))
+            (selector by)
+            (list (selector customerName) (selector entry))
+            (selector " $")
+            (list (selector total) (selector entry))
+          )
+        )
+      )
+    )
+  )
+  (call main)
+)

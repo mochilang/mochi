@@ -1,0 +1,76 @@
+(program
+  (list
+    (selector defrecord)
+    (selector Data)
+    (list (selector tag) (selector val))
+  )
+  (let data)
+  (let groups
+    (list
+      (selector for)
+      (list
+        (selector g)
+        (list (selector for) (selector g))
+      )
+      (selector g)
+    )
+  )
+  (let tmp (selector _))
+  (let result
+    (list
+      (selector for)
+      (list
+        (selector r)
+        (list
+          (selector sort_by)
+          (list
+            (selector fn)
+            (list (selector r))
+            (list (selector tag) (selector r))
+          )
+          (selector tmp)
+        )
+      )
+      (selector r)
+    )
+  )
+  (fun main
+    (block
+      (for g
+        (in (selector groups))
+        (block
+          (block
+            (assign total (int 0))
+            (for x
+              (in
+                (list (selector items) (selector g))
+              )
+              (block
+                (assign total
+                  (binary +
+                    (selector total)
+                    (list (selector val) (selector x))
+                  )
+                )
+              )
+            )
+            (assign tmp
+              (call append
+                (selector tmp)
+                (map
+                  (kv
+                    (selector tag)
+                    (list (selector key) (selector g))
+                  )
+                  (kv (selector total) (selector total))
+                )
+              )
+            )
+          )
+        )
+      )
+      (call print (selector result))
+    )
+  )
+  (call main)
+)

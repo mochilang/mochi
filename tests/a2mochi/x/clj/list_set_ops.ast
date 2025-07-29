@@ -1,0 +1,73 @@
+(program
+  (fun main
+    (block
+      (call print
+        (list
+          (selector vec)
+          (list
+            (selector clojure_set_union)
+            (list
+              (selector set)
+              (list (int 1) (int 2))
+            )
+            (list
+              (selector set)
+              (list (int 2) (int 3))
+            )
+          )
+        )
+      )
+      (call print
+        (list
+          (selector vec)
+          (list
+            (selector clojure_set_difference)
+            (list
+              (selector set)
+              (list (int 1) (int 2) (int 3))
+            )
+            (list
+              (selector set)
+              (list (int 2))
+            )
+          )
+        )
+      )
+      (call print
+        (list
+          (selector vec)
+          (list
+            (selector clojure_set_intersection)
+            (list
+              (selector set)
+              (list (int 1) (int 2) (int 3))
+            )
+            (list
+              (selector set)
+              (list (int 2) (int 4))
+            )
+          )
+        )
+      )
+      (call print
+        (call len
+          (list
+            (selector vec)
+            (list
+              (selector clojure_set_union)
+              (list
+                (selector set)
+                (list (int 1) (int 2))
+              )
+              (list
+                (selector set)
+                (list (int 2) (int 3))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (call main)
+)

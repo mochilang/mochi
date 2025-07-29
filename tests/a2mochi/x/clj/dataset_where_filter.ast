@@ -1,0 +1,60 @@
+(program
+  (list
+    (selector defrecord)
+    (selector People)
+    (list (selector name) (selector age))
+  )
+  (let people)
+  (let adults
+    (list
+      (selector for)
+      (list
+        (selector person)
+        (selector people)
+        (selector when)
+        (binary >=
+          (list (selector age) (selector person))
+          (int 18)
+        )
+      )
+      (map
+        (kv
+          (selector age)
+          (list (selector age) (selector person))
+        )
+        (kv
+          (selector is_senior)
+          (binary >=
+            (list (selector age) (selector person))
+            (int 60)
+          )
+        )
+        (kv
+          (selector name)
+          (list (selector name) (selector person))
+        )
+      )
+    )
+  )
+  (fun main
+    (block
+      (call print (selector " Adults ___"))
+      (for person
+        (in (selector adults))
+        (block
+          (call print
+            (list (selector name) (selector person))
+            (selector is)
+            (list (selector age) (selector person))
+            (if
+              (list (selector is_senior) (selector person))
+              (selector " (senior)")
+              (selector _)
+            )
+          )
+        )
+      )
+    )
+  )
+  (call main)
+)

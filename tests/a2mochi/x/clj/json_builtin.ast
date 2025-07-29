@@ -1,0 +1,17 @@
+(program
+  (list
+    (selector defrecord)
+    (selector M)
+    (list (selector a) (selector b))
+  )
+  (let m
+    (map
+      (kv (selector a) (int 1))
+      (kv (selector b) (int 2))
+    )
+  )
+  (fun main
+    (block (call print))
+  )
+  (call main)
+)

@@ -1,0 +1,23 @@
+(program
+  (fun inner
+    (param x (type int))
+    (param y (type int))
+    (block
+      (binary + (selector x) (selector y))
+    )
+  )
+  (fun outer
+    (param x (type int))
+    (block
+      (call inner (selector x) (int 5))
+    )
+  )
+  (fun main
+    (block
+      (call print
+        (call outer (int 3))
+      )
+    )
+  )
+  (call main)
+)
