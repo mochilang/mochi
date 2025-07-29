@@ -2,8 +2,8 @@
 
 This directory holds golden outputs for converting C source files located in `tests/transpiler/x/c` into Mochi AST form. Each `.c` source has a matching `.mochi` and `.ast` file in this directory.
 
-Completed programs: 66/81
-Date: 2025-07-29 15:23:36 GMT
+Completed programs: 79/81
+Date: 2025-07-29 17:40:38 GMT
 
 ## Checklist
 
@@ -18,11 +18,11 @@ Date: 2025-07-29 15:23:36 GMT
 - [x] cast_struct
 - [x] closure
 - [x] count_builtin
-- [ ] cross_join
-- [ ] cross_join_filter
-- [ ] cross_join_triple
+- [x] cross_join
+- [x] cross_join_filter
+- [x] cross_join_triple
 - [x] dataset_sort_take_limit
-- [ ] dataset_where_filter
+- [x] dataset_where_filter
 - [x] exists_builtin
 - [x] for_list_collection
 - [x] for_loop
@@ -31,24 +31,24 @@ Date: 2025-07-29 15:23:36 GMT
 - [x] fun_expr_in_let
 - [x] fun_three_args
 - [x] go_auto
-- [ ] group_by
+- [x] group_by
 - [x] group_by_conditional_sum
 - [x] group_by_having
-- [ ] group_by_join
-- [ ] group_by_left_join
-- [ ] group_by_multi_join
+- [x] group_by_join
+- [x] group_by_left_join
+- [x] group_by_multi_join
 - [ ] group_by_multi_join_sort
 - [x] group_by_sort
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
 - [x] in_operator
-- [ ] in_operator_extended
-- [ ] inner_join
-- [ ] join_multi
+- [x] in_operator_extended
+- [x] inner_join
+- [x] join_multi
 - [x] json_builtin
-- [ ] left_join
-- [ ] left_join_multi
+- [x] left_join
+- [x] left_join_multi
 - [x] len_builtin
 - [x] len_map
 - [x] len_string
