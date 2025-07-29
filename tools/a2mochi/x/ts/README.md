@@ -1,7 +1,7 @@
 # a2mochi TypeScript Converter
 
-Completed programs: 26/105
-Date: 2025-07-29 23:36:30 GMT+7
+Completed programs: 27/105
+Date: 2025-07-30 00:05:28 GMT+7
 
 This directory holds golden outputs for the TypeScript to Mochi converter.
 Each `.ts` source in `tests/transpiler/x/ts` has a matching `.mochi` and `.ast`
@@ -10,7 +10,7 @@ package and executed to verify runtime behaviour matches the original VM
 programs.
 
 - [x] append_builtin
-- [ ] avg_builtin
+- [x] avg_builtin
 - [x] basic_compare
 - [ ] bench_block
 - [x] binary_precedence
