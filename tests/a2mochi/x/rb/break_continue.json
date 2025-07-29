@@ -1,0 +1,1089 @@
+{
+  "Type": "program",
+  "Value": "",
+  "Line": 2,
+  "Col": 0,
+  "Children": [
+    {
+      "Type": "stmts_add",
+      "Value": "",
+      "Line": 2,
+      "Col": 0,
+      "Children": [
+        {
+          "Type": "stmts_add",
+          "Value": "",
+          "Line": 2,
+          "Col": 0,
+          "Children": [
+            {
+              "Type": "stmts_new",
+              "Value": "",
+              "Line": 0,
+              "Col": 0,
+              "Children": null,
+              "EndLine": 0,
+              "EndCol": 0,
+              "Source": ""
+            },
+            {
+              "Type": "assign",
+              "Value": "",
+              "Line": 2,
+              "Col": 0,
+              "Children": [
+                {
+                  "Type": "var_field",
+                  "Value": "",
+                  "Line": 2,
+                  "Col": 0,
+                  "Children": [
+                    {
+                      "Type": "@ident",
+                      "Value": "numbers",
+                      "Line": 2,
+                      "Col": 0,
+                      "Children": null,
+                      "EndLine": 2,
+                      "EndCol": 0,
+                      "Source": ""
+                    }
+                  ],
+                  "EndLine": 2,
+                  "EndCol": 0,
+                  "Source": ""
+                },
+                {
+                  "Type": "array",
+                  "Value": "",
+                  "Line": 2,
+                  "Col": 11,
+                  "Children": [
+                    {
+                      "Type": "args_add",
+                      "Value": "",
+                      "Line": 2,
+                      "Col": 11,
+                      "Children": [
+                        {
+                          "Type": "args_add",
+                          "Value": "",
+                          "Line": 2,
+                          "Col": 11,
+                          "Children": [
+                            {
+                              "Type": "args_add",
+                              "Value": "",
+                              "Line": 2,
+                              "Col": 11,
+                              "Children": [
+                                {
+                                  "Type": "args_add",
+                                  "Value": "",
+                                  "Line": 2,
+                                  "Col": 11,
+                                  "Children": [
+                                    {
+                                      "Type": "args_add",
+                                      "Value": "",
+                                      "Line": 2,
+                                      "Col": 11,
+                                      "Children": [
+                                        {
+                                          "Type": "args_add",
+                                          "Value": "",
+                                          "Line": 2,
+                                          "Col": 11,
+                                          "Children": [
+                                            {
+                                              "Type": "args_add",
+                                              "Value": "",
+                                              "Line": 2,
+                                              "Col": 11,
+                                              "Children": [
+                                                {
+                                                  "Type": "args_add",
+                                                  "Value": "",
+                                                  "Line": 2,
+                                                  "Col": 11,
+                                                  "Children": [
+                                                    {
+                                                      "Type": "args_add",
+                                                      "Value": "",
+                                                      "Line": 2,
+                                                      "Col": 11,
+                                                      "Children": [
+                                                        {
+                                                          "Type": "args_new",
+                                                          "Value": "",
+                                                          "Line": 0,
+                                                          "Col": 0,
+                                                          "Children": null,
+                                                          "EndLine": 0,
+                                                          "EndCol": 0,
+                                                          "Source": ""
+                                                        },
+                                                        {
+                                                          "Type": "@int",
+                                                          "Value": "1",
+                                                          "Line": 2,
+                                                          "Col": 11,
+                                                          "Children": null,
+                                                          "EndLine": 2,
+                                                          "EndCol": 11,
+                                                          "Source": ""
+                                                        }
+                                                      ],
+                                                      "EndLine": 2,
+                                                      "EndCol": 11,
+                                                      "Source": ""
+                                                    },
+                                                    {
+                                                      "Type": "@int",
+                                                      "Value": "2",
+                                                      "Line": 2,
+                                                      "Col": 14,
+                                                      "Children": null,
+                                                      "EndLine": 2,
+                                                      "EndCol": 14,
+                                                      "Source": ""
+                                                    }
+                                                  ],
+                                                  "EndLine": 2,
+                                                  "EndCol": 14,
+                                                  "Source": ""
+                                                },
+                                                {
+                                                  "Type": "@int",
+                                                  "Value": "3",
+                                                  "Line": 2,
+                                                  "Col": 17,
+                                                  "Children": null,
+                                                  "EndLine": 2,
+                                                  "EndCol": 17,
+                                                  "Source": ""
+                                                }
+                                              ],
+                                              "EndLine": 2,
+                                              "EndCol": 17,
+                                              "Source": ""
+                                            },
+                                            {
+                                              "Type": "@int",
+                                              "Value": "4",
+                                              "Line": 2,
+                                              "Col": 20,
+                                              "Children": null,
+                                              "EndLine": 2,
+                                              "EndCol": 20,
+                                              "Source": ""
+                                            }
+                                          ],
+                                          "EndLine": 2,
+                                          "EndCol": 20,
+                                          "Source": ""
+                                        },
+                                        {
+                                          "Type": "@int",
+                                          "Value": "5",
+                                          "Line": 2,
+                                          "Col": 23,
+                                          "Children": null,
+                                          "EndLine": 2,
+                                          "EndCol": 23,
+                                          "Source": ""
+                                        }
+                                      ],
+                                      "EndLine": 2,
+                                      "EndCol": 23,
+                                      "Source": ""
+                                    },
+                                    {
+                                      "Type": "@int",
+                                      "Value": "6",
+                                      "Line": 2,
+                                      "Col": 26,
+                                      "Children": null,
+                                      "EndLine": 2,
+                                      "EndCol": 26,
+                                      "Source": ""
+                                    }
+                                  ],
+                                  "EndLine": 2,
+                                  "EndCol": 26,
+                                  "Source": ""
+                                },
+                                {
+                                  "Type": "@int",
+                                  "Value": "7",
+                                  "Line": 2,
+                                  "Col": 29,
+                                  "Children": null,
+                                  "EndLine": 2,
+                                  "EndCol": 29,
+                                  "Source": ""
+                                }
+                              ],
+                              "EndLine": 2,
+                              "EndCol": 29,
+                              "Source": ""
+                            },
+                            {
+                              "Type": "@int",
+                              "Value": "8",
+                              "Line": 2,
+                              "Col": 32,
+                              "Children": null,
+                              "EndLine": 2,
+                              "EndCol": 32,
+                              "Source": ""
+                            }
+                          ],
+                          "EndLine": 2,
+                          "EndCol": 32,
+                          "Source": ""
+                        },
+                        {
+                          "Type": "@int",
+                          "Value": "9",
+                          "Line": 2,
+                          "Col": 35,
+                          "Children": null,
+                          "EndLine": 2,
+                          "EndCol": 35,
+                          "Source": ""
+                        }
+                      ],
+                      "EndLine": 2,
+                      "EndCol": 35,
+                      "Source": ""
+                    }
+                  ],
+                  "EndLine": 2,
+                  "EndCol": 35,
+                  "Source": ""
+                }
+              ],
+              "EndLine": 2,
+              "EndCol": 35,
+              "Source": ""
+            }
+          ],
+          "EndLine": 2,
+          "EndCol": 35,
+          "Source": ""
+        },
+        {
+          "Type": "method_add_block",
+          "Value": "",
+          "Line": 3,
+          "Col": 0,
+          "Children": [
+            {
+              "Type": "call",
+              "Value": "",
+              "Line": 3,
+              "Col": 0,
+              "Children": [
+                {
+                  "Type": "var_ref",
+                  "Value": "",
+                  "Line": 3,
+                  "Col": 0,
+                  "Children": [
+                    {
+                      "Type": "@ident",
+                      "Value": "numbers",
+                      "Line": 3,
+                      "Col": 0,
+                      "Children": null,
+                      "EndLine": 3,
+                      "EndCol": 0,
+                      "Source": ""
+                    }
+                  ],
+                  "EndLine": 3,
+                  "EndCol": 0,
+                  "Source": ""
+                },
+                {
+                  "Type": "@period",
+                  "Value": ".",
+                  "Line": 3,
+                  "Col": 7,
+                  "Children": null,
+                  "EndLine": 3,
+                  "EndCol": 7,
+                  "Source": ""
+                },
+                {
+                  "Type": "@ident",
+                  "Value": "each",
+                  "Line": 3,
+                  "Col": 8,
+                  "Children": null,
+                  "EndLine": 3,
+                  "EndCol": 8,
+                  "Source": ""
+                }
+              ],
+              "EndLine": 3,
+              "EndCol": 8,
+              "Source": ""
+            },
+            {
+              "Type": "do_block",
+              "Value": "",
+              "Line": 4,
+              "Col": 5,
+              "Children": [
+                {
+                  "Type": "block_var",
+                  "Value": "",
+                  "Line": 0,
+                  "Col": 0,
+                  "Children": [
+                    {
+                      "Type": "params",
+                      "Value": "",
+                      "Line": 0,
+                      "Col": 0,
+                      "Children": [
+                        {
+                          "Type": "list",
+                          "Value": "",
+                          "Line": 0,
+                          "Col": 0,
+                          "Children": [
+                            {
+                              "Type": "@ident",
+                              "Value": "n",
+                              "Line": 3,
+                              "Col": 17,
+                              "Children": null,
+                              "EndLine": 3,
+                              "EndCol": 17,
+                              "Source": ""
+                            }
+                          ],
+                          "EndLine": 0,
+                          "EndCol": 0,
+                          "Source": ""
+                        }
+                      ],
+                      "EndLine": 0,
+                      "EndCol": 0,
+                      "Source": ""
+                    }
+                  ],
+                  "EndLine": 0,
+                  "EndCol": 0,
+                  "Source": ""
+                },
+                {
+                  "Type": "bodystmt",
+                  "Value": "",
+                  "Line": 4,
+                  "Col": 5,
+                  "Children": [
+                    {
+                      "Type": "stmts_add",
+                      "Value": "",
+                      "Line": 4,
+                      "Col": 5,
+                      "Children": [
+                        {
+                          "Type": "stmts_add",
+                          "Value": "",
+                          "Line": 4,
+                          "Col": 5,
+                          "Children": [
+                            {
+                              "Type": "stmts_add",
+                              "Value": "",
+                              "Line": 4,
+                              "Col": 5,
+                              "Children": [
+                                {
+                                  "Type": "stmts_new",
+                                  "Value": "",
+                                  "Line": 0,
+                                  "Col": 0,
+                                  "Children": null,
+                                  "EndLine": 0,
+                                  "EndCol": 0,
+                                  "Source": ""
+                                },
+                                {
+                                  "Type": "if",
+                                  "Value": "",
+                                  "Line": 4,
+                                  "Col": 5,
+                                  "Children": [
+                                    {
+                                      "Type": "binary",
+                                      "Value": "",
+                                      "Line": 4,
+                                      "Col": 5,
+                                      "Children": [
+                                        {
+                                          "Type": "binary",
+                                          "Value": "",
+                                          "Line": 4,
+                                          "Col": 5,
+                                          "Children": [
+                                            {
+                                              "Type": "var_ref",
+                                              "Value": "",
+                                              "Line": 4,
+                                              "Col": 5,
+                                              "Children": [
+                                                {
+                                                  "Type": "@ident",
+                                                  "Value": "n",
+                                                  "Line": 4,
+                                                  "Col": 5,
+                                                  "Children": null,
+                                                  "EndLine": 4,
+                                                  "EndCol": 5,
+                                                  "Source": ""
+                                                }
+                                              ],
+                                              "EndLine": 4,
+                                              "EndCol": 5,
+                                              "Source": ""
+                                            },
+                                            {
+                                              "Type": "@tok",
+                                              "Value": "%",
+                                              "Line": 0,
+                                              "Col": 0,
+                                              "Children": null,
+                                              "EndLine": 0,
+                                              "EndCol": 0,
+                                              "Source": ""
+                                            },
+                                            {
+                                              "Type": "@int",
+                                              "Value": "2",
+                                              "Line": 4,
+                                              "Col": 9,
+                                              "Children": null,
+                                              "EndLine": 4,
+                                              "EndCol": 9,
+                                              "Source": ""
+                                            }
+                                          ],
+                                          "EndLine": 4,
+                                          "EndCol": 9,
+                                          "Source": ""
+                                        },
+                                        {
+                                          "Type": "@tok",
+                                          "Value": "==",
+                                          "Line": 0,
+                                          "Col": 0,
+                                          "Children": null,
+                                          "EndLine": 0,
+                                          "EndCol": 0,
+                                          "Source": ""
+                                        },
+                                        {
+                                          "Type": "@int",
+                                          "Value": "0",
+                                          "Line": 4,
+                                          "Col": 14,
+                                          "Children": null,
+                                          "EndLine": 4,
+                                          "EndCol": 14,
+                                          "Source": ""
+                                        }
+                                      ],
+                                      "EndLine": 4,
+                                      "EndCol": 14,
+                                      "Source": ""
+                                    },
+                                    {
+                                      "Type": "stmts_add",
+                                      "Value": "",
+                                      "Line": 0,
+                                      "Col": 0,
+                                      "Children": [
+                                        {
+                                          "Type": "stmts_new",
+                                          "Value": "",
+                                          "Line": 0,
+                                          "Col": 0,
+                                          "Children": null,
+                                          "EndLine": 0,
+                                          "EndCol": 0,
+                                          "Source": ""
+                                        },
+                                        {
+                                          "Type": "next",
+                                          "Value": "",
+                                          "Line": 0,
+                                          "Col": 0,
+                                          "Children": [
+                                            {
+                                              "Type": "args_new",
+                                              "Value": "",
+                                              "Line": 0,
+                                              "Col": 0,
+                                              "Children": null,
+                                              "EndLine": 0,
+                                              "EndCol": 0,
+                                              "Source": ""
+                                            }
+                                          ],
+                                          "EndLine": 0,
+                                          "EndCol": 0,
+                                          "Source": ""
+                                        }
+                                      ],
+                                      "EndLine": 0,
+                                      "EndCol": 0,
+                                      "Source": ""
+                                    }
+                                  ],
+                                  "EndLine": 0,
+                                  "EndCol": 0,
+                                  "Source": ""
+                                }
+                              ],
+                              "EndLine": 0,
+                              "EndCol": 0,
+                              "Source": ""
+                            },
+                            {
+                              "Type": "if",
+                              "Value": "",
+                              "Line": 7,
+                              "Col": 5,
+                              "Children": [
+                                {
+                                  "Type": "binary",
+                                  "Value": "",
+                                  "Line": 7,
+                                  "Col": 5,
+                                  "Children": [
+                                    {
+                                      "Type": "var_ref",
+                                      "Value": "",
+                                      "Line": 7,
+                                      "Col": 5,
+                                      "Children": [
+                                        {
+                                          "Type": "@ident",
+                                          "Value": "n",
+                                          "Line": 7,
+                                          "Col": 5,
+                                          "Children": null,
+                                          "EndLine": 7,
+                                          "EndCol": 5,
+                                          "Source": ""
+                                        }
+                                      ],
+                                      "EndLine": 7,
+                                      "EndCol": 5,
+                                      "Source": ""
+                                    },
+                                    {
+                                      "Type": "@tok",
+                                      "Value": "\u003e",
+                                      "Line": 0,
+                                      "Col": 0,
+                                      "Children": null,
+                                      "EndLine": 0,
+                                      "EndCol": 0,
+                                      "Source": ""
+                                    },
+                                    {
+                                      "Type": "@int",
+                                      "Value": "7",
+                                      "Line": 7,
+                                      "Col": 9,
+                                      "Children": null,
+                                      "EndLine": 7,
+                                      "EndCol": 9,
+                                      "Source": ""
+                                    }
+                                  ],
+                                  "EndLine": 7,
+                                  "EndCol": 9,
+                                  "Source": ""
+                                },
+                                {
+                                  "Type": "stmts_add",
+                                  "Value": "",
+                                  "Line": 0,
+                                  "Col": 0,
+                                  "Children": [
+                                    {
+                                      "Type": "stmts_new",
+                                      "Value": "",
+                                      "Line": 0,
+                                      "Col": 0,
+                                      "Children": null,
+                                      "EndLine": 0,
+                                      "EndCol": 0,
+                                      "Source": ""
+                                    },
+                                    {
+                                      "Type": "break",
+                                      "Value": "",
+                                      "Line": 0,
+                                      "Col": 0,
+                                      "Children": [
+                                        {
+                                          "Type": "args_new",
+                                          "Value": "",
+                                          "Line": 0,
+                                          "Col": 0,
+                                          "Children": null,
+                                          "EndLine": 0,
+                                          "EndCol": 0,
+                                          "Source": ""
+                                        }
+                                      ],
+                                      "EndLine": 0,
+                                      "EndCol": 0,
+                                      "Source": ""
+                                    }
+                                  ],
+                                  "EndLine": 0,
+                                  "EndCol": 0,
+                                  "Source": ""
+                                }
+                              ],
+                              "EndLine": 0,
+                              "EndCol": 0,
+                              "Source": ""
+                            }
+                          ],
+                          "EndLine": 0,
+                          "EndCol": 0,
+                          "Source": ""
+                        },
+                        {
+                          "Type": "method_add_arg",
+                          "Value": "",
+                          "Line": 10,
+                          "Col": 2,
+                          "Children": [
+                            {
+                              "Type": "fcall",
+                              "Value": "",
+                              "Line": 10,
+                              "Col": 2,
+                              "Children": [
+                                {
+                                  "Type": "@ident",
+                                  "Value": "puts",
+                                  "Line": 10,
+                                  "Col": 2,
+                                  "Children": null,
+                                  "EndLine": 10,
+                                  "EndCol": 2,
+                                  "Source": ""
+                                }
+                              ],
+                              "EndLine": 10,
+                              "EndCol": 2,
+                              "Source": ""
+                            },
+                            {
+                              "Type": "arg_paren",
+                              "Value": "",
+                              "Line": 10,
+                              "Col": 10,
+                              "Children": [
+                                {
+                                  "Type": "args_add_block",
+                                  "Value": "",
+                                  "Line": 10,
+                                  "Col": 10,
+                                  "Children": [
+                                    {
+                                      "Type": "args_add",
+                                      "Value": "",
+                                      "Line": 10,
+                                      "Col": 10,
+                                      "Children": [
+                                        {
+                                          "Type": "args_new",
+                                          "Value": "",
+                                          "Line": 0,
+                                          "Col": 0,
+                                          "Children": null,
+                                          "EndLine": 0,
+                                          "EndCol": 0,
+                                          "Source": ""
+                                        },
+                                        {
+                                          "Type": "method_add_arg",
+                                          "Value": "",
+                                          "Line": 10,
+                                          "Col": 10,
+                                          "Children": [
+                                            {
+                                              "Type": "call",
+                                              "Value": "",
+                                              "Line": 10,
+                                              "Col": 10,
+                                              "Children": [
+                                                {
+                                                  "Type": "method_add_arg",
+                                                  "Value": "",
+                                                  "Line": 10,
+                                                  "Col": 10,
+                                                  "Children": [
+                                                    {
+                                                      "Type": "call",
+                                                      "Value": "",
+                                                      "Line": 10,
+                                                      "Col": 10,
+                                                      "Children": [
+                                                        {
+                                                          "Type": "paren",
+                                                          "Value": "",
+                                                          "Line": 10,
+                                                          "Col": 10,
+                                                          "Children": [
+                                                            {
+                                                              "Type": "stmts_add",
+                                                              "Value": "",
+                                                              "Line": 10,
+                                                              "Col": 10,
+                                                              "Children": [
+                                                                {
+                                                                  "Type": "stmts_new",
+                                                                  "Value": "",
+                                                                  "Line": 0,
+                                                                  "Col": 0,
+                                                                  "Children": null,
+                                                                  "EndLine": 0,
+                                                                  "EndCol": 0,
+                                                                  "Source": ""
+                                                                },
+                                                                {
+                                                                  "Type": "array",
+                                                                  "Value": "",
+                                                                  "Line": 10,
+                                                                  "Col": 10,
+                                                                  "Children": [
+                                                                    {
+                                                                      "Type": "args_add",
+                                                                      "Value": "",
+                                                                      "Line": 10,
+                                                                      "Col": 10,
+                                                                      "Children": [
+                                                                        {
+                                                                          "Type": "args_add",
+                                                                          "Value": "",
+                                                                          "Line": 10,
+                                                                          "Col": 10,
+                                                                          "Children": [
+                                                                            {
+                                                                              "Type": "args_new",
+                                                                              "Value": "",
+                                                                              "Line": 0,
+                                                                              "Col": 0,
+                                                                              "Children": null,
+                                                                              "EndLine": 0,
+                                                                              "EndCol": 0,
+                                                                              "Source": ""
+                                                                            },
+                                                                            {
+                                                                              "Type": "string_literal",
+                                                                              "Value": "",
+                                                                              "Line": 10,
+                                                                              "Col": 10,
+                                                                              "Children": [
+                                                                                {
+                                                                                  "Type": "string_add",
+                                                                                  "Value": "",
+                                                                                  "Line": 10,
+                                                                                  "Col": 10,
+                                                                                  "Children": [
+                                                                                    {
+                                                                                      "Type": "string_content",
+                                                                                      "Value": "",
+                                                                                      "Line": 0,
+                                                                                      "Col": 0,
+                                                                                      "Children": null,
+                                                                                      "EndLine": 0,
+                                                                                      "EndCol": 0,
+                                                                                      "Source": ""
+                                                                                    },
+                                                                                    {
+                                                                                      "Type": "@tstring_content",
+                                                                                      "Value": "odd number:",
+                                                                                      "Line": 10,
+                                                                                      "Col": 10,
+                                                                                      "Children": null,
+                                                                                      "EndLine": 10,
+                                                                                      "EndCol": 10,
+                                                                                      "Source": ""
+                                                                                    }
+                                                                                  ],
+                                                                                  "EndLine": 10,
+                                                                                  "EndCol": 10,
+                                                                                  "Source": ""
+                                                                                }
+                                                                              ],
+                                                                              "EndLine": 10,
+                                                                              "EndCol": 10,
+                                                                              "Source": ""
+                                                                            }
+                                                                          ],
+                                                                          "EndLine": 10,
+                                                                          "EndCol": 10,
+                                                                          "Source": ""
+                                                                        },
+                                                                        {
+                                                                          "Type": "var_ref",
+                                                                          "Value": "",
+                                                                          "Line": 10,
+                                                                          "Col": 24,
+                                                                          "Children": [
+                                                                            {
+                                                                              "Type": "@ident",
+                                                                              "Value": "n",
+                                                                              "Line": 10,
+                                                                              "Col": 24,
+                                                                              "Children": null,
+                                                                              "EndLine": 10,
+                                                                              "EndCol": 24,
+                                                                              "Source": ""
+                                                                            }
+                                                                          ],
+                                                                          "EndLine": 10,
+                                                                          "EndCol": 24,
+                                                                          "Source": ""
+                                                                        }
+                                                                      ],
+                                                                      "EndLine": 10,
+                                                                      "EndCol": 24,
+                                                                      "Source": ""
+                                                                    }
+                                                                  ],
+                                                                  "EndLine": 10,
+                                                                  "EndCol": 24,
+                                                                  "Source": ""
+                                                                }
+                                                              ],
+                                                              "EndLine": 10,
+                                                              "EndCol": 24,
+                                                              "Source": ""
+                                                            }
+                                                          ],
+                                                          "EndLine": 10,
+                                                          "EndCol": 24,
+                                                          "Source": ""
+                                                        },
+                                                        {
+                                                          "Type": "@period",
+                                                          "Value": ".",
+                                                          "Line": 10,
+                                                          "Col": 27,
+                                                          "Children": null,
+                                                          "EndLine": 10,
+                                                          "EndCol": 27,
+                                                          "Source": ""
+                                                        },
+                                                        {
+                                                          "Type": "@ident",
+                                                          "Value": "join",
+                                                          "Line": 10,
+                                                          "Col": 28,
+                                                          "Children": null,
+                                                          "EndLine": 10,
+                                                          "EndCol": 28,
+                                                          "Source": ""
+                                                        }
+                                                      ],
+                                                      "EndLine": 10,
+                                                      "EndCol": 28,
+                                                      "Source": ""
+                                                    },
+                                                    {
+                                                      "Type": "arg_paren",
+                                                      "Value": "",
+                                                      "Line": 10,
+                                                      "Col": 34,
+                                                      "Children": [
+                                                        {
+                                                          "Type": "args_add_block",
+                                                          "Value": "",
+                                                          "Line": 10,
+                                                          "Col": 34,
+                                                          "Children": [
+                                                            {
+                                                              "Type": "args_add",
+                                                              "Value": "",
+                                                              "Line": 10,
+                                                              "Col": 34,
+                                                              "Children": [
+                                                                {
+                                                                  "Type": "args_new",
+                                                                  "Value": "",
+                                                                  "Line": 0,
+                                                                  "Col": 0,
+                                                                  "Children": null,
+                                                                  "EndLine": 0,
+                                                                  "EndCol": 0,
+                                                                  "Source": ""
+                                                                },
+                                                                {
+                                                                  "Type": "string_literal",
+                                                                  "Value": "",
+                                                                  "Line": 10,
+                                                                  "Col": 34,
+                                                                  "Children": [
+                                                                    {
+                                                                      "Type": "string_add",
+                                                                      "Value": "",
+                                                                      "Line": 10,
+                                                                      "Col": 34,
+                                                                      "Children": [
+                                                                        {
+                                                                          "Type": "string_content",
+                                                                          "Value": "",
+                                                                          "Line": 0,
+                                                                          "Col": 0,
+                                                                          "Children": null,
+                                                                          "EndLine": 0,
+                                                                          "EndCol": 0,
+                                                                          "Source": ""
+                                                                        },
+                                                                        {
+                                                                          "Type": "@tstring_content",
+                                                                          "Value": " ",
+                                                                          "Line": 10,
+                                                                          "Col": 34,
+                                                                          "Children": null,
+                                                                          "EndLine": 10,
+                                                                          "EndCol": 34,
+                                                                          "Source": ""
+                                                                        }
+                                                                      ],
+                                                                      "EndLine": 10,
+                                                                      "EndCol": 34,
+                                                                      "Source": ""
+                                                                    }
+                                                                  ],
+                                                                  "EndLine": 10,
+                                                                  "EndCol": 34,
+                                                                  "Source": ""
+                                                                }
+                                                              ],
+                                                              "EndLine": 10,
+                                                              "EndCol": 34,
+                                                              "Source": ""
+                                                            }
+                                                          ],
+                                                          "EndLine": 10,
+                                                          "EndCol": 34,
+                                                          "Source": ""
+                                                        }
+                                                      ],
+                                                      "EndLine": 10,
+                                                      "EndCol": 34,
+                                                      "Source": ""
+                                                    }
+                                                  ],
+                                                  "EndLine": 10,
+                                                  "EndCol": 34,
+                                                  "Source": ""
+                                                },
+                                                {
+                                                  "Type": "@period",
+                                                  "Value": ".",
+                                                  "Line": 10,
+                                                  "Col": 37,
+                                                  "Children": null,
+                                                  "EndLine": 10,
+                                                  "EndCol": 37,
+                                                  "Source": ""
+                                                },
+                                                {
+                                                  "Type": "@ident",
+                                                  "Value": "rstrip",
+                                                  "Line": 10,
+                                                  "Col": 38,
+                                                  "Children": null,
+                                                  "EndLine": 10,
+                                                  "EndCol": 38,
+                                                  "Source": ""
+                                                }
+                                              ],
+                                              "EndLine": 10,
+                                              "EndCol": 38,
+                                              "Source": ""
+                                            },
+                                            {
+                                              "Type": "arg_paren",
+                                              "Value": "",
+                                              "Line": 0,
+                                              "Col": 0,
+                                              "Children": null,
+                                              "EndLine": 0,
+                                              "EndCol": 0,
+                                              "Source": ""
+                                            }
+                                          ],
+                                          "EndLine": 0,
+                                          "EndCol": 0,
+                                          "Source": ""
+                                        }
+                                      ],
+                                      "EndLine": 0,
+                                      "EndCol": 0,
+                                      "Source": ""
+                                    }
+                                  ],
+                                  "EndLine": 0,
+                                  "EndCol": 0,
+                                  "Source": ""
+                                }
+                              ],
+                              "EndLine": 0,
+                              "EndCol": 0,
+                              "Source": ""
+                            }
+                          ],
+                          "EndLine": 0,
+                          "EndCol": 0,
+                          "Source": ""
+                        }
+                      ],
+                      "EndLine": 0,
+                      "EndCol": 0,
+                      "Source": ""
+                    }
+                  ],
+                  "EndLine": 0,
+                  "EndCol": 0,
+                  "Source": ""
+                }
+              ],
+              "EndLine": 0,
+              "EndCol": 0,
+              "Source": ""
+            }
+          ],
+          "EndLine": 0,
+          "EndCol": 0,
+          "Source": ""
+        }
+      ],
+      "EndLine": 0,
+      "EndCol": 0,
+      "Source": ""
+    }
+  ],
+  "EndLine": 0,
+  "EndCol": 0,
+  "Source": "# Generated by Mochi transpiler v0.10.33 on 2025-07-21 16:57 +0700\nnumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]\nnumbers.each do |n|\n  if n % 2 == 0\n    next\n  end\n  if n \u003e 7\n    break\n  end\n  puts(([\"odd number:\", n]).join(' ').rstrip())\nend\n"
+}

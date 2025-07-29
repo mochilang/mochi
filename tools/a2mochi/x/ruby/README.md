@@ -2,20 +2,20 @@
 
 This directory contains a minimal converter that translates simple Ruby programs back into Mochi form. It uses Ruby's built in `ripper` library to obtain an s-expression AST which is then converted to Mochi code. The implementation mirrors the Python and TypeScript converters and is only powerful enough for the examples under `tests/transpiler/x/rb`.
 
-Completed programs: 33/104
-Date: 2025-07-29 15:22 +07
+Completed programs: 41/104
+Date: 2025-07-29 18:02 +07
 
 ## Checklist
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
 - [ ] bench_block
-- [ ] binary_precedence
-- [ ] bool_chain
+- [x] binary_precedence
+- [x] bool_chain
 - [x] break_continue
 - [x] cast_string_to_int
 - [ ] cast_struct
-- [ ] closure
+- [x] closure
 - [x] count_builtin
 - [ ] cross_join
 - [ ] cross_join_filter
@@ -24,9 +24,9 @@ Date: 2025-07-29 15:22 +07
 - [ ] dataset_where_filter
 - [ ] exists_builtin
 - [x] for_list_collection
-- [ ] for_loop
+- [x] for_loop
 - [x] for_map_collection
-- [ ] fun_call
+- [x] fun_call
 - [ ] fun_expr_in_let
 - [ ] fun_three_args
 - [ ] go_auto
@@ -95,8 +95,8 @@ Date: 2025-07-29 15:22 +07
 - [x] string_contains
 - [x] string_in_operator
 - [x] string_index
-- [ ] string_prefix_slice
-- [ ] substring_builtin
+- [x] string_prefix_slice
+- [x] substring_builtin
 - [x] sum_builtin
 - [ ] tail_recursion
 - [ ] test_block
@@ -104,7 +104,7 @@ Date: 2025-07-29 15:22 +07
 - [ ] two-sum
 - [ ] typed_let
 - [ ] typed_var
-- [ ] unary_neg
+- [x] unary_neg
 - [ ] update_stmt
 - [ ] user_type_literal
 - [ ] values_builtin

@@ -1,15 +1,2 @@
-(program
-  (call print
-    (group
-      (unary - (int 3))
-    )
-  )
-  (call print
-    (binary +
-      (int 5)
-      (group
-        (unary - (int 2))
-      )
-    )
-  )
-)
+print((-3))
+print((5 + (-2)))

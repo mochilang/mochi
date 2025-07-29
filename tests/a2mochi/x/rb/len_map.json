@@ -1,0 +1,297 @@
+{
+  "Type": "program",
+  "Value": "",
+  "Line": 2,
+  "Col": 0,
+  "Children": [
+    {
+      "Type": "stmts_add",
+      "Value": "",
+      "Line": 2,
+      "Col": 0,
+      "Children": [
+        {
+          "Type": "stmts_new",
+          "Value": "",
+          "Line": 0,
+          "Col": 0,
+          "Children": null,
+          "EndLine": 0,
+          "EndCol": 0,
+          "Source": ""
+        },
+        {
+          "Type": "method_add_arg",
+          "Value": "",
+          "Line": 2,
+          "Col": 0,
+          "Children": [
+            {
+              "Type": "fcall",
+              "Value": "",
+              "Line": 2,
+              "Col": 0,
+              "Children": [
+                {
+                  "Type": "@ident",
+                  "Value": "puts",
+                  "Line": 2,
+                  "Col": 0,
+                  "Children": null,
+                  "EndLine": 2,
+                  "EndCol": 0,
+                  "Source": ""
+                }
+              ],
+              "EndLine": 2,
+              "EndCol": 0,
+              "Source": ""
+            },
+            {
+              "Type": "arg_paren",
+              "Value": "",
+              "Line": 2,
+              "Col": 25,
+              "Children": [
+                {
+                  "Type": "args_add_block",
+                  "Value": "",
+                  "Line": 2,
+                  "Col": 25,
+                  "Children": [
+                    {
+                      "Type": "args_add",
+                      "Value": "",
+                      "Line": 2,
+                      "Col": 25,
+                      "Children": [
+                        {
+                          "Type": "args_new",
+                          "Value": "",
+                          "Line": 0,
+                          "Col": 0,
+                          "Children": null,
+                          "EndLine": 0,
+                          "EndCol": 0,
+                          "Source": ""
+                        },
+                        {
+                          "Type": "call",
+                          "Value": "",
+                          "Line": 2,
+                          "Col": 25,
+                          "Children": [
+                            {
+                              "Type": "hash",
+                              "Value": "",
+                              "Line": 0,
+                              "Col": 0,
+                              "Children": [
+                                {
+                                  "Type": "assoclist_from_args",
+                                  "Value": "",
+                                  "Line": 0,
+                                  "Col": 0,
+                                  "Children": [
+                                    {
+                                      "Type": "list",
+                                      "Value": "",
+                                      "Line": 0,
+                                      "Col": 0,
+                                      "Children": [
+                                        {
+                                          "Type": "assoc_new",
+                                          "Value": "",
+                                          "Line": 2,
+                                          "Col": 7,
+                                          "Children": [
+                                            {
+                                              "Type": "string_literal",
+                                              "Value": "",
+                                              "Line": 2,
+                                              "Col": 7,
+                                              "Children": [
+                                                {
+                                                  "Type": "string_add",
+                                                  "Value": "",
+                                                  "Line": 2,
+                                                  "Col": 7,
+                                                  "Children": [
+                                                    {
+                                                      "Type": "string_content",
+                                                      "Value": "",
+                                                      "Line": 0,
+                                                      "Col": 0,
+                                                      "Children": null,
+                                                      "EndLine": 0,
+                                                      "EndCol": 0,
+                                                      "Source": ""
+                                                    },
+                                                    {
+                                                      "Type": "@tstring_content",
+                                                      "Value": "a",
+                                                      "Line": 2,
+                                                      "Col": 7,
+                                                      "Children": null,
+                                                      "EndLine": 2,
+                                                      "EndCol": 7,
+                                                      "Source": ""
+                                                    }
+                                                  ],
+                                                  "EndLine": 2,
+                                                  "EndCol": 7,
+                                                  "Source": ""
+                                                }
+                                              ],
+                                              "EndLine": 2,
+                                              "EndCol": 7,
+                                              "Source": ""
+                                            },
+                                            {
+                                              "Type": "@int",
+                                              "Value": "1",
+                                              "Line": 2,
+                                              "Col": 13,
+                                              "Children": null,
+                                              "EndLine": 2,
+                                              "EndCol": 13,
+                                              "Source": ""
+                                            }
+                                          ],
+                                          "EndLine": 2,
+                                          "EndCol": 13,
+                                          "Source": ""
+                                        },
+                                        {
+                                          "Type": "assoc_new",
+                                          "Value": "",
+                                          "Line": 2,
+                                          "Col": 17,
+                                          "Children": [
+                                            {
+                                              "Type": "string_literal",
+                                              "Value": "",
+                                              "Line": 2,
+                                              "Col": 17,
+                                              "Children": [
+                                                {
+                                                  "Type": "string_add",
+                                                  "Value": "",
+                                                  "Line": 2,
+                                                  "Col": 17,
+                                                  "Children": [
+                                                    {
+                                                      "Type": "string_content",
+                                                      "Value": "",
+                                                      "Line": 0,
+                                                      "Col": 0,
+                                                      "Children": null,
+                                                      "EndLine": 0,
+                                                      "EndCol": 0,
+                                                      "Source": ""
+                                                    },
+                                                    {
+                                                      "Type": "@tstring_content",
+                                                      "Value": "b",
+                                                      "Line": 2,
+                                                      "Col": 17,
+                                                      "Children": null,
+                                                      "EndLine": 2,
+                                                      "EndCol": 17,
+                                                      "Source": ""
+                                                    }
+                                                  ],
+                                                  "EndLine": 2,
+                                                  "EndCol": 17,
+                                                  "Source": ""
+                                                }
+                                              ],
+                                              "EndLine": 2,
+                                              "EndCol": 17,
+                                              "Source": ""
+                                            },
+                                            {
+                                              "Type": "@int",
+                                              "Value": "2",
+                                              "Line": 2,
+                                              "Col": 23,
+                                              "Children": null,
+                                              "EndLine": 2,
+                                              "EndCol": 23,
+                                              "Source": ""
+                                            }
+                                          ],
+                                          "EndLine": 2,
+                                          "EndCol": 23,
+                                          "Source": ""
+                                        }
+                                      ],
+                                      "EndLine": 0,
+                                      "EndCol": 0,
+                                      "Source": ""
+                                    }
+                                  ],
+                                  "EndLine": 0,
+                                  "EndCol": 0,
+                                  "Source": ""
+                                }
+                              ],
+                              "EndLine": 0,
+                              "EndCol": 0,
+                              "Source": ""
+                            },
+                            {
+                              "Type": "@period",
+                              "Value": ".",
+                              "Line": 2,
+                              "Col": 25,
+                              "Children": null,
+                              "EndLine": 2,
+                              "EndCol": 25,
+                              "Source": ""
+                            },
+                            {
+                              "Type": "@ident",
+                              "Value": "length",
+                              "Line": 2,
+                              "Col": 26,
+                              "Children": null,
+                              "EndLine": 2,
+                              "EndCol": 26,
+                              "Source": ""
+                            }
+                          ],
+                          "EndLine": 2,
+                          "EndCol": 26,
+                          "Source": ""
+                        }
+                      ],
+                      "EndLine": 2,
+                      "EndCol": 26,
+                      "Source": ""
+                    }
+                  ],
+                  "EndLine": 2,
+                  "EndCol": 26,
+                  "Source": ""
+                }
+              ],
+              "EndLine": 2,
+              "EndCol": 26,
+              "Source": ""
+            }
+          ],
+          "EndLine": 2,
+          "EndCol": 26,
+          "Source": ""
+        }
+      ],
+      "EndLine": 2,
+      "EndCol": 26,
+      "Source": ""
+    }
+  ],
+  "EndLine": 2,
+  "EndCol": 26,
+  "Source": "# Generated by Mochi transpiler v0.10.33 on 2025-07-21 16:07 +0700\nputs({\"a\" =\u003e 1, \"b\" =\u003e 2}.length)\n"
+}

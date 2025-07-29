@@ -126,9 +126,9 @@ func TestTransformGolden(t *testing.T) {
 		"map_index":           true,
 		"map_int_key":         true,
 		"map_literal_dynamic": true,
-                "map_membership":      true,
-                "map_in_operator":     true,
-                "map_nested_assign":   true,
+		"map_membership":      true,
+		"map_in_operator":     true,
+		"map_nested_assign":   true,
 		"string_prefix_slice": true,
 		"substring_builtin":   true,
 		"membership":          true,
@@ -190,5 +190,8 @@ func TestTransformGolden(t *testing.T) {
 				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
 			}
 		})
+	}
+	if *updateGolden {
+		ruby.UpdateReadmeForTests()
 	}
 }
