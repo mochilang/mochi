@@ -23,7 +23,7 @@ func Transform(p *Program) (*ast.Node, error) {
 		case "var":
 			prog.Children = append(prog.Children, newLet(it.Name))
 		case "import":
-			// ignore imports for now
+			prog.Children = append(prog.Children, newUse(it.Name))
 		case "assign":
 			prog.Children = append(prog.Children, newAssign(it.Name))
 		}
