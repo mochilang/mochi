@@ -12,9 +12,10 @@ import (
 
 // Item represents a top-level Scheme definition discovered by the parser.
 type Item struct {
-	Kind   string   `json:"kind"`
-	Name   string   `json:"name"`
-	Params []string `json:"params,omitempty"`
+	Kind   string      `json:"kind"`
+	Name   string      `json:"name"`
+	Params []string    `json:"params,omitempty"`
+	Value  interface{} `json:"value,omitempty"`
 }
 
 // Program holds the parsed representation of a Scheme source file.
@@ -86,15 +87,30 @@ func Parse(src string) (*Program, error) {
                 'name (symbol->string name)
                 'params (map symbol->string (cadar body)))]
          [(symbol? name)
-          (hash 'kind "var" 'name (symbol->string name))]
+          (let ([val (car body)])
+            (hash 'kind "var" 'name (symbol->string name)
+                  'value (cond [(number? val) val]
+                              [(string? val) val]
+                              [else #f])))]
          [else #f]))]
     [(and (pair? f) (eq? (car f) 'import))
      (for/list ([s (cdr f)] #:when (module-name s))
        (hash 'kind "import" 'name (module-name s)))]
+    [(and (pair? f) (eq? (car f) 'begin))
+     (for/fold ([acc '()]) ([x (cdr f)])
+       (define it (item x))
+       (cond
+         [(list? it) (append acc it)]
+         [it (append acc (list it))]
+         [else acc]))]
     [(and (pair? f) (eq? (car f) 'set!))
      (cond
        [(symbol? (cadr f))
-        (hash 'kind "assign" 'name (symbol->string (cadr f)))]
+        (let ([val (caddr f)])
+          (hash 'kind "assign" 'name (symbol->string (cadr f))
+                'value (cond [(number? val) val]
+                            [(string? val) val]
+                            [else #f])))]
        [else #f])]
     [else #f]))
 (define forms (read-all in))

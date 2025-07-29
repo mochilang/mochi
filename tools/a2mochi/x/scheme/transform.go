@@ -21,11 +21,11 @@ func Transform(p *Program) (*ast.Node, error) {
 		case "func":
 			prog.Children = append(prog.Children, newFunc(it.Name, it.Params))
 		case "var":
-			prog.Children = append(prog.Children, newLet(it.Name))
+			prog.Children = append(prog.Children, newLet(it.Name, it.Value))
 		case "import":
-			prog.Children = append(prog.Children, newUse(it.Name))
+			// ignore imports
 		case "assign":
-			prog.Children = append(prog.Children, newAssign(it.Name))
+			prog.Children = append(prog.Children, newAssign(it.Name, it.Value))
 		}
 	}
 
@@ -49,16 +49,35 @@ func newParam(name string) *ast.Node {
 	return &ast.Node{Kind: "param", Value: sanitizeName(name), Children: []*ast.Node{{Kind: "type", Value: "any"}}}
 }
 
-func newLet(name string) *ast.Node {
-	return &ast.Node{Kind: "let", Value: sanitizeName(name)}
+func newLet(name string, val interface{}) *ast.Node {
+	n := &ast.Node{Kind: "let", Value: sanitizeName(name)}
+	if val != nil {
+		if c := constNode(val); c != nil {
+			n.Children = append(n.Children, c)
+		}
+	}
+	return n
 }
 
-func newUse(name string) *ast.Node {
-	return &ast.Node{Kind: "selector", Value: sanitizeName(name), Children: []*ast.Node{{Kind: "selector", Value: "use"}}}
+func newAssign(name string, val interface{}) *ast.Node {
+	n := &ast.Node{Kind: "assign", Value: sanitizeName(name)}
+	if c := constNode(val); c != nil {
+		n.Children = append(n.Children, c)
+	} else {
+		n.Children = append(n.Children, &ast.Node{Kind: "int", Value: 0})
+	}
+	return n
 }
 
-func newAssign(name string) *ast.Node {
-	return &ast.Node{Kind: "assign", Value: sanitizeName(name), Children: []*ast.Node{{Kind: "int", Value: 0}}}
+func constNode(v interface{}) *ast.Node {
+	switch val := v.(type) {
+	case float64:
+		return &ast.Node{Kind: "int", Value: int(val)}
+	case string:
+		return &ast.Node{Kind: "string", Value: val}
+	default:
+		return nil
+	}
 }
 
 func sanitizeName(s string) string {
