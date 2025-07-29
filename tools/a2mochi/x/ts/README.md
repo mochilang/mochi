@@ -1,7 +1,7 @@
 # a2mochi TypeScript Converter
 
-Completed programs: 24/105
-Date: 2025-07-29 18:29:19 GMT+7
+Completed programs: 31/105
+Date: 2025-07-29 20:51:31 GMT+7
 
 This directory holds golden outputs for the TypeScript to Mochi converter.
 Each `.ts` source in `tests/transpiler/x/ts` has a matching `.mochi` and `.ast`
@@ -11,10 +11,10 @@ programs.
 
 - [x] append_builtin
 - [ ] avg_builtin
-- [ ] basic_compare
+- [x] basic_compare
 - [ ] bench_block
 - [x] binary_precedence
-- [ ] bool_chain
+- [x] bool_chain
 - [ ] break_continue
 - [x] cast_string_to_int
 - [ ] cast_struct
@@ -57,9 +57,9 @@ programs.
 - [ ] len_map
 - [ ] len_string
 - [x] let_and_print
-- [ ] list_assign
+- [x] list_assign
 - [x] list_index
-- [ ] list_nested_assign
+- [x] list_nested_assign
 - [ ] list_set_ops
 - [ ] load_jsonl
 - [ ] load_yaml
@@ -90,11 +90,11 @@ programs.
 - [ ] record_assign
 - [ ] right_join
 - [ ] save_jsonl_stdout
-- [ ] short_circuit
+- [x] short_circuit
 - [ ] slice
 - [ ] sort_stable
 - [x] str_builtin
-- [ ] string_compare
+- [x] string_compare
 - [x] string_concat
 - [ ] string_contains
 - [ ] string_in_operator
@@ -112,5 +112,5 @@ programs.
 - [ ] update_stmt
 - [ ] user_type_literal
 - [ ] values_builtin
-- [ ] var_assignment
+- [x] var_assignment
 - [x] while_loop
