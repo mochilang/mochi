@@ -1,0 +1,15 @@
+(program
+  (fun main
+    (type int)
+    (call print
+      (call len
+        (map
+          (entry (string a) (int 1))
+          (entry (string b) (int 2))
+        )
+      )
+    )
+    (return (int 0))
+  )
+  (call main)
+)
