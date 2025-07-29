@@ -70,7 +70,7 @@ func Parse(src string) (*Program, error) {
 func fallbackParse(src string) *Program {
 	lines := strings.Split(src, "\n")
 	var decls []Decl
-	valRe := regexp.MustCompile(`^(val|var) ([^:=]+)(:[^=]+)?= (.+)$`)
+        valRe := regexp.MustCompile(`^(val|var) ([^:=]+)(:[^=]+)?= (.+)$`)
 	defRe := regexp.MustCompile(`^def ([^(]+)\(([^)]*)\).*{`)
 	caseRe := regexp.MustCompile(`^case class ([^(]+)\(([^)]*)\)`)
 	for i := 0; i < len(lines); i++ {
@@ -88,8 +88,9 @@ func fallbackParse(src string) *Program {
 			decls = append(decls, Decl{Kind: "caseclass", Name: strings.TrimSpace(m[1]), Fields: fields})
 			continue
 		}
-		if m := valRe.FindStringSubmatch(line); len(m) == 5 {
-			decls = append(decls, Decl{Kind: m[1], Name: strings.TrimSpace(m[2]), RHS: strings.TrimSpace(m[4])})
+                if m := valRe.FindStringSubmatch(line); len(m) == 5 {
+                        ret := strings.TrimPrefix(strings.TrimSpace(m[3]), ":")
+                        decls = append(decls, Decl{Kind: m[1], Name: strings.TrimSpace(m[2]), Ret: ret, RHS: strings.TrimSpace(m[4])})
 			continue
 		}
 		if m := defRe.FindStringSubmatch(line); len(m) == 3 {
