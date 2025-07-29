@@ -7,6 +7,13 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+public class Node
+{
+    public string Kind { get; set; }
+    public string Value { get; set; }
+    public List<Node> Children { get; set; } = new List<Node>();
+}
+
 public class Field
 {
     public string Name { get; set; }
@@ -32,6 +39,7 @@ public class Method
     public string Access { get; set; }
     public bool Static { get; set; }
     public List<string> Body { get; set; } = new List<string>();
+    public Node Ast { get; set; }
     public int StartLine { get; set; }
     public int EndLine { get; set; }
     public string Doc { get; set; }
@@ -123,6 +131,132 @@ public static class AstJson
         };
     }
 
+    static Node ParseExpr(ExpressionSyntax e)
+    {
+        switch (e)
+        {
+            case LiteralExpressionSyntax lit:
+                return new Node { Kind = "literal", Value = lit.Token.ValueText };
+            case IdentifierNameSyntax id:
+                return new Node { Kind = "ident", Value = id.Identifier.Text };
+            case BinaryExpressionSyntax bin:
+                return new Node { Kind = "binary", Value = bin.OperatorToken.Text, Children = new List<Node> { ParseExpr(bin.Left), ParseExpr(bin.Right) } };
+            case PrefixUnaryExpressionSyntax pre:
+                return new Node { Kind = "unary", Value = pre.OperatorToken.Text, Children = new List<Node> { ParseExpr(pre.Operand) } };
+            case ParenthesizedExpressionSyntax par:
+                return ParseExpr(par.Expression);
+            case InvocationExpressionSyntax inv:
+                return ParseCall(inv);
+            case ConditionalExpressionSyntax cond:
+                return new Node { Kind = "cond", Children = new List<Node> { ParseExpr(cond.Condition), ParseExpr(cond.WhenTrue), ParseExpr(cond.WhenFalse) } };
+            case MemberAccessExpressionSyntax mem:
+                return new Node { Kind = "member", Value = mem.Name.Identifier.Text, Children = new List<Node> { ParseExpr(mem.Expression) } };
+        }
+        return new Node { Kind = "unknown" };
+    }
+
+    static Node ParseCall(InvocationExpressionSyntax inv)
+    {
+        string name = "";
+        List<Node> args = new List<Node>();
+        foreach (var a in inv.ArgumentList.Arguments)
+            args.Add(ParseExpr(a.Expression));
+
+        if (inv.Expression is MemberAccessExpressionSyntax ma)
+        {
+            if (ma.Expression.ToString() == "Console" && ma.Name.Identifier.Text == "WriteLine")
+            {
+                return new Node { Kind = "call", Value = "print", Children = args };
+            }
+            name = ma.Name.Identifier.Text;
+            var target = ParseExpr(ma.Expression);
+            args.Insert(0, target);
+            return new Node { Kind = "call", Value = name, Children = args };
+        }
+        if (inv.Expression is IdentifierNameSyntax id)
+        {
+            name = id.Identifier.Text;
+            return new Node { Kind = "call", Value = name, Children = args };
+        }
+        return new Node { Kind = "call", Value = inv.Expression.ToString(), Children = args };
+    }
+
+    static Node ParseStmt(StatementSyntax st)
+    {
+        switch (st)
+        {
+            case LocalDeclarationStatementSyntax ld:
+                var v = ld.Declaration.Variables.First();
+                var node = new Node { Kind = "var", Value = v.Identifier.Text };
+                if (v.Initializer != null) node.Children.Add(ParseExpr(v.Initializer.Value));
+                return node;
+            case ExpressionStatementSyntax es:
+                if (es.Expression is AssignmentExpressionSyntax ass)
+                {
+                    var asn = new Node { Kind = "assign", Value = ass.Left.ToString(), Children = new List<Node> { ParseExpr(ass.Right) } };
+                    return asn;
+                }
+                if (es.Expression is InvocationExpressionSyntax inv)
+                {
+                    return ParseCall(inv);
+                }
+                return new Node { Kind = "expr" };
+            case ForStatementSyntax fs:
+                string name = "i";
+                Node start = null;
+                Node end = null;
+                if (fs.Declaration != null && fs.Declaration.Variables.Count == 1)
+                {
+                    var fv = fs.Declaration.Variables.First();
+                    name = fv.Identifier.Text;
+                    if (fv.Initializer != null) start = ParseExpr(fv.Initializer.Value);
+                }
+                if (fs.Condition is BinaryExpressionSyntax be && be.Left.ToString() == name)
+                    end = ParseExpr(be.Right);
+                var body = ParseBlock(fs.Statement as BlockSyntax);
+                var range = new Node { Kind = "range", Children = new List<Node> { start, end } };
+                return new Node { Kind = "for", Value = name, Children = new List<Node> { range, body } };
+            case WhileStatementSyntax ws:
+                var wcond = ParseExpr(ws.Condition);
+                var wbody = ParseBlock(ws.Statement as BlockSyntax);
+                return new Node { Kind = "while", Children = new List<Node> { wcond, wbody } };
+            case IfStatementSyntax iff:
+                var cond = ParseExpr(iff.Condition);
+                var thenN = ParseBlock(iff.Statement as BlockSyntax ?? SyntaxFactory.Block(iff.Statement));
+                var ifn = new Node { Kind = "if", Children = new List<Node> { cond, thenN } };
+                if (iff.Else != null)
+                {
+                    var elseN = ParseBlock(iff.Else.Statement as BlockSyntax ?? SyntaxFactory.Block(iff.Else.Statement));
+                    ifn.Children.Add(elseN);
+                }
+                return ifn;
+            case ReturnStatementSyntax ret:
+                var rn = new Node { Kind = "return" };
+                if (ret.Expression != null) rn.Children.Add(ParseExpr(ret.Expression));
+                return rn;
+            case BreakStatementSyntax:
+                return new Node { Kind = "break" };
+            case ContinueStatementSyntax:
+                return new Node { Kind = "continue" };
+            case BlockSyntax bs:
+                return ParseBlock(bs);
+        }
+        return new Node { Kind = "unknown" };
+    }
+
+    static Node ParseBlock(BlockSyntax b)
+    {
+        var blk = new Node { Kind = "block" };
+        if (b != null)
+        {
+            foreach (var st in b.Statements)
+            {
+                blk.Children.Add(ParseStmt(st));
+            }
+        }
+        return blk;
+    }
+
     static Method ParseMethod(MethodDeclarationSyntax m)
     {
         var span = m.GetLocation().GetLineSpan();
@@ -140,6 +274,7 @@ public static class AstJson
             Access = GetAccess(m.Modifiers),
             Static = m.Modifiers.Any(SyntaxKind.StaticKeyword),
             Body = lines,
+            Ast = ParseBlock(m.Body),
             StartLine = span.StartLinePosition.Line + 1,
             EndLine = span.EndLinePosition.Line + 1,
             Doc = GetDoc(m)
