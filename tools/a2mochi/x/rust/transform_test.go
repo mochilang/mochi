@@ -126,6 +126,15 @@ func TestTransformGolden(t *testing.T) {
 		"if_else":             true,
 		"if_then_else":        true,
 		"if_then_else_nested": true,
+		"break_continue":      true,
+		"len_builtin":         true,
+		"str_builtin":         true,
+		"string_compare":      true,
+		"string_concat":       true,
+		"string_contains":     true,
+		"string_index":        true,
+		"slice":               true,
+		"string_prefix_slice": true,
 	}
 
 	for _, srcPath := range files {
