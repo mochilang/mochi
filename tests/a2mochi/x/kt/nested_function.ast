@@ -3,9 +3,5 @@
     (param x (type int))
     (type int)
   )
-  (fun inner
-    (param y (type int))
-    (type int)
-  )
   (fun main)
 )

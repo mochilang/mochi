@@ -322,76 +322,90 @@ func splitGeneric(s string) []string {
 
 func parseNaive(src string) (*Program, error) {
 	var nodes []Node
+	depth := 0
 	for _, line := range strings.Split(src, "\n") {
-		line = strings.TrimSpace(line)
-		if strings.HasPrefix(line, "data class ") {
-			rest := strings.TrimPrefix(line, "data class ")
-			open := strings.Index(rest, "(")
-			if open == -1 {
-				continue
-			}
-			name := strings.TrimSpace(rest[:open])
-			close := strings.Index(rest, ")")
-			if close == -1 {
-				continue
-			}
-			fieldsPart := rest[open+1 : close]
-			var fields []Field
-			for _, p := range splitParams(fieldsPart) {
-				p = strings.TrimSpace(p)
-				p = strings.TrimPrefix(p, "val ")
-				p = strings.TrimPrefix(p, "var ")
-				kv := strings.SplitN(p, ":", 2)
-				if len(kv) != 2 {
-					continue
+		trimmed := strings.TrimSpace(line)
+		if depth == 0 {
+			if strings.HasPrefix(trimmed, "data class ") {
+				rest := strings.TrimPrefix(trimmed, "data class ")
+				if open := strings.Index(rest, "("); open != -1 {
+					name := strings.TrimSpace(rest[:open])
+					if close := strings.Index(rest, ")"); close != -1 {
+						fieldsPart := rest[open+1 : close]
+						var fields []Field
+						for _, p := range splitParams(fieldsPart) {
+							p = strings.TrimSpace(p)
+							p = strings.TrimPrefix(p, "val ")
+							p = strings.TrimPrefix(p, "var ")
+							kv := strings.SplitN(p, ":", 2)
+							if len(kv) == 2 {
+								fields = append(fields, Field{Name: strings.TrimSpace(kv[0]), Typ: strings.TrimSpace(kv[1])})
+							}
+						}
+						nodes = append(nodes, Node{Kind: "type", Name: name, Fields: fields})
+					}
 				}
-				fields = append(fields, Field{Name: strings.TrimSpace(kv[0]), Typ: strings.TrimSpace(kv[1])})
+			} else if strings.HasPrefix(trimmed, "fun ") {
+				rest := strings.TrimPrefix(trimmed, "fun ")
+				if open := strings.Index(rest, "("); open != -1 {
+					name := strings.TrimSpace(rest[:open])
+					afterOpen := rest[open+1:]
+					if close := strings.Index(afterOpen, ")"); close != -1 {
+						paramsPart := afterOpen[:close]
+						remainder := strings.TrimSpace(afterOpen[close+1:])
+						ret := ""
+						if strings.HasPrefix(remainder, ":") {
+							rest := strings.TrimSpace(remainder[1:])
+							end := len(rest)
+							if idx := strings.IndexAny(rest, "={"); idx != -1 {
+								end = idx
+							}
+							ret = strings.TrimSpace(rest[:end])
+						}
+						var params []Param
+						for _, p := range splitParams(paramsPart) {
+							p = strings.TrimSpace(p)
+							if p == "" {
+								continue
+							}
+							if idx := strings.Index(p, "="); idx != -1 {
+								p = strings.TrimSpace(p[:idx])
+							}
+							kv := strings.SplitN(p, ":", 2)
+							if len(kv) == 2 {
+								params = append(params, Param{Name: strings.TrimSpace(kv[0]), Typ: strings.TrimSpace(kv[1])})
+							} else if len(kv) == 1 {
+								params = append(params, Param{Name: strings.TrimSpace(kv[0])})
+							}
+						}
+						nodes = append(nodes, Node{Kind: "func", Name: name, Params: params, Ret: ret})
+					}
+				}
+			} else if strings.HasPrefix(trimmed, "val ") || strings.HasPrefix(trimmed, "var ") {
+				kind := "val"
+				rest := strings.TrimSpace(strings.TrimPrefix(trimmed, "val "))
+				if strings.HasPrefix(trimmed, "var ") {
+					kind = "var"
+					rest = strings.TrimSpace(strings.TrimPrefix(trimmed, "var "))
+				}
+				name := rest
+				typ := ""
+				if idx := strings.Index(rest, ":"); idx != -1 {
+					name = strings.TrimSpace(rest[:idx])
+					after := strings.TrimSpace(rest[idx+1:])
+					if idxEq := strings.Index(after, "="); idxEq != -1 {
+						typ = strings.TrimSpace(after[:idxEq])
+					} else {
+						typ = strings.TrimSpace(after)
+					}
+				} else if idx := strings.Index(rest, "="); idx != -1 {
+					name = strings.TrimSpace(rest[:idx])
+				}
+				nodes = append(nodes, Node{Kind: kind, Name: name, Ret: typ})
 			}
-			nodes = append(nodes, Node{Kind: "type", Name: name, Fields: fields})
-			continue
 		}
-		if strings.HasPrefix(line, "fun ") {
-			rest := strings.TrimPrefix(line, "fun ")
-			open := strings.Index(rest, "(")
-			if open == -1 {
-				continue
-			}
-			name := strings.TrimSpace(rest[:open])
-			afterOpen := rest[open+1:]
-			close := strings.Index(afterOpen, ")")
-			if close == -1 {
-				continue
-			}
-			paramsPart := afterOpen[:close]
-			remainder := strings.TrimSpace(afterOpen[close+1:])
-			ret := ""
-			if strings.HasPrefix(remainder, ":") {
-				rest := strings.TrimSpace(remainder[1:])
-				end := len(rest)
-				if idx := strings.IndexAny(rest, "={"); idx != -1 {
-					end = idx
-				}
-				ret = strings.TrimSpace(rest[:end])
-			}
-			var params []Param
-			for _, p := range splitParams(paramsPart) {
-				p = strings.TrimSpace(p)
-				if p == "" {
-					continue
-				}
-				if idx := strings.Index(p, "="); idx != -1 {
-					p = strings.TrimSpace(p[:idx])
-				}
-				kv := strings.SplitN(p, ":", 2)
-				if len(kv) == 2 {
-					params = append(params, Param{Name: strings.TrimSpace(kv[0]), Typ: strings.TrimSpace(kv[1])})
-				} else if len(kv) == 1 {
-					params = append(params, Param{Name: strings.TrimSpace(kv[0])})
-				}
-			}
-			nodes = append(nodes, Node{Kind: "func", Name: name, Params: params, Ret: ret})
-			continue
-		}
+		depth += strings.Count(line, "{")
+		depth -= strings.Count(line, "}")
 	}
 	if len(nodes) == 0 {
 		return nil, fmt.Errorf("no symbols found")
