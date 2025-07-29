@@ -1,57 +1,113 @@
 # a2mochi Racket Converter
 
-This directory contains a very small converter that translates simple
-Racket programs back into Mochi form. It is inspired by the Python and
-TypeScript converters and is only powerful enough for the examples used
-in the repository tests.
+This directory contains a very small converter that translates simple Racket programs back into Mochi form. It is inspired by the Python and TypeScript converters and is only powerful enough for the examples used in the repository tests.
 
-The converter does not rely on a language server. It tokenises the input
-and recognises basic forms such as `define`, `struct` and `for`. Only a
-subset of expressions and statements are supported.
+The converter does not rely on a language server. It tokenises the input and recognises basic forms such as `define`, `struct` and `for`. Only a subset of expressions and statements are supported.
 
-Completed programs: 42/104
+Completed programs: 44/103
+Date: 2025-07-29 15:19 GMT+7
 
 ## Checklist
 - [x] append_builtin
-- [x] fun_call
-- [x] fun_three_args
-- [x] let_and_print
-- [x] for_loop
-- [x] for_list_collection
-- [x] for_map_collection
-- [x] print_hello
-- [x] unary_neg
-- [x] basic_compare
-- [x] string_concat
-- [x] list_index
-- [x] bool_chain
-- [x] if_then_else
-- [x] short_circuit
 - [x] avg_builtin
+- [x] basic_compare
 - [x] binary_precedence
+- [x] bool_chain
+- [x] break_continue
 - [x] cast_string_to_int
 - [x] cast_struct
 - [x] closure
+- [x] count_builtin
+- [ ] cross_join
+- [ ] cross_join_filter
+- [ ] cross_join_triple
+- [ ] dataset_sort_take_limit
+- [ ] dataset_where_filter
+- [ ] exists_builtin
+- [x] for_list_collection
+- [x] for_loop
+- [x] for_map_collection
+- [x] fun_call
 - [x] fun_expr_in_let
-- [x] list_assign
-- [x] map_index
-- [x] string_index
-- [x] substring_builtin
-- [x] map_assign
-- [x] var_assignment
-- [x] values_builtin
-- [x] sum_builtin
-- [x] min_max_builtin
-- [x] string_compare
-- [x] membership
-- [x] str_builtin
-- [x] math_ops
-- [x] string_contains
+- [x] fun_three_args
+- [ ] go_auto
+- [ ] group_by
+- [ ] group_by_conditional_sum
+- [ ] group_by_having
+- [ ] group_by_join
+- [ ] group_by_left_join
+- [ ] group_by_multi_join
+- [ ] group_by_multi_join_sort
+- [ ] group_by_multi_sort
+- [ ] group_by_sort
+- [ ] group_items_iteration
+- [ ] if_else
+- [x] if_then_else
+- [ ] if_then_else_nested
+- [ ] in_operator
+- [ ] in_operator_extended
+- [ ] inner_join
+- [ ] join_multi
+- [ ] json_builtin
+- [ ] left_join
+- [ ] left_join_multi
 - [x] len_builtin
 - [x] len_map
 - [x] len_string
-- [x] count_builtin
-- [x] typed_var
+- [x] let_and_print
+- [x] list_assign
+- [x] list_index
+- [ ] list_nested_assign
+- [ ] list_set_ops
+- [ ] load_jsonl
+- [ ] load_yaml
+- [x] map_assign
+- [ ] map_in_operator
+- [x] map_index
+- [ ] map_int_key
+- [ ] map_literal_dynamic
+- [ ] map_membership
+- [ ] map_nested_assign
+- [ ] match_expr
+- [ ] match_full
+- [x] math_ops
+- [x] membership
+- [x] min_max_builtin
+- [ ] mix_go_python
+- [ ] nested_function
+- [ ] order_by_map
+- [ ] outer_join
+- [ ] partial_application
+- [x] print_hello
+- [ ] pure_fold
+- [ ] pure_global_fold
+- [ ] python_auto
+- [ ] python_math
+- [ ] query_sum_select
+- [ ] record_assign
+- [ ] right_join
+- [ ] save_jsonl_stdout
+- [x] short_circuit
+- [ ] slice
+- [ ] sort_stable
+- [x] str_builtin
+- [x] string_compare
+- [x] string_concat
+- [x] string_contains
+- [ ] string_in_operator
+- [x] string_index
+- [x] string_prefix_slice
+- [x] substring_builtin
+- [x] sum_builtin
+- [ ] tail_recursion
+- [ ] test_block
+- [ ] tree_sum
+- [ ] two-sum
 - [x] typed_let
+- [x] typed_var
+- [x] unary_neg
+- [ ] update_stmt
+- [ ] user_type_literal
+- [x] values_builtin
+- [x] var_assignment
 - [x] while_loop
-
