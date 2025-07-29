@@ -320,6 +320,31 @@ func simpleExpr(n pnode.Node) (string, bool) {
 		return fmt.Sprintf("(%s as int)", val), true
 	case *expr.FunctionCall:
 		name := nameString(v.Function)
+		// unwrap nested str_replace(json_encode(...)) patterns used for printing
+		if name == "str_replace" {
+			inner := v
+			for {
+				if nameString(inner.Function) != "str_replace" || inner.ArgumentList == nil || len(inner.ArgumentList.Arguments) != 3 {
+					break
+				}
+				arg2, ok := inner.ArgumentList.Arguments[2].(*pnode.Argument)
+				if !ok {
+					break
+				}
+				fc, ok := arg2.Expr.(*expr.FunctionCall)
+				if !ok {
+					break
+				}
+				inner = fc
+			}
+			if nameString(inner.Function) == "json_encode" && inner.ArgumentList != nil && len(inner.ArgumentList.Arguments) >= 1 {
+				if arg0, ok := inner.ArgumentList.Arguments[0].(*pnode.Argument); ok {
+					if val, ok := simpleExpr(arg0.Expr); ok {
+						return val, true
+					}
+				}
+			}
+		}
 		args := []string{}
 		if v.ArgumentList != nil {
 			for _, a := range v.ArgumentList.Arguments {
