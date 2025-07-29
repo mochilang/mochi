@@ -91,9 +91,24 @@ func funcNode(fn Function) (*ast.Node, error) {
 
 // --- Helpers ---
 
-// typedVarRe matches Dart variable declarations with an optional type.
-// It allows "final" or "const" without a following type.
-var typedVarRe = regexp.MustCompile(`^(?:final|const)?\s*(?:([A-Za-z_][A-Za-z0-9_<>,\[\]\? ]*)\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*(=.*)?$`)
+// parseTypedVar parses declarations like "final int x = 1".
+func parseTypedVar(s string) (typ, name, val string, ok bool) {
+	s = strings.TrimSpace(s)
+	s = strings.TrimPrefix(s, "final ")
+	s = strings.TrimPrefix(s, "const ")
+	parts := strings.SplitN(s, "=", 2)
+	left := strings.TrimSpace(parts[0])
+	if len(parts) == 2 {
+		val = strings.TrimSpace(parts[1])
+	}
+	fields := strings.Fields(left)
+	if len(fields) == 0 {
+		return
+	}
+	name = fields[len(fields)-1]
+	typ = strings.Join(fields[:len(fields)-1], " ")
+	return toMochiType(strings.TrimSpace(typ)), name, val, true
+}
 
 func parseTopLevelVars(src string, funcs []Function, classes []Class) []string {
 	lines := strings.Split(src, "\n")
@@ -122,10 +137,7 @@ func parseTopLevelVars(src string, funcs []Function, classes []Class) []string {
 			vars = append(vars, convertQuotes("let "+strings.TrimSpace(l[4:])))
 			continue
 		}
-		if m := typedVarRe.FindStringSubmatch(l); m != nil {
-			typ := toMochiType(strings.TrimSpace(m[1]))
-			name := m[2]
-			val := strings.TrimSpace(strings.TrimPrefix(m[3], "="))
+		if typ, name, val, ok := parseTypedVar(l); ok && name != "" {
 			stmt := "let " + name
 			if typ != "" && typ != "any" {
 				stmt += ": " + typ
@@ -157,7 +169,7 @@ func convertBodyLine(s string) string {
 	s = strings.TrimSuffix(s, ";")
 	s = forVarRe.ReplaceAllString(s, "${1}for ${2} in ${3}")
 	s = forRangeRe.ReplaceAllString(s, "${1}for ${2} in ${3}..${4}")
-	if strings.HasPrefix(strings.TrimSpace(s), "let ") {
+	if strings.HasPrefix(strings.TrimSpace(s), "let ") && !strings.Contains(s, ":") {
 		s = strings.Replace(s, "let ", "var ", 1)
 	}
 	s = fixUnaryNeg(s)
@@ -165,6 +177,7 @@ func convertBodyLine(s string) string {
 	s = convertTernaryPrint(s)
 	s = convertTernary(s)
 	s = convertSpread(s)
+	s = convertReduce(s)
 	s = convertLength(s)
 	return convertQuotes(s)
 }
@@ -214,6 +227,12 @@ var lengthRe = regexp.MustCompile(`([A-Za-z0-9_\]\)]+)\.length`)
 
 func convertLength(s string) string {
 	return lengthRe.ReplaceAllString(s, "len($1)")
+}
+
+var reduceSumRe = regexp.MustCompile(`([^\s]+)\.reduce\(\([^)]*\)\s*=>\s*[^+]+\+[^)]+\)`)
+
+func convertReduce(s string) string {
+	return reduceSumRe.ReplaceAllString(s, "sum($1)")
 }
 
 func splitArgs(s string) []string {
