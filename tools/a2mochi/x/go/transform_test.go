@@ -175,6 +175,8 @@ func TestTransform_Golden(t *testing.T) {
 		"match_expr":          true,
 		"match_full":          true,
 		"cast_string_to_int":  true,
+		"count_builtin":       true,
+		"cast_struct":         true,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/go")
