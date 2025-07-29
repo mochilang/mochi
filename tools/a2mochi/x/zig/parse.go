@@ -20,6 +20,7 @@ type Program struct {
 // syntactic checks because the small subset of Zig supported by the converter
 // can be processed using simple textual rules.
 func Parse(src string) (*Program, error) {
+	src = strings.TrimPrefix(src, "\ufeff")
 	if strings.TrimSpace(src) == "" {
 		return nil, fmt.Errorf("empty source")
 	}

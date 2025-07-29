@@ -3,15 +3,15 @@
 This directory stores helpers and golden files for converting Zig programs
 in `tests/transpiler/x/zig` into Mochi AST form.
 
-Completed programs: 46/98
+Completed programs: 32/98
 
-Last updated: 2025-07-29 18:26 +07
+Last updated: 2025-07-29 20:58 +07
 
 ## Checklist
-- [x] append_builtin
-- [x] avg_builtin
+- [ ] append_builtin
+- [ ] avg_builtin
 - [x] basic_compare
-- [x] binary_precedence
+- [ ] binary_precedence
 - [x] bool_chain
 - [x] break_continue
 - [x] cast_string_to_int
@@ -40,10 +40,10 @@ Last updated: 2025-07-29 18:26 +07
 - [ ] group_by_multi_sort
 - [ ] group_by_sort
 - [ ] group_items_iteration
-- [x] if_else
+- [ ] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
-- [x] in_operator
+- [ ] in_operator
 - [ ] in_operator_extended
 - [ ] inner_join
 - [ ] join_multi
@@ -51,7 +51,7 @@ Last updated: 2025-07-29 18:26 +07
 - [ ] left_join_multi
 - [x] len_builtin
 - [ ] len_map
-- [x] len_string
+- [ ] len_string
 - [x] let_and_print
 - [x] list_assign
 - [x] list_index
@@ -69,7 +69,7 @@ Last updated: 2025-07-29 18:26 +07
 - [ ] match_expr
 - [ ] match_full
 - [x] math_ops
-- [x] membership
+- [ ] membership
 - [ ] min_max_builtin
 - [ ] nested_function
 - [ ] order_by_map
@@ -79,19 +79,19 @@ Last updated: 2025-07-29 18:26 +07
 - [x] pure_fold
 - [ ] pure_global_fold
 - [ ] query_sum_select
-- [x] record_assign
+- [ ] record_assign
 - [ ] right_join
 - [ ] save_jsonl_stdout
-- [x] short_circuit
-- [x] slice
+- [ ] short_circuit
+- [ ] slice
 - [ ] sort_stable
 - [x] str_builtin
-- [x] string_compare
+- [ ] string_compare
 - [x] string_concat
-- [x] string_contains
-- [x] string_in_operator
+- [ ] string_contains
+- [ ] string_in_operator
 - [x] string_index
-- [x] string_prefix_slice
+- [ ] string_prefix_slice
 - [x] substring_builtin
 - [x] sum_builtin
 - [x] tail_recursion

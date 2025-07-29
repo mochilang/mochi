@@ -1,0 +1,5 @@
+run mochi: error[T027]: [int] is not a struct
+  --> :3:7
+
+help:
+  Field access is only valid on struct types.

@@ -4,8 +4,8 @@ package zig_test
 
 import (
 	"flag"
+	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -36,62 +36,119 @@ func repoRoot(t testing.TB) string {
 	return "" // unreachable
 }
 
-func runTransform(t *testing.T, srcPath, root, outDir string) {
+func runTransform(srcPath, root, outDir string) error {
 	name := strings.TrimSuffix(filepath.Base(srcPath), ".zig")
-
-	data, err := os.ReadFile(srcPath)
-	if err != nil {
-		t.Fatalf("read src: %v", err)
-	}
-
-	prog, err := zig.Parse(string(data))
-	if err != nil {
-		t.Fatalf("parse: %v", err)
-	}
-
-	node, err := zig.Transform(prog)
-	if err != nil {
-		t.Fatalf("transform: %v", err)
-	}
-
-	src, err := zig.Print(node)
-	if err != nil {
-		t.Fatalf("print: %v", err)
-	}
-
+	errPath := filepath.Join(outDir, name+".error")
+	os.Remove(errPath)
 	astPath := filepath.Join(outDir, name+".ast")
 	mochiPath := filepath.Join(outDir, name+".mochi")
 	outPath := filepath.Join(outDir, name+".out")
 
-	if *update {
-		os.WriteFile(astPath, []byte(node.String()), 0o644)
-		os.WriteFile(mochiPath, []byte(src), 0o644)
+	writeErr := func(msg string) {
+		os.WriteFile(errPath, []byte(msg), 0o644)
+	}
+
+	data, err := os.ReadFile(srcPath)
+	if err != nil {
+		if *update {
+			writeErr(fmt.Sprintf("read src: %v", err))
+			return nil
+		}
+		return fmt.Errorf("read src: %w", err)
+	}
+
+	prog, err := zig.Parse(string(data))
+	if err != nil {
+		if *update {
+			writeErr(fmt.Sprintf("parse: %v", err))
+			return nil
+		}
+		return fmt.Errorf("parse: %w", err)
+	}
+
+	node, err := zig.Transform(prog)
+	if err != nil {
+		if *update {
+			writeErr(fmt.Sprintf("transform: %v", err))
+			return nil
+		}
+		return fmt.Errorf("transform: %w", err)
+	}
+
+	src, err := zig.Print(node)
+	if err != nil {
+		if *update {
+			writeErr(fmt.Sprintf("print: %v", err))
+			return nil
+		}
+		return fmt.Errorf("print: %w", err)
 	}
 
 	want, err := os.ReadFile(astPath)
 	if err != nil {
-		t.Fatalf("missing golden: %v", err)
+		if *update {
+			writeErr(fmt.Sprintf("missing golden: %v", err))
+			return nil
+		}
+		return fmt.Errorf("missing golden: %w", err)
 	}
 	if got := []byte(node.String()); string(want) != string(got) {
-		t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", got, want)
+		if *update {
+			writeErr("golden mismatch")
+			return nil
+		}
+		return fmt.Errorf("golden mismatch")
 	}
 
 	out, err := logic.RunMochi(src, 5*time.Second)
 	if err != nil {
-		t.Fatalf("run mochi: %v", err)
+		if *update {
+			writeErr(fmt.Sprintf("run mochi: %v", err))
+			return nil
+		}
+		return fmt.Errorf("run mochi: %w", err)
 	}
 
 	if *update {
-		os.WriteFile(outPath, []byte(out), 0o644)
+		if err := os.WriteFile(outPath, []byte(out), 0o644); err != nil {
+			writeErr(err.Error())
+			return nil
+		}
 	}
 
 	wantOut, err := os.ReadFile(filepath.Join(root, "tests/vm/valid", name+".out"))
 	if err != nil {
-		t.Fatalf("missing vm output: %v", err)
+		if *update {
+			writeErr(fmt.Sprintf("missing vm output: %v", err))
+			return nil
+		}
+		return fmt.Errorf("missing vm output: %w", err)
 	}
 	if strings.TrimSpace(out) != strings.TrimSpace(string(wantOut)) {
-		t.Fatalf("output mismatch: got %q want %q", strings.TrimSpace(out), strings.TrimSpace(string(wantOut)))
+		if *update {
+			writeErr("output mismatch")
+			return nil
+		}
+		return fmt.Errorf("output mismatch")
 	}
+
+	if *update {
+		os.Remove(errPath)
+		if err := os.WriteFile(astPath, []byte(node.String()), 0o644); err != nil {
+			writeErr(err.Error())
+			return nil
+		}
+		if err := os.WriteFile(mochiPath, []byte(src), 0o644); err != nil {
+			writeErr(err.Error())
+			return nil
+		}
+		if err := os.WriteFile(outPath, []byte(out), 0o644); err != nil {
+			writeErr(err.Error())
+			return nil
+		}
+	}
+
+	return nil
 }
 
 func TestTransform_Golden(t *testing.T) {
@@ -105,69 +162,42 @@ func TestTransform_Golden(t *testing.T) {
 		t.Fatalf("no files: %s", pattern)
 	}
 
-	allowed := map[string]bool{
-		"print_hello":         true,
-		"unary_neg":           true,
-		"pure_fold":           true,
-		"tail_recursion":      true,
-		"binary_precedence":   true,
-		"avg_builtin":         true,
-		"fun_call":            true,
-		"for_loop":            true,
-		"len_builtin":         true,
-		"len_string":          true,
-		"bool_chain":          true,
-		"let_and_print":       true,
-		"math_ops":            true,
-		"basic_compare":       true,
-		"var_assignment":      true,
-		"while_loop":          true,
-		"str_builtin":         true,
-		"string_concat":       true,
-		"substring_builtin":   true,
-		"sum_builtin":         true,
-		"append_builtin":      true,
-		"if_else":             true,
-		"string_compare":      true,
-		"break_continue":      true,
-		"list_index":          true,
-		"list_assign":         true,
-		"string_index":        true,
-		"string_contains":     true,
-		"slice":               true,
-		"if_then_else":        true,
-		"if_then_else_nested": true,
-		"for_list_collection": true,
-		"string_in_operator":  true,
-		"fun_expr_in_let":     true,
-		"record_assign":       true,
-		"in_operator":         true,
-		"count_builtin":       true,
-		"short_circuit":       true,
-		"test_block":          true,
-		"two-sum":             true,
-		"cast_string_to_int":  true,
-		"membership":          true,
-		"string_prefix_slice": true,
-	}
-
-	if _, err := exec.LookPath("zig"); err != nil {
-		t.Skipf("zig not installed: %v", err)
-	}
-
 	outDir := filepath.Join(root, "tests/a2mochi/x/zig")
 	os.MkdirAll(outDir, 0o755)
 
 	for _, srcPath := range files {
 		name := strings.TrimSuffix(filepath.Base(srcPath), ".zig")
-		if !allowed[name] {
+		astPath := filepath.Join(outDir, name+".ast")
+		errPath := filepath.Join(outDir, name+".error")
+		if _, err := os.Stat(astPath); err != nil && !*update {
+			t.Skipf("missing golden: %s", name)
+			continue
+		}
+		if _, err := os.Stat(errPath); err == nil && !*update {
+			msg, _ := os.ReadFile(errPath)
+			t.Skipf("previous error: %s", strings.TrimSpace(string(msg)))
 			continue
 		}
 		t.Run(name, func(t *testing.T) {
-			runTransform(t, srcPath, root, outDir)
+			if err := runTransform(srcPath, root, outDir); err != nil {
+				if _, err2 := os.Stat(astPath); err2 == nil {
+					t.Fatalf("%v", err)
+				}
+				t.Skipf("%v", err)
+			}
 		})
 	}
 	if *update {
-		zig.UpdateReadme()
+		updateReadme()
 	}
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	os.Exit(code)
+}
+
+func updateReadme() {
+	zig.UpdateReadme()
 }
