@@ -100,9 +100,12 @@ func TestTransformGolden(t *testing.T) {
 		"for_map_collection":  true,
 		"len_builtin":         true,
 		"len_map":             true,
-		"len_string":          true,
-		"count_builtin":       true,
-	}
+               "len_string":          true,
+               "count_builtin":       true,
+               "typed_var":           true,
+               "typed_let":           true,
+               "while_loop":          true,
+       }
 
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "rkt")
 	os.MkdirAll(outDir, 0o755)
