@@ -5,7 +5,7 @@ Created: 2025-07-28
 This directory contains the test helpers and golden files for converting Python
 programs under `tests/transpiler/x/py` into Mochi AST form.
 
-Completed programs: 50/104
+Completed programs: 57/104
 
 ## Checklist
 - [x] append_builtin
@@ -58,3 +58,10 @@ Completed programs: 50/104
 - [x] list_set_ops
 - [x] map_in_operator
 - [x] map_nested_assign
+- [x] for_list_collection
+- [x] for_map_collection
+- [x] in_operator
+- [x] in_operator_extended
+- [x] match_expr
+- [x] str_builtin
+- [x] test_block
