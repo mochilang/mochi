@@ -1,0 +1,20 @@
+(program
+  (fun makeAdder
+    (param n (type int))
+    (return
+      (funexpr
+        (param x (type int))
+        (type int)
+        (group
+          (binary + (selector x) (selector n))
+        )
+      )
+    )
+  )
+  (let add10
+    (call makeAdder (int 10))
+  )
+  (call print
+    (call add10 (int 7))
+  )
+)

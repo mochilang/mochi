@@ -326,7 +326,14 @@ func exprToNode(e luaast.Expr, mut map[string]bool) *ast.Node {
 		if rt := inferReturnType(v); rt != "" {
 			n.Children = append(n.Children, node("type", rt))
 		}
-		n.Children = append(n.Children, convertStmtsToNodes(v.Stmts, map[string]bool{}, mut)...)
+		if len(v.Stmts) == 1 {
+			if r, ok := v.Stmts[0].(*luaast.ReturnStmt); ok && len(r.Exprs) == 1 {
+				n.Children = append(n.Children, exprToNode(r.Exprs[0], mut))
+				return n
+			}
+		}
+		blk := node("block", nil, convertStmtsToNodes(v.Stmts, map[string]bool{}, mut)...)
+		n.Children = append(n.Children, blk)
 		return n
 	case *luaast.AttrGetExpr:
 		if k, ok := v.Key.(*luaast.StringExpr); ok {
@@ -767,6 +774,13 @@ func luaExprString(e luaast.Expr, mut map[string]bool) string {
 		var b strings.Builder
 		b.WriteString("fun")
 		b.WriteString(luaFuncSignature(v))
+		if len(v.Stmts) == 1 {
+			if r, ok := v.Stmts[0].(*luaast.ReturnStmt); ok && len(r.Exprs) == 1 {
+				b.WriteString(" => ")
+				b.WriteString(luaExprString(r.Exprs[0], mut))
+				return b.String()
+			}
+		}
 		b.WriteString(" {")
 		for _, line := range convertLuaStmts(v.Stmts, 1, map[string]bool{}, mut) {
 			b.WriteByte('\n')
