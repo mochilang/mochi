@@ -157,6 +157,8 @@ func TestTransformGolden(t *testing.T) {
 		"map_literal_dynamic":  true,
 		"test_block":           true,
 		"user_type_literal":    true,
+		"membership":           true,
+		"min_max_builtin":      true,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/lua")

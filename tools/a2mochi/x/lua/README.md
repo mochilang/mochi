@@ -1,7 +1,7 @@
 # a2mochi Lua Converter
 
-Completed programs: 65/104
-Date: 2025-07-29 21:32:43 GMT+7
+Completed programs: 67/104
+Date: 2025-07-29 23:34:59 GMT+7
 
 This directory contains helpers and golden files for converting Lua programs
 under `tests/transpiler/x/lua` back into Mochi code.
@@ -71,8 +71,8 @@ Supported examples:
 - [ ] match_expr
 - [ ] match_full
 - [ ] math_ops
-- [ ] membership
-- [ ] min_max_builtin
+- [x] membership
+- [x] min_max_builtin
 - [ ] nested_function
 - [ ] order_by_map
 - [ ] outer_join

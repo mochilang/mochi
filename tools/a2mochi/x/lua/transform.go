@@ -320,6 +320,12 @@ func exprToNode(e luaast.Expr, mut map[string]bool) *ast.Node {
 			if isLenFunc(fn) && len(v.Args) == 1 {
 				return node("call", "len", exprToNode(v.Args[0], mut))
 			}
+			if isMinFunc(fn) && len(v.Args) == 1 {
+				return node("call", "min", exprToNode(v.Args[0], mut))
+			}
+			if isMaxFunc(fn) && len(v.Args) == 1 {
+				return node("call", "max", exprToNode(v.Args[0], mut))
+			}
 			if isInOperatorFunc(fn) && len(v.Args) == 2 {
 				return node("binary", "in", exprToNode(v.Args[1], mut), exprToNode(v.Args[0], mut))
 			}
@@ -799,6 +805,12 @@ func luaExprString(e luaast.Expr, mut map[string]bool) string {
 			if isAvgFunc(fn) && len(v.Args) == 1 {
 				return "avg(" + luaExprString(v.Args[0], mut) + ")"
 			}
+			if isMinFunc(fn) && len(v.Args) == 1 {
+				return "min(" + luaExprString(v.Args[0], mut) + ")"
+			}
+			if isMaxFunc(fn) && len(v.Args) == 1 {
+				return "max(" + luaExprString(v.Args[0], mut) + ")"
+			}
 		}
 		if (callee == "pairs" || callee == "ipairs") && len(args) == 1 {
 			return luaExprString(v.Args[0], mut)
@@ -1198,6 +1210,90 @@ func isInOperatorFunc(fn *luaast.FunctionExpr) bool {
 		return false
 	}
 	return true
+}
+
+func isMinFunc(fn *luaast.FunctionExpr) bool {
+	if fn.ParList == nil || len(fn.ParList.Names) != 1 || len(fn.Stmts) != 3 {
+		return false
+	}
+	assign, ok := fn.Stmts[0].(*luaast.LocalAssignStmt)
+	if !ok || len(assign.Names) != 1 || len(assign.Exprs) != 1 {
+		return false
+	}
+	if _, ok := assign.Exprs[0].(*luaast.NilExpr); !ok {
+		return false
+	}
+	switch loop := fn.Stmts[1].(type) {
+	case *luaast.GenericForStmt:
+		if len(loop.Stmts) == 0 {
+			return false
+		}
+		ifs, ok := loop.Stmts[0].(*luaast.IfStmt)
+		if !ok || !containsRelOp(ifs.Condition, "<") {
+			return false
+		}
+	case *luaast.NumberForStmt:
+		if len(loop.Stmts) == 0 {
+			return false
+		}
+		ifs, ok := loop.Stmts[0].(*luaast.IfStmt)
+		if !ok || !containsRelOp(ifs.Condition, "<") {
+			return false
+		}
+	default:
+		return false
+	}
+	if _, ok := fn.Stmts[2].(*luaast.ReturnStmt); !ok {
+		return false
+	}
+	return true
+}
+
+func isMaxFunc(fn *luaast.FunctionExpr) bool {
+	if fn.ParList == nil || len(fn.ParList.Names) != 1 || len(fn.Stmts) != 3 {
+		return false
+	}
+	assign, ok := fn.Stmts[0].(*luaast.LocalAssignStmt)
+	if !ok || len(assign.Names) != 1 || len(assign.Exprs) != 1 {
+		return false
+	}
+	if _, ok := assign.Exprs[0].(*luaast.NilExpr); !ok {
+		return false
+	}
+	switch loop := fn.Stmts[1].(type) {
+	case *luaast.GenericForStmt:
+		if len(loop.Stmts) == 0 {
+			return false
+		}
+		ifs, ok := loop.Stmts[0].(*luaast.IfStmt)
+		if !ok || !containsRelOp(ifs.Condition, ">") {
+			return false
+		}
+	case *luaast.NumberForStmt:
+		if len(loop.Stmts) == 0 {
+			return false
+		}
+		ifs, ok := loop.Stmts[0].(*luaast.IfStmt)
+		if !ok || !containsRelOp(ifs.Condition, ">") {
+			return false
+		}
+	default:
+		return false
+	}
+	if _, ok := fn.Stmts[2].(*luaast.ReturnStmt); !ok {
+		return false
+	}
+	return true
+}
+
+func containsRelOp(e luaast.Expr, op string) bool {
+	switch v := e.(type) {
+	case *luaast.RelationalOpExpr:
+		return v.Operator == op
+	case *luaast.LogicalOpExpr:
+		return containsRelOp(v.Lhs, op) || containsRelOp(v.Rhs, op)
+	}
+	return false
 }
 
 func tryValuesCall(call *luaast.FuncCallExpr, mut map[string]bool) (string, bool) {
