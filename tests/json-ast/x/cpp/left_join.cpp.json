@@ -1,0 +1,1207 @@
+{
+  "funcs": [
+    {
+      "Name": "__addressof",
+      "Params": [
+        {
+          "Name": "__r",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": "    __items.push_back(ResultItem{.o"
+    },
+    {
+      "Name": "forward",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "typename std::remove_reference\u003c_Tp\u003e::type"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": " (auto entry : result) {\n        s"
+    },
+    {
+      "Name": "forward",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "typename std::remove_reference\u003c_Tp\u003e::type"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": "\u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003c\"total\"; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003centry.total; return ss.str(); }()) \u003c\u003c std::endl;\n    }\n  "
+    },
+    {
+      "Name": "operator==",
+      "Params": [
+        {
+          "Name": "__v",
+          "Typ": "partial_ordering"
+        },
+        {
+          "Name": "",
+          "Typ": "__cmp_cat::__unspec"
+        }
+      ],
+      "Ret": "bool",
+      "Body": " ss; ss\u003c\u003centry.customer; ret"
+    },
+    {
+      "Name": "__is_single_threaded",
+      "Params": null,
+      "Ret": "bool",
+      "Body": "     if((o.customerId == c.id)) {\n            __matched = true;\n            { std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto c = c_opt;\n            __items.push"
+    },
+    {
+      "Name": "__exchange_and_add",
+      "Params": [
+        {
+          "Name": "__mem",
+          "Typ": "volatile _Atomic_word"
+        },
+        {
+          "Name": "__val",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "_Atomic_word",
+      "Body": "gstream ss; ss\u003c\u003c\"--- Left Join ---\"; return ss.str(); }()) \u003c\u003c"
+    },
+    {
+      "Name": "__atomic_add",
+      "Params": [
+        {
+          "Name": "__mem",
+          "Typ": "volatile _Atomic_word"
+        },
+        {
+          "Name": "__val",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "",
+      "Body": "n ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss"
+    },
+    {
+      "Name": "__exchange_and_add_single",
+      "Params": [
+        {
+          "Name": "__mem",
+          "Typ": "_Atomic_word"
+        },
+        {
+          "Name": "__val",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "_Atomic_word",
+      "Body": " std::ostringstream ss; ss\u003c\u003centry.total; return ss.str(); }()) \u003c\u003c std::endl;\n    }"
+    },
+    {
+      "Name": "__ostream_write",
+      "Params": [
+        {
+          "Name": "__out",
+          "Typ": "basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__s",
+          "Typ": "_CharT"
+        },
+        {
+          "Name": "__n",
+          "Typ": "streamsize"
+        }
+      ],
+      "Ret": "",
+      "Body": ":optional\u003cCustomersItem\u003e c_opt(c);\n            auto c = c_opt;\n            __items.push_back(ResultItem{.orderId = o.id, .customer = c, .total = o.total}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        __items.p"
+    },
+    {
+      "Name": "__ostream_fill",
+      "Params": [
+        {
+          "Name": "__out",
+          "Typ": "basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__n",
+          "Typ": "streamsize"
+        }
+      ],
+      "Ret": "",
+      "Body": ":ostringstream ss; ss\u003c\u003c\"--- Left Join ---\"; return ss.str(); }()) \u003c\u003c std::endl;\n    for (auto entry : result) {\n        std::cout \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003c\"Order\"; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003centry.orderId; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003c\"customer\"; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003centry.customer"
+    },
+    {
+      "Name": "__iter_less_iter",
+      "Params": null,
+      "Ret": "_Iter_less_iter",
+      "Body": "d::optional\u003cCustomersItem\u003e c"
+    },
+    {
+      "Name": "__iter_less_val",
+      "Params": null,
+      "Ret": "_Iter_less_val",
+      "Body": " for (auto entry : result) "
+    },
+    {
+      "Name": "__iter_comp_val",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "_Iter_less_iter"
+        }
+      ],
+      "Ret": "_Iter_less_val",
+      "Body": "\u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostrin"
+    },
+    {
+      "Name": "bit_cast",
+      "Params": [
+        {
+          "Name": "__from",
+          "Typ": "_From"
+        }
+      ],
+      "Ret": "_To",
+      "Body": "try.customer; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ "
+    },
+    {
+      "Name": "__invfwd",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "typename remove_reference\u003c_Tp\u003e::type"
+        }
+      ],
+      "Ret": "_Up",
+      "Body": "__matched) {\n        std::optional"
+    },
+    {
+      "Name": "__invoke_impl",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__invoke_other"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_Fn"
+        },
+        {
+          "Name": "__args",
+          "Typ": "_Args \u0026\u0026..."
+        }
+      ],
+      "Ret": "_Res",
+      "Body": "));\n\nint main() {\n    std::cout \u003c\u003c ([\u0026]{ std::ostringstream ss; s"
+    },
+    {
+      "Name": "__invoke_impl",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__invoke_memfun_ref"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_MemFun"
+        },
+        {
+          "Name": "__t",
+          "Typ": "_Tp"
+        },
+        {
+          "Name": "__args",
+          "Typ": "_Args \u0026\u0026..."
+        }
+      ],
+      "Ret": "_Res",
+      "Body": "{ std::ostringstream ss; ss\u003c\u003centry.orderId; return ss.str(); }()) \u003c\u003c"
+    },
+    {
+      "Name": "__invoke_impl",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__invoke_memfun_deref"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_MemFun"
+        },
+        {
+          "Name": "__t",
+          "Typ": "_Tp"
+        },
+        {
+          "Name": "__args",
+          "Typ": "_Args \u0026\u0026..."
+        }
+      ],
+      "Ret": "_Res",
+      "Body": "; ss\u003c\u003c\"total\"; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003centry"
+    },
+    {
+      "Name": "begin",
+      "Params": [
+        {
+          "Name": "__ils",
+          "Typ": "initializer_list\u003c_Tp\u003e"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": ") \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::o"
+    },
+    {
+      "Name": "begin",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        }
+      ],
+      "Ret": "",
+      "Body": "tem\u003e c = std::nullopt;\n  "
+    },
+    {
+      "Name": "begin",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        }
+      ],
+      "Ret": "",
+      "Body": "urn ss.str(); }()) \u003c\u003c ' '"
+    },
+    {
+      "Name": "end",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        }
+      ],
+      "Ret": "",
+      "Body": "stringstream ss; ss\u003c\u003cen"
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "__max_size_type"
+        }
+      ],
+      "Ret": "__max_size_type",
+      "Body": "::optional\u003cCus"
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "__max_diff_type"
+        }
+      ],
+      "Ret": "__max_size_type",
+      "Body": "mer = c, .total = o.total});\n  "
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "",
+      "Body": "t Join ---\"; return ss.str(); }()) \u003c\u003c std::endl;\n"
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "__int128"
+        }
+      ],
+      "Ret": "__int128",
+      "Body": "ingstream ss; "
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "__int128"
+        }
+      ],
+      "Ret": "__int128",
+      "Body": "; return ss.st"
+    },
+    {
+      "Name": "__sv_check",
+      "Params": [
+        {
+          "Name": "__size",
+          "Typ": "int"
+        },
+        {
+          "Name": "__pos",
+          "Typ": "int"
+        },
+        {
+          "Name": "__s",
+          "Typ": "string"
+        }
+      ],
+      "Ret": "int",
+      "Body": "));\n\nint main() {\n    std::cout \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003c\"--- Left Join ---\"; return ss.str(); }()) \u003c\u003c std::endl;\n    for (auto entry : result) {\n        "
+    },
+    {
+      "Name": "__sv_limit",
+      "Params": [
+        {
+          "Name": "__size",
+          "Typ": "int"
+        },
+        {
+          "Name": "__pos",
+          "Typ": "int"
+        },
+        {
+          "Name": "__off",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "gstream ss; ss\u003c\u003c\"customer\"; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003centry.cu"
+    },
+    {
+      "Name": "__bswap_16",
+      "Params": [
+        {
+          "Name": "__bsx",
+          "Typ": "__uint16_t"
+        }
+      ],
+      "Ret": "__uint16_t",
+      "Body": "tem\u003e orders = std::vector{OrdersItem{.id = 100, .customerId = 1, .total = 250}, OrdersItem{.id = 101, .customerId "
+    },
+    {
+      "Name": "__bswap_32",
+      "Params": [
+        {
+          "Name": "__bsx",
+          "Typ": "__uint32_t"
+        }
+      ],
+      "Ret": "__uint32_t",
+      "Body": "{ std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto c = c_opt;\n            __items.push_back(ResultItem{.ord"
+    },
+    {
+      "Name": "__bswap_64",
+      "Params": [
+        {
+          "Name": "__bsx",
+          "Typ": "__uint64_t"
+        }
+      ],
+      "Ret": "__uint64_t",
+      "Body": "\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003centry.orderId; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream "
+    },
+    {
+      "Name": "__uint16_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint16_t"
+        }
+      ],
+      "Ret": "__uint16_t",
+      "Body": "rders = std::vec"
+    },
+    {
+      "Name": "__uint32_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint32_t"
+        }
+      ],
+      "Ret": "__uint32_t",
+      "Body": "tem{.id = 101, ."
+    },
+    {
+      "Name": "__uint64_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint64_t"
+        }
+      ],
+      "Ret": "__uint64_t",
+      "Body": "ultItem\u003e __items"
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__i",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "_opt;\n            __items.push"
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "long long"
+        }
+      ],
+      "Ret": "long long",
+      "Body": "\n    }\n    if(!__matched) {\n    "
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "float"
+        }
+      ],
+      "Ret": "float",
+      "Body": "{\n        std::cout \u003c\u003c ([\u0026]{ s"
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "float"
+        }
+      ],
+      "Ret": "float",
+      "Body": " \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringst"
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "long double"
+        }
+      ],
+      "Ret": "long double",
+      "Body": "d::ostringstream ss; ss\u003c\u003c\"custo"
+    },
+    {
+      "Name": "__to_chars_len",
+      "Params": [
+        {
+          "Name": "__value",
+          "Typ": "_Tp"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "tem\u003e c = std::nullopt;\n        __items.push_back(ResultItem{.orderId = o.id, .customer = c, .total = o.total});\n    }\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003c\"--- Left Join ---\"; return ss.str(); }()) \u003c\u003c std::endl;\n    for (auto entry : result) {\n        std::cout \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003c\"Order\"; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003centry.orderId; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c"
+    },
+    {
+      "Name": "__to_chars_len",
+      "Params": [
+        {
+          "Name": "__value",
+          "Typ": "int"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "tem\u003e c = std::nullopt;\n        __items.push_back(ResultItem{.orderId = o.id, .customer = c, .total = o.total});\n    }\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003c\"--- Left Join ---\"; return ss.str(); }()) \u003c\u003c std::endl;\n    for (auto entry : result) {\n        std::cout \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003c\"Order\"; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003centry.orderId; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c"
+    },
+    {
+      "Name": "__to_chars_len",
+      "Params": [
+        {
+          "Name": "__value",
+          "Typ": "int"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "tem\u003e c = std::nullopt;\n        __items.push_back(ResultItem{.orderId = o.id, .customer = c, .total = o.total});\n    }\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003c\"--- Left Join ---\"; return ss.str(); }()) \u003c\u003c std::endl;\n    for (auto entry : result) {\n        std::cout \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003c\"Order\"; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003centry.orderId; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c"
+    },
+    {
+      "Name": "__to_chars_len",
+      "Params": [
+        {
+          "Name": "__value",
+          "Typ": "long long"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "tem\u003e c = std::nullopt;\n        __items.push_back(ResultItem{.orderId = o.id, .customer = c, .total = o.total});\n    }\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003c\"--- Left Join ---\"; return ss.str(); }()) \u003c\u003c std::endl;\n    for (auto entry : result) {\n        std::cout \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003c\"Order\"; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003centry.orderId; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c"
+    },
+    {
+      "Name": "__check_facet",
+      "Params": [
+        {
+          "Name": "__f",
+          "Typ": "_Facet"
+        }
+      ],
+      "Ret": "_Facet",
+      "Body": "c.id)) {\n            __matched = true;\n            { std::opti"
+    },
+    {
+      "Name": "__check_facet",
+      "Params": [
+        {
+          "Name": "__f",
+          "Typ": "std::ctype\u003cchar\u003e"
+        }
+      ],
+      "Ret": "std::ctype\u003cchar\u003e",
+      "Body": "c.id)) {\n            __matched = true;\n            { std::opti"
+    },
+    {
+      "Name": "__erase_nodes_if",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        },
+        {
+          "Name": "__ucont",
+          "Typ": "_UnsafeContainer"
+        },
+        {
+          "Name": "__pred",
+          "Typ": "_Predicate"
+        }
+      ],
+      "Ret": "typename _Container::size_type",
+      "Body": "         auto c = c_opt;\n            __items.push_back(ResultItem{.orderId = o.id, .customer = c, .total = o.total}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        __items.push_back(ResultItem{.orderId = o.id, .customer ="
+    },
+    {
+      "Name": "resetiosflags",
+      "Params": [
+        {
+          "Name": "__mask",
+          "Typ": "ios_base::fmtflags"
+        }
+      ],
+      "Ret": "_Resetiosflags",
+      "Body": "= c, .total = o.total"
+    },
+    {
+      "Name": "operator\u003e\u003e",
+      "Params": [
+        {
+          "Name": "__is",
+          "Typ": "basic_istream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_Resetiosflags"
+        }
+      ],
+      "Ret": "basic_istream\u003c_CharT, _Traits\u003e",
+      "Body": "entry : result) {\n        std::cout \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003c\"Order"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "__os",
+          "Typ": "basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_Resetiosflags"
+        }
+      ],
+      "Ret": "basic_ostream\u003c_CharT, _Traits\u003e",
+      "Body": ".str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003centry.customer; return"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "os",
+          "Typ": "std::ostream"
+        },
+        {
+          "Name": "v",
+          "Typ": "std::optional\u003cT\u003e"
+        }
+      ],
+      "Ret": "std::ostream",
+      "Body": "{\n    if(v) os \u003c\u003c *v; else os \u003c\u003c \"None\";\n    return os;\n"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "os",
+          "Typ": "std::ostream"
+        },
+        {
+          "Name": "v",
+          "Typ": "std::optional\u003cCustomersItem\u003e"
+        }
+      ],
+      "Ret": "std::ostream",
+      "Body": "{\n    if(v) os \u003c\u003c *v; else os \u003c\u003c \"None\";\n    return os;\n"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "os",
+          "Typ": "std::ostream"
+        },
+        {
+          "Name": "v",
+          "Typ": "CustomersItem"
+        }
+      ],
+      "Ret": "std::ostream",
+      "Body": "{\n    os \u003c\u003c '{' \u003c\u003c \"'id': \" \u003c\u003c v.id \u003c\u003c \", \" \u003c\u003c \"'name': '\" \u003c\u003c v.name \u003c\u003c \"'\" \u003c\u003c '}';\n    return os;\n"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "os",
+          "Typ": "std::ostream"
+        },
+        {
+          "Name": "v",
+          "Typ": "OrdersItem"
+        }
+      ],
+      "Ret": "std::ostream",
+      "Body": "{\n    os \u003c\u003c '{' \u003c\u003c \"'id': \" \u003c\u003c v.id \u003c\u003c \", \" \u003c\u003c \"'customerId': \" \u003c\u003c v.customerId \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "os",
+          "Typ": "std::ostream"
+        },
+        {
+          "Name": "v",
+          "Typ": "ResultItem"
+        }
+      ],
+      "Ret": "std::ostream",
+      "Body": "{\n    os \u003c\u003c '{' \u003c\u003c \"'orderId': \" \u003c\u003c v.orderId \u003c\u003c \", \" \u003c\u003c \"'customer': \" \u003c\u003c v.customer \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n"
+    },
+    {
+      "Name": "main",
+      "Params": null,
+      "Ret": "int",
+      "Body": "{\n    std::cout \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003c\"--- Left Join ---\"; return ss.str(); }()) \u003c\u003c std::endl;\n    for (auto entry : result) {\n        std::cout \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003c\"Order\"; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003centry.orderId; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003c\"customer\"; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003centry.customer; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003c\"total\"; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003centry.total; return ss.str(); }()) \u003c\u003c std::endl;\n    }\n    return 0;\n"
+    }
+  ],
+  "enums": [
+    {
+      "Name": "_Ord",
+      "Variants": [
+        "equivalent",
+        "less",
+        "greater"
+      ]
+    },
+    {
+      "Name": "_Ncmp",
+      "Variants": [
+        "_Unordered"
+      ]
+    },
+    {
+      "Name": "_Ios_Fmtflags",
+      "Variants": [
+        "_S_boolalpha",
+        "_S_dec",
+        "_S_fixed",
+        "_S_hex",
+        "_S_internal",
+        "_S_left",
+        "_S_oct",
+        "_S_right",
+        "_S_scientific",
+        "_S_showbase",
+        "_S_showpoint",
+        "_S_showpos",
+        "_S_skipws",
+        "_S_unitbuf",
+        "_S_uppercase",
+        "_S_adjustfield",
+        "_S_basefield",
+        "_S_floatfield",
+        "_S_ios_fmtflags_end",
+        "_S_ios_fmtflags_max",
+        "_S_ios_fmtflags_min"
+      ]
+    },
+    {
+      "Name": "_Construct",
+      "Variants": [
+        "_Token"
+      ]
+    },
+    {
+      "Name": "dateorder",
+      "Variants": [
+        "no_order",
+        "dmy",
+        "mdy",
+        "ymd",
+        "ydm"
+      ]
+    },
+    {
+      "Name": "result",
+      "Variants": [
+        "ok",
+        "partial",
+        "error",
+        "noconv"
+      ]
+    }
+  ],
+  "structs": [
+    {
+      "Name": "CustomersItem",
+      "Fields": [
+        {
+          "Name": "id",
+          "Typ": "int"
+        },
+        {
+          "Name": "name",
+          "Typ": "string"
+        }
+      ]
+    },
+    {
+      "Name": "OrdersItem",
+      "Fields": [
+        {
+          "Name": "id",
+          "Typ": "int"
+        },
+        {
+          "Name": "customerId",
+          "Typ": "int"
+        },
+        {
+          "Name": "total",
+          "Typ": "int"
+        }
+      ]
+    },
+    {
+      "Name": "ResultItem",
+      "Fields": [
+        {
+          "Name": "orderId",
+          "Typ": "int"
+        },
+        {
+          "Name": "customer",
+          "Typ": "std::optional\u003cCustomersItem\u003e"
+        },
+        {
+          "Name": "total",
+          "Typ": "int"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "Name": "c",
+      "Typ": "atched) { std::optional\u003cCustomersItem\u003e",
+      "Value": "std::nullopt"
+    },
+    {
+      "Name": "c",
+      "Typ": "atched) { std::optional\u003cCustomersItem\u003e",
+      "Value": "std::nullopt"
+    },
+    {
+      "Name": "c",
+      "Typ": "atched) { std::optional\u003cCustomersItem\u003e",
+      "Value": "std::nullopt"
+    },
+    {
+      "Name": "c",
+      "Typ": "atched) { std::optional\u003cCustomersItem\u003e",
+      "Value": "std::nullopt"
+    },
+    {
+      "Name": "std::ostringstr",
+      "Typ": "return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{",
+      "Value": ""
+    },
+    {
+      "Name": "\u003c\u003c",
+      "Typ": ".customer",
+      "Value": ""
+    },
+    {
+      "Name": "([\u0026]{",
+      "Typ": "\"total\"; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::endl",
+      "Typ": "ingstream ss; ss\u003c\u003centry.total; return ss.str(); }()) \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "([\u0026]{",
+      "Typ": "\"total\"; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::endl",
+      "Typ": "ingstream ss; ss\u003c\u003centry.total; return ss.str(); }()) \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "([\u0026]{",
+      "Typ": "\"total\"; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::endl",
+      "Typ": "ingstream ss; ss\u003c\u003centry.total; return ss.str(); }()) \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "([\u0026]{",
+      "Typ": "\"total\"; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::endl",
+      "Typ": "ingstream ss; ss\u003c\u003centry.total; return ss.str(); }()) \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "([\u0026]{",
+      "Typ": "\"total\"; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::endl",
+      "Typ": "ingstream ss; ss\u003c\u003centry.total; return ss.str(); }()) \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "([\u0026]{",
+      "Typ": "\"total\"; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::endl",
+      "Typ": "ingstream ss; ss\u003c\u003centry.total; return ss.str(); }()) \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "([\u0026]{",
+      "Typ": "\"total\"; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::endl",
+      "Typ": "ingstream ss; ss\u003c\u003centry.total; return ss.str(); }()) \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "([\u0026]{",
+      "Typ": "\"total\"; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::endl",
+      "Typ": "ingstream ss; ss\u003c\u003centry.total; return ss.str(); }()) \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "(",
+      "Typ": "tream ss; ss\u003c\u003c\"total\"; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "ss\u003c\u003centry.orderId",
+      "Typ": "' ' \u003c\u003c ([\u0026]{ std::ostringstream ss;",
+      "Value": ""
+    },
+    {
+      "Name": "c",
+      "Typ": "\u003e c_opt(c); auto",
+      "Value": "c_opt;\n            __items.push_back(ResultItem{.orderId = o.id, .customer = c, .total = o.total}"
+    },
+    {
+      "Name": "c",
+      "Typ": "} if(!__matched) { std::optional\u003cCustomersItem\u003e",
+      "Value": "std::nullopt;\n        __items.pu"
+    },
+    {
+      "Name": ".total",
+      "Typ": "c,",
+      "Value": "o.total});\n    }\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c ([\u0026]{ std::ostring"
+    },
+    {
+      "Name": "ss",
+      "Typ": "ss.str(); }()) \u003c\u003c std::endl; for (auto entry : result) { std::cout \u003c\u003c ([\u0026]{ std::ostringstream",
+      "Value": ""
+    },
+    {
+      "Name": "s",
+      "Typ": "}()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003centry.orderId; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{",
+      "Value": ""
+    },
+    {
+      "Name": "([\u0026]{",
+      "Typ": "r(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003centry.customer; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::e",
+      "Typ": "str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003centry.total; return ss.str(); }()) \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "__matched",
+      "Typ": "",
+      "Value": "true;\n            { std::optional\u003cCustomersItem\u003e c_opt(c"
+    },
+    {
+      "Name": "c",
+      "Typ": "",
+      "Value": "c_opt;\n            __items.pus"
+    },
+    {
+      "Name": "ector\u003cResultI",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "__matched",
+      "Typ": ": orders) { bool",
+      "Value": "false"
+    },
+    {
+      "Name": "__matched",
+      "Typ": "{",
+      "Value": "true;\n            { std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto c = c_opt"
+    },
+    {
+      "Name": ".customer",
+      "Typ": "o.id,",
+      "Value": "c, .total = o.total}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        __items.push_back(ResultItem{"
+    },
+    {
+      "Name": "c",
+      "Typ": "(!__matched) { std::optional\u003cCustomersItem\u003e",
+      "Value": "std::nullopt;\n        __items.push_back(ResultItem{.orderId = o.id, .customer = c, .total = o.total}"
+    },
+    {
+      "Name": "customers",
+      "Typ": "// Generated by Mochi transpiler v0.10.34 on 2025-07-21 20:45:53 GMT+7 #include \u003ciostream\u003e #include \u003cstring\u003e #include \u003cvector\u003e #include \u003cmap\u003e #include \u003coptional\u003e #include \u003csstream\u003e #include \u003ciomanip\u003e template\u003ctypename T\u003e std::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const std::optional\u003cT\u003e\u0026 v) { if(v) os \u003c\u003c *v; else os \u003c\u003c \"None\"; return os; } struct CustomersItem { int id; std::string name; }; struct OrdersItem { int id; int customerId; int total; }; struct ResultItem { int orderId; std::optional\u003cCustomersItem\u003e customer; int total; }; std::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const CustomersItem\u0026 v) { os \u003c\u003c '{' \u003c\u003c \"'id': \" \u003c\u003c v.id \u003c\u003c \", \" \u003c\u003c \"'name': '\" \u003c\u003c v.name \u003c\u003c \"'\" \u003c\u003c '}'; return os; } std::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const OrdersItem\u0026 v) { os \u003c\u003c '{' \u003c\u003c \"'id': \" \u003c\u003c v.id \u003c\u003c \", \" \u003c\u003c \"'customerId': \" \u003c\u003c v.customerId \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}'; return os; } std::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const ResultItem\u0026 v) { os \u003c\u003c '{' \u003c\u003c \"'orderId': \" \u003c\u003c v.orderId \u003c\u003c \", \" \u003c\u003c \"'customer': \" \u003c\u003c v.customer \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}'; return os; } std::vector\u003cCustomersItem\u003e",
+      "Value": "std::vector{CustomersItem{.id = 1, .name = \"Alice\"}, CustomersItem{.id = 2, .name = \"Bob\"}};\nstd::vector\u003cOrdersItem\u003e orders = std::vector{OrdersItem{.id = 100, .customerId = 1, .total = 250}, OrdersItem{.id = 101, .customerId = 3, .total = 80}};\nauto result = ([]{ std::vector\u003cResultItem\u003e __items;\nfor (auto o : orders) {\n    bool __matched = false;\n    for (auto __c : customers) {\n        auto c = __c;\n        if((o.customerId == c.id)) {\n            __matched = true;\n            { std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto c = c_opt;\n            __items.push_back(ResultItem{.orderId = o.id, .customer = c, .total = o.total}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        __items.push_back(ResultItem{.orderId = o.id, .customer = c, .total = o.total});\n    }\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003c\"--- Left Join ---\"; return ss.str(); }()) \u003c\u003c std::endl"
+    },
+    {
+      "Name": "---\"",
+      "Typ": "int main() { std::cout \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003c\"--- Left Join",
+      "Value": ""
+    },
+    {
+      "Name": "ss",
+      "Typ": ":endl; for (auto entry : result) { std::cout \u003c\u003c ([\u0026]{ std::ostringstream",
+      "Value": ""
+    },
+    {
+      "Name": "__matched",
+      "Typ": "",
+      "Value": "true"
+    },
+    {
+      "Name": "{",
+      "Typ": "} } if(!__matched)",
+      "Value": ""
+    },
+    {
+      "Name": "c",
+      "Typ": ":optional\u003cCustomersItem\u003e",
+      "Value": "std::nu"
+    },
+    {
+      "Name": "__items.push_back(Res",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": ".orderId",
+      "Typ": "",
+      "Value": "o.id, .customer = c, .total = o.total}"
+    },
+    {
+      "Name": "r",
+      "Typ": "al}); } }",
+      "Value": ""
+    },
+    {
+      "Name": "(",
+      "Typ": "std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "re",
+      "Typ": "t Join ---\";",
+      "Value": ""
+    },
+    {
+      "Name": "ss",
+      "Typ": "y : result) { std::cout \u003c\u003c ([\u0026]{ std::ostringstream",
+      "Value": ""
+    },
+    {
+      "Name": "(",
+      "Typ": "}()) \u003c\u003c ' ' \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "s",
+      "Typ": "rderId; return",
+      "Value": ""
+    },
+    {
+      "Name": "ss\u003c",
+      "Typ": "ngstream ss;",
+      "Value": ""
+    },
+    {
+      "Name": "td::ostringstrea",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "ss.str()",
+      "Typ": "\u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003c\"total\"; return",
+      "Value": ""
+    },
+    {
+      "Name": "c",
+      "Typ": "l\u003cCustomersItem\u003e",
+      "Value": "std::nullopt"
+    },
+    {
+      "Name": "c",
+      "Typ": "l\u003cCustomersItem\u003e",
+      "Value": "std::nullopt"
+    },
+    {
+      "Name": "}",
+      "Typ": "ingstream ss; ss\u003c\u003c\"Order\"; return ss.str();",
+      "Value": ""
+    },
+    {
+      "Name": "ss",
+      "Typ": "' ' \u003c\u003c ([\u0026]{ std::ostringstream",
+      "Value": ""
+    },
+    {
+      "Name": "items.push_back(ResultItem{.orderId",
+      "Typ": "",
+      "Value": "o.id, .customer = c, .total = o.total}"
+    },
+    {
+      "Name": "er",
+      "Typ": "",
+      "Value": "c, .total = o.total}"
+    },
+    {
+      "Name": "customers",
+      "Typ": "list\u003cCustomersItem\u003e",
+      "Value": "std::vector{CustomersItem{.id = 1, .name = \"Alice\"}, CustomersItem{.id = 2, .name = \"Bob\"}}"
+    },
+    {
+      "Name": "orders",
+      "Typ": "list\u003cOrdersItem\u003e",
+      "Value": "std::vector{OrdersItem{.id = 100, .customerId = 1, .total = 250}, OrdersItem{.id = 101, .customerId = 3, .total = 80}}"
+    },
+    {
+      "Name": "result",
+      "Typ": "",
+      "Value": "[]{ std::vector\u003cResultItem\u003e __items;\nfor (auto o : orders) {\n    bool __matched = false;\n    for (auto __c : customers) {\n        auto c = __c;\n        if((o.customerId == c.id)) {\n            __matched = true;\n            { std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto c = c_opt;\n            __items.push_back(ResultItem{.orderId = o.id, .customer = c, .total = o.total}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        __items.push_back(ResultItem{.orderId = o.id, .customer = c, .total = o.total});\n    }\n}\nreturn __items; }("
+    },
+    {
+      "Name": "std::vector\u003cResultItem\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "o",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "__matched",
+      "Typ": "bool",
+      "Value": ""
+    },
+    {
+      "Name": "__c",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "c",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "c_opt(c",
+      "Typ": "std::optional\u003cCustomersItem\u003e",
+      "Value": ""
+    },
+    {
+      "Name": "c",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "c",
+      "Typ": "std::optional\u003cCustomersItem\u003e",
+      "Value": "std::"
+    }
+  ],
+  "source": "// Generated by Mochi transpiler v0.10.34 on 2025-07-21 20:45:53 GMT+7\n#include \u003ciostream\u003e\n#include \u003cstring\u003e\n#include \u003cvector\u003e\n#include \u003cmap\u003e\n#include \u003coptional\u003e\n#include \u003csstream\u003e\n#include \u003ciomanip\u003e\n\n\ntemplate\u003ctypename T\u003e\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const std::optional\u003cT\u003e\u0026 v) {\n    if(v) os \u003c\u003c *v; else os \u003c\u003c \"None\";\n    return os;\n}\n\nstruct CustomersItem {\n    int id;\n    std::string name;\n};\n\nstruct OrdersItem {\n    int id;\n    int customerId;\n    int total;\n};\n\nstruct ResultItem {\n    int orderId;\n    std::optional\u003cCustomersItem\u003e customer;\n    int total;\n};\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const CustomersItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'id': \" \u003c\u003c v.id \u003c\u003c \", \" \u003c\u003c \"'name': '\" \u003c\u003c v.name \u003c\u003c \"'\" \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const OrdersItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'id': \" \u003c\u003c v.id \u003c\u003c \", \" \u003c\u003c \"'customerId': \" \u003c\u003c v.customerId \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const ResultItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'orderId': \" \u003c\u003c v.orderId \u003c\u003c \", \" \u003c\u003c \"'customer': \" \u003c\u003c v.customer \u003c\u003c \", \" \u003c\u003c \"'total': \" \u003c\u003c v.total \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cCustomersItem\u003e customers = std::vector{CustomersItem{.id = 1, .name = \"Alice\"}, CustomersItem{.id = 2, .name = \"Bob\"}};\nstd::vector\u003cOrdersItem\u003e orders = std::vector{OrdersItem{.id = 100, .customerId = 1, .total = 250}, OrdersItem{.id = 101, .customerId = 3, .total = 80}};\nauto result = ([]{ std::vector\u003cResultItem\u003e __items;\nfor (auto o : orders) {\n    bool __matched = false;\n    for (auto __c : customers) {\n        auto c = __c;\n        if((o.customerId == c.id)) {\n            __matched = true;\n            { std::optional\u003cCustomersItem\u003e c_opt(c);\n            auto c = c_opt;\n            __items.push_back(ResultItem{.orderId = o.id, .customer = c, .total = o.total}); }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cCustomersItem\u003e c = std::nullopt;\n        __items.push_back(ResultItem{.orderId = o.id, .customer = c, .total = o.total});\n    }\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003c\"--- Left Join ---\"; return ss.str(); }()) \u003c\u003c std::endl;\n    for (auto entry : result) {\n        std::cout \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003c\"Order\"; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003centry.orderId; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003c\"customer\"; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003centry.customer; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003c\"total\"; return ss.str(); }()) \u003c\u003c ' ' \u003c\u003c ([\u0026]{ std::ostringstream ss; ss\u003c\u003centry.total; return ss.str(); }()) \u003c\u003c std::endl;\n    }\n    return 0;\n}\n"
+}

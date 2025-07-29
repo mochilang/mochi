@@ -1,0 +1,409 @@
+{
+  "funcs": [
+    {
+      "Name": "__addressof",
+      "Params": [
+        {
+          "Name": "__r",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": "total = (total + x.val);\n        }\n"
+    },
+    {
+      "Name": "__is_single_threaded",
+      "Params": null,
+      "Ret": "bool",
+      "Body": "_tmp[__i].second);\n}\nreturn __items; }());\n\nint main() {\n    for (auto g : groups) {\n        int total = 0;\n        for (auto x : g.items) {\n            total = (total +"
+    },
+    {
+      "Name": "__ostream_write",
+      "Params": [
+        {
+          "Name": "__out",
+          "Typ": "basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__s",
+          "Typ": "_CharT"
+        },
+        {
+          "Name": "__n",
+          "Typ": "streamsize"
+        }
+      ],
+      "Ret": "",
+      "Body": " {\n        int total = 0;\n        for (auto x : g.items) {\n            total = (total + x.val);\n        }\n        tmp = ([\u0026]{ auto v = tmp; v.push_back(std::map\u003cauto, auto\u003e{{tag, g.key}, {total, total}}); return v; }());\n    }\n    std::cout \u003c\u003c std::boolalpha \u003c\u003c resul"
+    },
+    {
+      "Name": "__iter_less_iter",
+      "Params": null,
+      "Ret": "_Iter_less_iter",
+      "Body": "s) {\n        int total = 0;\n"
+    },
+    {
+      "Name": "__invfwd",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "typename remove_reference\u003c_Tp\u003e::type"
+        }
+      ],
+      "Ret": "_Up",
+      "Body": "ey}, {total, total}}); return v; }"
+    },
+    {
+      "Name": "begin",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        }
+      ],
+      "Ret": "",
+      "Body": "    std::cout \u003c\u003c std::boo"
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "__max_size_type"
+        }
+      ],
+      "Ret": "__max_size_type",
+      "Body": "eturn v; }());"
+    },
+    {
+      "Name": "__bswap_16",
+      "Params": [
+        {
+          "Name": "__bsx",
+          "Typ": "__uint16_t"
+        }
+      ],
+      "Ret": "__uint16_t",
+      "Body": "d::vector\u003cstd::pair\u003cauto, auto\u003e\u003e __tmp;\nfor (auto r : tmp) {\n        __tmp.emplace_back(r.tag, r);\n}\nstd::sort(__t"
+    },
+    {
+      "Name": "__bswap_32",
+      "Params": [
+        {
+          "Name": "__bsx",
+          "Typ": "__uint32_t"
+        }
+      ],
+      "Ret": "__uint32_t",
+      "Body": "roups) {\n        int total = 0;\n        for (auto x : g.items) {\n            total = (total + x.val);\n        }\n  "
+    },
+    {
+      "Name": "__uint16_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint16_t"
+        }
+      ],
+      "Ret": "__uint16_t",
+      "Body": "tor\u003cstd::pair\u003cau"
+    },
+    {
+      "Name": "__uint32_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint32_t"
+        }
+      ],
+      "Ret": "__uint32_t",
+      "Body": "(r.tag, r);\n}\nst"
+    },
+    {
+      "Name": "__uint64_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint64_t"
+        }
+      ],
+      "Ret": "__uint64_t",
+      "Body": "b){ return a.fir"
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__i",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "{\n            total = (total +"
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "long long"
+        }
+      ],
+      "Ret": "long long",
+      "Body": "auto\u003e{{tag, g.key}, {total, tota"
+    },
+    {
+      "Name": "__check_facet",
+      "Params": [
+        {
+          "Name": "__f",
+          "Typ": "_Facet"
+        }
+      ],
+      "Ret": "_Facet",
+      "Body": "rn __items; }());\n\nint main() {\n    for (auto g : groups) {\n  "
+    },
+    {
+      "Name": "main",
+      "Params": null,
+      "Ret": "int",
+      "Body": "{\n    for (auto g : groups) {\n        int total = 0;\n        for (auto x : g.items) {\n            total = (total + x.val);\n        }\n        tmp = ([\u0026]{ auto v = tmp; v.push_back(std::map\u003cauto, auto\u003e{{tag, g.key}, {total, total}}); return v; }());\n    }\n    std::cout \u003c\u003c std::boolalpha \u003c\u003c result \u003c\u003c std::endl;\n    return 0;\n"
+    }
+  ],
+  "enums": [
+    {
+      "Name": "_Ord",
+      "Variants": [
+        "equivalent",
+        "less",
+        "greater"
+      ]
+    },
+    {
+      "Name": "_Ncmp",
+      "Variants": [
+        "_Unordered"
+      ]
+    },
+    {
+      "Name": "dateorder",
+      "Variants": [
+        "no_order",
+        "dmy",
+        "mdy",
+        "ymd",
+        "ydm"
+      ]
+    },
+    {
+      "Name": "result",
+      "Variants": [
+        "ok",
+        "partial",
+        "error",
+        "noconv"
+      ]
+    }
+  ],
+  "structs": [
+    {
+      "Name": "DataItem",
+      "Fields": [
+        {
+          "Name": "tag",
+          "Typ": "string"
+        },
+        {
+          "Name": "val",
+          "Typ": "int"
+        }
+      ]
+    },
+    {
+      "Name": "GGroup",
+      "Fields": [
+        {
+          "Name": "key",
+          "Typ": "string"
+        },
+        {
+          "Name": "items",
+          "Typ": "list\u003cDataItem\u003e"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "Name": "}",
+      "Typ": ", {total, total}}); return v; }());",
+      "Value": ""
+    },
+    {
+      "Name": "}",
+      "Typ": ", {total, total}}); return v; }());",
+      "Value": ""
+    },
+    {
+      "Name": "}())",
+      "Typ": ", {total, total}}); return v;",
+      "Value": ""
+    },
+    {
+      "Name": "}())",
+      "Typ": ", {total, total}}); return v;",
+      "Value": ""
+    },
+    {
+      "Name": "__",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "total",
+      "Typ": "0; for (auto x : g.items) {",
+      "Value": "total + x.val);\n        }\n        tmp ="
+    },
+    {
+      "Name": "result",
+      "Typ": "auto\u003e{{tag, g.key}, {total, total}}); return v; }()); } std::cout \u003c\u003c std::boolalpha \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "total",
+      "Typ": "; int main() { for (auto g : groups) { int",
+      "Value": "0"
+    },
+    {
+      "Name": "total",
+      "Typ": "uto x : g.items) {",
+      "Value": "total + x.val"
+    },
+    {
+      "Name": "b.first",
+      "Typ": "st auto\u0026 b){ return a.first \u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::vec",
+      "Typ": "});",
+      "Value": ""
+    },
+    {
+      "Name": "total",
+      "Typ": "ems; }()); int main() { for (auto g : groups) { int",
+      "Value": "0;\n        for (auto x : g.items) {\n            total = (total + x.val"
+    },
+    {
+      "Name": "mp",
+      "Typ": "",
+      "Value": "[\u0026]{ auto v = tmp; v.push_back(std::map\u003cauto, auto\u003e{{tag, g.key}, {total, total}}); return v; }());\n    }\n    std::cout \u003c\u003c std::boolalpha \u003c\u003c result \u003c\u003c std::endl"
+    },
+    {
+      "Name": "std::endl",
+      "Typ": ".key}, {total, total}}); return v; }()); } std::cout \u003c\u003c std::boolalpha \u003c\u003c result \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "g",
+      "Typ": "}()); int main() { for (auto",
+      "Value": ""
+    },
+    {
+      "Name": "total}})",
+      "Typ": "ap\u003cauto, auto\u003e{{tag, g.key}, {total,",
+      "Value": ""
+    },
+    {
+      "Name": "\u003c\u003c",
+      "Typ": "turn v; }()); } std::cout",
+      "Value": ""
+    },
+    {
+      "Name": "std::en",
+      "Typ": "oolalpha \u003c\u003c result \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "otal",
+      "Typ": "",
+      "Value": "total + x.val);\n        }\n        tmp"
+    },
+    {
+      "Name": "std::boo",
+      "Typ": "}()); } std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::boo",
+      "Typ": "}()); } std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "data",
+      "Typ": "list\u003cDataItem\u003e",
+      "Value": "std::vector{DataItem{.tag = std::string(\"a\"), .val = 1}, DataItem{.tag = std::string(\"a\"), .val = 2}, DataItem{.tag = std::string(\"b\"), .val = 3}}"
+    },
+    {
+      "Name": "groups",
+      "Typ": "list\u003cGGroup\u003e",
+      "Value": "[]{ std::vector\u003cGGroup\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cstd::string, size_t\u003e __idx;\nfor (auto d : data) {\n        auto __key = d.tag;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(d);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_back(d);\n        }\n}\nfor(auto \u0026__g : __groups) {\n    GGroup g = __g;\n    __items.push_back(g);\n}\nreturn __items; }("
+    },
+    {
+      "Name": "std::vector\u003cGGroup\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "std::vector\u003cGGroup\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "size_t\u003e",
+      "Typ": "std::unordered_map\u003cstd::string,",
+      "Value": ""
+    },
+    {
+      "Name": "d",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "__key",
+      "Typ": "",
+      "Value": "d."
+    },
+    {
+      "Name": "it",
+      "Typ": "",
+      "Value": "__idx.find(__key"
+    },
+    {
+      "Name": "{}}",
+      "Typ": "GGroup __g{__key,",
+      "Value": ""
+    },
+    {
+      "Name": "\u0026__g",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "g",
+      "Typ": "GGroup",
+      "Value": ""
+    },
+    {
+      "Name": "tmp",
+      "Typ": "",
+      "Value": "std::vector{}"
+    },
+    {
+      "Name": "std::vector\u003cauto\u003e",
+      "Typ": "",
+      "Value": ""
+    }
+  ],
+  "source": "// Generated by Mochi transpiler v0.10.33 on 2025-07-21 18:19:57 GMT+7\n#include \u003ciostream\u003e\n#include \u003cstring\u003e\n#include \u003cvector\u003e\n#include \u003cmap\u003e\n#include \u003cunordered_map\u003e\n#include \u003calgorithm\u003e\n#include \u003csstream\u003e\n#include \u003ciomanip\u003e\n\n\nstruct DataItem {\n    std::string tag;\n    int val;\n};\n\nstruct GGroup {\n    std::string key;\n    std::vector\u003cDataItem\u003e items;\n    auto begin() { return items.begin(); }\n    auto end() { return items.end(); }\n    size_t size() const { return items.size(); }\n};\n\nstd::vector\u003cDataItem\u003e data = std::vector{DataItem{.tag = std::string(\"a\"), .val = 1}, DataItem{.tag = std::string(\"a\"), .val = 2}, DataItem{.tag = std::string(\"b\"), .val = 3}};\nstd::vector\u003cGGroup\u003e groups = ([]{ std::vector\u003cGGroup\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cstd::string, size_t\u003e __idx;\nfor (auto d : data) {\n        auto __key = d.tag;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(d);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_back(d);\n        }\n}\nfor(auto \u0026__g : __groups) {\n    GGroup g = __g;\n    __items.push_back(g);\n}\nreturn __items; }());\nauto tmp = std::vector{};\nstd::vector\u003cauto\u003e result = ([]{ std::vector\u003cstd::pair\u003cauto, auto\u003e\u003e __tmp;\nfor (auto r : tmp) {\n        __tmp.emplace_back(r.tag, r);\n}\nstd::sort(__tmp.begin(), __tmp.end(), [](const auto\u0026 a,const auto\u0026 b){ return a.first \u003c b.first; });\nstd::vector\u003cauto\u003e __items;\nfor(size_t __i=0; __i\u003c__tmp.size(); ++__i){\n    __items.push_back(__tmp[__i].second);\n}\nreturn __items; }());\n\nint main() {\n    for (auto g : groups) {\n        int total = 0;\n        for (auto x : g.items) {\n            total = (total + x.val);\n        }\n        tmp = ([\u0026]{ auto v = tmp; v.push_back(std::map\u003cauto, auto\u003e{{tag, g.key}, {total, total}}); return v; }());\n    }\n    std::cout \u003c\u003c std::boolalpha \u003c\u003c result \u003c\u003c std::endl;\n    return 0;\n}\n"
+}

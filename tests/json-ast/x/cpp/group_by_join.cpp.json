@@ -1,0 +1,318 @@
+{
+  "funcs": [
+    {
+      "Name": "__addressof",
+      "Params": [
+        {
+          "Name": "__r",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": "  std::cout \u003c\u003c std::boolalpha \u003c\u003c s."
+    },
+    {
+      "Name": "__is_single_threaded",
+      "Params": null,
+      "Ret": "bool",
+      "Body": "_items; }());\n\nint main() {\n    std::cout \u003c\u003c std::boolalpha \u003c\u003c std::string(\"--- Orders per customer ---\") \u003c\u003c std::endl;\n    for (auto s : stats) {\n        std::cout \u003c\u003c s"
+    },
+    {
+      "Name": "__iter_less_iter",
+      "Params": null,
+      "Ret": "_Iter_less_iter",
+      "Body": "Orders per customer ---\") \u003c\u003c"
+    },
+    {
+      "Name": "__bswap_16",
+      "Params": [
+        {
+          "Name": "__bsx",
+          "Typ": "__uint16_t"
+        }
+      ],
+      "Ret": "__uint16_t",
+      "Body": "           __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __gro"
+    },
+    {
+      "Name": "__bswap_32",
+      "Params": [
+        {
+          "Name": "__bsx",
+          "Typ": "__uint32_t"
+        }
+      ],
+      "Ret": "__uint32_t",
+      "Body": "--- Orders per customer ---\") \u003c\u003c std::endl;\n    for (auto s : stats) {\n        std::cout \u003c\u003c std::boolalpha \u003c\u003c s.na"
+    },
+    {
+      "Name": "__uint16_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint16_t"
+        }
+      ],
+      "Ret": "__uint16_t",
+      "Body": "     __idx[__key"
+    },
+    {
+      "Name": "__uint32_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint32_t"
+        }
+      ],
+      "Ret": "__uint32_t",
+      "Body": " } else {\n      "
+    },
+    {
+      "Name": "__uint64_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint64_t"
+        }
+      ],
+      "Ret": "__uint64_t",
+      "Body": "}\nfor(auto \u0026__g "
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__i",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "tats) {\n        std::cout \u003c\u003c s"
+    },
+    {
+      "Name": "__check_facet",
+      "Params": [
+        {
+          "Name": "__f",
+          "Typ": "_Facet"
+        }
+      ],
+      "Ret": "_Facet",
+      "Body": " {\n    std::cout \u003c\u003c std::boolalpha \u003c\u003c std::string(\"--- Orders "
+    },
+    {
+      "Name": "__check_facet",
+      "Params": [
+        {
+          "Name": "__f",
+          "Typ": "std::ctype\u003cchar\u003e"
+        }
+      ],
+      "Ret": "std::ctype\u003cchar\u003e",
+      "Body": " {\n    std::cout \u003c\u003c std::boolalpha \u003c\u003c std::string(\"--- Orders "
+    },
+    {
+      "Name": "main",
+      "Params": null,
+      "Ret": "int",
+      "Body": "{\n    std::cout \u003c\u003c std::boolalpha \u003c\u003c std::string(\"--- Orders per customer ---\") \u003c\u003c std::endl;\n    for (auto s : stats) {\n        std::cout \u003c\u003c std::boolalpha \u003c\u003c s.name \u003c\u003c ' ' \u003c\u003c std::string(\"orders:\") \u003c\u003c ' ' \u003c\u003c s.count \u003c\u003c std::endl;\n    }\n    return 0;\n"
+    }
+  ],
+  "enums": [
+    {
+      "Name": "_Ord",
+      "Variants": [
+        "equivalent",
+        "less",
+        "greater"
+      ]
+    },
+    {
+      "Name": "_Ncmp",
+      "Variants": [
+        "_Unordered"
+      ]
+    },
+    {
+      "Name": "dateorder",
+      "Variants": [
+        "no_order",
+        "dmy",
+        "mdy",
+        "ymd",
+        "ydm"
+      ]
+    },
+    {
+      "Name": "result",
+      "Variants": [
+        "ok",
+        "partial",
+        "error",
+        "noconv"
+      ]
+    }
+  ],
+  "structs": [
+    {
+      "Name": "CustomersItem",
+      "Fields": [
+        {
+          "Name": "id",
+          "Typ": "int"
+        },
+        {
+          "Name": "name",
+          "Typ": "string"
+        }
+      ]
+    },
+    {
+      "Name": "OrdersItem",
+      "Fields": [
+        {
+          "Name": "id",
+          "Typ": "int"
+        },
+        {
+          "Name": "customerId",
+          "Typ": "int"
+        }
+      ]
+    },
+    {
+      "Name": "GGroup",
+      "Fields": [
+        {
+          "Name": "key",
+          "Typ": "string"
+        },
+        {
+          "Name": "items",
+          "Typ": "list\u003cCustomersItem\u003e"
+        }
+      ]
+    },
+    {
+      "Name": "StatsItem",
+      "Fields": [
+        {
+          "Name": "name",
+          "Typ": "string"
+        },
+        {
+          "Name": "count",
+          "Typ": "int"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "Name": "custome",
+      "Typ": "c :",
+      "Value": ""
+    },
+    {
+      "Name": "std::endl",
+      "Typ": "\u003c\u003c std::endl; for (auto s : stats) { std::cout \u003c\u003c std::boolalpha \u003c\u003c s.name \u003c\u003c ' ' \u003c\u003c std::string(\"orders:\") \u003c\u003c ' ' \u003c\u003c s.count \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "Order",
+      "Typ": "\u003c\u003c std::boolalpha \u003c\u003c std::string(\"---",
+      "Value": ""
+    },
+    {
+      "Name": "std::endl",
+      "Typ": "for (auto s : stats) { std::cout \u003c\u003c std::boolalpha \u003c\u003c s.name \u003c\u003c ' ' \u003c\u003c std::string(\"orders:\") \u003c\u003c ' ' \u003c\u003c s.count \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "fo",
+      "Typ": "} } }",
+      "Value": ""
+    },
+    {
+      "Name": "g",
+      "Typ": "GGroup",
+      "Value": ""
+    },
+    {
+      "Name": "std::endl",
+      "Typ": "std::cout \u003c\u003c std::boolalpha \u003c\u003c std::string(\"--- Orders per customer ---\") \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "std::stri",
+      "Typ": ":cout \u003c\u003c std::boolalpha \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "customers",
+      "Typ": "list\u003cCustomersItem\u003e",
+      "Value": "std::vector{CustomersItem{.id = 1, .name = std::string(\"Alice\")}, CustomersItem{.id = 2, .name = std::string(\"Bob\")}}"
+    },
+    {
+      "Name": "orders",
+      "Typ": "list\u003cOrdersItem\u003e",
+      "Value": "std::vector{OrdersItem{.id = 100, .customerId = 1}, OrdersItem{.id = 101, .customerId = 1}, OrdersItem{.id = 102, .customerId = 2}}"
+    },
+    {
+      "Name": "stats",
+      "Typ": "list\u003cStatsItem\u003e",
+      "Value": "[]{ std::vector\u003cStatsItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cstd::string, size_t\u003e __idx;\nfor (auto o : orders) {\nfor (auto c : customers) {\n    if((o.customerId == c.id)) {\n        auto __key = c.name;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(c);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_back(c);\n        }\n    }\n}\n}\nfor(auto \u0026__g : __groups) {\n    GGroup g = __g;\n    __items.push_back(StatsItem{.name = g.key, .count = g.size()});\n}\nreturn __items; }("
+    },
+    {
+      "Name": "std::vector\u003cStatsItem\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "std::vector\u003cGGroup\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "size_t\u003e",
+      "Typ": "std::unordered_map\u003cstd::string,",
+      "Value": ""
+    },
+    {
+      "Name": "o",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "c",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "__key",
+      "Typ": "",
+      "Value": "c."
+    },
+    {
+      "Name": "it",
+      "Typ": "",
+      "Value": "__idx.find(__key"
+    },
+    {
+      "Name": "{}}",
+      "Typ": "GGroup __g{__key,",
+      "Value": ""
+    },
+    {
+      "Name": "\u0026__g",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "g",
+      "Typ": "GGroup",
+      "Value": ""
+    }
+  ],
+  "source": "// Generated by Mochi transpiler v0.10.33 on 2025-07-21 18:19:55 GMT+7\n#include \u003ciostream\u003e\n#include \u003cstring\u003e\n#include \u003cvector\u003e\n#include \u003cmap\u003e\n#include \u003cunordered_map\u003e\n#include \u003csstream\u003e\n#include \u003ciomanip\u003e\n\n\nstruct CustomersItem {\n    int id;\n    std::string name;\n};\n\nstruct OrdersItem {\n    int id;\n    int customerId;\n};\n\nstruct GGroup {\n    std::string key;\n    std::vector\u003cCustomersItem\u003e items;\n    auto begin() { return items.begin(); }\n    auto end() { return items.end(); }\n    size_t size() const { return items.size(); }\n};\n\nstruct StatsItem {\n    std::string name;\n    int count;\n};\n\nstd::vector\u003cCustomersItem\u003e customers = std::vector{CustomersItem{.id = 1, .name = std::string(\"Alice\")}, CustomersItem{.id = 2, .name = std::string(\"Bob\")}};\nstd::vector\u003cOrdersItem\u003e orders = std::vector{OrdersItem{.id = 100, .customerId = 1}, OrdersItem{.id = 101, .customerId = 1}, OrdersItem{.id = 102, .customerId = 2}};\nstd::vector\u003cStatsItem\u003e stats = ([]{ std::vector\u003cStatsItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cstd::string, size_t\u003e __idx;\nfor (auto o : orders) {\nfor (auto c : customers) {\n    if((o.customerId == c.id)) {\n        auto __key = c.name;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(c);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_back(c);\n        }\n    }\n}\n}\nfor(auto \u0026__g : __groups) {\n    GGroup g = __g;\n    __items.push_back(StatsItem{.name = g.key, .count = g.size()});\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c std::boolalpha \u003c\u003c std::string(\"--- Orders per customer ---\") \u003c\u003c std::endl;\n    for (auto s : stats) {\n        std::cout \u003c\u003c std::boolalpha \u003c\u003c s.name \u003c\u003c ' ' \u003c\u003c std::string(\"orders:\") \u003c\u003c ' ' \u003c\u003c s.count \u003c\u003c std::endl;\n    }\n    return 0;\n}\n"
+}

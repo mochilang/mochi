@@ -1,0 +1,1224 @@
+{
+  "funcs": [
+    {
+      "Name": "__addressof",
+      "Params": [
+        {
+          "Name": "__r",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": "items.push_back(__pair);\n          "
+    },
+    {
+      "Name": "forward",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "typename std::remove_reference\u003c_Tp\u003e::type"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": "lse {\n            __groups[it-\u003esec"
+    },
+    {
+      "Name": "forward",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "typename std::remove_reference\u003c_Tp\u003e::type"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": "\n\nint main() {\n    std::cout \u003c\u003c std::boolalpha \u003c\u003c std::string(\"--- Group Left Join ---\") \u003c\u003c std::endl;\n    for (auto s : stats) {\n        std::cout \u003c\u003c std::boolalpha \u003c\u003c s.nam"
+    },
+    {
+      "Name": "operator==",
+      "Params": [
+        {
+          "Name": "__v",
+          "Typ": "partial_ordering"
+        },
+        {
+          "Name": "",
+          "Typ": "__cmp_cat::__unspec"
+        }
+      ],
+      "Ret": "bool",
+      "Body": "__items; }()).size()});\n}\nre"
+    },
+    {
+      "Name": "operator\u003c",
+      "Params": [
+        {
+          "Name": "__v",
+          "Typ": "partial_ordering"
+        },
+        {
+          "Name": "",
+          "Typ": "__cmp_cat::__unspec"
+        }
+      ],
+      "Ret": "bool",
+      "Body": " \u003c\u003c s.count \u003c\u003c std::endl;\n   "
+    },
+    {
+      "Name": "__is_single_threaded",
+      "Params": null,
+      "Ret": "bool",
+      "Body": "air);\n                __idx[__key] = __groups.size();\n                __groups.push_back(__g);\n            } else {\n                __groups[it-\u003esecond].items.push_back("
+    },
+    {
+      "Name": "__exchange_and_add",
+      "Params": [
+        {
+          "Name": "__mem",
+          "Typ": "volatile _Atomic_word"
+        },
+        {
+          "Name": "__val",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "_Atomic_word",
+      "Body": "__idx[__key] = __groups.size();\n            __groups.push_bac"
+    },
+    {
+      "Name": "__atomic_add",
+      "Params": [
+        {
+          "Name": "__mem",
+          "Typ": "volatile _Atomic_word"
+        },
+        {
+          "Name": "__val",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "",
+      "Body": "_g : __groups) {\n    GGroup g = __g;\n    __items.push_"
+    },
+    {
+      "Name": "__exchange_and_add_single",
+      "Params": [
+        {
+          "Name": "__mem",
+          "Typ": "_Atomic_word"
+        },
+        {
+          "Name": "__val",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "_Atomic_word",
+      "Body": "\u003c\u003c std::endl;\n    for (auto s : stats) {\n        std::cout \u003c\u003c std::boolalpha \u003c\u003c s."
+    },
+    {
+      "Name": "__ostream_write",
+      "Params": [
+        {
+          "Name": "__out",
+          "Typ": "basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__s",
+          "Typ": "_CharT"
+        },
+        {
+          "Name": "__n",
+          "Typ": "streamsize"
+        }
+      ],
+      "Ret": "",
+      "Body": "h_back(__g);\n            } else {\n                __groups[it-\u003esecond].items.push_back(__pair);\n            }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        StatsPair __pair{c, o};\n        auto __key = c.name;\n       "
+    },
+    {
+      "Name": "__ostream_fill",
+      "Params": [
+        {
+          "Name": "__out",
+          "Typ": "basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__n",
+          "Typ": "streamsize"
+        }
+      ],
+      "Ret": "",
+      "Body": "       __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_back(__pair);\n        }\n    }\n}\nfor(auto \u0026__g : __groups) {\n    GGroup g = __g;\n    __items.push_back(StatsItem{.name = g.key, .count = ([]{ std::vector\u003cStatsPair\u003e __items;\nfor (auto r : g) {\n    if(r.o) {\n        __items.push_back(r);\n    }\n}\nreturn __items; }()).size()});"
+    },
+    {
+      "Name": "__iter_less_iter",
+      "Params": null,
+      "Ret": "_Iter_less_iter",
+      "Body": "ush_back(__g);\n            }"
+    },
+    {
+      "Name": "__iter_less_val",
+      "Params": null,
+      "Ret": "_Iter_less_val",
+      "Body": " } else {\n            __gro"
+    },
+    {
+      "Name": "__iter_comp_val",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "_Iter_less_iter"
+        }
+      ],
+      "Ret": "_Iter_less_val",
+      "Body": "    GGroup g = __g;\n    __i"
+    },
+    {
+      "Name": "bit_cast",
+      "Params": [
+        {
+          "Name": "__from",
+          "Typ": "_From"
+        }
+      ],
+      "Ret": "_To",
+      "Body": ")).size()});\n}\nreturn __items; }());\n\nint main() {\n "
+    },
+    {
+      "Name": "__invfwd",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "typename remove_reference\u003c_Tp\u003e::type"
+        }
+      ],
+      "Ret": "_Up",
+      "Body": " = std::nullopt;\n        StatsPair"
+    },
+    {
+      "Name": "__invoke_impl",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__invoke_other"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_Fn"
+        },
+        {
+          "Name": "__args",
+          "Typ": "_Args \u0026\u0026..."
+        }
+      ],
+      "Ret": "_Res",
+      "Body": "           __g.items.push_back(__pair);\n            __idx[__key] "
+    },
+    {
+      "Name": "__invoke_impl",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__invoke_memfun_ref"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_MemFun"
+        },
+        {
+          "Name": "__t",
+          "Typ": "_Tp"
+        },
+        {
+          "Name": "__args",
+          "Typ": "_Args \u0026\u0026..."
+        }
+      ],
+      "Ret": "_Res",
+      "Body": " __g;\n    __items.push_back(StatsItem{.name = g.key, .count = ([]{ s"
+    },
+    {
+      "Name": "__invoke_impl",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__invoke_memfun_deref"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_MemFun"
+        },
+        {
+          "Name": "__t",
+          "Typ": "_Tp"
+        },
+        {
+          "Name": "__args",
+          "Typ": "_Args \u0026\u0026..."
+        }
+      ],
+      "Ret": "_Res",
+      "Body": "boolalpha \u003c\u003c std::string(\"--- Group Left Join ---\") \u003c\u003c std::endl;\n    for (auto s : s"
+    },
+    {
+      "Name": "begin",
+      "Params": [
+        {
+          "Name": "__ils",
+          "Typ": "initializer_list\u003c_Tp\u003e"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": " Left Join ---\") \u003c\u003c std:"
+    },
+    {
+      "Name": "begin",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        }
+      ],
+      "Ret": "",
+      "Body": "o};\n        auto __key = "
+    },
+    {
+      "Name": "begin",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        }
+      ],
+      "Ret": "",
+      "Body": "\u0026__g : __groups) {\n    GG"
+    },
+    {
+      "Name": "end",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        }
+      ],
+      "Ret": "",
+      "Body": ":endl;\n    for (auto s "
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "__max_size_type"
+        }
+      ],
+      "Ret": "__max_size_type",
+      "Body": " StatsPair __p"
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "__max_diff_type"
+        }
+      ],
+      "Ret": "__max_size_type",
+      "Body": " == __idx.end()) {\n            "
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "",
+      "Body": "size();\n            __groups.push_back(__g);\n    "
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "__int128"
+        }
+      ],
+      "Ret": "__int128",
+      "Body": "_items.push_ba"
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "__int128"
+        }
+      ],
+      "Ret": "__int128",
+      "Body": "   if(r.o) {\n "
+    },
+    {
+      "Name": "__sv_check",
+      "Params": [
+        {
+          "Name": "__size",
+          "Typ": "int"
+        },
+        {
+          "Name": "__pos",
+          "Typ": "int"
+        },
+        {
+          "Name": "__s",
+          "Typ": "string"
+        }
+      ],
+      "Ret": "int",
+      "Body": "           __g.items.push_back(__pair);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003ese"
+    },
+    {
+      "Name": "__sv_limit",
+      "Params": [
+        {
+          "Name": "__size",
+          "Typ": "int"
+        },
+        {
+          "Name": "__pos",
+          "Typ": "int"
+        },
+        {
+          "Name": "__off",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "tems;\nfor (auto r : g) {\n    if(r.o) {\n        __items.push_back(r);\n    }\n}\nreturn __items; }()).siz"
+    },
+    {
+      "Name": "__bswap_16",
+      "Params": [
+        {
+          "Name": "__bsx",
+          "Typ": "__uint16_t"
+        }
+      ],
+      "Ret": "__uint16_t",
+      "Body": "Id == c.id)) {\n            __matched = true;\n            StatsPair __pair{c, std::optional\u003cOrdersItem\u003e(o)};\n      "
+    },
+    {
+      "Name": "__bswap_32",
+      "Params": [
+        {
+          "Name": "__bsx",
+          "Typ": "__uint32_t"
+        }
+      ],
+      "Ret": "__uint32_t",
+      "Body": "ps.push_back(__g);\n            } else {\n                __groups[it-\u003esecond].items.push_back(__pair);\n            "
+    },
+    {
+      "Name": "__bswap_64",
+      "Params": [
+        {
+          "Name": "__bsx",
+          "Typ": "__uint64_t"
+        }
+      ],
+      "Ret": "__uint64_t",
+      "Body": "   GGroup g = __g;\n    __items.push_back(StatsItem{.name = g.key, .count = ([]{ std::vector\u003cStatsPair\u003e __items;\nfo"
+    },
+    {
+      "Name": "__uint16_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint16_t"
+        }
+      ],
+      "Ret": "__uint16_t",
+      "Body": "c.id)) {\n       "
+    },
+    {
+      "Name": "__uint32_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint32_t"
+        }
+      ],
+      "Ret": "__uint32_t",
+      "Body": "nal\u003cOrdersItem\u003e("
+    },
+    {
+      "Name": "__uint64_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint64_t"
+        }
+      ],
+      "Ret": "__uint64_t",
+      "Body": ".find(__key);\n  "
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__i",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "s[it-\u003esecond].items.push_back("
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "long long"
+        }
+      ],
+      "Ret": "long long",
+      "Body": "l\u003cOrdersItem\u003e o = std::nullopt;\n"
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "float"
+        }
+      ],
+      "Ret": "float",
+      "Body": "ups[it-\u003esecond].items.push_bac"
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "float"
+        }
+      ],
+      "Ret": "float",
+      "Body": "\n    GGroup g = __g;\n    __item"
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "long double"
+        }
+      ],
+      "Ret": "long double",
+      "Body": "Pair\u003e __items;\nfor (auto r : g)"
+    },
+    {
+      "Name": "__to_chars_len",
+      "Params": [
+        {
+          "Name": "__value",
+          "Typ": "_Tp"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "o};\n        auto __key = c.name;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(__pair);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_back(__pair);\n        }\n    }\n}\nfor(auto \u0026__g : __groups) {\n    GGroup g = __g;\n    __items.push_back(StatsItem{.name = g.key, .count = ([]{ std::vector\u003cStatsPair\u003e __items;\nfor (auto"
+    },
+    {
+      "Name": "__to_chars_len",
+      "Params": [
+        {
+          "Name": "__value",
+          "Typ": "int"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "o};\n        auto __key = c.name;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(__pair);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_back(__pair);\n        }\n    }\n}\nfor(auto \u0026__g : __groups) {\n    GGroup g = __g;\n    __items.push_back(StatsItem{.name = g.key, .count = ([]{ std::vector\u003cStatsPair\u003e __items;\nfor (auto"
+    },
+    {
+      "Name": "__to_chars_len",
+      "Params": [
+        {
+          "Name": "__value",
+          "Typ": "int"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "o};\n        auto __key = c.name;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(__pair);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_back(__pair);\n        }\n    }\n}\nfor(auto \u0026__g : __groups) {\n    GGroup g = __g;\n    __items.push_back(StatsItem{.name = g.key, .count = ([]{ std::vector\u003cStatsPair\u003e __items;\nfor (auto"
+    },
+    {
+      "Name": "__to_chars_len",
+      "Params": [
+        {
+          "Name": "__value",
+          "Typ": "long long"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "o};\n        auto __key = c.name;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(__pair);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_back(__pair);\n        }\n    }\n}\nfor(auto \u0026__g : __groups) {\n    GGroup g = __g;\n    __items.push_back(StatsItem{.name = g.key, .count = ([]{ std::vector\u003cStatsPair\u003e __items;\nfor (auto"
+    },
+    {
+      "Name": "__check_facet",
+      "Params": [
+        {
+          "Name": "__f",
+          "Typ": "_Facet"
+        }
+      ],
+      "Ret": "_Facet",
+      "Body": "dx[__key] = __groups.size();\n                __groups.push_bac"
+    },
+    {
+      "Name": "__check_facet",
+      "Params": [
+        {
+          "Name": "__f",
+          "Typ": "std::ctype\u003cchar\u003e"
+        }
+      ],
+      "Ret": "std::ctype\u003cchar\u003e",
+      "Body": "dx[__key] = __groups.size();\n                __groups.push_bac"
+    },
+    {
+      "Name": "__erase_nodes_if",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        },
+        {
+          "Name": "__ucont",
+          "Typ": "_UnsafeContainer"
+        },
+        {
+          "Name": "__pred",
+          "Typ": "_Predicate"
+        }
+      ],
+      "Ret": "typename _Container::size_type",
+      "Body": "            __groups[it-\u003esecond].items.push_back(__pair);\n            }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        StatsPair __pair{c, o};\n        auto __key = c.name;\n        auto it = __idx.find(__key);\n        if(it == _"
+    },
+    {
+      "Name": "__distance_fw",
+      "Params": [
+        {
+          "Name": "__first",
+          "Typ": "_Iterator"
+        },
+        {
+          "Name": "__last",
+          "Typ": "_Iterator"
+        },
+        {
+          "Name": "",
+          "Typ": "std::input_iterator_tag"
+        }
+      ],
+      "Ret": "typename std::iterator_traits\u003c_Iterator\u003e::difference_type",
+      "Body": ".count \u003c\u003c std::endl;\n    }\n    retur"
+    },
+    {
+      "Name": "resetiosflags",
+      "Params": [
+        {
+          "Name": "__mask",
+          "Typ": "ios_base::fmtflags"
+        }
+      ],
+      "Ret": "_Resetiosflags",
+      "Body": "__idx.end()) {\n      "
+    },
+    {
+      "Name": "operator\u003e\u003e",
+      "Params": [
+        {
+          "Name": "__is",
+          "Typ": "basic_istream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_Resetiosflags"
+        }
+      ],
+      "Ret": "basic_istream\u003c_CharT, _Traits\u003e",
+      "Body": "           __groups[it-\u003esecond].items.push_back(__pair);\n        }\n    }\n}\nfor"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "__os",
+          "Typ": "basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_Resetiosflags"
+        }
+      ],
+      "Ret": "basic_ostream\u003c_CharT, _Traits\u003e",
+      "Body": "{\n        __items.push_back(r);\n    }\n}\nreturn __items; }()).size()});\n}\nretur"
+    },
+    {
+      "Name": "main",
+      "Params": null,
+      "Ret": "int",
+      "Body": "{\n    std::cout \u003c\u003c std::boolalpha \u003c\u003c std::string(\"--- Group Left Join ---\") \u003c\u003c std::endl;\n    for (auto s : stats) {\n        std::cout \u003c\u003c std::boolalpha \u003c\u003c s.name \u003c\u003c ' ' \u003c\u003c std::string(\"orders:\") \u003c\u003c ' ' \u003c\u003c s.count \u003c\u003c std::endl;\n    }\n    return 0;\n"
+    }
+  ],
+  "enums": [
+    {
+      "Name": "_Ord",
+      "Variants": [
+        "equivalent",
+        "less",
+        "greater"
+      ]
+    },
+    {
+      "Name": "_Ncmp",
+      "Variants": [
+        "_Unordered"
+      ]
+    },
+    {
+      "Name": "_Ios_Fmtflags",
+      "Variants": [
+        "_S_boolalpha",
+        "_S_dec",
+        "_S_fixed",
+        "_S_hex",
+        "_S_internal",
+        "_S_left",
+        "_S_oct",
+        "_S_right",
+        "_S_scientific",
+        "_S_showbase",
+        "_S_showpoint",
+        "_S_showpos",
+        "_S_skipws",
+        "_S_unitbuf",
+        "_S_uppercase",
+        "_S_adjustfield",
+        "_S_basefield",
+        "_S_floatfield",
+        "_S_ios_fmtflags_end",
+        "_S_ios_fmtflags_max",
+        "_S_ios_fmtflags_min"
+      ]
+    },
+    {
+      "Name": "_Construct",
+      "Variants": [
+        "_Token"
+      ]
+    },
+    {
+      "Name": "dateorder",
+      "Variants": [
+        "no_order",
+        "dmy",
+        "mdy",
+        "ymd",
+        "ydm"
+      ]
+    },
+    {
+      "Name": "result",
+      "Variants": [
+        "ok",
+        "partial",
+        "error",
+        "noconv"
+      ]
+    }
+  ],
+  "structs": [
+    {
+      "Name": "CustomersItem",
+      "Fields": [
+        {
+          "Name": "id",
+          "Typ": "int"
+        },
+        {
+          "Name": "name",
+          "Typ": "string"
+        }
+      ]
+    },
+    {
+      "Name": "OrdersItem",
+      "Fields": [
+        {
+          "Name": "id",
+          "Typ": "int"
+        },
+        {
+          "Name": "customerId",
+          "Typ": "int"
+        }
+      ]
+    },
+    {
+      "Name": "StatsPair",
+      "Fields": [
+        {
+          "Name": "c",
+          "Typ": "CustomersItem"
+        },
+        {
+          "Name": "o",
+          "Typ": "std::optional\u003cOrdersItem\u003e"
+        }
+      ]
+    },
+    {
+      "Name": "GGroup",
+      "Fields": [
+        {
+          "Name": "key",
+          "Typ": "string"
+        },
+        {
+          "Name": "items",
+          "Typ": "list\u003cStatsPair\u003e"
+        }
+      ]
+    },
+    {
+      "Name": "StatsItem",
+      "Fields": [
+        {
+          "Name": "name",
+          "Typ": "string"
+        },
+        {
+          "Name": "count",
+          "Typ": "int"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "Name": "std::string(\"order",
+      "Typ": "' \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "o}",
+      "Typ": "std::nullopt; StatsPair __pair{c,",
+      "Value": ""
+    },
+    {
+      "Name": "o}",
+      "Typ": "std::nullopt; StatsPair __pair{c,",
+      "Value": ""
+    },
+    {
+      "Name": "__pair",
+      "Typ": "std::nullopt; StatsPair",
+      "Value": ""
+    },
+    {
+      "Name": "__pair",
+      "Typ": "std::nullopt; StatsPair",
+      "Value": ""
+    },
+    {
+      "Name": "\u003c",
+      "Typ": "pha \u003c\u003c std::string(\"--- Group Left Join ---\")",
+      "Value": ""
+    },
+    {
+      "Name": "std::endl",
+      "Typ": "dl; for (auto s : stats) { std::cout \u003c\u003c std::boolalpha \u003c\u003c s.name \u003c\u003c ' ' \u003c\u003c std::string(\"orders:\") \u003c\u003c ' ' \u003c\u003c s.count \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "\u003c",
+      "Typ": "pha \u003c\u003c std::string(\"--- Group Left Join ---\")",
+      "Value": ""
+    },
+    {
+      "Name": "std::endl",
+      "Typ": "dl; for (auto s : stats) { std::cout \u003c\u003c std::boolalpha \u003c\u003c s.name \u003c\u003c ' ' \u003c\u003c std::string(\"orders:\") \u003c\u003c ' ' \u003c\u003c s.count \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "\u003c",
+      "Typ": "pha \u003c\u003c std::string(\"--- Group Left Join ---\")",
+      "Value": ""
+    },
+    {
+      "Name": "std::endl",
+      "Typ": "dl; for (auto s : stats) { std::cout \u003c\u003c std::boolalpha \u003c\u003c s.name \u003c\u003c ' ' \u003c\u003c std::string(\"orders:\") \u003c\u003c ' ' \u003c\u003c s.count \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "\u003c",
+      "Typ": "pha \u003c\u003c std::string(\"--- Group Left Join ---\")",
+      "Value": ""
+    },
+    {
+      "Name": "std::endl",
+      "Typ": "dl; for (auto s : stats) { std::cout \u003c\u003c std::boolalpha \u003c\u003c s.name \u003c\u003c ' ' \u003c\u003c std::string(\"orders:\") \u003c\u003c ' ' \u003c\u003c s.count \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "\u003c",
+      "Typ": "pha \u003c\u003c std::string(\"--- Group Left Join ---\")",
+      "Value": ""
+    },
+    {
+      "Name": "std::endl",
+      "Typ": "dl; for (auto s : stats) { std::cout \u003c\u003c std::boolalpha \u003c\u003c s.name \u003c\u003c ' ' \u003c\u003c std::string(\"orders:\") \u003c\u003c ' ' \u003c\u003c s.count \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "\u003c",
+      "Typ": "pha \u003c\u003c std::string(\"--- Group Left Join ---\")",
+      "Value": ""
+    },
+    {
+      "Name": "std::endl",
+      "Typ": "dl; for (auto s : stats) { std::cout \u003c\u003c std::boolalpha \u003c\u003c s.name \u003c\u003c ' ' \u003c\u003c std::string(\"orders:\") \u003c\u003c ' ' \u003c\u003c s.count \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "\u003c",
+      "Typ": "pha \u003c\u003c std::string(\"--- Group Left Join ---\")",
+      "Value": ""
+    },
+    {
+      "Name": "std::endl",
+      "Typ": "dl; for (auto s : stats) { std::cout \u003c\u003c std::boolalpha \u003c\u003c s.name \u003c\u003c ' ' \u003c\u003c std::string(\"orders:\") \u003c\u003c ' ' \u003c\u003c s.count \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "\u003c",
+      "Typ": "pha \u003c\u003c std::string(\"--- Group Left Join ---\")",
+      "Value": ""
+    },
+    {
+      "Name": "std::endl",
+      "Typ": "dl; for (auto s : stats) { std::cout \u003c\u003c std::boolalpha \u003c\u003c s.name \u003c\u003c ' ' \u003c\u003c std::string(\"orders:\") \u003c\u003c ' ' \u003c\u003c s.count \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "--",
+      "Typ": "\u003c\u003c std::boolalpha \u003c\u003c std::string(\"--- Group Left Join",
+      "Value": ""
+    },
+    {
+      "Name": "g",
+      "Typ": "GGroup",
+      "Value": "__g;\n    __items.push_back(Stat"
+    },
+    {
+      "Name": "}",
+      "Typ": "} else { __groups[it-\u003esecond].items.push_back(__pair); }",
+      "Value": ""
+    },
+    {
+      "Name": "o",
+      "Typ": "l\u003cOrdersItem\u003e",
+      "Value": "std::nullopt;\n        StatsPair __pair{c, o};\n        auto __key = c.name"
+    },
+    {
+      "Name": "__idx[__key]",
+      "Typ": "idx.end()) { GGroup __g{__key, {}}; __g.items.push_back(__pair);",
+      "Value": "__groups.size("
+    },
+    {
+      "Name": "__groups[it-\u003esecond].items.push_back(__pair",
+      "Typ": "__groups.push_back(__g); } else {",
+      "Value": ""
+    },
+    {
+      "Name": "g",
+      "Typ": "s) { GGroup",
+      "Value": "__g;\n    __items.push_back(StatsItem{.name = g.key, .count = ([]{ std::vector\u003cStatsPair\u003e __items"
+    },
+    {
+      "Name": "{",
+      "Typ": "__items.push_back(r); } } return __items; }()).size()}); } return __items; }()); int main()",
+      "Value": ""
+    },
+    {
+      "Name": "std::endl",
+      "Typ": "\"--- Group Left Join ---\") \u003c\u003c std::endl; for (auto s : stats) { std::cout \u003c\u003c std::boolalpha \u003c\u003c s.name \u003c\u003c ' ' \u003c\u003c std::string(\"orders:\") \u003c\u003c ' ' \u003c\u003c s.count \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "__groups.push_b",
+      "Typ": "oups.size();",
+      "Value": ""
+    },
+    {
+      "Name": "__groups[it-\u003esecond].items.push_back",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "t",
+      "Typ": "",
+      "Value": "__idx.fin"
+    },
+    {
+      "Name": "it",
+      "Typ": "",
+      "Value": "= __idx.e"
+    },
+    {
+      "Name": "y]",
+      "Typ": "",
+      "Value": "__groups.size();\n                __groups.push_back(__g);\n            } else {"
+    },
+    {
+      "Name": "o",
+      "Typ": "} } if(!__matched) { std::optional\u003cOrdersItem\u003e",
+      "Value": "std::nullopt;\n        StatsPair __pair{c, o};\n        auto __key = c.name;\n        auto it = __idx.fin"
+    },
+    {
+      "Name": "o",
+      "Typ": "",
+      "Value": "std::nullopt;\n        StatsPair __pair{c, o};\n        auto __key = c.name;\n        auto it = __idx.fin"
+    },
+    {
+      "Name": "customers",
+      "Typ": "// Generated by Mochi transpiler v0.10.33 on 2025-07-21 18:19:56 GMT+7 #include \u003ciostream\u003e #include \u003cstring\u003e #include \u003cvector\u003e #include \u003cmap\u003e #include \u003cunordered_map\u003e #include \u003coptional\u003e #include \u003csstream\u003e #include \u003ciomanip\u003e struct CustomersItem { int id; std::string name; }; struct OrdersItem { int id; int customerId; }; struct StatsPair { CustomersItem c; std::optional\u003cOrdersItem\u003e o; }; struct GGroup { std::string key; std::vector\u003cStatsPair\u003e items; auto begin() { return items.begin(); } auto end() { return items.end(); } size_t size() const { return items.size(); } }; struct StatsItem { std::string name; int count; }; std::vector\u003cCustomersItem\u003e",
+      "Value": "std::vector{CustomersItem{.id = 1, .name = std::string(\"Alice\")}, CustomersItem{.id = 2, .name = std::string(\"Bob\")}, CustomersItem{.id = 3, .name = std::string(\"Charlie\")}};\nstd::vector\u003cOrdersItem\u003e orders = std::vector{OrdersItem{.id = 100, .customerId = 1}, OrdersItem{.id = 101, .customerId = 1}, OrdersItem{.id = 102, .customerId = 2}};\nstd::vector\u003cStatsItem\u003e stats = ([]{ std::vector\u003cStatsItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cstd::string, size_t\u003e __idx;\nfor (auto c : customers) {\n    bool __matched = false;\n    for (auto o : orders) {\n        if((o.customerId == c.id)) {\n            __matched = true;\n            StatsPair __pair{c, std::optional\u003cOrdersItem\u003e(o)};\n            auto __key = c.name;\n            auto it = __idx.find(__key);\n            if(it == __idx.end()) {\n                GGroup __g{__key, {}};\n                __g.items.push_back(__pair);\n                __idx[__key] = __groups.size();\n                __groups.push_back(__g);\n            } else {\n                __groups[it-\u003esecond].items.push_back(__pair);\n            }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        StatsPair __pair{c, o};\n        auto __key = c.name;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(__pair);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_back(__pair"
+    },
+    {
+      "Name": "__idx[__key]",
+      "Typ": "__g.items.push_back(__pair);",
+      "Value": "__groups.size("
+    },
+    {
+      "Name": "__groups[it-\u003esecond].items.push_back(__pair)",
+      "Typ": "); } else {",
+      "Value": ""
+    },
+    {
+      "Name": "__",
+      "Typ": "__groups.size();",
+      "Value": ""
+    },
+    {
+      "Name": "o",
+      "Typ": "::optional\u003cOrdersItem\u003e",
+      "Value": "std::nullopt"
+    },
+    {
+      "Name": "auto",
+      "Typ": "StatsPair __pair{c, o};",
+      "Value": ""
+    },
+    {
+      "Name": "if(it",
+      "Typ": "d(__key);",
+      "Value": "= __idx.end()) {\n            GGroup __g{__key, {}}"
+    },
+    {
+      "Name": "GGroup",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "push_back(__pai",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "size()",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "__groups",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "g",
+      "Typ": "s) { GGroup",
+      "Value": "__g"
+    },
+    {
+      "Name": "m{.name",
+      "Typ": "",
+      "Value": "g.key, .count = ([]{ std::vector\u003cStatsPair\u003e __items"
+    },
+    {
+      "Name": "(auto",
+      "Typ": "items; for",
+      "Value": ""
+    },
+    {
+      "Name": "return",
+      "Typ": "; } }",
+      "Value": ""
+    },
+    {
+      "Name": "std::endl",
+      "Typ": "; int main() { std::cout \u003c\u003c std::boolalpha \u003c\u003c std::string(\"--- Group Left Join ---\") \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "__key",
+      "Typ": "r __pair{c, o}; auto",
+      "Value": ""
+    },
+    {
+      "Name": "__key",
+      "Typ": "r __pair{c, o}; auto",
+      "Value": ""
+    },
+    {
+      "Name": "__groups",
+      "Typ": "); } } } for(auto \u0026__g :",
+      "Value": ""
+    },
+    {
+      "Name": "g",
+      "Typ": "GGroup",
+      "Value": "__g;\n    __item"
+    },
+    {
+      "Name": "it",
+      "Typ": "",
+      "Value": "__idx.find(__key"
+    },
+    {
+      "Name": "customers",
+      "Typ": "list\u003cCustomersItem\u003e",
+      "Value": "std::vector{CustomersItem{.id = 1, .name = std::string(\"Alice\")}, CustomersItem{.id = 2, .name = std::string(\"Bob\")}, CustomersItem{.id = 3, .name = std::string(\"Charlie\")}}"
+    },
+    {
+      "Name": "orders",
+      "Typ": "list\u003cOrdersItem\u003e",
+      "Value": "std::vector{OrdersItem{.id = 100, .customerId = 1}, OrdersItem{.id = 101, .customerId = 1}, OrdersItem{.id = 102, .customerId = 2}}"
+    },
+    {
+      "Name": "stats",
+      "Typ": "list\u003cStatsItem\u003e",
+      "Value": "[]{ std::vector\u003cStatsItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cstd::string, size_t\u003e __idx;\nfor (auto c : customers) {\n    bool __matched = false;\n    for (auto o : orders) {\n        if((o.customerId == c.id)) {\n            __matched = true;\n            StatsPair __pair{c, std::optional\u003cOrdersItem\u003e(o)};\n            auto __key = c.name;\n            auto it = __idx.find(__key);\n            if(it == __idx.end()) {\n                GGroup __g{__key, {}};\n                __g.items.push_back(__pair);\n                __idx[__key] = __groups.size();\n                __groups.push_back(__g);\n            } else {\n                __groups[it-\u003esecond].items.push_back(__pair);\n            }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        StatsPair __pair{c, o};\n        auto __key = c.name;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(__pair);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_back(__pair);\n        }\n    }\n}\nfor(auto \u0026__g : __groups) {\n    GGroup g = __g;\n    __items.push_back(StatsItem{.name = g.key, .count = ([]{ std::vector\u003cStatsPair\u003e __items;\nfor (auto r : g) {\n    if(r.o) {\n        __items.push_back(r);\n    }\n}\nreturn __items; }()).size()});\n}\nreturn __items; }("
+    },
+    {
+      "Name": "std::vector\u003cStatsItem\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "std::vector\u003cGGroup\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "size_t\u003e",
+      "Typ": "std::unordered_map\u003cstd::string,",
+      "Value": ""
+    },
+    {
+      "Name": "c",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "__matched",
+      "Typ": "bool",
+      "Value": ""
+    },
+    {
+      "Name": "o",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "std::optional\u003cOrdersItem\u003e(o)}",
+      "Typ": "StatsPair __pair{c,",
+      "Value": ""
+    },
+    {
+      "Name": "__key",
+      "Typ": "",
+      "Value": "c."
+    },
+    {
+      "Name": "it",
+      "Typ": "",
+      "Value": "__idx.find(__key"
+    },
+    {
+      "Name": "{}}",
+      "Typ": "GGroup __g{__key,",
+      "Value": ""
+    },
+    {
+      "Name": "o",
+      "Typ": "std::optional\u003cOrdersItem\u003e",
+      "Value": "std::"
+    },
+    {
+      "Name": "o}",
+      "Typ": "StatsPair __pair{c,",
+      "Value": ""
+    },
+    {
+      "Name": "__key",
+      "Typ": "",
+      "Value": "c."
+    },
+    {
+      "Name": "it",
+      "Typ": "",
+      "Value": "__idx.find(__key"
+    },
+    {
+      "Name": "{}}",
+      "Typ": "GGroup __g{__key,",
+      "Value": ""
+    },
+    {
+      "Name": "\u0026__g",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "g",
+      "Typ": "GGroup",
+      "Value": ""
+    },
+    {
+      "Name": "std::vector\u003cStatsPair\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "r",
+      "Typ": "",
+      "Value": ""
+    }
+  ],
+  "source": "// Generated by Mochi transpiler v0.10.33 on 2025-07-21 18:19:56 GMT+7\n#include \u003ciostream\u003e\n#include \u003cstring\u003e\n#include \u003cvector\u003e\n#include \u003cmap\u003e\n#include \u003cunordered_map\u003e\n#include \u003coptional\u003e\n#include \u003csstream\u003e\n#include \u003ciomanip\u003e\n\n\nstruct CustomersItem {\n    int id;\n    std::string name;\n};\n\nstruct OrdersItem {\n    int id;\n    int customerId;\n};\n\nstruct StatsPair {\n    CustomersItem c;\n    std::optional\u003cOrdersItem\u003e o;\n};\n\nstruct GGroup {\n    std::string key;\n    std::vector\u003cStatsPair\u003e items;\n    auto begin() { return items.begin(); }\n    auto end() { return items.end(); }\n    size_t size() const { return items.size(); }\n};\n\nstruct StatsItem {\n    std::string name;\n    int count;\n};\n\nstd::vector\u003cCustomersItem\u003e customers = std::vector{CustomersItem{.id = 1, .name = std::string(\"Alice\")}, CustomersItem{.id = 2, .name = std::string(\"Bob\")}, CustomersItem{.id = 3, .name = std::string(\"Charlie\")}};\nstd::vector\u003cOrdersItem\u003e orders = std::vector{OrdersItem{.id = 100, .customerId = 1}, OrdersItem{.id = 101, .customerId = 1}, OrdersItem{.id = 102, .customerId = 2}};\nstd::vector\u003cStatsItem\u003e stats = ([]{ std::vector\u003cStatsItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cstd::string, size_t\u003e __idx;\nfor (auto c : customers) {\n    bool __matched = false;\n    for (auto o : orders) {\n        if((o.customerId == c.id)) {\n            __matched = true;\n            StatsPair __pair{c, std::optional\u003cOrdersItem\u003e(o)};\n            auto __key = c.name;\n            auto it = __idx.find(__key);\n            if(it == __idx.end()) {\n                GGroup __g{__key, {}};\n                __g.items.push_back(__pair);\n                __idx[__key] = __groups.size();\n                __groups.push_back(__g);\n            } else {\n                __groups[it-\u003esecond].items.push_back(__pair);\n            }\n        }\n    }\n    if(!__matched) {\n        std::optional\u003cOrdersItem\u003e o = std::nullopt;\n        StatsPair __pair{c, o};\n        auto __key = c.name;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(__pair);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_back(__pair);\n        }\n    }\n}\nfor(auto \u0026__g : __groups) {\n    GGroup g = __g;\n    __items.push_back(StatsItem{.name = g.key, .count = ([]{ std::vector\u003cStatsPair\u003e __items;\nfor (auto r : g) {\n    if(r.o) {\n        __items.push_back(r);\n    }\n}\nreturn __items; }()).size()});\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c std::boolalpha \u003c\u003c std::string(\"--- Group Left Join ---\") \u003c\u003c std::endl;\n    for (auto s : stats) {\n        std::cout \u003c\u003c std::boolalpha \u003c\u003c s.name \u003c\u003c ' ' \u003c\u003c std::string(\"orders:\") \u003c\u003c ' ' \u003c\u003c s.count \u003c\u003c std::endl;\n    }\n    return 0;\n}\n"
+}

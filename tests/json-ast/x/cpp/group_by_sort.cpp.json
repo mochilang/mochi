@@ -1,0 +1,245 @@
+{
+  "funcs": [
+    {
+      "Name": "__iter_less_iter",
+      "Params": null,
+      "Ret": "_Iter_less_iter",
+      "Body": "\u003c\u003c std::boolalpha \u003c\u003c grouped"
+    },
+    {
+      "Name": "__bswap_16",
+      "Params": [
+        {
+          "Name": "__bsx",
+          "Typ": "__uint16_t"
+        }
+      ],
+      "Ret": "__uint16_t",
+      "Body": "Group g = __g;\n    __items.push_back(GroupedItem{.cat = g.key, .total = std::accumulate(([]{ std::vector\u003cint\u003e __it"
+    },
+    {
+      "Name": "__uint16_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint16_t"
+        }
+      ],
+      "Ret": "__uint16_t",
+      "Body": "g = __g;\n    __i"
+    },
+    {
+      "Name": "__uint32_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint32_t"
+        }
+      ],
+      "Ret": "__uint32_t",
+      "Body": "(([]{ std::vecto"
+    },
+    {
+      "Name": "__uint64_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint64_t"
+        }
+      ],
+      "Ret": "__uint64_t",
+      "Body": "l);\n}\nreturn __i"
+    },
+    {
+      "Name": "__check_facet",
+      "Params": [
+        {
+          "Name": "__f",
+          "Typ": "_Facet"
+        }
+      ],
+      "Ret": "_Facet",
+      "Body": ");\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c std:"
+    },
+    {
+      "Name": "main",
+      "Params": null,
+      "Ret": "int",
+      "Body": "{\n    std::cout \u003c\u003c std::boolalpha \u003c\u003c grouped \u003c\u003c std::endl;\n    return 0;\n"
+    }
+  ],
+  "enums": [
+    {
+      "Name": "_Ord",
+      "Variants": [
+        "equivalent",
+        "less",
+        "greater"
+      ]
+    },
+    {
+      "Name": "_Ncmp",
+      "Variants": [
+        "_Unordered"
+      ]
+    },
+    {
+      "Name": "result",
+      "Variants": [
+        "ok",
+        "partial",
+        "error",
+        "noconv"
+      ]
+    }
+  ],
+  "structs": [
+    {
+      "Name": "ItemsItem",
+      "Fields": [
+        {
+          "Name": "cat",
+          "Typ": "string"
+        },
+        {
+          "Name": "val",
+          "Typ": "int"
+        }
+      ]
+    },
+    {
+      "Name": "GGroup",
+      "Fields": [
+        {
+          "Name": "key",
+          "Typ": "string"
+        },
+        {
+          "Name": "items",
+          "Typ": "list\u003cItemsItem\u003e"
+        }
+      ]
+    },
+    {
+      "Name": "GroupedItem",
+      "Fields": [
+        {
+          "Name": "cat",
+          "Typ": "string"
+        },
+        {
+          "Name": "total",
+          "Typ": "int"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "Name": "__g.items.p",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "st",
+      "Typ": "ems; }()); int main() { std::cout \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "back(x.val)",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "__items",
+      "Typ": "gin(), ([]{ std::vector\u003cint\u003e",
+      "Value": ""
+    },
+    {
+      "Name": "std::e",
+      "Typ": "turn __items; }()); int main() { std::cout \u003c\u003c std::boolalpha \u003c\u003c grouped \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "st",
+      "Typ": "__items; }()); int main() {",
+      "Value": ""
+    },
+    {
+      "Name": "items",
+      "Typ": "list\u003cItemsItem\u003e",
+      "Value": "std::vector{ItemsItem{.cat = std::string(\"a\"), .val = 3}, ItemsItem{.cat = std::string(\"a\"), .val = 1}, ItemsItem{.cat = std::string(\"b\"), .val = 5}, ItemsItem{.cat = std::string(\"b\"), .val = 2}}"
+    },
+    {
+      "Name": "grouped",
+      "Typ": "list\u003cGroupedItem\u003e",
+      "Value": "[]{ std::vector\u003cGroupedItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cstd::string, size_t\u003e __idx;\nfor (auto i : items) {\n        auto __key = i.cat;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(i);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_back(i);\n        }\n}\nfor(auto \u0026__g : __groups) {\n    GGroup g = __g;\n    __items.push_back(GroupedItem{.cat = g.key, .total = std::accumulate(([]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back(x.val);\n}\nreturn __items; }()).begin(), ([]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back(x.val);\n}\nreturn __items; }()).end(), 0)});\n}\nreturn __items; }("
+    },
+    {
+      "Name": "std::vector\u003cGroupedItem\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "std::vector\u003cGGroup\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "size_t\u003e",
+      "Typ": "std::unordered_map\u003cstd::string,",
+      "Value": ""
+    },
+    {
+      "Name": "i",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "__key",
+      "Typ": "",
+      "Value": "i."
+    },
+    {
+      "Name": "it",
+      "Typ": "",
+      "Value": "__idx.find(__key"
+    },
+    {
+      "Name": "{}}",
+      "Typ": "GGroup __g{__key,",
+      "Value": ""
+    },
+    {
+      "Name": "\u0026__g",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "g",
+      "Typ": "GGroup",
+      "Value": ""
+    },
+    {
+      "Name": "std::vector\u003cint\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "x",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "std::vector\u003cint\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "x",
+      "Typ": "",
+      "Value": ""
+    }
+  ],
+  "source": "// Generated by Mochi transpiler v0.10.33 on 2025-07-21 18:19:57 GMT+7\n#include \u003ciostream\u003e\n#include \u003cstring\u003e\n#include \u003cvector\u003e\n#include \u003cmap\u003e\n#include \u003cnumeric\u003e\n#include \u003cunordered_map\u003e\n#include \u003csstream\u003e\n#include \u003ciomanip\u003e\n\n\nstruct ItemsItem {\n    std::string cat;\n    int val;\n};\n\nstruct GGroup {\n    std::string key;\n    std::vector\u003cItemsItem\u003e items;\n    auto begin() { return items.begin(); }\n    auto end() { return items.end(); }\n    size_t size() const { return items.size(); }\n};\n\nstruct GroupedItem {\n    std::string cat;\n    auto total;\n};\n\nstd::vector\u003cItemsItem\u003e items = std::vector{ItemsItem{.cat = std::string(\"a\"), .val = 3}, ItemsItem{.cat = std::string(\"a\"), .val = 1}, ItemsItem{.cat = std::string(\"b\"), .val = 5}, ItemsItem{.cat = std::string(\"b\"), .val = 2}};\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cstd::string, size_t\u003e __idx;\nfor (auto i : items) {\n        auto __key = i.cat;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(i);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_back(i);\n        }\n}\nfor(auto \u0026__g : __groups) {\n    GGroup g = __g;\n    __items.push_back(GroupedItem{.cat = g.key, .total = std::accumulate(([]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back(x.val);\n}\nreturn __items; }()).begin(), ([]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back(x.val);\n}\nreturn __items; }()).end(), 0)});\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c std::boolalpha \u003c\u003c grouped \u003c\u003c std::endl;\n    return 0;\n}\n"
+}

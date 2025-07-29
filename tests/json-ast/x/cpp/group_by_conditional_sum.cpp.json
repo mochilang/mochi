@@ -1,0 +1,512 @@
+{
+  "funcs": [
+    {
+      "Name": "__addressof",
+      "Params": [
+        {
+          "Name": "__r",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": "_back(x.val);\n}\nreturn __items; }()"
+    },
+    {
+      "Name": "__is_single_threaded",
+      "Params": null,
+      "Ret": "bool",
+      "Body": "ush_back((x.flag ? x.val : 0));\n}\nreturn __items; }()).end(), 0) / std::accumulate(([]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back(x.val);\n}\n"
+    },
+    {
+      "Name": "__ostream_write",
+      "Params": [
+        {
+          "Name": "__out",
+          "Typ": "basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__s",
+          "Typ": "_CharT"
+        },
+        {
+          "Name": "__n",
+          "Typ": "streamsize"
+        }
+      ],
+      "Ret": "",
+      "Body": "(([]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back(x.val);\n}\nreturn __items; }()).begin(), ([]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back(x.val);\n}\nreturn __items; }()).end(), 0))});\n}\nreturn __items; }());\n\nint "
+    },
+    {
+      "Name": "__iter_less_iter",
+      "Params": null,
+      "Ret": "_Iter_less_iter",
+      "Body": "te(([]{ std::vector\u003cint\u003e __i"
+    },
+    {
+      "Name": "__invfwd",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "typename remove_reference\u003c_Tp\u003e::type"
+        }
+      ],
+      "Ret": "_Up",
+      "Body": ".push_back(x.val);\n}\nreturn __item"
+    },
+    {
+      "Name": "begin",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        }
+      ],
+      "Ret": "",
+      "Body": "(), 0))});\n}\nreturn __ite"
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "__max_size_type"
+        }
+      ],
+      "Ret": "__max_size_type",
+      "Body": "urn __items; }"
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "__max_diff_type"
+        }
+      ],
+      "Ret": "__max_size_type",
+      "Body": " result \u003c\u003c std::endl;\n    retur"
+    },
+    {
+      "Name": "__bswap_16",
+      "Params": [
+        {
+          "Name": "__bsx",
+          "Typ": "__uint16_t"
+        }
+      ],
+      "Ret": "__uint16_t",
+      "Body": "s) {\n    GGroup g = __g;\n    __items.push_back(ResultItem{.cat = g.key, .share = (std::accumulate(([]{ std::vector"
+    },
+    {
+      "Name": "__bswap_32",
+      "Params": [
+        {
+          "Name": "__bsx",
+          "Typ": "__uint32_t"
+        }
+      ],
+      "Ret": "__uint32_t",
+      "Body": "mulate(([]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back(x.val);\n}\nreturn __items; }())."
+    },
+    {
+      "Name": "__uint16_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint16_t"
+        }
+      ],
+      "Ret": "__uint16_t",
+      "Body": "   GGroup g = __"
+    },
+    {
+      "Name": "__uint32_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint32_t"
+        }
+      ],
+      "Ret": "__uint32_t",
+      "Body": "accumulate(([]{ "
+    },
+    {
+      "Name": "__uint64_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint64_t"
+        }
+      ],
+      "Ret": "__uint64_t",
+      "Body": "_back((x.flag ? "
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__i",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "  __items.push_back(x.val);\n}\n"
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "long long"
+        }
+      ],
+      "Ret": "long long",
+      "Body": "        __items.push_back(x.val)"
+    },
+    {
+      "Name": "__check_facet",
+      "Params": [
+        {
+          "Name": "__f",
+          "Typ": "_Facet"
+        }
+      ],
+      "Ret": "_Facet",
+      "Body": ": 0));\n}\nreturn __items; }()).end(), 0) / std::accumulate(([]{"
+    },
+    {
+      "Name": "__erase_nodes_if",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        },
+        {
+          "Name": "__ucont",
+          "Typ": "_UnsafeContainer"
+        },
+        {
+          "Name": "__pred",
+          "Typ": "_Predicate"
+        }
+      ],
+      "Ret": "typename _Container::size_type",
+      "Body": "uto x : g) {\n        __items.push_back(x.val);\n}\nreturn __items; }()).begin(), ([]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back(x.val);\n}\nreturn __items; }()).end(), 0))});\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c std::boolalpha \u003c\u003c resu"
+    },
+    {
+      "Name": "resetiosflags",
+      "Params": [
+        {
+          "Name": "__mask",
+          "Typ": "ios_base::fmtflags"
+        }
+      ],
+      "Ret": "_Resetiosflags",
+      "Body": "ult \u003c\u003c std::endl;\n   "
+    },
+    {
+      "Name": "main",
+      "Params": null,
+      "Ret": "int",
+      "Body": "{\n    std::cout \u003c\u003c std::boolalpha \u003c\u003c result \u003c\u003c std::endl;\n    return 0;\n"
+    }
+  ],
+  "enums": [
+    {
+      "Name": "_Ord",
+      "Variants": [
+        "equivalent",
+        "less",
+        "greater"
+      ]
+    },
+    {
+      "Name": "_Ncmp",
+      "Variants": [
+        "_Unordered"
+      ]
+    },
+    {
+      "Name": "dateorder",
+      "Variants": [
+        "no_order",
+        "dmy",
+        "mdy",
+        "ymd",
+        "ydm"
+      ]
+    },
+    {
+      "Name": "result",
+      "Variants": [
+        "ok",
+        "partial",
+        "error",
+        "noconv"
+      ]
+    }
+  ],
+  "structs": [
+    {
+      "Name": "ItemsItem",
+      "Fields": [
+        {
+          "Name": "cat",
+          "Typ": "string"
+        },
+        {
+          "Name": "val",
+          "Typ": "int"
+        },
+        {
+          "Name": "flag",
+          "Typ": "bool"
+        }
+      ]
+    },
+    {
+      "Name": "GGroup",
+      "Fields": [
+        {
+          "Name": "key",
+          "Typ": "string"
+        },
+        {
+          "Name": "items",
+          "Typ": "list\u003cItemsItem\u003e"
+        }
+      ]
+    },
+    {
+      "Name": "ResultItem",
+      "Fields": [
+        {
+          "Name": "cat",
+          "Typ": "string"
+        },
+        {
+          "Name": "share",
+          "Typ": "int"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "Name": "}()).end(),",
+      "Typ": "sh_back(x.val); } return __items;",
+      "Value": ""
+    },
+    {
+      "Name": "}()).end(),",
+      "Typ": "sh_back(x.val); } return __items;",
+      "Value": ""
+    },
+    {
+      "Name": "}())",
+      "Typ": "sh_back(x.val); } return __items;",
+      "Value": ""
+    },
+    {
+      "Name": "}())",
+      "Typ": "sh_back(x.val); } return __items;",
+      "Value": ""
+    },
+    {
+      "Name": "_",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "([]",
+      "Typ": "__items; for (auto x : g) { __items.push_back(x.val); } return __items; }()).begin(),",
+      "Value": ""
+    },
+    {
+      "Name": "m",
+      "Typ": "__items.push_back(x.val); } return __items; }()).end(), 0))}); } return __items; }()); int",
+      "Value": ""
+    },
+    {
+      "Name": "std::accumulate(([",
+      "Typ": "__items; }()).end(), 0) /",
+      "Value": ""
+    },
+    {
+      "Name": "}",
+      "Typ": "o x : g) { __items.push_back(x.val);",
+      "Value": ""
+    },
+    {
+      "Name": "tems.push_bac",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "__it",
+      "Typ": "} return",
+      "Value": ""
+    },
+    {
+      "Name": "for",
+      "Typ": "} return __items; }()).end(), 0) / std::accumulate(([]{ std::vector\u003cint\u003e __items;",
+      "Value": ""
+    },
+    {
+      "Name": "std::co",
+      "Typ": ", ([]{ std::vector\u003cint\u003e __items; for (auto x : g) { __items.push_back(x.val); } return __items; }()).end(), 0))}); } return __items; }()); int main() {",
+      "Value": ""
+    },
+    {
+      "Name": "std::co",
+      "Typ": "ms.push_back(x.val); } return __items; }()).end(), 0))}); } return __items; }()); int main() {",
+      "Value": ""
+    },
+    {
+      "Name": "std::",
+      "Typ": "turn __items; }()).end(), 0) /",
+      "Value": ""
+    },
+    {
+      "Name": "__items",
+      "Typ": "x : g) { __items.push_back(x.val); } return",
+      "Value": ""
+    },
+    {
+      "Name": "ret",
+      "Typ": "rn __items; }()).end(), 0))}); }",
+      "Value": ""
+    },
+    {
+      "Name": "{",
+      "Typ": "tems; }()); int main()",
+      "Value": ""
+    },
+    {
+      "Name": "retur",
+      "Typ": "ut \u003c\u003c std::boolalpha \u003c\u003c result \u003c\u003c std::endl;",
+      "Value": ""
+    },
+    {
+      "Name": "}",
+      "Typ": "return 0;",
+      "Value": ""
+    },
+    {
+      "Name": "__ite",
+      "Typ": "ms; }()).end(), 0))}); } return",
+      "Value": ""
+    },
+    {
+      "Name": "__ite",
+      "Typ": "ms; }()).end(), 0))}); } return",
+      "Value": ""
+    },
+    {
+      "Name": "std::endl",
+      "Typ": "; int main() { std::cout \u003c\u003c std::boolalpha \u003c\u003c result \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "ret",
+      "Typ": "result \u003c\u003c std::endl;",
+      "Value": ""
+    },
+    {
+      "Name": "items",
+      "Typ": "list\u003cItemsItem\u003e",
+      "Value": "std::vector{ItemsItem{.cat = std::string(\"a\"), .val = 10, .flag = true}, ItemsItem{.cat = std::string(\"a\"), .val = 5, .flag = false}, ItemsItem{.cat = std::string(\"b\"), .val = 20, .flag = true}}"
+    },
+    {
+      "Name": "result",
+      "Typ": "list\u003cResultItem\u003e",
+      "Value": "[]{ std::vector\u003cResultItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cstd::string, size_t\u003e __idx;\nfor (auto i : items) {\n        auto __key = i.cat;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(i);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_back(i);\n        }\n}\nfor(auto \u0026__g : __groups) {\n    GGroup g = __g;\n    __items.push_back(ResultItem{.cat = g.key, .share = (std::accumulate(([]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back((x.flag ? x.val : 0));\n}\nreturn __items; }()).begin(), ([]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back((x.flag ? x.val : 0));\n}\nreturn __items; }()).end(), 0) / std::accumulate(([]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back(x.val);\n}\nreturn __items; }()).begin(), ([]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back(x.val);\n}\nreturn __items; }()).end(), 0))});\n}\nreturn __items; }("
+    },
+    {
+      "Name": "std::vector\u003cResultItem\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "std::vector\u003cGGroup\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "size_t\u003e",
+      "Typ": "std::unordered_map\u003cstd::string,",
+      "Value": ""
+    },
+    {
+      "Name": "i",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "__key",
+      "Typ": "",
+      "Value": "i."
+    },
+    {
+      "Name": "it",
+      "Typ": "",
+      "Value": "__idx.find(__key"
+    },
+    {
+      "Name": "{}}",
+      "Typ": "GGroup __g{__key,",
+      "Value": ""
+    },
+    {
+      "Name": "\u0026__g",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "g",
+      "Typ": "GGroup",
+      "Value": ""
+    },
+    {
+      "Name": "std::vector\u003cint\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "x",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "std::vector\u003cint\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "x",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "std::vector\u003cint\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "x",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "std::vector\u003cint\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "x",
+      "Typ": "",
+      "Value": ""
+    }
+  ],
+  "source": "// Generated by Mochi transpiler v0.10.33 on 2025-07-21 18:19:54 GMT+7\n#include \u003ciostream\u003e\n#include \u003cstring\u003e\n#include \u003cvector\u003e\n#include \u003cmap\u003e\n#include \u003cnumeric\u003e\n#include \u003cunordered_map\u003e\n#include \u003csstream\u003e\n#include \u003ciomanip\u003e\n\n\nstruct ItemsItem {\n    std::string cat;\n    int val;\n    bool flag;\n};\n\nstruct GGroup {\n    std::string key;\n    std::vector\u003cItemsItem\u003e items;\n    auto begin() { return items.begin(); }\n    auto end() { return items.end(); }\n    size_t size() const { return items.size(); }\n};\n\nstruct ResultItem {\n    std::string cat;\n    auto share;\n};\n\nstd::vector\u003cItemsItem\u003e items = std::vector{ItemsItem{.cat = std::string(\"a\"), .val = 10, .flag = true}, ItemsItem{.cat = std::string(\"a\"), .val = 5, .flag = false}, ItemsItem{.cat = std::string(\"b\"), .val = 20, .flag = true}};\nstd::vector\u003cResultItem\u003e result = ([]{ std::vector\u003cResultItem\u003e __items;\nstd::vector\u003cGGroup\u003e __groups;\nstd::unordered_map\u003cstd::string, size_t\u003e __idx;\nfor (auto i : items) {\n        auto __key = i.cat;\n        auto it = __idx.find(__key);\n        if(it == __idx.end()) {\n            GGroup __g{__key, {}};\n            __g.items.push_back(i);\n            __idx[__key] = __groups.size();\n            __groups.push_back(__g);\n        } else {\n            __groups[it-\u003esecond].items.push_back(i);\n        }\n}\nfor(auto \u0026__g : __groups) {\n    GGroup g = __g;\n    __items.push_back(ResultItem{.cat = g.key, .share = (std::accumulate(([]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back((x.flag ? x.val : 0));\n}\nreturn __items; }()).begin(), ([]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back((x.flag ? x.val : 0));\n}\nreturn __items; }()).end(), 0) / std::accumulate(([]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back(x.val);\n}\nreturn __items; }()).begin(), ([]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back(x.val);\n}\nreturn __items; }()).end(), 0))});\n}\nreturn __items; }());\n\nint main() {\n    std::cout \u003c\u003c std::boolalpha \u003c\u003c result \u003c\u003c std::endl;\n    return 0;\n}\n"
+}

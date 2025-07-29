@@ -1,0 +1,1225 @@
+{
+  "funcs": [
+    {
+      "Name": "__addressof",
+      "Params": [
+        {
+          "Name": "__r",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": " std::string(\"x\"), .b = 2, .val = 3"
+    },
+    {
+      "Name": "forward",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "typename std::remove_reference\u003c_Tp\u003e::type"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": "kv : __groups) {\n    GGroup g{__kv"
+    },
+    {
+      "Name": "forward",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "typename std::remove_reference\u003c_Tp\u003e::type"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": " main() {\n    { auto __tmp = grouped; std::cout \u003c\u003c \"[\"; for(size_t i=0;i\u003c__tmp.size();++i){ if(i\u003e0) std::cout \u003c\u003c \", \"; std::cout \u003c\u003c __tmp[i]; } std::cout \u003c\u003c \"]\"; }\n    std::c"
+    },
+    {
+      "Name": "operator==",
+      "Params": [
+        {
+          "Name": "__v",
+          "Typ": "partial_ordering"
+        },
+        {
+          "Name": "",
+          "Typ": "__cmp_cat::__unspec"
+        }
+      ],
+      "Ret": "bool",
+      "Body": "d(), 0.0); }())});\n}\nreturn "
+    },
+    {
+      "Name": "__is_single_threaded",
+      "Params": null,
+      "Ret": "bool",
+      "Body": "on(1) \u003c\u003c v.total\n \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cItemsItem\u003e items = std::vector{ItemsItem{.a = std::string(\"x\"), .b = 1, .val = 2}, ItemsItem{.a = std::string(\"x\""
+    },
+    {
+      "Name": "__exchange_and_add",
+      "Params": [
+        {
+          "Name": "__mem",
+          "Typ": "volatile _Atomic_word"
+        },
+        {
+          "Name": "__val",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "_Atomic_word",
+      "Body": "= i.a, .b = i.b};\n        __groups[__key].push_back(__row);\n}"
+    },
+    {
+      "Name": "__atomic_add",
+      "Params": [
+        {
+          "Name": "__mem",
+          "Typ": "volatile _Atomic_word"
+        },
+        {
+          "Name": "__val",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "",
+      "Body": "= g.key.a, .b = g.key.b, .total = ([\u0026]{ auto __tmp = ("
+    },
+    {
+      "Name": "__exchange_and_add_single",
+      "Params": [
+        {
+          "Name": "__mem",
+          "Typ": "_Atomic_word"
+        },
+        {
+          "Name": "__val",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "_Atomic_word",
+      "Body": "){ if(i\u003e0) std::cout \u003c\u003c \", \"; std::cout \u003c\u003c __tmp[i]; } std::cout \u003c\u003c \"]\"; }\n    std"
+    },
+    {
+      "Name": "__ostream_write",
+      "Params": [
+        {
+          "Name": "__out",
+          "Typ": "basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__s",
+          "Typ": "_CharT"
+        },
+        {
+          "Name": "__n",
+          "Typ": "streamsize"
+        }
+      ],
+      "Ret": "",
+      "Body": "ctor{ItemsItem{.a = std::string(\"x\"), .b = 1, .val = 2}, ItemsItem{.a = std::string(\"x\"), .b = 2, .val = 3}, ItemsItem{.a = std::string(\"y\"), .b = 1, .val = 4}, ItemsItem{.a = std::string(\"y\"), .b = 2, .val = 1}};\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cG"
+    },
+    {
+      "Name": "__ostream_fill",
+      "Params": [
+        {
+          "Name": "__out",
+          "Typ": "basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__n",
+          "Typ": "streamsize"
+        }
+      ],
+      "Ret": "",
+      "Body": "Key{.a = i.a, .b = i.b};\n        __groups[__key].push_back(__row);\n}\nfor(const auto\u0026 __kv : __groups) {\n    GGroup g{__kv.first, __kv.second};\n    __items.push_back(GroupedItem{.a = g.key.a, .b = g.key.b, .total = ([\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back(x.val);\n}\nreturn __items; }()); return std::accumulate(__tmp.begin(), __tmp.end(), 0.0); }())});\n}\nre"
+    },
+    {
+      "Name": "__iter_less_iter",
+      "Params": null,
+      "Ret": "_Iter_less_iter",
+      "Body": "vector{ItemsItem{.a = std::s"
+    },
+    {
+      "Name": "__iter_less_val",
+      "Params": null,
+      "Ret": "_Iter_less_val",
+      "Body": "\u0026 __kv : __groups) {\n    GG"
+    },
+    {
+      "Name": "__iter_comp_val",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "_Iter_less_iter"
+        }
+      ],
+      "Ret": "_Iter_less_val",
+      "Body": ".key.b, .total = ([\u0026]{ auto"
+    },
+    {
+      "Name": "bit_cast",
+      "Params": [
+        {
+          "Name": "__from",
+          "Typ": "_From"
+        }
+      ],
+      "Ret": "_To",
+      "Body": "}())});\n}\nreturn __items; }());\n\nint main() {\n    { "
+    },
+    {
+      "Name": "__invfwd",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "typename remove_reference\u003c_Tp\u003e::type"
+        }
+      ],
+      "Ret": "_Up",
+      "Body": "tring(\"y\"), .b = 2, .val = 1}};\nst"
+    },
+    {
+      "Name": "__invoke_impl",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__invoke_other"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_Fn"
+        },
+        {
+          "Name": "__args",
+          "Typ": "_Args \u0026\u0026..."
+        }
+      ],
+      "Ret": "_Res",
+      "Body": "   ItemsItem __row{i};\n        auto __key = GKey{.a = i.a, .b = i"
+    },
+    {
+      "Name": "__invoke_impl",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__invoke_memfun_ref"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_MemFun"
+        },
+        {
+          "Name": "__t",
+          "Typ": "_Tp"
+        },
+        {
+          "Name": "__args",
+          "Typ": "_Args \u0026\u0026..."
+        }
+      ],
+      "Ret": "_Res",
+      "Body": " = ([\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cint\u003e __items;\nfor (auto x : "
+    },
+    {
+      "Name": "__invoke_impl",
+      "Params": [
+        {
+          "Name": "",
+          "Typ": "__invoke_memfun_deref"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_MemFun"
+        },
+        {
+          "Name": "__t",
+          "Typ": "_Tp"
+        },
+        {
+          "Name": "__args",
+          "Typ": "_Args \u0026\u0026..."
+        }
+      ],
+      "Ret": "_Res",
+      "Body": " std::cout \u003c\u003c \"[\"; for(size_t i=0;i\u003c__tmp.size();++i){ if(i\u003e0) std::cout \u003c\u003c \", \"; std"
+    },
+    {
+      "Name": "begin",
+      "Params": [
+        {
+          "Name": "__ils",
+          "Typ": "initializer_list\u003c_Tp\u003e"
+        }
+      ],
+      "Ret": "_Tp",
+      "Body": "\u003c__tmp.size();++i){ if(i"
+    },
+    {
+      "Name": "begin",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        }
+      ],
+      "Ret": "",
+      "Body": "roupedItem\u003e grouped = ([]"
+    },
+    {
+      "Name": "begin",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        }
+      ],
+      "Ret": "",
+      "Body": "a = g.key.a, .b = g.key.b"
+    },
+    {
+      "Name": "end",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        }
+      ],
+      "Ret": "",
+      "Body": "\u003e0) std::cout \u003c\u003c \", \"; "
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "__max_size_type"
+        }
+      ],
+      "Ret": "__max_size_type",
+      "Body": " = 1}};\nstd::v"
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "__max_diff_type"
+        }
+      ],
+      "Ret": "__max_size_type",
+      "Body": "ctor\u003cItemsItem\u003e\u003e __groups;\nfor "
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "_Tp"
+        }
+      ],
+      "Ret": "",
+      "Body": "  __groups[__key].push_back(__row);\n}\nfor(const a"
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "__int128"
+        }
+      ],
+      "Ret": "__int128",
+      "Body": "to __tmp = ([\u0026"
+    },
+    {
+      "Name": "__to_unsigned_like",
+      "Params": [
+        {
+          "Name": "__t",
+          "Typ": "__int128"
+        }
+      ],
+      "Ret": "__int128",
+      "Body": "tems; }()); re"
+    },
+    {
+      "Name": "__sv_check",
+      "Params": [
+        {
+          "Name": "__size",
+          "Typ": "int"
+        },
+        {
+          "Name": "__pos",
+          "Typ": "int"
+        },
+        {
+          "Name": "__s",
+          "Typ": "string"
+        }
+      ],
+      "Ret": "int",
+      "Body": "   ItemsItem __row{i};\n        auto __key = GKey{.a = i.a, .b = i.b};\n        __groups[__key].push_back(__row);\n}\nfor(const auto\u0026 __kv : __groups) {\n    GGroup g{__k"
+    },
+    {
+      "Name": "__sv_limit",
+      "Params": [
+        {
+          "Name": "__size",
+          "Typ": "int"
+        },
+        {
+          "Name": "__pos",
+          "Typ": "int"
+        },
+        {
+          "Name": "__off",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "_back(x.val);\n}\nreturn __items; }()); return std::accumulate(__tmp.begin(), __tmp.end(), 0.0); }())})"
+    },
+    {
+      "Name": "__bswap_16",
+      "Params": [
+        {
+          "Name": "__bsx",
+          "Typ": "__uint16_t"
+        }
+      ],
+      "Ret": "__uint16_t",
+      "Body": "=0;i\u003cv.items.size();++i){ if(i\u003e0) os \u003c\u003c \", \"; os \u003c\u003c v.items[i]; } os \u003c\u003c \"]\"\n \u003c\u003c '}';\n    return os;\n}\n\nstd::ostrea"
+    },
+    {
+      "Name": "__bswap_32",
+      "Params": [
+        {
+          "Name": "__bsx",
+          "Typ": "__uint32_t"
+        }
+      ],
+      "Ret": "__uint32_t",
+      "Body": "td::vector{ItemsItem{.a = std::string(\"x\"), .b = 1, .val = 2}, ItemsItem{.a = std::string(\"x\"), .b = 2, .val = 3},"
+    },
+    {
+      "Name": "__bswap_64",
+      "Params": [
+        {
+          "Name": "__bsx",
+          "Typ": "__uint64_t"
+        }
+      ],
+      "Ret": "__uint64_t",
+      "Body": "key.b, .total = ([\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back(x."
+    },
+    {
+      "Name": "__uint16_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint16_t"
+        }
+      ],
+      "Ret": "__uint16_t",
+      "Body": ".items.size();++"
+    },
+    {
+      "Name": "__uint32_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint32_t"
+        }
+      ],
+      "Ret": "__uint32_t",
+      "Body": "  return os;\n}\n\n"
+    },
+    {
+      "Name": "__uint64_identity",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "__uint64_t"
+        }
+      ],
+      "Ret": "__uint64_t",
+      "Body": "{\n    os \u003c\u003c '{' "
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__i",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "ItemsItem{.a = std::string(\"x\""
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "long long"
+        }
+      ],
+      "Ret": "long long",
+      "Body": "tem{.a = std::string(\"y\"), .b = "
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "float"
+        }
+      ],
+      "Ret": "float",
+      "Body": "roup g{__kv.first, __kv.second"
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "float"
+        }
+      ],
+      "Ret": "float",
+      "Body": "g.key.b, .total = ([\u0026]{ auto __"
+    },
+    {
+      "Name": "abs",
+      "Params": [
+        {
+          "Name": "__x",
+          "Typ": "long double"
+        }
+      ],
+      "Ret": "long double",
+      "Body": "tems.push_back(x.val);\n}\nreturn"
+    },
+    {
+      "Name": "__to_chars_len",
+      "Params": [
+        {
+          "Name": "__value",
+          "Typ": "_Tp"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "roupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\nstd::map\u003cGKey, std::vector\u003cItemsItem\u003e\u003e __groups;\nfor (auto i : items) {\n        ItemsItem __row{i};\n        auto __key = GKey{.a = i.a, .b = i.b};\n        __groups[__key].push_back(__row);\n}\nfor(const auto\u0026 __kv : __groups) {\n    GGroup g{__kv.first, __kv.second};\n    __items.push_back(GroupedItem{.a = g.key.a, .b = g.key.b, .total = ([\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back(x.val);\n}"
+    },
+    {
+      "Name": "__to_chars_len",
+      "Params": [
+        {
+          "Name": "__value",
+          "Typ": "int"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "roupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\nstd::map\u003cGKey, std::vector\u003cItemsItem\u003e\u003e __groups;\nfor (auto i : items) {\n        ItemsItem __row{i};\n        auto __key = GKey{.a = i.a, .b = i.b};\n        __groups[__key].push_back(__row);\n}\nfor(const auto\u0026 __kv : __groups) {\n    GGroup g{__kv.first, __kv.second};\n    __items.push_back(GroupedItem{.a = g.key.a, .b = g.key.b, .total = ([\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back(x.val);\n}"
+    },
+    {
+      "Name": "__to_chars_len",
+      "Params": [
+        {
+          "Name": "__value",
+          "Typ": "int"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "roupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\nstd::map\u003cGKey, std::vector\u003cItemsItem\u003e\u003e __groups;\nfor (auto i : items) {\n        ItemsItem __row{i};\n        auto __key = GKey{.a = i.a, .b = i.b};\n        __groups[__key].push_back(__row);\n}\nfor(const auto\u0026 __kv : __groups) {\n    GGroup g{__kv.first, __kv.second};\n    __items.push_back(GroupedItem{.a = g.key.a, .b = g.key.b, .total = ([\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back(x.val);\n}"
+    },
+    {
+      "Name": "__to_chars_len",
+      "Params": [
+        {
+          "Name": "__value",
+          "Typ": "long long"
+        },
+        {
+          "Name": "__base",
+          "Typ": "int"
+        }
+      ],
+      "Ret": "int",
+      "Body": "roupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\nstd::map\u003cGKey, std::vector\u003cItemsItem\u003e\u003e __groups;\nfor (auto i : items) {\n        ItemsItem __row{i};\n        auto __key = GKey{.a = i.a, .b = i.b};\n        __groups[__key].push_back(__row);\n}\nfor(const auto\u0026 __kv : __groups) {\n    GGroup g{__kv.first, __kv.second};\n    __items.push_back(GroupedItem{.a = g.key.a, .b = g.key.b, .total = ([\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back(x.val);\n}"
+    },
+    {
+      "Name": "__check_facet",
+      "Params": [
+        {
+          "Name": "__f",
+          "Typ": "_Facet"
+        }
+      ],
+      "Ret": "_Facet",
+      "Body": "\n    return os;\n}\n\nstd::vector\u003cItemsItem\u003e items = std::vector{"
+    },
+    {
+      "Name": "__check_facet",
+      "Params": [
+        {
+          "Name": "__f",
+          "Typ": "std::ctype\u003cchar\u003e"
+        }
+      ],
+      "Ret": "std::ctype\u003cchar\u003e",
+      "Body": "\n    return os;\n}\n\nstd::vector\u003cItemsItem\u003e items = std::vector{"
+    },
+    {
+      "Name": "__erase_nodes_if",
+      "Params": [
+        {
+          "Name": "__cont",
+          "Typ": "_Container"
+        },
+        {
+          "Name": "__ucont",
+          "Typ": "_UnsafeContainer"
+        },
+        {
+          "Name": "__pred",
+          "Typ": "_Predicate"
+        }
+      ],
+      "Ret": "typename _Container::size_type",
+      "Body": ".b = 1, .val = 2}, ItemsItem{.a = std::string(\"x\"), .b = 2, .val = 3}, ItemsItem{.a = std::string(\"y\"), .b = 1, .val = 4}, ItemsItem{.a = std::string(\"y\"), .b = 2, .val = 1}};\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\nstd::map\u003cGKey, std::vector\u003c"
+    },
+    {
+      "Name": "resetiosflags",
+      "Params": [
+        {
+          "Name": "__mask",
+          "Typ": "ios_base::fmtflags"
+        }
+      ],
+      "Ret": "_Resetiosflags",
+      "Body": "\u003cItemsItem\u003e\u003e __groups"
+    },
+    {
+      "Name": "operator\u003e\u003e",
+      "Params": [
+        {
+          "Name": "__is",
+          "Typ": "basic_istream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_Resetiosflags"
+        }
+      ],
+      "Ret": "basic_istream\u003c_CharT, _Traits\u003e",
+      "Body": "groups) {\n    GGroup g{__kv.first, __kv.second};\n    __items.push_back(Grouped"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "__os",
+          "Typ": "basic_ostream\u003c_CharT, _Traits\u003e"
+        },
+        {
+          "Name": "__f",
+          "Typ": "_Resetiosflags"
+        }
+      ],
+      "Ret": "basic_ostream\u003c_CharT, _Traits\u003e",
+      "Body": " return std::accumulate(__tmp.begin(), __tmp.end(), 0.0); }())});\n}\nreturn __i"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "os",
+          "Typ": "std::ostream"
+        },
+        {
+          "Name": "v",
+          "Typ": "ItemsItem"
+        }
+      ],
+      "Ret": "std::ostream",
+      "Body": "{\n    os \u003c\u003c '{' \u003c\u003c \"'a': \"\u003c\u003c \"'\" \u003c\u003c v.a \u003c\u003c \"'\"\n \u003c\u003c \", \" \u003c\u003c \"'b': \"\u003c\u003c v.b\n \u003c\u003c \", \" \u003c\u003c \"'val': \"\u003c\u003c v.val\n \u003c\u003c '}';\n    return os;\n"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "os",
+          "Typ": "std::ostream"
+        },
+        {
+          "Name": "v",
+          "Typ": "GKey"
+        }
+      ],
+      "Ret": "std::ostream",
+      "Body": "{\n    os \u003c\u003c '{' \u003c\u003c \"'a': \"\u003c\u003c \"'\" \u003c\u003c v.a \u003c\u003c \"'\"\n \u003c\u003c \", \" \u003c\u003c \"'b': \"\u003c\u003c v.b\n \u003c\u003c '}';\n    return os;\n"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "os",
+          "Typ": "std::ostream"
+        },
+        {
+          "Name": "v",
+          "Typ": "GGroup"
+        }
+      ],
+      "Ret": "std::ostream",
+      "Body": "{\n    os \u003c\u003c '{' \u003c\u003c \"'key': \"\u003c\u003c v.key\n \u003c\u003c \", \" \u003c\u003c \"'items': \"\u003c\u003c \"[\"; for(size_t i=0;i\u003cv.items.size();++i){ if(i\u003e0) os \u003c\u003c \", \"; os \u003c\u003c v.items[i]; } os \u003c\u003c \"]\"\n \u003c\u003c '}';\n    return os;\n"
+    },
+    {
+      "Name": "operator\u003c\u003c",
+      "Params": [
+        {
+          "Name": "os",
+          "Typ": "std::ostream"
+        },
+        {
+          "Name": "v",
+          "Typ": "GroupedItem"
+        }
+      ],
+      "Ret": "std::ostream",
+      "Body": "{\n    os \u003c\u003c '{' \u003c\u003c \"'a': \"\u003c\u003c \"'\" \u003c\u003c v.a \u003c\u003c \"'\"\n \u003c\u003c \", \" \u003c\u003c \"'b': \"\u003c\u003c v.b\n \u003c\u003c \", \" \u003c\u003c \"'total': \"\u003c\u003c std::fixed \u003c\u003c std::setprecision(1) \u003c\u003c v.total\n \u003c\u003c '}';\n    return os;\n"
+    },
+    {
+      "Name": "main",
+      "Params": null,
+      "Ret": "int",
+      "Body": "{\n    { auto __tmp = grouped; std::cout \u003c\u003c \"[\"; for(size_t i=0;i\u003c__tmp.size();++i){ if(i\u003e0) std::cout \u003c\u003c \", \"; std::cout \u003c\u003c __tmp[i]; } std::cout \u003c\u003c \"]\"; }\n    std::cout \u003c\u003c std::endl;\n    return 0;\n"
+    }
+  ],
+  "enums": [
+    {
+      "Name": "_Ord",
+      "Variants": [
+        "equivalent",
+        "less",
+        "greater"
+      ]
+    },
+    {
+      "Name": "_Ncmp",
+      "Variants": [
+        "_Unordered"
+      ]
+    },
+    {
+      "Name": "_Ios_Fmtflags",
+      "Variants": [
+        "_S_boolalpha",
+        "_S_dec",
+        "_S_fixed",
+        "_S_hex",
+        "_S_internal",
+        "_S_left",
+        "_S_oct",
+        "_S_right",
+        "_S_scientific",
+        "_S_showbase",
+        "_S_showpoint",
+        "_S_showpos",
+        "_S_skipws",
+        "_S_unitbuf",
+        "_S_uppercase",
+        "_S_adjustfield",
+        "_S_basefield",
+        "_S_floatfield",
+        "_S_ios_fmtflags_end",
+        "_S_ios_fmtflags_max",
+        "_S_ios_fmtflags_min"
+      ]
+    },
+    {
+      "Name": "dateorder",
+      "Variants": [
+        "no_order",
+        "dmy",
+        "mdy",
+        "ymd",
+        "ydm"
+      ]
+    },
+    {
+      "Name": "result",
+      "Variants": [
+        "ok",
+        "partial",
+        "error",
+        "noconv"
+      ]
+    },
+    {
+      "Name": "_Construct",
+      "Variants": [
+        "_Token"
+      ]
+    }
+  ],
+  "structs": [
+    {
+      "Name": "ItemsItem",
+      "Fields": [
+        {
+          "Name": "a",
+          "Typ": "string"
+        },
+        {
+          "Name": "b",
+          "Typ": "int"
+        },
+        {
+          "Name": "val",
+          "Typ": "int"
+        }
+      ]
+    },
+    {
+      "Name": "GKey",
+      "Fields": [
+        {
+          "Name": "a",
+          "Typ": "string"
+        },
+        {
+          "Name": "b",
+          "Typ": "int"
+        }
+      ]
+    },
+    {
+      "Name": "GGroup",
+      "Fields": [
+        {
+          "Name": "key",
+          "Typ": "GKey"
+        },
+        {
+          "Name": "items",
+          "Typ": "list\u003cItemsItem\u003e"
+        }
+      ]
+    },
+    {
+      "Name": "GroupedItem",
+      "Fields": [
+        {
+          "Name": "a",
+          "Typ": "string"
+        },
+        {
+          "Name": "b",
+          "Typ": "int"
+        },
+        {
+          "Name": "total",
+          "Typ": "float"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "Name": "0",
+      "Typ": "std::endl; return",
+      "Value": ""
+    },
+    {
+      "Name": ".b",
+      "Typ": "ng(\"y\"),",
+      "Value": "2, .val = 1}};\nstd::vector\u003cGroup"
+    },
+    {
+      "Name": ".b",
+      "Typ": "ng(\"y\"),",
+      "Value": "2, .val = 1}};\nstd::vector\u003cGroup"
+    },
+    {
+      "Name": ".b",
+      "Typ": "ng(\"y\"),",
+      "Value": "2, .val = 1}};\nstd::vect"
+    },
+    {
+      "Name": ".b",
+      "Typ": "ng(\"y\"),",
+      "Value": "2, .val = 1}};\nstd::vect"
+    },
+    {
+      "Name": "__items.push_back(x.val)",
+      "Typ": "__items; for (auto x : g) {",
+      "Value": ""
+    },
+    {
+      "Name": "\"'",
+      "Typ": "\"'a': \"\u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "i",
+      "Typ": "cout \u003c\u003c \"[\"; for(size_t",
+      "Value": "0;i\u003c__tmp.size();++i"
+    },
+    {
+      "Name": "st",
+      "Typ": "std::cout \u003c\u003c \", \"; std::cout \u003c\u003c __tmp[i]; } std::cout \u003c\u003c \"]\"; }",
+      "Value": ""
+    },
+    {
+      "Name": "i",
+      "Typ": "cout \u003c\u003c \"[\"; for(size_t",
+      "Value": "0;i\u003c__tmp.size();++i"
+    },
+    {
+      "Name": "st",
+      "Typ": "std::cout \u003c\u003c \", \"; std::cout \u003c\u003c __tmp[i]; } std::cout \u003c\u003c \"]\"; }",
+      "Value": ""
+    },
+    {
+      "Name": "i",
+      "Typ": "cout \u003c\u003c \"[\"; for(size_t",
+      "Value": "0;i\u003c__tmp.size();++i"
+    },
+    {
+      "Name": "st",
+      "Typ": "std::cout \u003c\u003c \", \"; std::cout \u003c\u003c __tmp[i]; } std::cout \u003c\u003c \"]\"; }",
+      "Value": ""
+    },
+    {
+      "Name": "i",
+      "Typ": "cout \u003c\u003c \"[\"; for(size_t",
+      "Value": "0;i\u003c__tmp.size();++i"
+    },
+    {
+      "Name": "st",
+      "Typ": "std::cout \u003c\u003c \", \"; std::cout \u003c\u003c __tmp[i]; } std::cout \u003c\u003c \"]\"; }",
+      "Value": ""
+    },
+    {
+      "Name": "i",
+      "Typ": "cout \u003c\u003c \"[\"; for(size_t",
+      "Value": "0;i\u003c__tmp.size();++i"
+    },
+    {
+      "Name": "st",
+      "Typ": "std::cout \u003c\u003c \", \"; std::cout \u003c\u003c __tmp[i]; } std::cout \u003c\u003c \"]\"; }",
+      "Value": ""
+    },
+    {
+      "Name": "i",
+      "Typ": "cout \u003c\u003c \"[\"; for(size_t",
+      "Value": "0;i\u003c__tmp.size();++i"
+    },
+    {
+      "Name": "st",
+      "Typ": "std::cout \u003c\u003c \", \"; std::cout \u003c\u003c __tmp[i]; } std::cout \u003c\u003c \"]\"; }",
+      "Value": ""
+    },
+    {
+      "Name": "i",
+      "Typ": "cout \u003c\u003c \"[\"; for(size_t",
+      "Value": "0;i\u003c__tmp.size();++i"
+    },
+    {
+      "Name": "st",
+      "Typ": "std::cout \u003c\u003c \", \"; std::cout \u003c\u003c __tmp[i]; } std::cout \u003c\u003c \"]\"; }",
+      "Value": ""
+    },
+    {
+      "Name": "i",
+      "Typ": "cout \u003c\u003c \"[\"; for(size_t",
+      "Value": "0;i\u003c__tmp.size();++i"
+    },
+    {
+      "Name": "st",
+      "Typ": "std::cout \u003c\u003c \", \"; std::cout \u003c\u003c __tmp[i]; } std::cout \u003c\u003c \"]\"; }",
+      "Value": ""
+    },
+    {
+      "Name": "i",
+      "Typ": "grouped; std::cout \u003c\u003c \"[\"; for(size_t",
+      "Value": "0;i\u003c__tmp.size("
+    },
+    {
+      "Name": ".total",
+      "Typ": "y.b,",
+      "Value": "[\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cint\u003e __items"
+    },
+    {
+      "Name": ".b",
+      "Typ": "::string(\"x\"),",
+      "Value": "1, .val = 2}, ItemsItem{.a = std::string(\"x\"), .b = 2, .val = 3}, ItemsItem{."
+    },
+    {
+      "Name": "tem{.a",
+      "Typ": "",
+      "Value": "std::string(\"y\"), .b = 2, .val = 1}};\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGr"
+    },
+    {
+      "Name": "__key",
+      "Typ": "temsItem\u003e\u003e __groups; for (auto i : items) { ItemsItem __row{i}; auto",
+      "Value": "GKey{.a = i.a, .b = i.b}"
+    },
+    {
+      "Name": "_",
+      "Typ": "ush_back(__row); } for(const auto\u0026 __kv : __groups) { GGroup g{__kv.first, __kv.second};",
+      "Value": ""
+    },
+    {
+      "Name": "b",
+      "Typ": "",
+      "Value": "g.key.b, .total = ([\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back(x.val"
+    },
+    {
+      "Name": "{",
+      "Typ": "turn std::accumulate(__tmp.begin(), __tmp.end(), 0.0); }())}); } return __items; }()); int main() {",
+      "Value": ""
+    },
+    {
+      "Name": "i",
+      "Typ": "ze_t",
+      "Value": "0;i\u003c__tmp.size();++i){ if(i\u003e0) std::cout \u003c\u003c \", \"; std::cout \u003c\u003c __tmp[i]; } std::cout \u003c\u003c \"]\""
+    },
+    {
+      "Name": "items",
+      "Typ": "} std::vector\u003cItemsItem\u003e",
+      "Value": "std::vecto"
+    },
+    {
+      "Name": "'}'",
+      "Typ": "Item\u0026 v) { os \u003c\u003c '{' \u003c\u003c \"'a': \"\u003c\u003c \"'\" \u003c\u003c v.a \u003c\u003c \"'\" \u003c\u003c \", \" \u003c\u003c \"'b': \"\u003c\u003c v.b \u003c\u003c \", \" \u003c\u003c \"'total': \"\u003c\u003c std::fixed \u003c\u003c std::setprecision(1) \u003c\u003c v.total \u003c\u003c",
+      "Value": ""
+    },
+    {
+      "Name": "\u003c\u003c",
+      "Typ": "\"'\" \u003c\u003c v.a",
+      "Value": ""
+    },
+    {
+      "Name": "items",
+      "Typ": "turn os; } std::vector\u003cItemsItem\u003e",
+      "Value": "std::vector{ItemsItem{.a = std::string(\"x\"), .b = 1, .val = 2}, ItemsItem{.a = std::string(\"x\"), .b = 2, .val = 3}, ItemsItem{.a = std::string(\"y\"), .b = 1, .val = 4}, ItemsItem{.a = std::string(\"y\"), .b = 2, .val = 1}}"
+    },
+    {
+      "Name": "tem{.a",
+      "Typ": "",
+      "Value": "std::string(\"y\"), .b = 1, .val = 4}, ItemsItem{.a = std::string(\"y\"), .b = 2, .val = 1}};\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items"
+    },
+    {
+      "Name": ".b",
+      "Typ": ":string(\"y\"),",
+      "Value": "2, .val = 1}};\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items"
+    },
+    {
+      "Name": "operator\u003c",
+      "Typ": "// Generated by Mochi transpiler v0.10.35 on 2025-07-22 15:14:25 GMT+7 #include \u003ciostream\u003e #include \u003cstring\u003e #include \u003cvector\u003e #include \u003cmap\u003e #include \u003cnumeric\u003e #include \u003csstream\u003e #include \u003ciomanip\u003e #include \u003coptional\u003e struct ItemsItem { std::string a; int b; int val; auto",
+      "Value": "\u003e(const ItemsItem\u0026) const = default;\n};\n\nstruct GKey {\n    std::string a;\n    int b;\n    auto operator\u003c=\u003e(const GKey\u0026) const = default;\n};\n\nstruct GGroup {\n    GKey key;\n    std::vector\u003cItemsItem\u003e items;\n    auto operator\u003c=\u003e(const GGroup\u0026) const = default;\n    auto begin() { return items.begin(); }\n    auto end() { return items.end(); }\n    size_t size() const { return items.size(); }\n};\n\nstruct GroupedItem {\n    std::string a;\n    int b;\n    double total;\n    auto operator\u003c=\u003e(const GroupedItem\u0026) const = default;\n};\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const ItemsItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'a': \"\u003c\u003c \"'\" \u003c\u003c v.a \u003c\u003c \"'\"\n \u003c\u003c \", \" \u003c\u003c \"'b': \"\u003c\u003c v.b\n \u003c\u003c \", \" \u003c\u003c \"'val': \"\u003c\u003c v.val\n \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GKey\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'a': \"\u003c\u003c \"'\" \u003c\u003c v.a \u003c\u003c \"'\"\n \u003c\u003c \", \" \u003c\u003c \"'b': \"\u003c\u003c v.b\n \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GGroup\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'key': \"\u003c\u003c v.key\n \u003c\u003c \", \" \u003c\u003c \"'items': \"\u003c\u003c \"[\"; for(size_t i=0;i\u003cv.items.size();++i){ if(i\u003e0) os \u003c\u003c \", \"; os \u003c\u003c v.items[i]; } os \u003c\u003c \"]\"\n \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'a': \"\u003c\u003c \"'\" \u003c\u003c v.a \u003c\u003c \"'\"\n \u003c\u003c \", \" \u003c\u003c \"'b': \"\u003c\u003c v.b\n \u003c\u003c \", \" \u003c\u003c \"'total': \"\u003c\u003c std::fixed \u003c\u003c std::setprecision(1) \u003c\u003c v.total\n \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cItemsItem\u003e items = std::vector{ItemsItem{.a = std::string(\"x\"), .b = 1, .val = 2}, ItemsItem{.a = std::string(\"x\"), .b = 2, .val = 3}, ItemsItem{.a = std::string(\"y\"), .b = 1, .val = 4}, ItemsItem{.a = std::string(\"y\"), .b = 2, .val = 1}};\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\nstd::map\u003cGKey, std::vector\u003cItemsItem\u003e\u003e __groups;\nfor (auto i : items) {\n        ItemsItem __row{i};\n        auto __key = GKey{.a = i.a, .b = i.b};\n        __groups[__key].push_back(__row);\n}\nfor(const auto\u0026 __kv : __groups) {\n    GGroup g{__kv.first, __kv.second}"
+    },
+    {
+      "Name": "__key",
+      "Typ": "emsItem __row{i}; auto",
+      "Value": "GKey{.a = i.a, .b = i.b};\n        __g"
+    },
+    {
+      "Name": "__items.push_back(GroupedItem{.a",
+      "Typ": "auto\u0026 __kv : __groups) { GGroup g{__kv.first, __kv.second};",
+      "Value": "g.key.a, .b = g.key.b, .total = ([\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cint\u003e __items"
+    },
+    {
+      "Name": "items",
+      "Typ": "os; } std::vector\u003cItemsItem\u003e",
+      "Value": ""
+    },
+    {
+      "Name": "ItemsItem{.a",
+      "Typ": "},",
+      "Value": "std::string(\"y\"), .b = 2"
+    },
+    {
+      "Name": "__items",
+      "Typ": "[]{ std::vector\u003cGroupedItem\u003e",
+      "Value": ""
+    },
+    {
+      "Name": "for",
+      "Typ": "std::map\u003cGKey, std::vector\u003cItemsItem\u003e\u003e __groups;",
+      "Value": ""
+    },
+    {
+      "Name": "i",
+      "Typ": "ps; for (auto",
+      "Value": ""
+    },
+    {
+      "Name": "auto",
+      "Typ": ";",
+      "Value": ""
+    },
+    {
+      "Name": "__groups[__ke",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "__kv.second}",
+      "Typ": "ps) { GGroup g{__kv.first,",
+      "Value": ""
+    },
+    {
+      "Name": "b",
+      "Typ": "",
+      "Value": "g.key.b, .to"
+    },
+    {
+      "Name": "__items",
+      "Typ": "tor\u003cint\u003e",
+      "Value": ""
+    },
+    {
+      "Name": "}",
+      "Typ": "h_back(x.val);",
+      "Value": ""
+    },
+    {
+      "Name": "__tmp.e",
+      "Typ": "begin(),",
+      "Value": ""
+    },
+    {
+      "Name": "operator\u003c",
+      "Typ": "// Generated by Mochi transpiler v0.10.35 on 2025-07-22 15:14:25 GMT+7 #include \u003ciostream\u003e #include \u003cstring\u003e #include \u003cvector\u003e #include \u003cmap\u003e #include \u003cnumeric\u003e #include \u003csstream\u003e #include \u003ciomanip\u003e #include \u003coptional\u003e struct ItemsItem { std::string a; int b; int val; auto",
+      "Value": "\u003e(const ItemsItem\u0026) const = default;\n};\n\nstruct GKey {\n    std::string a;\n    int b;\n    auto operator\u003c=\u003e(const GKey\u0026) const = default;\n};\n\nstruct GGroup {\n    GKey key;\n    std::vector\u003cItemsItem\u003e items;\n    auto operator\u003c=\u003e(const GGroup\u0026) const = default;\n    auto begin() { return items.begin(); }\n    auto end() { return items.end(); }\n    size_t size() const { return items.size(); }\n};\n\nstruct GroupedItem {\n    std::string a;\n    int b;\n    double total;\n    auto operator\u003c=\u003e(const GroupedItem\u0026) const = default;\n};\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const ItemsItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'a': \"\u003c\u003c \"'\" \u003c\u003c v.a \u003c\u003c \"'\"\n \u003c\u003c \", \" \u003c\u003c \"'b': \"\u003c\u003c v.b\n \u003c\u003c \", \" \u003c\u003c \"'val': \"\u003c\u003c v.val\n \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GKey\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'a': \"\u003c\u003c \"'\" \u003c\u003c v.a \u003c\u003c \"'\"\n \u003c\u003c \", \" \u003c\u003c \"'b': \"\u003c\u003c v.b\n \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GGroup\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'key': \"\u003c\u003c v.key\n \u003c\u003c \", \" \u003c\u003c \"'items': \"\u003c\u003c \"[\"; for(size_t i=0;i\u003cv.items.size();++i){ if(i\u003e0) os \u003c\u003c \", \"; os \u003c\u003c v.items[i]; } os \u003c\u003c \"]\"\n \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'a': \"\u003c\u003c \"'\" \u003c\u003c v.a \u003c\u003c \"'\"\n \u003c\u003c \", \" \u003c\u003c \"'b': \"\u003c\u003c v.b\n \u003c\u003c \", \" \u003c\u003c \"'total': \"\u003c\u003c std::fixed \u003c\u003c std::setprecision(1) \u003c\u003c v.total\n \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cItemsItem\u003e items = std::vector{ItemsItem{.a = std::string(\"x\"), .b = 1, .val = 2}, ItemsItem{.a = std::string(\"x\"), .b = 2, .val = 3}, ItemsItem{.a = std::string(\"y\"), .b = 1, .val = 4}, ItemsItem{.a = std::string(\"y\"), .b = 2, .val = 1}};\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\nstd::map\u003cGKey, std::vector\u003cItemsItem\u003e\u003e __groups;\nfor (auto i : items) {\n        ItemsItem __row{i};\n        auto __key = GKey{.a = i.a, .b = i.b};\n        __groups[__key].push_back(__row);\n}\nfor(const auto\u0026 __kv : __groups) {\n    GGroup g{__kv.first, __kv.second};\n    __items.push_back(GroupedItem{.a = g.key.a, .b = g.key.b, .total = ([\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cint\u003e __items"
+    },
+    {
+      "Name": "operator\u003c",
+      "Typ": "// Generated by Mochi transpiler v0.10.35 on 2025-07-22 15:14:25 GMT+7 #include \u003ciostream\u003e #include \u003cstring\u003e #include \u003cvector\u003e #include \u003cmap\u003e #include \u003cnumeric\u003e #include \u003csstream\u003e #include \u003ciomanip\u003e #include \u003coptional\u003e struct ItemsItem { std::string a; int b; int val; auto",
+      "Value": "\u003e(const ItemsItem\u0026) const = default;\n};\n\nstruct GKey {\n    std::string a;\n    int b;\n    auto operator\u003c=\u003e(const GKey\u0026) const = default;\n};\n\nstruct GGroup {\n    GKey key;\n    std::vector\u003cItemsItem\u003e items;\n    auto operator\u003c=\u003e(const GGroup\u0026) const = default;\n    auto begin() { return items.begin(); }\n    auto end() { return items.end(); }\n    size_t size() const { return items.size(); }\n};\n\nstruct GroupedItem {\n    std::string a;\n    int b;\n    double total;\n    auto operator\u003c=\u003e(const GroupedItem\u0026) const = default;\n};\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const ItemsItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'a': \"\u003c\u003c \"'\" \u003c\u003c v.a \u003c\u003c \"'\"\n \u003c\u003c \", \" \u003c\u003c \"'b': \"\u003c\u003c v.b\n \u003c\u003c \", \" \u003c\u003c \"'val': \"\u003c\u003c v.val\n \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GKey\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'a': \"\u003c\u003c \"'\" \u003c\u003c v.a \u003c\u003c \"'\"\n \u003c\u003c \", \" \u003c\u003c \"'b': \"\u003c\u003c v.b\n \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GGroup\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'key': \"\u003c\u003c v.key\n \u003c\u003c \", \" \u003c\u003c \"'items': \"\u003c\u003c \"[\"; for(size_t i=0;i\u003cv.items.size();++i){ if(i\u003e0) os \u003c\u003c \", \"; os \u003c\u003c v.items[i]; } os \u003c\u003c \"]\"\n \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'a': \"\u003c\u003c \"'\" \u003c\u003c v.a \u003c\u003c \"'\"\n \u003c\u003c \", \" \u003c\u003c \"'b': \"\u003c\u003c v.b\n \u003c\u003c \", \" \u003c\u003c \"'total': \"\u003c\u003c std::fixed \u003c\u003c std::setprecision(1) \u003c\u003c v.total\n \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cItemsItem\u003e items = std::vector{ItemsItem{.a = std::string(\"x\"), .b = 1, .val = 2}, ItemsItem{.a = std::string(\"x\"), .b = 2, .val = 3}, ItemsItem{.a = std::string(\"y\"), .b = 1, .val = 4}, ItemsItem{.a = std::string(\"y\"), .b = 2, .val = 1}};\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\nstd::map\u003cGKey, std::vector\u003cItemsItem\u003e\u003e __groups;\nfor (auto i : items) {\n        ItemsItem __row{i};\n        auto __key = GKey{.a = i.a, .b = i.b};\n        __groups[__key].push_back(__row);\n}\nfor(const auto\u0026 __kv : __groups) {\n    GGroup g{__kv.first, __kv.second};\n    __items.push_back(GroupedItem{.a = g.key.a, .b = g.key.b, .total = ([\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cint\u003e __items"
+    },
+    {
+      "Name": "operator\u003c",
+      "Typ": "// Generated by Mochi transpiler v0.10.35 on 2025-07-22 15:14:25 GMT+7 #include \u003ciostream\u003e #include \u003cstring\u003e #include \u003cvector\u003e #include \u003cmap\u003e #include \u003cnumeric\u003e #include \u003csstream\u003e #include \u003ciomanip\u003e #include \u003coptional\u003e struct ItemsItem { std::string a; int b; int val; auto",
+      "Value": "\u003e(const ItemsItem\u0026) const = default;\n};\n\nstruct GKey {\n    std::string a;\n    int b;\n    auto operator\u003c=\u003e(const GKey\u0026) const = default;\n};\n\nstruct GGroup {\n    GKey key;\n    std::vector\u003cItemsItem\u003e items;\n    auto operator\u003c=\u003e(const GGroup\u0026) const = default;\n    auto begin() { return items.begin(); }\n    auto end() { return items.end(); }\n    size_t size() const { return items.size(); }\n};\n\nstruct GroupedItem {\n    std::string a;\n    int b;\n    double total;\n    auto operator\u003c=\u003e(const GroupedItem\u0026) const = default;\n};\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const ItemsItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'a': \"\u003c\u003c \"'\" \u003c\u003c v.a \u003c\u003c \"'\"\n \u003c\u003c \", \" \u003c\u003c \"'b': \"\u003c\u003c v.b\n \u003c\u003c \", \" \u003c\u003c \"'val': \"\u003c\u003c v.val\n \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GKey\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'a': \"\u003c\u003c \"'\" \u003c\u003c v.a \u003c\u003c \"'\"\n \u003c\u003c \", \" \u003c\u003c \"'b': \"\u003c\u003c v.b\n \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GGroup\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'key': \"\u003c\u003c v.key\n \u003c\u003c \", \" \u003c\u003c \"'items': \"\u003c\u003c \"[\"; for(size_t i=0;i\u003cv.items.size();++i){ if(i\u003e0) os \u003c\u003c \", \"; os \u003c\u003c v.items[i]; } os \u003c\u003c \"]\"\n \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'a': \"\u003c\u003c \"'\" \u003c\u003c v.a \u003c\u003c \"'\"\n \u003c\u003c \", \" \u003c\u003c \"'b': \"\u003c\u003c v.b\n \u003c\u003c \", \" \u003c\u003c \"'total': \"\u003c\u003c std::fixed \u003c\u003c std::setprecision(1) \u003c\u003c v.total\n \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cItemsItem\u003e items = std::vector{ItemsItem{.a = std::string(\"x\"), .b = 1, .val = 2}, ItemsItem{.a = std::string(\"x\"), .b = 2, .val = 3}, ItemsItem{.a = std::string(\"y\"), .b = 1, .val = 4}, ItemsItem{.a = std::string(\"y\"), .b = 2, .val = 1}};\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\nstd::map\u003cGKey, std::vector\u003cItemsItem\u003e\u003e __groups;\nfor (auto i : items) {\n        ItemsItem __row{i};\n        auto __key = GKey{.a = i.a, .b = i.b};\n        __groups[__key].push_back(__row);\n}\nfor(const auto\u0026 __kv : __groups) {\n    GGroup g{__kv.first, __kv.second};\n    __items.push_back(GroupedItem{.a = g.key.a, .b = g.key.b, .total = ([\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back(x.val"
+    },
+    {
+      "Name": "operator\u003c",
+      "Typ": "// Generated by Mochi transpiler v0.10.35 on 2025-07-22 15:14:25 GMT+7 #include \u003ciostream\u003e #include \u003cstring\u003e #include \u003cvector\u003e #include \u003cmap\u003e #include \u003cnumeric\u003e #include \u003csstream\u003e #include \u003ciomanip\u003e #include \u003coptional\u003e struct ItemsItem { std::string a; int b; int val; auto",
+      "Value": "\u003e(const ItemsItem\u0026) const = default;\n};\n\nstruct GKey {\n    std::string a;\n    int b;\n    auto operator\u003c=\u003e(const GKey\u0026) const = default;\n};\n\nstruct GGroup {\n    GKey key;\n    std::vector\u003cItemsItem\u003e items;\n    auto operator\u003c=\u003e(const GGroup\u0026) const = default;\n    auto begin() { return items.begin(); }\n    auto end() { return items.end(); }\n    size_t size() const { return items.size(); }\n};\n\nstruct GroupedItem {\n    std::string a;\n    int b;\n    double total;\n    auto operator\u003c=\u003e(const GroupedItem\u0026) const = default;\n};\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const ItemsItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'a': \"\u003c\u003c \"'\" \u003c\u003c v.a \u003c\u003c \"'\"\n \u003c\u003c \", \" \u003c\u003c \"'b': \"\u003c\u003c v.b\n \u003c\u003c \", \" \u003c\u003c \"'val': \"\u003c\u003c v.val\n \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GKey\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'a': \"\u003c\u003c \"'\" \u003c\u003c v.a \u003c\u003c \"'\"\n \u003c\u003c \", \" \u003c\u003c \"'b': \"\u003c\u003c v.b\n \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GGroup\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'key': \"\u003c\u003c v.key\n \u003c\u003c \", \" \u003c\u003c \"'items': \"\u003c\u003c \"[\"; for(size_t i=0;i\u003cv.items.size();++i){ if(i\u003e0) os \u003c\u003c \", \"; os \u003c\u003c v.items[i]; } os \u003c\u003c \"]\"\n \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'a': \"\u003c\u003c \"'\" \u003c\u003c v.a \u003c\u003c \"'\"\n \u003c\u003c \", \" \u003c\u003c \"'b': \"\u003c\u003c v.b\n \u003c\u003c \", \" \u003c\u003c \"'total': \"\u003c\u003c std::fixed \u003c\u003c std::setprecision(1) \u003c\u003c v.total\n \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cItemsItem\u003e items = std::vector{ItemsItem{.a = std::string(\"x\"), .b = 1, .val = 2}, ItemsItem{.a = std::string(\"x\"), .b = 2, .val = 3}, ItemsItem{.a = std::string(\"y\"), .b = 1, .val = 4}, ItemsItem{.a = std::string(\"y\"), .b = 2, .val = 1}};\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\nstd::map\u003cGKey, std::vector\u003cItemsItem\u003e\u003e __groups;\nfor (auto i : items) {\n        ItemsItem __row{i};\n        auto __key = GKey{.a = i.a, .b = i.b};\n        __groups[__key].push_back(__row);\n}\nfor(const auto\u0026 __kv : __groups) {\n    GGroup g{__kv.first, __kv.second};\n    __items.push_back(GroupedItem{.a = g.key.a, .b = g.key.b, .total = ([\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back(x.val);\n}\nreturn __items; }()); return std::accumulate(__tmp.begin(), __tmp.end(), 0.0"
+    },
+    {
+      "Name": "grouped",
+      "Typ": "td::vector\u003cGroupedItem\u003e",
+      "Value": "[]"
+    },
+    {
+      "Name": "grouped",
+      "Typ": "td::vector\u003cGroupedItem\u003e",
+      "Value": "[]"
+    },
+    {
+      "Name": "_items.push_back(GroupedItem{.a",
+      "Typ": "",
+      "Value": "g.key.a, .b = g.key.b, .total = ([\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cint\u003e __items"
+    },
+    {
+      "Name": ".total",
+      "Typ": "ey.b,",
+      "Value": "[\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cint\u003e __items"
+    },
+    {
+      "Name": "st",
+      "Typ": "ector\u003cGroupedItem\u003e __items; std::map\u003cGKey,",
+      "Value": ""
+    },
+    {
+      "Name": "fo",
+      "Typ": "tor\u003cItemsItem\u003e\u003e __groups;",
+      "Value": ""
+    },
+    {
+      "Name": "__tmp",
+      "Typ": "t main() { { auto",
+      "Value": "grouped; std::cout \u003c\u003c \"[\"; for(size_t i=0"
+    },
+    {
+      "Name": "items",
+      "Typ": "list\u003cItemsItem\u003e",
+      "Value": "std::vector{ItemsItem{.a = std::string(\"x\"), .b = 1, .val = 2}, ItemsItem{.a = std::string(\"x\"), .b = 2, .val = 3}, ItemsItem{.a = std::string(\"y\"), .b = 1, .val = 4}, ItemsItem{.a = std::string(\"y\"), .b = 2, .val = 1}}"
+    },
+    {
+      "Name": "grouped",
+      "Typ": "list\u003cGroupedItem\u003e",
+      "Value": "[]{ std::vector\u003cGroupedItem\u003e __items;\nstd::map\u003cGKey, std::vector\u003cItemsItem\u003e\u003e __groups;\nfor (auto i : items) {\n        ItemsItem __row{i};\n        auto __key = GKey{.a = i.a, .b = i.b};\n        __groups[__key].push_back(__row);\n}\nfor(const auto\u0026 __kv : __groups) {\n    GGroup g{__kv.first, __kv.second};\n    __items.push_back(GroupedItem{.a = g.key.a, .b = g.key.b, .total = ([\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back(x.val);\n}\nreturn __items; }()); return std::accumulate(__tmp.begin(), __tmp.end(), 0.0); }())});\n}\nreturn __items; }("
+    },
+    {
+      "Name": "std::vector\u003cGroupedItem\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "std::vector\u003cItemsItem\u003e\u003e",
+      "Typ": "std::map\u003cGKey,",
+      "Value": ""
+    },
+    {
+      "Name": "i",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "__row{i}",
+      "Typ": "ItemsItem",
+      "Value": ""
+    },
+    {
+      "Name": "__key",
+      "Typ": "",
+      "Value": "GKey{.a = i.a, .b = i.b}"
+    },
+    {
+      "Name": "__kv",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "__kv.second}",
+      "Typ": "GGroup g{__kv.first,",
+      "Value": ""
+    },
+    {
+      "Name": "__tmp",
+      "Typ": "",
+      "Value": "[\u0026]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back(x.val);\n}\nreturn __items; }("
+    },
+    {
+      "Name": "std::vector\u003cint\u003e",
+      "Typ": "",
+      "Value": ""
+    },
+    {
+      "Name": "x",
+      "Typ": "",
+      "Value": ""
+    }
+  ],
+  "source": "// Generated by Mochi transpiler v0.10.35 on 2025-07-22 15:14:25 GMT+7\n#include \u003ciostream\u003e\n#include \u003cstring\u003e\n#include \u003cvector\u003e\n#include \u003cmap\u003e\n#include \u003cnumeric\u003e\n#include \u003csstream\u003e\n#include \u003ciomanip\u003e\n#include \u003coptional\u003e\n\n\n\nstruct ItemsItem {\n    std::string a;\n    int b;\n    int val;\n    auto operator\u003c=\u003e(const ItemsItem\u0026) const = default;\n};\n\nstruct GKey {\n    std::string a;\n    int b;\n    auto operator\u003c=\u003e(const GKey\u0026) const = default;\n};\n\nstruct GGroup {\n    GKey key;\n    std::vector\u003cItemsItem\u003e items;\n    auto operator\u003c=\u003e(const GGroup\u0026) const = default;\n    auto begin() { return items.begin(); }\n    auto end() { return items.end(); }\n    size_t size() const { return items.size(); }\n};\n\nstruct GroupedItem {\n    std::string a;\n    int b;\n    double total;\n    auto operator\u003c=\u003e(const GroupedItem\u0026) const = default;\n};\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const ItemsItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'a': \"\u003c\u003c \"'\" \u003c\u003c v.a \u003c\u003c \"'\"\n \u003c\u003c \", \" \u003c\u003c \"'b': \"\u003c\u003c v.b\n \u003c\u003c \", \" \u003c\u003c \"'val': \"\u003c\u003c v.val\n \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GKey\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'a': \"\u003c\u003c \"'\" \u003c\u003c v.a \u003c\u003c \"'\"\n \u003c\u003c \", \" \u003c\u003c \"'b': \"\u003c\u003c v.b\n \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GGroup\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'key': \"\u003c\u003c v.key\n \u003c\u003c \", \" \u003c\u003c \"'items': \"\u003c\u003c \"[\"; for(size_t i=0;i\u003cv.items.size();++i){ if(i\u003e0) os \u003c\u003c \", \"; os \u003c\u003c v.items[i]; } os \u003c\u003c \"]\"\n \u003c\u003c '}';\n    return os;\n}\n\nstd::ostream\u0026 operator\u003c\u003c(std::ostream\u0026 os, const GroupedItem\u0026 v) {\n    os \u003c\u003c '{' \u003c\u003c \"'a': \"\u003c\u003c \"'\" \u003c\u003c v.a \u003c\u003c \"'\"\n \u003c\u003c \", \" \u003c\u003c \"'b': \"\u003c\u003c v.b\n \u003c\u003c \", \" \u003c\u003c \"'total': \"\u003c\u003c std::fixed \u003c\u003c std::setprecision(1) \u003c\u003c v.total\n \u003c\u003c '}';\n    return os;\n}\n\nstd::vector\u003cItemsItem\u003e items = std::vector{ItemsItem{.a = std::string(\"x\"), .b = 1, .val = 2}, ItemsItem{.a = std::string(\"x\"), .b = 2, .val = 3}, ItemsItem{.a = std::string(\"y\"), .b = 1, .val = 4}, ItemsItem{.a = std::string(\"y\"), .b = 2, .val = 1}};\nstd::vector\u003cGroupedItem\u003e grouped = ([]{ std::vector\u003cGroupedItem\u003e __items;\nstd::map\u003cGKey, std::vector\u003cItemsItem\u003e\u003e __groups;\nfor (auto i : items) {\n        ItemsItem __row{i};\n        auto __key = GKey{.a = i.a, .b = i.b};\n        __groups[__key].push_back(__row);\n}\nfor(const auto\u0026 __kv : __groups) {\n    GGroup g{__kv.first, __kv.second};\n    __items.push_back(GroupedItem{.a = g.key.a, .b = g.key.b, .total = ([\u0026]{ auto __tmp = ([\u0026]{ std::vector\u003cint\u003e __items;\nfor (auto x : g) {\n        __items.push_back(x.val);\n}\nreturn __items; }()); return std::accumulate(__tmp.begin(), __tmp.end(), 0.0); }())});\n}\nreturn __items; }());\n\nint main() {\n    { auto __tmp = grouped; std::cout \u003c\u003c \"[\"; for(size_t i=0;i\u003c__tmp.size();++i){ if(i\u003e0) std::cout \u003c\u003c \", \"; std::cout \u003c\u003c __tmp[i]; } std::cout \u003c\u003c \"]\"; }\n    std::cout \u003c\u003c std::endl;\n    return 0;\n}\n"
+}
