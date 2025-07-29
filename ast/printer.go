@@ -430,22 +430,18 @@ func exprString(n *Node) string {
 		var sb strings.Builder
 		sb.WriteString("match ")
 		sb.WriteString(exprString(n.Children[0]))
-		sb.WriteString(" { ")
+		sb.WriteString(" {\n")
 		for i := 1; i < len(n.Children); i++ {
 			c := n.Children[i]
-			if i > 1 {
-				sb.WriteString(" ")
-			}
+			sb.WriteString("  ")
 			pat := "_"
 			if len(c.Children) > 0 && c.Children[0].Kind != "_" {
 				pat = exprString(c.Children[0])
 			}
 			sb.WriteString(pat + " => " + exprString(c.Children[len(c.Children)-1]))
-			if i < len(n.Children)-1 {
-				sb.WriteString(",")
-			}
+			sb.WriteString("\n")
 		}
-		sb.WriteString(" }")
+		sb.WriteString("}")
 		return sb.String()
 	case "generate_text":
 		parts := make([]string, len(n.Children))

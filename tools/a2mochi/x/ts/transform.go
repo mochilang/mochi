@@ -419,6 +419,7 @@ func convertConsole(expr string) string {
 	if strings.HasPrefix(inner, "String(") && strings.HasSuffix(inner, ")") {
 		inner = inner[len("String(") : len(inner)-1]
 	}
+	inner = removeStringCasts(inner)
 	if strings.HasPrefix(inner, "\"[\"") && strings.Contains(inner, "]).join") && strings.HasSuffix(inner, "]\"") {
 		start := strings.Index(inner, "[...")
 		end := strings.Index(inner, "]")
@@ -443,6 +444,22 @@ func convertConsole(expr string) string {
 	return "print(" + inner + ")"
 }
 
+func removeStringCasts(s string) string {
+	for {
+		idx := strings.Index(s, "String(")
+		if idx == -1 {
+			break
+		}
+		end := findMatch(s, idx+len("String(")-1, '(', ')')
+		if end == len(s) {
+			break
+		}
+		inner := s[idx+len("String(") : end]
+		s = s[:idx] + inner + s[end+1:]
+	}
+	return s
+}
+
 func convertExpr(expr string) string {
 	if strings.HasPrefix(expr, "console.log(") {
 		return convertConsole(expr)
@@ -459,6 +476,8 @@ func convertExpr(expr string) string {
 
 func convertExprSimple(expr string) string {
 	expr = strings.TrimSpace(expr)
+	expr = removeStringCasts(expr)
+	expr = strings.ReplaceAll(expr, "'undefined'", "\"undefined\"")
 	if strings.HasPrefix(expr, "\"[\"") && strings.Contains(expr, "].join") && strings.HasSuffix(expr, "]\"") {
 		start := strings.Index(expr, "[...")
 		end := strings.Index(expr, "]")
@@ -488,10 +507,7 @@ func convertExprSimple(expr string) string {
 	}
 	if strings.HasPrefix(expr, "+") {
 		inner := strings.TrimSpace(expr[1:])
-		if strings.HasPrefix(inner, "(") && strings.HasSuffix(inner, ")") {
-			inner = strings.TrimSpace(inner[1 : len(inner)-1])
-		}
-		return "match " + inner + " { true -> 1 false -> 0 }"
+		return "match " + inner + " { true => 1 false => 0 }"
 	}
 	if strings.HasPrefix(expr, "String(") && strings.HasSuffix(expr, ")") {
 		return strings.TrimSpace(expr[len("String(") : len(expr)-1])
