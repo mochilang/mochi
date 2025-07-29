@@ -146,6 +146,7 @@ func TestTransform_Golden(t *testing.T) {
 		"short_circuit":       true,
 		"test_block":          true,
 		"two-sum":             true,
+		"cast_string_to_int":  true,
 	}
 
 	if _, err := exec.LookPath("zig"); err != nil {

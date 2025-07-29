@@ -322,6 +322,30 @@ func parseScalarContains(expr string) (string, bool) {
 	return out, true
 }
 
+// parseParseInt converts calls like `std.fmt.parseInt(i64, expr, 10)` optionally
+// followed by a `catch` clause into Mochi cast expressions.
+func parseParseInt(expr string) (string, bool) {
+	expr = strings.TrimSpace(expr)
+	if idx := strings.Index(expr, " catch "); idx >= 0 {
+		expr = strings.TrimSpace(expr[:idx])
+	}
+	const prefix = "std.fmt.parseInt("
+	if !strings.HasPrefix(expr, prefix) || !strings.HasSuffix(expr, ")") {
+		return "", false
+	}
+	inner := strings.TrimSpace(expr[len(prefix) : len(expr)-1])
+	parts := strings.Split(inner, ",")
+	if len(parts) != 3 {
+		return "", false
+	}
+	typ := mapType(strings.TrimSpace(parts[0]))
+	val := transformExpr(strings.TrimSpace(parts[1]))
+	if typ == "" {
+		typ = "any"
+	}
+	return fmt.Sprintf("%s as %s", val, typ), true
+}
+
 func parseSlice(expr string) (string, bool) {
 	idxDots := strings.Index(expr, "..")
 	if idxDots < 0 {
@@ -413,6 +437,9 @@ func transformExpr(expr string) string {
 		return res
 	}
 	if res, ok := parseScalarContains(expr); ok {
+		return res
+	}
+	if res, ok := parseParseInt(expr); ok {
 		return res
 	}
 	if res, ok := parseOrder(expr); ok {
