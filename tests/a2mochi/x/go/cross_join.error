@@ -1,5 +1,0 @@
-error[T026]: unknown field `customerid` on Order
-  --> :20:60
-
-help:
-  Check the struct definition for valid fields.

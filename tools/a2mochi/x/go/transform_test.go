@@ -216,7 +216,7 @@ func TestTransform_Golden(t *testing.T) {
 		"json_builtin":            true,
 		"test_block":              true,
 		"update_stmt":             true,
-		"cross_join":              false,
+                "cross_join":              true,
 		"cross_join_filter":       false,
 		"cross_join_triple":       true,
 		"dataset_sort_take_limit": true,
