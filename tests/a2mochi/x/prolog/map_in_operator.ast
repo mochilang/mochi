@@ -1,0 +1,29 @@
+(program
+  (fun main
+    (let _11766
+      (map
+        (entry (int 1) (string a))
+        (entry (int 2) (string b))
+      )
+    )
+    (if
+      (index (selector _11766) (int 1))
+      (block
+        (call print (bool true))
+      )
+      (block
+        (call print (bool false))
+      )
+    )
+    (if
+      (index (selector _11766) (int 3))
+      (block
+        (call print (bool true))
+      )
+      (block
+        (call print (bool false))
+      )
+    )
+  )
+  (call main)
+)
