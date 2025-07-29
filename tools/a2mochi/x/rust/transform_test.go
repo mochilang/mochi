@@ -118,6 +118,9 @@ func TestTransformGolden(t *testing.T) {
 		"typed_var":      true,
 		"typed_let":      true,
 		"unary_neg":      true,
+		"list_index":     true,
+		"list_assign":    true,
+		"list_set_ops":   true,
 	}
 
 	for _, srcPath := range files {

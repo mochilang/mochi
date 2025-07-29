@@ -824,6 +824,7 @@ func convertRustTree(src string, tree *node) ([]byte, error) {
 			if nameNode == nil {
 				continue
 			}
+			name := strings.TrimSpace(src[nameNode.start:nameNode.end])
 			params := convertParams(src, findChild(c, "PARAM_LIST"))
 			ret := ""
 			if rt := findChild(c, "RET_TYPE"); rt != nil {
@@ -836,12 +837,16 @@ func convertRustTree(src string, tree *node) ([]byte, error) {
 					ret = ""
 				}
 			}
-			header := fmt.Sprintf("fun %s(%s)", strings.TrimSpace(src[nameNode.start:nameNode.end]), strings.Join(params, ", "))
+			body := findChild(findChild(c, "BLOCK_EXPR"), "STMT_LIST")
+			if name == "main" && len(params) == 0 && ret == "" {
+				out = append(out, convertStmts(src, body, 0)...)
+				continue
+			}
+			header := fmt.Sprintf("fun %s(%s)", name, strings.Join(params, ", "))
 			if ret != "" {
 				header += ": " + ret
 			}
 			out = append(out, header+" {")
-			body := findChild(findChild(c, "BLOCK_EXPR"), "STMT_LIST")
 			out = append(out, convertStmts(src, body, 1)...)
 			out = append(out, "}")
 		}
