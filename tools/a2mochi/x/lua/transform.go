@@ -60,12 +60,21 @@ func convertStmtsToNodes(stmts []luaast.Stmt, vars map[string]bool, mut map[stri
 			}
 		case *luaast.AssignStmt:
 			for i, lh := range s.Lhs {
-				name := exprToNode(lh, mut)
+				nameExpr := exprToNode(lh, mut)
 				var val *ast.Node
 				if i < len(s.Rhs) {
 					val = exprToNode(s.Rhs[i], mut)
 				}
-				out = append(out, node("assign", name.Value, val))
+				if id, ok := lh.(*luaast.IdentExpr); ok && !vars[id.Value] {
+					kind := "let"
+					if mut[id.Value] {
+						kind = "var"
+					}
+					out = append(out, node(kind, id.Value, val))
+					vars[id.Value] = true
+				} else {
+					out = append(out, node("assign", nameExpr.Value, val))
+				}
 			}
 		case *luaast.ReturnStmt:
 			if len(s.Exprs) == 0 {
@@ -129,6 +138,7 @@ func convertStmtsToNodes(stmts []luaast.Stmt, vars map[string]bool, mut map[stri
 		case *luaast.FuncDefStmt:
 			name := luaExprString(s.Name.Func, mut)
 			fnNode := node("fun", name)
+			fnNode.Children = append(fnNode.Children, paramNodes(s.Func)...)
 			if rt := inferReturnType(s.Func); rt != "" {
 				fnNode.Children = append(fnNode.Children, node("type", rt))
 			}
@@ -226,6 +236,9 @@ func exprToNode(e luaast.Expr, mut map[string]bool) *ast.Node {
 			if isAvgFunc(fn) && len(v.Args) == 1 {
 				return node("call", "avg", exprToNode(v.Args[0], mut))
 			}
+			if isLenFunc(fn) && len(v.Args) == 1 {
+				return node("call", "len", exprToNode(v.Args[0], mut))
+			}
 		}
 		if (callee == "pairs" || callee == "ipairs") && len(args) == 1 {
 			return exprToNode(v.Args[0], mut)
@@ -309,6 +322,10 @@ func exprToNode(e luaast.Expr, mut map[string]bool) *ast.Node {
 		return n
 	case *luaast.FunctionExpr:
 		n := node("funexpr", nil)
+		n.Children = append(n.Children, paramNodes(v)...)
+		if rt := inferReturnType(v); rt != "" {
+			n.Children = append(n.Children, node("type", rt))
+		}
 		n.Children = append(n.Children, convertStmtsToNodes(v.Stmts, map[string]bool{}, mut)...)
 		return n
 	case *luaast.AttrGetExpr:
@@ -320,6 +337,11 @@ func exprToNode(e luaast.Expr, mut map[string]bool) *ast.Node {
 		}
 		if _, ok := v.Key.(*luaast.IdentExpr); ok {
 			return node("selector", luaExprString(v.Key, mut), exprToNode(v.Object, mut))
+		}
+		if add, ok := v.Key.(*luaast.ArithmeticOpExpr); ok && add.Operator == "+" {
+			if num, ok := add.Rhs.(*luaast.NumberExpr); ok && num.Value == "1" {
+				return node("index", nil, exprToNode(v.Object, mut), exprToNode(add.Lhs, mut))
+			}
 		}
 		return node("index", nil, exprToNode(v.Object, mut), exprToNode(v.Key, mut))
 	case *luaast.TableExpr:
@@ -370,6 +392,28 @@ func inferReturnType(fn *luaast.FunctionExpr) string {
 		}
 	}
 	return ""
+}
+
+func paramNodes(fn *luaast.FunctionExpr) []*ast.Node {
+	var params []string
+	if fn.ParList != nil {
+		params = fn.ParList.Names
+	}
+	types := make(map[string]string)
+	paramSet := make(map[string]bool)
+	for _, n := range params {
+		paramSet[n] = true
+	}
+	collectParamTypes(fn.Stmts, paramSet, types)
+	var out []*ast.Node
+	for _, n := range params {
+		p := node("param", n)
+		if t, ok := types[n]; ok {
+			p.Children = append(p.Children, node("type", t))
+		}
+		out = append(out, p)
+	}
+	return out
 }
 
 func luaNumberString(e luaast.Expr) string {
@@ -898,6 +942,62 @@ func isAvgFunc(fn *luaast.FunctionExpr) bool {
 		}
 	}
 	return hasLoop && hasReturn
+}
+
+func isLenFunc(fn *luaast.FunctionExpr) bool {
+	if fn.ParList == nil || len(fn.ParList.Names) != 1 {
+		return false
+	}
+	found := false
+	var visitExpr func(luaast.Expr)
+	visitExpr = func(e luaast.Expr) {
+		switch v := e.(type) {
+		case *luaast.UnaryLenOpExpr:
+			found = true
+		case *luaast.ArithmeticOpExpr:
+			visitExpr(v.Lhs)
+			visitExpr(v.Rhs)
+		case *luaast.AttrGetExpr:
+			visitExpr(v.Object)
+			visitExpr(v.Key)
+		case *luaast.FuncCallExpr:
+			visitExpr(v.Func)
+			for _, a := range v.Args {
+				visitExpr(a)
+			}
+		}
+	}
+	var visitStmt func(luaast.Stmt)
+	visitStmt = func(s luaast.Stmt) {
+		switch st := s.(type) {
+		case *luaast.ReturnStmt:
+			for _, e := range st.Exprs {
+				visitExpr(e)
+			}
+		case *luaast.AssignStmt:
+			for _, e := range st.Rhs {
+				visitExpr(e)
+			}
+		case *luaast.LocalAssignStmt:
+			for _, e := range st.Exprs {
+				visitExpr(e)
+			}
+		case *luaast.IfStmt:
+			visitExpr(st.Condition)
+			for _, t := range st.Then {
+				visitStmt(t)
+			}
+			for _, e := range st.Else {
+				visitStmt(e)
+			}
+		case *luaast.NumberForStmt, *luaast.GenericForStmt, *luaast.WhileStmt, *luaast.RepeatStmt, *luaast.DoBlockStmt:
+			// ignore for len builtin detection
+		}
+	}
+	for _, st := range fn.Stmts {
+		visitStmt(st)
+	}
+	return found
 }
 
 func tryValuesCall(call *luaast.FuncCallExpr, mut map[string]bool) (string, bool) {
