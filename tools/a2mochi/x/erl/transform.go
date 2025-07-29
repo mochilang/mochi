@@ -16,6 +16,8 @@ var appendRe = regexp.MustCompile(`lists:append\(([^,]+),\s*\[([^\]]+)\]\)`)
 var mapsGetRe = regexp.MustCompile(`maps:get\(([^,]+),\s*([^\)]+)\)`)
 var mapsPutRe = regexp.MustCompile(`maps:put\(([^,]+),\s*([^,]+),\s*([^\)]+)\)`)
 var mapsIsKeyRe = regexp.MustCompile(`maps:is_key\(([^,]+),\s*([^\)]+)\)`)
+var listsMemberRe = regexp.MustCompile(`lists:member\(([^,]+),\s*([^\)]+)\)`)
+var notListsMemberRe = regexp.MustCompile(`not\s+lists:member\(([^,]+),\s*([^\)]+)\)`)
 var stringStrNotZeroRe = regexp.MustCompile(`string:str\(([^,]+),\s*([^\)]+)\)\s*(=/=|/=)\s*0`)
 var stringStrZeroRe = regexp.MustCompile(`string:str\(([^,]+),\s*([^\)]+)\)\s*(=|=:=)\s*0`)
 var substrRe = regexp.MustCompile(`string:substr\(([^,]+),\s*([^,]+?)\s*\+\s*1,\s*([^\)]+)\)`)
@@ -229,6 +231,12 @@ func rewriteLine(ln string, recs []Record) []string {
 		ln = strings.ReplaceAll(ln, "++", "+")
 	}
 	ln = fixPlusNeg(ln)
+	if notListsMemberRe.MatchString(ln) {
+		ln = notListsMemberRe.ReplaceAllString(ln, "!($1 in $2)")
+	}
+	if listsMemberRe.MatchString(ln) {
+		ln = listsMemberRe.ReplaceAllString(ln, "$1 in $2")
+	}
 	if stringStrNotZeroRe.MatchString(ln) {
 		ln = stringStrNotZeroRe.ReplaceAllString(ln, "$1.contains($2)")
 	}
