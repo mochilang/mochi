@@ -1,7 +1,7 @@
 # a2mochi Erlang Converter
 
-Completed programs: 49/103
-Date: 2025-07-29 18:50 GMT+7
+Completed programs: 50/103
+Date: 2025-07-29 21:03 GMT+7
 
 This directory stores golden files for the Erlang to Mochi converter.
 
@@ -100,7 +100,7 @@ This directory stores golden files for the Erlang to Mochi converter.
 - [ ] tail_recursion
 - [ ] test_block
 - [ ] tree_sum
-- [ ] two-sum
+- [x] two-sum
 - [ ] typed_let
 - [ ] typed_var
 - [x] unary_neg

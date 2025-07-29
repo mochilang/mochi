@@ -66,6 +66,9 @@ func runMochi(src string) ([]byte, error) {
 
 func transformFile(t *testing.T, root, outDir, srcPath string) {
 	name := strings.TrimSuffix(filepath.Base(srcPath), ".erl")
+	errPath := filepath.Join(outDir, name+".error")
+	os.Remove(errPath)
+
 	data, err := os.ReadFile(srcPath)
 	if err != nil {
 		t.Fatalf("read src: %v", err)
@@ -73,18 +76,22 @@ func transformFile(t *testing.T, root, outDir, srcPath string) {
 	code := string(data)
 	prog, err := erl.Parse(code)
 	if err != nil {
+		os.WriteFile(errPath, []byte(fmt.Sprintf("parse: %v", err)), 0o644)
 		t.Fatalf("parse: %v", err)
 	}
 	node, err := erl.Transform(prog)
 	if err != nil {
+		os.WriteFile(errPath, []byte(fmt.Sprintf("transform: %v", err)), 0o644)
 		t.Fatalf("transform: %v", err)
 	}
 	src, err := erl.Print(node)
 	if err != nil {
+		os.WriteFile(errPath, []byte(fmt.Sprintf("print source: %v", err)), 0o644)
 		t.Fatalf("print source: %v", err)
 	}
 	var buf bytes.Buffer
 	if err := ast.Fprint(&buf, node); err != nil {
+		os.WriteFile(errPath, []byte(fmt.Sprintf("print ast: %v", err)), 0o644)
 		t.Fatalf("print: %v", err)
 	}
 	t.Log(buf.String())
@@ -94,6 +101,7 @@ func transformFile(t *testing.T, root, outDir, srcPath string) {
 	}
 	gotOut, err := runMochi(src)
 	if err != nil {
+		os.WriteFile(errPath, []byte(fmt.Sprintf("run: %v", err)), 0o644)
 		t.Fatalf("run: %v", err)
 	}
 	if *update {
@@ -101,13 +109,16 @@ func transformFile(t *testing.T, root, outDir, srcPath string) {
 	}
 	vmSrc, err := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
 	if err != nil {
+		os.WriteFile(errPath, []byte(fmt.Sprintf("missing vm source: %v", err)), 0o644)
 		t.Fatalf("missing vm source: %v", err)
 	}
 	wantOut, err := runMochi(string(vmSrc))
 	if err != nil {
+		os.WriteFile(errPath, []byte(fmt.Sprintf("run vm: %v", err)), 0o644)
 		t.Fatalf("run vm: %v", err)
 	}
 	if !bytes.Equal(gotOut, wantOut) {
+		os.WriteFile(errPath, []byte(fmt.Sprintf("output mismatch: got %s want %s", gotOut, wantOut)), 0o644)
 		t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
 	}
 }
@@ -180,6 +191,7 @@ func TestTransform_Golden(t *testing.T) {
 		"typed_let":           false,
 		"test_block":          false,
 		"math_ops":            false,
+		"two-sum":             true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "erl")
 	os.MkdirAll(outDir, 0o755)
@@ -207,9 +219,17 @@ func updateReadme() {
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".erl")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
-			compiled++
-			mark = "[x]"
+		outPath := filepath.Join(outDir, name+".out")
+		vmPath := filepath.Join(root, "tests", "vm", "valid", name+".mochi")
+		if data, err := os.ReadFile(outPath); err == nil {
+			wantData, werr := os.ReadFile(vmPath)
+			if werr == nil {
+				wantOut, werr := runMochi(string(wantData))
+				if werr == nil && bytes.Equal(bytes.TrimSpace(data), wantOut) {
+					compiled++
+					mark = "[x]"
+				}
+			}
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}

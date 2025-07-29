@@ -27,7 +27,8 @@ var caseIfRe = regexp.MustCompile(`case\s+(.+?)\s+of\s+true\s*->\s*(.+?);\s*(?:_
 var printCallRe = regexp.MustCompile(`io:(?:format|fwrite)\("~[sp]~n",\s*\[(.+?)\]\)`)
 var foreachRe = regexp.MustCompile(`^lists:foreach\(fun\(([^)]*)\)\s*->\s*(.*?)\s*end,\s*(.+)\)$`)
 var lambdaRe = regexp.MustCompile(`^fun\(([^)]*)\)\s*->\s*(.+)\s*end$`)
-var seqRangeRe = regexp.MustCompile(`lists:seq\(1,\s*([^\)]+)\s*-\s*1\)`)
+var seqRangeRe = regexp.MustCompile(`lists:seq\(([^,]+),\s*([^\)]+)\s*-\s*1\)`)
+var throwReturnRe = regexp.MustCompile(`^throw\(\{return,\s*(.+)\}\)$`)
 var listAssignRe = regexp.MustCompile(`^lists:sublist\(([^,]+),\s*([^,\)]+)\)\s*\+\+\s*\[([^\]]+)\]\s*\+\+\s*lists:nthtail\(([^,]+),\s*([^\)]+)\)$`)
 var listsAnyRe = regexp.MustCompile(`lists:any\(fun\(([^)]*)\)\s*->\s*(.+?)\s*end,\s*([^\)]+)\)`)
 var listsSublistCall = "lists:sublist("
@@ -113,6 +114,21 @@ func formatProgram(p *Program) (string, error) {
 		}
 		boolReturn := false
 		returnType := ""
+		paramType := make(map[string]string)
+		for _, line := range f.Body {
+			if strings.Contains(line, "lists:nth(") {
+				for _, p := range f.Params {
+					if strings.Contains(line, ", "+p+")") {
+						paramType[p] = "list<int>"
+					}
+				}
+			}
+		}
+		for _, p := range f.Params {
+			if p == "Target" {
+				paramType[p] = "int"
+			}
+		}
 		if len(f.Body) > 0 {
 			last := strings.TrimSpace(f.Body[len(f.Body)-1])
 			lines := rewriteLine(strings.ReplaceAll(last, "\n", " "), p.Records)
@@ -124,6 +140,10 @@ func formatProgram(p *Program) (string, error) {
 				boolReturn = true
 			} else if strings.HasPrefix(rewritten, "return fun(") {
 				returnType = "fun(any): any"
+			} else if strings.HasPrefix(rewritten, "return [") {
+				returnType = "list<int>"
+			} else if strings.HasPrefix(rewritten, "[") && strings.HasSuffix(rewritten, "]") {
+				returnType = "list<int>"
 			} else if strings.HasPrefix(rewritten, "return ") {
 				boolReturn = true
 			}
@@ -134,7 +154,11 @@ func formatProgram(p *Program) (string, error) {
 			}
 			funLine += p
 			if p != "_" {
-				funLine += ": any"
+				if t, ok := paramType[p]; ok {
+					funLine += ": " + t
+				} else {
+					funLine += ": any"
+				}
 			}
 		}
 		funLine += ")"
@@ -177,7 +201,32 @@ func formatProgram(p *Program) (string, error) {
 }
 
 func rewriteLine(ln string, recs []Record) []string {
-	ln = strings.TrimSuffix(strings.TrimSpace(ln), ",")
+	ln = strings.TrimSpace(ln)
+	ln = strings.TrimSuffix(ln, ",")
+	ln = strings.TrimSuffix(ln, ";")
+	ln = strings.TrimSuffix(ln, ".")
+
+	if strings.HasPrefix(ln, "try ") && strings.HasSuffix(ln, " end") && strings.Contains(ln, " catch ") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(ln, "try "), " end")
+		parts := strings.SplitN(inner, " catch ", 2)
+		body := strings.TrimSpace(parts[0])
+		exprs := splitTop(body)
+		var out []string
+		for _, e := range exprs {
+			out = append(out, rewriteLine(e, recs)...)
+		}
+		return out
+	}
+
+	exprs := splitTop(ln)
+	if len(exprs) > 1 {
+		var out []string
+		for _, e := range exprs {
+			out = append(out, rewriteLine(e, recs)...)
+		}
+		return out
+	}
+	ln = strings.TrimSpace(ln)
 	prefix := ""
 	if m := assignRe.FindStringSubmatch(ln); m != nil {
 		expr := strings.TrimSpace(m[2])
@@ -199,6 +248,12 @@ func rewriteLine(ln string, recs []Record) []string {
 		}
 		prefix = "let " + m[1] + " = "
 		ln = expr
+	}
+	if ln == "ok" {
+		return nil
+	}
+	if m := throwReturnRe.FindStringSubmatch(ln); m != nil {
+		return []string{"return " + strings.TrimSpace(m[1])}
 	}
 	if strings.HasPrefix(ln, "io:format(") {
 		ln = strings.TrimPrefix(ln, "io:format(")
@@ -282,7 +337,26 @@ func rewriteLine(ln string, recs []Record) []string {
 	if printCallRe.MatchString(ln) {
 		ln = printCallRe.ReplaceAllString(ln, "print($1)")
 	}
-	if foreachRe.MatchString(ln) {
+	if p, b, iter, ok := parseForeach(ln); ok {
+		blines := rewriteLine(b, recs)
+		body := ""
+		if len(blines) > 0 {
+			body = blines[len(blines)-1]
+		}
+		if strings.HasPrefix(iter, "maps:keys(") && strings.HasSuffix(iter, ")") {
+			iter = strings.TrimSuffix(strings.TrimPrefix(iter, "maps:keys("), ")")
+		}
+		if seqRangeRe.MatchString(iter) {
+			im := seqRangeRe.FindStringSubmatch(iter)
+			start := strings.TrimSpace(im[1])
+			end := strings.TrimSpace(im[2])
+			iter = start + ".." + end
+		}
+		ln = fmt.Sprintf("for %s in %s { %s }", strings.TrimSpace(p), iter, body)
+		if m := throwReturnRe.FindStringSubmatch(ln); m != nil {
+			return []string{"return " + strings.TrimSpace(m[1])}
+		}
+	} else if foreachRe.MatchString(ln) {
 		m := foreachRe.FindStringSubmatch(ln)
 		body := strings.TrimSpace(m[2])
 		blines := rewriteLine(body, recs)
@@ -295,9 +369,14 @@ func rewriteLine(ln string, recs []Record) []string {
 		}
 		if seqRangeRe.MatchString(iter) {
 			im := seqRangeRe.FindStringSubmatch(iter)
-			iter = "1.." + strings.TrimSpace(im[1])
+			start := strings.TrimSpace(im[1])
+			end := strings.TrimSpace(im[2])
+			iter = start + ".." + end
 		}
 		ln = fmt.Sprintf("for %s in %s { %s }", strings.TrimSpace(m[1]), iter, body)
+		if m := throwReturnRe.FindStringSubmatch(ln); m != nil {
+			return []string{"return " + strings.TrimSpace(m[1])}
+		}
 	}
 	if listsAnyRe.MatchString(ln) {
 		m := listsAnyRe.FindStringSubmatch(ln)
@@ -313,7 +392,9 @@ func rewriteLine(ln string, recs []Record) []string {
 		iter := strings.TrimSpace(m[3])
 		if seqRangeRe.MatchString(iter) {
 			im := seqRangeRe.FindStringSubmatch(iter)
-			iter = "1.." + strings.TrimSpace(im[1])
+			start := strings.TrimSpace(im[1])
+			end := strings.TrimSpace(im[2])
+			iter = start + ".." + end
 		}
 		ln = fmt.Sprintf("any(%s, fun(%s): any => %s)", iter, param, body)
 	}
@@ -334,7 +415,19 @@ func rewriteLine(ln string, recs []Record) []string {
 		ln = caseIfRe.ReplaceAllStringFunc(ln, func(s string) string {
 			m := caseIfRe.FindStringSubmatch(s)
 			if len(m) == 4 {
-				return fmt.Sprintf("if %s { %s } else { %s }", strings.TrimSpace(m[1]), strings.TrimSpace(m[2]), strings.TrimSpace(m[3]))
+				cond := strings.TrimSpace(m[1])
+				tbranch := strings.TrimSpace(m[2])
+				fbranch := strings.TrimSpace(m[3])
+				if tt := throwReturnRe.FindStringSubmatch(tbranch); tt != nil {
+					tbranch = "return " + strings.TrimSpace(tt[1])
+				}
+				if ff := throwReturnRe.FindStringSubmatch(fbranch); ff != nil {
+					fbranch = "return " + strings.TrimSpace(ff[1])
+				}
+				if fbranch == "ok" {
+					return fmt.Sprintf("if %s { %s }", cond, tbranch)
+				}
+				return fmt.Sprintf("if %s { %s } else { %s }", cond, tbranch, fbranch)
 			}
 			return s
 		})
@@ -567,4 +660,59 @@ func splitArgs(s string, n int) []string {
 		parts = append(parts, s[last:])
 	}
 	return parts
+}
+
+func splitTop(s string) []string {
+	parts := []string{}
+	depth := 0
+	last := 0
+	for i := 0; i < len(s); i++ {
+		switch s[i] {
+		case '(', '[', '{':
+			depth++
+		case ')', ']', '}':
+			if depth > 0 {
+				depth--
+			}
+		case ',':
+			if depth == 0 {
+				parts = append(parts, strings.TrimSpace(s[last:i]))
+				last = i + 1
+			}
+		}
+	}
+	if last < len(s) {
+		parts = append(parts, strings.TrimSpace(s[last:]))
+	}
+	return parts
+}
+
+func parseForeach(s string) (param, body, iter string, ok bool) {
+	s = strings.TrimSpace(s)
+	if !strings.HasPrefix(s, "lists:foreach(") || !strings.HasSuffix(s, ")") {
+		return
+	}
+	inner := s[len("lists:foreach(") : len(s)-1]
+	args := splitArgs(inner, 2)
+	if len(args) != 2 {
+		return
+	}
+	funPart := strings.TrimSpace(args[0])
+	if !strings.HasPrefix(funPart, "fun(") || !strings.HasSuffix(funPart, "end") {
+		return
+	}
+	funPart = strings.TrimSuffix(funPart, "end")
+	funPart = strings.TrimSpace(funPart[len("fun("):])
+	idx := strings.Index(funPart, ")")
+	if idx == -1 {
+		return
+	}
+	param = strings.TrimSpace(funPart[:idx])
+	body = strings.TrimSpace(funPart[idx+1:])
+	if strings.HasPrefix(body, "->") {
+		body = strings.TrimSpace(body[2:])
+	}
+	iter = strings.TrimSpace(args[1])
+	ok = true
+	return
 }
