@@ -1,7 +1,7 @@
 package scheme
 
 import (
-	sitter "github.com/smacker/go-tree-sitter"
+	sitter "github.com/tree-sitter/go-tree-sitter"
 	tsscheme "github.com/tree-sitter/tree-sitter-scheme/bindings/go"
 )
 
@@ -10,6 +10,6 @@ import (
 func Inspect(src string) (*Program, error) {
 	p := sitter.NewParser()
 	p.SetLanguage(sitter.NewLanguage(tsscheme.Language()))
-	tree := p.Parse(nil, []byte(src))
+	tree := p.Parse([]byte(src), nil)
 	return convertProgram(tree.RootNode(), []byte(src)), nil
 }
