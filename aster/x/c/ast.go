@@ -4,6 +4,12 @@ import (
 	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
+// IncludePos controls whether positional information should be recorded when
+// converting tree-sitter nodes. When false (the default) the position fields
+// remain zero and are omitted from the marshalled JSON due to the `omitempty`
+// struct tags.
+var IncludePos bool
+
 // Node represents a tree-sitter node with byte offsets and optional text.
 // Node represents a simplified syntax tree node. Only nodes that carry useful
 // textual values are kept in the tree. Position information is stored using
