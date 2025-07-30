@@ -11,6 +11,7 @@ type Node struct {
 	Kind     string  `json:"kind"`
 	Start    int     `json:"start"`
 	End      int     `json:"end"`
+	Text     string  `json:"text,omitempty"`
 	Children []*Node `json:"children,omitempty"`
 }
 
@@ -21,7 +22,7 @@ type SourceFile struct {
 
 // convertNode transforms a tree-sitter node into the Go AST representation.
 // The conversion is recursive and ignores anonymous children.
-func convertNode(n *sitter.Node) *Node {
+func convertNode(n *sitter.Node, src []byte) *Node {
 	if n == nil {
 		return nil
 	}
@@ -30,18 +31,21 @@ func convertNode(n *sitter.Node) *Node {
 		Start: int(n.StartByte()),
 		End:   int(n.EndByte()),
 	}
+	if n.ChildCount() == 0 {
+		out.Text = n.Content(src)
+	}
 	for i := 0; i < int(n.NamedChildCount()); i++ {
 		child := n.NamedChild(i)
-		out.Children = append(out.Children, convertNode(child))
+		out.Children = append(out.Children, convertNode(child, src))
 	}
 	return out
 }
 
 // ConvertFile converts the tree-sitter root node of a Swift file into a
 // SourceFile AST value.
-func ConvertFile(n *sitter.Node) *SourceFile {
+func ConvertFile(n *sitter.Node, src []byte) *SourceFile {
 	if n == nil {
 		return nil
 	}
-	return &SourceFile{Node: *convertNode(n)}
+	return &SourceFile{Node: *convertNode(n, src)}
 }
