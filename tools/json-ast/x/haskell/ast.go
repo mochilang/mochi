@@ -20,6 +20,54 @@ type Node struct {
 	Children []Node `json:"children,omitempty"`
 }
 
+// A set of concrete node types mirroring the kinds present in the JSON
+// representation.  They simply embed Node so the JSON layout stays the same
+// while providing a richer type structure in Go code.
+type (
+	Haskell           Node
+	Pragma            Node
+	Imports           Node
+	Import            Node
+	ImportList        Node
+	ImportName        Node
+	Module            Node
+	ModuleID          Node
+	Declarations      Node
+	DataType          Node
+	DataConstructors  Node
+	DataConstructor   Node
+	Deriving          Node
+	Signature         Node
+	Infix             Node
+	Bind              Node
+	Lambda            Node
+	Patterns          Node
+	Match             Node
+	Do                Node
+	Apply             Node
+	Generator         Node
+	Qualifiers        Node
+	Record            Node
+	Field             Node
+	FieldName         Node
+	FieldUpdate       Node
+	Fields            Node
+	Projection        Node
+	List              Node
+	ListComprehension Node
+	Parens            Node
+	Exp               Node
+	Literal           Node
+	Comment           Node
+	Constructor       Node
+	Integer           Node
+	Name              Node
+	Operator          Node
+	String            Node
+	Unit              Node
+	Variable          Node
+)
+
 // convert transforms a tree-sitter node into the Node structure defined above.
 // Only named children are traversed to keep the result compact.
 func convert(n *sitter.Node, src []byte, pos bool) *Node {
