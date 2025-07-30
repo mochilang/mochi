@@ -1,7 +1,34 @@
+Warning: Undefined variable $echo in /workspace/mochi/tests/rosetta/transpiler/php/extend-your-language.php on line 50
+
+Warning: Undefined variable $rtrim in /workspace/mochi/tests/rosetta/transpiler/php/extend-your-language.php on line 50
+
+Warning: Undefined variable $echo in /workspace/mochi/tests/rosetta/transpiler/php/extend-your-language.php on line 53
+
+Warning: Undefined variable $rtrim in /workspace/mochi/tests/rosetta/transpiler/php/extend-your-language.php on line 53
+
+Warning: Undefined variable $echo in /workspace/mochi/tests/rosetta/transpiler/php/extend-your-language.php on line 56
+
+Warning: Undefined variable $rtrim in /workspace/mochi/tests/rosetta/transpiler/php/extend-your-language.php on line 56
+
+Warning: Undefined variable $echo in /workspace/mochi/tests/rosetta/transpiler/php/extend-your-language.php on line 59
+
+Warning: Undefined variable $rtrim in /workspace/mochi/tests/rosetta/transpiler/php/extend-your-language.php on line 59
 a <> 1 and b <> 3
+
+Warning: Undefined variable $echo in /workspace/mochi/tests/rosetta/transpiler/php/extend-your-language.php on line 64
+
+Warning: Undefined variable $rtrim in /workspace/mochi/tests/rosetta/transpiler/php/extend-your-language.php on line 64
+
+Warning: Undefined variable $echo in /workspace/mochi/tests/rosetta/transpiler/php/extend-your-language.php on line 67
+
+Warning: Undefined variable $rtrim in /workspace/mochi/tests/rosetta/transpiler/php/extend-your-language.php on line 67
+
+Warning: Undefined variable $echo in /workspace/mochi/tests/rosetta/transpiler/php/extend-your-language.php on line 70
+
+Warning: Undefined variable $rtrim in /workspace/mochi/tests/rosetta/transpiler/php/extend-your-language.php on line 70
 a = 1 and b <> 3
 {
-  "duration_us": 27,
-  "memory_bytes": 568,
+  "duration_us": 233,
+  "memory_bytes": 624,
   "name": "main"
 }

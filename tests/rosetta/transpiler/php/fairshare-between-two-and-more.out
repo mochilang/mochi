@@ -10,7 +10,7 @@ How many times does each get a turn in 50000 iterations?
   With 50000 people: 1
   With 50001 people: only 50000 have a turn
 {
-  "duration_us": 5491371,
+  "duration_us": 5357892,
   "memory_bytes": 96,
   "name": "main"
 }

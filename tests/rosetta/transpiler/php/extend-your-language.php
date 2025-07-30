@@ -47,27 +47,27 @@ $__start = _now();
 };
   $a = 0;
   $b = 1;
-  $t = if2($a == 1, $b == 3, function() {
+  $t = if2($a == 1, $b == 3, function() use ($echo, $rtrim) {
   echo rtrim('a = 1 and b = 3'), PHP_EOL;
 });
-  $t = else1($t, function() {
+  $t = else1($t, function() use ($echo, $rtrim) {
   echo rtrim('a = 1 and b <> 3'), PHP_EOL;
 });
-  $t = else2($t, function() {
+  $t = else2($t, function() use ($echo, $rtrim) {
   echo rtrim('a <> 1 and b = 3'), PHP_EOL;
 });
-  else0($t, function() {
+  else0($t, function() use ($echo, $rtrim) {
   echo rtrim('a <> 1 and b <> 3'), PHP_EOL;
 });
   $a = 1;
   $b = 0;
-  $t = if2($a == 1, $b == 3, function() {
+  $t = if2($a == 1, $b == 3, function() use ($echo, $rtrim) {
   echo rtrim('a = 1 and b = 3'), PHP_EOL;
 });
-  $t = else0($t, function() {
+  $t = else0($t, function() use ($echo, $rtrim) {
   echo rtrim('a <> 1 and b <> 3'), PHP_EOL;
 });
-  else1($t, function() {
+  else1($t, function() use ($echo, $rtrim) {
   echo rtrim('a = 1 and b <> 3'), PHP_EOL;
 });
 $__end = _now();
