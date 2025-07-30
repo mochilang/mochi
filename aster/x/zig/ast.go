@@ -38,9 +38,6 @@ type (
 	InitList        Node
 )
 
-// SourceFile is the root of a Zig program.
-type SourceFile struct{ Node }
-
 // Options control how the AST is produced.
 type Options struct {
 	// Positions includes line/column information when true.
