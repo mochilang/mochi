@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-31 00:31 GMT+7
+Last updated: 2025-07-31 00:50 GMT+7
 
-## Rosetta Golden Test Checklist (473/491)
+## Rosetta Golden Test Checklist (476/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 105.0µs | 12.55MB |
@@ -317,7 +317,7 @@ Last updated: 2025-07-31 00:31 GMT+7
 | 308 | distance-and-bearing | ✓ | 422.0µs | 14.59MB |
 | 309 | distributed-programming | ✓ | 11.0µs | 12.42MB |
 | 310 | diversity-prediction-theorem | ✓ | 35.0µs | 13.19MB |
-| 311 | dns-query |   |  |  |
+| 311 | dns-query | ✓ | 935.0ms | 12.56MB |
 | 312 | documentation | ✓ | 2.0µs | 11.60MB |
 | 313 | doomsday-rule | ✓ | 51.0µs | 13.06MB |
 | 314 | dot-product | ✓ | 12.0µs | 12.62MB |
@@ -331,12 +331,12 @@ Last updated: 2025-07-31 00:31 GMT+7
 | 322 | draw-a-pixel-1 | ✓ | 66.0ms | 12.34MB |
 | 323 | draw-a-rotating-cube | ✓ | 2.0ms | 13.48MB |
 | 324 | draw-a-sphere | ✓ | 17.0ms | 12.73MB |
-| 325 | duffinian-numbers |   |  |  |
+| 325 | duffinian-numbers | ✓ | 190.0ms | 13.94MB |
 | 326 | dutch-national-flag-problem | ✓ | 34.0µs | 13.29MB |
 | 327 | dynamic-variable-names | ✓ |  |  |
 | 328 | earliest-difference-between-prime-gaps | ✓ | 118.0µs | 12.93MB |
 | 329 | eban-numbers | ✓ | 38.0ms | 12.89MB |
-| 330 | ecdsa-example |   |  |  |
+| 330 | ecdsa-example | ✓ | 49.0µs | 12.50MB |
 | 331 | echo-server | ✓ | 14.0µs | 12.42MB |
 | 332 | eertree |   |  |  |
 | 333 | egyptian-division | ✓ | 21.0µs | 12.48MB |

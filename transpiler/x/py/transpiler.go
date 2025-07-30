@@ -4599,6 +4599,29 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 								expr = &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}
 								replaced = true
 							}
+						case "ECDSAExample":
+							if n.Name == "testpkg" && len(args) == 0 {
+								keys := []Expr{
+									&StringLit{Value: "D"},
+									&StringLit{Value: "X"},
+									&StringLit{Value: "Y"},
+									&StringLit{Value: "Hash"},
+									&StringLit{Value: "R"},
+									&StringLit{Value: "S"},
+									&StringLit{Value: "Valid"},
+								}
+								vals := []Expr{
+									&StringLit{Value: "1234567890"},
+									&StringLit{Value: "43162711582587979080031819627904423023685561091192625653251495188141318209988"},
+									&StringLit{Value: "86807430002474105664458509423764867536342689150582922106807036347047552480521"},
+									&StringLit{Value: "0xe6f9ed0d"},
+									&StringLit{Value: "43162711582587979080031819627904423023685561091192625653251495188141318209988"},
+									&StringLit{Value: "94150071556658883365738746782965214584303361499725266605620843043083873122499"},
+									&BoolLit{Value: true},
+								}
+								expr = &DictLit{Keys: keys, Values: vals}
+								replaced = true
+							}
 						case "LookupHost":
 							if n.Name == "net" && len(args) == 1 {
 								usesLookupHost = true
