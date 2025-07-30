@@ -20,14 +20,14 @@ require (
 	github.com/tliron/commonlog v0.2.20
 	github.com/tliron/glsp v0.2.2
 	github.com/tree-sitter/go-tree-sitter v0.25.0
-	github.com/tree-sitter/tree-sitter-c v0.23.4
+	github.com/tree-sitter/tree-sitter-c v0.24.1
 	github.com/tree-sitter/tree-sitter-c-sharp v0.23.1
 	github.com/tree-sitter/tree-sitter-cpp v0.23.4
 	github.com/tree-sitter/tree-sitter-go v0.23.4
 	github.com/tree-sitter/tree-sitter-haskell v0.23.1
 	github.com/tree-sitter/tree-sitter-java v0.23.5
 	github.com/tree-sitter/tree-sitter-ocaml v0.24.2
-	github.com/tree-sitter/tree-sitter-php v0.23.11
+	github.com/tree-sitter/tree-sitter-php v0.23.12
 	github.com/tree-sitter/tree-sitter-python v0.23.6
 	github.com/tree-sitter/tree-sitter-ruby v0.23.1
 	github.com/tree-sitter/tree-sitter-typescript v0.23.2
@@ -41,16 +41,23 @@ require (
 
 replace github.com/tree-sitter/tree-sitter-scheme => github.com/6cdh/tree-sitter-scheme v0.24.7
 
+replace github.com/tree-sitter/tree-sitter-fsharp => github.com/ionide/tree-sitter-fsharp v0.1.0
+
+replace github.com/tree-sitter/tree-sitter-racket => github.com/6cdh/tree-sitter-racket v0.24.7
+
+
 require github.com/tree-sitter/tree-sitter-scala v0.24.0
 
 require (
-        github.com/tree-sitter-grammars/tree-sitter-lua v0.3.0
-        github.com/tree-sitter/tree-sitter-scheme v0.24.7
+	github.com/tree-sitter-grammars/tree-sitter-lua v0.4.0
+	github.com/tree-sitter/tree-sitter-scheme v0.24.7
 )
 
-require github.com/smacker/go-tree-sitter v0.0.0-20240827094217-dd81d9e9be82 // indirect
+require github.com/smacker/go-tree-sitter v0.0.0-20240827094217-dd81d9e9be82
 
-require github.com/tree-sitter/tree-sitter-elixir v0.3.4 // indirect
+require (
+	github.com/tree-sitter/tree-sitter-elixir v0.3.4
+)
 
 require (
 	github.com/alexflint/go-scalar v1.2.0 // indirect
@@ -99,7 +106,7 @@ require (
 	github.com/spf13/cast v1.9.2 // indirect
 	github.com/spf13/pflag v1.0.7 // indirect
 	github.com/tliron/kutil v0.3.27 // indirect
-	github.com/tree-sitter/tree-sitter-rust v0.23.2
+	github.com/tree-sitter/tree-sitter-rust v0.24.0
 	github.com/wk8/go-ordered-map/v2 v2.1.8 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
