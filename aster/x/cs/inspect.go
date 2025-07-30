@@ -3,8 +3,8 @@ package cs
 import (
 	"encoding/json"
 
-	sitter "github.com/smacker/go-tree-sitter"
-	csharp "github.com/smacker/go-tree-sitter/csharp"
+	sitter "github.com/tree-sitter/go-tree-sitter"
+	csharp "github.com/tree-sitter/tree-sitter-c-sharp/bindings/go"
 )
 
 // Program is defined in ast.go and composes Node values.
@@ -15,9 +15,9 @@ import (
 // true the returned AST includes position information.
 func Inspect(src string, withPos bool) (*Program, error) {
 	p := sitter.NewParser()
-	p.SetLanguage(csharp.GetLanguage())
+	p.SetLanguage(sitter.NewLanguage(csharp.Language()))
 	data := []byte(src)
-	tree := p.Parse(nil, data)
+	tree := p.Parse(data, nil)
 	return &Program{File: (*CompilationUnit)(toNode(tree.RootNode(), data, withPos))}, nil
 }
 
