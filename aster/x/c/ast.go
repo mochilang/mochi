@@ -1,7 +1,7 @@
 package c
 
 import (
-	sitter "github.com/smacker/go-tree-sitter"
+	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
 // Node represents a tree-sitter node with byte offsets and optional text.
@@ -56,10 +56,10 @@ func convert(n *sitter.Node, src []byte, pos bool) *Node {
 	if n == nil {
 		return nil
 	}
-	node := &Node{Kind: n.Type()}
+	node := &Node{Kind: n.Kind()}
 	if pos {
-		start := n.StartPoint()
-		end := n.EndPoint()
+		start := n.StartPosition()
+		end := n.EndPosition()
 		node.Start = int(start.Row) + 1
 		node.StartCol = int(start.Column)
 		node.End = int(end.Row) + 1
@@ -67,10 +67,10 @@ func convert(n *sitter.Node, src []byte, pos bool) *Node {
 	}
 
 	if n.NamedChildCount() == 0 {
-		if isValueNode(n.Type()) {
-			node.Text = n.Content(src)
+		if isValueNode(n.Kind()) {
+			node.Text = n.Utf8Text(src)
 		} else if node.Kind == "comment" {
-			node.Text = n.Content(src)
+			node.Text = n.Utf8Text(src)
 		} else {
 			// skip pure syntax leaves
 			return nil
@@ -78,7 +78,7 @@ func convert(n *sitter.Node, src []byte, pos bool) *Node {
 	}
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
-		child := n.NamedChild(i)
+		child := n.NamedChild(uint(i))
 		if child == nil {
 			continue
 		}

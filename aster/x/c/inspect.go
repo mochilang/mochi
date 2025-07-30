@@ -3,10 +3,9 @@ package c
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 
-	sitter "github.com/smacker/go-tree-sitter"
-	ts "github.com/smacker/go-tree-sitter/c"
+	sitter "github.com/tree-sitter/go-tree-sitter"
+	tsc "github.com/tree-sitter/tree-sitter-c/bindings/go"
 )
 
 // Program is the root of a parsed C translation unit.
@@ -30,11 +29,8 @@ func InspectWithPositions(src string) (*Program, error) {
 
 func inspect(src string, pos bool) (*Program, error) {
 	parser := sitter.NewParser()
-	parser.SetLanguage(ts.GetLanguage())
-	tree, err := parser.ParseCtx(context.Background(), nil, []byte(src))
-	if err != nil {
-		return nil, fmt.Errorf("parse: %w", err)
-	}
+	parser.SetLanguage(sitter.NewLanguage(tsc.Language()))
+	tree := parser.ParseCtx(context.Background(), []byte(src), nil)
 	root := convert(tree.RootNode(), []byte(src), pos)
 	return &Program{Root: (*TranslationUnit)(root)}, nil
 }
