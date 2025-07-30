@@ -11,7 +11,6 @@ import (
 	"strings"
 	"testing"
 
-	javacode "mochi/compiler/x/java"
 	javaast "mochi/tools/json-ast/x/java"
 )
 
@@ -36,14 +35,7 @@ func repoRoot(t *testing.T) string {
 	return ""
 }
 
-func ensureJava(t *testing.T) {
-	if err := javacode.EnsureJavac(); err != nil {
-		t.Skipf("javac not installed: %v", err)
-	}
-}
-
 func TestInspect_Golden(t *testing.T) {
-	ensureJava(t)
 	root := repoRoot(t)
 	srcDir := filepath.Join(root, "tests", "transpiler", "x", "java")
 	outDir := filepath.Join(root, "tests", "json-ast", "x", "java")
