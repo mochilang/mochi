@@ -9,7 +9,7 @@ import (
 
 // Program represents a parsed Kotlin source file.
 type Program struct {
-	File *SourceFile `json:"file"`
+	Root SourceFile `json:"root"`
 }
 
 // Inspect parses Kotlin source code using tree-sitter and returns its AST.
@@ -18,7 +18,8 @@ func Inspect(src string) (*Program, error) {
 	p.SetLanguage(ts.GetLanguage())
 	data := []byte(src)
 	tree := p.Parse(nil, data)
-	return &Program{File: &SourceFile{*toNode(tree.RootNode(), data)}}, nil
+	root := convert(tree.RootNode(), data)
+	return &Program{Root: SourceFile{Node: root}}, nil
 }
 
 // MarshalJSON ensures stable output for Program.
