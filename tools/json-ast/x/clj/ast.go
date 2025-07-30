@@ -7,86 +7,79 @@ import (
 	sitter "github.com/smacker/go-tree-sitter"
 )
 
-// Node represents a Clojure form in a type-safe structure.
+// Node is a generic representation of a Clojure form.  Only leaves that carry
+// a textual value populate the Text field.  Position information can be
+// optionally included via the includePos parameter of convert.
 type Node struct {
-	Sym    string     `json:"sym,omitempty"`
-	Kw     string     `json:"kw,omitempty"`
-	Str    string     `json:"str,omitempty"`
-	Num    *float64   `json:"num,omitempty"`
-	Bool   *bool      `json:"bool,omitempty"`
-	Nil    bool       `json:"nil,omitempty"`
-	List   []*Node    `json:"list,omitempty"`
-	Vector []*Node    `json:"vector,omitempty"`
-	Map    []MapEntry `json:"map,omitempty"`
+	Kind     string  `json:"kind"`
+	Text     string  `json:"text,omitempty"`
+	Start    int     `json:"start,omitempty"`
+	StartCol int     `json:"startCol,omitempty"`
+	End      int     `json:"end,omitempty"`
+	EndCol   int     `json:"endCol,omitempty"`
+	Children []*Node `json:"children,omitempty"`
 }
 
-// MapEntry represents a key/value pair within a map literal.
-type MapEntry struct {
-	Key *Node `json:"key"`
-	Val *Node `json:"val"`
-}
-
-// toAST converts a tree-sitter node into a Node structure.
-func toAST(n *sitter.Node, src []byte) *Node {
+// convert transforms a tree-sitter node into our Node representation.
+// Non-value leaves are omitted entirely to keep the result minimal.  When
+// includePos is false, position fields are left at their zero values so they
+// can be omitted from the JSON output.
+func convert(n *sitter.Node, src []byte, includePos bool) *Node {
 	if n == nil {
 		return nil
 	}
-	switch n.Type() {
-	case "sym_lit", "symbol":
-		return &Node{Sym: n.Content(src)}
-	case "kwd_lit", "keyword":
-		return &Node{Kw: n.Content(src)}
-	case "str_lit", "string":
-		s := n.Content(src)
-		s = strings.TrimPrefix(s, "\"")
-		s = strings.TrimSuffix(s, "\"")
-		return &Node{Str: s}
-	case "char_lit":
-		return &Node{Str: n.Content(src)}
-	case "num_lit", "number":
-		if f, err := strconv.ParseFloat(n.Content(src), 64); err == nil {
-			return &Node{Num: &f}
-		}
-	case "bool_lit", "boolean":
-		val := n.Content(src)
-		if val == "true" {
-			b := true
-			return &Node{Bool: &b}
-		}
-		if val == "false" {
-			b := false
-			return &Node{Bool: &b}
-		}
-	case "nil_lit", "nil":
-		return &Node{Nil: true}
-	case "list_lit", "list":
-		node := &Node{}
-		for i := 0; i < int(n.NamedChildCount()); i++ {
-			child := n.NamedChild(i)
-			node.List = append(node.List, toAST(child, src))
-		}
-		return node
-	case "vec_lit", "vector":
-		node := &Node{}
-		for i := 0; i < int(n.NamedChildCount()); i++ {
-			child := n.NamedChild(i)
-			node.Vector = append(node.Vector, toAST(child, src))
-		}
-		return node
-	case "map_lit", "map":
-		node := &Node{}
-		var key *Node
-		for i := 0; i < int(n.NamedChildCount()); i++ {
-			child := n.NamedChild(i)
-			if key == nil {
-				key = toAST(child, src)
-			} else {
-				node.Map = append(node.Map, MapEntry{Key: key, Val: toAST(child, src)})
-				key = nil
-			}
-		}
-		return node
+
+	node := &Node{Kind: n.Type()}
+
+	if includePos {
+		start := n.StartPoint()
+		end := n.EndPoint()
+		node.Start = int(start.Row) + 1
+		node.StartCol = int(start.Column)
+		node.End = int(end.Row) + 1
+		node.EndCol = int(end.Column)
 	}
-	// Fallback: treat as symbol
-	return &Node{Sym: n.Content(src)}
+
+	if n.NamedChildCount() == 0 {
+		if isValueNode(n.Type()) {
+			text := n.Content(src)
+			if n.Type() == "str_lit" || n.Type() == "string" {
+				text = strings.TrimPrefix(text, "\"")
+				text = strings.TrimSuffix(text, "\"")
+			}
+			if n.Type() == "num_lit" || n.Type() == "number" {
+				if f, err := strconv.ParseFloat(text, 64); err == nil {
+					text = strconv.FormatFloat(f, 'f', -1, 64)
+				}
+			}
+			node.Text = text
+			return node
+		}
+		return nil
+	}
+
+	for i := 0; i < int(n.NamedChildCount()); i++ {
+		child := n.NamedChild(i)
+		if c := convert(child, src, includePos); c != nil {
+			node.Children = append(node.Children, c)
+		}
+	}
+
+	if len(node.Children) == 0 && node.Text == "" {
+		return nil
+	}
+	return node
+}
+
+// isValueNode reports whether the given tree-sitter node kind carries a
+// textual value that should be kept in the JSON representation.
+func isValueNode(kind string) bool {
+	switch kind {
+	case "sym_lit", "symbol", "kwd_lit", "keyword", "str_lit", "string",
+		"char_lit", "num_lit", "number", "bool_lit", "boolean",
+		"nil_lit", "nil", "comment":
+		return true
+	default:
+		return false
+	}
 }
