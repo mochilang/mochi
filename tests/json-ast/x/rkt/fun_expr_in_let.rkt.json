@@ -1,70 +1,145 @@
 {
-  "forms": [
-    {
-      "datum": [
-        {
-          "sym": "require"
-        },
-        {
-          "sym": "racket/list"
-        },
-        {
-          "sym": "racket/string"
-        },
-        {
-          "sym": "json"
-        }
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "define"
-        },
-        {
-          "sym": "square"
-        },
-        [
+  "root": {
+    "type": "program",
+    "start": 0,
+    "end": 176,
+    "children": [
+      {
+        "type": "comment",
+        "start": 0,
+        "end": 55
+      },
+      {
+        "type": "extension",
+        "start": 56,
+        "end": 73,
+        "children": [
           {
-            "sym": "lambda"
-          },
-          [
-            {
-              "sym": "x"
-            }
-          ],
-          [
-            {
-              "sym": "*"
-            },
-            {
-              "sym": "x"
-            },
-            {
-              "sym": "x"
-            }
-          ]
+            "type": "lang_name",
+            "start": 62,
+            "end": 73
+          }
         ]
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "displayln"
-        },
-        [
+      },
+      {
+        "type": "list",
+        "start": 74,
+        "end": 114,
+        "children": [
           {
-            "sym": "square"
+            "type": "symbol",
+            "start": 75,
+            "end": 82
           },
-          6
+          {
+            "type": "symbol",
+            "start": 83,
+            "end": 94
+          },
+          {
+            "type": "symbol",
+            "start": 95,
+            "end": 108
+          },
+          {
+            "type": "symbol",
+            "start": 109,
+            "end": 113
+          }
         ]
-      ],
-      "line": 0,
-      "col": 0
-    }
-  ]
+      },
+      {
+        "type": "list",
+        "start": 116,
+        "end": 152,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 117,
+            "end": 123
+          },
+          {
+            "type": "symbol",
+            "start": 124,
+            "end": 130
+          },
+          {
+            "type": "list",
+            "start": 131,
+            "end": 151,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 132,
+                "end": 138
+              },
+              {
+                "type": "list",
+                "start": 139,
+                "end": 142,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 140,
+                    "end": 141
+                  }
+                ]
+              },
+              {
+                "type": "list",
+                "start": 143,
+                "end": 150,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 144,
+                    "end": 145
+                  },
+                  {
+                    "type": "symbol",
+                    "start": 146,
+                    "end": 147
+                  },
+                  {
+                    "type": "symbol",
+                    "start": 148,
+                    "end": 149
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "start": 153,
+        "end": 175,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 154,
+            "end": 163
+          },
+          {
+            "type": "list",
+            "start": 164,
+            "end": 174,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 165,
+                "end": 171
+              },
+              {
+                "type": "number",
+                "start": 172,
+                "end": 173
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

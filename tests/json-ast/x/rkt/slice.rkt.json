@@ -1,87 +1,214 @@
 {
-  "forms": [
-    {
-      "datum": [
-        {
-          "sym": "require"
-        },
-        {
-          "sym": "racket/list"
-        },
-        {
-          "sym": "racket/string"
-        },
-        {
-          "sym": "json"
-        }
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "displayln"
-        },
-        [
+  "root": {
+    "type": "program",
+    "start": 0,
+    "end": 230,
+    "children": [
+      {
+        "type": "comment",
+        "start": 0,
+        "end": 55
+      },
+      {
+        "type": "extension",
+        "start": 56,
+        "end": 73,
+        "children": [
           {
-            "sym": "sublist"
-          },
-          [
-            {
-              "sym": "list"
-            },
-            1,
-            2,
-            3
-          ],
-          1,
-          3
+            "type": "lang_name",
+            "start": 62,
+            "end": 73
+          }
         ]
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "displayln"
-        },
-        [
+      },
+      {
+        "type": "list",
+        "start": 74,
+        "end": 114,
+        "children": [
           {
-            "sym": "sublist"
+            "type": "symbol",
+            "start": 75,
+            "end": 82
           },
-          [
-            {
-              "sym": "list"
-            },
-            1,
-            2,
-            3
-          ],
-          0,
-          2
-        ]
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "displayln"
-        },
-        [
           {
-            "sym": "substring"
+            "type": "symbol",
+            "start": 83,
+            "end": 94
           },
-          "hello",
-          1,
-          4
+          {
+            "type": "symbol",
+            "start": 95,
+            "end": 108
+          },
+          {
+            "type": "symbol",
+            "start": 109,
+            "end": 113
+          }
         ]
-      ],
-      "line": 0,
-      "col": 0
-    }
-  ]
+      },
+      {
+        "type": "list",
+        "start": 116,
+        "end": 154,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 117,
+            "end": 126
+          },
+          {
+            "type": "list",
+            "start": 127,
+            "end": 153,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 128,
+                "end": 135
+              },
+              {
+                "type": "list",
+                "start": 136,
+                "end": 148,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 137,
+                    "end": 141
+                  },
+                  {
+                    "type": "number",
+                    "start": 142,
+                    "end": 143
+                  },
+                  {
+                    "type": "number",
+                    "start": 144,
+                    "end": 145
+                  },
+                  {
+                    "type": "number",
+                    "start": 146,
+                    "end": 147
+                  }
+                ]
+              },
+              {
+                "type": "number",
+                "start": 149,
+                "end": 150
+              },
+              {
+                "type": "number",
+                "start": 151,
+                "end": 152
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "start": 155,
+        "end": 193,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 156,
+            "end": 165
+          },
+          {
+            "type": "list",
+            "start": 166,
+            "end": 192,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 167,
+                "end": 174
+              },
+              {
+                "type": "list",
+                "start": 175,
+                "end": 187,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 176,
+                    "end": 180
+                  },
+                  {
+                    "type": "number",
+                    "start": 181,
+                    "end": 182
+                  },
+                  {
+                    "type": "number",
+                    "start": 183,
+                    "end": 184
+                  },
+                  {
+                    "type": "number",
+                    "start": 185,
+                    "end": 186
+                  }
+                ]
+              },
+              {
+                "type": "number",
+                "start": 188,
+                "end": 189
+              },
+              {
+                "type": "number",
+                "start": 190,
+                "end": 191
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "start": 194,
+        "end": 229,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 195,
+            "end": 204
+          },
+          {
+            "type": "list",
+            "start": 205,
+            "end": 228,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 206,
+                "end": 215
+              },
+              {
+                "type": "string",
+                "start": 216,
+                "end": 223
+              },
+              {
+                "type": "number",
+                "start": 224,
+                "end": 225
+              },
+              {
+                "type": "number",
+                "start": 226,
+                "end": 227
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

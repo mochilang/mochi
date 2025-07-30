@@ -1,93 +1,191 @@
 {
-  "forms": [
-    {
-      "datum": [
-        {
-          "sym": "require"
-        },
-        {
-          "sym": "racket/list"
-        },
-        {
-          "sym": "racket/string"
-        },
-        {
-          "sym": "json"
-        }
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "define"
-        },
-        [
+  "root": {
+    "type": "program",
+    "start": 0,
+    "end": 213,
+    "children": [
+      {
+        "type": "comment",
+        "start": 0,
+        "end": 55
+      },
+      {
+        "type": "extension",
+        "start": 56,
+        "end": 73,
+        "children": [
           {
-            "sym": "makeAdder"
-          },
-          {
-            "sym": "n"
+            "type": "lang_name",
+            "start": 62,
+            "end": 73
           }
-        ],
-        [
-          {
-            "sym": "lambda"
-          },
-          [
-            {
-              "sym": "x"
-            }
-          ],
-          [
-            {
-              "sym": "+"
-            },
-            {
-              "sym": "x"
-            },
-            {
-              "sym": "n"
-            }
-          ]
         ]
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "define"
-        },
-        {
-          "sym": "add10"
-        },
-        [
+      },
+      {
+        "type": "list",
+        "start": 74,
+        "end": 114,
+        "children": [
           {
-            "sym": "makeAdder"
+            "type": "symbol",
+            "start": 75,
+            "end": 82
           },
-          10
-        ]
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "displayln"
-        },
-        [
           {
-            "sym": "add10"
+            "type": "symbol",
+            "start": 83,
+            "end": 94
           },
-          7
+          {
+            "type": "symbol",
+            "start": 95,
+            "end": 108
+          },
+          {
+            "type": "symbol",
+            "start": 109,
+            "end": 113
+          }
         ]
-      ],
-      "line": 0,
-      "col": 0
-    }
-  ]
+      },
+      {
+        "type": "list",
+        "start": 116,
+        "end": 160,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 117,
+            "end": 123
+          },
+          {
+            "type": "list",
+            "start": 124,
+            "end": 137,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 125,
+                "end": 134
+              },
+              {
+                "type": "symbol",
+                "start": 135,
+                "end": 136
+              }
+            ]
+          },
+          {
+            "type": "list",
+            "start": 138,
+            "end": 158,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 139,
+                "end": 145
+              },
+              {
+                "type": "list",
+                "start": 146,
+                "end": 149,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 147,
+                    "end": 148
+                  }
+                ]
+              },
+              {
+                "type": "list",
+                "start": 150,
+                "end": 157,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 151,
+                    "end": 152
+                  },
+                  {
+                    "type": "symbol",
+                    "start": 153,
+                    "end": 154
+                  },
+                  {
+                    "type": "symbol",
+                    "start": 155,
+                    "end": 156
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "start": 161,
+        "end": 190,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 162,
+            "end": 168
+          },
+          {
+            "type": "symbol",
+            "start": 169,
+            "end": 174
+          },
+          {
+            "type": "list",
+            "start": 175,
+            "end": 189,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 176,
+                "end": 185
+              },
+              {
+                "type": "number",
+                "start": 186,
+                "end": 188
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "start": 191,
+        "end": 212,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 192,
+            "end": 201
+          },
+          {
+            "type": "list",
+            "start": 202,
+            "end": 211,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 203,
+                "end": 208
+              },
+              {
+                "type": "number",
+                "start": 209,
+                "end": 210
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

@@ -1,105 +1,211 @@
 {
-  "forms": [
-    {
-      "datum": [
-        {
-          "sym": "require"
-        },
-        {
-          "sym": "racket/list"
-        },
-        {
-          "sym": "racket/string"
-        }
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "define"
-        },
-        {
-          "sym": "a"
-        },
-        [
+  "root": {
+    "type": "program",
+    "start": 0,
+    "end": 199,
+    "children": [
+      {
+        "type": "comment",
+        "start": 0,
+        "end": 55
+      },
+      {
+        "type": "extension",
+        "start": 56,
+        "end": 68,
+        "children": [
           {
-            "sym": "-"
-          },
-          10,
-          3
+            "type": "lang_name",
+            "start": 62,
+            "end": 68
+          }
         ]
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "define"
-        },
-        {
-          "sym": "b"
-        },
-        [
+      },
+      {
+        "type": "list",
+        "start": 69,
+        "end": 104,
+        "children": [
           {
-            "sym": "+"
+            "type": "symbol",
+            "start": 70,
+            "end": 77
           },
-          2,
-          2
+          {
+            "type": "symbol",
+            "start": 78,
+            "end": 89
+          },
+          {
+            "type": "symbol",
+            "start": 90,
+            "end": 103
+          }
         ]
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "displayln"
-        },
-        {
-          "sym": "a"
-        }
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "displayln"
-        },
-        [
+      },
+      {
+        "type": "list",
+        "start": 106,
+        "end": 125,
+        "children": [
           {
-            "sym": "="
+            "type": "symbol",
+            "start": 107,
+            "end": 113
           },
           {
-            "sym": "a"
+            "type": "symbol",
+            "start": 114,
+            "end": 115
           },
-          7
+          {
+            "type": "list",
+            "start": 116,
+            "end": 124,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 117,
+                "end": 118
+              },
+              {
+                "type": "number",
+                "start": 119,
+                "end": 121
+              },
+              {
+                "type": "number",
+                "start": 122,
+                "end": 123
+              }
+            ]
+          }
         ]
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "displayln"
-        },
-        [
+      },
+      {
+        "type": "list",
+        "start": 126,
+        "end": 144,
+        "children": [
           {
-            "sym": "\u003c"
+            "type": "symbol",
+            "start": 127,
+            "end": 133
           },
           {
-            "sym": "b"
+            "type": "symbol",
+            "start": 134,
+            "end": 135
           },
-          5
+          {
+            "type": "list",
+            "start": 136,
+            "end": 143,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 137,
+                "end": 138
+              },
+              {
+                "type": "number",
+                "start": 139,
+                "end": 140
+              },
+              {
+                "type": "number",
+                "start": 141,
+                "end": 142
+              }
+            ]
+          }
         ]
-      ],
-      "line": 0,
-      "col": 0
-    }
-  ]
+      },
+      {
+        "type": "list",
+        "start": 145,
+        "end": 158,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 146,
+            "end": 155
+          },
+          {
+            "type": "symbol",
+            "start": 156,
+            "end": 157
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "start": 159,
+        "end": 178,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 160,
+            "end": 169
+          },
+          {
+            "type": "list",
+            "start": 170,
+            "end": 177,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 171,
+                "end": 172
+              },
+              {
+                "type": "symbol",
+                "start": 173,
+                "end": 174
+              },
+              {
+                "type": "number",
+                "start": 175,
+                "end": 176
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "start": 179,
+        "end": 198,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 180,
+            "end": 189
+          },
+          {
+            "type": "list",
+            "start": 190,
+            "end": 197,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 191,
+                "end": 192
+              },
+              {
+                "type": "symbol",
+                "start": 193,
+                "end": 194
+              },
+              {
+                "type": "number",
+                "start": 195,
+                "end": 196
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

@@ -1,51 +1,123 @@
 {
-  "forms": [
-    {
-      "datum": [
-        {
-          "sym": "require"
-        },
-        {
-          "sym": "racket/list"
-        },
-        {
-          "sym": "racket/string"
-        }
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "for"
-        },
-        [
-          [
-            {
-              "sym": "n"
-            },
-            [
-              {
-                "sym": "list"
-              },
-              1,
-              2,
-              3
-            ]
-          ]
-        ],
-        [
+  "root": {
+    "type": "program",
+    "start": 0,
+    "end": 146,
+    "children": [
+      {
+        "type": "comment",
+        "start": 0,
+        "end": 55
+      },
+      {
+        "type": "extension",
+        "start": 56,
+        "end": 68,
+        "children": [
           {
-            "sym": "displayln"
-          },
-          {
-            "sym": "n"
+            "type": "lang_name",
+            "start": 62,
+            "end": 68
           }
         ]
-      ],
-      "line": 0,
-      "col": 0
-    }
-  ]
+      },
+      {
+        "type": "list",
+        "start": 69,
+        "end": 104,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 70,
+            "end": 77
+          },
+          {
+            "type": "symbol",
+            "start": 78,
+            "end": 89
+          },
+          {
+            "type": "symbol",
+            "start": 90,
+            "end": 103
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "start": 106,
+        "end": 145,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 107,
+            "end": 110
+          },
+          {
+            "type": "list",
+            "start": 111,
+            "end": 129,
+            "children": [
+              {
+                "type": "list",
+                "start": 112,
+                "end": 128,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 113,
+                    "end": 114
+                  },
+                  {
+                    "type": "list",
+                    "start": 115,
+                    "end": 127,
+                    "children": [
+                      {
+                        "type": "symbol",
+                        "start": 116,
+                        "end": 120
+                      },
+                      {
+                        "type": "number",
+                        "start": 121,
+                        "end": 122
+                      },
+                      {
+                        "type": "number",
+                        "start": 123,
+                        "end": 124
+                      },
+                      {
+                        "type": "number",
+                        "start": 125,
+                        "end": 126
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "list",
+            "start": 130,
+            "end": 143,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 131,
+                "end": 140
+              },
+              {
+                "type": "symbol",
+                "start": 141,
+                "end": 142
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

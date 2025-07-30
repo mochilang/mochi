@@ -1,92 +1,209 @@
 {
-  "forms": [
-    {
-      "datum": [
-        {
-          "sym": "require"
-        },
-        {
-          "sym": "racket/list"
-        },
-        {
-          "sym": "racket/string"
-        }
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "struct"
-        },
-        {
-          "sym": "group"
-        },
-        [
+  "root": {
+    "type": "program",
+    "start": 0,
+    "end": 260,
+    "children": [
+      {
+        "type": "comment",
+        "start": 0,
+        "end": 55
+      },
+      {
+        "type": "extension",
+        "start": 56,
+        "end": 68,
+        "children": [
           {
-            "sym": "key"
-          },
-          {
-            "sym": "items"
+            "type": "lang_name",
+            "start": 62,
+            "end": 68
           }
         ]
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "define"
-        },
-        {
-          "sym": "book"
-        },
-        [
+      },
+      {
+        "type": "list",
+        "start": 69,
+        "end": 104,
+        "children": [
           {
-            "sym": "hash"
+            "type": "symbol",
+            "start": 70,
+            "end": 77
           },
-          "title",
-          "Go",
-          "author",
-          [
-            {
-              "sym": "hash"
-            },
-            "name",
-            "Bob",
-            "age",
-            42
-          ]
-        ]
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "displayln"
-        },
-        [
           {
-            "sym": "hash-ref"
+            "type": "symbol",
+            "start": 78,
+            "end": 89
           },
-          [
-            {
-              "sym": "hash-ref"
-            },
-            {
-              "sym": "book"
-            },
-            "author"
-          ],
-          "name"
+          {
+            "type": "symbol",
+            "start": 90,
+            "end": 103
+          }
         ]
-      ],
-      "line": 0,
-      "col": 0
-    }
-  ]
+      },
+      {
+        "type": "list",
+        "start": 105,
+        "end": 131,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 106,
+            "end": 112
+          },
+          {
+            "type": "symbol",
+            "start": 113,
+            "end": 118
+          },
+          {
+            "type": "list",
+            "start": 119,
+            "end": 130,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 120,
+                "end": 123
+              },
+              {
+                "type": "symbol",
+                "start": 124,
+                "end": 129
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "start": 133,
+        "end": 204,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 134,
+            "end": 140
+          },
+          {
+            "type": "symbol",
+            "start": 141,
+            "end": 145
+          },
+          {
+            "type": "list",
+            "start": 146,
+            "end": 203,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 147,
+                "end": 151
+              },
+              {
+                "type": "string",
+                "start": 152,
+                "end": 159
+              },
+              {
+                "type": "string",
+                "start": 160,
+                "end": 164
+              },
+              {
+                "type": "string",
+                "start": 165,
+                "end": 173
+              },
+              {
+                "type": "list",
+                "start": 174,
+                "end": 202,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 175,
+                    "end": 179
+                  },
+                  {
+                    "type": "string",
+                    "start": 180,
+                    "end": 186
+                  },
+                  {
+                    "type": "string",
+                    "start": 187,
+                    "end": 192
+                  },
+                  {
+                    "type": "string",
+                    "start": 193,
+                    "end": 198
+                  },
+                  {
+                    "type": "number",
+                    "start": 199,
+                    "end": 201
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "start": 205,
+        "end": 259,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 206,
+            "end": 215
+          },
+          {
+            "type": "list",
+            "start": 216,
+            "end": 258,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 217,
+                "end": 225
+              },
+              {
+                "type": "list",
+                "start": 226,
+                "end": 250,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 227,
+                    "end": 235
+                  },
+                  {
+                    "type": "symbol",
+                    "start": 236,
+                    "end": 240
+                  },
+                  {
+                    "type": "string",
+                    "start": 241,
+                    "end": 249
+                  }
+                ]
+              },
+              {
+                "type": "string",
+                "start": 251,
+                "end": 257
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }
