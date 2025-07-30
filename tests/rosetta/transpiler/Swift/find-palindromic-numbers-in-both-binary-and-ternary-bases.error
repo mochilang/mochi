@@ -1,0 +1,376 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:47:36: warning: forced cast of 'String' to same type has no effect
+ 45 |         var x: Int = n
+ 46 |         while (x > 0) {
+ 47 |             s = ((_p((x % b)) + s) as! String)
+    |                                    `- warning: forced cast of 'String' to same type has no effect
+ 48 |             x = ((x / b) as! Int)
+ 49 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:48:26: warning: forced cast of 'Int' to same type has no effect
+ 46 |         while (x > 0) {
+ 47 |             s = ((_p((x % b)) + s) as! String)
+ 48 |             x = ((x / b) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+ 49 |         }
+ 50 |         return (s as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:50:19: warning: forced cast of 'String' to same type has no effect
+ 48 |             x = ((x / b) as! Int)
+ 49 |         }
+ 50 |         return (s as! String)
+    |                   `- warning: forced cast of 'String' to same type has no effect
+ 51 |     }
+ 52 |     func parseIntStr(_ str: String) -> Int {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:55:65: warning: forced cast of 'String' to same type has no effect
+ 53 |         var i: Int = 0
+ 54 |         var neg: Bool = false
+ 55 |         if ((Int(((str).count)) > 0) && ((String(Array(str)[0]) as! String) == "-")) {
+    |                                                                 `- warning: forced cast of 'String' to same type has no effect
+ 56 |             neg = true
+ 57 |             i = 1
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:61:13: error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+ 59 |         var n: Int = 0
+ 60 |         while (i < Int(((str).count))) {
+ 61 |             n = ((((n * 10) + Int(String(Array(str)[i..<(i + 1)]))) - "0") as! Int)
+    |             `- error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+ 62 |             i = ((i + 1) as! Int)
+ 63 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:62:26: warning: forced cast of 'Int' to same type has no effect
+ 60 |         while (i < Int(((str).count))) {
+ 61 |             n = ((((n * 10) + Int(String(Array(str)[i..<(i + 1)]))) - "0") as! Int)
+ 62 |             i = ((i + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+ 63 |         }
+ 64 |         if neg {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:65:21: warning: forced cast of 'Int' to same type has no effect
+ 63 |         }
+ 64 |         if neg {
+ 65 |             n = (-n as! Int)
+    |                     `- warning: forced cast of 'Int' to same type has no effect
+ 66 |         }
+ 67 |         return (n as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:67:19: warning: forced cast of 'Int' to same type has no effect
+ 65 |             n = (-n as! Int)
+ 66 |         }
+ 67 |         return (n as! Int)
+    |                   `- warning: forced cast of 'Int' to same type has no effect
+ 68 |     }
+ 69 |     func parseIntBase(_ s: String, _ b: Int) -> Int {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:73:87: warning: forced cast of 'String' to same type has no effect
+ 71 |         var i: Int = 0
+ 72 |         while (i < Int(((s).count))) {
+ 73 |             n = (((n * b) + Int(Int(String(describing: (String(Array(s)[i..<(i + 1)]) as! String)))!)) as! Int)
+    |                                                                                       `- warning: forced cast of 'String' to same type has no effect
+ 74 |             i = ((i + 1) as! Int)
+ 75 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:73:104: warning: forced cast of 'Int' to same type has no effect
+ 71 |         var i: Int = 0
+ 72 |         while (i < Int(((s).count))) {
+ 73 |             n = (((n * b) + Int(Int(String(describing: (String(Array(s)[i..<(i + 1)]) as! String)))!)) as! Int)
+    |                                                                                                        `- warning: forced cast of 'Int' to same type has no effect
+ 74 |             i = ((i + 1) as! Int)
+ 75 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:74:26: warning: forced cast of 'Int' to same type has no effect
+ 72 |         while (i < Int(((s).count))) {
+ 73 |             n = (((n * b) + Int(Int(String(describing: (String(Array(s)[i..<(i + 1)]) as! String)))!)) as! Int)
+ 74 |             i = ((i + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+ 75 |         }
+ 76 |         return (n as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:76:19: warning: forced cast of 'Int' to same type has no effect
+ 74 |             i = ((i + 1) as! Int)
+ 75 |         }
+ 76 |         return (n as! Int)
+    |                   `- warning: forced cast of 'Int' to same type has no effect
+ 77 |     }
+ 78 |     func reverseStr(_ s: String) -> String {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:82:58: warning: forced cast of 'String' to same type has no effect
+ 80 |         var i: Int = (Int(((s).count)) - 1)
+ 81 |         while (i >= 0) {
+ 82 |             out = ((out + String(Array(s)[i..<(i + 1)])) as! String)
+    |                                                          `- warning: forced cast of 'String' to same type has no effect
+ 83 |             i = ((i - 1) as! Int)
+ 84 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:83:26: warning: forced cast of 'Int' to same type has no effect
+ 81 |         while (i >= 0) {
+ 82 |             out = ((out + String(Array(s)[i..<(i + 1)])) as! String)
+ 83 |             i = ((i - 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+ 84 |         }
+ 85 |         return (out as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:85:21: warning: forced cast of 'String' to same type has no effect
+ 83 |             i = ((i - 1) as! Int)
+ 84 |         }
+ 85 |         return (out as! String)
+    |                     `- warning: forced cast of 'String' to same type has no effect
+ 86 |     }
+ 87 |     func isPalindrome(_ s: String) -> Bool {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:88:55: warning: forced cast of 'String' to same type has no effect
+ 86 |     }
+ 87 |     func isPalindrome(_ s: String) -> Bool {
+ 88 |         return (s == String(describing: reverseStr((s as! String))))
+    |                                                       `- warning: forced cast of 'String' to same type has no effect
+ 89 |     }
+ 90 |     func isPalindromeBin(_ n: Int) -> Bool {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:91:46: warning: forced cast of 'Int' to same type has no effect
+ 89 |     }
+ 90 |     func isPalindromeBin(_ n: Int) -> Bool {
+ 91 |         let b = String(describing: toBase((n as! Int), 2))
+    |                                              `- warning: forced cast of 'Int' to same type has no effect
+ 92 |         return isPalindrome((b as! String))
+ 93 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:92:32: warning: forced cast of 'String' to same type has no effect
+ 90 |     func isPalindromeBin(_ n: Int) -> Bool {
+ 91 |         let b = String(describing: toBase((n as! Int), 2))
+ 92 |         return isPalindrome((b as! String))
+    |                                `- warning: forced cast of 'String' to same type has no effect
+ 93 |     }
+ 94 |     func myMin(_ a: Int, _ b: Int) -> Int {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:96:23: warning: forced cast of 'Int' to same type has no effect
+ 94 |     func myMin(_ a: Int, _ b: Int) -> Int {
+ 95 |         if (a < b) {
+ 96 |             return (a as! Int)
+    |                       `- warning: forced cast of 'Int' to same type has no effect
+ 97 |         }
+ 98 |         return (b as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:98:19: warning: forced cast of 'Int' to same type has no effect
+ 96 |             return (a as! Int)
+ 97 |         }
+ 98 |         return (b as! Int)
+    |                   `- warning: forced cast of 'Int' to same type has no effect
+ 99 |     }
+100 |     func myMax(_ a: Int, _ b: Int) -> Int {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:102:23: warning: forced cast of 'Int' to same type has no effect
+100 |     func myMax(_ a: Int, _ b: Int) -> Int {
+101 |         if (a > b) {
+102 |             return (a as! Int)
+    |                       `- warning: forced cast of 'Int' to same type has no effect
+103 |         }
+104 |         return (b as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:104:19: warning: forced cast of 'Int' to same type has no effect
+102 |             return (a as! Int)
+103 |         }
+104 |         return (b as! Int)
+    |                   `- warning: forced cast of 'Int' to same type has no effect
+105 |     }
+106 |     func reverse3(_ n: Int) -> Int {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:110:43: warning: forced cast of 'Int' to same type has no effect
+108 |         var y: Int = n
+109 |         while (y != 0) {
+110 |             x = (((x * 3) + Int((y % 3))) as! Int)
+    |                                           `- warning: forced cast of 'Int' to same type has no effect
+111 |             y = ((y / 3) as! Int)
+112 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:111:26: warning: forced cast of 'Int' to same type has no effect
+109 |         while (y != 0) {
+110 |             x = (((x * 3) + Int((y % 3))) as! Int)
+111 |             y = ((y / 3) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+112 |         }
+113 |         return (x as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:113:19: warning: forced cast of 'Int' to same type has no effect
+111 |             y = ((y / 3) as! Int)
+112 |         }
+113 |         return (x as! Int)
+    |                   `- warning: forced cast of 'Int' to same type has no effect
+114 |     }
+115 |     func show(_ n: Int) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:117:63: warning: forced cast of 'Int' to same type has no effect
+115 |     func show(_ n: Int) {
+116 |         print(_p(("Decimal : " + _p(n))))
+117 |         print(_p(("Binary  : " + String(describing: toBase((n as! Int), 2)))))
+    |                                                               `- warning: forced cast of 'Int' to same type has no effect
+118 |         print(_p(("Ternary : " + String(describing: toBase((n as! Int), 3)))))
+119 |         print(_p(""))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:118:63: warning: forced cast of 'Int' to same type has no effect
+116 |         print(_p(("Decimal : " + _p(n))))
+117 |         print(_p(("Binary  : " + String(describing: toBase((n as! Int), 2)))))
+118 |         print(_p(("Ternary : " + String(describing: toBase((n as! Int), 3)))))
+    |                                                               `- warning: forced cast of 'Int' to same type has no effect
+119 |         print(_p(""))
+120 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:123:9: warning: using '_' to ignore the result of a Void-returning function is redundant
+121 |     func main() {
+122 |         print(_p("The first 6 numbers which are palindromic in both binary and ternary are :\n"))
+123 |         _ = show(0)
+    |         `- warning: using '_' to ignore the result of a Void-returning function is redundant
+124 |         var count: Int = 1
+125 |         var lo: Int = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:132:77: warning: forced cast of 'Int' to same type has no effect
+130 |             var i: Int = lo
+131 |             while (i < hi) {
+132 |                 var n: Int = ((Int(((i * 3) + 1)) * pow3) + Int(reverse3((i as! Int))))
+    |                                                                             `- warning: forced cast of 'Int' to same type has no effect
+133 |                 if isPalindromeBin((n as! Int)) {
+134 |                     _ = show((n as! Int))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:133:39: warning: forced cast of 'Int' to same type has no effect
+131 |             while (i < hi) {
+132 |                 var n: Int = ((Int(((i * 3) + 1)) * pow3) + Int(reverse3((i as! Int))))
+133 |                 if isPalindromeBin((n as! Int)) {
+    |                                       `- warning: forced cast of 'Int' to same type has no effect
+134 |                     _ = show((n as! Int))
+135 |                     count = ((count + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:134:33: warning: forced cast of 'Int' to same type has no effect
+132 |                 var n: Int = ((Int(((i * 3) + 1)) * pow3) + Int(reverse3((i as! Int))))
+133 |                 if isPalindromeBin((n as! Int)) {
+134 |                     _ = show((n as! Int))
+    |                                 `- warning: forced cast of 'Int' to same type has no effect
+135 |                     count = ((count + 1) as! Int)
+136 |                     if (count >= 6) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:134:21: warning: using '_' to ignore the result of a Void-returning function is redundant
+132 |                 var n: Int = ((Int(((i * 3) + 1)) * pow3) + Int(reverse3((i as! Int))))
+133 |                 if isPalindromeBin((n as! Int)) {
+134 |                     _ = show((n as! Int))
+    |                     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+135 |                     count = ((count + 1) as! Int)
+136 |                     if (count >= 6) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:135:42: warning: forced cast of 'Int' to same type has no effect
+133 |                 if isPalindromeBin((n as! Int)) {
+134 |                     _ = show((n as! Int))
+135 |                     count = ((count + 1) as! Int)
+    |                                          `- warning: forced cast of 'Int' to same type has no effect
+136 |                     if (count >= 6) {
+137 |                         return
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:140:30: warning: forced cast of 'Int' to same type has no effect
+138 |                     }
+139 |                 }
+140 |                 i = ((i + 1) as! Int)
+    |                              `- warning: forced cast of 'Int' to same type has no effect
+141 |             }
+142 |             if (i == pow3) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:143:36: warning: forced cast of 'Int' to same type has no effect
+141 |             }
+142 |             if (i == pow3) {
+143 |                 pow3 = ((pow3 * 3) as! Int)
+    |                                    `- warning: forced cast of 'Int' to same type has no effect
+144 |             } else {
+145 |                 pow2 = ((pow2 * 4) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:145:36: warning: forced cast of 'Int' to same type has no effect
+143 |                 pow3 = ((pow3 * 3) as! Int)
+144 |             } else {
+145 |                 pow2 = ((pow2 * 4) as! Int)
+    |                                    `- warning: forced cast of 'Int' to same type has no effect
+146 |             }
+147 |             while true {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:149:40: warning: forced cast of 'Int' to same type has no effect
+147 |             while true {
+148 |                 while (pow2 <= pow3) {
+149 |                     pow2 = ((pow2 * 4) as! Int)
+    |                                        `- warning: forced cast of 'Int' to same type has no effect
+150 |                 }
+151 |                 var lo2: Int = ((Int(((pow2 / pow3) - 1)) / 3) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:151:64: warning: forced cast of 'Int' to same type has no effect
+149 |                     pow2 = ((pow2 * 4) as! Int)
+150 |                 }
+151 |                 var lo2: Int = ((Int(((pow2 / pow3) - 1)) / 3) as! Int)
+    |                                                                `- warning: forced cast of 'Int' to same type has no effect
+152 |                 var hi2: Int = (((Int((((pow2 * 2) / pow3) - 1)) / 3) as! Int) + 1)
+153 |                 var lo3: Int = ((pow3 / 3) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:152:71: warning: forced cast of 'Int' to same type has no effect
+150 |                 }
+151 |                 var lo2: Int = ((Int(((pow2 / pow3) - 1)) / 3) as! Int)
+152 |                 var hi2: Int = (((Int((((pow2 * 2) / pow3) - 1)) / 3) as! Int) + 1)
+    |                                                                       `- warning: forced cast of 'Int' to same type has no effect
+153 |                 var lo3: Int = ((pow3 / 3) as! Int)
+154 |                 var hi3: Int = pow3
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:153:44: warning: forced cast of 'Int' to same type has no effect
+151 |                 var lo2: Int = ((Int(((pow2 / pow3) - 1)) / 3) as! Int)
+152 |                 var hi2: Int = (((Int((((pow2 * 2) / pow3) - 1)) / 3) as! Int) + 1)
+153 |                 var lo3: Int = ((pow3 / 3) as! Int)
+    |                                            `- warning: forced cast of 'Int' to same type has no effect
+154 |                 var hi3: Int = pow3
+155 |                 if (lo2 >= hi3) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:156:40: warning: forced cast of 'Int' to same type has no effect
+154 |                 var hi3: Int = pow3
+155 |                 if (lo2 >= hi3) {
+156 |                     pow3 = ((pow3 * 3) as! Int)
+    |                                        `- warning: forced cast of 'Int' to same type has no effect
+157 |                 } else if (lo3 >= hi2) {
+158 |                     pow2 = ((pow2 * 4) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:158:40: warning: forced cast of 'Int' to same type has no effect
+156 |                     pow3 = ((pow3 * 3) as! Int)
+157 |                 } else if (lo3 >= hi2) {
+158 |                     pow2 = ((pow2 * 4) as! Int)
+    |                                        `- warning: forced cast of 'Int' to same type has no effect
+159 |                 } else {
+160 |                     lo = Int(myMax((lo2 as! Int), (lo3 as! Int)))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:160:41: warning: forced cast of 'Int' to same type has no effect
+158 |                     pow2 = ((pow2 * 4) as! Int)
+159 |                 } else {
+160 |                     lo = Int(myMax((lo2 as! Int), (lo3 as! Int)))
+    |                                         `- warning: forced cast of 'Int' to same type has no effect
+161 |                     hi = Int(myMin((hi2 as! Int), (hi3 as! Int)))
+162 |                     break
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:160:56: warning: forced cast of 'Int' to same type has no effect
+158 |                     pow2 = ((pow2 * 4) as! Int)
+159 |                 } else {
+160 |                     lo = Int(myMax((lo2 as! Int), (lo3 as! Int)))
+    |                                                        `- warning: forced cast of 'Int' to same type has no effect
+161 |                     hi = Int(myMin((hi2 as! Int), (hi3 as! Int)))
+162 |                     break
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:161:41: warning: forced cast of 'Int' to same type has no effect
+159 |                 } else {
+160 |                     lo = Int(myMax((lo2 as! Int), (lo3 as! Int)))
+161 |                     hi = Int(myMin((hi2 as! Int), (hi3 as! Int)))
+    |                                         `- warning: forced cast of 'Int' to same type has no effect
+162 |                     break
+163 |                 }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:161:56: warning: forced cast of 'Int' to same type has no effect
+159 |                 } else {
+160 |                     lo = Int(myMax((lo2 as! Int), (lo3 as! Int)))
+161 |                     hi = Int(myMin((hi2 as! Int), (hi3 as! Int)))
+    |                                                        `- warning: forced cast of 'Int' to same type has no effect
+162 |                     break
+163 |                 }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3610809210/001/main.swift:168:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+166 |         }
+167 |     }
+168 |     _ = main()
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+169 |     let _benchEnd = _now()
+170 |     let _benchMemEnd = _mem()
