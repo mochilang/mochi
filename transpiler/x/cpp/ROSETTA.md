@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (198/493) - Last updated 2025-07-28 11:58 +0700:
+Checklist of programs that currently transpile and run (212/493) - Last updated 2025-07-30 21:05 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -19,9 +19,9 @@ Checklist of programs that currently transpile and run (198/493) - Last updated 
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 126.70s | 219.41MB |
 | 13 | 99-bottles-of-beer-2 | ✓ | 35.0ms | 14.44MB |
 | 14 | 99-bottles-of-beer | ✓ | 390.0µs | 13.00MB |
-| 15 | DNS-query | ✓ | 104.0µs | 12.87MB |
-| 16 | Duffinian-numbers |   |  |  |
-| 17 | Find-if-a-point-is-within-a-triangle |   |  |  |
+| 15 | dns-query |   |  |  |
+| 16 | duffinian-numbers |   |  |  |
+| 17 | find-if-a-point-is-within-a-triangle |   |  |  |
 | 18 | a+b | ✓ | 46.0µs | 12.06MB |
 | 19 | abbreviations-automatic | ✓ | 11.0ms | 14.06MB |
 | 20 | abbreviations-easy | ✓ | 1.0ms | 13.74MB |
@@ -196,7 +196,7 @@ Checklist of programs that currently transpile and run (198/493) - Last updated 
 | 189 | character-codes-4 | ✓ | 26.0µs | 12.68MB |
 | 190 | character-codes-5 | ✓ | 28.0µs | 12.80MB |
 | 191 | chat-server | ✓ | 53.0µs | 13.29MB |
-| 192 | check-machin-like-formulas | ✓ | 54.2ms | 14.29MB |
+| 192 | check-machin-like-formulas | ✓ | 54.0ms | 14.19MB |
 | 193 | check-that-file-exists |   |  |  |
 | 194 | checkpoint-synchronization-1 |   |  |  |
 | 195 | checkpoint-synchronization-2 |   |  |  |
@@ -404,20 +404,20 @@ Checklist of programs that currently transpile and run (198/493) - Last updated 
 | 397 | fairshare-between-two-and-more |   |  |  |
 | 398 | farey-sequence |   |  |  |
 | 399 | fast-fourier-transform |   |  |  |
-| 400 | fasta-format |   |  |  |
-| 401 | faulhabers-formula |   |  |  |
-| 402 | faulhabers-triangle |   |  |  |
-| 403 | feigenbaum-constant-calculation |   |  |  |
-| 404 | fermat-numbers |   |  |  |
-| 405 | fibonacci-n-step-number-sequences |   |  |  |
-| 406 | fibonacci-sequence-1 |   |  |  |
-| 407 | fibonacci-sequence-2 |   |  |  |
-| 408 | fibonacci-sequence-3 |   |  |  |
-| 409 | fibonacci-sequence-4 |   |  |  |
-| 410 | fibonacci-sequence-5 |   |  |  |
-| 411 | fibonacci-word-fractal |   |  |  |
-| 412 | fibonacci-word |   |  |  |
-| 413 | file-extension-is-in-extensions-list |   |  |  |
+| 400 | fasta-format | ✓ |  |  |
+| 401 | faulhabers-formula | ✓ |  |  |
+| 402 | faulhabers-triangle | ✓ |  |  |
+| 403 | feigenbaum-constant-calculation | ✓ |  |  |
+| 404 | fermat-numbers | ✓ |  |  |
+| 405 | fibonacci-n-step-number-sequences | ✓ |  |  |
+| 406 | fibonacci-sequence-1 | ✓ |  |  |
+| 407 | fibonacci-sequence-2 | ✓ |  |  |
+| 408 | fibonacci-sequence-3 | ✓ |  |  |
+| 409 | fibonacci-sequence-4 | ✓ |  |  |
+| 410 | fibonacci-sequence-5 | ✓ |  |  |
+| 411 | fibonacci-word-fractal | ✓ |  |  |
+| 412 | fibonacci-word | ✓ |  |  |
+| 413 | file-extension-is-in-extensions-list | ✓ |  |  |
 | 414 | file-input-output-1 |   |  |  |
 | 415 | file-input-output-2 |   |  |  |
 | 416 | file-input-output-3 |   |  |  |
