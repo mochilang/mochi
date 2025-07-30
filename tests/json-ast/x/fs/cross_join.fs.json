@@ -1,5 +1,2376 @@
 {
-  "vars": [],
-  "prints": [],
-  "stmts": []
+  "root": {
+    "kind": "file",
+    "start": 0,
+    "end": 1389,
+    "children": [
+      {
+        "kind": "line_comment",
+        "start": 0,
+        "end": 35
+      },
+      {
+        "kind": "type_definition",
+        "start": 37,
+        "end": 98,
+        "children": [
+          {
+            "kind": "record_type_defn",
+            "start": 42,
+            "end": 98,
+            "children": [
+              {
+                "kind": "type_name",
+                "start": 42,
+                "end": 47,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "start": 42,
+                    "end": 47
+                  }
+                ]
+              },
+              {
+                "kind": "record_fields",
+                "start": 56,
+                "end": 96,
+                "children": [
+                  {
+                    "kind": "record_field",
+                    "start": 56,
+                    "end": 71,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 64,
+                        "end": 66
+                      },
+                      {
+                        "kind": "simple_type",
+                        "start": 68,
+                        "end": 71,
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "start": 68,
+                            "end": 71,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 68,
+                                "end": 71
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "record_field",
+                    "start": 76,
+                    "end": 96,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 84,
+                        "end": 88
+                      },
+                      {
+                        "kind": "simple_type",
+                        "start": 90,
+                        "end": 96,
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "start": 90,
+                            "end": 96,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 90,
+                                "end": 96
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "type_definition",
+        "start": 99,
+        "end": 160,
+        "children": [
+          {
+            "kind": "record_type_defn",
+            "start": 104,
+            "end": 160,
+            "children": [
+              {
+                "kind": "type_name",
+                "start": 104,
+                "end": 109,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "start": 104,
+                    "end": 109
+                  }
+                ]
+              },
+              {
+                "kind": "record_fields",
+                "start": 118,
+                "end": 158,
+                "children": [
+                  {
+                    "kind": "record_field",
+                    "start": 118,
+                    "end": 133,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 126,
+                        "end": 128
+                      },
+                      {
+                        "kind": "simple_type",
+                        "start": 130,
+                        "end": 133,
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "start": 130,
+                            "end": 133,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 130,
+                                "end": 133
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "record_field",
+                    "start": 138,
+                    "end": 158,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 146,
+                        "end": 150
+                      },
+                      {
+                        "kind": "simple_type",
+                        "start": 152,
+                        "end": 158,
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "start": 152,
+                            "end": 158,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 152,
+                                "end": 158
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "type_definition",
+        "start": 161,
+        "end": 248,
+        "children": [
+          {
+            "kind": "record_type_defn",
+            "start": 166,
+            "end": 248,
+            "children": [
+              {
+                "kind": "type_name",
+                "start": 166,
+                "end": 171,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "start": 166,
+                    "end": 171
+                  }
+                ]
+              },
+              {
+                "kind": "record_fields",
+                "start": 180,
+                "end": 246,
+                "children": [
+                  {
+                    "kind": "record_field",
+                    "start": 180,
+                    "end": 195,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 188,
+                        "end": 190
+                      },
+                      {
+                        "kind": "simple_type",
+                        "start": 192,
+                        "end": 195,
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "start": 192,
+                            "end": 195,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 192,
+                                "end": 195
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "record_field",
+                    "start": 200,
+                    "end": 223,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 208,
+                        "end": 218
+                      },
+                      {
+                        "kind": "simple_type",
+                        "start": 220,
+                        "end": 223,
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "start": 220,
+                            "end": 223,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 220,
+                                "end": 223
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "record_field",
+                    "start": 228,
+                    "end": 246,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 236,
+                        "end": 241
+                      },
+                      {
+                        "kind": "simple_type",
+                        "start": 243,
+                        "end": 246,
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "start": 243,
+                            "end": 246,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 243,
+                                "end": 246
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "type_definition",
+        "start": 249,
+        "end": 336,
+        "children": [
+          {
+            "kind": "record_type_defn",
+            "start": 254,
+            "end": 336,
+            "children": [
+              {
+                "kind": "type_name",
+                "start": 254,
+                "end": 259,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "start": 254,
+                    "end": 259
+                  }
+                ]
+              },
+              {
+                "kind": "record_fields",
+                "start": 268,
+                "end": 334,
+                "children": [
+                  {
+                    "kind": "record_field",
+                    "start": 268,
+                    "end": 283,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 276,
+                        "end": 278
+                      },
+                      {
+                        "kind": "simple_type",
+                        "start": 280,
+                        "end": 283,
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "start": 280,
+                            "end": 283,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 280,
+                                "end": 283
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "record_field",
+                    "start": 288,
+                    "end": 311,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 296,
+                        "end": 306
+                      },
+                      {
+                        "kind": "simple_type",
+                        "start": 308,
+                        "end": 311,
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "start": 308,
+                            "end": 311,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 308,
+                                "end": 311
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "record_field",
+                    "start": 316,
+                    "end": 334,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 324,
+                        "end": 329
+                      },
+                      {
+                        "kind": "simple_type",
+                        "start": 331,
+                        "end": 334,
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "start": 331,
+                            "end": 334,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 331,
+                                "end": 334
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "type_definition",
+        "start": 337,
+        "end": 475,
+        "children": [
+          {
+            "kind": "record_type_defn",
+            "start": 342,
+            "end": 475,
+            "children": [
+              {
+                "kind": "type_name",
+                "start": 342,
+                "end": 347,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "start": 342,
+                    "end": 347
+                  }
+                ]
+              },
+              {
+                "kind": "record_fields",
+                "start": 356,
+                "end": 473,
+                "children": [
+                  {
+                    "kind": "record_field",
+                    "start": 356,
+                    "end": 376,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 364,
+                        "end": 371
+                      },
+                      {
+                        "kind": "simple_type",
+                        "start": 373,
+                        "end": 376,
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "start": 373,
+                            "end": 376,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 373,
+                                "end": 376
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "record_field",
+                    "start": 381,
+                    "end": 409,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 389,
+                        "end": 404
+                      },
+                      {
+                        "kind": "simple_type",
+                        "start": 406,
+                        "end": 409,
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "start": 406,
+                            "end": 409,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 406,
+                                "end": 409
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "record_field",
+                    "start": 414,
+                    "end": 445,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 422,
+                        "end": 440
+                      },
+                      {
+                        "kind": "simple_type",
+                        "start": 442,
+                        "end": 445,
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "start": 442,
+                            "end": 445,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 442,
+                                "end": 445
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "record_field",
+                    "start": 450,
+                    "end": 473,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 458,
+                        "end": 468
+                      },
+                      {
+                        "kind": "simple_type",
+                        "start": 470,
+                        "end": 473,
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "start": 470,
+                            "end": 473,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 470,
+                                "end": 473
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "type_definition",
+        "start": 476,
+        "end": 614,
+        "children": [
+          {
+            "kind": "record_type_defn",
+            "start": 481,
+            "end": 614,
+            "children": [
+              {
+                "kind": "type_name",
+                "start": 481,
+                "end": 486,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "start": 481,
+                    "end": 486
+                  }
+                ]
+              },
+              {
+                "kind": "record_fields",
+                "start": 495,
+                "end": 612,
+                "children": [
+                  {
+                    "kind": "record_field",
+                    "start": 495,
+                    "end": 515,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 503,
+                        "end": 510
+                      },
+                      {
+                        "kind": "simple_type",
+                        "start": 512,
+                        "end": 515,
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "start": 512,
+                            "end": 515,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 512,
+                                "end": 515
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "record_field",
+                    "start": 520,
+                    "end": 548,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 528,
+                        "end": 543
+                      },
+                      {
+                        "kind": "simple_type",
+                        "start": 545,
+                        "end": 548,
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "start": 545,
+                            "end": 548,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 545,
+                                "end": 548
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "record_field",
+                    "start": 553,
+                    "end": 584,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 561,
+                        "end": 579
+                      },
+                      {
+                        "kind": "simple_type",
+                        "start": 581,
+                        "end": 584,
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "start": 581,
+                            "end": 584,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 581,
+                                "end": 584
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "record_field",
+                    "start": 589,
+                    "end": 612,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 597,
+                        "end": 607
+                      },
+                      {
+                        "kind": "simple_type",
+                        "start": 609,
+                        "end": 612,
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "start": 609,
+                            "end": 612,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 609,
+                                "end": 612
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "value_declaration",
+        "start": 615,
+        "end": 727,
+        "children": [
+          {
+            "kind": "function_or_value_defn",
+            "start": 615,
+            "end": 727,
+            "children": [
+              {
+                "kind": "value_declaration_left",
+                "start": 619,
+                "end": 628,
+                "children": [
+                  {
+                    "kind": "identifier_pattern",
+                    "start": 619,
+                    "end": 628,
+                    "children": [
+                      {
+                        "kind": "long_identifier_or_op",
+                        "start": 619,
+                        "end": 628,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 619,
+                            "end": 628
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "postfix_type",
+                "start": 630,
+                "end": 640,
+                "children": [
+                  {
+                    "kind": "simple_type",
+                    "start": 630,
+                    "end": 635,
+                    "children": [
+                      {
+                        "kind": "long_identifier",
+                        "start": 630,
+                        "end": 635,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 630,
+                            "end": 635
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "long_identifier",
+                    "start": 636,
+                    "end": 640,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 636,
+                        "end": 640
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "list_expression",
+                "start": 643,
+                "end": 727,
+                "children": [
+                  {
+                    "kind": "brace_expression",
+                    "start": 644,
+                    "end": 670,
+                    "children": [
+                      {
+                        "kind": "field_initializers",
+                        "start": 646,
+                        "end": 668,
+                        "children": [
+                          {
+                            "kind": "field_initializer",
+                            "start": 646,
+                            "end": 652,
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "start": 646,
+                                "end": 648,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 646,
+                                    "end": 648
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "start": 651,
+                                "end": 652,
+                                "children": [
+                                  {
+                                    "kind": "int",
+                                    "start": 651,
+                                    "end": 652
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field_initializer",
+                            "start": 654,
+                            "end": 668,
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "start": 654,
+                                "end": 658,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 654,
+                                    "end": 658
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "start": 661,
+                                "end": 668,
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "start": 661,
+                                    "end": 668
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "brace_expression",
+                    "start": 672,
+                    "end": 696,
+                    "children": [
+                      {
+                        "kind": "field_initializers",
+                        "start": 674,
+                        "end": 694,
+                        "children": [
+                          {
+                            "kind": "field_initializer",
+                            "start": 674,
+                            "end": 680,
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "start": 674,
+                                "end": 676,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 674,
+                                    "end": 676
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "start": 679,
+                                "end": 680,
+                                "children": [
+                                  {
+                                    "kind": "int",
+                                    "start": 679,
+                                    "end": 680
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field_initializer",
+                            "start": 682,
+                            "end": 694,
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "start": 682,
+                                "end": 686,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 682,
+                                    "end": 686
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "start": 689,
+                                "end": 694,
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "start": 689,
+                                    "end": 694
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "brace_expression",
+                    "start": 698,
+                    "end": 726,
+                    "children": [
+                      {
+                        "kind": "field_initializers",
+                        "start": 700,
+                        "end": 724,
+                        "children": [
+                          {
+                            "kind": "field_initializer",
+                            "start": 700,
+                            "end": 706,
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "start": 700,
+                                "end": 702,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 700,
+                                    "end": 702
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "start": 705,
+                                "end": 706,
+                                "children": [
+                                  {
+                                    "kind": "int",
+                                    "start": 705,
+                                    "end": 706
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field_initializer",
+                            "start": 708,
+                            "end": 724,
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "start": 708,
+                                "end": 712,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 708,
+                                    "end": 712
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "start": 715,
+                                "end": 724,
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "start": 715,
+                                    "end": 724
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "value_declaration",
+        "start": 728,
+        "end": 882,
+        "children": [
+          {
+            "kind": "function_or_value_defn",
+            "start": 728,
+            "end": 882,
+            "children": [
+              {
+                "kind": "value_declaration_left",
+                "start": 732,
+                "end": 738,
+                "children": [
+                  {
+                    "kind": "identifier_pattern",
+                    "start": 732,
+                    "end": 738,
+                    "children": [
+                      {
+                        "kind": "long_identifier_or_op",
+                        "start": 732,
+                        "end": 738,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 732,
+                            "end": 738
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "postfix_type",
+                "start": 740,
+                "end": 750,
+                "children": [
+                  {
+                    "kind": "simple_type",
+                    "start": 740,
+                    "end": 745,
+                    "children": [
+                      {
+                        "kind": "long_identifier",
+                        "start": 740,
+                        "end": 745,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 740,
+                            "end": 745
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "long_identifier",
+                    "start": 746,
+                    "end": 750,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 746,
+                        "end": 750
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "list_expression",
+                "start": 753,
+                "end": 882,
+                "children": [
+                  {
+                    "kind": "brace_expression",
+                    "start": 754,
+                    "end": 795,
+                    "children": [
+                      {
+                        "kind": "field_initializers",
+                        "start": 756,
+                        "end": 793,
+                        "children": [
+                          {
+                            "kind": "field_initializer",
+                            "start": 756,
+                            "end": 764,
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "start": 756,
+                                "end": 758,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 756,
+                                    "end": 758
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "start": 761,
+                                "end": 764,
+                                "children": [
+                                  {
+                                    "kind": "int",
+                                    "start": 761,
+                                    "end": 764
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field_initializer",
+                            "start": 766,
+                            "end": 780,
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "start": 766,
+                                "end": 776,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 766,
+                                    "end": 776
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "start": 779,
+                                "end": 780,
+                                "children": [
+                                  {
+                                    "kind": "int",
+                                    "start": 779,
+                                    "end": 780
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field_initializer",
+                            "start": 782,
+                            "end": 793,
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "start": 782,
+                                "end": 787,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 782,
+                                    "end": 787
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "start": 790,
+                                "end": 793,
+                                "children": [
+                                  {
+                                    "kind": "int",
+                                    "start": 790,
+                                    "end": 793
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "brace_expression",
+                    "start": 797,
+                    "end": 838,
+                    "children": [
+                      {
+                        "kind": "field_initializers",
+                        "start": 799,
+                        "end": 836,
+                        "children": [
+                          {
+                            "kind": "field_initializer",
+                            "start": 799,
+                            "end": 807,
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "start": 799,
+                                "end": 801,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 799,
+                                    "end": 801
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "start": 804,
+                                "end": 807,
+                                "children": [
+                                  {
+                                    "kind": "int",
+                                    "start": 804,
+                                    "end": 807
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field_initializer",
+                            "start": 809,
+                            "end": 823,
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "start": 809,
+                                "end": 819,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 809,
+                                    "end": 819
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "start": 822,
+                                "end": 823,
+                                "children": [
+                                  {
+                                    "kind": "int",
+                                    "start": 822,
+                                    "end": 823
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field_initializer",
+                            "start": 825,
+                            "end": 836,
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "start": 825,
+                                "end": 830,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 825,
+                                    "end": 830
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "start": 833,
+                                "end": 836,
+                                "children": [
+                                  {
+                                    "kind": "int",
+                                    "start": 833,
+                                    "end": 836
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "brace_expression",
+                    "start": 840,
+                    "end": 881,
+                    "children": [
+                      {
+                        "kind": "field_initializers",
+                        "start": 842,
+                        "end": 879,
+                        "children": [
+                          {
+                            "kind": "field_initializer",
+                            "start": 842,
+                            "end": 850,
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "start": 842,
+                                "end": 844,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 842,
+                                    "end": 844
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "start": 847,
+                                "end": 850,
+                                "children": [
+                                  {
+                                    "kind": "int",
+                                    "start": 847,
+                                    "end": 850
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field_initializer",
+                            "start": 852,
+                            "end": 866,
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "start": 852,
+                                "end": 862,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 852,
+                                    "end": 862
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "start": 865,
+                                "end": 866,
+                                "children": [
+                                  {
+                                    "kind": "int",
+                                    "start": 865,
+                                    "end": 866
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field_initializer",
+                            "start": 868,
+                            "end": 879,
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "start": 868,
+                                "end": 873,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 868,
+                                    "end": 873
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "start": 876,
+                                "end": 879,
+                                "children": [
+                                  {
+                                    "kind": "int",
+                                    "start": 876,
+                                    "end": 879
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "value_declaration",
+        "start": 883,
+        "end": 1060,
+        "children": [
+          {
+            "kind": "function_or_value_defn",
+            "start": 883,
+            "end": 1060,
+            "children": [
+              {
+                "kind": "value_declaration_left",
+                "start": 887,
+                "end": 893,
+                "children": [
+                  {
+                    "kind": "identifier_pattern",
+                    "start": 887,
+                    "end": 893,
+                    "children": [
+                      {
+                        "kind": "long_identifier_or_op",
+                        "start": 887,
+                        "end": 893,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 887,
+                            "end": 893
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "postfix_type",
+                "start": 895,
+                "end": 905,
+                "children": [
+                  {
+                    "kind": "simple_type",
+                    "start": 895,
+                    "end": 900,
+                    "children": [
+                      {
+                        "kind": "long_identifier",
+                        "start": 895,
+                        "end": 900,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 895,
+                            "end": 900
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "long_identifier",
+                    "start": 901,
+                    "end": 905,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 901,
+                        "end": 905
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "list_expression",
+                "start": 908,
+                "end": 1060,
+                "children": [
+                  {
+                    "kind": "for_expression",
+                    "start": 910,
+                    "end": 1058,
+                    "children": [
+                      {
+                        "kind": "identifier_pattern",
+                        "start": 914,
+                        "end": 915,
+                        "children": [
+                          {
+                            "kind": "long_identifier_or_op",
+                            "start": 914,
+                            "end": 915,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 914,
+                                "end": 915
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "long_identifier_or_op",
+                        "start": 919,
+                        "end": 925,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 919,
+                            "end": 925
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "for_expression",
+                        "start": 929,
+                        "end": 1058,
+                        "children": [
+                          {
+                            "kind": "identifier_pattern",
+                            "start": 933,
+                            "end": 934,
+                            "children": [
+                              {
+                                "kind": "long_identifier_or_op",
+                                "start": 933,
+                                "end": 934,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 933,
+                                    "end": 934
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "long_identifier_or_op",
+                            "start": 938,
+                            "end": 947,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 938,
+                                "end": 947
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "prefixed_expression",
+                            "start": 951,
+                            "end": 1058,
+                            "children": [
+                              {
+                                "kind": "brace_expression",
+                                "start": 957,
+                                "end": 1058,
+                                "children": [
+                                  {
+                                    "kind": "field_initializers",
+                                    "start": 959,
+                                    "end": 1056,
+                                    "children": [
+                                      {
+                                        "kind": "field_initializer",
+                                        "start": 959,
+                                        "end": 973,
+                                        "children": [
+                                          {
+                                            "kind": "long_identifier",
+                                            "start": 959,
+                                            "end": 966,
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "start": 959,
+                                                "end": 966
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "long_identifier_or_op",
+                                            "start": 969,
+                                            "end": 973,
+                                            "children": [
+                                              {
+                                                "kind": "long_identifier",
+                                                "start": 969,
+                                                "end": 973,
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "start": 969,
+                                                    "end": 970
+                                                  },
+                                                  {
+                                                    "kind": "identifier",
+                                                    "start": 971,
+                                                    "end": 973
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "field_initializer",
+                                        "start": 975,
+                                        "end": 1005,
+                                        "children": [
+                                          {
+                                            "kind": "long_identifier",
+                                            "start": 975,
+                                            "end": 990,
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "start": 975,
+                                                "end": 990
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "long_identifier_or_op",
+                                            "start": 993,
+                                            "end": 1005,
+                                            "children": [
+                                              {
+                                                "kind": "long_identifier",
+                                                "start": 993,
+                                                "end": 1005,
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "start": 993,
+                                                    "end": 994
+                                                  },
+                                                  {
+                                                    "kind": "identifier",
+                                                    "start": 995,
+                                                    "end": 1005
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "field_initializer",
+                                        "start": 1007,
+                                        "end": 1034,
+                                        "children": [
+                                          {
+                                            "kind": "long_identifier",
+                                            "start": 1007,
+                                            "end": 1025,
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "start": 1007,
+                                                "end": 1025
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "long_identifier_or_op",
+                                            "start": 1028,
+                                            "end": 1034,
+                                            "children": [
+                                              {
+                                                "kind": "long_identifier",
+                                                "start": 1028,
+                                                "end": 1034,
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "start": 1028,
+                                                    "end": 1029
+                                                  },
+                                                  {
+                                                    "kind": "identifier",
+                                                    "start": 1030,
+                                                    "end": 1034
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "field_initializer",
+                                        "start": 1036,
+                                        "end": 1056,
+                                        "children": [
+                                          {
+                                            "kind": "long_identifier",
+                                            "start": 1036,
+                                            "end": 1046,
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "start": 1036,
+                                                "end": 1046
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "long_identifier_or_op",
+                                            "start": 1049,
+                                            "end": 1056,
+                                            "children": [
+                                              {
+                                                "kind": "long_identifier",
+                                                "start": 1049,
+                                                "end": 1056,
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "start": 1049,
+                                                    "end": 1050
+                                                  },
+                                                  {
+                                                    "kind": "identifier",
+                                                    "start": 1051,
+                                                    "end": 1056
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "application_expression",
+        "start": 1061,
+        "end": 1129,
+        "children": [
+          {
+            "kind": "application_expression",
+            "start": 1061,
+            "end": 1073,
+            "children": [
+              {
+                "kind": "long_identifier_or_op",
+                "start": 1061,
+                "end": 1068,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "start": 1061,
+                    "end": 1068
+                  }
+                ]
+              },
+              {
+                "kind": "const",
+                "start": 1069,
+                "end": 1073,
+                "children": [
+                  {
+                    "kind": "string",
+                    "start": 1069,
+                    "end": 1073
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "paren_expression",
+            "start": 1074,
+            "end": 1129,
+            "children": [
+              {
+                "kind": "application_expression",
+                "start": 1075,
+                "end": 1128,
+                "children": [
+                  {
+                    "kind": "long_identifier_or_op",
+                    "start": 1075,
+                    "end": 1081,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 1075,
+                        "end": 1081
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "const",
+                    "start": 1082,
+                    "end": 1128,
+                    "children": [
+                      {
+                        "kind": "string",
+                        "start": 1082,
+                        "end": 1128
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "ERROR",
+        "start": 1130,
+        "end": 1388,
+        "children": [
+          {
+            "kind": "identifier_pattern",
+            "start": 1134,
+            "end": 1139,
+            "children": [
+              {
+                "kind": "long_identifier_or_op",
+                "start": 1134,
+                "end": 1139,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "start": 1134,
+                    "end": 1139
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "long_identifier_or_op",
+            "start": 1143,
+            "end": 1149,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 1143,
+                "end": 1149
+              }
+            ]
+          },
+          {
+            "kind": "application_expression",
+            "start": 1153,
+            "end": 1165,
+            "children": [
+              {
+                "kind": "long_identifier_or_op",
+                "start": 1153,
+                "end": 1160,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "start": 1153,
+                    "end": 1160
+                  }
+                ]
+              },
+              {
+                "kind": "const",
+                "start": 1161,
+                "end": 1165,
+                "children": [
+                  {
+                    "kind": "string",
+                    "start": 1161,
+                    "end": 1165
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "paren_expression",
+            "start": 1166,
+            "end": 1388,
+            "children": [
+              {
+                "kind": "application_expression",
+                "start": 1167,
+                "end": 1387,
+                "children": [
+                  {
+                    "kind": "application_expression",
+                    "start": 1167,
+                    "end": 1184,
+                    "children": [
+                      {
+                        "kind": "long_identifier_or_op",
+                        "start": 1167,
+                        "end": 1180,
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "start": 1167,
+                            "end": 1180,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 1167,
+                                "end": 1173
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 1174,
+                                "end": 1180
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "const",
+                        "start": 1181,
+                        "end": 1184,
+                        "children": [
+                          {
+                            "kind": "string",
+                            "start": 1181,
+                            "end": 1184
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "list_expression",
+                    "start": 1185,
+                    "end": 1387,
+                    "children": [
+                      {
+                        "kind": "application_expression",
+                        "start": 1186,
+                        "end": 1200,
+                        "children": [
+                          {
+                            "kind": "long_identifier_or_op",
+                            "start": 1186,
+                            "end": 1192,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 1186,
+                                "end": 1192
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "const",
+                            "start": 1193,
+                            "end": 1200,
+                            "children": [
+                              {
+                                "kind": "string",
+                                "start": 1193,
+                                "end": 1200
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "application_expression",
+                        "start": 1202,
+                        "end": 1224,
+                        "children": [
+                          {
+                            "kind": "long_identifier_or_op",
+                            "start": 1202,
+                            "end": 1208,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 1202,
+                                "end": 1208
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "paren_expression",
+                            "start": 1209,
+                            "end": 1224,
+                            "children": [
+                              {
+                                "kind": "long_identifier_or_op",
+                                "start": 1210,
+                                "end": 1223,
+                                "children": [
+                                  {
+                                    "kind": "long_identifier",
+                                    "start": 1210,
+                                    "end": 1223,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 1210,
+                                        "end": 1215
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "start": 1216,
+                                        "end": 1223
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "application_expression",
+                        "start": 1226,
+                        "end": 1247,
+                        "children": [
+                          {
+                            "kind": "long_identifier_or_op",
+                            "start": 1226,
+                            "end": 1232,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 1226,
+                                "end": 1232
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "const",
+                            "start": 1233,
+                            "end": 1247,
+                            "children": [
+                              {
+                                "kind": "string",
+                                "start": 1233,
+                                "end": 1247
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "application_expression",
+                        "start": 1249,
+                        "end": 1279,
+                        "children": [
+                          {
+                            "kind": "long_identifier_or_op",
+                            "start": 1249,
+                            "end": 1255,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 1249,
+                                "end": 1255
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "paren_expression",
+                            "start": 1256,
+                            "end": 1279,
+                            "children": [
+                              {
+                                "kind": "long_identifier_or_op",
+                                "start": 1257,
+                                "end": 1278,
+                                "children": [
+                                  {
+                                    "kind": "long_identifier",
+                                    "start": 1257,
+                                    "end": 1278,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 1257,
+                                        "end": 1262
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "start": 1263,
+                                        "end": 1278
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "application_expression",
+                        "start": 1281,
+                        "end": 1300,
+                        "children": [
+                          {
+                            "kind": "long_identifier_or_op",
+                            "start": 1281,
+                            "end": 1287,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 1281,
+                                "end": 1287
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "const",
+                            "start": 1288,
+                            "end": 1300,
+                            "children": [
+                              {
+                                "kind": "string",
+                                "start": 1288,
+                                "end": 1300
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "application_expression",
+                        "start": 1302,
+                        "end": 1327,
+                        "children": [
+                          {
+                            "kind": "long_identifier_or_op",
+                            "start": 1302,
+                            "end": 1308,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 1302,
+                                "end": 1308
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "paren_expression",
+                            "start": 1309,
+                            "end": 1327,
+                            "children": [
+                              {
+                                "kind": "long_identifier_or_op",
+                                "start": 1310,
+                                "end": 1326,
+                                "children": [
+                                  {
+                                    "kind": "long_identifier",
+                                    "start": 1310,
+                                    "end": 1326,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 1310,
+                                        "end": 1315
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "start": 1316,
+                                        "end": 1326
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "application_expression",
+                        "start": 1329,
+                        "end": 1351,
+                        "children": [
+                          {
+                            "kind": "long_identifier_or_op",
+                            "start": 1329,
+                            "end": 1335,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 1329,
+                                "end": 1335
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "const",
+                            "start": 1336,
+                            "end": 1351,
+                            "children": [
+                              {
+                                "kind": "string",
+                                "start": 1336,
+                                "end": 1351
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "application_expression",
+                        "start": 1353,
+                        "end": 1386,
+                        "children": [
+                          {
+                            "kind": "long_identifier_or_op",
+                            "start": 1353,
+                            "end": 1359,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 1353,
+                                "end": 1359
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "paren_expression",
+                            "start": 1360,
+                            "end": 1386,
+                            "children": [
+                              {
+                                "kind": "long_identifier_or_op",
+                                "start": 1361,
+                                "end": 1385,
+                                "children": [
+                                  {
+                                    "kind": "long_identifier",
+                                    "start": 1361,
+                                    "end": 1385,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 1361,
+                                        "end": 1366
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "start": 1367,
+                                        "end": 1385
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }
