@@ -22,7 +22,42 @@ type Node struct {
 }
 
 // SourceFile is the root of an Erlang program.
-type SourceFile struct{ Node }
+// SourceFile is the root node for an Erlang source file.
+type SourceFile Node
+
+// The following aliases provide a slightly typed representation mirroring
+// tree-sitter's node kinds that appear in the golden tests.  Only nodes that
+// can carry a value are represented here to keep the structure minimal.
+type (
+	Error             Node
+	AnonymousFun      Node
+	Arity             Node
+	Atom              Node
+	BinaryOpExpr      Node
+	Call              Node
+	ClauseBody        Node
+	Comment           Node
+	ExportAttribute   Node
+	ExprArgs          Node
+	Fa                Node
+	FunClause         Node
+	FunDecl           Node
+	FunctionClause    Node
+	Generator         Node
+	Integer           Node
+	LcExprs           Node
+	List              Node
+	ListComprehension Node
+	MapExpr           Node
+	MapField          Node
+	MatchExpr         Node
+	ModuleAttribute   Node
+	ParenExpr         Node
+	Remote            Node
+	RemoteModule      Node
+	String            Node
+	Var               Node
+)
 
 // Option controls how the AST is generated.
 type Option struct {

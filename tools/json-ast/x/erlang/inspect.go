@@ -26,7 +26,7 @@ func InspectWithOption(src string, opt Option) (*Program, error) {
 	if root == nil {
 		return &Program{}, nil
 	}
-	return &Program{Root: &SourceFile{Node: *root}}, nil
+	return &Program{Root: (*SourceFile)(root)}, nil
 }
 
 // Inspect parses Erlang source code using tree-sitter and returns a Program.
