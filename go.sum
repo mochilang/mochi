@@ -1,3 +1,5 @@
+github.com/6cdh/tree-sitter-scheme v0.24.7 h1:yhRP+u4lRA4bCxq4dEETb+osMcwvqtG9hSYU9iGFgRk=
+github.com/6cdh/tree-sitter-scheme v0.24.7/go.mod h1:xgkD400pSRfWngDRCv8PwtmHbNWwkJGAKEXxef3q0Mg=
 github.com/UserNobody14/tree-sitter-dart v0.0.0-20250228221807-80e23c07b644 h1:k4tn8w6Ff/lqZ3ePeBEAviVFpyiuOKJ39ATc3eD2ibE=
 github.com/UserNobody14/tree-sitter-dart v0.0.0-20250228221807-80e23c07b644/go.mod h1:6zSIbyfHyxL/+XWRHElGLw+EUPYbDOyhDqIiAX6svrE=
 github.com/akrennmair/pascal v0.0.0-20230115195835-14bcf05a6156 h1:9TcsfXYLZ4uwgMoU1lHv4mOkvVSvT3jb79bUTnRk4m0=

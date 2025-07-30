@@ -39,9 +39,14 @@ require (
 	gopkg.in/yaml.v3 v3.0.1
 )
 
+replace github.com/tree-sitter/tree-sitter-scheme => github.com/6cdh/tree-sitter-scheme v0.24.7
+
 require github.com/tree-sitter/tree-sitter-scala v0.24.0
 
-require github.com/tree-sitter-grammars/tree-sitter-lua v0.3.0
+require (
+        github.com/tree-sitter-grammars/tree-sitter-lua v0.3.0
+        github.com/tree-sitter/tree-sitter-scheme v0.24.7
+)
 
 require (
 	github.com/alexflint/go-scalar v1.2.0 // indirect
