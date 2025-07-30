@@ -13,23 +13,23 @@ import (
 type Node struct {
 	Kind     string `json:"kind"`
 	Text     string `json:"text,omitempty"`
-	Start    int    `json:"start"`
-	StartCol int    `json:"startCol"`
-	End      int    `json:"end"`
-	EndCol   int    `json:"endCol"`
+	Start    int    `json:"start,omitempty"`
+	End      int    `json:"end,omitempty"`
+	StartCol int    `json:"startCol,omitempty"`
+	EndCol   int    `json:"endCol,omitempty"`
 	Children []Node `json:"children,omitempty"`
 }
 
 // convertNode converts a tree-sitter node to our Node representation.
-func convertNode(n *sitter.Node, src []byte) (Node, bool) {
+func convertNode(n *sitter.Node, src []byte, withPos bool) (Node, bool) {
 	start := n.StartPoint()
 	end := n.EndPoint()
-	node := Node{
-		Kind:     n.Type(),
-		Start:    int(start.Row) + 1,
-		StartCol: int(start.Column),
-		End:      int(end.Row) + 1,
-		EndCol:   int(end.Column),
+	node := Node{Kind: n.Type()}
+	if withPos {
+		node.Start = int(start.Row) + 1
+		node.StartCol = int(start.Column)
+		node.End = int(end.Row) + 1
+		node.EndCol = int(end.Column)
 	}
 
 	if n.NamedChildCount() == 0 {
@@ -49,7 +49,7 @@ func convertNode(n *sitter.Node, src []byte) (Node, bool) {
 		if child == nil {
 			continue
 		}
-		if cn, ok := convertNode(child, src); ok {
+		if cn, ok := convertNode(child, src, withPos); ok {
 			node.Children = append(node.Children, cn)
 		}
 	}
