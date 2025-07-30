@@ -1,593 +1,308 @@
 {
-  "root": [
+  "statements": [
     {
-      "nodeType": "Stmt_Function",
-      "attributes": {
-        "startLine": 2,
-        "startTokenPos": 1,
-        "startFilePos": 6,
-        "endLine": 6,
-        "endTokenPos": 37,
-        "endFilePos": 85
-      },
-      "byRef": false,
-      "name": {
-        "nodeType": "Identifier",
-        "attributes": {
-          "startLine": 2,
-          "startTokenPos": 3,
-          "startFilePos": 15,
-          "endLine": 2,
-          "endTokenPos": 3,
-          "endFilePos": 23
-        },
-        "name": "makeAdder"
-      },
-      "params": [
+      "kind": "function_definition",
+      "children": [
         {
-          "nodeType": "Param",
-          "attributes": {
-            "startLine": 2,
-            "startTokenPos": 5,
-            "startFilePos": 25,
-            "endLine": 2,
-            "endTokenPos": 5,
-            "endFilePos": 26
-          },
-          "type": null,
-          "byRef": false,
-          "variadic": false,
-          "var": {
-            "nodeType": "Expr_Variable",
-            "attributes": {
-              "startLine": 2,
-              "startTokenPos": 5,
-              "startFilePos": 25,
-              "endLine": 2,
-              "endTokenPos": 5,
-              "endFilePos": 26
-            },
-            "name": "n"
-          },
-          "default": null,
-          "flags": 0,
-          "attrGroups": [],
-          "hooks": []
-        }
-      ],
-      "returnType": null,
-      "stmts": [
+          "kind": "name",
+          "text": "makeAdder"
+        },
         {
-          "nodeType": "Stmt_Return",
-          "attributes": {
-            "startLine": 3,
-            "startTokenPos": 10,
-            "startFilePos": 33,
-            "endLine": 5,
-            "endTokenPos": 35,
-            "endFilePos": 83
-          },
-          "expr": {
-            "nodeType": "Expr_Closure",
-            "attributes": {
-              "startLine": 3,
-              "startTokenPos": 12,
-              "startFilePos": 40,
-              "endLine": 5,
-              "endTokenPos": 34,
-              "endFilePos": 82
-            },
-            "static": false,
-            "byRef": false,
-            "params": [
-              {
-                "nodeType": "Param",
-                "attributes": {
-                  "startLine": 3,
-                  "startTokenPos": 14,
-                  "startFilePos": 49,
-                  "endLine": 3,
-                  "endTokenPos": 14,
-                  "endFilePos": 50
-                },
-                "type": null,
-                "byRef": false,
-                "variadic": false,
-                "var": {
-                  "nodeType": "Expr_Variable",
-                  "attributes": {
-                    "startLine": 3,
-                    "startTokenPos": 14,
-                    "startFilePos": 49,
-                    "endLine": 3,
-                    "endTokenPos": 14,
-                    "endFilePos": 50
-                  },
-                  "name": "x"
-                },
-                "default": null,
-                "flags": 0,
-                "attrGroups": [],
-                "hooks": []
-              }
-            ],
-            "uses": [
-              {
-                "nodeType": "ClosureUse",
-                "attributes": {
-                  "startLine": 3,
-                  "startTokenPos": 20,
-                  "startFilePos": 58,
-                  "endLine": 3,
-                  "endTokenPos": 20,
-                  "endFilePos": 59
-                },
-                "var": {
-                  "nodeType": "Expr_Variable",
-                  "attributes": {
-                    "startLine": 3,
-                    "startTokenPos": 20,
-                    "startFilePos": 58,
-                    "endLine": 3,
-                    "endTokenPos": 20,
-                    "endFilePos": 59
-                  },
-                  "name": "n"
-                },
-                "byRef": false
-              }
-            ],
-            "returnType": null,
-            "stmts": [
-              {
-                "nodeType": "Stmt_Return",
-                "attributes": {
-                  "startLine": 4,
-                  "startTokenPos": 25,
-                  "startFilePos": 66,
-                  "endLine": 4,
-                  "endTokenPos": 32,
-                  "endFilePos": 80
-                },
-                "expr": {
-                  "nodeType": "Expr_BinaryOp_Plus",
-                  "attributes": {
-                    "startLine": 4,
-                    "startTokenPos": 27,
-                    "startFilePos": 73,
-                    "endLine": 4,
-                    "endTokenPos": 31,
-                    "endFilePos": 79
-                  },
-                  "left": {
-                    "nodeType": "Expr_Variable",
-                    "attributes": {
-                      "startLine": 4,
-                      "startTokenPos": 27,
-                      "startFilePos": 73,
-                      "endLine": 4,
-                      "endTokenPos": 27,
-                      "endFilePos": 74
-                    },
-                    "name": "x"
-                  },
-                  "right": {
-                    "nodeType": "Expr_Variable",
-                    "attributes": {
-                      "startLine": 4,
-                      "startTokenPos": 31,
-                      "startFilePos": 78,
-                      "endLine": 4,
-                      "endTokenPos": 31,
-                      "endFilePos": 79
-                    },
-                    "name": "n"
-                  }
-                }
-              }
-            ],
-            "attrGroups": []
-          }
-        }
-      ],
-      "attrGroups": []
-    },
-    {
-      "nodeType": "Stmt_Expression",
-      "attributes": {
-        "startLine": 7,
-        "startTokenPos": 39,
-        "startFilePos": 87,
-        "endLine": 7,
-        "endTokenPos": 47,
-        "endFilePos": 109
-      },
-      "expr": {
-        "nodeType": "Expr_Assign",
-        "attributes": {
-          "startLine": 7,
-          "startTokenPos": 39,
-          "startFilePos": 87,
-          "endLine": 7,
-          "endTokenPos": 46,
-          "endFilePos": 108
-        },
-        "var": {
-          "nodeType": "Expr_Variable",
-          "attributes": {
-            "startLine": 7,
-            "startTokenPos": 39,
-            "startFilePos": 87,
-            "endLine": 7,
-            "endTokenPos": 39,
-            "endFilePos": 92
-          },
-          "name": "add10"
-        },
-        "expr": {
-          "nodeType": "Expr_FuncCall",
-          "attributes": {
-            "startLine": 7,
-            "startTokenPos": 43,
-            "startFilePos": 96,
-            "endLine": 7,
-            "endTokenPos": 46,
-            "endFilePos": 108
-          },
-          "name": {
-            "nodeType": "Name",
-            "attributes": {
-              "startLine": 7,
-              "startTokenPos": 43,
-              "startFilePos": 96,
-              "endLine": 7,
-              "endTokenPos": 43,
-              "endFilePos": 104
-            },
-            "name": "makeAdder"
-          },
-          "args": [
+          "kind": "formal_parameters",
+          "children": [
             {
-              "nodeType": "Arg",
-              "attributes": {
-                "startLine": 7,
-                "startTokenPos": 45,
-                "startFilePos": 106,
-                "endLine": 7,
-                "endTokenPos": 45,
-                "endFilePos": 107
-              },
-              "name": null,
-              "value": {
-                "nodeType": "Scalar_Int",
-                "attributes": {
-                  "startLine": 7,
-                  "startTokenPos": 45,
-                  "startFilePos": 106,
-                  "endLine": 7,
-                  "endTokenPos": 45,
-                  "endFilePos": 107,
-                  "rawValue": "10",
-                  "kind": 10
-                },
-                "value": 10
-              },
-              "byRef": false,
-              "unpack": false
+              "kind": "simple_parameter",
+              "children": [
+                {
+                  "kind": "variable_name",
+                  "children": [
+                    {
+                      "kind": "name",
+                      "text": "n"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "compound_statement",
+          "children": [
+            {
+              "kind": "return_statement",
+              "children": [
+                {
+                  "kind": "anonymous_function_creation_expression",
+                  "children": [
+                    {
+                      "kind": "formal_parameters",
+                      "children": [
+                        {
+                          "kind": "simple_parameter",
+                          "children": [
+                            {
+                              "kind": "variable_name",
+                              "children": [
+                                {
+                                  "kind": "name",
+                                  "text": "x"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "anonymous_function_use_clause",
+                      "children": [
+                        {
+                          "kind": "variable_name",
+                          "children": [
+                            {
+                              "kind": "name",
+                              "text": "n"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "compound_statement",
+                      "children": [
+                        {
+                          "kind": "return_statement",
+                          "children": [
+                            {
+                              "kind": "binary_expression",
+                              "children": [
+                                {
+                                  "kind": "variable_name",
+                                  "children": [
+                                    {
+                                      "kind": "name",
+                                      "text": "x"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "variable_name",
+                                  "children": [
+                                    {
+                                      "kind": "name",
+                                      "text": "n"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
-      }
+      ]
     },
     {
-      "nodeType": "Stmt_Echo",
-      "attributes": {
-        "startLine": 8,
-        "startTokenPos": 49,
-        "startFilePos": 111,
-        "endLine": 8,
-        "endTokenPos": 83,
-        "endFilePos": 189
-      },
-      "exprs": [
+      "kind": "expression_statement",
+      "children": [
         {
-          "nodeType": "Expr_Ternary",
-          "attributes": {
-            "startLine": 8,
-            "startTokenPos": 52,
-            "startFilePos": 117,
-            "endLine": 8,
-            "endTokenPos": 78,
-            "endFilePos": 178
-          },
-          "cond": {
-            "nodeType": "Expr_FuncCall",
-            "attributes": {
-              "startLine": 8,
-              "startTokenPos": 52,
-              "startFilePos": 117,
-              "endLine": 8,
-              "endTokenPos": 58,
-              "endFilePos": 135
+          "kind": "assignment_expression",
+          "children": [
+            {
+              "kind": "variable_name",
+              "children": [
+                {
+                  "kind": "name",
+                  "text": "add10"
+                }
+              ]
             },
-            "name": {
-              "nodeType": "Name",
-              "attributes": {
-                "startLine": 8,
-                "startTokenPos": 52,
-                "startFilePos": 117,
-                "endLine": 8,
-                "endTokenPos": 52,
-                "endFilePos": 124
-              },
-              "name": "is_float"
-            },
-            "args": [
-              {
-                "nodeType": "Arg",
-                "attributes": {
-                  "startLine": 8,
-                  "startTokenPos": 54,
-                  "startFilePos": 126,
-                  "endLine": 8,
-                  "endTokenPos": 57,
-                  "endFilePos": 134
+            {
+              "kind": "function_call_expression",
+              "children": [
+                {
+                  "kind": "name",
+                  "text": "makeAdder"
                 },
-                "name": null,
-                "value": {
-                  "nodeType": "Expr_FuncCall",
-                  "attributes": {
-                    "startLine": 8,
-                    "startTokenPos": 54,
-                    "startFilePos": 126,
-                    "endLine": 8,
-                    "endTokenPos": 57,
-                    "endFilePos": 134
-                  },
-                  "name": {
-                    "nodeType": "Expr_Variable",
-                    "attributes": {
-                      "startLine": 8,
-                      "startTokenPos": 54,
-                      "startFilePos": 126,
-                      "endLine": 8,
-                      "endTokenPos": 54,
-                      "endFilePos": 131
-                    },
-                    "name": "add10"
-                  },
-                  "args": [
+                {
+                  "kind": "arguments",
+                  "children": [
                     {
-                      "nodeType": "Arg",
-                      "attributes": {
-                        "startLine": 8,
-                        "startTokenPos": 56,
-                        "startFilePos": 133,
-                        "endLine": 8,
-                        "endTokenPos": 56,
-                        "endFilePos": 133
-                      },
-                      "name": null,
-                      "value": {
-                        "nodeType": "Scalar_Int",
-                        "attributes": {
-                          "startLine": 8,
-                          "startTokenPos": 56,
-                          "startFilePos": 133,
-                          "endLine": 8,
-                          "endTokenPos": 56,
-                          "endFilePos": 133,
-                          "rawValue": "7",
-                          "kind": 10
-                        },
-                        "value": 7
-                      },
-                      "byRef": false,
-                      "unpack": false
+                      "kind": "argument",
+                      "children": [
+                        {
+                          "kind": "integer",
+                          "text": "10"
+                        }
+                      ]
                     }
                   ]
-                },
-                "byRef": false,
-                "unpack": false
-              }
-            ]
-          },
-          "if": {
-            "nodeType": "Expr_FuncCall",
-            "attributes": {
-              "startLine": 8,
-              "startTokenPos": 62,
-              "startFilePos": 139,
-              "endLine": 8,
-              "endTokenPos": 71,
-              "endFilePos": 166
-            },
-            "name": {
-              "nodeType": "Name",
-              "attributes": {
-                "startLine": 8,
-                "startTokenPos": 62,
-                "startFilePos": 139,
-                "endLine": 8,
-                "endTokenPos": 62,
-                "endFilePos": 149
-              },
-              "name": "json_encode"
-            },
-            "args": [
-              {
-                "nodeType": "Arg",
-                "attributes": {
-                  "startLine": 8,
-                  "startTokenPos": 64,
-                  "startFilePos": 151,
-                  "endLine": 8,
-                  "endTokenPos": 67,
-                  "endFilePos": 159
-                },
-                "name": null,
-                "value": {
-                  "nodeType": "Expr_FuncCall",
-                  "attributes": {
-                    "startLine": 8,
-                    "startTokenPos": 64,
-                    "startFilePos": 151,
-                    "endLine": 8,
-                    "endTokenPos": 67,
-                    "endFilePos": 159
-                  },
-                  "name": {
-                    "nodeType": "Expr_Variable",
-                    "attributes": {
-                      "startLine": 8,
-                      "startTokenPos": 64,
-                      "startFilePos": 151,
-                      "endLine": 8,
-                      "endTokenPos": 64,
-                      "endFilePos": 156
-                    },
-                    "name": "add10"
-                  },
-                  "args": [
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "echo_statement",
+      "children": [
+        {
+          "kind": "sequence_expression",
+          "children": [
+            {
+              "kind": "parenthesized_expression",
+              "children": [
+                {
+                  "kind": "conditional_expression",
+                  "children": [
                     {
-                      "nodeType": "Arg",
-                      "attributes": {
-                        "startLine": 8,
-                        "startTokenPos": 66,
-                        "startFilePos": 158,
-                        "endLine": 8,
-                        "endTokenPos": 66,
-                        "endFilePos": 158
-                      },
-                      "name": null,
-                      "value": {
-                        "nodeType": "Scalar_Int",
-                        "attributes": {
-                          "startLine": 8,
-                          "startTokenPos": 66,
-                          "startFilePos": 158,
-                          "endLine": 8,
-                          "endTokenPos": 66,
-                          "endFilePos": 158,
-                          "rawValue": "7",
-                          "kind": 10
+                      "kind": "function_call_expression",
+                      "children": [
+                        {
+                          "kind": "name",
+                          "text": "is_float"
                         },
-                        "value": 7
-                      },
-                      "byRef": false,
-                      "unpack": false
+                        {
+                          "kind": "arguments",
+                          "children": [
+                            {
+                              "kind": "argument",
+                              "children": [
+                                {
+                                  "kind": "function_call_expression",
+                                  "children": [
+                                    {
+                                      "kind": "variable_name",
+                                      "children": [
+                                        {
+                                          "kind": "name",
+                                          "text": "add10"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": "arguments",
+                                      "children": [
+                                        {
+                                          "kind": "argument",
+                                          "children": [
+                                            {
+                                              "kind": "integer",
+                                              "text": "7"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "function_call_expression",
+                      "children": [
+                        {
+                          "kind": "name",
+                          "text": "json_encode"
+                        },
+                        {
+                          "kind": "arguments",
+                          "children": [
+                            {
+                              "kind": "argument",
+                              "children": [
+                                {
+                                  "kind": "function_call_expression",
+                                  "children": [
+                                    {
+                                      "kind": "variable_name",
+                                      "children": [
+                                        {
+                                          "kind": "name",
+                                          "text": "add10"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": "arguments",
+                                      "children": [
+                                        {
+                                          "kind": "argument",
+                                          "children": [
+                                            {
+                                              "kind": "integer",
+                                              "text": "7"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "argument",
+                              "children": [
+                                {
+                                  "kind": "integer",
+                                  "text": "1344"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "function_call_expression",
+                      "children": [
+                        {
+                          "kind": "variable_name",
+                          "children": [
+                            {
+                              "kind": "name",
+                              "text": "add10"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "arguments",
+                          "children": [
+                            {
+                              "kind": "argument",
+                              "children": [
+                                {
+                                  "kind": "integer",
+                                  "text": "7"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
                     }
                   ]
-                },
-                "byRef": false,
-                "unpack": false
-              },
-              {
-                "nodeType": "Arg",
-                "attributes": {
-                  "startLine": 8,
-                  "startTokenPos": 70,
-                  "startFilePos": 162,
-                  "endLine": 8,
-                  "endTokenPos": 70,
-                  "endFilePos": 165
-                },
-                "name": null,
-                "value": {
-                  "nodeType": "Scalar_Int",
-                  "attributes": {
-                    "startLine": 8,
-                    "startTokenPos": 70,
-                    "startFilePos": 162,
-                    "endLine": 8,
-                    "endTokenPos": 70,
-                    "endFilePos": 165,
-                    "rawValue": "1344",
-                    "kind": 10
-                  },
-                  "value": 1344
-                },
-                "byRef": false,
-                "unpack": false
-              }
-            ]
-          },
-          "else": {
-            "nodeType": "Expr_FuncCall",
-            "attributes": {
-              "startLine": 8,
-              "startTokenPos": 75,
-              "startFilePos": 170,
-              "endLine": 8,
-              "endTokenPos": 78,
-              "endFilePos": 178
+                }
+              ]
             },
-            "name": {
-              "nodeType": "Expr_Variable",
-              "attributes": {
-                "startLine": 8,
-                "startTokenPos": 75,
-                "startFilePos": 170,
-                "endLine": 8,
-                "endTokenPos": 75,
-                "endFilePos": 175
-              },
-              "name": "add10"
-            },
-            "args": [
-              {
-                "nodeType": "Arg",
-                "attributes": {
-                  "startLine": 8,
-                  "startTokenPos": 77,
-                  "startFilePos": 177,
-                  "endLine": 8,
-                  "endTokenPos": 77,
-                  "endFilePos": 177
-                },
-                "name": null,
-                "value": {
-                  "nodeType": "Scalar_Int",
-                  "attributes": {
-                    "startLine": 8,
-                    "startTokenPos": 77,
-                    "startFilePos": 177,
-                    "endLine": 8,
-                    "endTokenPos": 77,
-                    "endFilePos": 177,
-                    "rawValue": "7",
-                    "kind": 10
-                  },
-                  "value": 7
-                },
-                "byRef": false,
-                "unpack": false
-              }
-            ]
-          }
-        },
-        {
-          "nodeType": "Expr_ConstFetch",
-          "attributes": {
-            "startLine": 8,
-            "startTokenPos": 82,
-            "startFilePos": 182,
-            "endLine": 8,
-            "endTokenPos": 82,
-            "endFilePos": 188
-          },
-          "name": {
-            "nodeType": "Name",
-            "attributes": {
-              "startLine": 8,
-              "startTokenPos": 82,
-              "startFilePos": 182,
-              "endLine": 8,
-              "endTokenPos": 82,
-              "endFilePos": 188
-            },
-            "name": "PHP_EOL"
-          }
+            {
+              "kind": "name",
+              "text": "PHP_EOL"
+            }
+          ]
         }
       ]
     }

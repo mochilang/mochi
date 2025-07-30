@@ -1,1629 +1,807 @@
 {
-  "root": [
+  "statements": [
     {
-      "nodeType": "Stmt_Expression",
-      "attributes": {
-        "startLine": 2,
-        "startTokenPos": 1,
-        "startFilePos": 6,
-        "endLine": 2,
-        "endTokenPos": 117,
-        "endFilePos": 294
-      },
-      "expr": {
-        "nodeType": "Expr_Assign",
-        "attributes": {
-          "startLine": 2,
-          "startTokenPos": 1,
-          "startFilePos": 6,
-          "endLine": 2,
-          "endTokenPos": 116,
-          "endFilePos": 293
-        },
-        "var": {
-          "nodeType": "Expr_Variable",
-          "attributes": {
-            "startLine": 2,
-            "startTokenPos": 1,
-            "startFilePos": 6,
-            "endLine": 2,
-            "endTokenPos": 1,
-            "endFilePos": 14
-          },
-          "name": "products"
-        },
-        "expr": {
-          "nodeType": "Expr_Array",
-          "attributes": {
-            "startLine": 2,
-            "startTokenPos": 5,
-            "startFilePos": 18,
-            "endLine": 2,
-            "endTokenPos": 116,
-            "endFilePos": 293,
-            "kind": 2
-          },
-          "items": [
+      "kind": "expression_statement",
+      "children": [
+        {
+          "kind": "assignment_expression",
+          "children": [
             {
-              "nodeType": "ArrayItem",
-              "attributes": {
-                "startLine": 2,
-                "startTokenPos": 6,
-                "startFilePos": 19,
-                "endLine": 2,
-                "endTokenPos": 19,
-                "endFilePos": 55
-              },
-              "key": null,
-              "value": {
-                "nodeType": "Expr_Array",
-                "attributes": {
-                  "startLine": 2,
-                  "startTokenPos": 6,
-                  "startFilePos": 19,
-                  "endLine": 2,
-                  "endTokenPos": 19,
-                  "endFilePos": 55,
-                  "kind": 2
-                },
-                "items": [
-                  {
-                    "nodeType": "ArrayItem",
-                    "attributes": {
-                      "startLine": 2,
-                      "startTokenPos": 7,
-                      "startFilePos": 20,
-                      "endLine": 2,
-                      "endTokenPos": 11,
-                      "endFilePos": 37
-                    },
-                    "key": {
-                      "nodeType": "Scalar_String",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 7,
-                        "startFilePos": 20,
-                        "endLine": 2,
-                        "endTokenPos": 7,
-                        "endFilePos": 25,
-                        "kind": 2,
-                        "rawValue": "\"name\""
-                      },
-                      "value": "name"
-                    },
-                    "value": {
-                      "nodeType": "Scalar_String",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 11,
-                        "startFilePos": 30,
-                        "endLine": 2,
-                        "endTokenPos": 11,
-                        "endFilePos": 37,
-                        "kind": 2,
-                        "rawValue": "\"Laptop\""
-                      },
-                      "value": "Laptop"
-                    },
-                    "byRef": false,
-                    "unpack": false
-                  },
-                  {
-                    "nodeType": "ArrayItem",
-                    "attributes": {
-                      "startLine": 2,
-                      "startTokenPos": 14,
-                      "startFilePos": 40,
-                      "endLine": 2,
-                      "endTokenPos": 18,
-                      "endFilePos": 54
-                    },
-                    "key": {
-                      "nodeType": "Scalar_String",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 14,
-                        "startFilePos": 40,
-                        "endLine": 2,
-                        "endTokenPos": 14,
-                        "endFilePos": 46,
-                        "kind": 2,
-                        "rawValue": "\"price\""
-                      },
-                      "value": "price"
-                    },
-                    "value": {
-                      "nodeType": "Scalar_Int",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 18,
-                        "startFilePos": 51,
-                        "endLine": 2,
-                        "endTokenPos": 18,
-                        "endFilePos": 54,
-                        "rawValue": "1500",
-                        "kind": 10
-                      },
-                      "value": 1500
-                    },
-                    "byRef": false,
-                    "unpack": false
-                  }
-                ]
-              },
-              "byRef": false,
-              "unpack": false
+              "kind": "variable_name",
+              "children": [
+                {
+                  "kind": "name",
+                  "text": "products"
+                }
+              ]
             },
             {
-              "nodeType": "ArrayItem",
-              "attributes": {
-                "startLine": 2,
-                "startTokenPos": 22,
-                "startFilePos": 58,
-                "endLine": 2,
-                "endTokenPos": 35,
-                "endFilePos": 97
-              },
-              "key": null,
-              "value": {
-                "nodeType": "Expr_Array",
-                "attributes": {
-                  "startLine": 2,
-                  "startTokenPos": 22,
-                  "startFilePos": 58,
-                  "endLine": 2,
-                  "endTokenPos": 35,
-                  "endFilePos": 97,
-                  "kind": 2
+              "kind": "array_creation_expression",
+              "children": [
+                {
+                  "kind": "array_element_initializer",
+                  "children": [
+                    {
+                      "kind": "array_creation_expression",
+                      "children": [
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "name"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "Laptop"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "price"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "integer",
+                              "text": "1500"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
                 },
-                "items": [
-                  {
-                    "nodeType": "ArrayItem",
-                    "attributes": {
-                      "startLine": 2,
-                      "startTokenPos": 23,
-                      "startFilePos": 59,
-                      "endLine": 2,
-                      "endTokenPos": 27,
-                      "endFilePos": 80
-                    },
-                    "key": {
-                      "nodeType": "Scalar_String",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 23,
-                        "startFilePos": 59,
-                        "endLine": 2,
-                        "endTokenPos": 23,
-                        "endFilePos": 64,
-                        "kind": 2,
-                        "rawValue": "\"name\""
-                      },
-                      "value": "name"
-                    },
-                    "value": {
-                      "nodeType": "Scalar_String",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 27,
-                        "startFilePos": 69,
-                        "endLine": 2,
-                        "endTokenPos": 27,
-                        "endFilePos": 80,
-                        "kind": 2,
-                        "rawValue": "\"Smartphone\""
-                      },
-                      "value": "Smartphone"
-                    },
-                    "byRef": false,
-                    "unpack": false
-                  },
-                  {
-                    "nodeType": "ArrayItem",
-                    "attributes": {
-                      "startLine": 2,
-                      "startTokenPos": 30,
-                      "startFilePos": 83,
-                      "endLine": 2,
-                      "endTokenPos": 34,
-                      "endFilePos": 96
-                    },
-                    "key": {
-                      "nodeType": "Scalar_String",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 30,
-                        "startFilePos": 83,
-                        "endLine": 2,
-                        "endTokenPos": 30,
-                        "endFilePos": 89,
-                        "kind": 2,
-                        "rawValue": "\"price\""
-                      },
-                      "value": "price"
-                    },
-                    "value": {
-                      "nodeType": "Scalar_Int",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 34,
-                        "startFilePos": 94,
-                        "endLine": 2,
-                        "endTokenPos": 34,
-                        "endFilePos": 96,
-                        "rawValue": "900",
-                        "kind": 10
-                      },
-                      "value": 900
-                    },
-                    "byRef": false,
-                    "unpack": false
-                  }
-                ]
-              },
-              "byRef": false,
-              "unpack": false
-            },
-            {
-              "nodeType": "ArrayItem",
-              "attributes": {
-                "startLine": 2,
-                "startTokenPos": 38,
-                "startFilePos": 100,
-                "endLine": 2,
-                "endTokenPos": 51,
-                "endFilePos": 135
-              },
-              "key": null,
-              "value": {
-                "nodeType": "Expr_Array",
-                "attributes": {
-                  "startLine": 2,
-                  "startTokenPos": 38,
-                  "startFilePos": 100,
-                  "endLine": 2,
-                  "endTokenPos": 51,
-                  "endFilePos": 135,
-                  "kind": 2
+                {
+                  "kind": "array_element_initializer",
+                  "children": [
+                    {
+                      "kind": "array_creation_expression",
+                      "children": [
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "name"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "Smartphone"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "price"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "integer",
+                              "text": "900"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
                 },
-                "items": [
-                  {
-                    "nodeType": "ArrayItem",
-                    "attributes": {
-                      "startLine": 2,
-                      "startTokenPos": 39,
-                      "startFilePos": 101,
-                      "endLine": 2,
-                      "endTokenPos": 43,
-                      "endFilePos": 118
-                    },
-                    "key": {
-                      "nodeType": "Scalar_String",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 39,
-                        "startFilePos": 101,
-                        "endLine": 2,
-                        "endTokenPos": 39,
-                        "endFilePos": 106,
-                        "kind": 2,
-                        "rawValue": "\"name\""
-                      },
-                      "value": "name"
-                    },
-                    "value": {
-                      "nodeType": "Scalar_String",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 43,
-                        "startFilePos": 111,
-                        "endLine": 2,
-                        "endTokenPos": 43,
-                        "endFilePos": 118,
-                        "kind": 2,
-                        "rawValue": "\"Tablet\""
-                      },
-                      "value": "Tablet"
-                    },
-                    "byRef": false,
-                    "unpack": false
-                  },
-                  {
-                    "nodeType": "ArrayItem",
-                    "attributes": {
-                      "startLine": 2,
-                      "startTokenPos": 46,
-                      "startFilePos": 121,
-                      "endLine": 2,
-                      "endTokenPos": 50,
-                      "endFilePos": 134
-                    },
-                    "key": {
-                      "nodeType": "Scalar_String",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 46,
-                        "startFilePos": 121,
-                        "endLine": 2,
-                        "endTokenPos": 46,
-                        "endFilePos": 127,
-                        "kind": 2,
-                        "rawValue": "\"price\""
-                      },
-                      "value": "price"
-                    },
-                    "value": {
-                      "nodeType": "Scalar_Int",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 50,
-                        "startFilePos": 132,
-                        "endLine": 2,
-                        "endTokenPos": 50,
-                        "endFilePos": 134,
-                        "rawValue": "600",
-                        "kind": 10
-                      },
-                      "value": 600
-                    },
-                    "byRef": false,
-                    "unpack": false
-                  }
-                ]
-              },
-              "byRef": false,
-              "unpack": false
-            },
-            {
-              "nodeType": "ArrayItem",
-              "attributes": {
-                "startLine": 2,
-                "startTokenPos": 54,
-                "startFilePos": 138,
-                "endLine": 2,
-                "endTokenPos": 67,
-                "endFilePos": 174
-              },
-              "key": null,
-              "value": {
-                "nodeType": "Expr_Array",
-                "attributes": {
-                  "startLine": 2,
-                  "startTokenPos": 54,
-                  "startFilePos": 138,
-                  "endLine": 2,
-                  "endTokenPos": 67,
-                  "endFilePos": 174,
-                  "kind": 2
+                {
+                  "kind": "array_element_initializer",
+                  "children": [
+                    {
+                      "kind": "array_creation_expression",
+                      "children": [
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "name"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "Tablet"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "price"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "integer",
+                              "text": "600"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
                 },
-                "items": [
-                  {
-                    "nodeType": "ArrayItem",
-                    "attributes": {
-                      "startLine": 2,
-                      "startTokenPos": 55,
-                      "startFilePos": 139,
-                      "endLine": 2,
-                      "endTokenPos": 59,
-                      "endFilePos": 157
-                    },
-                    "key": {
-                      "nodeType": "Scalar_String",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 55,
-                        "startFilePos": 139,
-                        "endLine": 2,
-                        "endTokenPos": 55,
-                        "endFilePos": 144,
-                        "kind": 2,
-                        "rawValue": "\"name\""
-                      },
-                      "value": "name"
-                    },
-                    "value": {
-                      "nodeType": "Scalar_String",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 59,
-                        "startFilePos": 149,
-                        "endLine": 2,
-                        "endTokenPos": 59,
-                        "endFilePos": 157,
-                        "kind": 2,
-                        "rawValue": "\"Monitor\""
-                      },
-                      "value": "Monitor"
-                    },
-                    "byRef": false,
-                    "unpack": false
-                  },
-                  {
-                    "nodeType": "ArrayItem",
-                    "attributes": {
-                      "startLine": 2,
-                      "startTokenPos": 62,
-                      "startFilePos": 160,
-                      "endLine": 2,
-                      "endTokenPos": 66,
-                      "endFilePos": 173
-                    },
-                    "key": {
-                      "nodeType": "Scalar_String",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 62,
-                        "startFilePos": 160,
-                        "endLine": 2,
-                        "endTokenPos": 62,
-                        "endFilePos": 166,
-                        "kind": 2,
-                        "rawValue": "\"price\""
-                      },
-                      "value": "price"
-                    },
-                    "value": {
-                      "nodeType": "Scalar_Int",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 66,
-                        "startFilePos": 171,
-                        "endLine": 2,
-                        "endTokenPos": 66,
-                        "endFilePos": 173,
-                        "rawValue": "300",
-                        "kind": 10
-                      },
-                      "value": 300
-                    },
-                    "byRef": false,
-                    "unpack": false
-                  }
-                ]
-              },
-              "byRef": false,
-              "unpack": false
-            },
-            {
-              "nodeType": "ArrayItem",
-              "attributes": {
-                "startLine": 2,
-                "startTokenPos": 70,
-                "startFilePos": 177,
-                "endLine": 2,
-                "endTokenPos": 83,
-                "endFilePos": 214
-              },
-              "key": null,
-              "value": {
-                "nodeType": "Expr_Array",
-                "attributes": {
-                  "startLine": 2,
-                  "startTokenPos": 70,
-                  "startFilePos": 177,
-                  "endLine": 2,
-                  "endTokenPos": 83,
-                  "endFilePos": 214,
-                  "kind": 2
+                {
+                  "kind": "array_element_initializer",
+                  "children": [
+                    {
+                      "kind": "array_creation_expression",
+                      "children": [
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "name"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "Monitor"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "price"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "integer",
+                              "text": "300"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
                 },
-                "items": [
-                  {
-                    "nodeType": "ArrayItem",
-                    "attributes": {
-                      "startLine": 2,
-                      "startTokenPos": 71,
-                      "startFilePos": 178,
-                      "endLine": 2,
-                      "endTokenPos": 75,
-                      "endFilePos": 197
-                    },
-                    "key": {
-                      "nodeType": "Scalar_String",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 71,
-                        "startFilePos": 178,
-                        "endLine": 2,
-                        "endTokenPos": 71,
-                        "endFilePos": 183,
-                        "kind": 2,
-                        "rawValue": "\"name\""
-                      },
-                      "value": "name"
-                    },
-                    "value": {
-                      "nodeType": "Scalar_String",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 75,
-                        "startFilePos": 188,
-                        "endLine": 2,
-                        "endTokenPos": 75,
-                        "endFilePos": 197,
-                        "kind": 2,
-                        "rawValue": "\"Keyboard\""
-                      },
-                      "value": "Keyboard"
-                    },
-                    "byRef": false,
-                    "unpack": false
-                  },
-                  {
-                    "nodeType": "ArrayItem",
-                    "attributes": {
-                      "startLine": 2,
-                      "startTokenPos": 78,
-                      "startFilePos": 200,
-                      "endLine": 2,
-                      "endTokenPos": 82,
-                      "endFilePos": 213
-                    },
-                    "key": {
-                      "nodeType": "Scalar_String",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 78,
-                        "startFilePos": 200,
-                        "endLine": 2,
-                        "endTokenPos": 78,
-                        "endFilePos": 206,
-                        "kind": 2,
-                        "rawValue": "\"price\""
-                      },
-                      "value": "price"
-                    },
-                    "value": {
-                      "nodeType": "Scalar_Int",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 82,
-                        "startFilePos": 211,
-                        "endLine": 2,
-                        "endTokenPos": 82,
-                        "endFilePos": 213,
-                        "rawValue": "100",
-                        "kind": 10
-                      },
-                      "value": 100
-                    },
-                    "byRef": false,
-                    "unpack": false
-                  }
-                ]
-              },
-              "byRef": false,
-              "unpack": false
-            },
-            {
-              "nodeType": "ArrayItem",
-              "attributes": {
-                "startLine": 2,
-                "startTokenPos": 86,
-                "startFilePos": 217,
-                "endLine": 2,
-                "endTokenPos": 99,
-                "endFilePos": 250
-              },
-              "key": null,
-              "value": {
-                "nodeType": "Expr_Array",
-                "attributes": {
-                  "startLine": 2,
-                  "startTokenPos": 86,
-                  "startFilePos": 217,
-                  "endLine": 2,
-                  "endTokenPos": 99,
-                  "endFilePos": 250,
-                  "kind": 2
+                {
+                  "kind": "array_element_initializer",
+                  "children": [
+                    {
+                      "kind": "array_creation_expression",
+                      "children": [
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "name"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "Keyboard"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "price"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "integer",
+                              "text": "100"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
                 },
-                "items": [
-                  {
-                    "nodeType": "ArrayItem",
-                    "attributes": {
-                      "startLine": 2,
-                      "startTokenPos": 87,
-                      "startFilePos": 218,
-                      "endLine": 2,
-                      "endTokenPos": 91,
-                      "endFilePos": 234
-                    },
-                    "key": {
-                      "nodeType": "Scalar_String",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 87,
-                        "startFilePos": 218,
-                        "endLine": 2,
-                        "endTokenPos": 87,
-                        "endFilePos": 223,
-                        "kind": 2,
-                        "rawValue": "\"name\""
-                      },
-                      "value": "name"
-                    },
-                    "value": {
-                      "nodeType": "Scalar_String",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 91,
-                        "startFilePos": 228,
-                        "endLine": 2,
-                        "endTokenPos": 91,
-                        "endFilePos": 234,
-                        "kind": 2,
-                        "rawValue": "\"Mouse\""
-                      },
-                      "value": "Mouse"
-                    },
-                    "byRef": false,
-                    "unpack": false
-                  },
-                  {
-                    "nodeType": "ArrayItem",
-                    "attributes": {
-                      "startLine": 2,
-                      "startTokenPos": 94,
-                      "startFilePos": 237,
-                      "endLine": 2,
-                      "endTokenPos": 98,
-                      "endFilePos": 249
-                    },
-                    "key": {
-                      "nodeType": "Scalar_String",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 94,
-                        "startFilePos": 237,
-                        "endLine": 2,
-                        "endTokenPos": 94,
-                        "endFilePos": 243,
-                        "kind": 2,
-                        "rawValue": "\"price\""
-                      },
-                      "value": "price"
-                    },
-                    "value": {
-                      "nodeType": "Scalar_Int",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 98,
-                        "startFilePos": 248,
-                        "endLine": 2,
-                        "endTokenPos": 98,
-                        "endFilePos": 249,
-                        "rawValue": "50",
-                        "kind": 10
-                      },
-                      "value": 50
-                    },
-                    "byRef": false,
-                    "unpack": false
-                  }
-                ]
-              },
-              "byRef": false,
-              "unpack": false
-            },
-            {
-              "nodeType": "ArrayItem",
-              "attributes": {
-                "startLine": 2,
-                "startTokenPos": 102,
-                "startFilePos": 253,
-                "endLine": 2,
-                "endTokenPos": 115,
-                "endFilePos": 292
-              },
-              "key": null,
-              "value": {
-                "nodeType": "Expr_Array",
-                "attributes": {
-                  "startLine": 2,
-                  "startTokenPos": 102,
-                  "startFilePos": 253,
-                  "endLine": 2,
-                  "endTokenPos": 115,
-                  "endFilePos": 292,
-                  "kind": 2
+                {
+                  "kind": "array_element_initializer",
+                  "children": [
+                    {
+                      "kind": "array_creation_expression",
+                      "children": [
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "name"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "Mouse"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "price"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "integer",
+                              "text": "50"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
                 },
-                "items": [
-                  {
-                    "nodeType": "ArrayItem",
-                    "attributes": {
-                      "startLine": 2,
-                      "startTokenPos": 103,
-                      "startFilePos": 254,
-                      "endLine": 2,
-                      "endTokenPos": 107,
-                      "endFilePos": 275
-                    },
-                    "key": {
-                      "nodeType": "Scalar_String",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 103,
-                        "startFilePos": 254,
-                        "endLine": 2,
-                        "endTokenPos": 103,
-                        "endFilePos": 259,
-                        "kind": 2,
-                        "rawValue": "\"name\""
-                      },
-                      "value": "name"
-                    },
-                    "value": {
-                      "nodeType": "Scalar_String",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 107,
-                        "startFilePos": 264,
-                        "endLine": 2,
-                        "endTokenPos": 107,
-                        "endFilePos": 275,
-                        "kind": 2,
-                        "rawValue": "\"Headphones\""
-                      },
-                      "value": "Headphones"
-                    },
-                    "byRef": false,
-                    "unpack": false
-                  },
-                  {
-                    "nodeType": "ArrayItem",
-                    "attributes": {
-                      "startLine": 2,
-                      "startTokenPos": 110,
-                      "startFilePos": 278,
-                      "endLine": 2,
-                      "endTokenPos": 114,
-                      "endFilePos": 291
-                    },
-                    "key": {
-                      "nodeType": "Scalar_String",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 110,
-                        "startFilePos": 278,
-                        "endLine": 2,
-                        "endTokenPos": 110,
-                        "endFilePos": 284,
-                        "kind": 2,
-                        "rawValue": "\"price\""
-                      },
-                      "value": "price"
-                    },
-                    "value": {
-                      "nodeType": "Scalar_Int",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 114,
-                        "startFilePos": 289,
-                        "endLine": 2,
-                        "endTokenPos": 114,
-                        "endFilePos": 291,
-                        "rawValue": "200",
-                        "kind": 10
-                      },
-                      "value": 200
-                    },
-                    "byRef": false,
-                    "unpack": false
-                  }
-                ]
-              },
-              "byRef": false,
-              "unpack": false
+                {
+                  "kind": "array_element_initializer",
+                  "children": [
+                    {
+                      "kind": "array_creation_expression",
+                      "children": [
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "name"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "Headphones"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "price"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "integer",
+                              "text": "200"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
-      }
+      ]
     },
     {
-      "nodeType": "Stmt_Expression",
-      "attributes": {
-        "startLine": 3,
-        "startTokenPos": 119,
-        "startFilePos": 296,
-        "endLine": 3,
-        "endTokenPos": 125,
-        "endFilePos": 311
-      },
-      "expr": {
-        "nodeType": "Expr_Assign",
-        "attributes": {
-          "startLine": 3,
-          "startTokenPos": 119,
-          "startFilePos": 296,
-          "endLine": 3,
-          "endTokenPos": 124,
-          "endFilePos": 310
-        },
-        "var": {
-          "nodeType": "Expr_Variable",
-          "attributes": {
-            "startLine": 3,
-            "startTokenPos": 119,
-            "startFilePos": 296,
-            "endLine": 3,
-            "endTokenPos": 119,
-            "endFilePos": 305
-          },
-          "name": "expensive"
-        },
-        "expr": {
-          "nodeType": "Expr_Array",
-          "attributes": {
-            "startLine": 3,
-            "startTokenPos": 123,
-            "startFilePos": 309,
-            "endLine": 3,
-            "endTokenPos": 124,
-            "endFilePos": 310,
-            "kind": 2
-          },
-          "items": []
-        }
-      }
-    },
-    {
-      "nodeType": "Stmt_Foreach",
-      "attributes": {
-        "startLine": 4,
-        "startTokenPos": 127,
-        "startFilePos": 313,
-        "endLine": 6,
-        "endTokenPos": 148,
-        "endFilePos": 362
-      },
-      "expr": {
-        "nodeType": "Expr_Variable",
-        "attributes": {
-          "startLine": 4,
-          "startTokenPos": 130,
-          "startFilePos": 322,
-          "endLine": 4,
-          "endTokenPos": 130,
-          "endFilePos": 330
-        },
-        "name": "products"
-      },
-      "keyVar": null,
-      "byRef": false,
-      "valueVar": {
-        "nodeType": "Expr_Variable",
-        "attributes": {
-          "startLine": 4,
-          "startTokenPos": 134,
-          "startFilePos": 335,
-          "endLine": 4,
-          "endTokenPos": 134,
-          "endFilePos": 336
-        },
-        "name": "p"
-      },
-      "stmts": [
+      "kind": "expression_statement",
+      "children": [
         {
-          "nodeType": "Stmt_Expression",
-          "attributes": {
-            "startLine": 5,
-            "startTokenPos": 139,
-            "startFilePos": 343,
-            "endLine": 5,
-            "endTokenPos": 146,
-            "endFilePos": 360
-          },
-          "expr": {
-            "nodeType": "Expr_Assign",
-            "attributes": {
-              "startLine": 5,
-              "startTokenPos": 139,
-              "startFilePos": 343,
-              "endLine": 5,
-              "endTokenPos": 145,
-              "endFilePos": 359
-            },
-            "var": {
-              "nodeType": "Expr_ArrayDimFetch",
-              "attributes": {
-                "startLine": 5,
-                "startTokenPos": 139,
-                "startFilePos": 343,
-                "endLine": 5,
-                "endTokenPos": 141,
-                "endFilePos": 354
-              },
-              "var": {
-                "nodeType": "Expr_Variable",
-                "attributes": {
-                  "startLine": 5,
-                  "startTokenPos": 139,
-                  "startFilePos": 343,
-                  "endLine": 5,
-                  "endTokenPos": 139,
-                  "endFilePos": 352
-                },
-                "name": "expensive"
-              },
-              "dim": null
-            },
-            "expr": {
-              "nodeType": "Expr_Variable",
-              "attributes": {
-                "startLine": 5,
-                "startTokenPos": 145,
-                "startFilePos": 358,
-                "endLine": 5,
-                "endTokenPos": 145,
-                "endFilePos": 359
-              },
-              "name": "p"
+          "kind": "assignment_expression",
+          "children": [
+            {
+              "kind": "variable_name",
+              "children": [
+                {
+                  "kind": "name",
+                  "text": "expensive"
+                }
+              ]
             }
-          }
+          ]
         }
       ]
     },
     {
-      "nodeType": "Stmt_Echo",
-      "attributes": {
-        "startLine": 8,
-        "startTokenPos": 150,
-        "startFilePos": 365,
-        "endLine": 8,
-        "endTokenPos": 156,
-        "endFilePos": 428
-      },
-      "exprs": [
+      "kind": "foreach_statement",
+      "children": [
         {
-          "nodeType": "Scalar_String",
-          "attributes": {
-            "startLine": 8,
-            "startTokenPos": 152,
-            "startFilePos": 370,
-            "endLine": 8,
-            "endTokenPos": 152,
-            "endFilePos": 418,
-            "kind": 2,
-            "rawValue": "\"--- Top products (excluding most expensive) ---\""
-          },
-          "value": "--- Top products (excluding most expensive) ---"
+          "kind": "variable_name",
+          "children": [
+            {
+              "kind": "name",
+              "text": "products"
+            }
+          ]
         },
         {
-          "nodeType": "Expr_ConstFetch",
-          "attributes": {
-            "startLine": 8,
-            "startTokenPos": 155,
-            "startFilePos": 421,
-            "endLine": 8,
-            "endTokenPos": 155,
-            "endFilePos": 427
-          },
-          "name": {
-            "nodeType": "Name",
-            "attributes": {
-              "startLine": 8,
-              "startTokenPos": 155,
-              "startFilePos": 421,
-              "endLine": 8,
-              "endTokenPos": 155,
-              "endFilePos": 427
-            },
-            "name": "PHP_EOL"
-          }
+          "kind": "variable_name",
+          "children": [
+            {
+              "kind": "name",
+              "text": "p"
+            }
+          ]
+        },
+        {
+          "kind": "compound_statement",
+          "children": [
+            {
+              "kind": "expression_statement",
+              "children": [
+                {
+                  "kind": "assignment_expression",
+                  "children": [
+                    {
+                      "kind": "subscript_expression",
+                      "children": [
+                        {
+                          "kind": "variable_name",
+                          "children": [
+                            {
+                              "kind": "name",
+                              "text": "expensive"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "variable_name",
+                      "children": [
+                        {
+                          "kind": "name",
+                          "text": "p"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         }
       ]
     },
     {
-      "nodeType": "Stmt_Foreach",
-      "attributes": {
-        "startLine": 9,
-        "startTokenPos": 158,
-        "startFilePos": 430,
-        "endLine": 11,
-        "endTokenPos": 250,
-        "endFilePos": 662
-      },
-      "expr": {
-        "nodeType": "Expr_Variable",
-        "attributes": {
-          "startLine": 9,
-          "startTokenPos": 161,
-          "startFilePos": 439,
-          "endLine": 9,
-          "endTokenPos": 161,
-          "endFilePos": 448
-        },
-        "name": "expensive"
-      },
-      "keyVar": null,
-      "byRef": false,
-      "valueVar": {
-        "nodeType": "Expr_Variable",
-        "attributes": {
-          "startLine": 9,
-          "startTokenPos": 165,
-          "startFilePos": 453,
-          "endLine": 9,
-          "endTokenPos": 165,
-          "endFilePos": 457
-        },
-        "name": "item"
-      },
-      "stmts": [
+      "kind": "echo_statement",
+      "children": [
         {
-          "nodeType": "Stmt_Echo",
-          "attributes": {
-            "startLine": 10,
-            "startTokenPos": 170,
-            "startFilePos": 464,
-            "endLine": 10,
-            "endTokenPos": 248,
-            "endFilePos": 660
-          },
-          "exprs": [
+          "kind": "sequence_expression",
+          "children": [
             {
-              "nodeType": "Expr_BinaryOp_Concat",
-              "attributes": {
-                "startLine": 10,
-                "startTokenPos": 172,
-                "startFilePos": 469,
-                "endLine": 10,
-                "endTokenPos": 244,
-                "endFilePos": 650
-              },
-              "left": {
-                "nodeType": "Expr_BinaryOp_Concat",
-                "attributes": {
-                  "startLine": 10,
-                  "startTokenPos": 172,
-                  "startFilePos": 469,
-                  "endLine": 10,
-                  "endTokenPos": 212,
-                  "endFilePos": 568
-                },
-                "left": {
-                  "nodeType": "Expr_BinaryOp_Concat",
-                  "attributes": {
-                    "startLine": 10,
-                    "startTokenPos": 172,
-                    "startFilePos": 469,
-                    "endLine": 10,
-                    "endTokenPos": 208,
-                    "endFilePos": 562
-                  },
-                  "left": {
-                    "nodeType": "Expr_BinaryOp_Concat",
-                    "attributes": {
-                      "startLine": 10,
-                      "startTokenPos": 172,
-                      "startFilePos": 469,
-                      "endLine": 10,
-                      "endTokenPos": 204,
-                      "endFilePos": 550
-                    },
-                    "left": {
-                      "nodeType": "Expr_Ternary",
-                      "attributes": {
-                        "startLine": 10,
-                        "startTokenPos": 173,
-                        "startFilePos": 470,
-                        "endLine": 10,
-                        "endTokenPos": 199,
-                        "endFilePos": 543
-                      },
-                      "cond": {
-                        "nodeType": "Expr_FuncCall",
-                        "attributes": {
-                          "startLine": 10,
-                          "startTokenPos": 173,
-                          "startFilePos": 470,
-                          "endLine": 10,
-                          "endTokenPos": 179,
-                          "endFilePos": 492
-                        },
-                        "name": {
-                          "nodeType": "Name",
-                          "attributes": {
-                            "startLine": 10,
-                            "startTokenPos": 173,
-                            "startFilePos": 470,
-                            "endLine": 10,
-                            "endTokenPos": 173,
-                            "endFilePos": 477
-                          },
-                          "name": "is_float"
-                        },
-                        "args": [
-                          {
-                            "nodeType": "Arg",
-                            "attributes": {
-                              "startLine": 10,
-                              "startTokenPos": 175,
-                              "startFilePos": 479,
-                              "endLine": 10,
-                              "endTokenPos": 178,
-                              "endFilePos": 491
-                            },
-                            "name": null,
-                            "value": {
-                              "nodeType": "Expr_ArrayDimFetch",
-                              "attributes": {
-                                "startLine": 10,
-                                "startTokenPos": 175,
-                                "startFilePos": 479,
-                                "endLine": 10,
-                                "endTokenPos": 178,
-                                "endFilePos": 491
-                              },
-                              "var": {
-                                "nodeType": "Expr_Variable",
-                                "attributes": {
-                                  "startLine": 10,
-                                  "startTokenPos": 175,
-                                  "startFilePos": 479,
-                                  "endLine": 10,
-                                  "endTokenPos": 175,
-                                  "endFilePos": 483
-                                },
-                                "name": "item"
-                              },
-                              "dim": {
-                                "nodeType": "Scalar_String",
-                                "attributes": {
-                                  "startLine": 10,
-                                  "startTokenPos": 177,
-                                  "startFilePos": 485,
-                                  "endLine": 10,
-                                  "endTokenPos": 177,
-                                  "endFilePos": 490,
-                                  "kind": 2,
-                                  "rawValue": "\"name\""
-                                },
-                                "value": "name"
-                              }
-                            },
-                            "byRef": false,
-                            "unpack": false
-                          }
-                        ]
-                      },
-                      "if": {
-                        "nodeType": "Expr_FuncCall",
-                        "attributes": {
-                          "startLine": 10,
-                          "startTokenPos": 183,
-                          "startFilePos": 496,
-                          "endLine": 10,
-                          "endTokenPos": 192,
-                          "endFilePos": 527
-                        },
-                        "name": {
-                          "nodeType": "Name",
-                          "attributes": {
-                            "startLine": 10,
-                            "startTokenPos": 183,
-                            "startFilePos": 496,
-                            "endLine": 10,
-                            "endTokenPos": 183,
-                            "endFilePos": 506
-                          },
-                          "name": "json_encode"
-                        },
-                        "args": [
-                          {
-                            "nodeType": "Arg",
-                            "attributes": {
-                              "startLine": 10,
-                              "startTokenPos": 185,
-                              "startFilePos": 508,
-                              "endLine": 10,
-                              "endTokenPos": 188,
-                              "endFilePos": 520
-                            },
-                            "name": null,
-                            "value": {
-                              "nodeType": "Expr_ArrayDimFetch",
-                              "attributes": {
-                                "startLine": 10,
-                                "startTokenPos": 185,
-                                "startFilePos": 508,
-                                "endLine": 10,
-                                "endTokenPos": 188,
-                                "endFilePos": 520
-                              },
-                              "var": {
-                                "nodeType": "Expr_Variable",
-                                "attributes": {
-                                  "startLine": 10,
-                                  "startTokenPos": 185,
-                                  "startFilePos": 508,
-                                  "endLine": 10,
-                                  "endTokenPos": 185,
-                                  "endFilePos": 512
-                                },
-                                "name": "item"
-                              },
-                              "dim": {
-                                "nodeType": "Scalar_String",
-                                "attributes": {
-                                  "startLine": 10,
-                                  "startTokenPos": 187,
-                                  "startFilePos": 514,
-                                  "endLine": 10,
-                                  "endTokenPos": 187,
-                                  "endFilePos": 519,
-                                  "kind": 2,
-                                  "rawValue": "\"name\""
-                                },
-                                "value": "name"
-                              }
-                            },
-                            "byRef": false,
-                            "unpack": false
-                          },
-                          {
-                            "nodeType": "Arg",
-                            "attributes": {
-                              "startLine": 10,
-                              "startTokenPos": 191,
-                              "startFilePos": 523,
-                              "endLine": 10,
-                              "endTokenPos": 191,
-                              "endFilePos": 526
-                            },
-                            "name": null,
-                            "value": {
-                              "nodeType": "Scalar_Int",
-                              "attributes": {
-                                "startLine": 10,
-                                "startTokenPos": 191,
-                                "startFilePos": 523,
-                                "endLine": 10,
-                                "endTokenPos": 191,
-                                "endFilePos": 526,
-                                "rawValue": "1344",
-                                "kind": 10
-                              },
-                              "value": 1344
-                            },
-                            "byRef": false,
-                            "unpack": false
-                          }
-                        ]
-                      },
-                      "else": {
-                        "nodeType": "Expr_ArrayDimFetch",
-                        "attributes": {
-                          "startLine": 10,
-                          "startTokenPos": 196,
-                          "startFilePos": 531,
-                          "endLine": 10,
-                          "endTokenPos": 199,
-                          "endFilePos": 543
-                        },
-                        "var": {
-                          "nodeType": "Expr_Variable",
-                          "attributes": {
-                            "startLine": 10,
-                            "startTokenPos": 196,
-                            "startFilePos": 531,
-                            "endLine": 10,
-                            "endTokenPos": 196,
-                            "endFilePos": 535
-                          },
-                          "name": "item"
-                        },
-                        "dim": {
-                          "nodeType": "Scalar_String",
-                          "attributes": {
-                            "startLine": 10,
-                            "startTokenPos": 198,
-                            "startFilePos": 537,
-                            "endLine": 10,
-                            "endTokenPos": 198,
-                            "endFilePos": 542,
-                            "kind": 2,
-                            "rawValue": "\"name\""
-                          },
-                          "value": "name"
-                        }
-                      }
-                    },
-                    "right": {
-                      "nodeType": "Scalar_String",
-                      "attributes": {
-                        "startLine": 10,
-                        "startTokenPos": 204,
-                        "startFilePos": 548,
-                        "endLine": 10,
-                        "endTokenPos": 204,
-                        "endFilePos": 550,
-                        "kind": 2,
-                        "rawValue": "\" \""
-                      },
-                      "value": " "
-                    }
-                  },
-                  "right": {
-                    "nodeType": "Scalar_String",
-                    "attributes": {
-                      "startLine": 10,
-                      "startTokenPos": 208,
-                      "startFilePos": 554,
-                      "endLine": 10,
-                      "endTokenPos": 208,
-                      "endFilePos": 562,
-                      "kind": 2,
-                      "rawValue": "\"costs $\""
-                    },
-                    "value": "costs $"
-                  }
-                },
-                "right": {
-                  "nodeType": "Scalar_String",
-                  "attributes": {
-                    "startLine": 10,
-                    "startTokenPos": 212,
-                    "startFilePos": 566,
-                    "endLine": 10,
-                    "endTokenPos": 212,
-                    "endFilePos": 568,
-                    "kind": 2,
-                    "rawValue": "\" \""
-                  },
-                  "value": " "
+              "kind": "encapsed_string",
+              "children": [
+                {
+                  "kind": "string_content",
+                  "text": "--- Top products (excluding most expensive) ---"
                 }
-              },
-              "right": {
-                "nodeType": "Expr_Ternary",
-                "attributes": {
-                  "startLine": 10,
-                  "startTokenPos": 217,
-                  "startFilePos": 573,
-                  "endLine": 10,
-                  "endTokenPos": 243,
-                  "endFilePos": 649
-                },
-                "cond": {
-                  "nodeType": "Expr_FuncCall",
-                  "attributes": {
-                    "startLine": 10,
-                    "startTokenPos": 217,
-                    "startFilePos": 573,
-                    "endLine": 10,
-                    "endTokenPos": 223,
-                    "endFilePos": 596
-                  },
-                  "name": {
-                    "nodeType": "Name",
-                    "attributes": {
-                      "startLine": 10,
-                      "startTokenPos": 217,
-                      "startFilePos": 573,
-                      "endLine": 10,
-                      "endTokenPos": 217,
-                      "endFilePos": 580
-                    },
-                    "name": "is_float"
-                  },
-                  "args": [
-                    {
-                      "nodeType": "Arg",
-                      "attributes": {
-                        "startLine": 10,
-                        "startTokenPos": 219,
-                        "startFilePos": 582,
-                        "endLine": 10,
-                        "endTokenPos": 222,
-                        "endFilePos": 595
-                      },
-                      "name": null,
-                      "value": {
-                        "nodeType": "Expr_ArrayDimFetch",
-                        "attributes": {
-                          "startLine": 10,
-                          "startTokenPos": 219,
-                          "startFilePos": 582,
-                          "endLine": 10,
-                          "endTokenPos": 222,
-                          "endFilePos": 595
-                        },
-                        "var": {
-                          "nodeType": "Expr_Variable",
-                          "attributes": {
-                            "startLine": 10,
-                            "startTokenPos": 219,
-                            "startFilePos": 582,
-                            "endLine": 10,
-                            "endTokenPos": 219,
-                            "endFilePos": 586
-                          },
-                          "name": "item"
-                        },
-                        "dim": {
-                          "nodeType": "Scalar_String",
-                          "attributes": {
-                            "startLine": 10,
-                            "startTokenPos": 221,
-                            "startFilePos": 588,
-                            "endLine": 10,
-                            "endTokenPos": 221,
-                            "endFilePos": 594,
-                            "kind": 2,
-                            "rawValue": "\"price\""
-                          },
-                          "value": "price"
-                        }
-                      },
-                      "byRef": false,
-                      "unpack": false
-                    }
-                  ]
-                },
-                "if": {
-                  "nodeType": "Expr_FuncCall",
-                  "attributes": {
-                    "startLine": 10,
-                    "startTokenPos": 227,
-                    "startFilePos": 600,
-                    "endLine": 10,
-                    "endTokenPos": 236,
-                    "endFilePos": 632
-                  },
-                  "name": {
-                    "nodeType": "Name",
-                    "attributes": {
-                      "startLine": 10,
-                      "startTokenPos": 227,
-                      "startFilePos": 600,
-                      "endLine": 10,
-                      "endTokenPos": 227,
-                      "endFilePos": 610
-                    },
-                    "name": "json_encode"
-                  },
-                  "args": [
-                    {
-                      "nodeType": "Arg",
-                      "attributes": {
-                        "startLine": 10,
-                        "startTokenPos": 229,
-                        "startFilePos": 612,
-                        "endLine": 10,
-                        "endTokenPos": 232,
-                        "endFilePos": 625
-                      },
-                      "name": null,
-                      "value": {
-                        "nodeType": "Expr_ArrayDimFetch",
-                        "attributes": {
-                          "startLine": 10,
-                          "startTokenPos": 229,
-                          "startFilePos": 612,
-                          "endLine": 10,
-                          "endTokenPos": 232,
-                          "endFilePos": 625
-                        },
-                        "var": {
-                          "nodeType": "Expr_Variable",
-                          "attributes": {
-                            "startLine": 10,
-                            "startTokenPos": 229,
-                            "startFilePos": 612,
-                            "endLine": 10,
-                            "endTokenPos": 229,
-                            "endFilePos": 616
-                          },
-                          "name": "item"
-                        },
-                        "dim": {
-                          "nodeType": "Scalar_String",
-                          "attributes": {
-                            "startLine": 10,
-                            "startTokenPos": 231,
-                            "startFilePos": 618,
-                            "endLine": 10,
-                            "endTokenPos": 231,
-                            "endFilePos": 624,
-                            "kind": 2,
-                            "rawValue": "\"price\""
-                          },
-                          "value": "price"
-                        }
-                      },
-                      "byRef": false,
-                      "unpack": false
-                    },
-                    {
-                      "nodeType": "Arg",
-                      "attributes": {
-                        "startLine": 10,
-                        "startTokenPos": 235,
-                        "startFilePos": 628,
-                        "endLine": 10,
-                        "endTokenPos": 235,
-                        "endFilePos": 631
-                      },
-                      "name": null,
-                      "value": {
-                        "nodeType": "Scalar_Int",
-                        "attributes": {
-                          "startLine": 10,
-                          "startTokenPos": 235,
-                          "startFilePos": 628,
-                          "endLine": 10,
-                          "endTokenPos": 235,
-                          "endFilePos": 631,
-                          "rawValue": "1344",
-                          "kind": 10
-                        },
-                        "value": 1344
-                      },
-                      "byRef": false,
-                      "unpack": false
-                    }
-                  ]
-                },
-                "else": {
-                  "nodeType": "Expr_ArrayDimFetch",
-                  "attributes": {
-                    "startLine": 10,
-                    "startTokenPos": 240,
-                    "startFilePos": 636,
-                    "endLine": 10,
-                    "endTokenPos": 243,
-                    "endFilePos": 649
-                  },
-                  "var": {
-                    "nodeType": "Expr_Variable",
-                    "attributes": {
-                      "startLine": 10,
-                      "startTokenPos": 240,
-                      "startFilePos": 636,
-                      "endLine": 10,
-                      "endTokenPos": 240,
-                      "endFilePos": 640
-                    },
-                    "name": "item"
-                  },
-                  "dim": {
-                    "nodeType": "Scalar_String",
-                    "attributes": {
-                      "startLine": 10,
-                      "startTokenPos": 242,
-                      "startFilePos": 642,
-                      "endLine": 10,
-                      "endTokenPos": 242,
-                      "endFilePos": 648,
-                      "kind": 2,
-                      "rawValue": "\"price\""
-                    },
-                    "value": "price"
-                  }
-                }
-              }
+              ]
             },
             {
-              "nodeType": "Expr_ConstFetch",
-              "attributes": {
-                "startLine": 10,
-                "startTokenPos": 247,
-                "startFilePos": 653,
-                "endLine": 10,
-                "endTokenPos": 247,
-                "endFilePos": 659
-              },
-              "name": {
-                "nodeType": "Name",
-                "attributes": {
-                  "startLine": 10,
-                  "startTokenPos": 247,
-                  "startFilePos": 653,
-                  "endLine": 10,
-                  "endTokenPos": 247,
-                  "endFilePos": 659
-                },
-                "name": "PHP_EOL"
-              }
+              "kind": "name",
+              "text": "PHP_EOL"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "foreach_statement",
+      "children": [
+        {
+          "kind": "variable_name",
+          "children": [
+            {
+              "kind": "name",
+              "text": "expensive"
+            }
+          ]
+        },
+        {
+          "kind": "variable_name",
+          "children": [
+            {
+              "kind": "name",
+              "text": "item"
+            }
+          ]
+        },
+        {
+          "kind": "compound_statement",
+          "children": [
+            {
+              "kind": "echo_statement",
+              "children": [
+                {
+                  "kind": "sequence_expression",
+                  "children": [
+                    {
+                      "kind": "binary_expression",
+                      "children": [
+                        {
+                          "kind": "binary_expression",
+                          "children": [
+                            {
+                              "kind": "binary_expression",
+                              "children": [
+                                {
+                                  "kind": "binary_expression",
+                                  "children": [
+                                    {
+                                      "kind": "parenthesized_expression",
+                                      "children": [
+                                        {
+                                          "kind": "conditional_expression",
+                                          "children": [
+                                            {
+                                              "kind": "function_call_expression",
+                                              "children": [
+                                                {
+                                                  "kind": "name",
+                                                  "text": "is_float"
+                                                },
+                                                {
+                                                  "kind": "arguments",
+                                                  "children": [
+                                                    {
+                                                      "kind": "argument",
+                                                      "children": [
+                                                        {
+                                                          "kind": "subscript_expression",
+                                                          "children": [
+                                                            {
+                                                              "kind": "variable_name",
+                                                              "children": [
+                                                                {
+                                                                  "kind": "name",
+                                                                  "text": "item"
+                                                                }
+                                                              ]
+                                                            },
+                                                            {
+                                                              "kind": "encapsed_string",
+                                                              "children": [
+                                                                {
+                                                                  "kind": "string_content",
+                                                                  "text": "name"
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "kind": "function_call_expression",
+                                              "children": [
+                                                {
+                                                  "kind": "name",
+                                                  "text": "json_encode"
+                                                },
+                                                {
+                                                  "kind": "arguments",
+                                                  "children": [
+                                                    {
+                                                      "kind": "argument",
+                                                      "children": [
+                                                        {
+                                                          "kind": "subscript_expression",
+                                                          "children": [
+                                                            {
+                                                              "kind": "variable_name",
+                                                              "children": [
+                                                                {
+                                                                  "kind": "name",
+                                                                  "text": "item"
+                                                                }
+                                                              ]
+                                                            },
+                                                            {
+                                                              "kind": "encapsed_string",
+                                                              "children": [
+                                                                {
+                                                                  "kind": "string_content",
+                                                                  "text": "name"
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    },
+                                                    {
+                                                      "kind": "argument",
+                                                      "children": [
+                                                        {
+                                                          "kind": "integer",
+                                                          "text": "1344"
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "kind": "subscript_expression",
+                                              "children": [
+                                                {
+                                                  "kind": "variable_name",
+                                                  "children": [
+                                                    {
+                                                      "kind": "name",
+                                                      "text": "item"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "encapsed_string",
+                                                  "children": [
+                                                    {
+                                                      "kind": "string_content",
+                                                      "text": "name"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "encapsed_string",
+                                  "children": [
+                                    {
+                                      "kind": "string_content",
+                                      "text": "costs $"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "parenthesized_expression",
+                          "children": [
+                            {
+                              "kind": "conditional_expression",
+                              "children": [
+                                {
+                                  "kind": "function_call_expression",
+                                  "children": [
+                                    {
+                                      "kind": "name",
+                                      "text": "is_float"
+                                    },
+                                    {
+                                      "kind": "arguments",
+                                      "children": [
+                                        {
+                                          "kind": "argument",
+                                          "children": [
+                                            {
+                                              "kind": "subscript_expression",
+                                              "children": [
+                                                {
+                                                  "kind": "variable_name",
+                                                  "children": [
+                                                    {
+                                                      "kind": "name",
+                                                      "text": "item"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "encapsed_string",
+                                                  "children": [
+                                                    {
+                                                      "kind": "string_content",
+                                                      "text": "price"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "function_call_expression",
+                                  "children": [
+                                    {
+                                      "kind": "name",
+                                      "text": "json_encode"
+                                    },
+                                    {
+                                      "kind": "arguments",
+                                      "children": [
+                                        {
+                                          "kind": "argument",
+                                          "children": [
+                                            {
+                                              "kind": "subscript_expression",
+                                              "children": [
+                                                {
+                                                  "kind": "variable_name",
+                                                  "children": [
+                                                    {
+                                                      "kind": "name",
+                                                      "text": "item"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "encapsed_string",
+                                                  "children": [
+                                                    {
+                                                      "kind": "string_content",
+                                                      "text": "price"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": "argument",
+                                          "children": [
+                                            {
+                                              "kind": "integer",
+                                              "text": "1344"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "subscript_expression",
+                                  "children": [
+                                    {
+                                      "kind": "variable_name",
+                                      "children": [
+                                        {
+                                          "kind": "name",
+                                          "text": "item"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": "encapsed_string",
+                                      "children": [
+                                        {
+                                          "kind": "string_content",
+                                          "text": "price"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "name",
+                      "text": "PHP_EOL"
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }

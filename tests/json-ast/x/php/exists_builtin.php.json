@@ -1,566 +1,303 @@
 {
-  "root": [
+  "statements": [
     {
-      "nodeType": "Stmt_Expression",
-      "attributes": {
-        "startLine": 2,
-        "startTokenPos": 1,
-        "startFilePos": 6,
-        "endLine": 2,
-        "endTokenPos": 11,
-        "endFilePos": 20
-      },
-      "expr": {
-        "nodeType": "Expr_Assign",
-        "attributes": {
-          "startLine": 2,
-          "startTokenPos": 1,
-          "startFilePos": 6,
-          "endLine": 2,
-          "endTokenPos": 10,
-          "endFilePos": 19
-        },
-        "var": {
-          "nodeType": "Expr_Variable",
-          "attributes": {
-            "startLine": 2,
-            "startTokenPos": 1,
-            "startFilePos": 6,
-            "endLine": 2,
-            "endTokenPos": 1,
-            "endFilePos": 10
-          },
-          "name": "data"
-        },
-        "expr": {
-          "nodeType": "Expr_Array",
-          "attributes": {
-            "startLine": 2,
-            "startTokenPos": 5,
-            "startFilePos": 14,
-            "endLine": 2,
-            "endTokenPos": 10,
-            "endFilePos": 19,
-            "kind": 2
-          },
-          "items": [
+      "kind": "expression_statement",
+      "children": [
+        {
+          "kind": "assignment_expression",
+          "children": [
             {
-              "nodeType": "ArrayItem",
-              "attributes": {
-                "startLine": 2,
-                "startTokenPos": 6,
-                "startFilePos": 15,
-                "endLine": 2,
-                "endTokenPos": 6,
-                "endFilePos": 15
-              },
-              "key": null,
-              "value": {
-                "nodeType": "Scalar_Int",
-                "attributes": {
-                  "startLine": 2,
-                  "startTokenPos": 6,
-                  "startFilePos": 15,
-                  "endLine": 2,
-                  "endTokenPos": 6,
-                  "endFilePos": 15,
-                  "rawValue": "1",
-                  "kind": 10
-                },
-                "value": 1
-              },
-              "byRef": false,
-              "unpack": false
+              "kind": "variable_name",
+              "children": [
+                {
+                  "kind": "name",
+                  "text": "data"
+                }
+              ]
             },
             {
-              "nodeType": "ArrayItem",
-              "attributes": {
-                "startLine": 2,
-                "startTokenPos": 9,
-                "startFilePos": 18,
-                "endLine": 2,
-                "endTokenPos": 9,
-                "endFilePos": 18
-              },
-              "key": null,
-              "value": {
-                "nodeType": "Scalar_Int",
-                "attributes": {
-                  "startLine": 2,
-                  "startTokenPos": 9,
-                  "startFilePos": 18,
-                  "endLine": 2,
-                  "endTokenPos": 9,
-                  "endFilePos": 18,
-                  "rawValue": "2",
-                  "kind": 10
+              "kind": "array_creation_expression",
+              "children": [
+                {
+                  "kind": "array_element_initializer",
+                  "children": [
+                    {
+                      "kind": "integer",
+                      "text": "1"
+                    }
+                  ]
                 },
-                "value": 2
-              },
-              "byRef": false,
-              "unpack": false
+                {
+                  "kind": "array_element_initializer",
+                  "children": [
+                    {
+                      "kind": "integer",
+                      "text": "2"
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
-      }
+      ]
     },
     {
-      "nodeType": "Stmt_Expression",
-      "attributes": {
-        "startLine": 3,
-        "startTokenPos": 13,
-        "startFilePos": 22,
-        "endLine": 11,
-        "endTokenPos": 91,
-        "endFilePos": 182
-      },
-      "expr": {
-        "nodeType": "Expr_Assign",
-        "attributes": {
-          "startLine": 3,
-          "startTokenPos": 13,
-          "startFilePos": 22,
-          "endLine": 11,
-          "endTokenPos": 90,
-          "endFilePos": 181
-        },
-        "var": {
-          "nodeType": "Expr_Variable",
-          "attributes": {
-            "startLine": 3,
-            "startTokenPos": 13,
-            "startFilePos": 22,
-            "endLine": 3,
-            "endTokenPos": 13,
-            "endFilePos": 26
-          },
-          "name": "flag"
-        },
-        "expr": {
-          "nodeType": "Expr_BinaryOp_Greater",
-          "attributes": {
-            "startLine": 3,
-            "startTokenPos": 17,
-            "startFilePos": 30,
-            "endLine": 11,
-            "endTokenPos": 90,
-            "endFilePos": 181
-          },
-          "left": {
-            "nodeType": "Expr_FuncCall",
-            "attributes": {
-              "startLine": 3,
-              "startTokenPos": 17,
-              "startFilePos": 30,
-              "endLine": 11,
-              "endTokenPos": 86,
-              "endFilePos": 177
+      "kind": "expression_statement",
+      "children": [
+        {
+          "kind": "assignment_expression",
+          "children": [
+            {
+              "kind": "variable_name",
+              "children": [
+                {
+                  "kind": "name",
+                  "text": "flag"
+                }
+              ]
             },
-            "name": {
-              "nodeType": "Name",
-              "attributes": {
-                "startLine": 3,
-                "startTokenPos": 17,
-                "startFilePos": 30,
-                "endLine": 3,
-                "endTokenPos": 17,
-                "endFilePos": 34
-              },
-              "name": "count"
-            },
-            "args": [
-              {
-                "nodeType": "Arg",
-                "attributes": {
-                  "startLine": 3,
-                  "startTokenPos": 19,
-                  "startFilePos": 36,
-                  "endLine": 11,
-                  "endTokenPos": 85,
-                  "endFilePos": 176
-                },
-                "name": null,
-                "value": {
-                  "nodeType": "Expr_FuncCall",
-                  "attributes": {
-                    "startLine": 3,
-                    "startTokenPos": 19,
-                    "startFilePos": 36,
-                    "endLine": 11,
-                    "endTokenPos": 85,
-                    "endFilePos": 176
-                  },
-                  "name": {
-                    "nodeType": "Expr_Closure",
-                    "attributes": {
-                      "startLine": 3,
-                      "startTokenPos": 20,
-                      "startFilePos": 37,
-                      "endLine": 11,
-                      "endTokenPos": 82,
-                      "endFilePos": 173
+            {
+              "kind": "binary_expression",
+              "children": [
+                {
+                  "kind": "function_call_expression",
+                  "children": [
+                    {
+                      "kind": "name",
+                      "text": "count"
                     },
-                    "static": false,
-                    "byRef": false,
-                    "params": [],
-                    "uses": [
-                      {
-                        "nodeType": "ClosureUse",
-                        "attributes": {
-                          "startLine": 3,
-                          "startTokenPos": 27,
-                          "startFilePos": 53,
-                          "endLine": 3,
-                          "endTokenPos": 27,
-                          "endFilePos": 57
-                        },
-                        "var": {
-                          "nodeType": "Expr_Variable",
-                          "attributes": {
-                            "startLine": 3,
-                            "startTokenPos": 27,
-                            "startFilePos": 53,
-                            "endLine": 3,
-                            "endTokenPos": 27,
-                            "endFilePos": 57
-                          },
-                          "name": "data"
-                        },
-                        "byRef": false
-                      }
-                    ],
-                    "returnType": null,
-                    "stmts": [
-                      {
-                        "nodeType": "Stmt_Expression",
-                        "attributes": {
-                          "startLine": 4,
-                          "startTokenPos": 32,
-                          "startFilePos": 64,
-                          "endLine": 4,
-                          "endTokenPos": 38,
-                          "endFilePos": 76
-                        },
-                        "expr": {
-                          "nodeType": "Expr_Assign",
-                          "attributes": {
-                            "startLine": 4,
-                            "startTokenPos": 32,
-                            "startFilePos": 64,
-                            "endLine": 4,
-                            "endTokenPos": 37,
-                            "endFilePos": 75
-                          },
-                          "var": {
-                            "nodeType": "Expr_Variable",
-                            "attributes": {
-                              "startLine": 4,
-                              "startTokenPos": 32,
-                              "startFilePos": 64,
-                              "endLine": 4,
-                              "endTokenPos": 32,
-                              "endFilePos": 70
-                            },
-                            "name": "result"
-                          },
-                          "expr": {
-                            "nodeType": "Expr_Array",
-                            "attributes": {
-                              "startLine": 4,
-                              "startTokenPos": 36,
-                              "startFilePos": 74,
-                              "endLine": 4,
-                              "endTokenPos": 37,
-                              "endFilePos": 75,
-                              "kind": 2
-                            },
-                            "items": []
-                          }
-                        }
-                      },
-                      {
-                        "nodeType": "Stmt_Foreach",
-                        "attributes": {
-                          "startLine": 5,
-                          "startTokenPos": 40,
-                          "startFilePos": 80,
-                          "endLine": 9,
-                          "endTokenPos": 75,
-                          "endFilePos": 153
-                        },
-                        "expr": {
-                          "nodeType": "Expr_Variable",
-                          "attributes": {
-                            "startLine": 5,
-                            "startTokenPos": 43,
-                            "startFilePos": 89,
-                            "endLine": 5,
-                            "endTokenPos": 43,
-                            "endFilePos": 93
-                          },
-                          "name": "data"
-                        },
-                        "keyVar": null,
-                        "byRef": false,
-                        "valueVar": {
-                          "nodeType": "Expr_Variable",
-                          "attributes": {
-                            "startLine": 5,
-                            "startTokenPos": 47,
-                            "startFilePos": 98,
-                            "endLine": 5,
-                            "endTokenPos": 47,
-                            "endFilePos": 99
-                          },
-                          "name": "x"
-                        },
-                        "stmts": [
-                          {
-                            "nodeType": "Stmt_If",
-                            "attributes": {
-                              "startLine": 6,
-                              "startTokenPos": 52,
-                              "startFilePos": 108,
-                              "endLine": 8,
-                              "endTokenPos": 73,
-                              "endFilePos": 149
-                            },
-                            "cond": {
-                              "nodeType": "Expr_BinaryOp_Equal",
-                              "attributes": {
-                                "startLine": 6,
-                                "startTokenPos": 55,
-                                "startFilePos": 112,
-                                "endLine": 6,
-                                "endTokenPos": 59,
-                                "endFilePos": 118
-                              },
-                              "left": {
-                                "nodeType": "Expr_Variable",
-                                "attributes": {
-                                  "startLine": 6,
-                                  "startTokenPos": 55,
-                                  "startFilePos": 112,
-                                  "endLine": 6,
-                                  "endTokenPos": 55,
-                                  "endFilePos": 113
-                                },
-                                "name": "x"
-                              },
-                              "right": {
-                                "nodeType": "Scalar_Int",
-                                "attributes": {
-                                  "startLine": 6,
-                                  "startTokenPos": 59,
-                                  "startFilePos": 118,
-                                  "endLine": 6,
-                                  "endTokenPos": 59,
-                                  "endFilePos": 118,
-                                  "rawValue": "1",
-                                  "kind": 10
-                                },
-                                "value": 1
-                              }
-                            },
-                            "stmts": [
-                              {
-                                "nodeType": "Stmt_Expression",
-                                "attributes": {
-                                  "startLine": 7,
-                                  "startTokenPos": 64,
-                                  "startFilePos": 129,
-                                  "endLine": 7,
-                                  "endTokenPos": 71,
-                                  "endFilePos": 143
-                                },
-                                "expr": {
-                                  "nodeType": "Expr_Assign",
-                                  "attributes": {
-                                    "startLine": 7,
-                                    "startTokenPos": 64,
-                                    "startFilePos": 129,
-                                    "endLine": 7,
-                                    "endTokenPos": 70,
-                                    "endFilePos": 142
-                                  },
-                                  "var": {
-                                    "nodeType": "Expr_ArrayDimFetch",
-                                    "attributes": {
-                                      "startLine": 7,
-                                      "startTokenPos": 64,
-                                      "startFilePos": 129,
-                                      "endLine": 7,
-                                      "endTokenPos": 66,
-                                      "endFilePos": 137
-                                    },
-                                    "var": {
-                                      "nodeType": "Expr_Variable",
-                                      "attributes": {
-                                        "startLine": 7,
-                                        "startTokenPos": 64,
-                                        "startFilePos": 129,
-                                        "endLine": 7,
-                                        "endTokenPos": 64,
-                                        "endFilePos": 135
-                                      },
-                                      "name": "result"
-                                    },
-                                    "dim": null
-                                  },
-                                  "expr": {
-                                    "nodeType": "Expr_Variable",
-                                    "attributes": {
-                                      "startLine": 7,
-                                      "startTokenPos": 70,
-                                      "startFilePos": 141,
-                                      "endLine": 7,
-                                      "endTokenPos": 70,
-                                      "endFilePos": 142
-                                    },
-                                    "name": "x"
-                                  }
+                    {
+                      "kind": "arguments",
+                      "children": [
+                        {
+                          "kind": "argument",
+                          "children": [
+                            {
+                              "kind": "function_call_expression",
+                              "children": [
+                                {
+                                  "kind": "parenthesized_expression",
+                                  "children": [
+                                    {
+                                      "kind": "anonymous_function_creation_expression",
+                                      "children": [
+                                        {
+                                          "kind": "anonymous_function_use_clause",
+                                          "children": [
+                                            {
+                                              "kind": "variable_name",
+                                              "children": [
+                                                {
+                                                  "kind": "name",
+                                                  "text": "data"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": "compound_statement",
+                                          "children": [
+                                            {
+                                              "kind": "expression_statement",
+                                              "children": [
+                                                {
+                                                  "kind": "assignment_expression",
+                                                  "children": [
+                                                    {
+                                                      "kind": "variable_name",
+                                                      "children": [
+                                                        {
+                                                          "kind": "name",
+                                                          "text": "result"
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "kind": "foreach_statement",
+                                              "children": [
+                                                {
+                                                  "kind": "variable_name",
+                                                  "children": [
+                                                    {
+                                                      "kind": "name",
+                                                      "text": "data"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "variable_name",
+                                                  "children": [
+                                                    {
+                                                      "kind": "name",
+                                                      "text": "x"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "compound_statement",
+                                                  "children": [
+                                                    {
+                                                      "kind": "if_statement",
+                                                      "children": [
+                                                        {
+                                                          "kind": "parenthesized_expression",
+                                                          "children": [
+                                                            {
+                                                              "kind": "binary_expression",
+                                                              "children": [
+                                                                {
+                                                                  "kind": "variable_name",
+                                                                  "children": [
+                                                                    {
+                                                                      "kind": "name",
+                                                                      "text": "x"
+                                                                    }
+                                                                  ]
+                                                                },
+                                                                {
+                                                                  "kind": "integer",
+                                                                  "text": "1"
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        },
+                                                        {
+                                                          "kind": "compound_statement",
+                                                          "children": [
+                                                            {
+                                                              "kind": "expression_statement",
+                                                              "children": [
+                                                                {
+                                                                  "kind": "assignment_expression",
+                                                                  "children": [
+                                                                    {
+                                                                      "kind": "subscript_expression",
+                                                                      "children": [
+                                                                        {
+                                                                          "kind": "variable_name",
+                                                                          "children": [
+                                                                            {
+                                                                              "kind": "name",
+                                                                              "text": "result"
+                                                                            }
+                                                                          ]
+                                                                        }
+                                                                      ]
+                                                                    },
+                                                                    {
+                                                                      "kind": "variable_name",
+                                                                      "children": [
+                                                                        {
+                                                                          "kind": "name",
+                                                                          "text": "x"
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "kind": "return_statement",
+                                              "children": [
+                                                {
+                                                  "kind": "variable_name",
+                                                  "children": [
+                                                    {
+                                                      "kind": "name",
+                                                      "text": "result"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
                                 }
-                              }
-                            ],
-                            "elseifs": [],
-                            "else": null
-                          }
-                        ]
-                      },
-                      {
-                        "nodeType": "Stmt_Return",
-                        "attributes": {
-                          "startLine": 10,
-                          "startTokenPos": 77,
-                          "startFilePos": 157,
-                          "endLine": 10,
-                          "endTokenPos": 80,
-                          "endFilePos": 171
-                        },
-                        "expr": {
-                          "nodeType": "Expr_Variable",
-                          "attributes": {
-                            "startLine": 10,
-                            "startTokenPos": 79,
-                            "startFilePos": 164,
-                            "endLine": 10,
-                            "endTokenPos": 79,
-                            "endFilePos": 170
-                          },
-                          "name": "result"
+                              ]
+                            }
+                          ]
                         }
-                      }
-                    ],
-                    "attrGroups": []
-                  },
-                  "args": []
+                      ]
+                    }
+                  ]
                 },
-                "byRef": false,
-                "unpack": false
-              }
-            ]
-          },
-          "right": {
-            "nodeType": "Scalar_Int",
-            "attributes": {
-              "startLine": 11,
-              "startTokenPos": 90,
-              "startFilePos": 181,
-              "endLine": 11,
-              "endTokenPos": 90,
-              "endFilePos": 181,
-              "rawValue": "0",
-              "kind": 10
-            },
-            "value": 0
-          }
+                {
+                  "kind": "integer",
+                  "text": "0"
+                }
+              ]
+            }
+          ]
         }
-      }
+      ]
     },
     {
-      "nodeType": "Stmt_Echo",
-      "attributes": {
-        "startLine": 12,
-        "startTokenPos": 93,
-        "startFilePos": 184,
-        "endLine": 12,
-        "endTokenPos": 109,
-        "endFilePos": 224
-      },
-      "exprs": [
+      "kind": "echo_statement",
+      "children": [
         {
-          "nodeType": "Expr_Ternary",
-          "attributes": {
-            "startLine": 12,
-            "startTokenPos": 96,
-            "startFilePos": 190,
-            "endLine": 12,
-            "endTokenPos": 104,
-            "endFilePos": 213
-          },
-          "cond": {
-            "nodeType": "Expr_Variable",
-            "attributes": {
-              "startLine": 12,
-              "startTokenPos": 96,
-              "startFilePos": 190,
-              "endLine": 12,
-              "endTokenPos": 96,
-              "endFilePos": 194
+          "kind": "sequence_expression",
+          "children": [
+            {
+              "kind": "parenthesized_expression",
+              "children": [
+                {
+                  "kind": "conditional_expression",
+                  "children": [
+                    {
+                      "kind": "variable_name",
+                      "children": [
+                        {
+                          "kind": "name",
+                          "text": "flag"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "encapsed_string",
+                      "children": [
+                        {
+                          "kind": "string_content",
+                          "text": "true"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "encapsed_string",
+                      "children": [
+                        {
+                          "kind": "string_content",
+                          "text": "false"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             },
-            "name": "flag"
-          },
-          "if": {
-            "nodeType": "Scalar_String",
-            "attributes": {
-              "startLine": 12,
-              "startTokenPos": 100,
-              "startFilePos": 198,
-              "endLine": 12,
-              "endTokenPos": 100,
-              "endFilePos": 203,
-              "kind": 2,
-              "rawValue": "\"true\""
-            },
-            "value": "true"
-          },
-          "else": {
-            "nodeType": "Scalar_String",
-            "attributes": {
-              "startLine": 12,
-              "startTokenPos": 104,
-              "startFilePos": 207,
-              "endLine": 12,
-              "endTokenPos": 104,
-              "endFilePos": 213,
-              "kind": 2,
-              "rawValue": "\"false\""
-            },
-            "value": "false"
-          }
-        },
-        {
-          "nodeType": "Expr_ConstFetch",
-          "attributes": {
-            "startLine": 12,
-            "startTokenPos": 108,
-            "startFilePos": 217,
-            "endLine": 12,
-            "endTokenPos": 108,
-            "endFilePos": 223
-          },
-          "name": {
-            "nodeType": "Name",
-            "attributes": {
-              "startLine": 12,
-              "startTokenPos": 108,
-              "startFilePos": 217,
-              "endLine": 12,
-              "endTokenPos": 108,
-              "endFilePos": 223
-            },
-            "name": "PHP_EOL"
-          }
+            {
+              "kind": "name",
+              "text": "PHP_EOL"
+            }
+          ]
         }
       ]
     }
