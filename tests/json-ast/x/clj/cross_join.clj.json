@@ -1,144 +1,447 @@
 {
   "forms": [
-    [
-      "ns",
-      "main"
-    ],
-    [
-      "require",
-      [
-        "quote",
-        "clojure.set"
-      ]
-    ],
-    [
-      "defrecord",
-      "Orders",
-      [
-        "id",
-        "customerId",
-        "total"
-      ]
-    ],
-    [
-      "defrecord",
-      "Customers",
-      [
-        "id",
-        "name"
-      ]
-    ],
-    [
-      "def",
-      "customers",
-      [
+    {
+      "list": [
         {
-          "id": 1,
-          "name": "Alice"
+          "sym": "ns"
         },
         {
-          "id": 2,
-          "name": "Bob"
-        },
-        {
-          "id": 3,
-          "name": "Charlie"
+          "sym": "main"
         }
       ]
-    ],
-    [
-      "def",
-      "orders",
-      [
+    },
+    {
+      "list": [
         {
-          "customerId": 1,
-          "id": 100,
-          "total": 250
+          "sym": "require"
         },
         {
-          "customerId": 2,
-          "id": 101,
-          "total": 125
-        },
-        {
-          "customerId": 1,
-          "id": 102,
-          "total": 300
-        }
-      ]
-    ],
-    [
-      "def",
-      "result",
-      [
-        "for",
-        [
-          "o",
-          "orders",
-          "c",
-          "customers"
-        ],
-        {
-          "orderCustomerId": [
-            "customerId",
-            "o"
-          ],
-          "orderId": [
-            "id",
-            "o"
-          ],
-          "orderTotal": [
-            "total",
-            "o"
-          ],
-          "pairedCustomerName": [
-            "name",
-            "c"
+          "list": [
+            {
+              "sym": "quote"
+            },
+            {
+              "sym": "clojure.set"
+            }
           ]
         }
       ]
-    ],
-    [
-      "defn",
-      "-main",
-      [],
-      [
-        "println",
-        "--- Cross Join: All order-customer pairs ---"
-      ],
-      [
-        "doseq",
-        [
-          "entry",
-          "result"
-        ],
-        [
-          "println",
-          "Order",
-          [
-            "orderId",
-            "entry"
-          ],
-          "(customerId:",
-          [
-            "orderCustomerId",
-            "entry"
-          ],
-          ", total: $",
-          [
-            "orderTotal",
-            "entry"
-          ],
-          ") paired with",
-          [
-            "pairedCustomerName",
-            "entry"
+    },
+    {
+      "list": [
+        {
+          "sym": "defrecord"
+        },
+        {
+          "sym": "Orders"
+        },
+        {
+          "vector": [
+            {
+              "sym": "id"
+            },
+            {
+              "sym": "customerId"
+            },
+            {
+              "sym": "total"
+            }
           ]
-        ]
+        }
       ]
-    ],
-    [
-      "-main"
-    ]
+    },
+    {
+      "list": [
+        {
+          "sym": "defrecord"
+        },
+        {
+          "sym": "Customers"
+        },
+        {
+          "vector": [
+            {
+              "sym": "id"
+            },
+            {
+              "sym": "name"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "sym": "def"
+        },
+        {
+          "sym": "customers"
+        },
+        {
+          "vector": [
+            {
+              "map": [
+                {
+                  "key": {
+                    "kw": ":id"
+                  },
+                  "val": {
+                    "num": 1
+                  }
+                },
+                {
+                  "key": {
+                    "kw": ":name"
+                  },
+                  "val": {
+                    "str": "Alice"
+                  }
+                }
+              ]
+            },
+            {
+              "map": [
+                {
+                  "key": {
+                    "kw": ":id"
+                  },
+                  "val": {
+                    "num": 2
+                  }
+                },
+                {
+                  "key": {
+                    "kw": ":name"
+                  },
+                  "val": {
+                    "str": "Bob"
+                  }
+                }
+              ]
+            },
+            {
+              "map": [
+                {
+                  "key": {
+                    "kw": ":id"
+                  },
+                  "val": {
+                    "num": 3
+                  }
+                },
+                {
+                  "key": {
+                    "kw": ":name"
+                  },
+                  "val": {
+                    "str": "Charlie"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "sym": "def"
+        },
+        {
+          "sym": "orders"
+        },
+        {
+          "vector": [
+            {
+              "map": [
+                {
+                  "key": {
+                    "kw": ":id"
+                  },
+                  "val": {
+                    "num": 100
+                  }
+                },
+                {
+                  "key": {
+                    "kw": ":customerId"
+                  },
+                  "val": {
+                    "num": 1
+                  }
+                },
+                {
+                  "key": {
+                    "kw": ":total"
+                  },
+                  "val": {
+                    "num": 250
+                  }
+                }
+              ]
+            },
+            {
+              "map": [
+                {
+                  "key": {
+                    "kw": ":id"
+                  },
+                  "val": {
+                    "num": 101
+                  }
+                },
+                {
+                  "key": {
+                    "kw": ":customerId"
+                  },
+                  "val": {
+                    "num": 2
+                  }
+                },
+                {
+                  "key": {
+                    "kw": ":total"
+                  },
+                  "val": {
+                    "num": 125
+                  }
+                }
+              ]
+            },
+            {
+              "map": [
+                {
+                  "key": {
+                    "kw": ":id"
+                  },
+                  "val": {
+                    "num": 102
+                  }
+                },
+                {
+                  "key": {
+                    "kw": ":customerId"
+                  },
+                  "val": {
+                    "num": 1
+                  }
+                },
+                {
+                  "key": {
+                    "kw": ":total"
+                  },
+                  "val": {
+                    "num": 300
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "sym": "def"
+        },
+        {
+          "sym": "result"
+        },
+        {
+          "list": [
+            {
+              "sym": "for"
+            },
+            {
+              "vector": [
+                {
+                  "sym": "o"
+                },
+                {
+                  "sym": "orders"
+                },
+                {
+                  "sym": "c"
+                },
+                {
+                  "sym": "customers"
+                }
+              ]
+            },
+            {
+              "map": [
+                {
+                  "key": {
+                    "kw": ":orderId"
+                  },
+                  "val": {
+                    "list": [
+                      {
+                        "kw": ":id"
+                      },
+                      {
+                        "sym": "o"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": {
+                    "kw": ":orderCustomerId"
+                  },
+                  "val": {
+                    "list": [
+                      {
+                        "kw": ":customerId"
+                      },
+                      {
+                        "sym": "o"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": {
+                    "kw": ":pairedCustomerName"
+                  },
+                  "val": {
+                    "list": [
+                      {
+                        "kw": ":name"
+                      },
+                      {
+                        "sym": "c"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": {
+                    "kw": ":orderTotal"
+                  },
+                  "val": {
+                    "list": [
+                      {
+                        "kw": ":total"
+                      },
+                      {
+                        "sym": "o"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "sym": "defn"
+        },
+        {
+          "sym": "-main"
+        },
+        {},
+        {
+          "list": [
+            {
+              "sym": "println"
+            },
+            {
+              "str": "--- Cross Join: All order-customer pairs ---"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "sym": "doseq"
+            },
+            {
+              "vector": [
+                {
+                  "sym": "entry"
+                },
+                {
+                  "sym": "result"
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "sym": "println"
+                },
+                {
+                  "str": "Order"
+                },
+                {
+                  "list": [
+                    {
+                      "kw": ":orderId"
+                    },
+                    {
+                      "sym": "entry"
+                    }
+                  ]
+                },
+                {
+                  "str": "(customerId:"
+                },
+                {
+                  "list": [
+                    {
+                      "kw": ":orderCustomerId"
+                    },
+                    {
+                      "sym": "entry"
+                    }
+                  ]
+                },
+                {
+                  "str": ", total: $"
+                },
+                {
+                  "list": [
+                    {
+                      "kw": ":orderTotal"
+                    },
+                    {
+                      "sym": "entry"
+                    }
+                  ]
+                },
+                {
+                  "str": ") paired with"
+                },
+                {
+                  "list": [
+                    {
+                      "kw": ":pairedCustomerName"
+                    },
+                    {
+                      "sym": "entry"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "sym": "-main"
+        }
+      ]
+    }
   ]
 }

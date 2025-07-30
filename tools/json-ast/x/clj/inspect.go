@@ -10,26 +10,55 @@ import (
 	"time"
 )
 
-// Program represents a parsed Clojure source file.
-type Program struct {
-	Forms []any `json:"forms"`
+// Node represents a Clojure form in a type-safe structure.
+type Node struct {
+	Sym    string     `json:"sym,omitempty"`
+	Kw     string     `json:"kw,omitempty"`
+	Str    string     `json:"str,omitempty"`
+	Num    *float64   `json:"num,omitempty"`
+	Bool   *bool      `json:"bool,omitempty"`
+	Nil    bool       `json:"nil,omitempty"`
+	List   []*Node    `json:"list,omitempty"`
+	Vector []*Node    `json:"vector,omitempty"`
+	Map    []MapEntry `json:"map,omitempty"`
 }
 
-const bbScript = `(require '[clojure.tools.reader :as r])
-(require '[clojure.tools.reader.reader-types :as rt])
-(require '[cheshire.core :as json])
-(let [rdr (rt/string-push-back-reader (slurp *in*))]
-  (loop [acc []]
-    (let [form (try (r/read {:eof ::eof} rdr)
-                    (catch Exception e {:error (.getMessage e)}))]
-      (if (= form ::eof)
-        (println (json/generate-string acc))
-        (recur (conj acc form))))) )`
+// MapEntry represents a key/value pair within a map literal.
+type MapEntry struct {
+	Key *Node `json:"key"`
+	Val *Node `json:"val"`
+}
+
+// Program represents a parsed Clojure source file.
+type Program struct {
+	Forms []*Node `json:"forms"`
+}
+
+const bbScript = `(require '[cheshire.core :as json])
+
+(defn node->json [x]
+  (cond
+    (list? x) {:list (mapv node->json x)}
+    (vector? x) {:vector (mapv node->json x)}
+    (map? x) {:map (mapv (fn [[k v]] {:key (node->json k) :val (node->json v)}) x)}
+    (symbol? x) {:sym (str x)}
+    (keyword? x) {:kw (str x)}
+    (string? x) {:str x}
+    (number? x) {:num x}
+    (boolean? x) {:bool x}
+    (nil? x) {:nil true}
+    :else {:unknown (pr-str x)}))
+
+(let [forms (read-string (str "[" (slurp *in*) "]"))]
+  (println (json/generate-string (mapv node->json forms))))`
 
 var babashkaCmd = "bb"
 
 // Inspect parses the given Clojure source code and returns a Program describing its forms.
 func Inspect(src string) (*Program, error) {
+	if err := EnsureBabashka(); err != nil {
+		return nil, err
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	cmd := exec.CommandContext(ctx, babashkaCmd, "-e", bbScript)
@@ -44,7 +73,7 @@ func Inspect(src string) (*Program, error) {
 		}
 		return nil, err
 	}
-	var forms []any
+	var forms []*Node
 	if err := json.Unmarshal(out.Bytes(), &forms); err != nil {
 		return nil, err
 	}

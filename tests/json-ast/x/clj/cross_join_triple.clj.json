@@ -1,93 +1,240 @@
 {
   "forms": [
-    [
-      "ns",
-      "main"
-    ],
-    [
-      "require",
-      [
-        "quote",
-        "clojure.set"
-      ]
-    ],
-    [
-      "def",
-      "nums",
-      [
-        1,
-        2
-      ]
-    ],
-    [
-      "def",
-      "letters",
-      [
-        "A",
-        "B"
-      ]
-    ],
-    [
-      "def",
-      "bools",
-      [
-        true,
-        false
-      ]
-    ],
-    [
-      "def",
-      "combos",
-      [
-        "for",
-        [
-          "n",
-          "nums",
-          "l",
-          "letters",
-          "b",
-          "bools"
-        ],
+    {
+      "list": [
         {
-          "b": "b",
-          "l": "l",
-          "n": "n"
+          "sym": "ns"
+        },
+        {
+          "sym": "main"
         }
       ]
-    ],
-    [
-      "defn",
-      "-main",
-      [],
-      [
-        "println",
-        "--- Cross Join of three lists ---"
-      ],
-      [
-        "doseq",
-        [
-          "c",
-          "combos"
-        ],
-        [
-          "println",
-          [
-            "n",
-            "c"
-          ],
-          [
-            "l",
-            "c"
-          ],
-          [
-            "b",
-            "c"
+    },
+    {
+      "list": [
+        {
+          "sym": "require"
+        },
+        {
+          "list": [
+            {
+              "sym": "quote"
+            },
+            {
+              "sym": "clojure.set"
+            }
           ]
-        ]
+        }
       ]
-    ],
-    [
-      "-main"
-    ]
+    },
+    {
+      "list": [
+        {
+          "sym": "def"
+        },
+        {
+          "sym": "nums"
+        },
+        {
+          "vector": [
+            {
+              "num": 1
+            },
+            {
+              "num": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "sym": "def"
+        },
+        {
+          "sym": "letters"
+        },
+        {
+          "vector": [
+            {
+              "str": "A"
+            },
+            {
+              "str": "B"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "sym": "def"
+        },
+        {
+          "sym": "bools"
+        },
+        {
+          "vector": [
+            {
+              "bool": true
+            },
+            {
+              "bool": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "sym": "def"
+        },
+        {
+          "sym": "combos"
+        },
+        {
+          "list": [
+            {
+              "sym": "for"
+            },
+            {
+              "vector": [
+                {
+                  "sym": "n"
+                },
+                {
+                  "sym": "nums"
+                },
+                {
+                  "sym": "l"
+                },
+                {
+                  "sym": "letters"
+                },
+                {
+                  "sym": "b"
+                },
+                {
+                  "sym": "bools"
+                }
+              ]
+            },
+            {
+              "map": [
+                {
+                  "key": {
+                    "kw": ":n"
+                  },
+                  "val": {
+                    "sym": "n"
+                  }
+                },
+                {
+                  "key": {
+                    "kw": ":l"
+                  },
+                  "val": {
+                    "sym": "l"
+                  }
+                },
+                {
+                  "key": {
+                    "kw": ":b"
+                  },
+                  "val": {
+                    "sym": "b"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "sym": "defn"
+        },
+        {
+          "sym": "-main"
+        },
+        {},
+        {
+          "list": [
+            {
+              "sym": "println"
+            },
+            {
+              "str": "--- Cross Join of three lists ---"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "sym": "doseq"
+            },
+            {
+              "vector": [
+                {
+                  "sym": "c"
+                },
+                {
+                  "sym": "combos"
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "sym": "println"
+                },
+                {
+                  "list": [
+                    {
+                      "kw": ":n"
+                    },
+                    {
+                      "sym": "c"
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "kw": ":l"
+                    },
+                    {
+                      "sym": "c"
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "kw": ":b"
+                    },
+                    {
+                      "sym": "c"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "sym": "-main"
+        }
+      ]
+    }
   ]
 }
