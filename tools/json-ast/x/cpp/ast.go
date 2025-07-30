@@ -44,8 +44,8 @@ func convert(n *sitter.Node, src []byte, opts Options) *Node {
 	if opts.WithPositions {
 		start := n.StartPoint()
 		end := n.EndPoint()
-		node.Start = int(n.StartByte())
-		node.End = int(n.EndByte())
+		node.Start = int(start.Row) + 1
+		node.End = int(end.Row) + 1
 		node.StartCol = int(start.Column)
 		node.EndCol = int(end.Column)
 	}
