@@ -1,78 +1,90 @@
 {
-  "module": {
-    "_type": "Module",
-    "body": [
+  "file": {
+    "kind": "module",
+    "start": 0,
+    "end": 113,
+    "children": [
       {
-        "_type": "Expr",
-        "value": {
-          "_type": "Call",
-          "func": {
-            "_type": "Name",
-            "id": "print",
-            "ctx": {
-              "_type": "Load"
-            },
-            "lineno": 3,
-            "end_lineno": 3,
-            "col_offset": 0,
-            "end_col_offset": 5
-          },
-          "args": [
-            {
-              "_type": "Subscript",
-              "value": {
-                "_type": "Constant",
-                "value": "mochi",
-                "kind": null,
-                "lineno": 3,
-                "end_lineno": 3,
-                "col_offset": 6,
-                "end_col_offset": 13
+        "kind": "comment",
+        "start": 0,
+        "end": 37
+      },
+      {
+        "kind": "comment",
+        "start": 38,
+        "end": 92
+      },
+      {
+        "kind": "expression_statement",
+        "start": 93,
+        "end": 112,
+        "children": [
+          {
+            "kind": "call",
+            "start": 93,
+            "end": 112,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 93,
+                "end": 98
               },
-              "slice": {
-                "_type": "Slice",
-                "lower": {
-                  "_type": "Constant",
-                  "value": 1,
-                  "kind": null,
-                  "lineno": 3,
-                  "end_lineno": 3,
-                  "col_offset": 14,
-                  "end_col_offset": 15
-                },
-                "upper": {
-                  "_type": "Constant",
-                  "value": 4,
-                  "kind": null,
-                  "lineno": 3,
-                  "end_lineno": 3,
-                  "col_offset": 16,
-                  "end_col_offset": 17
-                },
-                "step": null,
-                "lineno": 3,
-                "end_lineno": 3,
-                "col_offset": 14,
-                "end_col_offset": 17
-              },
-              "ctx": {
-                "_type": "Load"
-              },
-              "lineno": 3,
-              "end_lineno": 3,
-              "col_offset": 6,
-              "end_col_offset": 18
-            }
-          ],
-          "keywords": [],
-          "lineno": 3,
-          "end_lineno": 3,
-          "col_offset": 0,
-          "end_col_offset": 19
-        },
-        "lineno": 3,
-        "end_lineno": 3,
-        "end_col_offset": 19
+              {
+                "kind": "argument_list",
+                "start": 98,
+                "end": 112,
+                "children": [
+                  {
+                    "kind": "subscript",
+                    "start": 99,
+                    "end": 111,
+                    "children": [
+                      {
+                        "kind": "string",
+                        "start": 99,
+                        "end": 106,
+                        "children": [
+                          {
+                            "kind": "string_start",
+                            "start": 99,
+                            "end": 100
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 100,
+                            "end": 105
+                          },
+                          {
+                            "kind": "string_end",
+                            "start": 105,
+                            "end": 106
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "slice",
+                        "start": 107,
+                        "end": 110,
+                        "children": [
+                          {
+                            "kind": "integer",
+                            "start": 107,
+                            "end": 108
+                          },
+                          {
+                            "kind": "integer",
+                            "start": 109,
+                            "end": 110
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     ]
   }

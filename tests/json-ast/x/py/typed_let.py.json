@@ -1,68 +1,73 @@
 {
-  "module": {
-    "_type": "Module",
-    "body": [
+  "file": {
+    "kind": "module",
+    "start": 0,
+    "end": 108,
+    "children": [
       {
-        "_type": "Assign",
-        "targets": [
-          {
-            "_type": "Name",
-            "id": "y",
-            "lineno": 3,
-            "end_lineno": 3,
-            "end_col_offset": 1
-          }
-        ],
-        "value": {
-          "_type": "Constant",
-          "value": 0,
-          "kind": null,
-          "lineno": 3,
-          "end_lineno": 3,
-          "col_offset": 4,
-          "end_col_offset": 5
-        },
-        "lineno": 3,
-        "end_lineno": 3,
-        "end_col_offset": 5
+        "kind": "comment",
+        "start": 0,
+        "end": 37
       },
       {
-        "_type": "Expr",
-        "value": {
-          "_type": "Call",
-          "func": {
-            "_type": "Name",
-            "id": "print",
-            "ctx": {
-              "_type": "Load"
-            },
-            "lineno": 4,
-            "end_lineno": 4,
-            "col_offset": 0,
-            "end_col_offset": 5
-          },
-          "args": [
-            {
-              "_type": "Name",
-              "id": "y",
-              "ctx": {
-                "_type": "Load"
+        "kind": "comment",
+        "start": 38,
+        "end": 92
+      },
+      {
+        "kind": "expression_statement",
+        "start": 93,
+        "end": 98,
+        "children": [
+          {
+            "kind": "assignment",
+            "start": 93,
+            "end": 98,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 93,
+                "end": 94
               },
-              "lineno": 4,
-              "end_lineno": 4,
-              "col_offset": 6,
-              "end_col_offset": 7
-            }
-          ],
-          "keywords": [],
-          "lineno": 4,
-          "end_lineno": 4,
-          "col_offset": 0,
-          "end_col_offset": 8
-        },
-        "lineno": 4,
-        "end_lineno": 4,
-        "end_col_offset": 8
+              {
+                "kind": "integer",
+                "start": 97,
+                "end": 98
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "start": 99,
+        "end": 107,
+        "children": [
+          {
+            "kind": "call",
+            "start": 99,
+            "end": 107,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 99,
+                "end": 104
+              },
+              {
+                "kind": "argument_list",
+                "start": 104,
+                "end": 107,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "start": 105,
+                    "end": 106
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     ]
   }

@@ -1,61 +1,95 @@
 {
-  "module": {
-    "_type": "Module",
-    "body": [
+  "file": {
+    "kind": "module",
+    "start": 0,
+    "end": 119,
+    "children": [
       {
-        "_type": "Expr",
-        "value": {
-          "_type": "Call",
-          "func": {
-            "_type": "Name",
-            "id": "print",
-            "ctx": {
-              "_type": "Load"
-            },
-            "lineno": 3,
-            "end_lineno": 3,
-            "col_offset": 0,
-            "end_col_offset": 5
-          },
-          "args": [
-            {
-              "_type": "BinOp",
-              "left": {
-                "_type": "Constant",
-                "value": "hello ",
-                "kind": null,
-                "lineno": 3,
-                "end_lineno": 3,
-                "col_offset": 6,
-                "end_col_offset": 14
+        "kind": "comment",
+        "start": 0,
+        "end": 37
+      },
+      {
+        "kind": "comment",
+        "start": 38,
+        "end": 92
+      },
+      {
+        "kind": "expression_statement",
+        "start": 93,
+        "end": 118,
+        "children": [
+          {
+            "kind": "call",
+            "start": 93,
+            "end": 118,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 93,
+                "end": 98
               },
-              "op": {
-                "_type": "Add"
-              },
-              "right": {
-                "_type": "Constant",
-                "value": "world",
-                "kind": null,
-                "lineno": 3,
-                "end_lineno": 3,
-                "col_offset": 17,
-                "end_col_offset": 24
-              },
-              "lineno": 3,
-              "end_lineno": 3,
-              "col_offset": 6,
-              "end_col_offset": 24
-            }
-          ],
-          "keywords": [],
-          "lineno": 3,
-          "end_lineno": 3,
-          "col_offset": 0,
-          "end_col_offset": 25
-        },
-        "lineno": 3,
-        "end_lineno": 3,
-        "end_col_offset": 25
+              {
+                "kind": "argument_list",
+                "start": 98,
+                "end": 118,
+                "children": [
+                  {
+                    "kind": "binary_operator",
+                    "start": 99,
+                    "end": 117,
+                    "children": [
+                      {
+                        "kind": "string",
+                        "start": 99,
+                        "end": 107,
+                        "children": [
+                          {
+                            "kind": "string_start",
+                            "start": 99,
+                            "end": 100
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 100,
+                            "end": 106
+                          },
+                          {
+                            "kind": "string_end",
+                            "start": 106,
+                            "end": 107
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "string",
+                        "start": 110,
+                        "end": 117,
+                        "children": [
+                          {
+                            "kind": "string_start",
+                            "start": 110,
+                            "end": 111
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 111,
+                            "end": 116
+                          },
+                          {
+                            "kind": "string_end",
+                            "start": 116,
+                            "end": 117
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     ]
   }

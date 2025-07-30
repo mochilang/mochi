@@ -1,42 +1,66 @@
 {
-  "module": {
-    "_type": "Module",
-    "body": [
+  "file": {
+    "kind": "module",
+    "start": 0,
+    "end": 108,
+    "children": [
       {
-        "_type": "Expr",
-        "value": {
-          "_type": "Call",
-          "func": {
-            "_type": "Name",
-            "id": "print",
-            "ctx": {
-              "_type": "Load"
-            },
-            "lineno": 3,
-            "end_lineno": 3,
-            "col_offset": 0,
-            "end_col_offset": 5
-          },
-          "args": [
-            {
-              "_type": "Constant",
-              "value": "hello",
-              "kind": null,
-              "lineno": 3,
-              "end_lineno": 3,
-              "col_offset": 6,
-              "end_col_offset": 13
-            }
-          ],
-          "keywords": [],
-          "lineno": 3,
-          "end_lineno": 3,
-          "col_offset": 0,
-          "end_col_offset": 14
-        },
-        "lineno": 3,
-        "end_lineno": 3,
-        "end_col_offset": 14
+        "kind": "comment",
+        "start": 0,
+        "end": 37
+      },
+      {
+        "kind": "comment",
+        "start": 38,
+        "end": 92
+      },
+      {
+        "kind": "expression_statement",
+        "start": 93,
+        "end": 107,
+        "children": [
+          {
+            "kind": "call",
+            "start": 93,
+            "end": 107,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 93,
+                "end": 98
+              },
+              {
+                "kind": "argument_list",
+                "start": 98,
+                "end": 107,
+                "children": [
+                  {
+                    "kind": "string",
+                    "start": 99,
+                    "end": 106,
+                    "children": [
+                      {
+                        "kind": "string_start",
+                        "start": 99,
+                        "end": 100
+                      },
+                      {
+                        "kind": "string_content",
+                        "start": 100,
+                        "end": 105
+                      },
+                      {
+                        "kind": "string_end",
+                        "start": 105,
+                        "end": 106
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     ]
   }

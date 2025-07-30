@@ -1,133 +1,123 @@
 {
-  "module": {
-    "_type": "Module",
-    "body": [
+  "file": {
+    "kind": "module",
+    "start": 0,
+    "end": 128,
+    "children": [
       {
-        "_type": "Expr",
-        "value": {
-          "_type": "Call",
-          "func": {
-            "_type": "Name",
-            "id": "print",
-            "ctx": {
-              "_type": "Load"
-            },
-            "lineno": 3,
-            "end_lineno": 3,
-            "col_offset": 0,
-            "end_col_offset": 5
-          },
-          "args": [
-            {
-              "_type": "BinOp",
-              "left": {
-                "_type": "Constant",
-                "value": 2,
-                "kind": null,
-                "lineno": 3,
-                "end_lineno": 3,
-                "col_offset": 6,
-                "end_col_offset": 7
-              },
-              "op": {
-                "_type": "Add"
-              },
-              "right": {
-                "_type": "Constant",
-                "value": 3,
-                "kind": null,
-                "lineno": 3,
-                "end_lineno": 3,
-                "col_offset": 10,
-                "end_col_offset": 11
-              },
-              "lineno": 3,
-              "end_lineno": 3,
-              "col_offset": 6,
-              "end_col_offset": 11
-            }
-          ],
-          "keywords": [],
-          "lineno": 3,
-          "end_lineno": 3,
-          "col_offset": 0,
-          "end_col_offset": 12
-        },
-        "lineno": 3,
-        "end_lineno": 3,
-        "end_col_offset": 12
+        "kind": "comment",
+        "start": 0,
+        "end": 37
       },
       {
-        "_type": "Expr",
-        "value": {
-          "_type": "Call",
-          "func": {
-            "_type": "Name",
-            "id": "print",
-            "ctx": {
-              "_type": "Load"
-            },
-            "lineno": 4,
-            "end_lineno": 4,
-            "col_offset": 0,
-            "end_col_offset": 5
-          },
-          "args": [
-            {
-              "_type": "Constant",
-              "value": 3.14,
-              "kind": null,
-              "lineno": 4,
-              "end_lineno": 4,
-              "col_offset": 6,
-              "end_col_offset": 10
-            }
-          ],
-          "keywords": [],
-          "lineno": 4,
-          "end_lineno": 4,
-          "col_offset": 0,
-          "end_col_offset": 11
-        },
-        "lineno": 4,
-        "end_lineno": 4,
-        "end_col_offset": 11
+        "kind": "comment",
+        "start": 38,
+        "end": 92
       },
       {
-        "_type": "Expr",
-        "value": {
-          "_type": "Call",
-          "func": {
-            "_type": "Name",
-            "id": "print",
-            "ctx": {
-              "_type": "Load"
-            },
-            "lineno": 5,
-            "end_lineno": 5,
-            "col_offset": 0,
-            "end_col_offset": 5
-          },
-          "args": [
-            {
-              "_type": "Constant",
-              "value": 42,
-              "kind": null,
-              "lineno": 5,
-              "end_lineno": 5,
-              "col_offset": 6,
-              "end_col_offset": 8
-            }
-          ],
-          "keywords": [],
-          "lineno": 5,
-          "end_lineno": 5,
-          "col_offset": 0,
-          "end_col_offset": 9
-        },
-        "lineno": 5,
-        "end_lineno": 5,
-        "end_col_offset": 9
+        "kind": "expression_statement",
+        "start": 93,
+        "end": 105,
+        "children": [
+          {
+            "kind": "call",
+            "start": 93,
+            "end": 105,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 93,
+                "end": 98
+              },
+              {
+                "kind": "argument_list",
+                "start": 98,
+                "end": 105,
+                "children": [
+                  {
+                    "kind": "binary_operator",
+                    "start": 99,
+                    "end": 104,
+                    "children": [
+                      {
+                        "kind": "integer",
+                        "start": 99,
+                        "end": 100
+                      },
+                      {
+                        "kind": "integer",
+                        "start": 103,
+                        "end": 104
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "start": 106,
+        "end": 117,
+        "children": [
+          {
+            "kind": "call",
+            "start": 106,
+            "end": 117,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 106,
+                "end": 111
+              },
+              {
+                "kind": "argument_list",
+                "start": 111,
+                "end": 117,
+                "children": [
+                  {
+                    "kind": "float",
+                    "start": 112,
+                    "end": 116
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "start": 118,
+        "end": 127,
+        "children": [
+          {
+            "kind": "call",
+            "start": 118,
+            "end": 127,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 118,
+                "end": 123
+              },
+              {
+                "kind": "argument_list",
+                "start": 123,
+                "end": 127,
+                "children": [
+                  {
+                    "kind": "integer",
+                    "start": 124,
+                    "end": 126
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     ]
   }
