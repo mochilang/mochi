@@ -1,78 +1,78 @@
 {
   "stmts": [
     {
-      "Lhs": [
+      "lhs": [
         {
-          "Value": "customers"
+          "value": "customers"
         }
       ],
-      "Rhs": [
+      "rhs": [
         {
-          "Fields": [
+          "fields": [
             {
-              "Key": null,
-              "Value": {
-                "Fields": [
+              "key": null,
+              "value": {
+                "fields": [
                   {
-                    "Key": {
-                      "Value": "id"
+                    "key": {
+                      "value": "id"
                     },
-                    "Value": {
-                      "Value": "1"
+                    "value": {
+                      "value": "1"
                     }
                   },
                   {
-                    "Key": {
-                      "Value": "name"
+                    "key": {
+                      "value": "name"
                     },
-                    "Value": {
-                      "Value": "Alice"
+                    "value": {
+                      "value": "Alice"
                     }
                   }
                 ]
               }
             },
             {
-              "Key": null,
-              "Value": {
-                "Fields": [
+              "key": null,
+              "value": {
+                "fields": [
                   {
-                    "Key": {
-                      "Value": "id"
+                    "key": {
+                      "value": "id"
                     },
-                    "Value": {
-                      "Value": "2"
+                    "value": {
+                      "value": "2"
                     }
                   },
                   {
-                    "Key": {
-                      "Value": "name"
+                    "key": {
+                      "value": "name"
                     },
-                    "Value": {
-                      "Value": "Bob"
+                    "value": {
+                      "value": "Bob"
                     }
                   }
                 ]
               }
             },
             {
-              "Key": null,
-              "Value": {
-                "Fields": [
+              "key": null,
+              "value": {
+                "fields": [
                   {
-                    "Key": {
-                      "Value": "id"
+                    "key": {
+                      "value": "id"
                     },
-                    "Value": {
-                      "Value": "3"
+                    "value": {
+                      "value": "3"
                     }
                   },
                   {
-                    "Key": {
-                      "Value": "name"
+                    "key": {
+                      "value": "name"
                     },
-                    "Value": {
-                      "Value": "Charlie"
+                    "value": {
+                      "value": "Charlie"
                     }
                   }
                 ]
@@ -83,102 +83,102 @@
       ]
     },
     {
-      "Lhs": [
+      "lhs": [
         {
-          "Value": "orders"
+          "value": "orders"
         }
       ],
-      "Rhs": [
+      "rhs": [
         {
-          "Fields": [
+          "fields": [
             {
-              "Key": null,
-              "Value": {
-                "Fields": [
+              "key": null,
+              "value": {
+                "fields": [
                   {
-                    "Key": {
-                      "Value": "id"
+                    "key": {
+                      "value": "id"
                     },
-                    "Value": {
-                      "Value": "100"
+                    "value": {
+                      "value": "100"
                     }
                   },
                   {
-                    "Key": {
-                      "Value": "customerId"
+                    "key": {
+                      "value": "customerId"
                     },
-                    "Value": {
-                      "Value": "1"
+                    "value": {
+                      "value": "1"
                     }
                   },
                   {
-                    "Key": {
-                      "Value": "total"
+                    "key": {
+                      "value": "total"
                     },
-                    "Value": {
-                      "Value": "250"
+                    "value": {
+                      "value": "250"
                     }
                   }
                 ]
               }
             },
             {
-              "Key": null,
-              "Value": {
-                "Fields": [
+              "key": null,
+              "value": {
+                "fields": [
                   {
-                    "Key": {
-                      "Value": "id"
+                    "key": {
+                      "value": "id"
                     },
-                    "Value": {
-                      "Value": "101"
+                    "value": {
+                      "value": "101"
                     }
                   },
                   {
-                    "Key": {
-                      "Value": "customerId"
+                    "key": {
+                      "value": "customerId"
                     },
-                    "Value": {
-                      "Value": "2"
+                    "value": {
+                      "value": "2"
                     }
                   },
                   {
-                    "Key": {
-                      "Value": "total"
+                    "key": {
+                      "value": "total"
                     },
-                    "Value": {
-                      "Value": "125"
+                    "value": {
+                      "value": "125"
                     }
                   }
                 ]
               }
             },
             {
-              "Key": null,
-              "Value": {
-                "Fields": [
+              "key": null,
+              "value": {
+                "fields": [
                   {
-                    "Key": {
-                      "Value": "id"
+                    "key": {
+                      "value": "id"
                     },
-                    "Value": {
-                      "Value": "102"
+                    "value": {
+                      "value": "102"
                     }
                   },
                   {
-                    "Key": {
-                      "Value": "customerId"
+                    "key": {
+                      "value": "customerId"
                     },
-                    "Value": {
-                      "Value": "1"
+                    "value": {
+                      "value": "1"
                     }
                   },
                   {
-                    "Key": {
-                      "Value": "total"
+                    "key": {
+                      "value": "total"
                     },
-                    "Value": {
-                      "Value": "300"
+                    "value": {
+                      "value": "300"
                     }
                   }
                 ]
@@ -189,133 +189,133 @@
       ]
     },
     {
-      "Lhs": [
+      "lhs": [
         {
-          "Value": "result"
+          "value": "result"
         }
       ],
-      "Rhs": [
+      "rhs": [
         {
-          "Fields": []
+          "fields": []
         }
       ]
     },
     {
-      "Names": [
+      "names": [
         "_",
         "o"
       ],
-      "Exprs": [
+      "exprs": [
         {
-          "Func": {
-            "Value": "ipairs"
+          "func": {
+            "value": "ipairs"
           },
-          "Receiver": null,
-          "Method": "",
-          "Args": [
+          "receiver": null,
+          "method": "",
+          "args": [
             {
-              "Value": "orders"
+              "value": "orders"
             }
           ],
-          "AdjustRet": false
+          "adjustret": false
         }
       ],
-      "Stmts": [
+      "stmts": [
         {
-          "Names": [
+          "names": [
             "_",
             "c"
           ],
-          "Exprs": [
+          "exprs": [
             {
-              "Func": {
-                "Value": "ipairs"
+              "func": {
+                "value": "ipairs"
               },
-              "Receiver": null,
-              "Method": "",
-              "Args": [
+              "receiver": null,
+              "method": "",
+              "args": [
                 {
-                  "Value": "customers"
+                  "value": "customers"
                 }
               ],
-              "AdjustRet": false
+              "adjustret": false
             }
           ],
-          "Stmts": [
+          "stmts": [
             {
-              "Expr": {
-                "Func": {
-                  "Object": {
-                    "Value": "table"
+              "expr": {
+                "func": {
+                  "object": {
+                    "value": "table"
                   },
-                  "Key": {
-                    "Value": "insert"
+                  "key": {
+                    "value": "insert"
                   }
                 },
-                "Receiver": null,
-                "Method": "",
-                "Args": [
+                "receiver": null,
+                "method": "",
+                "args": [
                   {
-                    "Value": "result"
+                    "value": "result"
                   },
                   {
-                    "Fields": [
+                    "fields": [
                       {
-                        "Key": {
-                          "Value": "orderId"
+                        "key": {
+                          "value": "orderId"
                         },
-                        "Value": {
-                          "Object": {
-                            "Value": "o"
+                        "value": {
+                          "object": {
+                            "value": "o"
                           },
-                          "Key": {
-                            "Value": "id"
+                          "key": {
+                            "value": "id"
                           }
                         }
                       },
                       {
-                        "Key": {
-                          "Value": "orderCustomerId"
+                        "key": {
+                          "value": "orderCustomerId"
                         },
-                        "Value": {
-                          "Object": {
-                            "Value": "o"
+                        "value": {
+                          "object": {
+                            "value": "o"
                           },
-                          "Key": {
-                            "Value": "customerId"
+                          "key": {
+                            "value": "customerId"
                           }
                         }
                       },
                       {
-                        "Key": {
-                          "Value": "pairedCustomerName"
+                        "key": {
+                          "value": "pairedCustomerName"
                         },
-                        "Value": {
-                          "Object": {
-                            "Value": "c"
+                        "value": {
+                          "object": {
+                            "value": "c"
                           },
-                          "Key": {
-                            "Value": "name"
+                          "key": {
+                            "value": "name"
                           }
                         }
                       },
                       {
-                        "Key": {
-                          "Value": "orderTotal"
+                        "key": {
+                          "value": "orderTotal"
                         },
-                        "Value": {
-                          "Object": {
-                            "Value": "o"
+                        "value": {
+                          "object": {
+                            "value": "o"
                           },
-                          "Key": {
-                            "Value": "total"
+                          "key": {
+                            "value": "total"
                           }
                         }
                       }
                     ]
                   }
                 ],
-                "AdjustRet": false
+                "adjustret": false
               }
             }
           ]
@@ -323,101 +323,101 @@
       ]
     },
     {
-      "Expr": {
-        "Func": {
-          "Value": "print"
+      "expr": {
+        "func": {
+          "value": "print"
         },
-        "Receiver": null,
-        "Method": "",
-        "Args": [
+        "receiver": null,
+        "method": "",
+        "args": [
           {
-            "Value": "--- Cross Join: All order-customer pairs ---"
+            "value": "--- Cross Join: All order-customer pairs ---"
           }
         ],
-        "AdjustRet": false
+        "adjustret": false
       }
     },
     {
-      "Names": [
+      "names": [
         "_",
         "entry"
       ],
-      "Exprs": [
+      "exprs": [
         {
-          "Func": {
-            "Value": "ipairs"
+          "func": {
+            "value": "ipairs"
           },
-          "Receiver": null,
-          "Method": "",
-          "Args": [
+          "receiver": null,
+          "method": "",
+          "args": [
             {
-              "Value": "result"
+              "value": "result"
             }
           ],
-          "AdjustRet": false
+          "adjustret": false
         }
       ],
-      "Stmts": [
+      "stmts": [
         {
-          "Expr": {
-            "Func": {
-              "Value": "print"
+          "expr": {
+            "func": {
+              "value": "print"
             },
-            "Receiver": null,
-            "Method": "",
-            "Args": [
+            "receiver": null,
+            "method": "",
+            "args": [
               {
-                "Func": {
-                  "Object": {
-                    "Value": "string"
+                "func": {
+                  "object": {
+                    "value": "string"
                   },
-                  "Key": {
-                    "Value": "format"
+                  "key": {
+                    "value": "format"
                   }
                 },
-                "Receiver": null,
-                "Method": "",
-                "Args": [
+                "receiver": null,
+                "method": "",
+                "args": [
                   {
-                    "Value": "Order %s (customerId: %s , total: $ %s ) paired with %s"
+                    "value": "Order %s (customerId: %s , total: $ %s ) paired with %s"
                   },
                   {
-                    "Object": {
-                      "Value": "entry"
+                    "object": {
+                      "value": "entry"
                     },
-                    "Key": {
-                      "Value": "orderId"
+                    "key": {
+                      "value": "orderId"
                     }
                   },
                   {
-                    "Object": {
-                      "Value": "entry"
+                    "object": {
+                      "value": "entry"
                     },
-                    "Key": {
-                      "Value": "orderCustomerId"
+                    "key": {
+                      "value": "orderCustomerId"
                     }
                   },
                   {
-                    "Object": {
-                      "Value": "entry"
+                    "object": {
+                      "value": "entry"
                     },
-                    "Key": {
-                      "Value": "orderTotal"
+                    "key": {
+                      "value": "orderTotal"
                     }
                   },
                   {
-                    "Object": {
-                      "Value": "entry"
+                    "object": {
+                      "value": "entry"
                     },
-                    "Key": {
-                      "Value": "pairedCustomerName"
+                    "key": {
+                      "value": "pairedCustomerName"
                     }
                   }
                 ],
-                "AdjustRet": false
+                "adjustret": false
               }
             ],
-            "AdjustRet": false
+            "adjustret": false
           }
         }
       ]
