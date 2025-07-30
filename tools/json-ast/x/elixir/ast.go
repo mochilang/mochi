@@ -21,15 +21,15 @@ type Program struct {
 // convert transforms a tree-sitter Node into our Node structure.
 func convert(n *sitter.Node, src []byte) Node {
 	node := Node{Kind: n.Type(), Start: int(n.StartByte()), End: int(n.EndByte())}
-	if n.ChildCount() == 0 {
-		node.Text = n.Content(src)
-	}
-	for i := 0; i < int(n.ChildCount()); i++ {
-		child := n.Child(i)
-		if child == nil {
-			continue
-		}
-		node.Children = append(node.Children, convert(child, src))
-	}
+       if n.NamedChildCount() == 0 {
+               node.Text = n.Content(src)
+       }
+       for i := 0; i < int(n.NamedChildCount()); i++ {
+               child := n.NamedChild(i)
+               if child == nil {
+                       continue
+               }
+               node.Children = append(node.Children, convert(child, src))
+       }
 	return node
 }
