@@ -1,0 +1,191 @@
+{
+  "forms": [
+    {
+      "list": [
+        {
+          "atom": "import"
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "1"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "69"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "chibi"
+            },
+            {
+              "atom": "string"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "list": [
+            {
+              "atom": "take"
+            },
+            {
+              "list": [
+                {
+                  "atom": "drop"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "atom": "1"
+                    },
+                    {
+                      "atom": "2"
+                    },
+                    {
+                      "atom": "3"
+                    }
+                  ]
+                },
+                {
+                  "atom": "1"
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "-"
+                },
+                {
+                  "atom": "3"
+                },
+                {
+                  "atom": "1"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "list": [
+            {
+              "atom": "take"
+            },
+            {
+              "list": [
+                {
+                  "atom": "drop"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "atom": "1"
+                    },
+                    {
+                      "atom": "2"
+                    },
+                    {
+                      "atom": "3"
+                    }
+                  ]
+                },
+                {
+                  "atom": "0"
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "-"
+                },
+                {
+                  "atom": "2"
+                },
+                {
+                  "atom": "0"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "list": [
+            {
+              "atom": "substring"
+            },
+            {
+              "atom": "hello"
+            },
+            {
+              "atom": "1"
+            },
+            {
+              "atom": "4"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    }
+  ]
+}

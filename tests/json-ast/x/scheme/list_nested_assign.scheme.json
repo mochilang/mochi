@@ -1,0 +1,255 @@
+{
+  "forms": [
+    {
+      "list": [
+        {
+          "atom": "import"
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "1"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "69"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "chibi"
+            },
+            {
+              "atom": "string"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "matrix"
+        },
+        {
+          "list": [
+            {
+              "atom": "list"
+            },
+            {
+              "list": [
+                {
+                  "atom": "list"
+                },
+                {
+                  "atom": "1"
+                },
+                {
+                  "atom": "2"
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "list"
+                },
+                {
+                  "atom": "3"
+                },
+                {
+                  "atom": "4"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "list-set!"
+        },
+        {
+          "list": [
+            {
+              "atom": "list-ref"
+            },
+            {
+              "atom": "matrix"
+            },
+            {
+              "atom": "1"
+            }
+          ]
+        },
+        {
+          "atom": "0"
+        },
+        {
+          "atom": "5"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "list": [
+            {
+              "atom": "cond"
+            },
+            {
+              "list": [
+                {
+                  "list": [
+                    {
+                      "atom": "string?"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "list-ref"
+                        },
+                        {
+                          "atom": "matrix"
+                        },
+                        {
+                          "atom": "1"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "string-ref"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "list-ref"
+                        },
+                        {
+                          "atom": "matrix"
+                        },
+                        {
+                          "atom": "1"
+                        }
+                      ]
+                    },
+                    {
+                      "atom": "0"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "list": [
+                    {
+                      "atom": "hash-table?"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "list-ref"
+                        },
+                        {
+                          "atom": "matrix"
+                        },
+                        {
+                          "atom": "1"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "hash-table-ref"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "list-ref"
+                        },
+                        {
+                          "atom": "matrix"
+                        },
+                        {
+                          "atom": "1"
+                        }
+                      ]
+                    },
+                    {
+                      "atom": "0"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "else"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list-ref"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "list-ref"
+                        },
+                        {
+                          "atom": "matrix"
+                        },
+                        {
+                          "atom": "1"
+                        }
+                      ]
+                    },
+                    {
+                      "atom": "0"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "forms": [
+    {
+      "list": [
+        {
+          "atom": "import"
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "1"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "69"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "chibi"
+            },
+            {
+              "atom": "string"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "nums"
+        },
+        {
+          "list": [
+            {
+              "atom": "list"
+            },
+            {
+              "atom": "3"
+            },
+            {
+              "atom": "1"
+            },
+            {
+              "atom": "4"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "list": [
+            {
+              "atom": "apply"
+            },
+            {
+              "atom": "min"
+            },
+            {
+              "atom": "nums"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "list": [
+            {
+              "atom": "apply"
+            },
+            {
+              "atom": "max"
+            },
+            {
+              "atom": "nums"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    }
+  ]
+}

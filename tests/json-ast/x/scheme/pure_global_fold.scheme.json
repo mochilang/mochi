@@ -1,0 +1,108 @@
+{
+  "forms": [
+    {
+      "list": [
+        {
+          "atom": "import"
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "1"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "69"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "chibi"
+            },
+            {
+              "atom": "string"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "k"
+        },
+        {
+          "atom": "2"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "list": [
+            {
+              "atom": "inc"
+            },
+            {
+              "atom": "x"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "+"
+            },
+            {
+              "atom": "x"
+            },
+            {
+              "atom": "k"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "list": [
+            {
+              "atom": "inc"
+            },
+            {
+              "atom": "3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    }
+  ]
+}

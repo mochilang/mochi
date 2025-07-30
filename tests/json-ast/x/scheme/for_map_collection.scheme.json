@@ -1,0 +1,146 @@
+{
+  "forms": [
+    {
+      "list": [
+        {
+          "atom": "import"
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "1"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "69"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "chibi"
+            },
+            {
+              "atom": "string"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "m"
+        },
+        {
+          "list": [
+            {
+              "atom": "alist-\u003ehash-table"
+            },
+            {
+              "list": [
+                {
+                  "atom": "list"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "cons"
+                    },
+                    {
+                      "atom": "a"
+                    },
+                    {
+                      "atom": "1"
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "cons"
+                    },
+                    {
+                      "atom": "b"
+                    },
+                    {
+                      "atom": "2"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "for-each"
+        },
+        {
+          "list": [
+            {
+              "atom": "lambda"
+            },
+            {
+              "list": [
+                {
+                  "atom": "k"
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "begin"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "display"
+                    },
+                    {
+                      "atom": "k"
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "newline"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "hash-table-keys"
+            },
+            {
+              "atom": "m"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,699 @@
+{
+  "forms": [
+    {
+      "list": [
+        {
+          "atom": "import"
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "1"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "69"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "chibi"
+            },
+            {
+              "atom": "string"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "customers"
+        },
+        {
+          "list": [
+            {
+              "atom": "list"
+            },
+            {
+              "list": [
+                {
+                  "atom": "alist-\u003ehash-table"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "id"
+                        },
+                        {
+                          "atom": "1"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "name"
+                        },
+                        {
+                          "atom": "Alice"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "alist-\u003ehash-table"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "id"
+                        },
+                        {
+                          "atom": "2"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "name"
+                        },
+                        {
+                          "atom": "Bob"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "orders"
+        },
+        {
+          "list": [
+            {
+              "atom": "list"
+            },
+            {
+              "list": [
+                {
+                  "atom": "alist-\u003ehash-table"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "id"
+                        },
+                        {
+                          "atom": "100"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "customerId"
+                        },
+                        {
+                          "atom": "1"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "total"
+                        },
+                        {
+                          "atom": "250"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "alist-\u003ehash-table"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "id"
+                        },
+                        {
+                          "atom": "101"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "customerId"
+                        },
+                        {
+                          "atom": "3"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "total"
+                        },
+                        {
+                          "atom": "80"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "result"
+        },
+        {
+          "list": [
+            {
+              "atom": "let"
+            },
+            {
+              "list": [
+                {
+                  "list": [
+                    {
+                      "atom": "res38"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "list"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "begin"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "for-each"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "lambda"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "o"
+                            }
+                          ]
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "for-each"
+                            },
+                            {
+                              "list": [
+                                {
+                                  "atom": "lambda"
+                                },
+                                {
+                                  "list": [
+                                    {
+                                      "atom": "c"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "list": [
+                                    {
+                                      "atom": "if"
+                                    },
+                                    {
+                                      "list": [
+                                        {
+                                          "atom": "="
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "atom": "hash-table-ref"
+                                            },
+                                            {
+                                              "atom": "o"
+                                            },
+                                            {
+                                              "atom": "customerId"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "atom": "hash-table-ref"
+                                            },
+                                            {
+                                              "atom": "c"
+                                            },
+                                            {
+                                              "atom": "id"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "list": [
+                                        {
+                                          "atom": "set!"
+                                        },
+                                        {
+                                          "atom": "res38"
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "atom": "append"
+                                            },
+                                            {
+                                              "atom": "res38"
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "atom": "list"
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "alist-\u003ehash-table"
+                                                    },
+                                                    {
+                                                      "list": [
+                                                        {
+                                                          "atom": "list"
+                                                        },
+                                                        {
+                                                          "list": [
+                                                            {
+                                                              "atom": "cons"
+                                                            },
+                                                            {
+                                                              "atom": "orderId"
+                                                            },
+                                                            {
+                                                              "list": [
+                                                                {
+                                                                  "atom": "hash-table-ref"
+                                                                },
+                                                                {
+                                                                  "atom": "o"
+                                                                },
+                                                                {
+                                                                  "atom": "id"
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        },
+                                                        {
+                                                          "list": [
+                                                            {
+                                                              "atom": "cons"
+                                                            },
+                                                            {
+                                                              "atom": "customer"
+                                                            },
+                                                            {
+                                                              "atom": "c"
+                                                            }
+                                                          ]
+                                                        },
+                                                        {
+                                                          "list": [
+                                                            {
+                                                              "atom": "cons"
+                                                            },
+                                                            {
+                                                              "atom": "total"
+                                                            },
+                                                            {
+                                                              "list": [
+                                                                {
+                                                                  "atom": "hash-table-ref"
+                                                                },
+                                                                {
+                                                                  "atom": "o"
+                                                                },
+                                                                {
+                                                                  "atom": "total"
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "list": [
+                                        {
+                                          "atom": "quote"
+                                        },
+                                        {
+                                          "atom": "nil"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "atom": "customers"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "atom": "orders"
+                    }
+                  ]
+                },
+                {
+                  "atom": "res38"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "atom": "--- Left Join ---"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "for-each"
+        },
+        {
+          "list": [
+            {
+              "atom": "lambda"
+            },
+            {
+              "list": [
+                {
+                  "atom": "entry"
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "begin"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "display"
+                    },
+                    {
+                      "atom": "Order"
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "display"
+                    },
+                    {
+                      "atom": " "
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "display"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "hash-table-ref"
+                        },
+                        {
+                          "atom": "entry"
+                        },
+                        {
+                          "atom": "orderId"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "display"
+                    },
+                    {
+                      "atom": " "
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "display"
+                    },
+                    {
+                      "atom": "customer"
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "display"
+                    },
+                    {
+                      "atom": " "
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "display"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "hash-table-ref"
+                        },
+                        {
+                          "atom": "entry"
+                        },
+                        {
+                          "atom": "customer"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "display"
+                    },
+                    {
+                      "atom": " "
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "display"
+                    },
+                    {
+                      "atom": "total"
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "display"
+                    },
+                    {
+                      "atom": " "
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "display"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "hash-table-ref"
+                        },
+                        {
+                          "atom": "entry"
+                        },
+                        {
+                          "atom": "total"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "newline"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "atom": "result"
+        }
+      ]
+    }
+  ]
+}

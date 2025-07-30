@@ -1,0 +1,223 @@
+{
+  "forms": [
+    {
+      "list": [
+        {
+          "atom": "import"
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "1"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "69"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "chibi"
+            },
+            {
+              "atom": "string"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "nums"
+        },
+        {
+          "list": [
+            {
+              "atom": "list"
+            },
+            {
+              "atom": "1"
+            },
+            {
+              "atom": "2"
+            },
+            {
+              "atom": "3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "result"
+        },
+        {
+          "list": [
+            {
+              "atom": "let"
+            },
+            {
+              "list": [
+                {
+                  "list": [
+                    {
+                      "atom": "res42"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "list"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "begin"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "for-each"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "lambda"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "n"
+                            }
+                          ]
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "if"
+                            },
+                            {
+                              "list": [
+                                {
+                                  "atom": "\u003e"
+                                },
+                                {
+                                  "atom": "n"
+                                },
+                                {
+                                  "atom": "1"
+                                }
+                              ]
+                            },
+                            {
+                              "list": [
+                                {
+                                  "atom": "set!"
+                                },
+                                {
+                                  "atom": "res42"
+                                },
+                                {
+                                  "list": [
+                                    {
+                                      "atom": "append"
+                                    },
+                                    {
+                                      "atom": "res42"
+                                    },
+                                    {
+                                      "list": [
+                                        {
+                                          "atom": "list"
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "atom": "apply"
+                                            },
+                                            {
+                                              "atom": "+"
+                                            },
+                                            {
+                                              "atom": "n"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "list": [
+                                {
+                                  "atom": "quote"
+                                },
+                                {
+                                  "atom": "nil"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "atom": "nums"
+                    }
+                  ]
+                },
+                {
+                  "atom": "res42"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "atom": "result"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    }
+  ]
+}

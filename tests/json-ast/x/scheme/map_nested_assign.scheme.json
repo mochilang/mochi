@@ -1,0 +1,273 @@
+{
+  "forms": [
+    {
+      "list": [
+        {
+          "atom": "import"
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "1"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "69"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "chibi"
+            },
+            {
+              "atom": "string"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "data"
+        },
+        {
+          "list": [
+            {
+              "atom": "alist-\u003ehash-table"
+            },
+            {
+              "list": [
+                {
+                  "atom": "list"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "cons"
+                    },
+                    {
+                      "atom": "outer"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "alist-\u003ehash-table"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "list"
+                            },
+                            {
+                              "list": [
+                                {
+                                  "atom": "cons"
+                                },
+                                {
+                                  "atom": "inner"
+                                },
+                                {
+                                  "atom": "1"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "hash-table-set!"
+        },
+        {
+          "list": [
+            {
+              "atom": "hash-table-ref"
+            },
+            {
+              "atom": "data"
+            },
+            {
+              "atom": "outer"
+            }
+          ]
+        },
+        {
+          "atom": "inner"
+        },
+        {
+          "atom": "2"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "list": [
+            {
+              "atom": "cond"
+            },
+            {
+              "list": [
+                {
+                  "list": [
+                    {
+                      "atom": "string?"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "hash-table-ref"
+                        },
+                        {
+                          "atom": "data"
+                        },
+                        {
+                          "atom": "outer"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "string-ref"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "hash-table-ref"
+                        },
+                        {
+                          "atom": "data"
+                        },
+                        {
+                          "atom": "outer"
+                        }
+                      ]
+                    },
+                    {
+                      "atom": "inner"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "list": [
+                    {
+                      "atom": "hash-table?"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "hash-table-ref"
+                        },
+                        {
+                          "atom": "data"
+                        },
+                        {
+                          "atom": "outer"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "hash-table-ref"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "hash-table-ref"
+                        },
+                        {
+                          "atom": "data"
+                        },
+                        {
+                          "atom": "outer"
+                        }
+                      ]
+                    },
+                    {
+                      "atom": "inner"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "else"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list-ref"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "hash-table-ref"
+                        },
+                        {
+                          "atom": "data"
+                        },
+                        {
+                          "atom": "outer"
+                        }
+                      ]
+                    },
+                    {
+                      "atom": "inner"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    }
+  ]
+}

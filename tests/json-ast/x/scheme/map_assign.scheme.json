@@ -1,0 +1,121 @@
+{
+  "forms": [
+    {
+      "list": [
+        {
+          "atom": "import"
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "1"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "69"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "chibi"
+            },
+            {
+              "atom": "string"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "scores"
+        },
+        {
+          "list": [
+            {
+              "atom": "alist-\u003ehash-table"
+            },
+            {
+              "list": [
+                {
+                  "atom": "list"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "cons"
+                    },
+                    {
+                      "atom": "alice"
+                    },
+                    {
+                      "atom": "1"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "hash-table-set!"
+        },
+        {
+          "atom": "scores"
+        },
+        {
+          "atom": "bob"
+        },
+        {
+          "atom": "2"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "list": [
+            {
+              "atom": "hash-table-ref"
+            },
+            {
+              "atom": "scores"
+            },
+            {
+              "atom": "bob"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    }
+  ]
+}

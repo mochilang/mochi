@@ -1,0 +1,2661 @@
+{
+  "forms": [
+    {
+      "list": [
+        {
+          "atom": "begin"
+        },
+        {
+          "list": [
+            {
+              "atom": "current-error-port"
+            },
+            {
+              "list": [
+                {
+                  "atom": "open-output-string"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "import"
+            },
+            {
+              "list": [
+                {
+                  "atom": "scheme"
+                },
+                {
+                  "atom": "base"
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "srfi"
+                },
+                {
+                  "atom": "69"
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "scheme"
+                },
+                {
+                  "atom": "sort"
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "chibi"
+                },
+                {
+                  "atom": "string"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "list": [
+            {
+              "atom": "to-str"
+            },
+            {
+              "atom": "x"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "cond"
+            },
+            {
+              "list": [
+                {
+                  "list": [
+                    {
+                      "atom": "and"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "list?"
+                        },
+                        {
+                          "atom": "x"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "pair?"
+                        },
+                        {
+                          "atom": "x"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "pair?"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "car"
+                            },
+                            {
+                              "atom": "x"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "string?"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "car"
+                            },
+                            {
+                              "list": [
+                                {
+                                  "atom": "car"
+                                },
+                                {
+                                  "atom": "x"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "string-append"
+                    },
+                    {
+                      "atom": "{"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "string-join"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "map"
+                            },
+                            {
+                              "list": [
+                                {
+                                  "atom": "lambda"
+                                },
+                                {
+                                  "list": [
+                                    {
+                                      "atom": "kv"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "list": [
+                                    {
+                                      "atom": "string-append"
+                                    },
+                                    {
+                                      "atom": "'"
+                                    },
+                                    {
+                                      "list": [
+                                        {
+                                          "atom": "car"
+                                        },
+                                        {
+                                          "atom": "kv"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "atom": "': "
+                                    },
+                                    {
+                                      "list": [
+                                        {
+                                          "atom": "to-str"
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "atom": "cdr"
+                                            },
+                                            {
+                                              "atom": "kv"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "atom": "x"
+                            }
+                          ]
+                        },
+                        {
+                          "atom": ", "
+                        }
+                      ]
+                    },
+                    {
+                      "atom": "}"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "list": [
+                    {
+                      "atom": "hash-table?"
+                    },
+                    {
+                      "atom": "x"
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "let"
+                    },
+                    {
+                      "list": [
+                        {
+                          "list": [
+                            {
+                              "atom": "pairs"
+                            },
+                            {
+                              "list": [
+                                {
+                                  "atom": "hash-table-\u003ealist"
+                                },
+                                {
+                                  "atom": "x"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "string-append"
+                        },
+                        {
+                          "atom": "{"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "string-join"
+                            },
+                            {
+                              "list": [
+                                {
+                                  "atom": "map"
+                                },
+                                {
+                                  "list": [
+                                    {
+                                      "atom": "lambda"
+                                    },
+                                    {
+                                      "list": [
+                                        {
+                                          "atom": "kv"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "list": [
+                                        {
+                                          "atom": "string-append"
+                                        },
+                                        {
+                                          "atom": "'"
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "atom": "car"
+                                            },
+                                            {
+                                              "atom": "kv"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "atom": "': "
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "atom": "to-str"
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "atom": "cdr"
+                                                },
+                                                {
+                                                  "atom": "kv"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "atom": "pairs"
+                                }
+                              ]
+                            },
+                            {
+                              "atom": ", "
+                            }
+                          ]
+                        },
+                        {
+                          "atom": "}"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "list": [
+                    {
+                      "atom": "list?"
+                    },
+                    {
+                      "atom": "x"
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "string-append"
+                    },
+                    {
+                      "atom": "["
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "string-join"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "map"
+                            },
+                            {
+                              "atom": "to-str"
+                            },
+                            {
+                              "atom": "x"
+                            }
+                          ]
+                        },
+                        {
+                          "atom": ", "
+                        }
+                      ]
+                    },
+                    {
+                      "atom": "]"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "list": [
+                    {
+                      "atom": "string?"
+                    },
+                    {
+                      "atom": "x"
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "string-append"
+                    },
+                    {
+                      "atom": "'"
+                    },
+                    {
+                      "atom": "x"
+                    },
+                    {
+                      "atom": "'"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "else"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "number-\u003estring"
+                    },
+                    {
+                      "atom": "x"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "nation"
+        },
+        {
+          "list": [
+            {
+              "atom": "list"
+            },
+            {
+              "list": [
+                {
+                  "atom": "alist-\u003ehash-table"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "n_nationkey"
+                        },
+                        {
+                          "atom": "1"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "n_name"
+                        },
+                        {
+                          "atom": "BRAZIL"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "customer"
+        },
+        {
+          "list": [
+            {
+              "atom": "list"
+            },
+            {
+              "list": [
+                {
+                  "atom": "alist-\u003ehash-table"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "c_custkey"
+                        },
+                        {
+                          "atom": "1"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "c_name"
+                        },
+                        {
+                          "atom": "Alice"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "c_acctbal"
+                        },
+                        {
+                          "atom": "100.0"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "c_nationkey"
+                        },
+                        {
+                          "atom": "1"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "c_address"
+                        },
+                        {
+                          "atom": "123 St"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "c_phone"
+                        },
+                        {
+                          "atom": "123-456"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "c_comment"
+                        },
+                        {
+                          "atom": "Loyal"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "orders"
+        },
+        {
+          "list": [
+            {
+              "atom": "list"
+            },
+            {
+              "list": [
+                {
+                  "atom": "alist-\u003ehash-table"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "o_orderkey"
+                        },
+                        {
+                          "atom": "1000"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "o_custkey"
+                        },
+                        {
+                          "atom": "1"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "o_orderdate"
+                        },
+                        {
+                          "atom": "1993-10-15"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "alist-\u003ehash-table"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "o_orderkey"
+                        },
+                        {
+                          "atom": "2000"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "o_custkey"
+                        },
+                        {
+                          "atom": "1"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "o_orderdate"
+                        },
+                        {
+                          "atom": "1994-01-02"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "lineitem"
+        },
+        {
+          "list": [
+            {
+              "atom": "list"
+            },
+            {
+              "list": [
+                {
+                  "atom": "alist-\u003ehash-table"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "l_orderkey"
+                        },
+                        {
+                          "atom": "1000"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "l_returnflag"
+                        },
+                        {
+                          "atom": "R"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "l_extendedprice"
+                        },
+                        {
+                          "atom": "1000.0"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "l_discount"
+                        },
+                        {
+                          "atom": "0.1"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "alist-\u003ehash-table"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "l_orderkey"
+                        },
+                        {
+                          "atom": "2000"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "l_returnflag"
+                        },
+                        {
+                          "atom": "N"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "l_extendedprice"
+                        },
+                        {
+                          "atom": "500.0"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "l_discount"
+                        },
+                        {
+                          "atom": "0.0"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "start_date"
+        },
+        {
+          "atom": "1993-10-01"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "end_date"
+        },
+        {
+          "atom": "1994-01-01"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "result"
+        },
+        {
+          "list": [
+            {
+              "atom": "let"
+            },
+            {
+              "list": [
+                {
+                  "list": [
+                    {
+                      "atom": "groups3"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "make-hash-table"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "res6"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "list"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "begin"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "for-each"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "lambda"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "c"
+                            }
+                          ]
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "for-each"
+                            },
+                            {
+                              "list": [
+                                {
+                                  "atom": "lambda"
+                                },
+                                {
+                                  "list": [
+                                    {
+                                      "atom": "o"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "list": [
+                                    {
+                                      "atom": "for-each"
+                                    },
+                                    {
+                                      "list": [
+                                        {
+                                          "atom": "lambda"
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "atom": "l"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "atom": "for-each"
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "atom": "lambda"
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "n"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "if"
+                                                    },
+                                                    {
+                                                      "list": [
+                                                        {
+                                                          "atom": "and"
+                                                        },
+                                                        {
+                                                          "list": [
+                                                            {
+                                                              "atom": "and"
+                                                            },
+                                                            {
+                                                              "list": [
+                                                                {
+                                                                  "atom": "and"
+                                                                },
+                                                                {
+                                                                  "list": [
+                                                                    {
+                                                                      "atom": "and"
+                                                                    },
+                                                                    {
+                                                                      "list": [
+                                                                        {
+                                                                          "atom": "and"
+                                                                        },
+                                                                        {
+                                                                          "list": [
+                                                                            {
+                                                                              "atom": "string\u003e=?"
+                                                                            },
+                                                                            {
+                                                                              "list": [
+                                                                                {
+                                                                                  "atom": "hash-table-ref"
+                                                                                },
+                                                                                {
+                                                                                  "atom": "o"
+                                                                                },
+                                                                                {
+                                                                                  "atom": "o_orderdate"
+                                                                                }
+                                                                              ]
+                                                                            },
+                                                                            {
+                                                                              "atom": "start_date"
+                                                                            }
+                                                                          ]
+                                                                        },
+                                                                        {
+                                                                          "list": [
+                                                                            {
+                                                                              "atom": "string\u003c?"
+                                                                            },
+                                                                            {
+                                                                              "list": [
+                                                                                {
+                                                                                  "atom": "hash-table-ref"
+                                                                                },
+                                                                                {
+                                                                                  "atom": "o"
+                                                                                },
+                                                                                {
+                                                                                  "atom": "o_orderdate"
+                                                                                }
+                                                                              ]
+                                                                            },
+                                                                            {
+                                                                              "atom": "end_date"
+                                                                            }
+                                                                          ]
+                                                                        }
+                                                                      ]
+                                                                    },
+                                                                    {
+                                                                      "list": [
+                                                                        {
+                                                                          "atom": "string=?"
+                                                                        },
+                                                                        {
+                                                                          "list": [
+                                                                            {
+                                                                              "atom": "hash-table-ref"
+                                                                            },
+                                                                            {
+                                                                              "atom": "l"
+                                                                            },
+                                                                            {
+                                                                              "atom": "l_returnflag"
+                                                                            }
+                                                                          ]
+                                                                        },
+                                                                        {
+                                                                          "atom": "R"
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  ]
+                                                                },
+                                                                {
+                                                                  "list": [
+                                                                    {
+                                                                      "atom": "="
+                                                                    },
+                                                                    {
+                                                                      "list": [
+                                                                        {
+                                                                          "atom": "hash-table-ref"
+                                                                        },
+                                                                        {
+                                                                          "atom": "o"
+                                                                        },
+                                                                        {
+                                                                          "atom": "o_custkey"
+                                                                        }
+                                                                      ]
+                                                                    },
+                                                                    {
+                                                                      "list": [
+                                                                        {
+                                                                          "atom": "hash-table-ref"
+                                                                        },
+                                                                        {
+                                                                          "atom": "c"
+                                                                        },
+                                                                        {
+                                                                          "atom": "c_custkey"
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            },
+                                                            {
+                                                              "list": [
+                                                                {
+                                                                  "atom": "="
+                                                                },
+                                                                {
+                                                                  "list": [
+                                                                    {
+                                                                      "atom": "hash-table-ref"
+                                                                    },
+                                                                    {
+                                                                      "atom": "l"
+                                                                    },
+                                                                    {
+                                                                      "atom": "l_orderkey"
+                                                                    }
+                                                                  ]
+                                                                },
+                                                                {
+                                                                  "list": [
+                                                                    {
+                                                                      "atom": "hash-table-ref"
+                                                                    },
+                                                                    {
+                                                                      "atom": "o"
+                                                                    },
+                                                                    {
+                                                                      "atom": "o_orderkey"
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        },
+                                                        {
+                                                          "list": [
+                                                            {
+                                                              "atom": "="
+                                                            },
+                                                            {
+                                                              "list": [
+                                                                {
+                                                                  "atom": "hash-table-ref"
+                                                                },
+                                                                {
+                                                                  "atom": "n"
+                                                                },
+                                                                {
+                                                                  "atom": "n_nationkey"
+                                                                }
+                                                              ]
+                                                            },
+                                                            {
+                                                              "list": [
+                                                                {
+                                                                  "atom": "hash-table-ref"
+                                                                },
+                                                                {
+                                                                  "atom": "c"
+                                                                },
+                                                                {
+                                                                  "atom": "c_nationkey"
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    },
+                                                    {
+                                                      "list": [
+                                                        {
+                                                          "atom": "let*"
+                                                        },
+                                                        {
+                                                          "list": [
+                                                            {
+                                                              "list": [
+                                                                {
+                                                                  "atom": "k5"
+                                                                },
+                                                                {
+                                                                  "list": [
+                                                                    {
+                                                                      "atom": "alist-\u003ehash-table"
+                                                                    },
+                                                                    {
+                                                                      "list": [
+                                                                        {
+                                                                          "atom": "list"
+                                                                        },
+                                                                        {
+                                                                          "list": [
+                                                                            {
+                                                                              "atom": "cons"
+                                                                            },
+                                                                            {
+                                                                              "atom": "c_custkey"
+                                                                            },
+                                                                            {
+                                                                              "list": [
+                                                                                {
+                                                                                  "atom": "hash-table-ref"
+                                                                                },
+                                                                                {
+                                                                                  "atom": "c"
+                                                                                },
+                                                                                {
+                                                                                  "atom": "c_custkey"
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          ]
+                                                                        },
+                                                                        {
+                                                                          "list": [
+                                                                            {
+                                                                              "atom": "cons"
+                                                                            },
+                                                                            {
+                                                                              "atom": "c_name"
+                                                                            },
+                                                                            {
+                                                                              "list": [
+                                                                                {
+                                                                                  "atom": "hash-table-ref"
+                                                                                },
+                                                                                {
+                                                                                  "atom": "c"
+                                                                                },
+                                                                                {
+                                                                                  "atom": "c_name"
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          ]
+                                                                        },
+                                                                        {
+                                                                          "list": [
+                                                                            {
+                                                                              "atom": "cons"
+                                                                            },
+                                                                            {
+                                                                              "atom": "c_acctbal"
+                                                                            },
+                                                                            {
+                                                                              "list": [
+                                                                                {
+                                                                                  "atom": "hash-table-ref"
+                                                                                },
+                                                                                {
+                                                                                  "atom": "c"
+                                                                                },
+                                                                                {
+                                                                                  "atom": "c_acctbal"
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          ]
+                                                                        },
+                                                                        {
+                                                                          "list": [
+                                                                            {
+                                                                              "atom": "cons"
+                                                                            },
+                                                                            {
+                                                                              "atom": "c_address"
+                                                                            },
+                                                                            {
+                                                                              "list": [
+                                                                                {
+                                                                                  "atom": "hash-table-ref"
+                                                                                },
+                                                                                {
+                                                                                  "atom": "c"
+                                                                                },
+                                                                                {
+                                                                                  "atom": "c_address"
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          ]
+                                                                        },
+                                                                        {
+                                                                          "list": [
+                                                                            {
+                                                                              "atom": "cons"
+                                                                            },
+                                                                            {
+                                                                              "atom": "c_phone"
+                                                                            },
+                                                                            {
+                                                                              "list": [
+                                                                                {
+                                                                                  "atom": "hash-table-ref"
+                                                                                },
+                                                                                {
+                                                                                  "atom": "c"
+                                                                                },
+                                                                                {
+                                                                                  "atom": "c_phone"
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          ]
+                                                                        },
+                                                                        {
+                                                                          "list": [
+                                                                            {
+                                                                              "atom": "cons"
+                                                                            },
+                                                                            {
+                                                                              "atom": "c_comment"
+                                                                            },
+                                                                            {
+                                                                              "list": [
+                                                                                {
+                                                                                  "atom": "hash-table-ref"
+                                                                                },
+                                                                                {
+                                                                                  "atom": "c"
+                                                                                },
+                                                                                {
+                                                                                  "atom": "c_comment"
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          ]
+                                                                        },
+                                                                        {
+                                                                          "list": [
+                                                                            {
+                                                                              "atom": "cons"
+                                                                            },
+                                                                            {
+                                                                              "atom": "n_name"
+                                                                            },
+                                                                            {
+                                                                              "list": [
+                                                                                {
+                                                                                  "atom": "hash-table-ref"
+                                                                                },
+                                                                                {
+                                                                                  "atom": "n"
+                                                                                },
+                                                                                {
+                                                                                  "atom": "n_name"
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          ]
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            },
+                                                            {
+                                                              "list": [
+                                                                {
+                                                                  "atom": "g4"
+                                                                },
+                                                                {
+                                                                  "list": [
+                                                                    {
+                                                                      "atom": "hash-table-ref/default"
+                                                                    },
+                                                                    {
+                                                                      "atom": "groups3"
+                                                                    },
+                                                                    {
+                                                                      "atom": "k5"
+                                                                    },
+                                                                    {
+                                                                      "atom": "#f"
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        },
+                                                        {
+                                                          "list": [
+                                                            {
+                                                              "atom": "begin"
+                                                            },
+                                                            {
+                                                              "list": [
+                                                                {
+                                                                  "atom": "if"
+                                                                },
+                                                                {
+                                                                  "list": [
+                                                                    {
+                                                                      "atom": "not"
+                                                                    },
+                                                                    {
+                                                                      "atom": "g4"
+                                                                    }
+                                                                  ]
+                                                                },
+                                                                {
+                                                                  "list": [
+                                                                    {
+                                                                      "atom": "begin"
+                                                                    },
+                                                                    {
+                                                                      "list": [
+                                                                        {
+                                                                          "atom": "set!"
+                                                                        },
+                                                                        {
+                                                                          "atom": "g4"
+                                                                        },
+                                                                        {
+                                                                          "list": [
+                                                                            {
+                                                                              "atom": "alist-\u003ehash-table"
+                                                                            },
+                                                                            {
+                                                                              "list": [
+                                                                                {
+                                                                                  "atom": "list"
+                                                                                },
+                                                                                {
+                                                                                  "list": [
+                                                                                    {
+                                                                                      "atom": "cons"
+                                                                                    },
+                                                                                    {
+                                                                                      "atom": "key"
+                                                                                    },
+                                                                                    {
+                                                                                      "atom": "k5"
+                                                                                    }
+                                                                                  ]
+                                                                                },
+                                                                                {
+                                                                                  "list": [
+                                                                                    {
+                                                                                      "atom": "cons"
+                                                                                    },
+                                                                                    {
+                                                                                      "atom": "items"
+                                                                                    },
+                                                                                    {
+                                                                                      "list": [
+                                                                                        {
+                                                                                          "atom": "list"
+                                                                                        }
+                                                                                      ]
+                                                                                    }
+                                                                                  ]
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          ]
+                                                                        }
+                                                                      ]
+                                                                    },
+                                                                    {
+                                                                      "list": [
+                                                                        {
+                                                                          "atom": "hash-table-set!"
+                                                                        },
+                                                                        {
+                                                                          "atom": "groups3"
+                                                                        },
+                                                                        {
+                                                                          "atom": "k5"
+                                                                        },
+                                                                        {
+                                                                          "atom": "g4"
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  ]
+                                                                },
+                                                                {
+                                                                  "list": [
+                                                                    {
+                                                                      "atom": "quote"
+                                                                    },
+                                                                    {
+                                                                      "atom": "nil"
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            },
+                                                            {
+                                                              "list": [
+                                                                {
+                                                                  "atom": "hash-table-set!"
+                                                                },
+                                                                {
+                                                                  "atom": "g4"
+                                                                },
+                                                                {
+                                                                  "atom": "items"
+                                                                },
+                                                                {
+                                                                  "list": [
+                                                                    {
+                                                                      "atom": "append"
+                                                                    },
+                                                                    {
+                                                                      "list": [
+                                                                        {
+                                                                          "atom": "hash-table-ref"
+                                                                        },
+                                                                        {
+                                                                          "atom": "g4"
+                                                                        },
+                                                                        {
+                                                                          "atom": "items"
+                                                                        }
+                                                                      ]
+                                                                    },
+                                                                    {
+                                                                      "list": [
+                                                                        {
+                                                                          "atom": "list"
+                                                                        },
+                                                                        {
+                                                                          "list": [
+                                                                            {
+                                                                              "atom": "alist-\u003ehash-table"
+                                                                            },
+                                                                            {
+                                                                              "list": [
+                                                                                {
+                                                                                  "atom": "list"
+                                                                                },
+                                                                                {
+                                                                                  "list": [
+                                                                                    {
+                                                                                      "atom": "cons"
+                                                                                    },
+                                                                                    {
+                                                                                      "atom": "c"
+                                                                                    },
+                                                                                    {
+                                                                                      "atom": "c"
+                                                                                    }
+                                                                                  ]
+                                                                                },
+                                                                                {
+                                                                                  "list": [
+                                                                                    {
+                                                                                      "atom": "cons"
+                                                                                    },
+                                                                                    {
+                                                                                      "atom": "o"
+                                                                                    },
+                                                                                    {
+                                                                                      "atom": "o"
+                                                                                    }
+                                                                                  ]
+                                                                                },
+                                                                                {
+                                                                                  "list": [
+                                                                                    {
+                                                                                      "atom": "cons"
+                                                                                    },
+                                                                                    {
+                                                                                      "atom": "l"
+                                                                                    },
+                                                                                    {
+                                                                                      "atom": "l"
+                                                                                    }
+                                                                                  ]
+                                                                                },
+                                                                                {
+                                                                                  "list": [
+                                                                                    {
+                                                                                      "atom": "cons"
+                                                                                    },
+                                                                                    {
+                                                                                      "atom": "n"
+                                                                                    },
+                                                                                    {
+                                                                                      "atom": "n"
+                                                                                    }
+                                                                                  ]
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          ]
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    },
+                                                    {
+                                                      "list": [
+                                                        {
+                                                          "atom": "quote"
+                                                        },
+                                                        {
+                                                          "atom": "nil"
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "atom": "nation"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "atom": "lineitem"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "atom": "orders"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "atom": "customer"
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "for-each"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "lambda"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "g"
+                            }
+                          ]
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "set!"
+                            },
+                            {
+                              "atom": "res6"
+                            },
+                            {
+                              "list": [
+                                {
+                                  "atom": "append"
+                                },
+                                {
+                                  "atom": "res6"
+                                },
+                                {
+                                  "list": [
+                                    {
+                                      "atom": "list"
+                                    },
+                                    {
+                                      "list": [
+                                        {
+                                          "atom": "list"
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "atom": "cons"
+                                            },
+                                            {
+                                              "atom": "c_custkey"
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "atom": "hash-table-ref"
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "hash-table-ref"
+                                                    },
+                                                    {
+                                                      "atom": "g"
+                                                    },
+                                                    {
+                                                      "atom": "key"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "atom": "c_custkey"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "atom": "cons"
+                                            },
+                                            {
+                                              "atom": "c_name"
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "atom": "hash-table-ref"
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "hash-table-ref"
+                                                    },
+                                                    {
+                                                      "atom": "g"
+                                                    },
+                                                    {
+                                                      "atom": "key"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "atom": "c_name"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "atom": "cons"
+                                            },
+                                            {
+                                              "atom": "revenue"
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "atom": "apply"
+                                                },
+                                                {
+                                                  "atom": "+"
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "let"
+                                                    },
+                                                    {
+                                                      "list": [
+                                                        {
+                                                          "list": [
+                                                            {
+                                                              "atom": "res1"
+                                                            },
+                                                            {
+                                                              "list": [
+                                                                {
+                                                                  "atom": "list"
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    },
+                                                    {
+                                                      "list": [
+                                                        {
+                                                          "atom": "begin"
+                                                        },
+                                                        {
+                                                          "list": [
+                                                            {
+                                                              "atom": "for-each"
+                                                            },
+                                                            {
+                                                              "list": [
+                                                                {
+                                                                  "atom": "lambda"
+                                                                },
+                                                                {
+                                                                  "list": [
+                                                                    {
+                                                                      "atom": "x"
+                                                                    }
+                                                                  ]
+                                                                },
+                                                                {
+                                                                  "list": [
+                                                                    {
+                                                                      "atom": "set!"
+                                                                    },
+                                                                    {
+                                                                      "atom": "res1"
+                                                                    },
+                                                                    {
+                                                                      "list": [
+                                                                        {
+                                                                          "atom": "append"
+                                                                        },
+                                                                        {
+                                                                          "atom": "res1"
+                                                                        },
+                                                                        {
+                                                                          "list": [
+                                                                            {
+                                                                              "atom": "list"
+                                                                            },
+                                                                            {
+                                                                              "list": [
+                                                                                {
+                                                                                  "atom": "*"
+                                                                                },
+                                                                                {
+                                                                                  "list": [
+                                                                                    {
+                                                                                      "atom": "hash-table-ref"
+                                                                                    },
+                                                                                    {
+                                                                                      "list": [
+                                                                                        {
+                                                                                          "atom": "hash-table-ref"
+                                                                                        },
+                                                                                        {
+                                                                                          "atom": "x"
+                                                                                        },
+                                                                                        {
+                                                                                          "atom": "l"
+                                                                                        }
+                                                                                      ]
+                                                                                    },
+                                                                                    {
+                                                                                      "atom": "l_extendedprice"
+                                                                                    }
+                                                                                  ]
+                                                                                },
+                                                                                {
+                                                                                  "list": [
+                                                                                    {
+                                                                                      "atom": "-"
+                                                                                    },
+                                                                                    {
+                                                                                      "atom": "1"
+                                                                                    },
+                                                                                    {
+                                                                                      "list": [
+                                                                                        {
+                                                                                          "atom": "hash-table-ref"
+                                                                                        },
+                                                                                        {
+                                                                                          "list": [
+                                                                                            {
+                                                                                              "atom": "hash-table-ref"
+                                                                                            },
+                                                                                            {
+                                                                                              "atom": "x"
+                                                                                            },
+                                                                                            {
+                                                                                              "atom": "l"
+                                                                                            }
+                                                                                          ]
+                                                                                        },
+                                                                                        {
+                                                                                          "atom": "l_discount"
+                                                                                        }
+                                                                                      ]
+                                                                                    }
+                                                                                  ]
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          ]
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            },
+                                                            {
+                                                              "list": [
+                                                                {
+                                                                  "atom": "hash-table-ref"
+                                                                },
+                                                                {
+                                                                  "atom": "g"
+                                                                },
+                                                                {
+                                                                  "atom": "items"
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        },
+                                                        {
+                                                          "atom": "res1"
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "atom": "cons"
+                                            },
+                                            {
+                                              "atom": "c_acctbal"
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "atom": "hash-table-ref"
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "hash-table-ref"
+                                                    },
+                                                    {
+                                                      "atom": "g"
+                                                    },
+                                                    {
+                                                      "atom": "key"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "atom": "c_acctbal"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "atom": "cons"
+                                            },
+                                            {
+                                              "atom": "n_name"
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "atom": "hash-table-ref"
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "hash-table-ref"
+                                                    },
+                                                    {
+                                                      "atom": "g"
+                                                    },
+                                                    {
+                                                      "atom": "key"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "atom": "n_name"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "atom": "cons"
+                                            },
+                                            {
+                                              "atom": "c_address"
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "atom": "hash-table-ref"
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "hash-table-ref"
+                                                    },
+                                                    {
+                                                      "atom": "g"
+                                                    },
+                                                    {
+                                                      "atom": "key"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "atom": "c_address"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "atom": "cons"
+                                            },
+                                            {
+                                              "atom": "c_phone"
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "atom": "hash-table-ref"
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "hash-table-ref"
+                                                    },
+                                                    {
+                                                      "atom": "g"
+                                                    },
+                                                    {
+                                                      "atom": "key"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "atom": "c_phone"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "atom": "cons"
+                                            },
+                                            {
+                                              "atom": "c_comment"
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "atom": "hash-table-ref"
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "hash-table-ref"
+                                                    },
+                                                    {
+                                                      "atom": "g"
+                                                    },
+                                                    {
+                                                      "atom": "key"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "atom": "c_comment"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "hash-table-values"
+                        },
+                        {
+                          "atom": "groups3"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "set!"
+                    },
+                    {
+                      "atom": "res6"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "list-sort"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "lambda"
+                            },
+                            {
+                              "list": [
+                                {
+                                  "atom": "a7"
+                                },
+                                {
+                                  "atom": "b8"
+                                }
+                              ]
+                            },
+                            {
+                              "list": [
+                                {
+                                  "atom": "\u003c"
+                                },
+                                {
+                                  "list": [
+                                    {
+                                      "atom": "-"
+                                    },
+                                    {
+                                      "list": [
+                                        {
+                                          "atom": "apply"
+                                        },
+                                        {
+                                          "atom": "+"
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "atom": "let"
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "res2"
+                                                    },
+                                                    {
+                                                      "list": [
+                                                        {
+                                                          "atom": "list"
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "atom": "begin"
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "for-each"
+                                                    },
+                                                    {
+                                                      "list": [
+                                                        {
+                                                          "atom": "lambda"
+                                                        },
+                                                        {
+                                                          "list": [
+                                                            {
+                                                              "atom": "x"
+                                                            }
+                                                          ]
+                                                        },
+                                                        {
+                                                          "list": [
+                                                            {
+                                                              "atom": "set!"
+                                                            },
+                                                            {
+                                                              "atom": "res2"
+                                                            },
+                                                            {
+                                                              "list": [
+                                                                {
+                                                                  "atom": "append"
+                                                                },
+                                                                {
+                                                                  "atom": "res2"
+                                                                },
+                                                                {
+                                                                  "list": [
+                                                                    {
+                                                                      "atom": "list"
+                                                                    },
+                                                                    {
+                                                                      "list": [
+                                                                        {
+                                                                          "atom": "*"
+                                                                        },
+                                                                        {
+                                                                          "list": [
+                                                                            {
+                                                                              "atom": "hash-table-ref"
+                                                                            },
+                                                                            {
+                                                                              "list": [
+                                                                                {
+                                                                                  "atom": "hash-table-ref"
+                                                                                },
+                                                                                {
+                                                                                  "atom": "x"
+                                                                                },
+                                                                                {
+                                                                                  "atom": "l"
+                                                                                }
+                                                                              ]
+                                                                            },
+                                                                            {
+                                                                              "atom": "l_extendedprice"
+                                                                            }
+                                                                          ]
+                                                                        },
+                                                                        {
+                                                                          "list": [
+                                                                            {
+                                                                              "atom": "-"
+                                                                            },
+                                                                            {
+                                                                              "atom": "1"
+                                                                            },
+                                                                            {
+                                                                              "list": [
+                                                                                {
+                                                                                  "atom": "hash-table-ref"
+                                                                                },
+                                                                                {
+                                                                                  "list": [
+                                                                                    {
+                                                                                      "atom": "hash-table-ref"
+                                                                                    },
+                                                                                    {
+                                                                                      "atom": "x"
+                                                                                    },
+                                                                                    {
+                                                                                      "atom": "l"
+                                                                                    }
+                                                                                  ]
+                                                                                },
+                                                                                {
+                                                                                  "atom": "l_discount"
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          ]
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    },
+                                                    {
+                                                      "list": [
+                                                        {
+                                                          "atom": "hash-table-ref"
+                                                        },
+                                                        {
+                                                          "atom": "a7"
+                                                        },
+                                                        {
+                                                          "atom": "items"
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "atom": "res2"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "list": [
+                                    {
+                                      "atom": "-"
+                                    },
+                                    {
+                                      "list": [
+                                        {
+                                          "atom": "apply"
+                                        },
+                                        {
+                                          "atom": "+"
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "atom": "let"
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "res2"
+                                                    },
+                                                    {
+                                                      "list": [
+                                                        {
+                                                          "atom": "list"
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "atom": "begin"
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "for-each"
+                                                    },
+                                                    {
+                                                      "list": [
+                                                        {
+                                                          "atom": "lambda"
+                                                        },
+                                                        {
+                                                          "list": [
+                                                            {
+                                                              "atom": "x"
+                                                            }
+                                                          ]
+                                                        },
+                                                        {
+                                                          "list": [
+                                                            {
+                                                              "atom": "set!"
+                                                            },
+                                                            {
+                                                              "atom": "res2"
+                                                            },
+                                                            {
+                                                              "list": [
+                                                                {
+                                                                  "atom": "append"
+                                                                },
+                                                                {
+                                                                  "atom": "res2"
+                                                                },
+                                                                {
+                                                                  "list": [
+                                                                    {
+                                                                      "atom": "list"
+                                                                    },
+                                                                    {
+                                                                      "list": [
+                                                                        {
+                                                                          "atom": "*"
+                                                                        },
+                                                                        {
+                                                                          "list": [
+                                                                            {
+                                                                              "atom": "hash-table-ref"
+                                                                            },
+                                                                            {
+                                                                              "list": [
+                                                                                {
+                                                                                  "atom": "hash-table-ref"
+                                                                                },
+                                                                                {
+                                                                                  "atom": "x"
+                                                                                },
+                                                                                {
+                                                                                  "atom": "l"
+                                                                                }
+                                                                              ]
+                                                                            },
+                                                                            {
+                                                                              "atom": "l_extendedprice"
+                                                                            }
+                                                                          ]
+                                                                        },
+                                                                        {
+                                                                          "list": [
+                                                                            {
+                                                                              "atom": "-"
+                                                                            },
+                                                                            {
+                                                                              "atom": "1"
+                                                                            },
+                                                                            {
+                                                                              "list": [
+                                                                                {
+                                                                                  "atom": "hash-table-ref"
+                                                                                },
+                                                                                {
+                                                                                  "list": [
+                                                                                    {
+                                                                                      "atom": "hash-table-ref"
+                                                                                    },
+                                                                                    {
+                                                                                      "atom": "x"
+                                                                                    },
+                                                                                    {
+                                                                                      "atom": "l"
+                                                                                    }
+                                                                                  ]
+                                                                                },
+                                                                                {
+                                                                                  "atom": "l_discount"
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          ]
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    },
+                                                    {
+                                                      "list": [
+                                                        {
+                                                          "atom": "hash-table-ref"
+                                                        },
+                                                        {
+                                                          "atom": "b8"
+                                                        },
+                                                        {
+                                                          "atom": "items"
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "atom": "res2"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "atom": "res6"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "atom": "res6"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "list": [
+            {
+              "atom": "to-str"
+            },
+            {
+              "atom": "result"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    }
+  ]
+}

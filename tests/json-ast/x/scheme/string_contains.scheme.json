@@ -1,0 +1,160 @@
+{
+  "forms": [
+    {
+      "list": [
+        {
+          "atom": "import"
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "1"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "69"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "chibi"
+            },
+            {
+              "atom": "string"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "s"
+        },
+        {
+          "atom": "catch"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "list": [
+            {
+              "atom": "if"
+            },
+            {
+              "list": [
+                {
+                  "atom": "if"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "string-contains"
+                    },
+                    {
+                      "atom": "s"
+                    },
+                    {
+                      "atom": "cat"
+                    }
+                  ]
+                },
+                {
+                  "atom": "true"
+                },
+                {
+                  "atom": "false"
+                }
+              ]
+            },
+            {
+              "atom": "1"
+            },
+            {
+              "atom": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "list": [
+            {
+              "atom": "if"
+            },
+            {
+              "list": [
+                {
+                  "atom": "if"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "string-contains"
+                    },
+                    {
+                      "atom": "s"
+                    },
+                    {
+                      "atom": "dog"
+                    }
+                  ]
+                },
+                {
+                  "atom": "true"
+                },
+                {
+                  "atom": "false"
+                }
+              ]
+            },
+            {
+              "atom": "1"
+            },
+            {
+              "atom": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    }
+  ]
+}

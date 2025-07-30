@@ -1,0 +1,118 @@
+{
+  "forms": [
+    {
+      "list": [
+        {
+          "atom": "import"
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "1"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "69"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "chibi"
+            },
+            {
+              "atom": "string"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "m"
+        },
+        {
+          "list": [
+            {
+              "atom": "alist-\u003ehash-table"
+            },
+            {
+              "list": [
+                {
+                  "atom": "list"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "cons"
+                    },
+                    {
+                      "atom": "1"
+                    },
+                    {
+                      "atom": "a"
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "cons"
+                    },
+                    {
+                      "atom": "2"
+                    },
+                    {
+                      "atom": "b"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "list": [
+            {
+              "atom": "hash-table-ref"
+            },
+            {
+              "atom": "m"
+            },
+            {
+              "atom": "1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    }
+  ]
+}
