@@ -9,7 +9,7 @@ import (
 
 // Program represents a parsed Swift source file.
 type Program struct {
-	File *SourceFile `json:"file"`
+	File *Node `json:"file"`
 }
 
 // Inspect parses the given Swift source code using tree-sitter and returns
@@ -19,7 +19,7 @@ func Inspect(src string) (*Program, error) {
 	p.SetLanguage(ts.GetLanguage())
 	b := []byte(src)
 	tree := p.Parse(nil, b)
-	return &Program{File: ConvertFile(tree.RootNode(), b)}, nil
+	return &Program{File: ConvertFile(tree.RootNode(), b).Node}, nil
 }
 
 // MarshalJSON implements json.Marshaler for Program to ensure stable output.
