@@ -1,1993 +1,1585 @@
 {
   "root": {
     "kind": "program",
-    "start": 0,
-    "end": 1143,
+    "start": 1,
+    "startCol": 0,
+    "end": 15,
+    "endCol": 0,
     "children": [
       {
         "kind": "php_tag",
-        "start": 0,
-        "end": 5,
-        "text": "\u003c?php"
+        "text": "\u003c?php",
+        "start": 1,
+        "startCol": 0,
+        "end": 1,
+        "endCol": 5
       },
       {
-        "kind": "expression_statement",
-        "start": 6,
-        "end": 116,
+        "kind": "assignment_expression",
+        "start": 2,
+        "startCol": 0,
+        "end": 2,
+        "endCol": 109,
         "children": [
           {
-            "kind": "assignment_expression",
+            "kind": "name",
+            "text": "customers",
+            "start": 2,
+            "startCol": 1,
+            "end": 2,
+            "endCol": 10
+          },
+          {
+            "kind": "array_creation_expression",
+            "start": 2,
+            "startCol": 13,
+            "end": 2,
+            "endCol": 109,
+            "children": [
+              {
+                "kind": "array_creation_expression",
+                "start": 2,
+                "startCol": 14,
+                "end": 2,
+                "endCol": 44,
+                "children": [
+                  {
+                    "kind": "array_element_initializer",
+                    "start": 2,
+                    "startCol": 15,
+                    "end": 2,
+                    "endCol": 24,
+                    "children": [
+                      {
+                        "kind": "string_content",
+                        "text": "id",
+                        "start": 2,
+                        "startCol": 16,
+                        "end": 2,
+                        "endCol": 18
+                      },
+                      {
+                        "kind": "integer",
+                        "text": "1",
+                        "start": 2,
+                        "startCol": 23,
+                        "end": 2,
+                        "endCol": 24
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "array_element_initializer",
+                    "start": 2,
+                    "startCol": 26,
+                    "end": 2,
+                    "endCol": 43,
+                    "children": [
+                      {
+                        "kind": "string_content",
+                        "text": "name",
+                        "start": 2,
+                        "startCol": 27,
+                        "end": 2,
+                        "endCol": 31
+                      },
+                      {
+                        "kind": "string_content",
+                        "text": "Alice",
+                        "start": 2,
+                        "startCol": 37,
+                        "end": 2,
+                        "endCol": 42
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "array_creation_expression",
+                "start": 2,
+                "startCol": 46,
+                "end": 2,
+                "endCol": 74,
+                "children": [
+                  {
+                    "kind": "array_element_initializer",
+                    "start": 2,
+                    "startCol": 47,
+                    "end": 2,
+                    "endCol": 56,
+                    "children": [
+                      {
+                        "kind": "string_content",
+                        "text": "id",
+                        "start": 2,
+                        "startCol": 48,
+                        "end": 2,
+                        "endCol": 50
+                      },
+                      {
+                        "kind": "integer",
+                        "text": "2",
+                        "start": 2,
+                        "startCol": 55,
+                        "end": 2,
+                        "endCol": 56
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "array_element_initializer",
+                    "start": 2,
+                    "startCol": 58,
+                    "end": 2,
+                    "endCol": 73,
+                    "children": [
+                      {
+                        "kind": "string_content",
+                        "text": "name",
+                        "start": 2,
+                        "startCol": 59,
+                        "end": 2,
+                        "endCol": 63
+                      },
+                      {
+                        "kind": "string_content",
+                        "text": "Bob",
+                        "start": 2,
+                        "startCol": 69,
+                        "end": 2,
+                        "endCol": 72
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "array_creation_expression",
+                "start": 2,
+                "startCol": 76,
+                "end": 2,
+                "endCol": 108,
+                "children": [
+                  {
+                    "kind": "array_element_initializer",
+                    "start": 2,
+                    "startCol": 77,
+                    "end": 2,
+                    "endCol": 86,
+                    "children": [
+                      {
+                        "kind": "string_content",
+                        "text": "id",
+                        "start": 2,
+                        "startCol": 78,
+                        "end": 2,
+                        "endCol": 80
+                      },
+                      {
+                        "kind": "integer",
+                        "text": "3",
+                        "start": 2,
+                        "startCol": 85,
+                        "end": 2,
+                        "endCol": 86
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "array_element_initializer",
+                    "start": 2,
+                    "startCol": 88,
+                    "end": 2,
+                    "endCol": 107,
+                    "children": [
+                      {
+                        "kind": "string_content",
+                        "text": "name",
+                        "start": 2,
+                        "startCol": 89,
+                        "end": 2,
+                        "endCol": 93
+                      },
+                      {
+                        "kind": "string_content",
+                        "text": "Charlie",
+                        "start": 2,
+                        "startCol": 99,
+                        "end": 2,
+                        "endCol": 106
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assignment_expression",
+        "start": 3,
+        "startCol": 0,
+        "end": 3,
+        "endCol": 160,
+        "children": [
+          {
+            "kind": "name",
+            "text": "orders",
+            "start": 3,
+            "startCol": 1,
+            "end": 3,
+            "endCol": 7
+          },
+          {
+            "kind": "array_creation_expression",
+            "start": 3,
+            "startCol": 10,
+            "end": 3,
+            "endCol": 160,
+            "children": [
+              {
+                "kind": "array_creation_expression",
+                "start": 3,
+                "startCol": 11,
+                "end": 3,
+                "endCol": 59,
+                "children": [
+                  {
+                    "kind": "array_element_initializer",
+                    "start": 3,
+                    "startCol": 12,
+                    "end": 3,
+                    "endCol": 23,
+                    "children": [
+                      {
+                        "kind": "string_content",
+                        "text": "id",
+                        "start": 3,
+                        "startCol": 13,
+                        "end": 3,
+                        "endCol": 15
+                      },
+                      {
+                        "kind": "integer",
+                        "text": "100",
+                        "start": 3,
+                        "startCol": 20,
+                        "end": 3,
+                        "endCol": 23
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "array_element_initializer",
+                    "start": 3,
+                    "startCol": 25,
+                    "end": 3,
+                    "endCol": 42,
+                    "children": [
+                      {
+                        "kind": "string_content",
+                        "text": "customerId",
+                        "start": 3,
+                        "startCol": 26,
+                        "end": 3,
+                        "endCol": 36
+                      },
+                      {
+                        "kind": "integer",
+                        "text": "1",
+                        "start": 3,
+                        "startCol": 41,
+                        "end": 3,
+                        "endCol": 42
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "array_element_initializer",
+                    "start": 3,
+                    "startCol": 44,
+                    "end": 3,
+                    "endCol": 58,
+                    "children": [
+                      {
+                        "kind": "string_content",
+                        "text": "total",
+                        "start": 3,
+                        "startCol": 45,
+                        "end": 3,
+                        "endCol": 50
+                      },
+                      {
+                        "kind": "integer",
+                        "text": "250",
+                        "start": 3,
+                        "startCol": 55,
+                        "end": 3,
+                        "endCol": 58
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "array_creation_expression",
+                "start": 3,
+                "startCol": 61,
+                "end": 3,
+                "endCol": 109,
+                "children": [
+                  {
+                    "kind": "array_element_initializer",
+                    "start": 3,
+                    "startCol": 62,
+                    "end": 3,
+                    "endCol": 73,
+                    "children": [
+                      {
+                        "kind": "string_content",
+                        "text": "id",
+                        "start": 3,
+                        "startCol": 63,
+                        "end": 3,
+                        "endCol": 65
+                      },
+                      {
+                        "kind": "integer",
+                        "text": "101",
+                        "start": 3,
+                        "startCol": 70,
+                        "end": 3,
+                        "endCol": 73
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "array_element_initializer",
+                    "start": 3,
+                    "startCol": 75,
+                    "end": 3,
+                    "endCol": 92,
+                    "children": [
+                      {
+                        "kind": "string_content",
+                        "text": "customerId",
+                        "start": 3,
+                        "startCol": 76,
+                        "end": 3,
+                        "endCol": 86
+                      },
+                      {
+                        "kind": "integer",
+                        "text": "2",
+                        "start": 3,
+                        "startCol": 91,
+                        "end": 3,
+                        "endCol": 92
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "array_element_initializer",
+                    "start": 3,
+                    "startCol": 94,
+                    "end": 3,
+                    "endCol": 108,
+                    "children": [
+                      {
+                        "kind": "string_content",
+                        "text": "total",
+                        "start": 3,
+                        "startCol": 95,
+                        "end": 3,
+                        "endCol": 100
+                      },
+                      {
+                        "kind": "integer",
+                        "text": "125",
+                        "start": 3,
+                        "startCol": 105,
+                        "end": 3,
+                        "endCol": 108
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "array_creation_expression",
+                "start": 3,
+                "startCol": 111,
+                "end": 3,
+                "endCol": 159,
+                "children": [
+                  {
+                    "kind": "array_element_initializer",
+                    "start": 3,
+                    "startCol": 112,
+                    "end": 3,
+                    "endCol": 123,
+                    "children": [
+                      {
+                        "kind": "string_content",
+                        "text": "id",
+                        "start": 3,
+                        "startCol": 113,
+                        "end": 3,
+                        "endCol": 115
+                      },
+                      {
+                        "kind": "integer",
+                        "text": "102",
+                        "start": 3,
+                        "startCol": 120,
+                        "end": 3,
+                        "endCol": 123
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "array_element_initializer",
+                    "start": 3,
+                    "startCol": 125,
+                    "end": 3,
+                    "endCol": 142,
+                    "children": [
+                      {
+                        "kind": "string_content",
+                        "text": "customerId",
+                        "start": 3,
+                        "startCol": 126,
+                        "end": 3,
+                        "endCol": 136
+                      },
+                      {
+                        "kind": "integer",
+                        "text": "1",
+                        "start": 3,
+                        "startCol": 141,
+                        "end": 3,
+                        "endCol": 142
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "array_element_initializer",
+                    "start": 3,
+                    "startCol": 144,
+                    "end": 3,
+                    "endCol": 158,
+                    "children": [
+                      {
+                        "kind": "string_content",
+                        "text": "total",
+                        "start": 3,
+                        "startCol": 145,
+                        "end": 3,
+                        "endCol": 150
+                      },
+                      {
+                        "kind": "integer",
+                        "text": "300",
+                        "start": 3,
+                        "startCol": 155,
+                        "end": 3,
+                        "endCol": 158
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assignment_expression",
+        "start": 4,
+        "startCol": 0,
+        "end": 4,
+        "endCol": 12,
+        "children": [
+          {
+            "kind": "name",
+            "text": "result",
+            "start": 4,
+            "startCol": 1,
+            "end": 4,
+            "endCol": 7
+          },
+          {
+            "kind": "array_creation_expression",
+            "text": "[]",
+            "start": 4,
+            "startCol": 10,
+            "end": 4,
+            "endCol": 12
+          }
+        ]
+      },
+      {
+        "kind": "foreach_statement",
+        "start": 5,
+        "startCol": 0,
+        "end": 9,
+        "endCol": 1,
+        "children": [
+          {
+            "kind": "name",
+            "text": "orders",
+            "start": 5,
+            "startCol": 10,
+            "end": 5,
+            "endCol": 16
+          },
+          {
+            "kind": "name",
+            "text": "o",
+            "start": 5,
+            "startCol": 21,
+            "end": 5,
+            "endCol": 22
+          },
+          {
+            "kind": "foreach_statement",
             "start": 6,
-            "end": 115,
+            "startCol": 2,
+            "end": 8,
+            "endCol": 3,
             "children": [
               {
-                "kind": "variable_name",
+                "kind": "name",
+                "text": "customers",
                 "start": 6,
-                "end": 16,
+                "startCol": 12,
+                "end": 6,
+                "endCol": 21
+              },
+              {
+                "kind": "name",
+                "text": "c",
+                "start": 6,
+                "startCol": 26,
+                "end": 6,
+                "endCol": 27
+              },
+              {
+                "kind": "assignment_expression",
+                "start": 7,
+                "startCol": 4,
+                "end": 7,
+                "endCol": 143,
                 "children": [
                   {
                     "kind": "name",
+                    "text": "result",
                     "start": 7,
-                    "end": 16,
-                    "text": "customers"
-                  }
-                ]
-              },
-              {
-                "kind": "array_creation_expression",
-                "start": 19,
-                "end": 115,
-                "children": [
-                  {
-                    "kind": "array_element_initializer",
-                    "start": 20,
-                    "end": 50,
-                    "children": [
-                      {
-                        "kind": "array_creation_expression",
-                        "start": 20,
-                        "end": 50,
-                        "children": [
-                          {
-                            "kind": "array_element_initializer",
-                            "start": 21,
-                            "end": 30,
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "start": 21,
-                                "end": 25,
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "start": 22,
-                                    "end": 24,
-                                    "text": "id"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "integer",
-                                "start": 29,
-                                "end": 30,
-                                "text": "1"
-                              }
-                            ]
-                          },
-                          {
-                            "kind": "array_element_initializer",
-                            "start": 32,
-                            "end": 49,
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "start": 32,
-                                "end": 38,
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "start": 33,
-                                    "end": 37,
-                                    "text": "name"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "encapsed_string",
-                                "start": 42,
-                                "end": 49,
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "start": 43,
-                                    "end": 48,
-                                    "text": "Alice"
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
+                    "startCol": 5,
+                    "end": 7,
+                    "endCol": 11
                   },
                   {
-                    "kind": "array_element_initializer",
-                    "start": 52,
-                    "end": 80,
+                    "kind": "array_creation_expression",
+                    "start": 7,
+                    "startCol": 16,
+                    "end": 7,
+                    "endCol": 143,
                     "children": [
                       {
-                        "kind": "array_creation_expression",
-                        "start": 52,
-                        "end": 80,
+                        "kind": "array_element_initializer",
+                        "start": 7,
+                        "startCol": 17,
+                        "end": 7,
+                        "endCol": 38,
                         "children": [
                           {
-                            "kind": "array_element_initializer",
-                            "start": 53,
-                            "end": 62,
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "start": 53,
-                                "end": 57,
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "start": 54,
-                                    "end": 56,
-                                    "text": "id"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "integer",
-                                "start": 61,
-                                "end": 62,
-                                "text": "2"
-                              }
-                            ]
+                            "kind": "string_content",
+                            "text": "orderId",
+                            "start": 7,
+                            "startCol": 18,
+                            "end": 7,
+                            "endCol": 25
                           },
                           {
-                            "kind": "array_element_initializer",
-                            "start": 64,
-                            "end": 79,
+                            "kind": "subscript_expression",
+                            "start": 7,
+                            "startCol": 30,
+                            "end": 7,
+                            "endCol": 38,
                             "children": [
                               {
-                                "kind": "encapsed_string",
-                                "start": 64,
-                                "end": 70,
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "start": 65,
-                                    "end": 69,
-                                    "text": "name"
-                                  }
-                                ]
+                                "kind": "name",
+                                "text": "o",
+                                "start": 7,
+                                "startCol": 31,
+                                "end": 7,
+                                "endCol": 32
                               },
                               {
-                                "kind": "encapsed_string",
-                                "start": 74,
-                                "end": 79,
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "start": 75,
-                                    "end": 78,
-                                    "text": "Bob"
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "kind": "array_element_initializer",
-                    "start": 82,
-                    "end": 114,
-                    "children": [
-                      {
-                        "kind": "array_creation_expression",
-                        "start": 82,
-                        "end": 114,
-                        "children": [
-                          {
-                            "kind": "array_element_initializer",
-                            "start": 83,
-                            "end": 92,
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "start": 83,
-                                "end": 87,
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "start": 84,
-                                    "end": 86,
-                                    "text": "id"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "integer",
-                                "start": 91,
-                                "end": 92,
-                                "text": "3"
-                              }
-                            ]
-                          },
-                          {
-                            "kind": "array_element_initializer",
-                            "start": 94,
-                            "end": 113,
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "start": 94,
-                                "end": 100,
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "start": 95,
-                                    "end": 99,
-                                    "text": "name"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "encapsed_string",
-                                "start": 104,
-                                "end": 113,
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "start": 105,
-                                    "end": 112,
-                                    "text": "Charlie"
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "kind": "expression_statement",
-        "start": 117,
-        "end": 278,
-        "children": [
-          {
-            "kind": "assignment_expression",
-            "start": 117,
-            "end": 277,
-            "children": [
-              {
-                "kind": "variable_name",
-                "start": 117,
-                "end": 124,
-                "children": [
-                  {
-                    "kind": "name",
-                    "start": 118,
-                    "end": 124,
-                    "text": "orders"
-                  }
-                ]
-              },
-              {
-                "kind": "array_creation_expression",
-                "start": 127,
-                "end": 277,
-                "children": [
-                  {
-                    "kind": "array_element_initializer",
-                    "start": 128,
-                    "end": 176,
-                    "children": [
-                      {
-                        "kind": "array_creation_expression",
-                        "start": 128,
-                        "end": 176,
-                        "children": [
-                          {
-                            "kind": "array_element_initializer",
-                            "start": 129,
-                            "end": 140,
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "start": 129,
-                                "end": 133,
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "start": 130,
-                                    "end": 132,
-                                    "text": "id"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "integer",
-                                "start": 137,
-                                "end": 140,
-                                "text": "100"
-                              }
-                            ]
-                          },
-                          {
-                            "kind": "array_element_initializer",
-                            "start": 142,
-                            "end": 159,
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "start": 142,
-                                "end": 154,
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "start": 143,
-                                    "end": 153,
-                                    "text": "customerId"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "integer",
-                                "start": 158,
-                                "end": 159,
-                                "text": "1"
-                              }
-                            ]
-                          },
-                          {
-                            "kind": "array_element_initializer",
-                            "start": 161,
-                            "end": 175,
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "start": 161,
-                                "end": 168,
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "start": 162,
-                                    "end": 167,
-                                    "text": "total"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "integer",
-                                "start": 172,
-                                "end": 175,
-                                "text": "250"
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "kind": "array_element_initializer",
-                    "start": 178,
-                    "end": 226,
-                    "children": [
-                      {
-                        "kind": "array_creation_expression",
-                        "start": 178,
-                        "end": 226,
-                        "children": [
-                          {
-                            "kind": "array_element_initializer",
-                            "start": 179,
-                            "end": 190,
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "start": 179,
-                                "end": 183,
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "start": 180,
-                                    "end": 182,
-                                    "text": "id"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "integer",
-                                "start": 187,
-                                "end": 190,
-                                "text": "101"
-                              }
-                            ]
-                          },
-                          {
-                            "kind": "array_element_initializer",
-                            "start": 192,
-                            "end": 209,
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "start": 192,
-                                "end": 204,
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "start": 193,
-                                    "end": 203,
-                                    "text": "customerId"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "integer",
-                                "start": 208,
-                                "end": 209,
-                                "text": "2"
-                              }
-                            ]
-                          },
-                          {
-                            "kind": "array_element_initializer",
-                            "start": 211,
-                            "end": 225,
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "start": 211,
-                                "end": 218,
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "start": 212,
-                                    "end": 217,
-                                    "text": "total"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "integer",
-                                "start": 222,
-                                "end": 225,
-                                "text": "125"
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "kind": "array_element_initializer",
-                    "start": 228,
-                    "end": 276,
-                    "children": [
-                      {
-                        "kind": "array_creation_expression",
-                        "start": 228,
-                        "end": 276,
-                        "children": [
-                          {
-                            "kind": "array_element_initializer",
-                            "start": 229,
-                            "end": 240,
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "start": 229,
-                                "end": 233,
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "start": 230,
-                                    "end": 232,
-                                    "text": "id"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "integer",
-                                "start": 237,
-                                "end": 240,
-                                "text": "102"
-                              }
-                            ]
-                          },
-                          {
-                            "kind": "array_element_initializer",
-                            "start": 242,
-                            "end": 259,
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "start": 242,
-                                "end": 254,
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "start": 243,
-                                    "end": 253,
-                                    "text": "customerId"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "integer",
-                                "start": 258,
-                                "end": 259,
-                                "text": "1"
-                              }
-                            ]
-                          },
-                          {
-                            "kind": "array_element_initializer",
-                            "start": 261,
-                            "end": 275,
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "start": 261,
-                                "end": 268,
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "start": 262,
-                                    "end": 267,
-                                    "text": "total"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "integer",
-                                "start": 272,
-                                "end": 275,
-                                "text": "300"
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "kind": "expression_statement",
-        "start": 279,
-        "end": 292,
-        "children": [
-          {
-            "kind": "assignment_expression",
-            "start": 279,
-            "end": 291,
-            "children": [
-              {
-                "kind": "variable_name",
-                "start": 279,
-                "end": 286,
-                "children": [
-                  {
-                    "kind": "name",
-                    "start": 280,
-                    "end": 286,
-                    "text": "result"
-                  }
-                ]
-              },
-              {
-                "kind": "array_creation_expression",
-                "start": 289,
-                "end": 291,
-                "text": "[]"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "kind": "foreach_statement",
-        "start": 293,
-        "end": 500,
-        "children": [
-          {
-            "kind": "variable_name",
-            "start": 302,
-            "end": 309,
-            "children": [
-              {
-                "kind": "name",
-                "start": 303,
-                "end": 309,
-                "text": "orders"
-              }
-            ]
-          },
-          {
-            "kind": "variable_name",
-            "start": 313,
-            "end": 315,
-            "children": [
-              {
-                "kind": "name",
-                "start": 314,
-                "end": 315,
-                "text": "o"
-              }
-            ]
-          },
-          {
-            "kind": "compound_statement",
-            "start": 317,
-            "end": 500,
-            "children": [
-              {
-                "kind": "foreach_statement",
-                "start": 321,
-                "end": 498,
-                "children": [
-                  {
-                    "kind": "variable_name",
-                    "start": 330,
-                    "end": 340,
-                    "children": [
-                      {
-                        "kind": "name",
-                        "start": 331,
-                        "end": 340,
-                        "text": "customers"
-                      }
-                    ]
-                  },
-                  {
-                    "kind": "variable_name",
-                    "start": 344,
-                    "end": 346,
-                    "children": [
-                      {
-                        "kind": "name",
-                        "start": 345,
-                        "end": 346,
-                        "text": "c"
-                      }
-                    ]
-                  },
-                  {
-                    "kind": "compound_statement",
-                    "start": 348,
-                    "end": 498,
-                    "children": [
-                      {
-                        "kind": "expression_statement",
-                        "start": 354,
-                        "end": 494,
-                        "children": [
-                          {
-                            "kind": "assignment_expression",
-                            "start": 354,
-                            "end": 493,
-                            "children": [
-                              {
-                                "kind": "subscript_expression",
-                                "start": 354,
-                                "end": 363,
-                                "children": [
-                                  {
-                                    "kind": "variable_name",
-                                    "start": 354,
-                                    "end": 361,
-                                    "children": [
-                                      {
-                                        "kind": "name",
-                                        "start": 355,
-                                        "end": 361,
-                                        "text": "result"
-                                      }
-                                    ]
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "array_creation_expression",
-                                "start": 366,
-                                "end": 493,
-                                "children": [
-                                  {
-                                    "kind": "array_element_initializer",
-                                    "start": 367,
-                                    "end": 388,
-                                    "children": [
-                                      {
-                                        "kind": "encapsed_string",
-                                        "start": 367,
-                                        "end": 376,
-                                        "children": [
-                                          {
-                                            "kind": "string_content",
-                                            "start": 368,
-                                            "end": 375,
-                                            "text": "orderId"
-                                          }
-                                        ]
-                                      },
-                                      {
-                                        "kind": "subscript_expression",
-                                        "start": 380,
-                                        "end": 388,
-                                        "children": [
-                                          {
-                                            "kind": "variable_name",
-                                            "start": 380,
-                                            "end": 382,
-                                            "children": [
-                                              {
-                                                "kind": "name",
-                                                "start": 381,
-                                                "end": 382,
-                                                "text": "o"
-                                              }
-                                            ]
-                                          },
-                                          {
-                                            "kind": "encapsed_string",
-                                            "start": 383,
-                                            "end": 387,
-                                            "children": [
-                                              {
-                                                "kind": "string_content",
-                                                "start": 384,
-                                                "end": 386,
-                                                "text": "id"
-                                              }
-                                            ]
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "kind": "array_element_initializer",
-                                    "start": 390,
-                                    "end": 427,
-                                    "children": [
-                                      {
-                                        "kind": "encapsed_string",
-                                        "start": 390,
-                                        "end": 407,
-                                        "children": [
-                                          {
-                                            "kind": "string_content",
-                                            "start": 391,
-                                            "end": 406,
-                                            "text": "orderCustomerId"
-                                          }
-                                        ]
-                                      },
-                                      {
-                                        "kind": "subscript_expression",
-                                        "start": 411,
-                                        "end": 427,
-                                        "children": [
-                                          {
-                                            "kind": "variable_name",
-                                            "start": 411,
-                                            "end": 413,
-                                            "children": [
-                                              {
-                                                "kind": "name",
-                                                "start": 412,
-                                                "end": 413,
-                                                "text": "o"
-                                              }
-                                            ]
-                                          },
-                                          {
-                                            "kind": "encapsed_string",
-                                            "start": 414,
-                                            "end": 426,
-                                            "children": [
-                                              {
-                                                "kind": "string_content",
-                                                "start": 415,
-                                                "end": 425,
-                                                "text": "customerId"
-                                              }
-                                            ]
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "kind": "array_element_initializer",
-                                    "start": 429,
-                                    "end": 463,
-                                    "children": [
-                                      {
-                                        "kind": "encapsed_string",
-                                        "start": 429,
-                                        "end": 449,
-                                        "children": [
-                                          {
-                                            "kind": "string_content",
-                                            "start": 430,
-                                            "end": 448,
-                                            "text": "pairedCustomerName"
-                                          }
-                                        ]
-                                      },
-                                      {
-                                        "kind": "subscript_expression",
-                                        "start": 453,
-                                        "end": 463,
-                                        "children": [
-                                          {
-                                            "kind": "variable_name",
-                                            "start": 453,
-                                            "end": 455,
-                                            "children": [
-                                              {
-                                                "kind": "name",
-                                                "start": 454,
-                                                "end": 455,
-                                                "text": "c"
-                                              }
-                                            ]
-                                          },
-                                          {
-                                            "kind": "encapsed_string",
-                                            "start": 456,
-                                            "end": 462,
-                                            "children": [
-                                              {
-                                                "kind": "string_content",
-                                                "start": 457,
-                                                "end": 461,
-                                                "text": "name"
-                                              }
-                                            ]
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "kind": "array_element_initializer",
-                                    "start": 465,
-                                    "end": 492,
-                                    "children": [
-                                      {
-                                        "kind": "encapsed_string",
-                                        "start": 465,
-                                        "end": 477,
-                                        "children": [
-                                          {
-                                            "kind": "string_content",
-                                            "start": 466,
-                                            "end": 476,
-                                            "text": "orderTotal"
-                                          }
-                                        ]
-                                      },
-                                      {
-                                        "kind": "subscript_expression",
-                                        "start": 481,
-                                        "end": 492,
-                                        "children": [
-                                          {
-                                            "kind": "variable_name",
-                                            "start": 481,
-                                            "end": 483,
-                                            "children": [
-                                              {
-                                                "kind": "name",
-                                                "start": 482,
-                                                "end": 483,
-                                                "text": "o"
-                                              }
-                                            ]
-                                          },
-                                          {
-                                            "kind": "encapsed_string",
-                                            "start": 484,
-                                            "end": 491,
-                                            "children": [
-                                              {
-                                                "kind": "string_content",
-                                                "start": 485,
-                                                "end": 490,
-                                                "text": "total"
-                                              }
-                                            ]
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "kind": "echo_statement",
-        "start": 502,
-        "end": 563,
-        "children": [
-          {
-            "kind": "sequence_expression",
-            "start": 507,
-            "end": 562,
-            "children": [
-              {
-                "kind": "encapsed_string",
-                "start": 507,
-                "end": 553,
-                "children": [
-                  {
-                    "kind": "string_content",
-                    "start": 508,
-                    "end": 552,
-                    "text": "--- Cross Join: All order-customer pairs ---"
-                  }
-                ]
-              },
-              {
-                "kind": "name",
-                "start": 555,
-                "end": 562,
-                "text": "PHP_EOL"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "kind": "foreach_statement",
-        "start": 564,
-        "end": 1142,
-        "children": [
-          {
-            "kind": "variable_name",
-            "start": 573,
-            "end": 580,
-            "children": [
-              {
-                "kind": "name",
-                "start": 574,
-                "end": 580,
-                "text": "result"
-              }
-            ]
-          },
-          {
-            "kind": "variable_name",
-            "start": 584,
-            "end": 590,
-            "children": [
-              {
-                "kind": "name",
-                "start": 585,
-                "end": 590,
-                "text": "entry"
-              }
-            ]
-          },
-          {
-            "kind": "compound_statement",
-            "start": 592,
-            "end": 1142,
-            "children": [
-              {
-                "kind": "echo_statement",
-                "start": 596,
-                "end": 1140,
-                "children": [
-                  {
-                    "kind": "sequence_expression",
-                    "start": 601,
-                    "end": 1139,
-                    "children": [
-                      {
-                        "kind": "binary_expression",
-                        "start": 601,
-                        "end": 1130,
-                        "children": [
-                          {
-                            "kind": "binary_expression",
-                            "start": 601,
-                            "end": 1006,
-                            "children": [
-                              {
-                                "kind": "binary_expression",
-                                "start": 601,
-                                "end": 1000,
-                                "children": [
-                                  {
-                                    "kind": "binary_expression",
-                                    "start": 601,
-                                    "end": 982,
-                                    "children": [
-                                      {
-                                        "kind": "binary_expression",
-                                        "start": 601,
-                                        "end": 976,
-                                        "children": [
-                                          {
-                                            "kind": "binary_expression",
-                                            "start": 601,
-                                            "end": 876,
-                                            "children": [
-                                              {
-                                                "kind": "binary_expression",
-                                                "start": 601,
-                                                "end": 870,
-                                                "children": [
-                                                  {
-                                                    "kind": "binary_expression",
-                                                    "start": 601,
-                                                    "end": 855,
-                                                    "children": [
-                                                      {
-                                                        "kind": "binary_expression",
-                                                        "start": 601,
-                                                        "end": 849,
-                                                        "children": [
-                                                          {
-                                                            "kind": "binary_expression",
-                                                            "start": 601,
-                                                            "end": 734,
-                                                            "children": [
-                                                              {
-                                                                "kind": "binary_expression",
-                                                                "start": 601,
-                                                                "end": 728,
-                                                                "children": [
-                                                                  {
-                                                                    "kind": "binary_expression",
-                                                                    "start": 601,
-                                                                    "end": 711,
-                                                                    "children": [
-                                                                      {
-                                                                        "kind": "binary_expression",
-                                                                        "start": 601,
-                                                                        "end": 705,
-                                                                        "children": [
-                                                                          {
-                                                                            "kind": "binary_expression",
-                                                                            "start": 601,
-                                                                            "end": 614,
-                                                                            "children": [
-                                                                              {
-                                                                                "kind": "encapsed_string",
-                                                                                "start": 601,
-                                                                                "end": 608,
-                                                                                "children": [
-                                                                                  {
-                                                                                    "kind": "string_content",
-                                                                                    "start": 602,
-                                                                                    "end": 607,
-                                                                                    "text": "Order"
-                                                                                  }
-                                                                                ]
-                                                                              },
-                                                                              {
-                                                                                "kind": "encapsed_string",
-                                                                                "start": 611,
-                                                                                "end": 614,
-                                                                                "children": [
-                                                                                  {
-                                                                                    "kind": "string_content",
-                                                                                    "start": 612,
-                                                                                    "end": 613,
-                                                                                    "text": " "
-                                                                                  }
-                                                                                ]
-                                                                              }
-                                                                            ]
-                                                                          },
-                                                                          {
-                                                                            "kind": "parenthesized_expression",
-                                                                            "start": 617,
-                                                                            "end": 705,
-                                                                            "children": [
-                                                                              {
-                                                                                "kind": "conditional_expression",
-                                                                                "start": 618,
-                                                                                "end": 704,
-                                                                                "children": [
-                                                                                  {
-                                                                                    "kind": "function_call_expression",
-                                                                                    "start": 618,
-                                                                                    "end": 645,
-                                                                                    "children": [
-                                                                                      {
-                                                                                        "kind": "name",
-                                                                                        "start": 618,
-                                                                                        "end": 626,
-                                                                                        "text": "is_float"
-                                                                                      },
-                                                                                      {
-                                                                                        "kind": "arguments",
-                                                                                        "start": 626,
-                                                                                        "end": 645,
-                                                                                        "children": [
-                                                                                          {
-                                                                                            "kind": "argument",
-                                                                                            "start": 627,
-                                                                                            "end": 644,
-                                                                                            "children": [
-                                                                                              {
-                                                                                                "kind": "subscript_expression",
-                                                                                                "start": 627,
-                                                                                                "end": 644,
-                                                                                                "children": [
-                                                                                                  {
-                                                                                                    "kind": "variable_name",
-                                                                                                    "start": 627,
-                                                                                                    "end": 633,
-                                                                                                    "children": [
-                                                                                                      {
-                                                                                                        "kind": "name",
-                                                                                                        "start": 628,
-                                                                                                        "end": 633,
-                                                                                                        "text": "entry"
-                                                                                                      }
-                                                                                                    ]
-                                                                                                  },
-                                                                                                  {
-                                                                                                    "kind": "encapsed_string",
-                                                                                                    "start": 634,
-                                                                                                    "end": 643,
-                                                                                                    "children": [
-                                                                                                      {
-                                                                                                        "kind": "string_content",
-                                                                                                        "start": 635,
-                                                                                                        "end": 642,
-                                                                                                        "text": "orderId"
-                                                                                                      }
-                                                                                                    ]
-                                                                                                  }
-                                                                                                ]
-                                                                                              }
-                                                                                            ]
-                                                                                          }
-                                                                                        ]
-                                                                                      }
-                                                                                    ]
-                                                                                  },
-                                                                                  {
-                                                                                    "kind": "function_call_expression",
-                                                                                    "start": 648,
-                                                                                    "end": 684,
-                                                                                    "children": [
-                                                                                      {
-                                                                                        "kind": "name",
-                                                                                        "start": 648,
-                                                                                        "end": 659,
-                                                                                        "text": "json_encode"
-                                                                                      },
-                                                                                      {
-                                                                                        "kind": "arguments",
-                                                                                        "start": 659,
-                                                                                        "end": 684,
-                                                                                        "children": [
-                                                                                          {
-                                                                                            "kind": "argument",
-                                                                                            "start": 660,
-                                                                                            "end": 677,
-                                                                                            "children": [
-                                                                                              {
-                                                                                                "kind": "subscript_expression",
-                                                                                                "start": 660,
-                                                                                                "end": 677,
-                                                                                                "children": [
-                                                                                                  {
-                                                                                                    "kind": "variable_name",
-                                                                                                    "start": 660,
-                                                                                                    "end": 666,
-                                                                                                    "children": [
-                                                                                                      {
-                                                                                                        "kind": "name",
-                                                                                                        "start": 661,
-                                                                                                        "end": 666,
-                                                                                                        "text": "entry"
-                                                                                                      }
-                                                                                                    ]
-                                                                                                  },
-                                                                                                  {
-                                                                                                    "kind": "encapsed_string",
-                                                                                                    "start": 667,
-                                                                                                    "end": 676,
-                                                                                                    "children": [
-                                                                                                      {
-                                                                                                        "kind": "string_content",
-                                                                                                        "start": 668,
-                                                                                                        "end": 675,
-                                                                                                        "text": "orderId"
-                                                                                                      }
-                                                                                                    ]
-                                                                                                  }
-                                                                                                ]
-                                                                                              }
-                                                                                            ]
-                                                                                          },
-                                                                                          {
-                                                                                            "kind": "argument",
-                                                                                            "start": 679,
-                                                                                            "end": 683,
-                                                                                            "children": [
-                                                                                              {
-                                                                                                "kind": "integer",
-                                                                                                "start": 679,
-                                                                                                "end": 683,
-                                                                                                "text": "1344"
-                                                                                              }
-                                                                                            ]
-                                                                                          }
-                                                                                        ]
-                                                                                      }
-                                                                                    ]
-                                                                                  },
-                                                                                  {
-                                                                                    "kind": "subscript_expression",
-                                                                                    "start": 687,
-                                                                                    "end": 704,
-                                                                                    "children": [
-                                                                                      {
-                                                                                        "kind": "variable_name",
-                                                                                        "start": 687,
-                                                                                        "end": 693,
-                                                                                        "children": [
-                                                                                          {
-                                                                                            "kind": "name",
-                                                                                            "start": 688,
-                                                                                            "end": 693,
-                                                                                            "text": "entry"
-                                                                                          }
-                                                                                        ]
-                                                                                      },
-                                                                                      {
-                                                                                        "kind": "encapsed_string",
-                                                                                        "start": 694,
-                                                                                        "end": 703,
-                                                                                        "children": [
-                                                                                          {
-                                                                                            "kind": "string_content",
-                                                                                            "start": 695,
-                                                                                            "end": 702,
-                                                                                            "text": "orderId"
-                                                                                          }
-                                                                                        ]
-                                                                                      }
-                                                                                    ]
-                                                                                  }
-                                                                                ]
-                                                                              }
-                                                                            ]
-                                                                          }
-                                                                        ]
-                                                                      },
-                                                                      {
-                                                                        "kind": "encapsed_string",
-                                                                        "start": 708,
-                                                                        "end": 711,
-                                                                        "children": [
-                                                                          {
-                                                                            "kind": "string_content",
-                                                                            "start": 709,
-                                                                            "end": 710,
-                                                                            "text": " "
-                                                                          }
-                                                                        ]
-                                                                      }
-                                                                    ]
-                                                                  },
-                                                                  {
-                                                                    "kind": "encapsed_string",
-                                                                    "start": 714,
-                                                                    "end": 728,
-                                                                    "children": [
-                                                                      {
-                                                                        "kind": "string_content",
-                                                                        "start": 715,
-                                                                        "end": 727,
-                                                                        "text": "(customerId:"
-                                                                      }
-                                                                    ]
-                                                                  }
-                                                                ]
-                                                              },
-                                                              {
-                                                                "kind": "encapsed_string",
-                                                                "start": 731,
-                                                                "end": 734,
-                                                                "children": [
-                                                                  {
-                                                                    "kind": "string_content",
-                                                                    "start": 732,
-                                                                    "end": 733,
-                                                                    "text": " "
-                                                                  }
-                                                                ]
-                                                              }
-                                                            ]
-                                                          },
-                                                          {
-                                                            "kind": "parenthesized_expression",
-                                                            "start": 737,
-                                                            "end": 849,
-                                                            "children": [
-                                                              {
-                                                                "kind": "conditional_expression",
-                                                                "start": 738,
-                                                                "end": 848,
-                                                                "children": [
-                                                                  {
-                                                                    "kind": "function_call_expression",
-                                                                    "start": 738,
-                                                                    "end": 773,
-                                                                    "children": [
-                                                                      {
-                                                                        "kind": "name",
-                                                                        "start": 738,
-                                                                        "end": 746,
-                                                                        "text": "is_float"
-                                                                      },
-                                                                      {
-                                                                        "kind": "arguments",
-                                                                        "start": 746,
-                                                                        "end": 773,
-                                                                        "children": [
-                                                                          {
-                                                                            "kind": "argument",
-                                                                            "start": 747,
-                                                                            "end": 772,
-                                                                            "children": [
-                                                                              {
-                                                                                "kind": "subscript_expression",
-                                                                                "start": 747,
-                                                                                "end": 772,
-                                                                                "children": [
-                                                                                  {
-                                                                                    "kind": "variable_name",
-                                                                                    "start": 747,
-                                                                                    "end": 753,
-                                                                                    "children": [
-                                                                                      {
-                                                                                        "kind": "name",
-                                                                                        "start": 748,
-                                                                                        "end": 753,
-                                                                                        "text": "entry"
-                                                                                      }
-                                                                                    ]
-                                                                                  },
-                                                                                  {
-                                                                                    "kind": "encapsed_string",
-                                                                                    "start": 754,
-                                                                                    "end": 771,
-                                                                                    "children": [
-                                                                                      {
-                                                                                        "kind": "string_content",
-                                                                                        "start": 755,
-                                                                                        "end": 770,
-                                                                                        "text": "orderCustomerId"
-                                                                                      }
-                                                                                    ]
-                                                                                  }
-                                                                                ]
-                                                                              }
-                                                                            ]
-                                                                          }
-                                                                        ]
-                                                                      }
-                                                                    ]
-                                                                  },
-                                                                  {
-                                                                    "kind": "function_call_expression",
-                                                                    "start": 776,
-                                                                    "end": 820,
-                                                                    "children": [
-                                                                      {
-                                                                        "kind": "name",
-                                                                        "start": 776,
-                                                                        "end": 787,
-                                                                        "text": "json_encode"
-                                                                      },
-                                                                      {
-                                                                        "kind": "arguments",
-                                                                        "start": 787,
-                                                                        "end": 820,
-                                                                        "children": [
-                                                                          {
-                                                                            "kind": "argument",
-                                                                            "start": 788,
-                                                                            "end": 813,
-                                                                            "children": [
-                                                                              {
-                                                                                "kind": "subscript_expression",
-                                                                                "start": 788,
-                                                                                "end": 813,
-                                                                                "children": [
-                                                                                  {
-                                                                                    "kind": "variable_name",
-                                                                                    "start": 788,
-                                                                                    "end": 794,
-                                                                                    "children": [
-                                                                                      {
-                                                                                        "kind": "name",
-                                                                                        "start": 789,
-                                                                                        "end": 794,
-                                                                                        "text": "entry"
-                                                                                      }
-                                                                                    ]
-                                                                                  },
-                                                                                  {
-                                                                                    "kind": "encapsed_string",
-                                                                                    "start": 795,
-                                                                                    "end": 812,
-                                                                                    "children": [
-                                                                                      {
-                                                                                        "kind": "string_content",
-                                                                                        "start": 796,
-                                                                                        "end": 811,
-                                                                                        "text": "orderCustomerId"
-                                                                                      }
-                                                                                    ]
-                                                                                  }
-                                                                                ]
-                                                                              }
-                                                                            ]
-                                                                          },
-                                                                          {
-                                                                            "kind": "argument",
-                                                                            "start": 815,
-                                                                            "end": 819,
-                                                                            "children": [
-                                                                              {
-                                                                                "kind": "integer",
-                                                                                "start": 815,
-                                                                                "end": 819,
-                                                                                "text": "1344"
-                                                                              }
-                                                                            ]
-                                                                          }
-                                                                        ]
-                                                                      }
-                                                                    ]
-                                                                  },
-                                                                  {
-                                                                    "kind": "subscript_expression",
-                                                                    "start": 823,
-                                                                    "end": 848,
-                                                                    "children": [
-                                                                      {
-                                                                        "kind": "variable_name",
-                                                                        "start": 823,
-                                                                        "end": 829,
-                                                                        "children": [
-                                                                          {
-                                                                            "kind": "name",
-                                                                            "start": 824,
-                                                                            "end": 829,
-                                                                            "text": "entry"
-                                                                          }
-                                                                        ]
-                                                                      },
-                                                                      {
-                                                                        "kind": "encapsed_string",
-                                                                        "start": 830,
-                                                                        "end": 847,
-                                                                        "children": [
-                                                                          {
-                                                                            "kind": "string_content",
-                                                                            "start": 831,
-                                                                            "end": 846,
-                                                                            "text": "orderCustomerId"
-                                                                          }
-                                                                        ]
-                                                                      }
-                                                                    ]
-                                                                  }
-                                                                ]
-                                                              }
-                                                            ]
-                                                          }
-                                                        ]
-                                                      },
-                                                      {
-                                                        "kind": "encapsed_string",
-                                                        "start": 852,
-                                                        "end": 855,
-                                                        "children": [
-                                                          {
-                                                            "kind": "string_content",
-                                                            "start": 853,
-                                                            "end": 854,
-                                                            "text": " "
-                                                          }
-                                                        ]
-                                                      }
-                                                    ]
-                                                  },
-                                                  {
-                                                    "kind": "encapsed_string",
-                                                    "start": 858,
-                                                    "end": 870,
-                                                    "children": [
-                                                      {
-                                                        "kind": "string_content",
-                                                        "start": 859,
-                                                        "end": 869,
-                                                        "text": ", total: $"
-                                                      }
-                                                    ]
-                                                  }
-                                                ]
-                                              },
-                                              {
-                                                "kind": "encapsed_string",
-                                                "start": 873,
-                                                "end": 876,
-                                                "children": [
-                                                  {
-                                                    "kind": "string_content",
-                                                    "start": 874,
-                                                    "end": 875,
-                                                    "text": " "
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          },
-                                          {
-                                            "kind": "parenthesized_expression",
-                                            "start": 879,
-                                            "end": 976,
-                                            "children": [
-                                              {
-                                                "kind": "conditional_expression",
-                                                "start": 880,
-                                                "end": 975,
-                                                "children": [
-                                                  {
-                                                    "kind": "function_call_expression",
-                                                    "start": 880,
-                                                    "end": 910,
-                                                    "children": [
-                                                      {
-                                                        "kind": "name",
-                                                        "start": 880,
-                                                        "end": 888,
-                                                        "text": "is_float"
-                                                      },
-                                                      {
-                                                        "kind": "arguments",
-                                                        "start": 888,
-                                                        "end": 910,
-                                                        "children": [
-                                                          {
-                                                            "kind": "argument",
-                                                            "start": 889,
-                                                            "end": 909,
-                                                            "children": [
-                                                              {
-                                                                "kind": "subscript_expression",
-                                                                "start": 889,
-                                                                "end": 909,
-                                                                "children": [
-                                                                  {
-                                                                    "kind": "variable_name",
-                                                                    "start": 889,
-                                                                    "end": 895,
-                                                                    "children": [
-                                                                      {
-                                                                        "kind": "name",
-                                                                        "start": 890,
-                                                                        "end": 895,
-                                                                        "text": "entry"
-                                                                      }
-                                                                    ]
-                                                                  },
-                                                                  {
-                                                                    "kind": "encapsed_string",
-                                                                    "start": 896,
-                                                                    "end": 908,
-                                                                    "children": [
-                                                                      {
-                                                                        "kind": "string_content",
-                                                                        "start": 897,
-                                                                        "end": 907,
-                                                                        "text": "orderTotal"
-                                                                      }
-                                                                    ]
-                                                                  }
-                                                                ]
-                                                              }
-                                                            ]
-                                                          }
-                                                        ]
-                                                      }
-                                                    ]
-                                                  },
-                                                  {
-                                                    "kind": "function_call_expression",
-                                                    "start": 913,
-                                                    "end": 952,
-                                                    "children": [
-                                                      {
-                                                        "kind": "name",
-                                                        "start": 913,
-                                                        "end": 924,
-                                                        "text": "json_encode"
-                                                      },
-                                                      {
-                                                        "kind": "arguments",
-                                                        "start": 924,
-                                                        "end": 952,
-                                                        "children": [
-                                                          {
-                                                            "kind": "argument",
-                                                            "start": 925,
-                                                            "end": 945,
-                                                            "children": [
-                                                              {
-                                                                "kind": "subscript_expression",
-                                                                "start": 925,
-                                                                "end": 945,
-                                                                "children": [
-                                                                  {
-                                                                    "kind": "variable_name",
-                                                                    "start": 925,
-                                                                    "end": 931,
-                                                                    "children": [
-                                                                      {
-                                                                        "kind": "name",
-                                                                        "start": 926,
-                                                                        "end": 931,
-                                                                        "text": "entry"
-                                                                      }
-                                                                    ]
-                                                                  },
-                                                                  {
-                                                                    "kind": "encapsed_string",
-                                                                    "start": 932,
-                                                                    "end": 944,
-                                                                    "children": [
-                                                                      {
-                                                                        "kind": "string_content",
-                                                                        "start": 933,
-                                                                        "end": 943,
-                                                                        "text": "orderTotal"
-                                                                      }
-                                                                    ]
-                                                                  }
-                                                                ]
-                                                              }
-                                                            ]
-                                                          },
-                                                          {
-                                                            "kind": "argument",
-                                                            "start": 947,
-                                                            "end": 951,
-                                                            "children": [
-                                                              {
-                                                                "kind": "integer",
-                                                                "start": 947,
-                                                                "end": 951,
-                                                                "text": "1344"
-                                                              }
-                                                            ]
-                                                          }
-                                                        ]
-                                                      }
-                                                    ]
-                                                  },
-                                                  {
-                                                    "kind": "subscript_expression",
-                                                    "start": 955,
-                                                    "end": 975,
-                                                    "children": [
-                                                      {
-                                                        "kind": "variable_name",
-                                                        "start": 955,
-                                                        "end": 961,
-                                                        "children": [
-                                                          {
-                                                            "kind": "name",
-                                                            "start": 956,
-                                                            "end": 961,
-                                                            "text": "entry"
-                                                          }
-                                                        ]
-                                                      },
-                                                      {
-                                                        "kind": "encapsed_string",
-                                                        "start": 962,
-                                                        "end": 974,
-                                                        "children": [
-                                                          {
-                                                            "kind": "string_content",
-                                                            "start": 963,
-                                                            "end": 973,
-                                                            "text": "orderTotal"
-                                                          }
-                                                        ]
-                                                      }
-                                                    ]
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          }
-                                        ]
-                                      },
-                                      {
-                                        "kind": "encapsed_string",
-                                        "start": 979,
-                                        "end": 982,
-                                        "children": [
-                                          {
-                                            "kind": "string_content",
-                                            "start": 980,
-                                            "end": 981,
-                                            "text": " "
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "kind": "encapsed_string",
-                                    "start": 985,
-                                    "end": 1000,
-                                    "children": [
-                                      {
-                                        "kind": "string_content",
-                                        "start": 986,
-                                        "end": 999,
-                                        "text": ") paired with"
-                                      }
-                                    ]
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "encapsed_string",
-                                "start": 1003,
-                                "end": 1006,
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "start": 1004,
-                                    "end": 1005,
-                                    "text": " "
-                                  }
-                                ]
-                              }
-                            ]
-                          },
-                          {
-                            "kind": "parenthesized_expression",
-                            "start": 1009,
-                            "end": 1130,
-                            "children": [
-                              {
-                                "kind": "conditional_expression",
-                                "start": 1010,
-                                "end": 1129,
-                                "children": [
-                                  {
-                                    "kind": "function_call_expression",
-                                    "start": 1010,
-                                    "end": 1048,
-                                    "children": [
-                                      {
-                                        "kind": "name",
-                                        "start": 1010,
-                                        "end": 1018,
-                                        "text": "is_float"
-                                      },
-                                      {
-                                        "kind": "arguments",
-                                        "start": 1018,
-                                        "end": 1048,
-                                        "children": [
-                                          {
-                                            "kind": "argument",
-                                            "start": 1019,
-                                            "end": 1047,
-                                            "children": [
-                                              {
-                                                "kind": "subscript_expression",
-                                                "start": 1019,
-                                                "end": 1047,
-                                                "children": [
-                                                  {
-                                                    "kind": "variable_name",
-                                                    "start": 1019,
-                                                    "end": 1025,
-                                                    "children": [
-                                                      {
-                                                        "kind": "name",
-                                                        "start": 1020,
-                                                        "end": 1025,
-                                                        "text": "entry"
-                                                      }
-                                                    ]
-                                                  },
-                                                  {
-                                                    "kind": "encapsed_string",
-                                                    "start": 1026,
-                                                    "end": 1046,
-                                                    "children": [
-                                                      {
-                                                        "kind": "string_content",
-                                                        "start": 1027,
-                                                        "end": 1045,
-                                                        "text": "pairedCustomerName"
-                                                      }
-                                                    ]
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "kind": "function_call_expression",
-                                    "start": 1051,
-                                    "end": 1098,
-                                    "children": [
-                                      {
-                                        "kind": "name",
-                                        "start": 1051,
-                                        "end": 1062,
-                                        "text": "json_encode"
-                                      },
-                                      {
-                                        "kind": "arguments",
-                                        "start": 1062,
-                                        "end": 1098,
-                                        "children": [
-                                          {
-                                            "kind": "argument",
-                                            "start": 1063,
-                                            "end": 1091,
-                                            "children": [
-                                              {
-                                                "kind": "subscript_expression",
-                                                "start": 1063,
-                                                "end": 1091,
-                                                "children": [
-                                                  {
-                                                    "kind": "variable_name",
-                                                    "start": 1063,
-                                                    "end": 1069,
-                                                    "children": [
-                                                      {
-                                                        "kind": "name",
-                                                        "start": 1064,
-                                                        "end": 1069,
-                                                        "text": "entry"
-                                                      }
-                                                    ]
-                                                  },
-                                                  {
-                                                    "kind": "encapsed_string",
-                                                    "start": 1070,
-                                                    "end": 1090,
-                                                    "children": [
-                                                      {
-                                                        "kind": "string_content",
-                                                        "start": 1071,
-                                                        "end": 1089,
-                                                        "text": "pairedCustomerName"
-                                                      }
-                                                    ]
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          },
-                                          {
-                                            "kind": "argument",
-                                            "start": 1093,
-                                            "end": 1097,
-                                            "children": [
-                                              {
-                                                "kind": "integer",
-                                                "start": 1093,
-                                                "end": 1097,
-                                                "text": "1344"
-                                              }
-                                            ]
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "kind": "subscript_expression",
-                                    "start": 1101,
-                                    "end": 1129,
-                                    "children": [
-                                      {
-                                        "kind": "variable_name",
-                                        "start": 1101,
-                                        "end": 1107,
-                                        "children": [
-                                          {
-                                            "kind": "name",
-                                            "start": 1102,
-                                            "end": 1107,
-                                            "text": "entry"
-                                          }
-                                        ]
-                                      },
-                                      {
-                                        "kind": "encapsed_string",
-                                        "start": 1108,
-                                        "end": 1128,
-                                        "children": [
-                                          {
-                                            "kind": "string_content",
-                                            "start": 1109,
-                                            "end": 1127,
-                                            "text": "pairedCustomerName"
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                ]
+                                "kind": "string_content",
+                                "text": "id",
+                                "start": 7,
+                                "startCol": 34,
+                                "end": 7,
+                                "endCol": 36
                               }
                             ]
                           }
                         ]
                       },
                       {
-                        "kind": "name",
-                        "start": 1132,
-                        "end": 1139,
-                        "text": "PHP_EOL"
+                        "kind": "array_element_initializer",
+                        "start": 7,
+                        "startCol": 40,
+                        "end": 7,
+                        "endCol": 77,
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "orderCustomerId",
+                            "start": 7,
+                            "startCol": 41,
+                            "end": 7,
+                            "endCol": 56
+                          },
+                          {
+                            "kind": "subscript_expression",
+                            "start": 7,
+                            "startCol": 61,
+                            "end": 7,
+                            "endCol": 77,
+                            "children": [
+                              {
+                                "kind": "name",
+                                "text": "o",
+                                "start": 7,
+                                "startCol": 62,
+                                "end": 7,
+                                "endCol": 63
+                              },
+                              {
+                                "kind": "string_content",
+                                "text": "customerId",
+                                "start": 7,
+                                "startCol": 65,
+                                "end": 7,
+                                "endCol": 75
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "array_element_initializer",
+                        "start": 7,
+                        "startCol": 79,
+                        "end": 7,
+                        "endCol": 113,
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "pairedCustomerName",
+                            "start": 7,
+                            "startCol": 80,
+                            "end": 7,
+                            "endCol": 98
+                          },
+                          {
+                            "kind": "subscript_expression",
+                            "start": 7,
+                            "startCol": 103,
+                            "end": 7,
+                            "endCol": 113,
+                            "children": [
+                              {
+                                "kind": "name",
+                                "text": "c",
+                                "start": 7,
+                                "startCol": 104,
+                                "end": 7,
+                                "endCol": 105
+                              },
+                              {
+                                "kind": "string_content",
+                                "text": "name",
+                                "start": 7,
+                                "startCol": 107,
+                                "end": 7,
+                                "endCol": 111
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "array_element_initializer",
+                        "start": 7,
+                        "startCol": 115,
+                        "end": 7,
+                        "endCol": 142,
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "orderTotal",
+                            "start": 7,
+                            "startCol": 116,
+                            "end": 7,
+                            "endCol": 126
+                          },
+                          {
+                            "kind": "subscript_expression",
+                            "start": 7,
+                            "startCol": 131,
+                            "end": 7,
+                            "endCol": 142,
+                            "children": [
+                              {
+                                "kind": "name",
+                                "text": "o",
+                                "start": 7,
+                                "startCol": 132,
+                                "end": 7,
+                                "endCol": 133
+                              },
+                              {
+                                "kind": "string_content",
+                                "text": "total",
+                                "start": 7,
+                                "startCol": 135,
+                                "end": 7,
+                                "endCol": 140
+                              }
+                            ]
+                          }
+                        ]
                       }
                     ]
                   }
                 ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "sequence_expression",
+        "start": 11,
+        "startCol": 5,
+        "end": 11,
+        "endCol": 60,
+        "children": [
+          {
+            "kind": "string_content",
+            "text": "--- Cross Join: All order-customer pairs ---",
+            "start": 11,
+            "startCol": 6,
+            "end": 11,
+            "endCol": 50
+          },
+          {
+            "kind": "name",
+            "text": "PHP_EOL",
+            "start": 11,
+            "startCol": 53,
+            "end": 11,
+            "endCol": 60
+          }
+        ]
+      },
+      {
+        "kind": "foreach_statement",
+        "start": 12,
+        "startCol": 0,
+        "end": 14,
+        "endCol": 1,
+        "children": [
+          {
+            "kind": "name",
+            "text": "result",
+            "start": 12,
+            "startCol": 10,
+            "end": 12,
+            "endCol": 16
+          },
+          {
+            "kind": "name",
+            "text": "entry",
+            "start": 12,
+            "startCol": 21,
+            "end": 12,
+            "endCol": 26
+          },
+          {
+            "kind": "sequence_expression",
+            "start": 13,
+            "startCol": 7,
+            "end": 13,
+            "endCol": 545,
+            "children": [
+              {
+                "kind": "binary_expression",
+                "start": 13,
+                "startCol": 7,
+                "end": 13,
+                "endCol": 536,
+                "children": [
+                  {
+                    "kind": "binary_expression",
+                    "start": 13,
+                    "startCol": 7,
+                    "end": 13,
+                    "endCol": 412,
+                    "children": [
+                      {
+                        "kind": "binary_expression",
+                        "start": 13,
+                        "startCol": 7,
+                        "end": 13,
+                        "endCol": 406,
+                        "children": [
+                          {
+                            "kind": "binary_expression",
+                            "start": 13,
+                            "startCol": 7,
+                            "end": 13,
+                            "endCol": 388,
+                            "children": [
+                              {
+                                "kind": "binary_expression",
+                                "start": 13,
+                                "startCol": 7,
+                                "end": 13,
+                                "endCol": 382,
+                                "children": [
+                                  {
+                                    "kind": "binary_expression",
+                                    "start": 13,
+                                    "startCol": 7,
+                                    "end": 13,
+                                    "endCol": 282,
+                                    "children": [
+                                      {
+                                        "kind": "binary_expression",
+                                        "start": 13,
+                                        "startCol": 7,
+                                        "end": 13,
+                                        "endCol": 276,
+                                        "children": [
+                                          {
+                                            "kind": "binary_expression",
+                                            "start": 13,
+                                            "startCol": 7,
+                                            "end": 13,
+                                            "endCol": 261,
+                                            "children": [
+                                              {
+                                                "kind": "binary_expression",
+                                                "start": 13,
+                                                "startCol": 7,
+                                                "end": 13,
+                                                "endCol": 255,
+                                                "children": [
+                                                  {
+                                                    "kind": "binary_expression",
+                                                    "start": 13,
+                                                    "startCol": 7,
+                                                    "end": 13,
+                                                    "endCol": 140,
+                                                    "children": [
+                                                      {
+                                                        "kind": "binary_expression",
+                                                        "start": 13,
+                                                        "startCol": 7,
+                                                        "end": 13,
+                                                        "endCol": 134,
+                                                        "children": [
+                                                          {
+                                                            "kind": "binary_expression",
+                                                            "start": 13,
+                                                            "startCol": 7,
+                                                            "end": 13,
+                                                            "endCol": 117,
+                                                            "children": [
+                                                              {
+                                                                "kind": "binary_expression",
+                                                                "start": 13,
+                                                                "startCol": 7,
+                                                                "end": 13,
+                                                                "endCol": 111,
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "binary_expression",
+                                                                    "start": 13,
+                                                                    "startCol": 7,
+                                                                    "end": 13,
+                                                                    "endCol": 20,
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "string_content",
+                                                                        "text": "Order",
+                                                                        "start": 13,
+                                                                        "startCol": 8,
+                                                                        "end": 13,
+                                                                        "endCol": 13
+                                                                      },
+                                                                      {
+                                                                        "kind": "string_content",
+                                                                        "text": " ",
+                                                                        "start": 13,
+                                                                        "startCol": 18,
+                                                                        "end": 13,
+                                                                        "endCol": 19
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "kind": "conditional_expression",
+                                                                    "start": 13,
+                                                                    "startCol": 24,
+                                                                    "end": 13,
+                                                                    "endCol": 110,
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "function_call_expression",
+                                                                        "start": 13,
+                                                                        "startCol": 24,
+                                                                        "end": 13,
+                                                                        "endCol": 51,
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "name",
+                                                                            "text": "is_float",
+                                                                            "start": 13,
+                                                                            "startCol": 24,
+                                                                            "end": 13,
+                                                                            "endCol": 32
+                                                                          },
+                                                                          {
+                                                                            "kind": "subscript_expression",
+                                                                            "start": 13,
+                                                                            "startCol": 33,
+                                                                            "end": 13,
+                                                                            "endCol": 50,
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "name",
+                                                                                "text": "entry",
+                                                                                "start": 13,
+                                                                                "startCol": 34,
+                                                                                "end": 13,
+                                                                                "endCol": 39
+                                                                              },
+                                                                              {
+                                                                                "kind": "string_content",
+                                                                                "text": "orderId",
+                                                                                "start": 13,
+                                                                                "startCol": 41,
+                                                                                "end": 13,
+                                                                                "endCol": 48
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "kind": "function_call_expression",
+                                                                        "start": 13,
+                                                                        "startCol": 54,
+                                                                        "end": 13,
+                                                                        "endCol": 90,
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "name",
+                                                                            "text": "json_encode",
+                                                                            "start": 13,
+                                                                            "startCol": 54,
+                                                                            "end": 13,
+                                                                            "endCol": 65
+                                                                          },
+                                                                          {
+                                                                            "kind": "arguments",
+                                                                            "start": 13,
+                                                                            "startCol": 65,
+                                                                            "end": 13,
+                                                                            "endCol": 90,
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "subscript_expression",
+                                                                                "start": 13,
+                                                                                "startCol": 66,
+                                                                                "end": 13,
+                                                                                "endCol": 83,
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "name",
+                                                                                    "text": "entry",
+                                                                                    "start": 13,
+                                                                                    "startCol": 67,
+                                                                                    "end": 13,
+                                                                                    "endCol": 72
+                                                                                  },
+                                                                                  {
+                                                                                    "kind": "string_content",
+                                                                                    "text": "orderId",
+                                                                                    "start": 13,
+                                                                                    "startCol": 74,
+                                                                                    "end": 13,
+                                                                                    "endCol": 81
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "integer",
+                                                                                "text": "1344",
+                                                                                "start": 13,
+                                                                                "startCol": 85,
+                                                                                "end": 13,
+                                                                                "endCol": 89
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "kind": "subscript_expression",
+                                                                        "start": 13,
+                                                                        "startCol": 93,
+                                                                        "end": 13,
+                                                                        "endCol": 110,
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "name",
+                                                                            "text": "entry",
+                                                                            "start": 13,
+                                                                            "startCol": 94,
+                                                                            "end": 13,
+                                                                            "endCol": 99
+                                                                          },
+                                                                          {
+                                                                            "kind": "string_content",
+                                                                            "text": "orderId",
+                                                                            "start": 13,
+                                                                            "startCol": 101,
+                                                                            "end": 13,
+                                                                            "endCol": 108
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": " ",
+                                                                "start": 13,
+                                                                "startCol": 115,
+                                                                "end": 13,
+                                                                "endCol": 116
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "string_content",
+                                                            "text": "(customerId:",
+                                                            "start": 13,
+                                                            "startCol": 121,
+                                                            "end": 13,
+                                                            "endCol": 133
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "string_content",
+                                                        "text": " ",
+                                                        "start": 13,
+                                                        "startCol": 138,
+                                                        "end": 13,
+                                                        "endCol": 139
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "conditional_expression",
+                                                    "start": 13,
+                                                    "startCol": 144,
+                                                    "end": 13,
+                                                    "endCol": 254,
+                                                    "children": [
+                                                      {
+                                                        "kind": "function_call_expression",
+                                                        "start": 13,
+                                                        "startCol": 144,
+                                                        "end": 13,
+                                                        "endCol": 179,
+                                                        "children": [
+                                                          {
+                                                            "kind": "name",
+                                                            "text": "is_float",
+                                                            "start": 13,
+                                                            "startCol": 144,
+                                                            "end": 13,
+                                                            "endCol": 152
+                                                          },
+                                                          {
+                                                            "kind": "subscript_expression",
+                                                            "start": 13,
+                                                            "startCol": 153,
+                                                            "end": 13,
+                                                            "endCol": 178,
+                                                            "children": [
+                                                              {
+                                                                "kind": "name",
+                                                                "text": "entry",
+                                                                "start": 13,
+                                                                "startCol": 154,
+                                                                "end": 13,
+                                                                "endCol": 159
+                                                              },
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": "orderCustomerId",
+                                                                "start": 13,
+                                                                "startCol": 161,
+                                                                "end": 13,
+                                                                "endCol": 176
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "function_call_expression",
+                                                        "start": 13,
+                                                        "startCol": 182,
+                                                        "end": 13,
+                                                        "endCol": 226,
+                                                        "children": [
+                                                          {
+                                                            "kind": "name",
+                                                            "text": "json_encode",
+                                                            "start": 13,
+                                                            "startCol": 182,
+                                                            "end": 13,
+                                                            "endCol": 193
+                                                          },
+                                                          {
+                                                            "kind": "arguments",
+                                                            "start": 13,
+                                                            "startCol": 193,
+                                                            "end": 13,
+                                                            "endCol": 226,
+                                                            "children": [
+                                                              {
+                                                                "kind": "subscript_expression",
+                                                                "start": 13,
+                                                                "startCol": 194,
+                                                                "end": 13,
+                                                                "endCol": 219,
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "name",
+                                                                    "text": "entry",
+                                                                    "start": 13,
+                                                                    "startCol": 195,
+                                                                    "end": 13,
+                                                                    "endCol": 200
+                                                                  },
+                                                                  {
+                                                                    "kind": "string_content",
+                                                                    "text": "orderCustomerId",
+                                                                    "start": 13,
+                                                                    "startCol": 202,
+                                                                    "end": 13,
+                                                                    "endCol": 217
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "integer",
+                                                                "text": "1344",
+                                                                "start": 13,
+                                                                "startCol": 221,
+                                                                "end": 13,
+                                                                "endCol": 225
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "subscript_expression",
+                                                        "start": 13,
+                                                        "startCol": 229,
+                                                        "end": 13,
+                                                        "endCol": 254,
+                                                        "children": [
+                                                          {
+                                                            "kind": "name",
+                                                            "text": "entry",
+                                                            "start": 13,
+                                                            "startCol": 230,
+                                                            "end": 13,
+                                                            "endCol": 235
+                                                          },
+                                                          {
+                                                            "kind": "string_content",
+                                                            "text": "orderCustomerId",
+                                                            "start": 13,
+                                                            "startCol": 237,
+                                                            "end": 13,
+                                                            "endCol": 252
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "string_content",
+                                                "text": " ",
+                                                "start": 13,
+                                                "startCol": 259,
+                                                "end": 13,
+                                                "endCol": 260
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "string_content",
+                                            "text": ", total: $",
+                                            "start": 13,
+                                            "startCol": 265,
+                                            "end": 13,
+                                            "endCol": 275
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "string_content",
+                                        "text": " ",
+                                        "start": 13,
+                                        "startCol": 280,
+                                        "end": 13,
+                                        "endCol": 281
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "conditional_expression",
+                                    "start": 13,
+                                    "startCol": 286,
+                                    "end": 13,
+                                    "endCol": 381,
+                                    "children": [
+                                      {
+                                        "kind": "function_call_expression",
+                                        "start": 13,
+                                        "startCol": 286,
+                                        "end": 13,
+                                        "endCol": 316,
+                                        "children": [
+                                          {
+                                            "kind": "name",
+                                            "text": "is_float",
+                                            "start": 13,
+                                            "startCol": 286,
+                                            "end": 13,
+                                            "endCol": 294
+                                          },
+                                          {
+                                            "kind": "subscript_expression",
+                                            "start": 13,
+                                            "startCol": 295,
+                                            "end": 13,
+                                            "endCol": 315,
+                                            "children": [
+                                              {
+                                                "kind": "name",
+                                                "text": "entry",
+                                                "start": 13,
+                                                "startCol": 296,
+                                                "end": 13,
+                                                "endCol": 301
+                                              },
+                                              {
+                                                "kind": "string_content",
+                                                "text": "orderTotal",
+                                                "start": 13,
+                                                "startCol": 303,
+                                                "end": 13,
+                                                "endCol": 313
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "function_call_expression",
+                                        "start": 13,
+                                        "startCol": 319,
+                                        "end": 13,
+                                        "endCol": 358,
+                                        "children": [
+                                          {
+                                            "kind": "name",
+                                            "text": "json_encode",
+                                            "start": 13,
+                                            "startCol": 319,
+                                            "end": 13,
+                                            "endCol": 330
+                                          },
+                                          {
+                                            "kind": "arguments",
+                                            "start": 13,
+                                            "startCol": 330,
+                                            "end": 13,
+                                            "endCol": 358,
+                                            "children": [
+                                              {
+                                                "kind": "subscript_expression",
+                                                "start": 13,
+                                                "startCol": 331,
+                                                "end": 13,
+                                                "endCol": 351,
+                                                "children": [
+                                                  {
+                                                    "kind": "name",
+                                                    "text": "entry",
+                                                    "start": 13,
+                                                    "startCol": 332,
+                                                    "end": 13,
+                                                    "endCol": 337
+                                                  },
+                                                  {
+                                                    "kind": "string_content",
+                                                    "text": "orderTotal",
+                                                    "start": 13,
+                                                    "startCol": 339,
+                                                    "end": 13,
+                                                    "endCol": 349
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "integer",
+                                                "text": "1344",
+                                                "start": 13,
+                                                "startCol": 353,
+                                                "end": 13,
+                                                "endCol": 357
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "subscript_expression",
+                                        "start": 13,
+                                        "startCol": 361,
+                                        "end": 13,
+                                        "endCol": 381,
+                                        "children": [
+                                          {
+                                            "kind": "name",
+                                            "text": "entry",
+                                            "start": 13,
+                                            "startCol": 362,
+                                            "end": 13,
+                                            "endCol": 367
+                                          },
+                                          {
+                                            "kind": "string_content",
+                                            "text": "orderTotal",
+                                            "start": 13,
+                                            "startCol": 369,
+                                            "end": 13,
+                                            "endCol": 379
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "string_content",
+                                "text": " ",
+                                "start": 13,
+                                "startCol": 386,
+                                "end": 13,
+                                "endCol": 387
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": ") paired with",
+                            "start": 13,
+                            "startCol": 392,
+                            "end": 13,
+                            "endCol": 405
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "string_content",
+                        "text": " ",
+                        "start": 13,
+                        "startCol": 410,
+                        "end": 13,
+                        "endCol": 411
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "conditional_expression",
+                    "start": 13,
+                    "startCol": 416,
+                    "end": 13,
+                    "endCol": 535,
+                    "children": [
+                      {
+                        "kind": "function_call_expression",
+                        "start": 13,
+                        "startCol": 416,
+                        "end": 13,
+                        "endCol": 454,
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "is_float",
+                            "start": 13,
+                            "startCol": 416,
+                            "end": 13,
+                            "endCol": 424
+                          },
+                          {
+                            "kind": "subscript_expression",
+                            "start": 13,
+                            "startCol": 425,
+                            "end": 13,
+                            "endCol": 453,
+                            "children": [
+                              {
+                                "kind": "name",
+                                "text": "entry",
+                                "start": 13,
+                                "startCol": 426,
+                                "end": 13,
+                                "endCol": 431
+                              },
+                              {
+                                "kind": "string_content",
+                                "text": "pairedCustomerName",
+                                "start": 13,
+                                "startCol": 433,
+                                "end": 13,
+                                "endCol": 451
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "function_call_expression",
+                        "start": 13,
+                        "startCol": 457,
+                        "end": 13,
+                        "endCol": 504,
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "json_encode",
+                            "start": 13,
+                            "startCol": 457,
+                            "end": 13,
+                            "endCol": 468
+                          },
+                          {
+                            "kind": "arguments",
+                            "start": 13,
+                            "startCol": 468,
+                            "end": 13,
+                            "endCol": 504,
+                            "children": [
+                              {
+                                "kind": "subscript_expression",
+                                "start": 13,
+                                "startCol": 469,
+                                "end": 13,
+                                "endCol": 497,
+                                "children": [
+                                  {
+                                    "kind": "name",
+                                    "text": "entry",
+                                    "start": 13,
+                                    "startCol": 470,
+                                    "end": 13,
+                                    "endCol": 475
+                                  },
+                                  {
+                                    "kind": "string_content",
+                                    "text": "pairedCustomerName",
+                                    "start": 13,
+                                    "startCol": 477,
+                                    "end": 13,
+                                    "endCol": 495
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "integer",
+                                "text": "1344",
+                                "start": 13,
+                                "startCol": 499,
+                                "end": 13,
+                                "endCol": 503
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "subscript_expression",
+                        "start": 13,
+                        "startCol": 507,
+                        "end": 13,
+                        "endCol": 535,
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "entry",
+                            "start": 13,
+                            "startCol": 508,
+                            "end": 13,
+                            "endCol": 513
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": "pairedCustomerName",
+                            "start": 13,
+                            "startCol": 515,
+                            "end": 13,
+                            "endCol": 533
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "name",
+                "text": "PHP_EOL",
+                "start": 13,
+                "startCol": 538,
+                "end": 13,
+                "endCol": 545
               }
             ]
           }
