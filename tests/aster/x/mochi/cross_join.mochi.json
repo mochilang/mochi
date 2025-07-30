@@ -1,0 +1,468 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "let",
+        "text": "customers",
+        "children": [
+          {
+            "kind": "list",
+            "children": [
+              {
+                "kind": "map",
+                "children": [
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "id"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "1"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "name"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "Alice"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "map",
+                "children": [
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "id"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "2"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "name"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "Bob"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "map",
+                "children": [
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "id"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "3"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "name"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "Charlie"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "let",
+        "text": "orders",
+        "children": [
+          {
+            "kind": "list",
+            "children": [
+              {
+                "kind": "map",
+                "children": [
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "id"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "100"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "customerId"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "1"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "total"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "250"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "map",
+                "children": [
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "id"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "101"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "customerId"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "2"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "total"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "125"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "map",
+                "children": [
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "id"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "102"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "customerId"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "1"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "total"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "300"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "let",
+        "text": "result",
+        "children": [
+          {
+            "kind": "query",
+            "text": "o",
+            "children": [
+              {
+                "kind": "source",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "orders"
+                  }
+                ]
+              },
+              {
+                "kind": "from",
+                "text": "c",
+                "children": [
+                  {
+                    "kind": "source",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "customers"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "select",
+                "children": [
+                  {
+                    "kind": "map",
+                    "children": [
+                      {
+                        "kind": "entry",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "orderId"
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "id",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "o"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "entry",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "orderCustomerId"
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "customerId",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "o"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "entry",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "pairedCustomerName"
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "name",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "c"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "entry",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "orderTotal"
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "total",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "o"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "string",
+            "text": "--- Cross Join: All order-customer pairs ---"
+          }
+        ]
+      },
+      {
+        "kind": "for",
+        "text": "entry",
+        "children": [
+          {
+            "kind": "in",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "result"
+              }
+            ]
+          },
+          {
+            "kind": "block",
+            "children": [
+              {
+                "kind": "call",
+                "text": "print",
+                "children": [
+                  {
+                    "kind": "string",
+                    "text": "Order"
+                  },
+                  {
+                    "kind": "selector",
+                    "text": "orderId",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "entry"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "string",
+                    "text": "(customerId:"
+                  },
+                  {
+                    "kind": "selector",
+                    "text": "orderCustomerId",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "entry"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "string",
+                    "text": ", total: $"
+                  },
+                  {
+                    "kind": "selector",
+                    "text": "orderTotal",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "entry"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "string",
+                    "text": ") paired with"
+                  },
+                  {
+                    "kind": "selector",
+                    "text": "pairedCustomerName",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "entry"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
