@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-28 10:43 GMT+7
+Last updated: 2025-07-30 21:28 GMT+7
 
-## Rosetta Golden Test Checklist (473/493)
+## Rosetta Golden Test Checklist (468/493)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 105.0µs | 12.55MB |
@@ -21,9 +21,9 @@ Last updated: 2025-07-28 10:43 GMT+7
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 7.52s | 233.87MB |
 | 13 | 99-bottles-of-beer-2 | ✓ | 8.0ms | 14.24MB |
 | 14 | 99-bottles-of-beer | ✓ | 310.0µs | 13.00MB |
-| 15 | DNS-query | ✓ | 646.0ms | 12.43MB |
-| 16 | Duffinian-numbers | ✓ | 128.0ms | 14.25MB |
-| 17 | Find-if-a-point-is-within-a-triangle | ✓ | 79.0µs | 13.62MB |
+| 15 | dns-query |   |  |  |
+| 16 | duffinian-numbers |   |  |  |
+| 17 | find-if-a-point-is-within-a-triangle | error | 79.0µs | 13.62MB |
 | 18 | a+b | ✓ | 34.0µs | 12.51MB |
 | 19 | abbreviations-automatic | ✓ | 2.0ms | 14.14MB |
 | 20 | abbreviations-easy | ✓ | 549.0µs | 13.98MB |
@@ -409,12 +409,12 @@ Last updated: 2025-07-28 10:43 GMT+7
 | 400 | fasta-format | ✓ | 51.0µs | 13.31MB |
 | 401 | faulhabers-formula | ✓ | 3.0ms | 12.93MB |
 | 402 | faulhabers-triangle | ✓ | 19.0µs | 12.42MB |
-| 403 | feigenbaum-constant-calculation | ✓ | 21.0ms | 12.75MB |
+| 403 | feigenbaum-constant-calculation | error | 21.0ms | 12.75MB |
 | 404 | fermat-numbers | ✓ | 32.0µs | 12.81MB |
 | 405 | fibonacci-n-step-number-sequences | ✓ | 68.0µs | 13.44MB |
 | 406 | fibonacci-sequence-1 | ✓ | 1.0µs | 12.70MB |
 | 407 | fibonacci-sequence-2 | ✓ | 1.0µs | 13.06MB |
-| 408 | fibonacci-sequence-3 | ✓ | 3.0µs | 12.95MB |
+| 408 | fibonacci-sequence-3 | error | 3.0µs | 12.95MB |
 | 409 | fibonacci-sequence-4 | ✓ | 25.0µs | 12.67MB |
 | 410 | fibonacci-sequence-5 |   |  |  |
 | 411 | fibonacci-word-fractal | ✓ | 417.0µs | 12.68MB |
@@ -431,7 +431,7 @@ Last updated: 2025-07-28 10:43 GMT+7
 | 422 | find-chess960-starting-position-identifier | ✓ | 208.0µs | 13.93MB |
 | 423 | find-common-directory-path | ✓ | 244.0µs | 13.37MB |
 | 424 | find-duplicate-files | ✓ | 11.0µs | 13.09MB |
-| 425 | find-if-a-point-is-within-a-triangle | ✓ | 72.0µs | 13.93MB |
+| 425 | find-if-a-point-is-within-a-triangle | error | 79.0µs | 13.62MB |
 | 426 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 3.0ms | 13.09MB |
 | 427 | find-limit-of-recursion | ✓ | 4.0ms | 12.51MB |
 | 428 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 26.57s | 12.84MB |
@@ -464,7 +464,7 @@ Last updated: 2025-07-28 10:43 GMT+7
 | 455 | forest-fire | ✓ | 1.0ms | 13.59MB |
 | 456 | fork-2 | ✓ | 11.0µs | 12.60MB |
 | 457 | fork | ✓ | 12.0µs | 12.74MB |
-| 458 | formal-power-series | error |  |  |
+| 458 | formal-power-series | ✓ | 869.0µs | 13.86MB |
 | 459 | formatted-numeric-output | ✓ | 13.0µs | 13.11MB |
 | 460 | forward-difference | ✓ | 25.0µs | 12.93MB |
 | 461 | four-bit-adder-1 | ✓ | 21.0µs | 13.24MB |

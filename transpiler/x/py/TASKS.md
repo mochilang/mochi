@@ -1,6 +1,6 @@
-## Progress (2025-07-28 10:14 +0700)
-- Commit 6ec5d67128: transpiler(py): update rosetta outputs for 451-493
-- Generated Python for 104/104 programs
+## Progress (2025-07-30 21:26 +0700)
+- Commit ec3938e4c2: transpiler(py): capture outer vars for nested functions
+- Generated Python for 104/105 programs
 - Updated README checklist and outputs
 - Removed runtime helpers and improved boolean type inference
 
