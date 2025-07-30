@@ -8,18 +8,21 @@ import (
 )
 
 // Program represents a parsed Python source file.
+// Program represents a parsed Python source file.
 type Program struct {
-	File *Node `json:"file"`
+	File *Module `json:"file"`
 }
 
 // Inspect parses the given Python source code using tree-sitter and returns
 // a Program describing its syntax tree.
-func Inspect(src string) (*Program, error) {
+// Inspect parses the given Python source code using tree-sitter. When withPos
+// is true the returned AST includes positional information.
+func Inspect(src string, withPos bool) (*Program, error) {
 	p := sitter.NewParser()
 	p.SetLanguage(tspython.GetLanguage())
 	data := []byte(src)
 	tree := p.Parse(nil, data)
-	return &Program{File: toNode(tree.RootNode(), data)}, nil
+	return &Program{File: (*Module)(toNode(tree.RootNode(), data, withPos))}, nil
 }
 
 // MarshalJSON implements json.Marshaler for Program to ensure stable output.
