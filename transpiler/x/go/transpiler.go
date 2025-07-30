@@ -4697,7 +4697,7 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 			continue
 		} else if op.Cast != nil {
 			if op.Cast.Type == nil {
-				return nil, fmt.Errorf("unsupported postfix")
+				return nil, fmt.Errorf("unsupported postfix: nil cast type")
 			}
 			if op.Cast.Type.Simple != nil {
 				name := *op.Cast.Type.Simple
@@ -4739,7 +4739,7 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 					case types.BigIntType:
 						// no-op
 					default:
-						return nil, fmt.Errorf("unsupported postfix")
+						expr = ensureBigIntExpr(expr, t)
 					}
 					t = types.BigIntType{}
 				} else if name == "float" {
@@ -4771,10 +4771,12 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 						expr = &AssertExpr{Expr: expr, Type: name}
 					}
 				} else {
-					return nil, fmt.Errorf("unsupported postfix")
+					return nil, fmt.Errorf("unsupported postfix: unknown simple cast %s", name)
 				}
 			} else if op.Cast.Type.Struct != nil {
-				return nil, fmt.Errorf("unsupported postfix")
+				typ := toGoType(op.Cast.Type, env)
+				expr = &AssertExpr{Expr: expr, Type: typ}
+				t = types.ResolveTypeRef(op.Cast.Type, env)
 			} else if op.Cast.Type.Generic != nil {
 				g := op.Cast.Type.Generic
 				if g.Name == "list" && len(g.Args) == 1 {
@@ -4798,10 +4800,16 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 					}
 					t = types.MapType{Key: types.ResolveTypeRef(g.Args[0], env), Value: types.ResolveTypeRef(g.Args[1], env)}
 				} else {
-					return nil, fmt.Errorf("unsupported postfix")
+					typ := toGoType(op.Cast.Type, env)
+					if typ != "" {
+						expr = &AssertExpr{Expr: expr, Type: typ}
+						t = types.ResolveTypeRef(op.Cast.Type, env)
+					} else {
+						return nil, fmt.Errorf("unsupported postfix: generic cast")
+					}
 				}
 			} else {
-				return nil, fmt.Errorf("unsupported postfix")
+				return nil, fmt.Errorf("unsupported postfix: final")
 			}
 		} else if op.Field != nil {
 			if op.Field.Name == "padStart" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
