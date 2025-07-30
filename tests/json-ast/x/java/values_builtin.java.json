@@ -5,7 +5,21 @@
       "name": "m",
       "type": "Data1",
       "expr": {
-        "kind": "UnknownExpr"
+        "kind": "NEW_CLASS",
+        "args": [
+          {
+            "kind": "Literal",
+            "value": "1"
+          },
+          {
+            "kind": "Literal",
+            "value": "2"
+          },
+          {
+            "kind": "Literal",
+            "value": "3"
+          }
+        ]
       }
     },
     {
@@ -79,7 +93,7 @@
             },
             "args": [
               {
-                "kind": "UnknownExpr"
+                "kind": "MEMBER_REFERENCE"
               }
             ]
           }

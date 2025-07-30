@@ -63,7 +63,7 @@
                     "name": "s"
                   },
                   "right": {
-                    "kind": "UnknownExpr"
+                    "kind": "NULL_LITERAL"
                   },
                   "op": "NOT_EQUAL_TO"
                 },
@@ -86,8 +86,7 @@
               },
               "then": [
                 {
-                  "kind": "Unknown",
-                  "type": "TRY"
+                  "kind": "TRY"
                 }
               ]
             }
@@ -226,8 +225,7 @@
       ]
     },
     {
-      "kind": "Unknown",
-      "type": "BLOCK"
+      "kind": "BLOCK"
     }
   ]
 }

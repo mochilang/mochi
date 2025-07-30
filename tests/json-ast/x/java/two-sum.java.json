@@ -12,7 +12,7 @@
         },
         "args": [
           {
-            "kind": "Array",
+            "kind": "NEW_ARRAY",
             "elems": [
               {
                 "kind": "Literal",
@@ -129,7 +129,7 @@
                     {
                       "kind": "Return",
                       "expr": {
-                        "kind": "Array",
+                        "kind": "NEW_ARRAY",
                         "elems": [
                           {
                             "kind": "Ident",
@@ -151,7 +151,7 @@
         {
           "kind": "Return",
           "expr": {
-            "kind": "Array",
+            "kind": "NEW_ARRAY",
             "elems": [
               {
                 "kind": "Literal",

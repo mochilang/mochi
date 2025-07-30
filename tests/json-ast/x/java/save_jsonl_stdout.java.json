@@ -5,13 +5,33 @@
       "name": "people",
       "type": "Data1[]",
       "expr": {
-        "kind": "Array",
+        "kind": "NEW_ARRAY",
         "elems": [
           {
-            "kind": "UnknownExpr"
+            "kind": "NEW_CLASS",
+            "args": [
+              {
+                "kind": "String",
+                "value": "Alice"
+              },
+              {
+                "kind": "Literal",
+                "value": "30"
+              }
+            ]
           },
           {
-            "kind": "UnknownExpr"
+            "kind": "NEW_CLASS",
+            "args": [
+              {
+                "kind": "String",
+                "value": "Bob"
+              },
+              {
+                "kind": "Literal",
+                "value": "25"
+              }
+            ]
           }
         ]
       }
@@ -24,7 +44,7 @@
         {
           "kind": "If",
           "cond": {
-            "kind": "UnknownExpr"
+            "kind": "INSTANCE_OF"
           },
           "then": [
             {
@@ -32,7 +52,7 @@
               "name": "m",
               "type": "java.util.LinkedHashMap\u003cString, Object\u003e",
               "expr": {
-                "kind": "UnknownExpr"
+                "kind": "NEW_CLASS"
               }
             },
             {
@@ -69,7 +89,7 @@
           "name": "m",
           "type": "java.util.LinkedHashMap\u003cString, Object\u003e",
           "expr": {
-            "kind": "UnknownExpr"
+            "kind": "NEW_CLASS"
           }
         },
         {
@@ -95,8 +115,7 @@
           },
           "body": [
             {
-              "kind": "Unknown",
-              "type": "TRY"
+              "kind": "TRY"
             }
           ]
         },
@@ -151,7 +170,7 @@
               "name": "parts",
               "type": "java.util.List\u003cString\u003e",
               "expr": {
-                "kind": "UnknownExpr"
+                "kind": "NEW_CLASS"
               }
             },
             {
@@ -188,7 +207,7 @@
                 {
                   "kind": "If",
                   "cond": {
-                    "kind": "UnknownExpr"
+                    "kind": "INSTANCE_OF"
                   },
                   "then": [
                     {

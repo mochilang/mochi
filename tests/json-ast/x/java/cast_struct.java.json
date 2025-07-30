@@ -5,7 +5,13 @@
       "name": "todo",
       "type": "Todo",
       "expr": {
-        "kind": "UnknownExpr"
+        "kind": "NEW_CLASS",
+        "args": [
+          {
+            "kind": "String",
+            "value": "hi"
+          }
+        ]
       }
     },
     {

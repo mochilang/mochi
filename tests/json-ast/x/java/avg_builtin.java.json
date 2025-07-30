@@ -8,7 +8,7 @@
         {
           "kind": "If",
           "cond": {
-            "kind": "UnknownExpr"
+            "kind": "INSTANCE_OF"
           },
           "then": [
             {
@@ -103,7 +103,7 @@
                 },
                 "args": [
                   {
-                    "kind": "Array",
+                    "kind": "NEW_ARRAY",
                     "elems": [
                       {
                         "kind": "Literal",

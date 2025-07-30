@@ -5,16 +5,58 @@
       "name": "items",
       "type": "Data1[]",
       "expr": {
-        "kind": "Array",
+        "kind": "NEW_ARRAY",
         "elems": [
           {
-            "kind": "UnknownExpr"
+            "kind": "NEW_CLASS",
+            "args": [
+              {
+                "kind": "String",
+                "value": "a"
+              },
+              {
+                "kind": "Literal",
+                "value": "10"
+              },
+              {
+                "kind": "Literal",
+                "value": "true"
+              }
+            ]
           },
           {
-            "kind": "UnknownExpr"
+            "kind": "NEW_CLASS",
+            "args": [
+              {
+                "kind": "String",
+                "value": "a"
+              },
+              {
+                "kind": "Literal",
+                "value": "5"
+              },
+              {
+                "kind": "Literal",
+                "value": "false"
+              }
+            ]
           },
           {
-            "kind": "UnknownExpr"
+            "kind": "NEW_CLASS",
+            "args": [
+              {
+                "kind": "String",
+                "value": "b"
+              },
+              {
+                "kind": "Literal",
+                "value": "20"
+              },
+              {
+                "kind": "Literal",
+                "value": "true"
+              }
+            ]
           }
         ]
       }
@@ -24,7 +66,304 @@
       "name": "result",
       "type": "java.util.List\u003cResult4\u003e",
       "expr": {
-        "kind": "UnknownExpr"
+        "kind": "NEW_CLASS",
+        "body": [
+          {
+            "kind": "VarDecl",
+            "name": "_groups",
+            "type": "java.util.LinkedHashMap\u003cString, Group2\u003e",
+            "expr": {
+              "kind": "NEW_CLASS"
+            }
+          },
+          {
+            "kind": "VarDecl",
+            "name": "_tmp",
+            "type": "java.util.ArrayList\u003cResult4\u003e",
+            "expr": {
+              "kind": "NEW_CLASS"
+            }
+          },
+          {
+            "kind": "ForEach",
+            "name": "i",
+            "expr": {
+              "kind": "Ident",
+              "name": "items"
+            },
+            "body": [
+              {
+                "kind": "VarDecl",
+                "name": "_k",
+                "expr": {
+                  "kind": "Cast",
+                  "value": "Integer",
+                  "expr": {
+                    "kind": "Call",
+                    "target": {
+                      "kind": "Member",
+                      "name": "get",
+                      "expr": {
+                        "kind": "Ident",
+                        "name": "i"
+                      }
+                    },
+                    "args": [
+                      {
+                        "kind": "String",
+                        "value": "cat"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "kind": "VarDecl",
+                "name": "_ks",
+                "type": "String",
+                "expr": {
+                  "kind": "Call",
+                  "target": {
+                    "kind": "Member",
+                    "name": "valueOf",
+                    "expr": {
+                      "kind": "Ident",
+                      "name": "String"
+                    }
+                  },
+                  "args": [
+                    {
+                      "kind": "Ident",
+                      "name": "_k"
+                    }
+                  ]
+                }
+              },
+              {
+                "kind": "VarDecl",
+                "name": "g",
+                "type": "Group2",
+                "expr": {
+                  "kind": "Call",
+                  "target": {
+                    "kind": "Member",
+                    "name": "get",
+                    "expr": {
+                      "kind": "Ident",
+                      "name": "_groups"
+                    }
+                  },
+                  "args": [
+                    {
+                      "kind": "Ident",
+                      "name": "_ks"
+                    }
+                  ]
+                }
+              },
+              {
+                "kind": "If",
+                "cond": {
+                  "kind": "Binary",
+                  "left": {
+                    "kind": "Ident",
+                    "name": "g"
+                  },
+                  "right": {
+                    "kind": "NULL_LITERAL"
+                  },
+                  "op": "EQUAL_TO"
+                },
+                "then": [
+                  {
+                    "kind": "Assign",
+                    "name": "g",
+                    "target": {
+                      "kind": "Ident",
+                      "name": "g"
+                    },
+                    "expr": {
+                      "kind": "NEW_CLASS",
+                      "args": [
+                        {
+                          "kind": "Ident",
+                          "name": "_k"
+                        },
+                        {
+                          "kind": "NEW_CLASS"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "kind": "Expr"
+                  }
+                ]
+              },
+              {
+                "kind": "Expr"
+              }
+            ]
+          },
+          {
+            "kind": "VarDecl",
+            "name": "list",
+            "type": "java.util.ArrayList\u003cGroup2\u003e",
+            "expr": {
+              "kind": "NEW_CLASS",
+              "args": [
+                {
+                  "kind": "Call",
+                  "target": {
+                    "kind": "Member",
+                    "name": "values",
+                    "expr": {
+                      "kind": "Ident",
+                      "name": "_groups"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "kind": "Expr"
+          },
+          {
+            "kind": "VarDecl",
+            "name": "skip",
+            "type": "int",
+            "expr": {
+              "kind": "Literal",
+              "value": "0"
+            }
+          },
+          {
+            "kind": "VarDecl",
+            "name": "take",
+            "type": "int",
+            "expr": {
+              "kind": "Literal",
+              "value": "-1"
+            }
+          },
+          {
+            "kind": "ForRange",
+            "name": "i",
+            "start": {
+              "kind": "Literal",
+              "value": "0"
+            },
+            "end": {
+              "kind": "Call",
+              "target": {
+                "kind": "Member",
+                "name": "size",
+                "expr": {
+                  "kind": "Ident",
+                  "name": "list"
+                }
+              }
+            },
+            "body": [
+              {
+                "kind": "If",
+                "cond": {
+                  "kind": "Binary",
+                  "left": {
+                    "kind": "Ident",
+                    "name": "i"
+                  },
+                  "right": {
+                    "kind": "Ident",
+                    "name": "skip"
+                  },
+                  "op": "LESS_THAN"
+                },
+                "then": [
+                  {
+                    "kind": "Continue"
+                  }
+                ]
+              },
+              {
+                "kind": "If",
+                "cond": {
+                  "kind": "Binary",
+                  "left": {
+                    "kind": "Binary",
+                    "left": {
+                      "kind": "Ident",
+                      "name": "take"
+                    },
+                    "right": {
+                      "kind": "Literal",
+                      "value": "0"
+                    },
+                    "op": "GREATER_THAN_EQUAL"
+                  },
+                  "right": {
+                    "kind": "Binary",
+                    "left": {
+                      "kind": "Ident",
+                      "name": "i"
+                    },
+                    "right": {
+                      "kind": "Binary",
+                      "left": {
+                        "kind": "Ident",
+                        "name": "skip"
+                      },
+                      "right": {
+                        "kind": "Ident",
+                        "name": "take"
+                      },
+                      "op": "PLUS"
+                    },
+                    "op": "GREATER_THAN_EQUAL"
+                  },
+                  "op": "CONDITIONAL_AND"
+                },
+                "then": [
+                  {
+                    "kind": "Break"
+                  }
+                ]
+              },
+              {
+                "kind": "VarDecl",
+                "name": "g",
+                "expr": {
+                  "kind": "Cast",
+                  "value": "Group2",
+                  "expr": {
+                    "kind": "Call",
+                    "target": {
+                      "kind": "Member",
+                      "name": "get",
+                      "expr": {
+                        "kind": "Ident",
+                        "name": "list"
+                      }
+                    },
+                    "args": [
+                      {
+                        "kind": "Ident",
+                        "name": "i"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "kind": "Expr"
+              }
+            ]
+          },
+          {
+            "kind": "Expr"
+          }
+        ]
       }
     },
     {
@@ -57,7 +396,7 @@
             },
             "args": [
               {
-                "kind": "UnknownExpr"
+                "kind": "MEMBER_REFERENCE"
               }
             ]
           }

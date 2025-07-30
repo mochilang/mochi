@@ -5,10 +5,10 @@
       "name": "matrix",
       "type": "int[][]",
       "expr": {
-        "kind": "Array",
+        "kind": "NEW_ARRAY",
         "elems": [
           {
-            "kind": "Array",
+            "kind": "NEW_ARRAY",
             "elems": [
               {
                 "kind": "Literal",
@@ -21,7 +21,7 @@
             ]
           },
           {
-            "kind": "Array",
+            "kind": "NEW_ARRAY",
             "elems": [
               {
                 "kind": "Literal",

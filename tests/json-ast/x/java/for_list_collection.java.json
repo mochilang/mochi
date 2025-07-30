@@ -4,7 +4,7 @@
       "kind": "ForEach",
       "name": "n",
       "expr": {
-        "kind": "Array",
+        "kind": "NEW_ARRAY",
         "elems": [
           {
             "kind": "Literal",

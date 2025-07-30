@@ -5,7 +5,13 @@
       "name": "c",
       "type": "Counter",
       "expr": {
-        "kind": "UnknownExpr"
+        "kind": "NEW_CLASS",
+        "args": [
+          {
+            "kind": "Literal",
+            "value": "0"
+          }
+        ]
       }
     },
     {

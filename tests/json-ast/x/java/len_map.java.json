@@ -8,7 +8,7 @@
         {
           "kind": "If",
           "cond": {
-            "kind": "UnknownExpr"
+            "kind": "INSTANCE_OF"
           },
           "then": [
             {
@@ -79,7 +79,7 @@
         {
           "kind": "If",
           "cond": {
-            "kind": "UnknownExpr"
+            "kind": "INSTANCE_OF"
           },
           "then": [
             {
@@ -145,7 +145,15 @@
               "kind": "Member",
               "name": "size",
               "expr": {
-                "kind": "UnknownExpr"
+                "kind": "NEW_CLASS",
+                "body": [
+                  {
+                    "kind": "Expr"
+                  },
+                  {
+                    "kind": "Expr"
+                  }
+                ]
               }
             }
           }

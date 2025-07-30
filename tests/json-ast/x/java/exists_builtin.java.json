@@ -5,7 +5,7 @@
       "name": "data",
       "type": "int[]",
       "expr": {
-        "kind": "Array",
+        "kind": "NEW_ARRAY",
         "elems": [
           {
             "kind": "Literal",
@@ -30,7 +30,165 @@
         },
         "args": [
           {
-            "kind": "UnknownExpr"
+            "kind": "NEW_CLASS",
+            "body": [
+              {
+                "kind": "VarDecl",
+                "name": "_tmp",
+                "type": "java.util.ArrayList\u003cInteger\u003e",
+                "expr": {
+                  "kind": "NEW_CLASS"
+                }
+              },
+              {
+                "kind": "ForEach",
+                "name": "x",
+                "expr": {
+                  "kind": "Ident",
+                  "name": "data"
+                },
+                "body": [
+                  {
+                    "kind": "If",
+                    "cond": {
+                      "kind": "Binary",
+                      "left": {
+                        "kind": "Ident",
+                        "name": "x"
+                      },
+                      "right": {
+                        "kind": "Literal",
+                        "value": "1"
+                      },
+                      "op": "EQUAL_TO"
+                    },
+                    "then": [
+                      {
+                        "kind": "Expr"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "VarDecl",
+                "name": "list",
+                "type": "java.util.ArrayList\u003cInteger\u003e",
+                "expr": {
+                  "kind": "Ident",
+                  "name": "_tmp"
+                }
+              },
+              {
+                "kind": "VarDecl",
+                "name": "skip",
+                "type": "int",
+                "expr": {
+                  "kind": "Literal",
+                  "value": "0"
+                }
+              },
+              {
+                "kind": "VarDecl",
+                "name": "take",
+                "type": "int",
+                "expr": {
+                  "kind": "Literal",
+                  "value": "-1"
+                }
+              },
+              {
+                "kind": "ForRange",
+                "name": "i",
+                "start": {
+                  "kind": "Literal",
+                  "value": "0"
+                },
+                "end": {
+                  "kind": "Call",
+                  "target": {
+                    "kind": "Member",
+                    "name": "size",
+                    "expr": {
+                      "kind": "Ident",
+                      "name": "list"
+                    }
+                  }
+                },
+                "body": [
+                  {
+                    "kind": "If",
+                    "cond": {
+                      "kind": "Binary",
+                      "left": {
+                        "kind": "Ident",
+                        "name": "i"
+                      },
+                      "right": {
+                        "kind": "Ident",
+                        "name": "skip"
+                      },
+                      "op": "LESS_THAN"
+                    },
+                    "then": [
+                      {
+                        "kind": "Continue"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "If",
+                    "cond": {
+                      "kind": "Binary",
+                      "left": {
+                        "kind": "Binary",
+                        "left": {
+                          "kind": "Ident",
+                          "name": "take"
+                        },
+                        "right": {
+                          "kind": "Literal",
+                          "value": "0"
+                        },
+                        "op": "GREATER_THAN_EQUAL"
+                      },
+                      "right": {
+                        "kind": "Binary",
+                        "left": {
+                          "kind": "Ident",
+                          "name": "i"
+                        },
+                        "right": {
+                          "kind": "Binary",
+                          "left": {
+                            "kind": "Ident",
+                            "name": "skip"
+                          },
+                          "right": {
+                            "kind": "Ident",
+                            "name": "take"
+                          },
+                          "op": "PLUS"
+                        },
+                        "op": "GREATER_THAN_EQUAL"
+                      },
+                      "op": "CONDITIONAL_AND"
+                    },
+                    "then": [
+                      {
+                        "kind": "Break"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "Expr"
+                  }
+                ]
+              },
+              {
+                "kind": "Expr"
+              }
+            ]
           }
         ]
       }

@@ -5,7 +5,7 @@
       "name": "nums",
       "type": "int[]",
       "expr": {
-        "kind": "Array",
+        "kind": "NEW_ARRAY",
         "elems": [
           {
             "kind": "Literal",
