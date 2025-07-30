@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"strings"
 
-	sitter "github.com/smacker/go-tree-sitter"
+	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
 // Node is a generic representation of a Clojure form. Only leaves that carry a
@@ -49,11 +49,11 @@ func convert(n *sitter.Node, src []byte) *Node {
 		return nil
 	}
 
-	node := &Node{Kind: n.Type()}
+	node := &Node{Kind: n.Kind()}
 
 	if IncludePositions {
-		start := n.StartPoint()
-		end := n.EndPoint()
+		start := n.StartPosition()
+		end := n.EndPosition()
 		node.Start = int(start.Row) + 1
 		node.StartCol = int(start.Column)
 		node.End = int(end.Row) + 1
@@ -61,13 +61,13 @@ func convert(n *sitter.Node, src []byte) *Node {
 	}
 
 	if n.NamedChildCount() == 0 {
-		if isValueNode(n.Type()) {
-			text := n.Content(src)
-			if n.Type() == "str_lit" || n.Type() == "string" {
+		if isValueNode(n.Kind()) {
+			text := n.Utf8Text(src)
+			if n.Kind() == "str_lit" || n.Kind() == "string" {
 				text = strings.TrimPrefix(text, "\"")
 				text = strings.TrimSuffix(text, "\"")
 			}
-			if n.Type() == "num_lit" || n.Type() == "number" {
+			if n.Kind() == "num_lit" || n.Kind() == "number" {
 				if f, err := strconv.ParseFloat(text, 64); err == nil {
 					text = strconv.FormatFloat(f, 'f', -1, 64)
 				}
@@ -79,7 +79,7 @@ func convert(n *sitter.Node, src []byte) *Node {
 	}
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
-		child := n.NamedChild(i)
+		child := n.NamedChild(uint(i))
 		if c := convert(child, src); c != nil {
 			node.Children = append(node.Children, c)
 		}
