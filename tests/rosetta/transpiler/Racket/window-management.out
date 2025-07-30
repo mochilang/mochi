@@ -1,0 +1,8 @@
+Start: pos=(100,100) size=(640x480) max=#f icon=#f visible=#t
+Maximize: pos=(100,100) size=(800x600) max=#t icon=#f visible=#t
+Unmaximize: pos=(100,100) size=(640x480) max=#f icon=#f visible=#t
+Iconify: pos=(100,100) size=(640x480) max=#f icon=#t visible=#f
+Deiconify: pos=(100,100) size=(640x480) max=#f icon=#f visible=#t
+Hide: pos=(100,100) size=(640x480) max=#f icon=#f visible=#f
+Show: pos=(100,100) size=(640x480) max=#f icon=#f visible=#t
+Move: pos=(110,110) size=(640x480) max=#f icon=#f visible=#t
