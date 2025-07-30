@@ -3,6 +3,7 @@ module mochi
 go 1.24.4
 
 require (
+	github.com/UserNobody14/tree-sitter-dart v0.0.0-20250228221807-80e23c07b644
 	github.com/akrennmair/pascal v0.0.0-20230115195835-14bcf05a6156
 	github.com/alecthomas/participle/v2 v2.1.4
 	github.com/alexflint/go-arg v1.5.1
