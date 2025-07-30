@@ -6,14 +6,9 @@ import (
 	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
-// IncludePositions controls whether converted AST nodes include position
-// information. When false the positional fields are left zero and omitted from
-// the resulting JSON thanks to `omitempty`.
-var IncludePositions bool
-
 // Node represents a minimal Swift AST node. Only nodes carrying a textual value
-// keep their Text field. Source positions are optional and controlled by the
-// IncludePositions flag.
+// keep their Text field. Position fields are optional and omitted from the
+// resulting JSON when zero.
 type Node struct {
 	Kind     string  `json:"kind"`
 	Text     string  `json:"text,omitempty"`
@@ -54,14 +49,67 @@ type IntegerLiteral struct{ Node }
 // SourceFile is the root of a Swift AST.
 type SourceFile struct{ Node }
 
+// Additional node types mirroring tree-sitter's Swift grammar. Only the kinds
+// that appear in the tests are declared here so Program can expose a structured
+// API without requiring the full grammar.
+type (
+	AdditiveExpression           Node
+	ArrayType                    Node
+	AsExpression                 Node
+	Assignment                   Node
+	Bang                         Node
+	CallExpression               Node
+	CallSuffix                   Node
+	ClassBody                    Node
+	ClassDeclaration             Node
+	ComparisonExpression         Node
+	ConjunctionExpression        Node
+	ControlTransferStatement     Node
+	DictionaryType               Node
+	DirectlyAssignableExpression Node
+	DisjunctionExpression        Node
+	DoStatement                  Node
+	EqualityExpression           Node
+	ForStatement                 Node
+	FunctionBody                 Node
+	FunctionDeclaration          Node
+	Identifier                   Node
+	IfStatement                  Node
+	ImportDeclaration            Node
+	InfixExpression              Node
+	InterpolatedExpression       Node
+	LambdaFunctionType           Node
+	LambdaFunctionTypeParameters Node
+	LambdaLiteral                Node
+	LambdaParameter              Node
+	MultiplicativeExpression     Node
+	NavigationExpression         Node
+	NavigationSuffix             Node
+	NilCoalescingExpression      Node
+	OptionalType                 Node
+	Parameter                    Node
+	PostfixExpression            Node
+	PrefixExpression             Node
+	RangeExpression              Node
+	Statements                   Node
+	TernaryExpression            Node
+	TupleExpression              Node
+	TypeAnnotation               Node
+	UserType                     Node
+	ValueArgument                Node
+	ValueArgumentLabel           Node
+	ValueArguments               Node
+	WhileStatement               Node
+)
+
 // convertNode transforms a tree-sitter node into the Go AST representation.
 // The conversion is recursive and ignores anonymous children.
-func convertNode(n *sitter.Node, src []byte) *Node {
+func convertNode(n *sitter.Node, src []byte, withPos bool) *Node {
 	if n == nil {
 		return nil
 	}
 	out := &Node{Kind: n.Kind()}
-	if IncludePositions {
+	if withPos {
 		start := n.StartPosition()
 		end := n.EndPosition()
 		out.Start = int(start.Row) + 1
@@ -80,7 +128,7 @@ func convertNode(n *sitter.Node, src []byte) *Node {
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
 		child := n.NamedChild(uint(i))
-		if c := convertNode(child, src); c != nil {
+		if c := convertNode(child, src, withPos); c != nil {
 			out.Children = append(out.Children, c)
 		}
 	}
@@ -105,11 +153,11 @@ func isValueNode(kind string) bool {
 
 // ConvertFile converts the tree-sitter root node of a Swift file into a
 // SourceFile AST value.
-func ConvertFile(n *sitter.Node, src []byte) *SourceFile {
+func ConvertFile(n *sitter.Node, src []byte, withPos bool) *SourceFile {
 	if n == nil {
 		return nil
 	}
-	root := convertNode(n, src)
+	root := convertNode(n, src, withPos)
 	if root == nil {
 		return nil
 	}
