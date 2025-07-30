@@ -3634,12 +3634,11 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 					typ = fmt.Sprintf("std::shared_ptr<%s>", elem)
 				}
 			}
+			typ = exprType(val)
 			if typ == "auto" || typ == "" {
-				typ = guessType(s.Let.Value)
-				if typ == "" {
-					if _, ok := val.(*StringLit); ok {
-						typ = "std::string"
-					}
+				t := guessType(s.Let.Value)
+				if t != "" && t != "auto" {
+					typ = t
 				}
 			}
 		}
