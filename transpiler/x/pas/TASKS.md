@@ -1,3 +1,42 @@
+## Progress (2025-07-30 23:15 +0700)
+- pascal: add bigrat support (progress 88/105)
+
+## Progress (2025-07-30 23:15 +0700)
+- pascal: add bigrat support (progress 88/105)
+
+## Progress (2025-07-30 23:15 +0700)
+- pascal: add bigrat support (progress 88/105)
+
+## Progress (2025-07-30 23:15 +0700)
+- pascal: add bigrat support (progress 88/105)
+
+## Progress (2025-07-30 23:15 +0700)
+- pascal: add bigrat support (progress 88/105)
+
+## Progress (2025-07-30 23:15 +0700)
+- pascal: add bigrat support (progress 88/105)
+
+## Progress (2025-07-30 23:15 +0700)
+- pascal: add bigrat support (progress 88/105)
+
+## Progress (2025-07-30 23:15 +0700)
+- pascal: add bigrat support (progress 88/105)
+
+## Progress (2025-07-30 23:15 +0700)
+- pascal: add bigrat support (progress 88/105)
+
+## Progress (2025-07-30 23:15 +0700)
+- pascal: add bigrat support (progress 88/105)
+
+## Progress (2025-07-30 23:15 +0700)
+- pascal: add bigrat support (progress 88/105)
+
+## Progress (2025-07-30 23:15 +0700)
+- pascal: add bigrat support (progress 88/105)
+
+## Progress (2025-07-30 23:15 +0700)
+- pascal: add bigrat support (progress 88/105)
+
 ## Progress (2025-07-26 19:01 +0700)
 - ex transpiler: handle float mod and module globals (progress 88/104)
 

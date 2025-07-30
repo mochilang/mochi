@@ -1477,19 +1477,28 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				}
 				typ := "integer"
 				if st.For.RangeEnd == nil {
-					t := types.ExprType(st.For.Source, env)
-					if lt, ok := t.(types.ListType); ok {
-						if _, ok := lt.Elem.(types.StringType); ok {
+					if t := inferType(start); strings.HasPrefix(t, "array of ") {
+						elem := strings.TrimPrefix(t, "array of ")
+						switch elem {
+						case "string":
 							typ = "string"
-						} else if _, ok := lt.Elem.(types.BoolType); ok {
+						case "boolean":
 							typ = "boolean"
+						}
+					} else {
+						tt := types.ExprType(st.For.Source, env)
+						if lt, ok := tt.(types.ListType); ok {
+							if _, ok := lt.Elem.(types.StringType); ok {
+								typ = "string"
+							} else if _, ok := lt.Elem.(types.BoolType); ok {
+								typ = "boolean"
+							}
 						}
 					}
 				}
-				if _, ok := varTypes[st.For.Name]; !ok {
-					varTypes[st.For.Name] = typ
-				}
-				setVarType(st.For.Name, varTypes[st.For.Name])
+				name := sanitize(st.For.Name)
+				varTypes[name] = typ
+				setVarType(name, varTypes[name])
 				pushScope()
 				body, err := convertBody(env, st.For.Body, varTypes)
 				popScope()
@@ -1501,9 +1510,9 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					if err != nil {
 						return nil, err
 					}
-					pr.Stmts = append(pr.Stmts, &ForRangeStmt{Name: st.For.Name, Start: start, End: end, Body: body})
+					pr.Stmts = append(pr.Stmts, &ForRangeStmt{Name: name, Start: start, End: end, Body: body})
 				} else {
-					pr.Stmts = append(pr.Stmts, &ForEachStmt{Name: st.For.Name, Iterable: start, Body: body})
+					pr.Stmts = append(pr.Stmts, &ForEachStmt{Name: name, Iterable: start, Body: body})
 				}
 			case st.While != nil:
 				cond, err := convertExpr(env, st.While.Cond)
@@ -1883,19 +1892,28 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 			}
 			typ := "integer"
 			if st.For.RangeEnd == nil {
-				t := types.ExprType(st.For.Source, env)
-				if lt, ok := t.(types.ListType); ok {
-					if _, ok := lt.Elem.(types.StringType); ok {
+				if t := inferType(start); strings.HasPrefix(t, "array of ") {
+					elem := strings.TrimPrefix(t, "array of ")
+					switch elem {
+					case "string":
 						typ = "string"
-					} else if _, ok := lt.Elem.(types.BoolType); ok {
+					case "boolean":
 						typ = "boolean"
+					}
+				} else {
+					tt := types.ExprType(st.For.Source, env)
+					if lt, ok := tt.(types.ListType); ok {
+						if _, ok := lt.Elem.(types.StringType); ok {
+							typ = "string"
+						} else if _, ok := lt.Elem.(types.BoolType); ok {
+							typ = "boolean"
+						}
 					}
 				}
 			}
-			if _, ok := varTypes[st.For.Name]; !ok {
-				varTypes[st.For.Name] = typ
-			}
-			setVarType(st.For.Name, varTypes[st.For.Name])
+			name := sanitize(st.For.Name)
+			varTypes[name] = typ
+			setVarType(name, varTypes[name])
 			body, err := convertBody(env, st.For.Body, varTypes)
 			if err != nil {
 				return nil, err
@@ -1905,9 +1923,9 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				if err != nil {
 					return nil, err
 				}
-				out = append(out, &ForRangeStmt{Name: st.For.Name, Start: start, End: end, Body: body})
+				out = append(out, &ForRangeStmt{Name: name, Start: start, End: end, Body: body})
 			} else {
-				out = append(out, &ForEachStmt{Name: st.For.Name, Iterable: start, Body: body})
+				out = append(out, &ForEachStmt{Name: name, Iterable: start, Body: body})
 			}
 		case st.While != nil:
 			cond, err := convertExpr(env, st.While.Cond)
@@ -2155,7 +2173,7 @@ func convertBenchBlock(env *types.Env, bench *parser.BenchBlock, varTypes map[st
 		&AssignStmt{Name: startName, Expr: &CallExpr{Name: "_bench_now"}},
 	}
 	prevFunc := currentFunc
-	currentFunc = bench.Name
+	currentFunc = ""
 	body, err := convertBody(env, bench.Body, varTypes)
 	currentFunc = prevFunc
 	if err != nil {
