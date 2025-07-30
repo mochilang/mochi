@@ -1,6 +1,6 @@
 package zig
 
-import sitter "github.com/smacker/go-tree-sitter"
+import sitter "github.com/tree-sitter/go-tree-sitter"
 
 // Node represents a simplified AST node for Zig. Only nodes that carry some
 // semantic value are kept so that the resulting JSON is compact.
@@ -42,10 +42,10 @@ var valueKinds = map[string]struct{}{
 // convertNode converts a tree-sitter node into a Node. It returns ok=false if
 // the node does not contain any semantic information and should be omitted.
 func convertNode(n *sitter.Node, src []byte, withPos bool) (node Node, ok bool) {
-	node = Node{Kind: n.Type()}
+	node = Node{Kind: n.Kind()}
 	if withPos {
-		start := n.StartPoint()
-		end := n.EndPoint()
+		start := n.StartPosition()
+		end := n.EndPosition()
 		node.Start = int(start.Row) + 1
 		node.StartCol = int(start.Column)
 		node.End = int(end.Row) + 1
@@ -53,15 +53,15 @@ func convertNode(n *sitter.Node, src []byte, withPos bool) (node Node, ok bool) 
 	}
 
 	if n.NamedChildCount() == 0 {
-		if _, keep := valueKinds[n.Type()]; keep {
-			node.Text = n.Content(src)
+		if _, keep := valueKinds[n.Kind()]; keep {
+			node.Text = n.Utf8Text(src)
 			return node, true
 		}
 		// skip pure syntax leaf
 		return Node{}, false
 	}
 
-	for i := 0; i < int(n.NamedChildCount()); i++ {
+	for i := uint(0); i < n.NamedChildCount(); i++ {
 		child := n.NamedChild(i)
 		if child == nil {
 			continue

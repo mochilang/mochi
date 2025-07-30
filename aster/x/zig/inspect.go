@@ -3,11 +3,10 @@
 package zig
 
 import (
-	"context"
-	"fmt"
+	"unsafe"
 
 	tszig "github.com/slimsag/tree-sitter-zig/bindings/go"
-	sitter "github.com/smacker/go-tree-sitter"
+	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
 // Program describes a parsed Zig source file.
@@ -24,11 +23,10 @@ func Inspect(src string, opts ...Options) (*Program, error) {
 		opt = opts[0]
 	}
 	parser := sitter.NewParser()
-	parser.SetLanguage(tszig.GetLanguage())
-	tree, err := parser.ParseCtx(context.Background(), nil, []byte(src))
-	if err != nil {
-		return nil, fmt.Errorf("parse: %w", err)
-	}
+	smackerLang := tszig.GetLanguage()
+	ptr := (*struct{ ptr unsafe.Pointer })(unsafe.Pointer(smackerLang)).ptr
+	parser.SetLanguage(sitter.NewLanguage(ptr))
+	tree := parser.Parse([]byte(src), nil)
 	node, ok := convertNode(tree.RootNode(), []byte(src), opt.Positions)
 	if !ok {
 		return &Program{Root: SourceFile{}}, nil
