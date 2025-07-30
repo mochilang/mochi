@@ -1,88 +1,91 @@
+//go:build slow
+
 package zig
 
 import (
 	"bytes"
 	"context"
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"strings"
 	"time"
+
+	zigcode "mochi/compiler/x/zig"
 )
 
-// Program represents a parsed Zig source file.
+//go:embed parse.zig
+var zigParser string
+
+// Token represents a Zig token.
+type Token struct {
+	Value string `json:"value"`
+}
+
+// Param represents a function parameter.
+type Param struct {
+	NameToken *Token `json:"name_token"`
+	TypeExpr  Node   `json:"type_expr"`
+}
+
+// Node represents an AST node emitted by parse.zig.
+type Node struct {
+	Tag        string  `json:"tag"`
+	NameToken  *Token  `json:"name_token,omitempty"`
+	Params     []Param `json:"params,omitempty"`
+	VisibToken *Token  `json:"visib_token,omitempty"`
+	TypeNode   *Node   `json:"type_node,omitempty"`
+	InitNode   *Node   `json:"init_node,omitempty"`
+	MainToken  *Token  `json:"main_token,omitempty"`
+	Members    []Node  `json:"members,omitempty"`
+	TypeExpr   *Node   `json:"type_expr,omitempty"`
+	ValueExpr  *Node   `json:"value_expr,omitempty"`
+}
+
+// Program holds the parsed nodes of a Zig source file.
 type Program struct {
-	Vars      []Variable `json:"vars"`
-	Structs   []Struct   `json:"structs"`
-	Functions []Function `json:"functions"`
+	Nodes []Node `json:"nodes"`
 }
 
-type Variable struct {
-	Name  string `json:"name"`
-	Type  string `json:"type"`
-	Value string `json:"value,omitempty"`
-	Const bool   `json:"const,omitempty"`
-	Pub   bool   `json:"pub,omitempty"`
-	Line  int    `json:"line"`
-}
-
-type Function struct {
-	Name    string   `json:"name"`
-	Params  string   `json:"params"`
-	Ret     string   `json:"ret"`
-	Pub     bool     `json:"pub,omitempty"`
-	Line    int      `json:"line"`
-	EndLine int      `json:"endLine"`
-	Lines   []string `json:"lines"`
-}
-
-type Struct struct {
-	Name    string  `json:"name"`
-	Pub     bool    `json:"pub,omitempty"`
-	Line    int     `json:"line"`
-	EndLine int     `json:"endLine"`
-	Fields  []Field `json:"fields"`
-}
-
-type Field struct {
-	Name string `json:"name"`
-	Type string `json:"type"`
-	Line int    `json:"line"`
-}
-
-// Inspect parses the given Zig source code and returns its program structure.
+// Inspect parses Zig source code using the bundled parser.
 func Inspect(src string) (*Program, error) {
-	if _, err := exec.LookPath("zig"); err != nil {
-		return nil, fmt.Errorf("zig not installed")
+	zigc, err := zigcode.EnsureZig()
+	if err != nil {
+		return nil, fmt.Errorf("zig not installed: %w", err)
 	}
-	tmp, err := os.CreateTemp("", "zigsrc_*.zig")
+
+	dir, err := os.MkdirTemp("", "zig-ast-")
 	if err != nil {
 		return nil, err
 	}
-	if _, err := tmp.WriteString(src); err != nil {
-		tmp.Close()
-		os.Remove(tmp.Name())
+	defer os.RemoveAll(dir)
+
+	parserPath := filepath.Join(dir, "parse.zig")
+	if err := os.WriteFile(parserPath, []byte(zigParser), 0644); err != nil {
 		return nil, err
 	}
-	tmp.Close()
-	defer os.Remove(tmp.Name())
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-
-	cmd := exec.CommandContext(ctx, "zig", "ast-check", "--format", "json", tmp.Name())
+	cmd := exec.CommandContext(ctx, zigc, "run", parserPath)
+	cmd.Stdin = strings.NewReader(src)
 	var out, errBuf bytes.Buffer
 	cmd.Stdout = &out
 	cmd.Stderr = &errBuf
 	if err := cmd.Run(); err != nil {
-		if msg := errBuf.String(); msg != "" {
+		msg := strings.TrimSpace(errBuf.String())
+		if msg != "" {
 			return nil, fmt.Errorf("%v: %s", err, msg)
 		}
 		return nil, err
 	}
-	var prog Program
-	if err := json.Unmarshal(out.Bytes(), &prog); err != nil {
+
+	var nodes []Node
+	if err := json.Unmarshal(out.Bytes(), &nodes); err != nil {
 		return nil, err
 	}
-	return &prog, nil
+	return &Program{Nodes: nodes}, nil
 }
