@@ -20,6 +20,12 @@ type Node struct {
 	Children []Node `json:"children,omitempty"`
 }
 
+// Option controls how the AST is generated.
+type Option struct {
+	// Positions requests inclusion of positional information when true.
+	Positions bool
+}
+
 // Typed aliases for the node kinds that appear in the generated JSON.  These
 // give a slightly more structured view of the AST while still using Node under
 // the hood.
@@ -68,13 +74,14 @@ type (
 )
 
 // convert transforms a tree-sitter node into the Node structure defined above.
-// Only named children are traversed to keep the result compact.
-func convert(n *sitter.Node, src []byte, pos bool) *Node {
+// Only named children are traversed to keep the result compact. Position
+// information is recorded when opt.Positions is true.
+func convert(n *sitter.Node, src []byte, opt Option) *Node {
 	if n == nil {
 		return nil
 	}
 	node := &Node{Kind: n.Type()}
-	if pos {
+	if opt.Positions {
 		start := n.StartPoint()
 		end := n.EndPoint()
 		node.Start = int(start.Row) + 1
@@ -93,7 +100,7 @@ func convert(n *sitter.Node, src []byte, pos bool) *Node {
 	}
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
-		child := convert(n.NamedChild(i), src, pos)
+		child := convert(n.NamedChild(i), src, opt)
 		if child != nil {
 			node.Children = append(node.Children, *child)
 		}

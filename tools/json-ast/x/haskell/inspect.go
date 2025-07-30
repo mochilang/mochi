@@ -12,22 +12,23 @@ type Program struct {
 	Root *Haskell `json:"root"`
 }
 
-// Inspect parses the provided Haskell source code using tree-sitter and
-// returns its Program representation.
-func Inspect(src string, includePos ...bool) (*Program, error) {
+// InspectWithOption parses Haskell source code using tree-sitter and returns a Program.
+func InspectWithOption(src string, opt Option) (*Program, error) {
 	parser := sitter.NewParser()
 	parser.SetLanguage(sitter.NewLanguage(tsHaskell.Language()))
 	tree, err := parser.ParseCtx(context.Background(), nil, []byte(src))
 	if err != nil {
 		return nil, err
 	}
-	pos := false
-	if len(includePos) > 0 && includePos[0] {
-		pos = true
-	}
-	root := convert(tree.RootNode(), []byte(src), pos)
+	root := convert(tree.RootNode(), []byte(src), opt)
 	if root == nil {
 		root = &Node{}
 	}
 	return &Program{Root: (*Haskell)(root)}, nil
+}
+
+// Inspect parses the provided Haskell source code using tree-sitter and
+// returns its Program representation without positional information by default.
+func Inspect(src string) (*Program, error) {
+	return InspectWithOption(src, Option{})
 }
