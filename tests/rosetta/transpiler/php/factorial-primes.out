@@ -9,7 +9,7 @@
  9: 12! - 1 = 479001599
 10: 14! - 1 = 87178291199
 {
-  "duration_us": 1741,
+  "duration_us": 1682,
   "memory_bytes": 96,
   "name": "main"
 }
