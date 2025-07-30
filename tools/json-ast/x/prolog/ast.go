@@ -24,6 +24,10 @@ type Term struct {
 type Node struct {
 	Kind     string `json:"kind"`
 	Text     string `json:"text,omitempty"`
+	Start    int    `json:"start"`
+	StartCol int    `json:"startCol"`
+	End      int    `json:"end"`
+	EndCol   int    `json:"endCol"`
 	Children []Node `json:"children,omitempty"`
 }
 
@@ -99,11 +103,75 @@ func termToNode(t Term) Node {
 	}
 }
 
+// pos converts a byte offset into 1-indexed line and column numbers.
+func pos(src []byte, off int) (int, int) {
+	line, col := 1, 0
+	for i, b := range src {
+		if i >= off {
+			break
+		}
+		if b == '\n' {
+			line++
+			col = 0
+		} else {
+			col++
+		}
+	}
+	return line, col
+}
+
+// convert transforms a tree-sitter node into our Node structure.
+func convert(n *sitter.Node, src []byte) Node {
+	if n == nil {
+		return Node{}
+	}
+	sp := n.StartPoint()
+	ep := n.EndPoint()
+	node := Node{
+		Kind:     n.Type(),
+		Start:    int(sp.Row) + 1,
+		StartCol: int(sp.Column),
+		End:      int(ep.Row) + 1,
+		EndCol:   int(ep.Column),
+	}
+
+	if n.NamedChildCount() == 0 {
+		switch n.Type() {
+		case "variable", "number", "atom", "true", "false", "string":
+			node.Text = n.Content(src)
+		default:
+			// skip non-value leaf nodes
+			return Node{}
+		}
+	}
+
+	for i := 0; i < int(n.NamedChildCount()); i++ {
+		child := n.NamedChild(i)
+		c := convert(child, src)
+		if c.Kind == "" {
+			continue
+		}
+		node.Children = append(node.Children, c)
+	}
+
+	if node.Text == "" && len(node.Children) == 0 {
+		return Node{}
+	}
+	return node
+}
+
 // programToNode converts a Program parsed by SWI-Prolog into a Node tree.
-func programToNode(p *Program) Node {
+func programToNode(p *Program, src []byte) Node {
 	root := Node{Kind: "program"}
 	for _, c := range p.Clauses {
 		clause := Node{Kind: "clause"}
+		line, col := pos(src, c.Start)
+		endLine, endCol := pos(src, c.End)
+		clause.Start = line
+		clause.StartCol = col
+		clause.End = endLine
+		clause.EndCol = endCol
+
 		head := Node{Kind: c.Name}
 		for _, p := range c.Params {
 			head.Children = append(head.Children, termToNode(p))
