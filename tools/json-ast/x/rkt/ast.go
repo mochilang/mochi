@@ -7,37 +7,46 @@ import sitter "github.com/smacker/go-tree-sitter"
 // expressed through the Kind and the list of Children.  This keeps the JSON
 // representation compact while still exposing all information from the parse
 // tree.
+// Node represents a node in the simplified AST.  Only leaves that carry
+// meaningful text populate the Text field.  Position fields are optional and
+// omitted when zero so the JSON output can be compact when locations are not
+// required.
 type Node struct {
 	Kind     string  `json:"kind"`
 	Text     string  `json:"text,omitempty"`
-	Start    int     `json:"start"`
-	StartCol int     `json:"startCol"`
-	End      int     `json:"end"`
-	EndCol   int     `json:"endCol"`
+	Start    int     `json:"start,omitempty"`
+	StartCol int     `json:"startCol,omitempty"`
+	End      int     `json:"end,omitempty"`
+	EndCol   int     `json:"endCol,omitempty"`
 	Children []*Node `json:"children,omitempty"`
 }
 
 // convertProgram converts the root tree-sitter node into a Program.
-func convertProgram(root *sitter.Node, src []byte) *Program {
+// convertProgram converts the tree-sitter root node into our Program
+// representation. When withPos is false location fields will be left zero so
+// that they disappear from the marshalled JSON thanks to the omitempty tags.
+func convertProgram(root *sitter.Node, src []byte, withPos bool) *Program {
 	if root == nil {
 		return &Program{}
 	}
-	return &Program{Root: convertNode(root, src)}
+	return &Program{Root: convertNode(root, src, withPos)}
 }
 
-// convertNode converts a tree-sitter node into our Node representation.
-func convertNode(n *sitter.Node, src []byte) *Node {
+// convertNode converts a tree-sitter node into our Node representation.  Pure
+// syntax leaves that do not carry text are skipped entirely to keep the
+// resulting tree small.
+func convertNode(n *sitter.Node, src []byte, withPos bool) *Node {
 	if n == nil {
 		return nil
 	}
-	start := n.StartPoint()
-	end := n.EndPoint()
-	node := &Node{
-		Kind:     n.Type(),
-		Start:    int(start.Row) + 1,
-		StartCol: int(start.Column),
-		End:      int(end.Row) + 1,
-		EndCol:   int(end.Column),
+	node := &Node{Kind: n.Type()}
+	if withPos {
+		sp := n.StartPoint()
+		ep := n.EndPoint()
+		node.Start = int(sp.Row) + 1
+		node.StartCol = int(sp.Column)
+		node.End = int(ep.Row) + 1
+		node.EndCol = int(ep.Column)
 	}
 
 	if n.NamedChildCount() == 0 {
@@ -50,7 +59,7 @@ func convertNode(n *sitter.Node, src []byte) *Node {
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
 		child := n.NamedChild(i)
-		if c := convertNode(child, src); c != nil {
+		if c := convertNode(child, src, withPos); c != nil {
 			node.Children = append(node.Children, c)
 		}
 	}
