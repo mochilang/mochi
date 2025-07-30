@@ -4,24 +4,60 @@ import (
 	sitter "github.com/smacker/go-tree-sitter"
 )
 
-// Node represents a simplified Rust syntax tree node. Only leaf nodes that
-// carry a semantic value retain their text content, keeping the resulting JSON
-// minimal.
-// Node represents a simplified Rust syntax tree node. Position information is
-// optional and omitted from the JSON output when zero valued.
+// Node represents a simplified Rust AST node converted from tree-sitter.
+// Leaves that carry semantic value keep their text while punctuation-only nodes
+// are omitted. Positional information is optional and encoded only when
+// explicitly requested.
 type Node struct {
 	Kind     string  `json:"kind"`
 	Text     string  `json:"text,omitempty"`
-	Start    *int    `json:"start,omitempty"`
-	End      *int    `json:"end,omitempty"`
-	StartCol *int    `json:"startCol,omitempty"`
-	EndCol   *int    `json:"endCol,omitempty"`
+	Start    int     `json:"start,omitempty"`
+	End      int     `json:"end,omitempty"`
+	StartCol int     `json:"startCol,omitempty"`
+	EndCol   int     `json:"endCol,omitempty"`
 	Children []*Node `json:"children,omitempty"`
 }
 
+// Typed aliases for the node kinds that appear in the golden tests. These
+// mirror the language structures while reusing Node internally.
+type (
+	SourceFile           Node
+	LineComment          Node
+	FunctionItem         Node
+	Block                Node
+	LetDeclaration       Node
+	Identifier           Node
+	FieldIdentifier      Node
+	TypeIdentifier       Node
+	PrimitiveType        Node
+	IntegerLiteral       Node
+	StringContent        Node
+	StringLiteral        Node
+	EscapeSequence       Node
+	MutableSpecifier     Node
+	Arguments            Node
+	Parameters           Node
+	Parameter            Node
+	FieldDeclaration     Node
+	FieldDeclarationList Node
+	FieldExpression      Node
+	FieldInitializer     Node
+	FieldInitializerList Node
+	MacroInvocation      Node
+	TokenTree            Node
+	GenericType          Node
+	TypeArguments        Node
+	ScopedIdentifier     Node
+	ScopedTypeIdentifier Node
+	ReferenceExpression  Node
+	ReferenceType        Node
+	Self                 Node
+	SelfParameter        Node
+)
+
 // Program represents a parsed Rust source file composed of AST nodes.
 type Program struct {
-	Root *Node `json:"root"`
+	Root *SourceFile `json:"root"`
 }
 
 // convert turns a tree-sitter node into our Node representation. The includePos
@@ -36,14 +72,10 @@ func convert(n *sitter.Node, src []byte, includePos bool) *Node {
 	if includePos {
 		sp := n.StartPoint()
 		ep := n.EndPoint()
-		start := int(sp.Row) + 1
-		end := int(ep.Row) + 1
-		startCol := int(sp.Column)
-		endCol := int(ep.Column)
-		node.Start = &start
-		node.End = &end
-		node.StartCol = &startCol
-		node.EndCol = &endCol
+		node.Start = int(sp.Row) + 1
+		node.End = int(ep.Row) + 1
+		node.StartCol = int(sp.Column)
+		node.EndCol = int(ep.Column)
 	}
 
 	if n.NamedChildCount() == 0 {
