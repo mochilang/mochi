@@ -33,6 +33,17 @@ type (
 	Pair           struct{ Node }
 	String         struct{ Node }
 	Integer        struct{ Node }
+	Call           struct{ Node }
+	Arguments      struct{ Node }
+	Dot            struct{ Node }
+	DoBlock        struct{ Node }
+	AnonymousFn    struct{ Node }
+	StabClause     struct{ Node }
+	Body           struct{ Node }
+	MapContent     struct{ Node }
+	Keywords       struct{ Node }
+	Keyword        struct{ Node }
+	Interpolation  struct{ Node }
 )
 
 // Program represents the root syntax tree for an Elixir file.
