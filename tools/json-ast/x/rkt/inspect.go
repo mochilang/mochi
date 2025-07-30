@@ -7,7 +7,7 @@ import (
 
 // Program represents a parsed Racket source file.
 type Program struct {
-	Forms []*Node `json:"forms"`
+	Root *Node `json:"root"`
 }
 
 // Inspect parses Racket source code using tree-sitter and returns a Program
