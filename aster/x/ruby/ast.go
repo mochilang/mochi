@@ -7,10 +7,11 @@ import (
 	tsruby "github.com/tree-sitter/tree-sitter-ruby/bindings/go"
 )
 
-// IncludePositions controls whether parsed nodes include position
-// information. When false (the default) the JSON output omits all
-// positional fields to keep the representation small.
-var IncludePositions bool
+// IncludePos controls whether positional information is populated when
+// converting tree-sitter nodes. When false (the default) the position
+// fields remain zero and are omitted from the marshalled JSON due to the
+// `omitempty` struct tags.
+var IncludePos bool
 
 // Node represents a node in the Ruby syntax tree as produced by tree-sitter.
 // Node represents a tree-sitter node in a simplified form. Only leaf nodes
@@ -21,13 +22,13 @@ var IncludePositions bool
 // and 0-based column offsets. Leaf nodes that carry a value expose it via the
 // Text field. Pure syntax tokens are omitted entirely.
 type Node struct {
-	Kind     string `json:"kind"`
-	Text     string `json:"text,omitempty"`
-	Start    int    `json:"start,omitempty"`
-	StartCol int    `json:"startCol,omitempty"`
-	End      int    `json:"end,omitempty"`
-	EndCol   int    `json:"endCol,omitempty"`
-	Children []Node `json:"children,omitempty"`
+	Kind     string  `json:"kind"`
+	Text     string  `json:"text,omitempty"`
+	Start    int     `json:"start,omitempty"`
+	StartCol int     `json:"startCol,omitempty"`
+	End      int     `json:"end,omitempty"`
+	EndCol   int     `json:"endCol,omitempty"`
+	Children []*Node `json:"children,omitempty"`
 }
 
 // A small set of concrete node types used in the golden example. They simply
@@ -65,7 +66,7 @@ func Parse(src string) (*Node, error) {
 	parser.SetLanguage(sitter.NewLanguage(tsruby.Language()))
 	data := []byte(src)
 	tree := parser.Parse(data, nil)
-	root := convert(tree.RootNode(), data)
+	root := convert(tree.RootNode(), data, IncludePos)
 	if root == nil {
 		return nil, nil
 	}
@@ -84,13 +85,13 @@ func ParseFile(path string) (*Node, error) {
 // convert converts a tree-sitter node into our Node representation. Pure
 // syntax leaves are dropped so the resulting JSON only contains nodes that
 // carry actual values or have children.
-func convert(n *sitter.Node, src []byte) *Node {
+func convert(n *sitter.Node, src []byte, pos bool) *Node {
 	if n == nil {
 		return nil
 	}
 
 	node := &Node{Kind: n.Kind()}
-	if IncludePositions {
+	if pos {
 		start := n.StartPosition()
 		end := n.EndPosition()
 		node.Start = int(start.Row) + 1
@@ -109,8 +110,8 @@ func convert(n *sitter.Node, src []byte) *Node {
 
 	for i := uint(0); i < n.NamedChildCount(); i++ {
 		child := n.NamedChild(i)
-		if c := convert(child, src); c != nil {
-			node.Children = append(node.Children, *c)
+		if c := convert(child, src, pos); c != nil {
+			node.Children = append(node.Children, c)
 		}
 	}
 
