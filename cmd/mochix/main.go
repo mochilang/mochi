@@ -84,12 +84,12 @@ import (
 	prologast "mochi/aster/x/prolog"
 	pyast "mochi/aster/x/py"
 	rbast "mochi/aster/x/rb"
-	rktast "mochi/aster/x/rkt"
 	rsast "mochi/aster/x/rs"
 	scalaast "mochi/aster/x/scala"
 	schemeast "mochi/aster/x/scheme"
 	swiftast "mochi/aster/x/swift"
 	tsast "mochi/aster/x/ts"
+	zigast "mochi/aster/x/zig"
 
 	"mochi/ast"
 	"mochi/interpreter"
@@ -560,8 +560,8 @@ func runInspect(cmd *InspectCmd) error {
 		prog, err = pyast.Inspect(src)
 	case "rb", "ruby":
 		prog, err = rbast.Inspect(src)
-	case "rkt", "racket":
-		prog, err = rktast.Inspect(src, rktast.Options{})
+	case "zig":
+		prog, err = zigast.Inspect(src)
 	case "rs", "rust":
 		prog, err = rsast.Inspect(src, rsast.Option{})
 	case "scala":
