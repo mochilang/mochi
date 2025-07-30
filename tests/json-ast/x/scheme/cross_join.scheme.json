@@ -1,505 +1,647 @@
 {
   "forms": [
     {
-      "list": [
+      "kind": "comment",
+      "text": ";; Generated on 2025-07-25 08:58 +0700",
+      "start": 1,
+      "startCol": 0,
+      "end": 1,
+      "endCol": 38
+    },
+    {
+      "kind": "list",
+      "start": 2,
+      "startCol": 0,
+      "end": 2,
+      "endCol": 66,
+      "children": [
         {
-          "atom": "import"
+          "kind": "symbol",
+          "text": "import",
+          "start": 2,
+          "startCol": 1,
+          "end": 2,
+          "endCol": 7
         },
         {
-          "list": [
+          "kind": "list",
+          "start": 2,
+          "startCol": 8,
+          "end": 2,
+          "endCol": 65,
+          "children": [
             {
-              "atom": "only"
+              "kind": "symbol",
+              "text": "only",
+              "start": 2,
+              "startCol": 9,
+              "end": 2,
+              "endCol": 13
             },
             {
-              "list": [
+              "kind": "list",
+              "start": 2,
+              "startCol": 14,
+              "end": 2,
+              "endCol": 27,
+              "children": [
                 {
-                  "atom": "scheme"
+                  "kind": "symbol",
+                  "text": "scheme",
+                  "start": 2,
+                  "startCol": 15,
+                  "end": 2,
+                  "endCol": 21
                 },
                 {
-                  "atom": "base"
+                  "kind": "symbol",
+                  "text": "base",
+                  "start": 2,
+                  "startCol": 22,
+                  "end": 2,
+                  "endCol": 26
                 }
               ]
             },
             {
-              "atom": "call/cc"
+              "kind": "symbol",
+              "text": "call/cc",
+              "start": 2,
+              "startCol": 28,
+              "end": 2,
+              "endCol": 35
             },
             {
-              "atom": "when"
+              "kind": "symbol",
+              "text": "when",
+              "start": 2,
+              "startCol": 36,
+              "end": 2,
+              "endCol": 40
             },
             {
-              "atom": "list-ref"
+              "kind": "symbol",
+              "text": "list-ref",
+              "start": 2,
+              "startCol": 41,
+              "end": 2,
+              "endCol": 49
             },
             {
-              "atom": "list-set!"
+              "kind": "symbol",
+              "text": "list-set!",
+              "start": 2,
+              "startCol": 50,
+              "end": 2,
+              "endCol": 59
             },
             {
-              "atom": "list"
+              "kind": "symbol",
+              "text": "list",
+              "start": 2,
+              "startCol": 60,
+              "end": 2,
+              "endCol": 64
             }
           ]
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "start": 3,
+      "startCol": 0,
+      "end": 3,
+      "endCol": 22,
+      "children": [
         {
-          "atom": "import"
+          "kind": "symbol",
+          "text": "import",
+          "start": 3,
+          "startCol": 1,
+          "end": 3,
+          "endCol": 7
         },
         {
-          "list": [
+          "kind": "list",
+          "start": 3,
+          "startCol": 8,
+          "end": 3,
+          "endCol": 21,
+          "children": [
             {
-              "atom": "scheme"
+              "kind": "symbol",
+              "text": "scheme",
+              "start": 3,
+              "startCol": 9,
+              "end": 3,
+              "endCol": 15
             },
             {
-              "atom": "time"
+              "kind": "symbol",
+              "text": "time",
+              "start": 3,
+              "startCol": 16,
+              "end": 3,
+              "endCol": 20
             }
           ]
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "start": 4,
+      "startCol": 0,
+      "end": 4,
+      "endCol": 23,
+      "children": [
         {
-          "atom": "import"
+          "kind": "symbol",
+          "text": "import",
+          "start": 4,
+          "startCol": 1,
+          "end": 4,
+          "endCol": 7
         },
         {
-          "list": [
+          "kind": "list",
+          "start": 4,
+          "startCol": 8,
+          "end": 4,
+          "endCol": 22,
+          "children": [
             {
-              "atom": "chibi"
+              "kind": "symbol",
+              "text": "chibi",
+              "start": 4,
+              "startCol": 9,
+              "end": 4,
+              "endCol": 14
             },
             {
-              "atom": "string"
+              "kind": "symbol",
+              "text": "string",
+              "start": 4,
+              "startCol": 15,
+              "end": 4,
+              "endCol": 21
             }
           ]
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "start": 5,
+      "startCol": 0,
+      "end": 5,
+      "endCol": 59,
+      "children": [
         {
-          "atom": "import"
+          "kind": "symbol",
+          "text": "import",
+          "start": 5,
+          "startCol": 1,
+          "end": 5,
+          "endCol": 7
         },
         {
-          "list": [
+          "kind": "list",
+          "start": 5,
+          "startCol": 8,
+          "end": 5,
+          "endCol": 58,
+          "children": [
             {
-              "atom": "only"
+              "kind": "symbol",
+              "text": "only",
+              "start": 5,
+              "startCol": 9,
+              "end": 5,
+              "endCol": 13
             },
             {
-              "list": [
+              "kind": "list",
+              "start": 5,
+              "startCol": 14,
+              "end": 5,
+              "endCol": 27,
+              "children": [
                 {
-                  "atom": "scheme"
+                  "kind": "symbol",
+                  "text": "scheme",
+                  "start": 5,
+                  "startCol": 15,
+                  "end": 5,
+                  "endCol": 21
                 },
                 {
-                  "atom": "char"
+                  "kind": "symbol",
+                  "text": "char",
+                  "start": 5,
+                  "startCol": 22,
+                  "end": 5,
+                  "endCol": 26
                 }
               ]
             },
             {
-              "atom": "string-upcase"
+              "kind": "symbol",
+              "text": "string-upcase",
+              "start": 5,
+              "startCol": 28,
+              "end": 5,
+              "endCol": 41
             },
             {
-              "atom": "string-downcase"
+              "kind": "symbol",
+              "text": "string-downcase",
+              "start": 5,
+              "startCol": 42,
+              "end": 5,
+              "endCol": 57
             }
           ]
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "start": 6,
+      "startCol": 0,
+      "end": 6,
+      "endCol": 18,
+      "children": [
         {
-          "atom": "import"
+          "kind": "symbol",
+          "text": "import",
+          "start": 6,
+          "startCol": 1,
+          "end": 6,
+          "endCol": 7
         },
         {
-          "list": [
+          "kind": "list",
+          "start": 6,
+          "startCol": 8,
+          "end": 6,
+          "endCol": 17,
+          "children": [
             {
-              "atom": "srfi"
+              "kind": "symbol",
+              "text": "srfi",
+              "start": 6,
+              "startCol": 9,
+              "end": 6,
+              "endCol": 13
             },
             {
-              "atom": "69"
+              "kind": "number",
+              "text": "69",
+              "start": 6,
+              "startCol": 14,
+              "end": 6,
+              "endCol": 16
             }
           ]
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "start": 7,
+      "startCol": 0,
+      "end": 12,
+      "endCol": 35,
+      "children": [
         {
-          "atom": "define"
+          "kind": "symbol",
+          "text": "define",
+          "start": 7,
+          "startCol": 1,
+          "end": 7,
+          "endCol": 7
         },
         {
-          "list": [
+          "kind": "list",
+          "start": 7,
+          "startCol": 8,
+          "end": 7,
+          "endCol": 18,
+          "children": [
             {
-              "atom": "to-str"
+              "kind": "symbol",
+              "text": "to-str",
+              "start": 7,
+              "startCol": 9,
+              "end": 7,
+              "endCol": 15
             },
             {
-              "atom": "x"
+              "kind": "symbol",
+              "text": "x",
+              "start": 7,
+              "startCol": 16,
+              "end": 7,
+              "endCol": 17
             }
           ]
         },
         {
-          "list": [
+          "kind": "list",
+          "start": 8,
+          "startCol": 2,
+          "end": 12,
+          "endCol": 34,
+          "children": [
             {
-              "atom": "cond"
+              "kind": "symbol",
+              "text": "cond",
+              "start": 8,
+              "startCol": 3,
+              "end": 8,
+              "endCol": 7
             },
             {
-              "list": [
+              "kind": "list",
+              "start": 8,
+              "startCol": 8,
+              "end": 9,
+              "endCol": 67,
+              "children": [
                 {
-                  "list": [
+                  "kind": "list",
+                  "start": 8,
+                  "startCol": 9,
+                  "end": 8,
+                  "endCol": 18,
+                  "children": [
                     {
-                      "atom": "pair?"
+                      "kind": "symbol",
+                      "text": "pair?",
+                      "start": 8,
+                      "startCol": 10,
+                      "end": 8,
+                      "endCol": 15
                     },
                     {
-                      "atom": "x"
+                      "kind": "symbol",
+                      "text": "x",
+                      "start": 8,
+                      "startCol": 16,
+                      "end": 8,
+                      "endCol": 17
                     }
                   ]
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "start": 9,
+                  "startCol": 9,
+                  "end": 9,
+                  "endCol": 66,
+                  "children": [
                     {
-                      "atom": "string-append"
+                      "kind": "symbol",
+                      "text": "string-append",
+                      "start": 9,
+                      "startCol": 10,
+                      "end": 9,
+                      "endCol": 23
                     },
                     {
-                      "atom": "["
+                      "kind": "string",
+                      "text": "\"[\"",
+                      "start": 9,
+                      "startCol": 24,
+                      "end": 9,
+                      "endCol": 27
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "start": 9,
+                      "startCol": 28,
+                      "end": 9,
+                      "endCol": 61,
+                      "children": [
                         {
-                          "atom": "string-join"
+                          "kind": "symbol",
+                          "text": "string-join",
+                          "start": 9,
+                          "startCol": 29,
+                          "end": 9,
+                          "endCol": 40
                         },
                         {
-                          "list": [
+                          "kind": "list",
+                          "start": 9,
+                          "startCol": 41,
+                          "end": 9,
+                          "endCol": 55,
+                          "children": [
                             {
-                              "atom": "map"
+                              "kind": "symbol",
+                              "text": "map",
+                              "start": 9,
+                              "startCol": 42,
+                              "end": 9,
+                              "endCol": 45
                             },
                             {
-                              "atom": "to-str"
+                              "kind": "symbol",
+                              "text": "to-str",
+                              "start": 9,
+                              "startCol": 46,
+                              "end": 9,
+                              "endCol": 52
                             },
                             {
-                              "atom": "x"
+                              "kind": "symbol",
+                              "text": "x",
+                              "start": 9,
+                              "startCol": 53,
+                              "end": 9,
+                              "endCol": 54
                             }
                           ]
                         },
                         {
-                          "atom": ", "
+                          "kind": "string",
+                          "text": "\", \"",
+                          "start": 9,
+                          "startCol": 56,
+                          "end": 9,
+                          "endCol": 60
                         }
                       ]
                     },
                     {
-                      "atom": "]"
+                      "kind": "string",
+                      "text": "\"]\"",
+                      "start": 9,
+                      "startCol": 62,
+                      "end": 9,
+                      "endCol": 65
                     }
                   ]
                 }
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "start": 10,
+              "startCol": 8,
+              "end": 10,
+              "endCol": 23,
+              "children": [
                 {
-                  "list": [
+                  "kind": "list",
+                  "start": 10,
+                  "startCol": 9,
+                  "end": 10,
+                  "endCol": 20,
+                  "children": [
                     {
-                      "atom": "string?"
+                      "kind": "symbol",
+                      "text": "string?",
+                      "start": 10,
+                      "startCol": 10,
+                      "end": 10,
+                      "endCol": 17
                     },
                     {
-                      "atom": "x"
+                      "kind": "symbol",
+                      "text": "x",
+                      "start": 10,
+                      "startCol": 18,
+                      "end": 10,
+                      "endCol": 19
                     }
                   ]
                 },
                 {
-                  "atom": "x"
+                  "kind": "symbol",
+                  "text": "x",
+                  "start": 10,
+                  "startCol": 21,
+                  "end": 10,
+                  "endCol": 22
                 }
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "start": 11,
+              "startCol": 8,
+              "end": 11,
+              "endCol": 37,
+              "children": [
                 {
-                  "list": [
+                  "kind": "list",
+                  "start": 11,
+                  "startCol": 9,
+                  "end": 11,
+                  "endCol": 21,
+                  "children": [
                     {
-                      "atom": "boolean?"
+                      "kind": "symbol",
+                      "text": "boolean?",
+                      "start": 11,
+                      "startCol": 10,
+                      "end": 11,
+                      "endCol": 18
                     },
                     {
-                      "atom": "x"
+                      "kind": "symbol",
+                      "text": "x",
+                      "start": 11,
+                      "startCol": 19,
+                      "end": 11,
+                      "endCol": 20
                     }
                   ]
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "start": 11,
+                  "startCol": 22,
+                  "end": 11,
+                  "endCol": 36,
+                  "children": [
                     {
-                      "atom": "if"
+                      "kind": "symbol",
+                      "text": "if",
+                      "start": 11,
+                      "startCol": 23,
+                      "end": 11,
+                      "endCol": 25
                     },
                     {
-                      "atom": "x"
+                      "kind": "symbol",
+                      "text": "x",
+                      "start": 11,
+                      "startCol": 26,
+                      "end": 11,
+                      "endCol": 27
                     },
                     {
-                      "atom": "1"
+                      "kind": "string",
+                      "text": "\"1\"",
+                      "start": 11,
+                      "startCol": 28,
+                      "end": 11,
+                      "endCol": 31
                     },
                     {
-                      "atom": "0"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "list": [
-                {
-                  "atom": "else"
-                },
-                {
-                  "list": [
-                    {
-                      "atom": "number-\u003estring"
-                    },
-                    {
-                      "atom": "x"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "list": [
-        {
-          "atom": "define"
-        },
-        {
-          "list": [
-            {
-              "atom": "upper"
-            },
-            {
-              "atom": "s"
-            }
-          ]
-        },
-        {
-          "list": [
-            {
-              "atom": "string-upcase"
-            },
-            {
-              "atom": "s"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "list": [
-        {
-          "atom": "define"
-        },
-        {
-          "list": [
-            {
-              "atom": "lower"
-            },
-            {
-              "atom": "s"
-            }
-          ]
-        },
-        {
-          "list": [
-            {
-              "atom": "string-downcase"
-            },
-            {
-              "atom": "s"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "list": [
-        {
-          "atom": "define"
-        },
-        {
-          "list": [
-            {
-              "atom": "fmod"
-            },
-            {
-              "atom": "a"
-            },
-            {
-              "atom": "b"
-            }
-          ]
-        },
-        {
-          "list": [
-            {
-              "atom": "-"
-            },
-            {
-              "atom": "a"
-            },
-            {
-              "list": [
-                {
-                  "atom": "*"
-                },
-                {
-                  "list": [
-                    {
-                      "atom": "floor"
-                    },
-                    {
-                      "list": [
-                        {
-                          "atom": "/"
-                        },
-                        {
-                          "atom": "a"
-                        },
-                        {
-                          "atom": "b"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "atom": "b"
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "list": [
-        {
-          "atom": "define"
-        },
-        {
-          "atom": "customers"
-        },
-        {
-          "list": [
-            {
-              "atom": "list"
-            },
-            {
-              "list": [
-                {
-                  "atom": "alist-\u003ehash-table"
-                },
-                {
-                  "list": [
-                    {
-                      "atom": "list"
-                    },
-                    {
-                      "list": [
-                        {
-                          "atom": "cons"
-                        },
-                        {
-                          "atom": "id"
-                        },
-                        {
-                          "atom": "1"
-                        }
-                      ]
-                    },
-                    {
-                      "list": [
-                        {
-                          "atom": "cons"
-                        },
-                        {
-                          "atom": "name"
-                        },
-                        {
-                          "atom": "Alice"
-                        }
-                      ]
+                      "kind": "string",
+                      "text": "\"0\"",
+                      "start": 11,
+                      "startCol": 32,
+                      "end": 11,
+                      "endCol": 35
                     }
                   ]
                 }
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "start": 12,
+              "startCol": 8,
+              "end": 12,
+              "endCol": 33,
+              "children": [
                 {
-                  "atom": "alist-\u003ehash-table"
+                  "kind": "symbol",
+                  "text": "else",
+                  "start": 12,
+                  "startCol": 9,
+                  "end": 12,
+                  "endCol": 13
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "start": 12,
+                  "startCol": 14,
+                  "end": 12,
+                  "endCol": 32,
+                  "children": [
                     {
-                      "atom": "list"
+                      "kind": "symbol",
+                      "text": "number-\u003estring",
+                      "start": 12,
+                      "startCol": 15,
+                      "end": 12,
+                      "endCol": 29
                     },
                     {
-                      "list": [
-                        {
-                          "atom": "cons"
-                        },
-                        {
-                          "atom": "id"
-                        },
-                        {
-                          "atom": "2"
-                        }
-                      ]
-                    },
-                    {
-                      "list": [
-                        {
-                          "atom": "cons"
-                        },
-                        {
-                          "atom": "name"
-                        },
-                        {
-                          "atom": "Bob"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "list": [
-                {
-                  "atom": "alist-\u003ehash-table"
-                },
-                {
-                  "list": [
-                    {
-                      "atom": "list"
-                    },
-                    {
-                      "list": [
-                        {
-                          "atom": "cons"
-                        },
-                        {
-                          "atom": "id"
-                        },
-                        {
-                          "atom": "3"
-                        }
-                      ]
-                    },
-                    {
-                      "list": [
-                        {
-                          "atom": "cons"
-                        },
-                        {
-                          "atom": "name"
-                        },
-                        {
-                          "atom": "Charlie"
-                        }
-                      ]
+                      "kind": "symbol",
+                      "text": "x",
+                      "start": 12,
+                      "startCol": 30,
+                      "end": 12,
+                      "endCol": 31
                     }
                   ]
                 }
@@ -510,64 +652,420 @@
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "start": 13,
+      "startCol": 0,
+      "end": 13,
+      "endCol": 36,
+      "children": [
         {
-          "atom": "define"
+          "kind": "symbol",
+          "text": "define",
+          "start": 13,
+          "startCol": 1,
+          "end": 13,
+          "endCol": 7
         },
         {
-          "atom": "orders"
-        },
-        {
-          "list": [
+          "kind": "list",
+          "start": 13,
+          "startCol": 8,
+          "end": 13,
+          "endCol": 17,
+          "children": [
             {
-              "atom": "list"
+              "kind": "symbol",
+              "text": "upper",
+              "start": 13,
+              "startCol": 9,
+              "end": 13,
+              "endCol": 14
             },
             {
-              "list": [
+              "kind": "symbol",
+              "text": "s",
+              "start": 13,
+              "startCol": 15,
+              "end": 13,
+              "endCol": 16
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "start": 13,
+          "startCol": 18,
+          "end": 13,
+          "endCol": 35,
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "string-upcase",
+              "start": 13,
+              "startCol": 19,
+              "end": 13,
+              "endCol": 32
+            },
+            {
+              "kind": "symbol",
+              "text": "s",
+              "start": 13,
+              "startCol": 33,
+              "end": 13,
+              "endCol": 34
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "start": 14,
+      "startCol": 0,
+      "end": 14,
+      "endCol": 38,
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "define",
+          "start": 14,
+          "startCol": 1,
+          "end": 14,
+          "endCol": 7
+        },
+        {
+          "kind": "list",
+          "start": 14,
+          "startCol": 8,
+          "end": 14,
+          "endCol": 17,
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "lower",
+              "start": 14,
+              "startCol": 9,
+              "end": 14,
+              "endCol": 14
+            },
+            {
+              "kind": "symbol",
+              "text": "s",
+              "start": 14,
+              "startCol": 15,
+              "end": 14,
+              "endCol": 16
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "start": 14,
+          "startCol": 18,
+          "end": 14,
+          "endCol": 37,
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "string-downcase",
+              "start": 14,
+              "startCol": 19,
+              "end": 14,
+              "endCol": 34
+            },
+            {
+              "kind": "symbol",
+              "text": "s",
+              "start": 14,
+              "startCol": 35,
+              "end": 14,
+              "endCol": 36
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "start": 15,
+      "startCol": 0,
+      "end": 15,
+      "endCol": 47,
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "define",
+          "start": 15,
+          "startCol": 1,
+          "end": 15,
+          "endCol": 7
+        },
+        {
+          "kind": "list",
+          "start": 15,
+          "startCol": 8,
+          "end": 15,
+          "endCol": 18,
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "fmod",
+              "start": 15,
+              "startCol": 9,
+              "end": 15,
+              "endCol": 13
+            },
+            {
+              "kind": "symbol",
+              "text": "a",
+              "start": 15,
+              "startCol": 14,
+              "end": 15,
+              "endCol": 15
+            },
+            {
+              "kind": "symbol",
+              "text": "b",
+              "start": 15,
+              "startCol": 16,
+              "end": 15,
+              "endCol": 17
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "start": 15,
+          "startCol": 19,
+          "end": 15,
+          "endCol": 46,
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "-",
+              "start": 15,
+              "startCol": 20,
+              "end": 15,
+              "endCol": 21
+            },
+            {
+              "kind": "symbol",
+              "text": "a",
+              "start": 15,
+              "startCol": 22,
+              "end": 15,
+              "endCol": 23
+            },
+            {
+              "kind": "list",
+              "start": 15,
+              "startCol": 24,
+              "end": 15,
+              "endCol": 45,
+              "children": [
                 {
-                  "atom": "alist-\u003ehash-table"
+                  "kind": "symbol",
+                  "text": "*",
+                  "start": 15,
+                  "startCol": 25,
+                  "end": 15,
+                  "endCol": 26
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "start": 15,
+                  "startCol": 27,
+                  "end": 15,
+                  "endCol": 42,
+                  "children": [
                     {
-                      "atom": "list"
+                      "kind": "symbol",
+                      "text": "floor",
+                      "start": 15,
+                      "startCol": 28,
+                      "end": 15,
+                      "endCol": 33
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "start": 15,
+                      "startCol": 34,
+                      "end": 15,
+                      "endCol": 41,
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "/",
+                          "start": 15,
+                          "startCol": 35,
+                          "end": 15,
+                          "endCol": 36
                         },
                         {
-                          "atom": "id"
+                          "kind": "symbol",
+                          "text": "a",
+                          "start": 15,
+                          "startCol": 37,
+                          "end": 15,
+                          "endCol": 38
                         },
                         {
-                          "atom": "100"
+                          "kind": "symbol",
+                          "text": "b",
+                          "start": 15,
+                          "startCol": 39,
+                          "end": 15,
+                          "endCol": 40
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "symbol",
+                  "text": "b",
+                  "start": 15,
+                  "startCol": 43,
+                  "end": 15,
+                  "endCol": 44
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "start": 16,
+      "startCol": 0,
+      "end": 29,
+      "endCol": 1,
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "define",
+          "start": 16,
+          "startCol": 1,
+          "end": 16,
+          "endCol": 7
+        },
+        {
+          "kind": "symbol",
+          "text": "customers",
+          "start": 16,
+          "startCol": 8,
+          "end": 16,
+          "endCol": 17
+        },
+        {
+          "kind": "list",
+          "start": 16,
+          "startCol": 18,
+          "end": 28,
+          "endCol": 1,
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "list",
+              "start": 16,
+              "startCol": 19,
+              "end": 16,
+              "endCol": 23
+            },
+            {
+              "kind": "list",
+              "start": 16,
+              "startCol": 24,
+              "end": 19,
+              "endCol": 1,
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table",
+                  "start": 16,
+                  "startCol": 25,
+                  "end": 16,
+                  "endCol": 42
+                },
+                {
+                  "kind": "list",
+                  "start": 16,
+                  "startCol": 43,
+                  "end": 18,
+                  "endCol": 1,
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "list",
+                      "start": 16,
+                      "startCol": 44,
+                      "end": 16,
+                      "endCol": 48
+                    },
+                    {
+                      "kind": "list",
+                      "start": 16,
+                      "startCol": 49,
+                      "end": 16,
+                      "endCol": 62,
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons",
+                          "start": 16,
+                          "startCol": 50,
+                          "end": 16,
+                          "endCol": 54
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"id\"",
+                          "start": 16,
+                          "startCol": 55,
+                          "end": 16,
+                          "endCol": 59
+                        },
+                        {
+                          "kind": "number",
+                          "text": "1",
+                          "start": 16,
+                          "startCol": 60,
+                          "end": 16,
+                          "endCol": 61
                         }
                       ]
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "start": 17,
+                      "startCol": 1,
+                      "end": 17,
+                      "endCol": 22,
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons",
+                          "start": 17,
+                          "startCol": 2,
+                          "end": 17,
+                          "endCol": 6
                         },
                         {
-                          "atom": "customerId"
+                          "kind": "string",
+                          "text": "\"name\"",
+                          "start": 17,
+                          "startCol": 7,
+                          "end": 17,
+                          "endCol": 13
                         },
                         {
-                          "atom": "1"
-                        }
-                      ]
-                    },
-                    {
-                      "list": [
-                        {
-                          "atom": "cons"
-                        },
-                        {
-                          "atom": "total"
-                        },
-                        {
-                          "atom": "250"
+                          "kind": "string",
+                          "text": "\"Alice\"",
+                          "start": 17,
+                          "startCol": 14,
+                          "end": 17,
+                          "endCol": 21
                         }
                       ]
                     }
@@ -576,51 +1074,98 @@
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "start": 20,
+              "startCol": 1,
+              "end": 23,
+              "endCol": 1,
+              "children": [
                 {
-                  "atom": "alist-\u003ehash-table"
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table",
+                  "start": 20,
+                  "startCol": 2,
+                  "end": 20,
+                  "endCol": 19
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "start": 20,
+                  "startCol": 20,
+                  "end": 22,
+                  "endCol": 1,
+                  "children": [
                     {
-                      "atom": "list"
+                      "kind": "symbol",
+                      "text": "list",
+                      "start": 20,
+                      "startCol": 21,
+                      "end": 20,
+                      "endCol": 25
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "start": 20,
+                      "startCol": 26,
+                      "end": 20,
+                      "endCol": 39,
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons",
+                          "start": 20,
+                          "startCol": 27,
+                          "end": 20,
+                          "endCol": 31
                         },
                         {
-                          "atom": "id"
+                          "kind": "string",
+                          "text": "\"id\"",
+                          "start": 20,
+                          "startCol": 32,
+                          "end": 20,
+                          "endCol": 36
                         },
                         {
-                          "atom": "101"
+                          "kind": "number",
+                          "text": "2",
+                          "start": 20,
+                          "startCol": 37,
+                          "end": 20,
+                          "endCol": 38
                         }
                       ]
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "start": 21,
+                      "startCol": 1,
+                      "end": 21,
+                      "endCol": 20,
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons",
+                          "start": 21,
+                          "startCol": 2,
+                          "end": 21,
+                          "endCol": 6
                         },
                         {
-                          "atom": "customerId"
+                          "kind": "string",
+                          "text": "\"name\"",
+                          "start": 21,
+                          "startCol": 7,
+                          "end": 21,
+                          "endCol": 13
                         },
                         {
-                          "atom": "2"
-                        }
-                      ]
-                    },
-                    {
-                      "list": [
-                        {
-                          "atom": "cons"
-                        },
-                        {
-                          "atom": "total"
-                        },
-                        {
-                          "atom": "125"
+                          "kind": "string",
+                          "text": "\"Bob\"",
+                          "start": 21,
+                          "startCol": 14,
+                          "end": 21,
+                          "endCol": 19
                         }
                       ]
                     }
@@ -629,51 +1174,98 @@
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "start": 24,
+              "startCol": 1,
+              "end": 27,
+              "endCol": 1,
+              "children": [
                 {
-                  "atom": "alist-\u003ehash-table"
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table",
+                  "start": 24,
+                  "startCol": 2,
+                  "end": 24,
+                  "endCol": 19
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "start": 24,
+                  "startCol": 20,
+                  "end": 26,
+                  "endCol": 1,
+                  "children": [
                     {
-                      "atom": "list"
+                      "kind": "symbol",
+                      "text": "list",
+                      "start": 24,
+                      "startCol": 21,
+                      "end": 24,
+                      "endCol": 25
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "start": 24,
+                      "startCol": 26,
+                      "end": 24,
+                      "endCol": 39,
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons",
+                          "start": 24,
+                          "startCol": 27,
+                          "end": 24,
+                          "endCol": 31
                         },
                         {
-                          "atom": "id"
+                          "kind": "string",
+                          "text": "\"id\"",
+                          "start": 24,
+                          "startCol": 32,
+                          "end": 24,
+                          "endCol": 36
                         },
                         {
-                          "atom": "102"
+                          "kind": "number",
+                          "text": "3",
+                          "start": 24,
+                          "startCol": 37,
+                          "end": 24,
+                          "endCol": 38
                         }
                       ]
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "start": 25,
+                      "startCol": 1,
+                      "end": 25,
+                      "endCol": 24,
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons",
+                          "start": 25,
+                          "startCol": 2,
+                          "end": 25,
+                          "endCol": 6
                         },
                         {
-                          "atom": "customerId"
+                          "kind": "string",
+                          "text": "\"name\"",
+                          "start": 25,
+                          "startCol": 7,
+                          "end": 25,
+                          "endCol": 13
                         },
                         {
-                          "atom": "1"
-                        }
-                      ]
-                    },
-                    {
-                      "list": [
-                        {
-                          "atom": "cons"
-                        },
-                        {
-                          "atom": "total"
-                        },
-                        {
-                          "atom": "300"
+                          "kind": "string",
+                          "text": "\"Charlie\"",
+                          "start": 25,
+                          "startCol": 14,
+                          "end": 25,
+                          "endCol": 23
                         }
                       ]
                     }
@@ -686,29 +1278,169 @@
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "start": 30,
+      "startCol": 0,
+      "end": 46,
+      "endCol": 1,
+      "children": [
         {
-          "atom": "define"
+          "kind": "symbol",
+          "text": "define",
+          "start": 30,
+          "startCol": 1,
+          "end": 30,
+          "endCol": 7
         },
         {
-          "atom": "result"
+          "kind": "symbol",
+          "text": "orders",
+          "start": 30,
+          "startCol": 8,
+          "end": 30,
+          "endCol": 14
         },
         {
-          "list": [
+          "kind": "list",
+          "start": 30,
+          "startCol": 15,
+          "end": 45,
+          "endCol": 1,
+          "children": [
             {
-              "atom": "let"
+              "kind": "symbol",
+              "text": "list",
+              "start": 30,
+              "startCol": 16,
+              "end": 30,
+              "endCol": 20
             },
             {
-              "list": [
+              "kind": "list",
+              "start": 30,
+              "startCol": 21,
+              "end": 34,
+              "endCol": 1,
+              "children": [
                 {
-                  "list": [
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table",
+                  "start": 30,
+                  "startCol": 22,
+                  "end": 30,
+                  "endCol": 39
+                },
+                {
+                  "kind": "list",
+                  "start": 30,
+                  "startCol": 40,
+                  "end": 33,
+                  "endCol": 1,
+                  "children": [
                     {
-                      "atom": "res14"
+                      "kind": "symbol",
+                      "text": "list",
+                      "start": 30,
+                      "startCol": 41,
+                      "end": 30,
+                      "endCol": 45
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "start": 30,
+                      "startCol": 46,
+                      "end": 30,
+                      "endCol": 61,
+                      "children": [
                         {
-                          "atom": "list"
+                          "kind": "symbol",
+                          "text": "cons",
+                          "start": 30,
+                          "startCol": 47,
+                          "end": 30,
+                          "endCol": 51
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"id\"",
+                          "start": 30,
+                          "startCol": 52,
+                          "end": 30,
+                          "endCol": 56
+                        },
+                        {
+                          "kind": "number",
+                          "text": "100",
+                          "start": 30,
+                          "startCol": 57,
+                          "end": 30,
+                          "endCol": 60
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "start": 31,
+                      "startCol": 1,
+                      "end": 31,
+                      "endCol": 22,
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons",
+                          "start": 31,
+                          "startCol": 2,
+                          "end": 31,
+                          "endCol": 6
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"customerId\"",
+                          "start": 31,
+                          "startCol": 7,
+                          "end": 31,
+                          "endCol": 19
+                        },
+                        {
+                          "kind": "number",
+                          "text": "1",
+                          "start": 31,
+                          "startCol": 20,
+                          "end": 31,
+                          "endCol": 21
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "start": 32,
+                      "startCol": 1,
+                      "end": 32,
+                      "endCol": 19,
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons",
+                          "start": 32,
+                          "startCol": 2,
+                          "end": 32,
+                          "endCol": 6
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"total\"",
+                          "start": 32,
+                          "startCol": 7,
+                          "end": 32,
+                          "endCol": 14
+                        },
+                        {
+                          "kind": "number",
+                          "text": "250",
+                          "start": 32,
+                          "startCol": 15,
+                          "end": 32,
+                          "endCol": 18
                         }
                       ]
                     }
@@ -717,162 +1449,783 @@
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "start": 35,
+              "startCol": 1,
+              "end": 39,
+              "endCol": 1,
+              "children": [
                 {
-                  "atom": "begin"
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table",
+                  "start": 35,
+                  "startCol": 2,
+                  "end": 35,
+                  "endCol": 19
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "start": 35,
+                  "startCol": 20,
+                  "end": 38,
+                  "endCol": 1,
+                  "children": [
                     {
-                      "atom": "for-each"
+                      "kind": "symbol",
+                      "text": "list",
+                      "start": 35,
+                      "startCol": 21,
+                      "end": 35,
+                      "endCol": 25
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "start": 35,
+                      "startCol": 26,
+                      "end": 35,
+                      "endCol": 41,
+                      "children": [
                         {
-                          "atom": "lambda"
+                          "kind": "symbol",
+                          "text": "cons",
+                          "start": 35,
+                          "startCol": 27,
+                          "end": 35,
+                          "endCol": 31
                         },
                         {
-                          "list": [
+                          "kind": "string",
+                          "text": "\"id\"",
+                          "start": 35,
+                          "startCol": 32,
+                          "end": 35,
+                          "endCol": 36
+                        },
+                        {
+                          "kind": "number",
+                          "text": "101",
+                          "start": 35,
+                          "startCol": 37,
+                          "end": 35,
+                          "endCol": 40
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "start": 36,
+                      "startCol": 1,
+                      "end": 36,
+                      "endCol": 22,
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons",
+                          "start": 36,
+                          "startCol": 2,
+                          "end": 36,
+                          "endCol": 6
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"customerId\"",
+                          "start": 36,
+                          "startCol": 7,
+                          "end": 36,
+                          "endCol": 19
+                        },
+                        {
+                          "kind": "number",
+                          "text": "2",
+                          "start": 36,
+                          "startCol": 20,
+                          "end": 36,
+                          "endCol": 21
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "start": 37,
+                      "startCol": 1,
+                      "end": 37,
+                      "endCol": 19,
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons",
+                          "start": 37,
+                          "startCol": 2,
+                          "end": 37,
+                          "endCol": 6
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"total\"",
+                          "start": 37,
+                          "startCol": 7,
+                          "end": 37,
+                          "endCol": 14
+                        },
+                        {
+                          "kind": "number",
+                          "text": "125",
+                          "start": 37,
+                          "startCol": 15,
+                          "end": 37,
+                          "endCol": 18
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "list",
+              "start": 40,
+              "startCol": 1,
+              "end": 44,
+              "endCol": 1,
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table",
+                  "start": 40,
+                  "startCol": 2,
+                  "end": 40,
+                  "endCol": 19
+                },
+                {
+                  "kind": "list",
+                  "start": 40,
+                  "startCol": 20,
+                  "end": 43,
+                  "endCol": 1,
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "list",
+                      "start": 40,
+                      "startCol": 21,
+                      "end": 40,
+                      "endCol": 25
+                    },
+                    {
+                      "kind": "list",
+                      "start": 40,
+                      "startCol": 26,
+                      "end": 40,
+                      "endCol": 41,
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons",
+                          "start": 40,
+                          "startCol": 27,
+                          "end": 40,
+                          "endCol": 31
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"id\"",
+                          "start": 40,
+                          "startCol": 32,
+                          "end": 40,
+                          "endCol": 36
+                        },
+                        {
+                          "kind": "number",
+                          "text": "102",
+                          "start": 40,
+                          "startCol": 37,
+                          "end": 40,
+                          "endCol": 40
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "start": 41,
+                      "startCol": 1,
+                      "end": 41,
+                      "endCol": 22,
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons",
+                          "start": 41,
+                          "startCol": 2,
+                          "end": 41,
+                          "endCol": 6
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"customerId\"",
+                          "start": 41,
+                          "startCol": 7,
+                          "end": 41,
+                          "endCol": 19
+                        },
+                        {
+                          "kind": "number",
+                          "text": "1",
+                          "start": 41,
+                          "startCol": 20,
+                          "end": 41,
+                          "endCol": 21
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "start": 42,
+                      "startCol": 1,
+                      "end": 42,
+                      "endCol": 19,
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons",
+                          "start": 42,
+                          "startCol": 2,
+                          "end": 42,
+                          "endCol": 6
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"total\"",
+                          "start": 42,
+                          "startCol": 7,
+                          "end": 42,
+                          "endCol": 14
+                        },
+                        {
+                          "kind": "number",
+                          "text": "300",
+                          "start": 42,
+                          "startCol": 15,
+                          "end": 42,
+                          "endCol": 18
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "start": 47,
+      "startCol": 0,
+      "end": 71,
+      "endCol": 1,
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "define",
+          "start": 47,
+          "startCol": 1,
+          "end": 47,
+          "endCol": 7
+        },
+        {
+          "kind": "symbol",
+          "text": "result",
+          "start": 47,
+          "startCol": 8,
+          "end": 47,
+          "endCol": 14
+        },
+        {
+          "kind": "list",
+          "start": 47,
+          "startCol": 15,
+          "end": 70,
+          "endCol": 1,
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "let",
+              "start": 47,
+              "startCol": 16,
+              "end": 47,
+              "endCol": 19
+            },
+            {
+              "kind": "list",
+              "start": 47,
+              "startCol": 20,
+              "end": 49,
+              "endCol": 1,
+              "children": [
+                {
+                  "kind": "list",
+                  "start": 47,
+                  "startCol": 21,
+                  "end": 48,
+                  "endCol": 1,
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "res14",
+                      "start": 47,
+                      "startCol": 22,
+                      "end": 47,
+                      "endCol": 27
+                    },
+                    {
+                      "kind": "list",
+                      "start": 47,
+                      "startCol": 28,
+                      "end": 47,
+                      "endCol": 34,
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "list",
+                          "start": 47,
+                          "startCol": 29,
+                          "end": 47,
+                          "endCol": 33
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "list",
+              "start": 50,
+              "startCol": 1,
+              "end": 69,
+              "endCol": 7,
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "begin",
+                  "start": 50,
+                  "startCol": 2,
+                  "end": 50,
+                  "endCol": 7
+                },
+                {
+                  "kind": "list",
+                  "start": 50,
+                  "startCol": 8,
+                  "end": 68,
+                  "endCol": 8,
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "for-each",
+                      "start": 50,
+                      "startCol": 9,
+                      "end": 50,
+                      "endCol": 17
+                    },
+                    {
+                      "kind": "list",
+                      "start": 50,
+                      "startCol": 18,
+                      "end": 67,
+                      "endCol": 1,
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "lambda",
+                          "start": 50,
+                          "startCol": 19,
+                          "end": 50,
+                          "endCol": 25
+                        },
+                        {
+                          "kind": "list",
+                          "start": 50,
+                          "startCol": 26,
+                          "end": 50,
+                          "endCol": 29,
+                          "children": [
                             {
-                              "atom": "o"
+                              "kind": "symbol",
+                              "text": "o",
+                              "start": 50,
+                              "startCol": 27,
+                              "end": 50,
+                              "endCol": 28
                             }
                           ]
                         },
                         {
-                          "list": [
+                          "kind": "list",
+                          "start": 51,
+                          "startCol": 1,
+                          "end": 66,
+                          "endCol": 11,
+                          "children": [
                             {
-                              "atom": "for-each"
+                              "kind": "symbol",
+                              "text": "for-each",
+                              "start": 51,
+                              "startCol": 2,
+                              "end": 51,
+                              "endCol": 10
                             },
                             {
-                              "list": [
+                              "kind": "list",
+                              "start": 51,
+                              "startCol": 11,
+                              "end": 65,
+                              "endCol": 1,
+                              "children": [
                                 {
-                                  "atom": "lambda"
+                                  "kind": "symbol",
+                                  "text": "lambda",
+                                  "start": 51,
+                                  "startCol": 12,
+                                  "end": 51,
+                                  "endCol": 18
                                 },
                                 {
-                                  "list": [
+                                  "kind": "list",
+                                  "start": 51,
+                                  "startCol": 19,
+                                  "end": 51,
+                                  "endCol": 22,
+                                  "children": [
                                     {
-                                      "atom": "c"
+                                      "kind": "symbol",
+                                      "text": "c",
+                                      "start": 51,
+                                      "startCol": 20,
+                                      "end": 51,
+                                      "endCol": 21
                                     }
                                   ]
                                 },
                                 {
-                                  "list": [
+                                  "kind": "list",
+                                  "start": 52,
+                                  "startCol": 1,
+                                  "end": 64,
+                                  "endCol": 1,
+                                  "children": [
                                     {
-                                      "atom": "set!"
+                                      "kind": "symbol",
+                                      "text": "set!",
+                                      "start": 52,
+                                      "startCol": 2,
+                                      "end": 52,
+                                      "endCol": 6
                                     },
                                     {
-                                      "atom": "res14"
+                                      "kind": "symbol",
+                                      "text": "res14",
+                                      "start": 52,
+                                      "startCol": 7,
+                                      "end": 52,
+                                      "endCol": 12
                                     },
                                     {
-                                      "list": [
+                                      "kind": "list",
+                                      "start": 52,
+                                      "startCol": 13,
+                                      "end": 63,
+                                      "endCol": 1,
+                                      "children": [
                                         {
-                                          "atom": "append"
+                                          "kind": "symbol",
+                                          "text": "append",
+                                          "start": 52,
+                                          "startCol": 14,
+                                          "end": 52,
+                                          "endCol": 20
                                         },
                                         {
-                                          "atom": "res14"
+                                          "kind": "symbol",
+                                          "text": "res14",
+                                          "start": 52,
+                                          "startCol": 21,
+                                          "end": 52,
+                                          "endCol": 26
                                         },
                                         {
-                                          "list": [
+                                          "kind": "list",
+                                          "start": 52,
+                                          "startCol": 27,
+                                          "end": 62,
+                                          "endCol": 1,
+                                          "children": [
                                             {
-                                              "atom": "list"
+                                              "kind": "symbol",
+                                              "text": "list",
+                                              "start": 52,
+                                              "startCol": 28,
+                                              "end": 52,
+                                              "endCol": 32
                                             },
                                             {
-                                              "list": [
+                                              "kind": "list",
+                                              "start": 52,
+                                              "startCol": 33,
+                                              "end": 61,
+                                              "endCol": 1,
+                                              "children": [
                                                 {
-                                                  "atom": "alist-\u003ehash-table"
+                                                  "kind": "symbol",
+                                                  "text": "alist-\u003ehash-table",
+                                                  "start": 52,
+                                                  "startCol": 34,
+                                                  "end": 52,
+                                                  "endCol": 51
                                                 },
                                                 {
-                                                  "list": [
+                                                  "kind": "list",
+                                                  "start": 52,
+                                                  "startCol": 52,
+                                                  "end": 60,
+                                                  "endCol": 1,
+                                                  "children": [
                                                     {
-                                                      "atom": "list"
+                                                      "kind": "symbol",
+                                                      "text": "list",
+                                                      "start": 52,
+                                                      "startCol": 53,
+                                                      "end": 52,
+                                                      "endCol": 57
                                                     },
                                                     {
-                                                      "list": [
+                                                      "kind": "list",
+                                                      "start": 52,
+                                                      "startCol": 58,
+                                                      "end": 53,
+                                                      "endCol": 1,
+                                                      "children": [
                                                         {
-                                                          "atom": "cons"
+                                                          "kind": "symbol",
+                                                          "text": "cons",
+                                                          "start": 52,
+                                                          "startCol": 59,
+                                                          "end": 52,
+                                                          "endCol": 63
                                                         },
                                                         {
-                                                          "atom": "orderId"
+                                                          "kind": "string",
+                                                          "text": "\"orderId\"",
+                                                          "start": 52,
+                                                          "startCol": 64,
+                                                          "end": 52,
+                                                          "endCol": 73
                                                         },
                                                         {
-                                                          "list": [
+                                                          "kind": "list",
+                                                          "start": 52,
+                                                          "startCol": 74,
+                                                          "end": 52,
+                                                          "endCol": 97,
+                                                          "children": [
                                                             {
-                                                              "atom": "hash-table-ref"
+                                                              "kind": "symbol",
+                                                              "text": "hash-table-ref",
+                                                              "start": 52,
+                                                              "startCol": 75,
+                                                              "end": 52,
+                                                              "endCol": 89
                                                             },
                                                             {
-                                                              "atom": "o"
+                                                              "kind": "symbol",
+                                                              "text": "o",
+                                                              "start": 52,
+                                                              "startCol": 90,
+                                                              "end": 52,
+                                                              "endCol": 91
                                                             },
                                                             {
-                                                              "atom": "id"
+                                                              "kind": "string",
+                                                              "text": "\"id\"",
+                                                              "start": 52,
+                                                              "startCol": 92,
+                                                              "end": 52,
+                                                              "endCol": 96
                                                             }
                                                           ]
                                                         }
                                                       ]
                                                     },
                                                     {
-                                                      "list": [
+                                                      "kind": "list",
+                                                      "start": 54,
+                                                      "startCol": 1,
+                                                      "end": 55,
+                                                      "endCol": 1,
+                                                      "children": [
                                                         {
-                                                          "atom": "cons"
+                                                          "kind": "symbol",
+                                                          "text": "cons",
+                                                          "start": 54,
+                                                          "startCol": 2,
+                                                          "end": 54,
+                                                          "endCol": 6
                                                         },
                                                         {
-                                                          "atom": "orderCustomerId"
+                                                          "kind": "string",
+                                                          "text": "\"orderCustomerId\"",
+                                                          "start": 54,
+                                                          "startCol": 7,
+                                                          "end": 54,
+                                                          "endCol": 24
                                                         },
                                                         {
-                                                          "list": [
+                                                          "kind": "list",
+                                                          "start": 54,
+                                                          "startCol": 25,
+                                                          "end": 54,
+                                                          "endCol": 56,
+                                                          "children": [
                                                             {
-                                                              "atom": "hash-table-ref"
+                                                              "kind": "symbol",
+                                                              "text": "hash-table-ref",
+                                                              "start": 54,
+                                                              "startCol": 26,
+                                                              "end": 54,
+                                                              "endCol": 40
                                                             },
                                                             {
-                                                              "atom": "o"
+                                                              "kind": "symbol",
+                                                              "text": "o",
+                                                              "start": 54,
+                                                              "startCol": 41,
+                                                              "end": 54,
+                                                              "endCol": 42
                                                             },
                                                             {
-                                                              "atom": "customerId"
+                                                              "kind": "string",
+                                                              "text": "\"customerId\"",
+                                                              "start": 54,
+                                                              "startCol": 43,
+                                                              "end": 54,
+                                                              "endCol": 55
                                                             }
                                                           ]
                                                         }
                                                       ]
                                                     },
                                                     {
-                                                      "list": [
+                                                      "kind": "list",
+                                                      "start": 56,
+                                                      "startCol": 1,
+                                                      "end": 57,
+                                                      "endCol": 1,
+                                                      "children": [
                                                         {
-                                                          "atom": "cons"
+                                                          "kind": "symbol",
+                                                          "text": "cons",
+                                                          "start": 56,
+                                                          "startCol": 2,
+                                                          "end": 56,
+                                                          "endCol": 6
                                                         },
                                                         {
-                                                          "atom": "pairedCustomerName"
+                                                          "kind": "string",
+                                                          "text": "\"pairedCustomerName\"",
+                                                          "start": 56,
+                                                          "startCol": 7,
+                                                          "end": 56,
+                                                          "endCol": 27
                                                         },
                                                         {
-                                                          "list": [
+                                                          "kind": "list",
+                                                          "start": 56,
+                                                          "startCol": 28,
+                                                          "end": 56,
+                                                          "endCol": 53,
+                                                          "children": [
                                                             {
-                                                              "atom": "hash-table-ref"
+                                                              "kind": "symbol",
+                                                              "text": "hash-table-ref",
+                                                              "start": 56,
+                                                              "startCol": 29,
+                                                              "end": 56,
+                                                              "endCol": 43
                                                             },
                                                             {
-                                                              "atom": "c"
+                                                              "kind": "symbol",
+                                                              "text": "c",
+                                                              "start": 56,
+                                                              "startCol": 44,
+                                                              "end": 56,
+                                                              "endCol": 45
                                                             },
                                                             {
-                                                              "atom": "name"
+                                                              "kind": "string",
+                                                              "text": "\"name\"",
+                                                              "start": 56,
+                                                              "startCol": 46,
+                                                              "end": 56,
+                                                              "endCol": 52
                                                             }
                                                           ]
                                                         }
                                                       ]
                                                     },
                                                     {
-                                                      "list": [
+                                                      "kind": "list",
+                                                      "start": 58,
+                                                      "startCol": 1,
+                                                      "end": 59,
+                                                      "endCol": 1,
+                                                      "children": [
                                                         {
-                                                          "atom": "cons"
+                                                          "kind": "symbol",
+                                                          "text": "cons",
+                                                          "start": 58,
+                                                          "startCol": 2,
+                                                          "end": 58,
+                                                          "endCol": 6
                                                         },
                                                         {
-                                                          "atom": "orderTotal"
+                                                          "kind": "string",
+                                                          "text": "\"orderTotal\"",
+                                                          "start": 58,
+                                                          "startCol": 7,
+                                                          "end": 58,
+                                                          "endCol": 19
                                                         },
                                                         {
-                                                          "list": [
+                                                          "kind": "list",
+                                                          "start": 58,
+                                                          "startCol": 20,
+                                                          "end": 58,
+                                                          "endCol": 46,
+                                                          "children": [
                                                             {
-                                                              "atom": "hash-table-ref"
+                                                              "kind": "symbol",
+                                                              "text": "hash-table-ref",
+                                                              "start": 58,
+                                                              "startCol": 21,
+                                                              "end": 58,
+                                                              "endCol": 35
                                                             },
                                                             {
-                                                              "atom": "o"
+                                                              "kind": "symbol",
+                                                              "text": "o",
+                                                              "start": 58,
+                                                              "startCol": 36,
+                                                              "end": 58,
+                                                              "endCol": 37
                                                             },
                                                             {
-                                                              "atom": "total"
+                                                              "kind": "string",
+                                                              "text": "\"total\"",
+                                                              "start": 58,
+                                                              "startCol": 38,
+                                                              "end": 58,
+                                                              "endCol": 45
                                                             }
                                                           ]
                                                         }
@@ -891,19 +2244,34 @@
                               ]
                             },
                             {
-                              "atom": "customers"
+                              "kind": "symbol",
+                              "text": "customers",
+                              "start": 66,
+                              "startCol": 1,
+                              "end": 66,
+                              "endCol": 10
                             }
                           ]
                         }
                       ]
                     },
                     {
-                      "atom": "orders"
+                      "kind": "symbol",
+                      "text": "orders",
+                      "start": 68,
+                      "startCol": 1,
+                      "end": 68,
+                      "endCol": 7
                     }
                   ]
                 },
                 {
-                  "atom": "res14"
+                  "kind": "symbol",
+                  "text": "res14",
+                  "start": 69,
+                  "startCol": 1,
+                  "end": 69,
+                  "endCol": 6
                 }
               ]
             }
@@ -912,119 +2280,319 @@
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "start": 72,
+      "startCol": 0,
+      "end": 73,
+      "endCol": 1,
+      "children": [
         {
-          "atom": "display"
+          "kind": "symbol",
+          "text": "display",
+          "start": 72,
+          "startCol": 1,
+          "end": 72,
+          "endCol": 8
         },
         {
-          "list": [
+          "kind": "list",
+          "start": 72,
+          "startCol": 9,
+          "end": 72,
+          "endCol": 64,
+          "children": [
             {
-              "atom": "to-str"
+              "kind": "symbol",
+              "text": "to-str",
+              "start": 72,
+              "startCol": 10,
+              "end": 72,
+              "endCol": 16
             },
             {
-              "atom": "--- Cross Join: All order-customer pairs ---"
+              "kind": "string",
+              "text": "\"--- Cross Join: All order-customer pairs ---\"",
+              "start": 72,
+              "startCol": 17,
+              "end": 72,
+              "endCol": 63
             }
           ]
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "start": 74,
+      "startCol": 0,
+      "end": 74,
+      "endCol": 9,
+      "children": [
         {
-          "atom": "newline"
+          "kind": "symbol",
+          "text": "newline",
+          "start": 74,
+          "startCol": 1,
+          "end": 74,
+          "endCol": 8
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "start": 75,
+      "startCol": 0,
+      "end": 123,
+      "endCol": 1,
+      "children": [
         {
-          "atom": "call/cc"
+          "kind": "symbol",
+          "text": "call/cc",
+          "start": 75,
+          "startCol": 1,
+          "end": 75,
+          "endCol": 8
         },
         {
-          "list": [
+          "kind": "list",
+          "start": 75,
+          "startCol": 9,
+          "end": 122,
+          "endCol": 1,
+          "children": [
             {
-              "atom": "lambda"
+              "kind": "symbol",
+              "text": "lambda",
+              "start": 75,
+              "startCol": 10,
+              "end": 75,
+              "endCol": 16
             },
             {
-              "list": [
+              "kind": "list",
+              "start": 75,
+              "startCol": 17,
+              "end": 75,
+              "endCol": 26,
+              "children": [
                 {
-                  "atom": "break16"
+                  "kind": "symbol",
+                  "text": "break16",
+                  "start": 75,
+                  "startCol": 18,
+                  "end": 75,
+                  "endCol": 25
                 }
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "start": 76,
+              "startCol": 1,
+              "end": 121,
+              "endCol": 1,
+              "children": [
                 {
-                  "atom": "letrec"
+                  "kind": "symbol",
+                  "text": "letrec",
+                  "start": 76,
+                  "startCol": 2,
+                  "end": 76,
+                  "endCol": 8
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "start": 76,
+                  "startCol": 9,
+                  "end": 119,
+                  "endCol": 1,
+                  "children": [
                     {
-                      "list": [
+                      "kind": "list",
+                      "start": 76,
+                      "startCol": 10,
+                      "end": 118,
+                      "endCol": 1,
+                      "children": [
                         {
-                          "atom": "loop15"
+                          "kind": "symbol",
+                          "text": "loop15",
+                          "start": 76,
+                          "startCol": 11,
+                          "end": 76,
+                          "endCol": 17
                         },
                         {
-                          "list": [
+                          "kind": "list",
+                          "start": 76,
+                          "startCol": 18,
+                          "end": 117,
+                          "endCol": 1,
+                          "children": [
                             {
-                              "atom": "lambda"
+                              "kind": "symbol",
+                              "text": "lambda",
+                              "start": 76,
+                              "startCol": 19,
+                              "end": 76,
+                              "endCol": 25
                             },
                             {
-                              "list": [
+                              "kind": "list",
+                              "start": 76,
+                              "startCol": 26,
+                              "end": 76,
+                              "endCol": 30,
+                              "children": [
                                 {
-                                  "atom": "xs"
+                                  "kind": "symbol",
+                                  "text": "xs",
+                                  "start": 76,
+                                  "startCol": 27,
+                                  "end": 76,
+                                  "endCol": 29
                                 }
                               ]
                             },
                             {
-                              "list": [
+                              "kind": "list",
+                              "start": 77,
+                              "startCol": 1,
+                              "end": 116,
+                              "endCol": 1,
+                              "children": [
                                 {
-                                  "atom": "if"
+                                  "kind": "symbol",
+                                  "text": "if",
+                                  "start": 77,
+                                  "startCol": 2,
+                                  "end": 77,
+                                  "endCol": 4
                                 },
                                 {
-                                  "list": [
+                                  "kind": "list",
+                                  "start": 77,
+                                  "startCol": 5,
+                                  "end": 77,
+                                  "endCol": 15,
+                                  "children": [
                                     {
-                                      "atom": "null?"
+                                      "kind": "symbol",
+                                      "text": "null?",
+                                      "start": 77,
+                                      "startCol": 6,
+                                      "end": 77,
+                                      "endCol": 11
                                     },
                                     {
-                                      "atom": "xs"
+                                      "kind": "symbol",
+                                      "text": "xs",
+                                      "start": 77,
+                                      "startCol": 12,
+                                      "end": 77,
+                                      "endCol": 14
                                     }
                                   ]
                                 },
                                 {
-                                  "list": [
+                                  "kind": "list",
+                                  "start": 78,
+                                  "startCol": 1,
+                                  "end": 78,
+                                  "endCol": 12,
+                                  "children": [
                                     {
-                                      "atom": "quote"
+                                      "kind": "symbol",
+                                      "text": "quote",
+                                      "start": 78,
+                                      "startCol": 2,
+                                      "end": 78,
+                                      "endCol": 7
                                     },
                                     {
-                                      "atom": "nil"
+                                      "kind": "symbol",
+                                      "text": "nil",
+                                      "start": 78,
+                                      "startCol": 8,
+                                      "end": 78,
+                                      "endCol": 11
                                     }
                                   ]
                                 },
                                 {
-                                  "list": [
+                                  "kind": "list",
+                                  "start": 79,
+                                  "startCol": 1,
+                                  "end": 115,
+                                  "endCol": 1,
+                                  "children": [
                                     {
-                                      "atom": "begin"
+                                      "kind": "symbol",
+                                      "text": "begin",
+                                      "start": 79,
+                                      "startCol": 2,
+                                      "end": 79,
+                                      "endCol": 7
                                     },
                                     {
-                                      "list": [
+                                      "kind": "list",
+                                      "start": 79,
+                                      "startCol": 8,
+                                      "end": 112,
+                                      "endCol": 1,
+                                      "children": [
                                         {
-                                          "atom": "let"
+                                          "kind": "symbol",
+                                          "text": "let",
+                                          "start": 79,
+                                          "startCol": 9,
+                                          "end": 79,
+                                          "endCol": 12
                                         },
                                         {
-                                          "list": [
+                                          "kind": "list",
+                                          "start": 79,
+                                          "startCol": 13,
+                                          "end": 81,
+                                          "endCol": 1,
+                                          "children": [
                                             {
-                                              "list": [
+                                              "kind": "list",
+                                              "start": 79,
+                                              "startCol": 14,
+                                              "end": 80,
+                                              "endCol": 1,
+                                              "children": [
                                                 {
-                                                  "atom": "entry"
+                                                  "kind": "symbol",
+                                                  "text": "entry",
+                                                  "start": 79,
+                                                  "startCol": 15,
+                                                  "end": 79,
+                                                  "endCol": 20
                                                 },
                                                 {
-                                                  "list": [
+                                                  "kind": "list",
+                                                  "start": 79,
+                                                  "startCol": 21,
+                                                  "end": 79,
+                                                  "endCol": 29,
+                                                  "children": [
                                                     {
-                                                      "atom": "car"
+                                                      "kind": "symbol",
+                                                      "text": "car",
+                                                      "start": 79,
+                                                      "startCol": 22,
+                                                      "end": 79,
+                                                      "endCol": 25
                                                     },
                                                     {
-                                                      "atom": "xs"
+                                                      "kind": "symbol",
+                                                      "text": "xs",
+                                                      "start": 79,
+                                                      "startCol": 26,
+                                                      "end": 79,
+                                                      "endCol": 28
                                                     }
                                                   ]
                                                 }
@@ -1033,57 +2601,147 @@
                                           ]
                                         },
                                         {
-                                          "list": [
+                                          "kind": "list",
+                                          "start": 82,
+                                          "startCol": 1,
+                                          "end": 111,
+                                          "endCol": 1,
+                                          "children": [
                                             {
-                                              "atom": "begin"
+                                              "kind": "symbol",
+                                              "text": "begin",
+                                              "start": 82,
+                                              "startCol": 2,
+                                              "end": 82,
+                                              "endCol": 7
                                             },
                                             {
-                                              "list": [
+                                              "kind": "list",
+                                              "start": 82,
+                                              "startCol": 8,
+                                              "end": 83,
+                                              "endCol": 1,
+                                              "children": [
                                                 {
-                                                  "atom": "display"
+                                                  "kind": "symbol",
+                                                  "text": "display",
+                                                  "start": 82,
+                                                  "startCol": 9,
+                                                  "end": 82,
+                                                  "endCol": 16
                                                 },
                                                 {
-                                                  "list": [
+                                                  "kind": "list",
+                                                  "start": 82,
+                                                  "startCol": 17,
+                                                  "end": 82,
+                                                  "endCol": 33,
+                                                  "children": [
                                                     {
-                                                      "atom": "to-str"
+                                                      "kind": "symbol",
+                                                      "text": "to-str",
+                                                      "start": 82,
+                                                      "startCol": 18,
+                                                      "end": 82,
+                                                      "endCol": 24
                                                     },
                                                     {
-                                                      "atom": "Order"
+                                                      "kind": "string",
+                                                      "text": "\"Order\"",
+                                                      "start": 82,
+                                                      "startCol": 25,
+                                                      "end": 82,
+                                                      "endCol": 32
                                                     }
                                                   ]
                                                 }
                                               ]
                                             },
                                             {
-                                              "list": [
+                                              "kind": "list",
+                                              "start": 84,
+                                              "startCol": 1,
+                                              "end": 84,
+                                              "endCol": 14,
+                                              "children": [
                                                 {
-                                                  "atom": "display"
+                                                  "kind": "symbol",
+                                                  "text": "display",
+                                                  "start": 84,
+                                                  "startCol": 2,
+                                                  "end": 84,
+                                                  "endCol": 9
                                                 },
                                                 {
-                                                  "atom": " "
+                                                  "kind": "string",
+                                                  "text": "\" \"",
+                                                  "start": 84,
+                                                  "startCol": 10,
+                                                  "end": 84,
+                                                  "endCol": 13
                                                 }
                                               ]
                                             },
                                             {
-                                              "list": [
+                                              "kind": "list",
+                                              "start": 85,
+                                              "startCol": 1,
+                                              "end": 87,
+                                              "endCol": 1,
+                                              "children": [
                                                 {
-                                                  "atom": "display"
+                                                  "kind": "symbol",
+                                                  "text": "display",
+                                                  "start": 85,
+                                                  "startCol": 2,
+                                                  "end": 85,
+                                                  "endCol": 9
                                                 },
                                                 {
-                                                  "list": [
+                                                  "kind": "list",
+                                                  "start": 85,
+                                                  "startCol": 10,
+                                                  "end": 86,
+                                                  "endCol": 1,
+                                                  "children": [
                                                     {
-                                                      "atom": "to-str"
+                                                      "kind": "symbol",
+                                                      "text": "to-str",
+                                                      "start": 85,
+                                                      "startCol": 11,
+                                                      "end": 85,
+                                                      "endCol": 17
                                                     },
                                                     {
-                                                      "list": [
+                                                      "kind": "list",
+                                                      "start": 85,
+                                                      "startCol": 18,
+                                                      "end": 85,
+                                                      "endCol": 50,
+                                                      "children": [
                                                         {
-                                                          "atom": "hash-table-ref"
+                                                          "kind": "symbol",
+                                                          "text": "hash-table-ref",
+                                                          "start": 85,
+                                                          "startCol": 19,
+                                                          "end": 85,
+                                                          "endCol": 33
                                                         },
                                                         {
-                                                          "atom": "entry"
+                                                          "kind": "symbol",
+                                                          "text": "entry",
+                                                          "start": 85,
+                                                          "startCol": 34,
+                                                          "end": 85,
+                                                          "endCol": 39
                                                         },
                                                         {
-                                                          "atom": "orderId"
+                                                          "kind": "string",
+                                                          "text": "\"orderId\"",
+                                                          "start": 85,
+                                                          "startCol": 40,
+                                                          "end": 85,
+                                                          "endCol": 49
                                                         }
                                                       ]
                                                     }
@@ -1092,62 +2750,157 @@
                                               ]
                                             },
                                             {
-                                              "list": [
+                                              "kind": "list",
+                                              "start": 88,
+                                              "startCol": 1,
+                                              "end": 88,
+                                              "endCol": 14,
+                                              "children": [
                                                 {
-                                                  "atom": "display"
+                                                  "kind": "symbol",
+                                                  "text": "display",
+                                                  "start": 88,
+                                                  "startCol": 2,
+                                                  "end": 88,
+                                                  "endCol": 9
                                                 },
                                                 {
-                                                  "atom": " "
+                                                  "kind": "string",
+                                                  "text": "\" \"",
+                                                  "start": 88,
+                                                  "startCol": 10,
+                                                  "end": 88,
+                                                  "endCol": 13
                                                 }
                                               ]
                                             },
                                             {
-                                              "list": [
+                                              "kind": "list",
+                                              "start": 89,
+                                              "startCol": 1,
+                                              "end": 90,
+                                              "endCol": 1,
+                                              "children": [
                                                 {
-                                                  "atom": "display"
+                                                  "kind": "symbol",
+                                                  "text": "display",
+                                                  "start": 89,
+                                                  "startCol": 2,
+                                                  "end": 89,
+                                                  "endCol": 9
                                                 },
                                                 {
-                                                  "list": [
+                                                  "kind": "list",
+                                                  "start": 89,
+                                                  "startCol": 10,
+                                                  "end": 89,
+                                                  "endCol": 33,
+                                                  "children": [
                                                     {
-                                                      "atom": "to-str"
+                                                      "kind": "symbol",
+                                                      "text": "to-str",
+                                                      "start": 89,
+                                                      "startCol": 11,
+                                                      "end": 89,
+                                                      "endCol": 17
                                                     },
                                                     {
-                                                      "atom": "(customerId:"
+                                                      "kind": "string",
+                                                      "text": "\"(customerId:\"",
+                                                      "start": 89,
+                                                      "startCol": 18,
+                                                      "end": 89,
+                                                      "endCol": 32
                                                     }
                                                   ]
                                                 }
                                               ]
                                             },
                                             {
-                                              "list": [
+                                              "kind": "list",
+                                              "start": 91,
+                                              "startCol": 1,
+                                              "end": 91,
+                                              "endCol": 14,
+                                              "children": [
                                                 {
-                                                  "atom": "display"
+                                                  "kind": "symbol",
+                                                  "text": "display",
+                                                  "start": 91,
+                                                  "startCol": 2,
+                                                  "end": 91,
+                                                  "endCol": 9
                                                 },
                                                 {
-                                                  "atom": " "
+                                                  "kind": "string",
+                                                  "text": "\" \"",
+                                                  "start": 91,
+                                                  "startCol": 10,
+                                                  "end": 91,
+                                                  "endCol": 13
                                                 }
                                               ]
                                             },
                                             {
-                                              "list": [
+                                              "kind": "list",
+                                              "start": 92,
+                                              "startCol": 1,
+                                              "end": 94,
+                                              "endCol": 1,
+                                              "children": [
                                                 {
-                                                  "atom": "display"
+                                                  "kind": "symbol",
+                                                  "text": "display",
+                                                  "start": 92,
+                                                  "startCol": 2,
+                                                  "end": 92,
+                                                  "endCol": 9
                                                 },
                                                 {
-                                                  "list": [
+                                                  "kind": "list",
+                                                  "start": 92,
+                                                  "startCol": 10,
+                                                  "end": 93,
+                                                  "endCol": 1,
+                                                  "children": [
                                                     {
-                                                      "atom": "to-str"
+                                                      "kind": "symbol",
+                                                      "text": "to-str",
+                                                      "start": 92,
+                                                      "startCol": 11,
+                                                      "end": 92,
+                                                      "endCol": 17
                                                     },
                                                     {
-                                                      "list": [
+                                                      "kind": "list",
+                                                      "start": 92,
+                                                      "startCol": 18,
+                                                      "end": 92,
+                                                      "endCol": 58,
+                                                      "children": [
                                                         {
-                                                          "atom": "hash-table-ref"
+                                                          "kind": "symbol",
+                                                          "text": "hash-table-ref",
+                                                          "start": 92,
+                                                          "startCol": 19,
+                                                          "end": 92,
+                                                          "endCol": 33
                                                         },
                                                         {
-                                                          "atom": "entry"
+                                                          "kind": "symbol",
+                                                          "text": "entry",
+                                                          "start": 92,
+                                                          "startCol": 34,
+                                                          "end": 92,
+                                                          "endCol": 39
                                                         },
                                                         {
-                                                          "atom": "orderCustomerId"
+                                                          "kind": "string",
+                                                          "text": "\"orderCustomerId\"",
+                                                          "start": 92,
+                                                          "startCol": 40,
+                                                          "end": 92,
+                                                          "endCol": 57
                                                         }
                                                       ]
                                                     }
@@ -1156,62 +2909,157 @@
                                               ]
                                             },
                                             {
-                                              "list": [
+                                              "kind": "list",
+                                              "start": 95,
+                                              "startCol": 1,
+                                              "end": 95,
+                                              "endCol": 14,
+                                              "children": [
                                                 {
-                                                  "atom": "display"
+                                                  "kind": "symbol",
+                                                  "text": "display",
+                                                  "start": 95,
+                                                  "startCol": 2,
+                                                  "end": 95,
+                                                  "endCol": 9
                                                 },
                                                 {
-                                                  "atom": " "
+                                                  "kind": "string",
+                                                  "text": "\" \"",
+                                                  "start": 95,
+                                                  "startCol": 10,
+                                                  "end": 95,
+                                                  "endCol": 13
                                                 }
                                               ]
                                             },
                                             {
-                                              "list": [
+                                              "kind": "list",
+                                              "start": 96,
+                                              "startCol": 1,
+                                              "end": 97,
+                                              "endCol": 1,
+                                              "children": [
                                                 {
-                                                  "atom": "display"
+                                                  "kind": "symbol",
+                                                  "text": "display",
+                                                  "start": 96,
+                                                  "startCol": 2,
+                                                  "end": 96,
+                                                  "endCol": 9
                                                 },
                                                 {
-                                                  "list": [
+                                                  "kind": "list",
+                                                  "start": 96,
+                                                  "startCol": 10,
+                                                  "end": 96,
+                                                  "endCol": 31,
+                                                  "children": [
                                                     {
-                                                      "atom": "to-str"
+                                                      "kind": "symbol",
+                                                      "text": "to-str",
+                                                      "start": 96,
+                                                      "startCol": 11,
+                                                      "end": 96,
+                                                      "endCol": 17
                                                     },
                                                     {
-                                                      "atom": ", total: $"
+                                                      "kind": "string",
+                                                      "text": "\", total: $\"",
+                                                      "start": 96,
+                                                      "startCol": 18,
+                                                      "end": 96,
+                                                      "endCol": 30
                                                     }
                                                   ]
                                                 }
                                               ]
                                             },
                                             {
-                                              "list": [
+                                              "kind": "list",
+                                              "start": 98,
+                                              "startCol": 1,
+                                              "end": 98,
+                                              "endCol": 14,
+                                              "children": [
                                                 {
-                                                  "atom": "display"
+                                                  "kind": "symbol",
+                                                  "text": "display",
+                                                  "start": 98,
+                                                  "startCol": 2,
+                                                  "end": 98,
+                                                  "endCol": 9
                                                 },
                                                 {
-                                                  "atom": " "
+                                                  "kind": "string",
+                                                  "text": "\" \"",
+                                                  "start": 98,
+                                                  "startCol": 10,
+                                                  "end": 98,
+                                                  "endCol": 13
                                                 }
                                               ]
                                             },
                                             {
-                                              "list": [
+                                              "kind": "list",
+                                              "start": 99,
+                                              "startCol": 1,
+                                              "end": 101,
+                                              "endCol": 1,
+                                              "children": [
                                                 {
-                                                  "atom": "display"
+                                                  "kind": "symbol",
+                                                  "text": "display",
+                                                  "start": 99,
+                                                  "startCol": 2,
+                                                  "end": 99,
+                                                  "endCol": 9
                                                 },
                                                 {
-                                                  "list": [
+                                                  "kind": "list",
+                                                  "start": 99,
+                                                  "startCol": 10,
+                                                  "end": 100,
+                                                  "endCol": 1,
+                                                  "children": [
                                                     {
-                                                      "atom": "to-str"
+                                                      "kind": "symbol",
+                                                      "text": "to-str",
+                                                      "start": 99,
+                                                      "startCol": 11,
+                                                      "end": 99,
+                                                      "endCol": 17
                                                     },
                                                     {
-                                                      "list": [
+                                                      "kind": "list",
+                                                      "start": 99,
+                                                      "startCol": 18,
+                                                      "end": 99,
+                                                      "endCol": 53,
+                                                      "children": [
                                                         {
-                                                          "atom": "hash-table-ref"
+                                                          "kind": "symbol",
+                                                          "text": "hash-table-ref",
+                                                          "start": 99,
+                                                          "startCol": 19,
+                                                          "end": 99,
+                                                          "endCol": 33
                                                         },
                                                         {
-                                                          "atom": "entry"
+                                                          "kind": "symbol",
+                                                          "text": "entry",
+                                                          "start": 99,
+                                                          "startCol": 34,
+                                                          "end": 99,
+                                                          "endCol": 39
                                                         },
                                                         {
-                                                          "atom": "orderTotal"
+                                                          "kind": "string",
+                                                          "text": "\"orderTotal\"",
+                                                          "start": 99,
+                                                          "startCol": 40,
+                                                          "end": 99,
+                                                          "endCol": 52
                                                         }
                                                       ]
                                                     }
@@ -1220,62 +3068,157 @@
                                               ]
                                             },
                                             {
-                                              "list": [
+                                              "kind": "list",
+                                              "start": 102,
+                                              "startCol": 1,
+                                              "end": 102,
+                                              "endCol": 14,
+                                              "children": [
                                                 {
-                                                  "atom": "display"
+                                                  "kind": "symbol",
+                                                  "text": "display",
+                                                  "start": 102,
+                                                  "startCol": 2,
+                                                  "end": 102,
+                                                  "endCol": 9
                                                 },
                                                 {
-                                                  "atom": " "
+                                                  "kind": "string",
+                                                  "text": "\" \"",
+                                                  "start": 102,
+                                                  "startCol": 10,
+                                                  "end": 102,
+                                                  "endCol": 13
                                                 }
                                               ]
                                             },
                                             {
-                                              "list": [
+                                              "kind": "list",
+                                              "start": 103,
+                                              "startCol": 1,
+                                              "end": 105,
+                                              "endCol": 1,
+                                              "children": [
                                                 {
-                                                  "atom": "display"
+                                                  "kind": "symbol",
+                                                  "text": "display",
+                                                  "start": 103,
+                                                  "startCol": 2,
+                                                  "end": 103,
+                                                  "endCol": 9
                                                 },
                                                 {
-                                                  "list": [
+                                                  "kind": "list",
+                                                  "start": 103,
+                                                  "startCol": 10,
+                                                  "end": 104,
+                                                  "endCol": 14,
+                                                  "children": [
                                                     {
-                                                      "atom": "to-str"
+                                                      "kind": "symbol",
+                                                      "text": "to-str",
+                                                      "start": 103,
+                                                      "startCol": 11,
+                                                      "end": 103,
+                                                      "endCol": 17
                                                     },
                                                     {
-                                                      "atom": ")\n paired with"
+                                                      "kind": "string",
+                                                      "text": "\")\n paired with\"",
+                                                      "start": 103,
+                                                      "startCol": 18,
+                                                      "end": 104,
+                                                      "endCol": 13
                                                     }
                                                   ]
                                                 }
                                               ]
                                             },
                                             {
-                                              "list": [
+                                              "kind": "list",
+                                              "start": 106,
+                                              "startCol": 1,
+                                              "end": 106,
+                                              "endCol": 14,
+                                              "children": [
                                                 {
-                                                  "atom": "display"
+                                                  "kind": "symbol",
+                                                  "text": "display",
+                                                  "start": 106,
+                                                  "startCol": 2,
+                                                  "end": 106,
+                                                  "endCol": 9
                                                 },
                                                 {
-                                                  "atom": " "
+                                                  "kind": "string",
+                                                  "text": "\" \"",
+                                                  "start": 106,
+                                                  "startCol": 10,
+                                                  "end": 106,
+                                                  "endCol": 13
                                                 }
                                               ]
                                             },
                                             {
-                                              "list": [
+                                              "kind": "list",
+                                              "start": 107,
+                                              "startCol": 1,
+                                              "end": 109,
+                                              "endCol": 1,
+                                              "children": [
                                                 {
-                                                  "atom": "display"
+                                                  "kind": "symbol",
+                                                  "text": "display",
+                                                  "start": 107,
+                                                  "startCol": 2,
+                                                  "end": 107,
+                                                  "endCol": 9
                                                 },
                                                 {
-                                                  "list": [
+                                                  "kind": "list",
+                                                  "start": 107,
+                                                  "startCol": 10,
+                                                  "end": 108,
+                                                  "endCol": 1,
+                                                  "children": [
                                                     {
-                                                      "atom": "to-str"
+                                                      "kind": "symbol",
+                                                      "text": "to-str",
+                                                      "start": 107,
+                                                      "startCol": 11,
+                                                      "end": 107,
+                                                      "endCol": 17
                                                     },
                                                     {
-                                                      "list": [
+                                                      "kind": "list",
+                                                      "start": 107,
+                                                      "startCol": 18,
+                                                      "end": 107,
+                                                      "endCol": 61,
+                                                      "children": [
                                                         {
-                                                          "atom": "hash-table-ref"
+                                                          "kind": "symbol",
+                                                          "text": "hash-table-ref",
+                                                          "start": 107,
+                                                          "startCol": 19,
+                                                          "end": 107,
+                                                          "endCol": 33
                                                         },
                                                         {
-                                                          "atom": "entry"
+                                                          "kind": "symbol",
+                                                          "text": "entry",
+                                                          "start": 107,
+                                                          "startCol": 34,
+                                                          "end": 107,
+                                                          "endCol": 39
                                                         },
                                                         {
-                                                          "atom": "pairedCustomerName"
+                                                          "kind": "string",
+                                                          "text": "\"pairedCustomerName\"",
+                                                          "start": 107,
+                                                          "startCol": 40,
+                                                          "end": 107,
+                                                          "endCol": 60
                                                         }
                                                       ]
                                                     }
@@ -1284,9 +3227,19 @@
                                               ]
                                             },
                                             {
-                                              "list": [
+                                              "kind": "list",
+                                              "start": 110,
+                                              "startCol": 1,
+                                              "end": 110,
+                                              "endCol": 10,
+                                              "children": [
                                                 {
-                                                  "atom": "newline"
+                                                  "kind": "symbol",
+                                                  "text": "newline",
+                                                  "start": 110,
+                                                  "startCol": 2,
+                                                  "end": 110,
+                                                  "endCol": 9
                                                 }
                                               ]
                                             }
@@ -1295,17 +3248,42 @@
                                       ]
                                     },
                                     {
-                                      "list": [
+                                      "kind": "list",
+                                      "start": 113,
+                                      "startCol": 1,
+                                      "end": 114,
+                                      "endCol": 1,
+                                      "children": [
                                         {
-                                          "atom": "loop15"
+                                          "kind": "symbol",
+                                          "text": "loop15",
+                                          "start": 113,
+                                          "startCol": 2,
+                                          "end": 113,
+                                          "endCol": 8
                                         },
                                         {
-                                          "list": [
+                                          "kind": "list",
+                                          "start": 113,
+                                          "startCol": 9,
+                                          "end": 113,
+                                          "endCol": 17,
+                                          "children": [
                                             {
-                                              "atom": "cdr"
+                                              "kind": "symbol",
+                                              "text": "cdr",
+                                              "start": 113,
+                                              "startCol": 10,
+                                              "end": 113,
+                                              "endCol": 13
                                             },
                                             {
-                                              "atom": "xs"
+                                              "kind": "symbol",
+                                              "text": "xs",
+                                              "start": 113,
+                                              "startCol": 14,
+                                              "end": 113,
+                                              "endCol": 16
                                             }
                                           ]
                                         }
@@ -1322,12 +3300,27 @@
                   ]
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "start": 120,
+                  "startCol": 1,
+                  "end": 120,
+                  "endCol": 16,
+                  "children": [
                     {
-                      "atom": "loop15"
+                      "kind": "symbol",
+                      "text": "loop15",
+                      "start": 120,
+                      "startCol": 2,
+                      "end": 120,
+                      "endCol": 8
                     },
                     {
-                      "atom": "result"
+                      "kind": "symbol",
+                      "text": "result",
+                      "start": 120,
+                      "startCol": 9,
+                      "end": 120,
+                      "endCol": 15
                     }
                   ]
                 }
