@@ -1,517 +1,645 @@
 {
-  "stmts": [
-    {
-      "Lhs": [
-        {
-          "Value": "x"
-        }
-      ],
-      "Rhs": [
-        {
-          "Value": "2"
-        }
-      ]
-    },
-    {
-      "Lhs": [
-        {
-          "Value": "label"
-        }
-      ],
-      "Rhs": [
-        {
-          "Func": {
-            "ParList": {
-              "HasVargs": false,
-              "Names": [
-                "_m"
-              ]
-            },
-            "Stmts": [
-              {
-                "Condition": {
-                  "Operator": "==",
-                  "Lhs": {
-                    "Value": "_m"
-                  },
-                  "Rhs": {
-                    "Value": "1"
-                  }
-                },
-                "Then": [
-                  {
-                    "Exprs": [
-                      {
-                        "Value": "one"
-                      }
-                    ]
-                  }
-                ],
-                "Else": [
-                  {
-                    "Condition": {
-                      "Operator": "==",
-                      "Lhs": {
-                        "Value": "_m"
-                      },
-                      "Rhs": {
-                        "Value": "2"
-                      }
-                    },
-                    "Then": [
-                      {
-                        "Exprs": [
-                          {
-                            "Value": "two"
-                          }
-                        ]
-                      }
-                    ],
-                    "Else": [
-                      {
-                        "Condition": {
-                          "Operator": "==",
-                          "Lhs": {
-                            "Value": "_m"
-                          },
-                          "Rhs": {
-                            "Value": "3"
-                          }
-                        },
-                        "Then": [
-                          {
-                            "Exprs": [
-                              {
-                                "Value": "three"
-                              }
-                            ]
-                          }
-                        ],
-                        "Else": [
-                          {
-                            "Condition": {},
-                            "Then": [
-                              {
-                                "Exprs": [
-                                  {
-                                    "Value": "unknown"
-                                  }
-                                ]
-                              }
-                            ],
-                            "Else": null
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          "Receiver": null,
-          "Method": "",
-          "Args": [
-            {
-              "Value": "x"
-            }
-          ],
-          "AdjustRet": false
-        }
-      ]
-    },
-    {
-      "Expr": {
-        "Func": {
-          "Value": "print"
-        },
-        "Receiver": null,
-        "Method": "",
-        "Args": [
-          {
-            "Value": "label"
-          }
-        ],
-        "AdjustRet": false
-      }
-    },
-    {
-      "Lhs": [
-        {
-          "Value": "day"
-        }
-      ],
-      "Rhs": [
-        {
-          "Value": "sun"
-        }
-      ]
-    },
-    {
-      "Lhs": [
-        {
-          "Value": "mood"
-        }
-      ],
-      "Rhs": [
-        {
-          "Func": {
-            "ParList": {
-              "HasVargs": false,
-              "Names": [
-                "_m"
-              ]
-            },
-            "Stmts": [
-              {
-                "Condition": {
-                  "Operator": "==",
-                  "Lhs": {
-                    "Value": "_m"
-                  },
-                  "Rhs": {
-                    "Value": "mon"
-                  }
-                },
-                "Then": [
-                  {
-                    "Exprs": [
-                      {
-                        "Value": "tired"
-                      }
-                    ]
-                  }
-                ],
-                "Else": [
-                  {
-                    "Condition": {
-                      "Operator": "==",
-                      "Lhs": {
-                        "Value": "_m"
-                      },
-                      "Rhs": {
-                        "Value": "fri"
-                      }
-                    },
-                    "Then": [
-                      {
-                        "Exprs": [
-                          {
-                            "Value": "excited"
-                          }
-                        ]
-                      }
-                    ],
-                    "Else": [
-                      {
-                        "Condition": {
-                          "Operator": "==",
-                          "Lhs": {
-                            "Value": "_m"
-                          },
-                          "Rhs": {
-                            "Value": "sun"
-                          }
-                        },
-                        "Then": [
-                          {
-                            "Exprs": [
-                              {
-                                "Value": "relaxed"
-                              }
-                            ]
-                          }
-                        ],
-                        "Else": [
-                          {
-                            "Condition": {},
-                            "Then": [
-                              {
-                                "Exprs": [
-                                  {
-                                    "Value": "normal"
-                                  }
-                                ]
-                              }
-                            ],
-                            "Else": null
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          "Receiver": null,
-          "Method": "",
-          "Args": [
-            {
-              "Value": "day"
-            }
-          ],
-          "AdjustRet": false
-        }
-      ]
-    },
-    {
-      "Expr": {
-        "Func": {
-          "Value": "print"
-        },
-        "Receiver": null,
-        "Method": "",
-        "Args": [
-          {
-            "Value": "mood"
-          }
-        ],
-        "AdjustRet": false
-      }
-    },
-    {
-      "Lhs": [
-        {
-          "Value": "ok"
-        }
-      ],
-      "Rhs": [
-        {}
-      ]
-    },
-    {
-      "Lhs": [
-        {
-          "Value": "status"
-        }
-      ],
-      "Rhs": [
-        {
-          "Func": {
-            "ParList": {
-              "HasVargs": false,
-              "Names": [
-                "_m"
-              ]
-            },
-            "Stmts": [
-              {
-                "Condition": {
-                  "Operator": "==",
-                  "Lhs": {
-                    "Value": "_m"
-                  },
-                  "Rhs": {}
-                },
-                "Then": [
-                  {
-                    "Exprs": [
-                      {
-                        "Value": "confirmed"
-                      }
-                    ]
-                  }
-                ],
-                "Else": [
-                  {
-                    "Condition": {
-                      "Operator": "==",
-                      "Lhs": {
-                        "Value": "_m"
-                      },
-                      "Rhs": {}
-                    },
-                    "Then": [
-                      {
-                        "Exprs": [
-                          {
-                            "Value": "denied"
-                          }
-                        ]
-                      }
-                    ],
-                    "Else": null
-                  }
-                ]
-              }
-            ]
-          },
-          "Receiver": null,
-          "Method": "",
-          "Args": [
-            {
-              "Value": "ok"
-            }
-          ],
-          "AdjustRet": false
-        }
-      ]
-    },
-    {
-      "Expr": {
-        "Func": {
-          "Value": "print"
-        },
-        "Receiver": null,
-        "Method": "",
-        "Args": [
-          {
-            "Value": "status"
-          }
-        ],
-        "AdjustRet": false
-      }
-    },
-    {
-      "Name": {
-        "Func": {
-          "Value": "classify"
-        },
-        "Receiver": null,
-        "Method": ""
+  "root": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "comment",
+        "text": "-- Generated by Mochi v0.10.33 on 2025-07-21 16:57 GMT+7"
       },
-      "Func": {
-        "ParList": {
-          "HasVargs": false,
-          "Names": [
-            "n"
-          ]
-        },
-        "Stmts": [
+      {
+        "kind": "variable_declaration",
+        "children": [
           {
-            "Exprs": [
+            "kind": "variable_declarator",
+            "children": [
               {
-                "Func": {
-                  "ParList": {
-                    "HasVargs": false,
-                    "Names": [
-                      "_m"
+                "kind": "identifier",
+                "text": "\nx"
+              }
+            ]
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          }
+        ]
+      },
+      {
+        "kind": "variable_declaration",
+        "children": [
+          {
+            "kind": "variable_declarator",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "\n\nlabel"
+              }
+            ]
+          },
+          {
+            "kind": "function_call",
+            "children": [
+              {
+                "kind": "function",
+                "children": [
+                  {
+                    "kind": "parameter_list",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "_m"
+                      }
                     ]
                   },
-                  "Stmts": [
-                    {
-                      "Condition": {
-                        "Operator": "==",
-                        "Lhs": {
-                          "Value": "_m"
-                        },
-                        "Rhs": {
-                          "Value": "0"
-                        }
-                      },
-                      "Then": [
-                        {
-                          "Exprs": [
-                            {
-                              "Value": "zero"
-                            }
-                          ]
-                        }
-                      ],
-                      "Else": [
-                        {
-                          "Condition": {
-                            "Operator": "==",
-                            "Lhs": {
-                              "Value": "_m"
-                            },
-                            "Rhs": {
-                              "Value": "1"
-                            }
-                          },
-                          "Then": [
-                            {
-                              "Exprs": [
-                                {
-                                  "Value": "one"
-                                }
-                              ]
-                            }
-                          ],
-                          "Else": [
-                            {
-                              "Condition": {},
-                              "Then": [
-                                {
-                                  "Exprs": [
-                                    {
-                                      "Value": "many"
-                                    }
-                                  ]
-                                }
-                              ],
-                              "Else": null
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                },
-                "Receiver": null,
-                "Method": "",
-                "Args": [
                   {
-                    "Value": "n"
+                    "kind": "function_body",
+                    "children": [
+                      {
+                        "kind": "if_statement",
+                        "children": [
+                          {
+                            "kind": "binary_operation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "_m"
+                              },
+                              {
+                                "kind": "number",
+                                "text": "1"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "return_statement",
+                            "children": [
+                              {
+                                "kind": "string",
+                                "text": "\"one\""
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "binary_operation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "_m"
+                              },
+                              {
+                                "kind": "number",
+                                "text": "2"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "return_statement",
+                            "children": [
+                              {
+                                "kind": "string",
+                                "text": "\"two\""
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "binary_operation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "_m"
+                              },
+                              {
+                                "kind": "number",
+                                "text": "3"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "return_statement",
+                            "children": [
+                              {
+                                "kind": "string",
+                                "text": "\"three\""
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "return_statement",
+                            "children": [
+                              {
+                                "kind": "string",
+                                "text": "\"unknown\""
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
                   }
-                ],
-                "AdjustRet": false
+                ]
+              },
+              {
+                "kind": "function_arguments",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "x"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "\n    \n    print"
+          },
+          {
+            "kind": "function_arguments",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "label"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "variable_declaration",
+        "children": [
+          {
+            "kind": "variable_declarator",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "\n    \n    day"
+              }
+            ]
+          },
+          {
+            "kind": "string",
+            "text": "\"sun\""
+          }
+        ]
+      },
+      {
+        "kind": "variable_declaration",
+        "children": [
+          {
+            "kind": "variable_declarator",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "\n    \n    mood"
+              }
+            ]
+          },
+          {
+            "kind": "function_call",
+            "children": [
+              {
+                "kind": "function",
+                "children": [
+                  {
+                    "kind": "parameter_list",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "_m"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "function_body",
+                    "children": [
+                      {
+                        "kind": "if_statement",
+                        "children": [
+                          {
+                            "kind": "binary_operation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "_m"
+                              },
+                              {
+                                "kind": "string",
+                                "text": "\"mon\""
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "return_statement",
+                            "children": [
+                              {
+                                "kind": "string",
+                                "text": "\"tired\""
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "binary_operation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "_m"
+                              },
+                              {
+                                "kind": "string",
+                                "text": "\"fri\""
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "return_statement",
+                            "children": [
+                              {
+                                "kind": "string",
+                                "text": "\"excited\""
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "binary_operation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "_m"
+                              },
+                              {
+                                "kind": "string",
+                                "text": "\"sun\""
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "return_statement",
+                            "children": [
+                              {
+                                "kind": "string",
+                                "text": "\"relaxed\""
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "return_statement",
+                            "children": [
+                              {
+                                "kind": "string",
+                                "text": "\"normal\""
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "function_arguments",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "day"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "\n        \n        print"
+          },
+          {
+            "kind": "function_arguments",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "mood"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "variable_declaration",
+        "children": [
+          {
+            "kind": "variable_declarator",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "\n        \n        ok"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "variable_declaration",
+        "children": [
+          {
+            "kind": "variable_declarator",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "\n        \n        status"
+              }
+            ]
+          },
+          {
+            "kind": "function_call",
+            "children": [
+              {
+                "kind": "function",
+                "children": [
+                  {
+                    "kind": "parameter_list",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "_m"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "function_body",
+                    "children": [
+                      {
+                        "kind": "if_statement",
+                        "children": [
+                          {
+                            "kind": "binary_operation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "_m"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "return_statement",
+                            "children": [
+                              {
+                                "kind": "string",
+                                "text": "\"confirmed\""
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "binary_operation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "_m"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "return_statement",
+                            "children": [
+                              {
+                                "kind": "string",
+                                "text": "\"denied\""
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "function_arguments",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "ok"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "\n        \n        print"
+          },
+          {
+            "kind": "function_arguments",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "status"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_statement",
+        "children": [
+          {
+            "kind": "function_name",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "classify"
+              }
+            ]
+          },
+          {
+            "kind": "parameter_list",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "n"
+              }
+            ]
+          },
+          {
+            "kind": "function_body",
+            "children": [
+              {
+                "kind": "return_statement",
+                "children": [
+                  {
+                    "kind": "function_call",
+                    "children": [
+                      {
+                        "kind": "function",
+                        "children": [
+                          {
+                            "kind": "parameter_list",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "_m"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "function_body",
+                            "children": [
+                              {
+                                "kind": "if_statement",
+                                "children": [
+                                  {
+                                    "kind": "binary_operation",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "_m"
+                                      },
+                                      {
+                                        "kind": "number",
+                                        "text": "0"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "return_statement",
+                                    "children": [
+                                      {
+                                        "kind": "string",
+                                        "text": "\"zero\""
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "binary_operation",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "_m"
+                                      },
+                                      {
+                                        "kind": "number",
+                                        "text": "1"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "return_statement",
+                                    "children": [
+                                      {
+                                        "kind": "string",
+                                        "text": "\"one\""
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "return_statement",
+                                    "children": [
+                                      {
+                                        "kind": "string",
+                                        "text": "\"many\""
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "function_arguments",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "n"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "\n          \n          print"
+          },
+          {
+            "kind": "function_arguments",
+            "children": [
+              {
+                "kind": "function_call",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "classify"
+                  },
+                  {
+                    "kind": "function_arguments",
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "0"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "\n          \n          print"
+          },
+          {
+            "kind": "function_arguments",
+            "children": [
+              {
+                "kind": "function_call",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "classify"
+                  },
+                  {
+                    "kind": "function_arguments",
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "5"
+                      }
+                    ]
+                  }
+                ]
               }
             ]
           }
         ]
       }
-    },
-    {
-      "Expr": {
-        "Func": {
-          "Value": "print"
-        },
-        "Receiver": null,
-        "Method": "",
-        "Args": [
-          {
-            "Func": {
-              "Value": "classify"
-            },
-            "Receiver": null,
-            "Method": "",
-            "Args": [
-              {
-                "Value": "0"
-              }
-            ],
-            "AdjustRet": false
-          }
-        ],
-        "AdjustRet": false
-      }
-    },
-    {
-      "Expr": {
-        "Func": {
-          "Value": "print"
-        },
-        "Receiver": null,
-        "Method": "",
-        "Args": [
-          {
-            "Func": {
-              "Value": "classify"
-            },
-            "Receiver": null,
-            "Method": "",
-            "Args": [
-              {
-                "Value": "5"
-              }
-            ],
-            "AdjustRet": false
-          }
-        ],
-        "AdjustRet": false
-      }
-    }
-  ]
+    ]
+  }
 }

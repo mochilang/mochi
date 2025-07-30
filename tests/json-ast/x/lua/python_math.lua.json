@@ -1,474 +1,615 @@
 {
-  "stmts": [
-    {
-      "Lhs": [
-        {
-          "Value": "math"
-        }
-      ],
-      "Rhs": [
-        {
-          "Fields": [
-            {
-              "Key": {
-                "Value": "sqrt"
-              },
-              "Value": {
-                "Object": {
-                  "Value": "math"
-                },
-                "Key": {
-                  "Value": "sqrt"
-                }
-              }
-            },
-            {
-              "Key": {
-                "Value": "pow"
-              },
-              "Value": {
-                "Object": {
-                  "Value": "math"
-                },
-                "Key": {
-                  "Value": "pow"
-                }
-              }
-            },
-            {
-              "Key": {
-                "Value": "sin"
-              },
-              "Value": {
-                "Object": {
-                  "Value": "math"
-                },
-                "Key": {
-                  "Value": "sin"
-                }
-              }
-            },
-            {
-              "Key": {
-                "Value": "log"
-              },
-              "Value": {
-                "Object": {
-                  "Value": "math"
-                },
-                "Key": {
-                  "Value": "log"
-                }
-              }
-            },
-            {
-              "Key": {
-                "Value": "pi"
-              },
-              "Value": {
-                "Object": {
-                  "Value": "math"
-                },
-                "Key": {
-                  "Value": "pi"
-                }
-              }
-            },
-            {
-              "Key": {
-                "Value": "e"
-              },
-              "Value": {
-                "Func": {
-                  "Object": {
-                    "Value": "math"
-                  },
-                  "Key": {
-                    "Value": "exp"
-                  }
-                },
-                "Receiver": null,
-                "Method": "",
-                "Args": [
-                  {
-                    "Value": "1"
-                  }
-                ],
-                "AdjustRet": false
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "Lhs": [
-        {
-          "Value": "r"
-        }
-      ],
-      "Rhs": [
-        {
-          "Value": "3"
-        }
-      ]
-    },
-    {
-      "Lhs": [
-        {
-          "Value": "area"
-        }
-      ],
-      "Rhs": [
-        {
-          "Operator": "*",
-          "Lhs": {
-            "Object": {
-              "Value": "math"
-            },
-            "Key": {
-              "Value": "pi"
-            }
-          },
-          "Rhs": {
-            "Func": {
-              "Object": {
-                "Value": "math"
-              },
-              "Key": {
-                "Value": "pow"
-              }
-            },
-            "Receiver": null,
-            "Method": "",
-            "Args": [
-              {
-                "Value": "r"
-              },
-              {
-                "Value": "2"
-              }
-            ],
-            "AdjustRet": false
-          }
-        }
-      ]
-    },
-    {
-      "Lhs": [
-        {
-          "Value": "root"
-        }
-      ],
-      "Rhs": [
-        {
-          "Func": {
-            "Object": {
-              "Value": "math"
-            },
-            "Key": {
-              "Value": "sqrt"
-            }
-          },
-          "Receiver": null,
-          "Method": "",
-          "Args": [
-            {
-              "Value": "49"
-            }
-          ],
-          "AdjustRet": false
-        }
-      ]
-    },
-    {
-      "Lhs": [
-        {
-          "Value": "sin45"
-        }
-      ],
-      "Rhs": [
-        {
-          "Func": {
-            "Object": {
-              "Value": "math"
-            },
-            "Key": {
-              "Value": "sin"
-            }
-          },
-          "Receiver": null,
-          "Method": "",
-          "Args": [
-            {
-              "Operator": "/",
-              "Lhs": {
-                "Object": {
-                  "Value": "math"
-                },
-                "Key": {
-                  "Value": "pi"
-                }
-              },
-              "Rhs": {
-                "Value": "4"
-              }
-            }
-          ],
-          "AdjustRet": false
-        }
-      ]
-    },
-    {
-      "Lhs": [
-        {
-          "Value": "log_e"
-        }
-      ],
-      "Rhs": [
-        {
-          "Func": {
-            "Object": {
-              "Value": "math"
-            },
-            "Key": {
-              "Value": "log"
-            }
-          },
-          "Receiver": null,
-          "Method": "",
-          "Args": [
-            {
-              "Object": {
-                "Value": "math"
-              },
-              "Key": {
-                "Value": "e"
-              }
-            }
-          ],
-          "AdjustRet": false
-        }
-      ]
-    },
-    {
-      "Expr": {
-        "Func": {
-          "Value": "print"
-        },
-        "Receiver": null,
-        "Method": "",
-        "Args": [
+  "root": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "comment",
+        "text": "-- Generated by Mochi v0.10.34 on 2025-07-22 09:25 GMT+7"
+      },
+      {
+        "kind": "variable_declaration",
+        "children": [
           {
-            "Func": {
-              "Object": {
-                "Value": "string"
-              },
-              "Key": {
-                "Value": "gsub"
+            "kind": "variable_declarator",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "\nmath"
               }
-            },
-            "Receiver": null,
-            "Method": "",
-            "Args": [
-              {
-                "Func": {
-                  "Object": {
-                    "Value": "string"
-                  },
-                  "Key": {
-                    "Value": "format"
-                  }
-                },
-                "Receiver": null,
-                "Method": "",
-                "Args": [
-                  {
-                    "Value": "Circle area with r = %s =\u003e %s"
-                  },
-                  {
-                    "Value": "r"
-                  },
-                  {
-                    "Value": "area"
-                  }
-                ],
-                "AdjustRet": false
-              },
-              {
-                "Value": "%s+$"
-              },
-              {
-                "Value": ""
-              }
-            ],
-            "AdjustRet": true
-          }
-        ],
-        "AdjustRet": false
-      }
-    },
-    {
-      "Expr": {
-        "Func": {
-          "Value": "print"
-        },
-        "Receiver": null,
-        "Method": "",
-        "Args": [
+            ]
+          },
           {
-            "Func": {
-              "Object": {
-                "Value": "string"
-              },
-              "Key": {
-                "Value": "gsub"
-              }
-            },
-            "Receiver": null,
-            "Method": "",
-            "Args": [
+            "kind": "tableconstructor",
+            "children": [
               {
-                "Func": {
-                  "Object": {
-                    "Value": "string"
-                  },
-                  "Key": {
-                    "Value": "format"
-                  }
-                },
-                "Receiver": null,
-                "Method": "",
-                "Args": [
+                "kind": "fieldlist",
+                "children": [
                   {
-                    "Value": "Square root of 49: %s"
+                    "kind": "field",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "sqrt"
+                      },
+                      {
+                        "kind": "identifier",
+                        "text": "math"
+                      },
+                      {
+                        "kind": "identifier",
+                        "text": "sqrt"
+                      }
+                    ]
                   },
                   {
-                    "Value": "root"
+                    "kind": "field",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "pow"
+                      },
+                      {
+                        "kind": "identifier",
+                        "text": "math"
+                      },
+                      {
+                        "kind": "identifier",
+                        "text": "pow"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "sin"
+                      },
+                      {
+                        "kind": "identifier",
+                        "text": "math"
+                      },
+                      {
+                        "kind": "identifier",
+                        "text": "sin"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "log"
+                      },
+                      {
+                        "kind": "identifier",
+                        "text": "math"
+                      },
+                      {
+                        "kind": "identifier",
+                        "text": "log"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "pi"
+                      },
+                      {
+                        "kind": "identifier",
+                        "text": "math"
+                      },
+                      {
+                        "kind": "identifier",
+                        "text": "pi"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "e"
+                      },
+                      {
+                        "kind": "function_call",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "math"
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "exp"
+                          },
+                          {
+                            "kind": "function_arguments",
+                            "children": [
+                              {
+                                "kind": "number",
+                                "text": "1"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
                   }
-                ],
-                "AdjustRet": false
-              },
-              {
-                "Value": "%s+$"
-              },
-              {
-                "Value": ""
+                ]
               }
-            ],
-            "AdjustRet": true
+            ]
           }
-        ],
-        "AdjustRet": false
-      }
-    },
-    {
-      "Expr": {
-        "Func": {
-          "Value": "print"
-        },
-        "Receiver": null,
-        "Method": "",
-        "Args": [
+        ]
+      },
+      {
+        "kind": "variable_declaration",
+        "children": [
           {
-            "Func": {
-              "Object": {
-                "Value": "string"
-              },
-              "Key": {
-                "Value": "gsub"
+            "kind": "variable_declarator",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "\n\nr"
               }
-            },
-            "Receiver": null,
-            "Method": "",
-            "Args": [
-              {
-                "Func": {
-                  "Object": {
-                    "Value": "string"
-                  },
-                  "Key": {
-                    "Value": "format"
-                  }
-                },
-                "Receiver": null,
-                "Method": "",
-                "Args": [
-                  {
-                    "Value": "sin(π/4): %s"
-                  },
-                  {
-                    "Value": "sin45"
-                  }
-                ],
-                "AdjustRet": false
-              },
-              {
-                "Value": "%s+$"
-              },
-              {
-                "Value": ""
-              }
-            ],
-            "AdjustRet": true
-          }
-        ],
-        "AdjustRet": false
-      }
-    },
-    {
-      "Expr": {
-        "Func": {
-          "Value": "print"
-        },
-        "Receiver": null,
-        "Method": "",
-        "Args": [
+            ]
+          },
           {
-            "Func": {
-              "Object": {
-                "Value": "string"
-              },
-              "Key": {
-                "Value": "gsub"
-              }
-            },
-            "Receiver": null,
-            "Method": "",
-            "Args": [
-              {
-                "Func": {
-                  "Object": {
-                    "Value": "string"
-                  },
-                  "Key": {
-                    "Value": "format"
-                  }
-                },
-                "Receiver": null,
-                "Method": "",
-                "Args": [
-                  {
-                    "Value": "log(e): %s"
-                  },
-                  {
-                    "Value": "log_e"
-                  }
-                ],
-                "AdjustRet": false
-              },
-              {
-                "Value": "%s+$"
-              },
-              {
-                "Value": ""
-              }
-            ],
-            "AdjustRet": true
+            "kind": "number",
+            "text": "3"
           }
-        ],
-        "AdjustRet": false
+        ]
+      },
+      {
+        "kind": "variable_declaration",
+        "children": [
+          {
+            "kind": "variable_declarator",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "\n\narea"
+              }
+            ]
+          },
+          {
+            "kind": "binary_operation",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "math"
+              },
+              {
+                "kind": "identifier",
+                "text": "pi"
+              },
+              {
+                "kind": "function_call",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "math"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "pow"
+                  },
+                  {
+                    "kind": "function_arguments",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "r"
+                      },
+                      {
+                        "kind": "number",
+                        "text": "2"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "variable_declaration",
+        "children": [
+          {
+            "kind": "variable_declarator",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "\n\nroot"
+              }
+            ]
+          },
+          {
+            "kind": "function_call",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "math"
+              },
+              {
+                "kind": "identifier",
+                "text": "sqrt"
+              },
+              {
+                "kind": "function_arguments",
+                "children": [
+                  {
+                    "kind": "number",
+                    "text": "49"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "variable_declaration",
+        "children": [
+          {
+            "kind": "variable_declarator",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "\n\nsin45"
+              }
+            ]
+          },
+          {
+            "kind": "function_call",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "math"
+              },
+              {
+                "kind": "identifier",
+                "text": "sin"
+              },
+              {
+                "kind": "function_arguments",
+                "children": [
+                  {
+                    "kind": "binary_operation",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "math"
+                      },
+                      {
+                        "kind": "identifier",
+                        "text": "pi"
+                      },
+                      {
+                        "kind": "number",
+                        "text": "4"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "variable_declaration",
+        "children": [
+          {
+            "kind": "variable_declarator",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "\n\nlog_e"
+              }
+            ]
+          },
+          {
+            "kind": "function_call",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "math"
+              },
+              {
+                "kind": "identifier",
+                "text": "log"
+              },
+              {
+                "kind": "function_arguments",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "math"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "e"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "\n\nprint"
+          },
+          {
+            "kind": "function_arguments",
+            "children": [
+              {
+                "kind": "function_call",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "string"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "gsub"
+                  },
+                  {
+                    "kind": "function_arguments",
+                    "children": [
+                      {
+                        "kind": "function_call",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "string"
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "format"
+                          },
+                          {
+                            "kind": "function_arguments",
+                            "children": [
+                              {
+                                "kind": "string",
+                                "text": "\"Circle area with r = %s =\u003e %s\""
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "r"
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "area"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "string",
+                        "text": "\"%s+$\""
+                      },
+                      {
+                        "kind": "string",
+                        "text": "\"\""
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "\n\nprint"
+          },
+          {
+            "kind": "function_arguments",
+            "children": [
+              {
+                "kind": "function_call",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "string"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "gsub"
+                  },
+                  {
+                    "kind": "function_arguments",
+                    "children": [
+                      {
+                        "kind": "function_call",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "string"
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "format"
+                          },
+                          {
+                            "kind": "function_arguments",
+                            "children": [
+                              {
+                                "kind": "string",
+                                "text": "\"Square root of 49: %s\""
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "root"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "string",
+                        "text": "\"%s+$\""
+                      },
+                      {
+                        "kind": "string",
+                        "text": "\"\""
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "\n\nprint"
+          },
+          {
+            "kind": "function_arguments",
+            "children": [
+              {
+                "kind": "function_call",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "string"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "gsub"
+                  },
+                  {
+                    "kind": "function_arguments",
+                    "children": [
+                      {
+                        "kind": "function_call",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "string"
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "format"
+                          },
+                          {
+                            "kind": "function_arguments",
+                            "children": [
+                              {
+                                "kind": "string",
+                                "text": "\"sin(π/4): %s\""
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "sin45"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "string",
+                        "text": "\"%s+$\""
+                      },
+                      {
+                        "kind": "string",
+                        "text": "\"\""
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "\n\nprint"
+          },
+          {
+            "kind": "function_arguments",
+            "children": [
+              {
+                "kind": "function_call",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "string"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "gsub"
+                  },
+                  {
+                    "kind": "function_arguments",
+                    "children": [
+                      {
+                        "kind": "function_call",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "string"
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "format"
+                          },
+                          {
+                            "kind": "function_arguments",
+                            "children": [
+                              {
+                                "kind": "string",
+                                "text": "\"log(e): %s\""
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "log_e"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "string",
+                        "text": "\"%s+$\""
+                      },
+                      {
+                        "kind": "string",
+                        "text": "\"\""
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
-    }
-  ]
+    ]
+  }
 }
