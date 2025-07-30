@@ -6,6 +6,11 @@ import (
 	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
+// IncludePositions controls whether position information is recorded when
+// converting tree-sitter nodes. When false the position fields remain zero and
+// are omitted from the marshalled JSON.
+var IncludePositions bool
+
 // Node represents a F# AST node converted from tree-sitter.
 // Node mirrors a tree-sitter node in a JSON-friendly form.
 // Node represents a F# AST node converted from tree-sitter.
@@ -15,14 +20,14 @@ import (
 // fields are omitted from the output when zero so callers can decide whether to
 // include them.
 type Node struct {
-	Kind     string `json:"kind"`
-	Name     string `json:"name,omitempty"`
-	Text     string `json:"text,omitempty"`
-	Start    int    `json:"start,omitempty"`
-	StartCol int    `json:"startCol,omitempty"`
-	End      int    `json:"end,omitempty"`
-	EndCol   int    `json:"endCol,omitempty"`
-	Children []Node `json:"children,omitempty"`
+	Kind     string  `json:"kind"`
+	Name     string  `json:"name,omitempty"`
+	Text     string  `json:"text,omitempty"`
+	Start    int     `json:"start,omitempty"`
+	StartCol int     `json:"startCol,omitempty"`
+	End      int     `json:"end,omitempty"`
+	EndCol   int     `json:"endCol,omitempty"`
+	Children []*Node `json:"children,omitempty"`
 }
 
 // File represents the root of an F# source file.
@@ -70,7 +75,7 @@ func isValueNode(kind string) bool {
 }
 
 // convertNode recursively converts a tree-sitter Node into our Node structure.
-func convert(n *sitter.Node, src []byte, withPos bool) *Node {
+func convert(n *sitter.Node, src []byte) *Node {
 	if n == nil {
 		return nil
 	}
@@ -78,7 +83,7 @@ func convert(n *sitter.Node, src []byte, withPos bool) *Node {
 	end := n.EndPosition()
 
 	node := &Node{Kind: n.Kind()}
-	if withPos {
+	if IncludePositions {
 		node.Start = int(start.Row) + 1
 		node.StartCol = int(start.Column)
 		node.End = int(end.Row) + 1
@@ -100,9 +105,9 @@ func convert(n *sitter.Node, src []byte, withPos bool) *Node {
 	}
 
 	for i := uint(0); i < n.NamedChildCount(); i++ {
-		child := convert(n.NamedChild(i), src, withPos)
+		child := convert(n.NamedChild(i), src)
 		if child != nil {
-			node.Children = append(node.Children, *child)
+			node.Children = append(node.Children, child)
 		}
 	}
 
