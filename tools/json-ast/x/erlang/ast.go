@@ -4,16 +4,17 @@ import (
 	sitter "github.com/smacker/go-tree-sitter"
 )
 
-// Node represents a simplified Erlang AST node converted from tree-sitter.
-//
-// Leaf nodes contain the raw source text in the Text field while internal
-// nodes only record their kind and children.  Start and End are byte offsets
-// within the source.
+// Node represents an Erlang AST node produced from tree-sitter.  Leaf nodes
+// that carry a meaningful value (identifiers, literals, comments) populate the
+// Text field; purely syntactic leaves are omitted.  Start and End are 1-based
+// line numbers while StartCol and EndCol are zero-based column positions.
 type Node struct {
 	Kind     string  `json:"kind"`
-	Start    int     `json:"start"`
-	End      int     `json:"end"`
 	Text     string  `json:"text,omitempty"`
+	Start    int     `json:"start"`
+	StartCol int     `json:"startCol"`
+	End      int     `json:"end"`
+	EndCol   int     `json:"endCol"`
 	Children []*Node `json:"children,omitempty"`
 }
 
@@ -22,18 +23,22 @@ func convert(n *sitter.Node, src []byte) *Node {
 	if n == nil {
 		return nil
 	}
+	start := n.StartPoint()
+	end := n.EndPoint()
 	node := &Node{
-		Kind:  n.Type(),
-		Start: int(n.StartByte()),
-		End:   int(n.EndByte()),
+		Kind:     n.Type(),
+		Start:    int(start.Row) + 1,
+		StartCol: int(start.Column),
+		End:      int(end.Row) + 1,
+		EndCol:   int(end.Column),
 	}
 
-	// Only keep raw text for leaf nodes.  Using NamedChildCount filters out
-	// punctuation and other non-semantic tokens so the resulting JSON is
-	// much smaller while still containing the important information.
 	if n.NamedChildCount() == 0 {
-		node.Text = n.Content(src)
-		return node
+		if isValueNode(n.Type()) {
+			node.Text = n.Content(src)
+		} else {
+			return nil
+		}
 	}
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
@@ -41,7 +46,22 @@ func convert(n *sitter.Node, src []byte) *Node {
 		if child == nil {
 			continue
 		}
-		node.Children = append(node.Children, convert(child, src))
+		if c := convert(child, src); c != nil {
+			node.Children = append(node.Children, c)
+		}
+	}
+
+	if len(node.Children) == 0 && node.Text == "" {
+		return nil
 	}
 	return node
+}
+
+func isValueNode(kind string) bool {
+	switch kind {
+	case "atom", "integer", "string", "var", "comment":
+		return true
+	default:
+		return false
+	}
 }

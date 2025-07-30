@@ -1,1113 +1,825 @@
 {
   "root": {
     "kind": "source_file",
-    "start": 0,
-    "end": 430,
+    "start": 1,
+    "startCol": 0,
+    "end": 15,
+    "endCol": 0,
     "children": [
       {
         "kind": "ERROR",
-        "start": 0,
-        "end": 22,
+        "start": 1,
+        "startCol": 0,
+        "end": 1,
+        "endCol": 22,
         "children": [
           {
-            "kind": "#",
-            "start": 0,
-            "end": 1,
-            "text": "#"
-          },
-          {
-            "kind": "!",
+            "kind": "atom",
+            "text": "usr",
             "start": 1,
-            "end": 2,
-            "text": "!"
-          },
-          {
-            "kind": "/",
-            "start": 2,
-            "end": 3,
-            "text": "/"
+            "startCol": 3,
+            "end": 1,
+            "endCol": 6
           },
           {
             "kind": "atom",
-            "start": 3,
-            "end": 6,
-            "text": "usr"
-          },
-          {
-            "kind": "/",
-            "start": 6,
-            "end": 7,
-            "text": "/"
+            "text": "bin",
+            "start": 1,
+            "startCol": 7,
+            "end": 1,
+            "endCol": 10
           },
           {
             "kind": "atom",
-            "start": 7,
-            "end": 10,
-            "text": "bin"
-          },
-          {
-            "kind": "/",
-            "start": 10,
-            "end": 11,
-            "text": "/"
+            "text": "env",
+            "start": 1,
+            "startCol": 11,
+            "end": 1,
+            "endCol": 14
           },
           {
             "kind": "atom",
-            "start": 11,
-            "end": 14,
-            "text": "env"
-          },
-          {
-            "kind": "atom",
-            "start": 15,
-            "end": 22,
-            "text": "escript"
+            "text": "escript",
+            "start": 1,
+            "startCol": 15,
+            "end": 1,
+            "endCol": 22
           }
         ]
       },
       {
         "kind": "module_attribute",
-        "start": 23,
-        "end": 37,
+        "start": 2,
+        "startCol": 0,
+        "end": 2,
+        "endCol": 14,
         "children": [
           {
-            "kind": "-",
-            "start": 23,
-            "end": 24,
-            "text": "-"
-          },
-          {
-            "kind": "module",
-            "start": 24,
-            "end": 30,
-            "text": "module"
-          },
-          {
-            "kind": "(",
-            "start": 30,
-            "end": 31,
-            "text": "("
-          },
-          {
             "kind": "atom",
-            "start": 31,
-            "end": 35,
-            "text": "main"
-          },
-          {
-            "kind": ")",
-            "start": 35,
-            "end": 36,
-            "text": ")"
-          },
-          {
-            "kind": ".",
-            "start": 36,
-            "end": 37,
-            "text": "."
+            "text": "main",
+            "start": 2,
+            "startCol": 8,
+            "end": 2,
+            "endCol": 12
           }
         ]
       },
       {
         "kind": "export_attribute",
-        "start": 38,
-        "end": 56,
+        "start": 3,
+        "startCol": 0,
+        "end": 3,
+        "endCol": 18,
         "children": [
           {
-            "kind": "-",
-            "start": 38,
-            "end": 39,
-            "text": "-"
-          },
-          {
-            "kind": "export",
-            "start": 39,
-            "end": 45,
-            "text": "export"
-          },
-          {
-            "kind": "(",
-            "start": 45,
-            "end": 46,
-            "text": "("
-          },
-          {
-            "kind": "[",
-            "start": 46,
-            "end": 47,
-            "text": "["
-          },
-          {
             "kind": "fa",
-            "start": 47,
-            "end": 53,
+            "start": 3,
+            "startCol": 9,
+            "end": 3,
+            "endCol": 15,
             "children": [
               {
                 "kind": "atom",
-                "start": 47,
-                "end": 51,
-                "text": "main"
+                "text": "main",
+                "start": 3,
+                "startCol": 9,
+                "end": 3,
+                "endCol": 13
               },
               {
                 "kind": "arity",
-                "start": 51,
-                "end": 53,
+                "start": 3,
+                "startCol": 13,
+                "end": 3,
+                "endCol": 15,
                 "children": [
                   {
-                    "kind": "/",
-                    "start": 51,
-                    "end": 52,
-                    "text": "/"
-                  },
-                  {
                     "kind": "integer",
-                    "start": 52,
-                    "end": 53,
-                    "text": "1"
+                    "text": "1",
+                    "start": 3,
+                    "startCol": 14,
+                    "end": 3,
+                    "endCol": 15
                   }
                 ]
               }
             ]
-          },
-          {
-            "kind": "]",
-            "start": 53,
-            "end": 54,
-            "text": "]"
-          },
-          {
-            "kind": ")",
-            "start": 54,
-            "end": 55,
-            "text": ")"
-          },
-          {
-            "kind": ".",
-            "start": 55,
-            "end": 56,
-            "text": "."
           }
         ]
       },
       {
         "kind": "comment",
-        "start": 58,
-        "end": 136,
-        "text": "% Generated by Mochi transpiler v0.10.33 (9f2177b9e) on 2025-07-21 18:06 +0700"
+        "text": "% Generated by Mochi transpiler v0.10.33 (9f2177b9e) on 2025-07-21 18:06 +0700",
+        "start": 5,
+        "startCol": 0,
+        "end": 5,
+        "endCol": 78
       },
       {
         "kind": "fun_decl",
-        "start": 138,
-        "end": 429,
+        "start": 7,
+        "startCol": 0,
+        "end": 14,
+        "endCol": 12,
         "children": [
           {
             "kind": "function_clause",
-            "start": 138,
-            "end": 428,
+            "start": 7,
+            "startCol": 0,
+            "end": 14,
+            "endCol": 11,
             "children": [
               {
                 "kind": "atom",
-                "start": 138,
-                "end": 142,
-                "text": "main"
+                "text": "main",
+                "start": 7,
+                "startCol": 0,
+                "end": 7,
+                "endCol": 4
               },
               {
                 "kind": "expr_args",
-                "start": 142,
-                "end": 145,
+                "start": 7,
+                "startCol": 4,
+                "end": 7,
+                "endCol": 7,
                 "children": [
                   {
-                    "kind": "(",
-                    "start": 142,
-                    "end": 143,
-                    "text": "("
-                  },
-                  {
                     "kind": "var",
-                    "start": 143,
-                    "end": 144,
-                    "text": "_"
-                  },
-                  {
-                    "kind": ")",
-                    "start": 144,
-                    "end": 145,
-                    "text": ")"
+                    "text": "_",
+                    "start": 7,
+                    "startCol": 5,
+                    "end": 7,
+                    "endCol": 6
                   }
                 ]
               },
               {
                 "kind": "clause_body",
-                "start": 146,
-                "end": 428,
+                "start": 7,
+                "startCol": 8,
+                "end": 14,
+                "endCol": 11,
                 "children": [
                   {
-                    "kind": "-\u003e",
-                    "start": 146,
-                    "end": 148,
-                    "text": "-\u003e"
-                  },
-                  {
                     "kind": "match_expr",
-                    "start": 153,
-                    "end": 169,
+                    "start": 8,
+                    "startCol": 4,
+                    "end": 8,
+                    "endCol": 20,
                     "children": [
                       {
                         "kind": "var",
-                        "start": 153,
-                        "end": 157,
-                        "text": "Nums"
-                      },
-                      {
-                        "kind": "=",
-                        "start": 158,
-                        "end": 159,
-                        "text": "="
+                        "text": "Nums",
+                        "start": 8,
+                        "startCol": 4,
+                        "end": 8,
+                        "endCol": 8
                       },
                       {
                         "kind": "list",
-                        "start": 160,
-                        "end": 169,
+                        "start": 8,
+                        "startCol": 11,
+                        "end": 8,
+                        "endCol": 20,
                         "children": [
                           {
-                            "kind": "[",
-                            "start": 160,
-                            "end": 161,
-                            "text": "["
+                            "kind": "integer",
+                            "text": "1",
+                            "start": 8,
+                            "startCol": 12,
+                            "end": 8,
+                            "endCol": 13
                           },
                           {
                             "kind": "integer",
-                            "start": 161,
-                            "end": 162,
-                            "text": "1"
-                          },
-                          {
-                            "kind": ",",
-                            "start": 162,
-                            "end": 163,
-                            "text": ","
+                            "text": "2",
+                            "start": 8,
+                            "startCol": 15,
+                            "end": 8,
+                            "endCol": 16
                           },
                           {
                             "kind": "integer",
-                            "start": 164,
-                            "end": 165,
-                            "text": "2"
-                          },
-                          {
-                            "kind": ",",
-                            "start": 165,
-                            "end": 166,
-                            "text": ","
-                          },
-                          {
-                            "kind": "integer",
-                            "start": 167,
-                            "end": 168,
-                            "text": "3"
-                          },
-                          {
-                            "kind": "]",
-                            "start": 168,
-                            "end": 169,
-                            "text": "]"
+                            "text": "3",
+                            "start": 8,
+                            "startCol": 18,
+                            "end": 8,
+                            "endCol": 19
                           }
                         ]
                       }
                     ]
                   },
                   {
-                    "kind": ",",
-                    "start": 169,
-                    "end": 170,
-                    "text": ","
-                  },
-                  {
                     "kind": "match_expr",
-                    "start": 175,
-                    "end": 195,
+                    "start": 9,
+                    "startCol": 4,
+                    "end": 9,
+                    "endCol": 24,
                     "children": [
                       {
                         "kind": "var",
-                        "start": 175,
-                        "end": 182,
-                        "text": "Letters"
-                      },
-                      {
-                        "kind": "=",
-                        "start": 183,
-                        "end": 184,
-                        "text": "="
+                        "text": "Letters",
+                        "start": 9,
+                        "startCol": 4,
+                        "end": 9,
+                        "endCol": 11
                       },
                       {
                         "kind": "list",
-                        "start": 185,
-                        "end": 195,
+                        "start": 9,
+                        "startCol": 14,
+                        "end": 9,
+                        "endCol": 24,
                         "children": [
                           {
-                            "kind": "[",
-                            "start": 185,
-                            "end": 186,
-                            "text": "["
+                            "kind": "string",
+                            "text": "\"A\"",
+                            "start": 9,
+                            "startCol": 15,
+                            "end": 9,
+                            "endCol": 18
                           },
                           {
                             "kind": "string",
-                            "start": 186,
-                            "end": 189,
-                            "text": "\"A\""
-                          },
-                          {
-                            "kind": ",",
-                            "start": 189,
-                            "end": 190,
-                            "text": ","
-                          },
-                          {
-                            "kind": "string",
-                            "start": 191,
-                            "end": 194,
-                            "text": "\"B\""
-                          },
-                          {
-                            "kind": "]",
-                            "start": 194,
-                            "end": 195,
-                            "text": "]"
+                            "text": "\"B\"",
+                            "start": 9,
+                            "startCol": 20,
+                            "end": 9,
+                            "endCol": 23
                           }
                         ]
                       }
                     ]
                   },
                   {
-                    "kind": ",",
-                    "start": 195,
-                    "end": 196,
-                    "text": ","
-                  },
-                  {
                     "kind": "match_expr",
-                    "start": 201,
-                    "end": 277,
+                    "start": 10,
+                    "startCol": 4,
+                    "end": 10,
+                    "endCol": 80,
                     "children": [
                       {
                         "kind": "var",
-                        "start": 201,
-                        "end": 206,
-                        "text": "Pairs"
-                      },
-                      {
-                        "kind": "=",
-                        "start": 207,
-                        "end": 208,
-                        "text": "="
+                        "text": "Pairs",
+                        "start": 10,
+                        "startCol": 4,
+                        "end": 10,
+                        "endCol": 9
                       },
                       {
                         "kind": "list_comprehension",
-                        "start": 209,
-                        "end": 277,
+                        "start": 10,
+                        "startCol": 12,
+                        "end": 10,
+                        "endCol": 80,
                         "children": [
                           {
-                            "kind": "[",
-                            "start": 209,
-                            "end": 210,
-                            "text": "["
-                          },
-                          {
                             "kind": "map_expr",
-                            "start": 210,
-                            "end": 231,
+                            "start": 10,
+                            "startCol": 13,
+                            "end": 10,
+                            "endCol": 34,
                             "children": [
                               {
-                                "kind": "#",
-                                "start": 210,
-                                "end": 211,
-                                "text": "#"
-                              },
-                              {
-                                "kind": "{",
-                                "start": 211,
-                                "end": 212,
-                                "text": "{"
-                              },
-                              {
                                 "kind": "map_field",
-                                "start": 212,
-                                "end": 220,
+                                "start": 10,
+                                "startCol": 15,
+                                "end": 10,
+                                "endCol": 23,
                                 "children": [
                                   {
                                     "kind": "string",
-                                    "start": 212,
-                                    "end": 215,
-                                    "text": "\"n\""
-                                  },
-                                  {
-                                    "kind": "=\u003e",
-                                    "start": 216,
-                                    "end": 218,
-                                    "text": "=\u003e"
+                                    "text": "\"n\"",
+                                    "start": 10,
+                                    "startCol": 15,
+                                    "end": 10,
+                                    "endCol": 18
                                   },
                                   {
                                     "kind": "var",
-                                    "start": 219,
-                                    "end": 220,
-                                    "text": "N"
+                                    "text": "N",
+                                    "start": 10,
+                                    "startCol": 22,
+                                    "end": 10,
+                                    "endCol": 23
                                   }
                                 ]
                               },
                               {
-                                "kind": ",",
-                                "start": 220,
-                                "end": 221,
-                                "text": ","
-                              },
-                              {
                                 "kind": "map_field",
-                                "start": 222,
-                                "end": 230,
+                                "start": 10,
+                                "startCol": 25,
+                                "end": 10,
+                                "endCol": 33,
                                 "children": [
                                   {
                                     "kind": "string",
-                                    "start": 222,
-                                    "end": 225,
-                                    "text": "\"l\""
-                                  },
-                                  {
-                                    "kind": "=\u003e",
-                                    "start": 226,
-                                    "end": 228,
-                                    "text": "=\u003e"
+                                    "text": "\"l\"",
+                                    "start": 10,
+                                    "startCol": 25,
+                                    "end": 10,
+                                    "endCol": 28
                                   },
                                   {
                                     "kind": "var",
-                                    "start": 229,
-                                    "end": 230,
-                                    "text": "L"
+                                    "text": "L",
+                                    "start": 10,
+                                    "startCol": 32,
+                                    "end": 10,
+                                    "endCol": 33
                                   }
                                 ]
-                              },
-                              {
-                                "kind": "}",
-                                "start": 230,
-                                "end": 231,
-                                "text": "}"
                               }
                             ]
                           },
                           {
                             "kind": "lc_exprs",
-                            "start": 232,
-                            "end": 276,
+                            "start": 10,
+                            "startCol": 35,
+                            "end": 10,
+                            "endCol": 79,
                             "children": [
                               {
-                                "kind": "||",
-                                "start": 232,
-                                "end": 234,
-                                "text": "||"
-                              },
-                              {
                                 "kind": "generator",
-                                "start": 235,
-                                "end": 244,
+                                "start": 10,
+                                "startCol": 38,
+                                "end": 10,
+                                "endCol": 47,
                                 "children": [
                                   {
                                     "kind": "var",
-                                    "start": 235,
-                                    "end": 236,
-                                    "text": "N"
-                                  },
-                                  {
-                                    "kind": "\u003c-",
-                                    "start": 237,
-                                    "end": 239,
-                                    "text": "\u003c-"
+                                    "text": "N",
+                                    "start": 10,
+                                    "startCol": 38,
+                                    "end": 10,
+                                    "endCol": 39
                                   },
                                   {
                                     "kind": "var",
-                                    "start": 240,
-                                    "end": 244,
-                                    "text": "Nums"
+                                    "text": "Nums",
+                                    "start": 10,
+                                    "startCol": 43,
+                                    "end": 10,
+                                    "endCol": 47
                                   }
                                 ]
                               },
                               {
-                                "kind": ",",
-                                "start": 244,
-                                "end": 245,
-                                "text": ","
-                              },
-                              {
                                 "kind": "generator",
-                                "start": 246,
-                                "end": 258,
+                                "start": 10,
+                                "startCol": 49,
+                                "end": 10,
+                                "endCol": 61,
                                 "children": [
                                   {
                                     "kind": "var",
-                                    "start": 246,
-                                    "end": 247,
-                                    "text": "L"
-                                  },
-                                  {
-                                    "kind": "\u003c-",
-                                    "start": 248,
-                                    "end": 250,
-                                    "text": "\u003c-"
+                                    "text": "L",
+                                    "start": 10,
+                                    "startCol": 49,
+                                    "end": 10,
+                                    "endCol": 50
                                   },
                                   {
                                     "kind": "var",
-                                    "start": 251,
-                                    "end": 258,
-                                    "text": "Letters"
+                                    "text": "Letters",
+                                    "start": 10,
+                                    "startCol": 54,
+                                    "end": 10,
+                                    "endCol": 61
                                   }
                                 ]
-                              },
-                              {
-                                "kind": ",",
-                                "start": 258,
-                                "end": 259,
-                                "text": ","
                               },
                               {
                                 "kind": "paren_expr",
-                                "start": 260,
-                                "end": 276,
+                                "start": 10,
+                                "startCol": 63,
+                                "end": 10,
+                                "endCol": 79,
                                 "children": [
                                   {
-                                    "kind": "(",
-                                    "start": 260,
-                                    "end": 261,
-                                    "text": "("
-                                  },
-                                  {
                                     "kind": "binary_op_expr",
-                                    "start": 261,
-                                    "end": 275,
+                                    "start": 10,
+                                    "startCol": 64,
+                                    "end": 10,
+                                    "endCol": 78,
                                     "children": [
                                       {
                                         "kind": "paren_expr",
-                                        "start": 261,
-                                        "end": 270,
+                                        "start": 10,
+                                        "startCol": 64,
+                                        "end": 10,
+                                        "endCol": 73,
                                         "children": [
                                           {
-                                            "kind": "(",
-                                            "start": 261,
-                                            "end": 262,
-                                            "text": "("
-                                          },
-                                          {
                                             "kind": "binary_op_expr",
-                                            "start": 262,
-                                            "end": 269,
+                                            "start": 10,
+                                            "startCol": 65,
+                                            "end": 10,
+                                            "endCol": 72,
                                             "children": [
                                               {
                                                 "kind": "var",
-                                                "start": 262,
-                                                "end": 263,
-                                                "text": "N"
-                                              },
-                                              {
-                                                "kind": "rem",
-                                                "start": 264,
-                                                "end": 267,
-                                                "text": "rem"
+                                                "text": "N",
+                                                "start": 10,
+                                                "startCol": 65,
+                                                "end": 10,
+                                                "endCol": 66
                                               },
                                               {
                                                 "kind": "integer",
-                                                "start": 268,
-                                                "end": 269,
-                                                "text": "2"
+                                                "text": "2",
+                                                "start": 10,
+                                                "startCol": 71,
+                                                "end": 10,
+                                                "endCol": 72
                                               }
                                             ]
-                                          },
-                                          {
-                                            "kind": ")",
-                                            "start": 269,
-                                            "end": 270,
-                                            "text": ")"
                                           }
                                         ]
                                       },
                                       {
-                                        "kind": "==",
-                                        "start": 271,
-                                        "end": 273,
-                                        "text": "=="
-                                      },
-                                      {
                                         "kind": "integer",
-                                        "start": 274,
-                                        "end": 275,
-                                        "text": "0"
+                                        "text": "0",
+                                        "start": 10,
+                                        "startCol": 77,
+                                        "end": 10,
+                                        "endCol": 78
                                       }
                                     ]
-                                  },
-                                  {
-                                    "kind": ")",
-                                    "start": 275,
-                                    "end": 276,
-                                    "text": ")"
                                   }
                                 ]
                               }
                             ]
-                          },
-                          {
-                            "kind": "]",
-                            "start": 276,
-                            "end": 277,
-                            "text": "]"
                           }
                         ]
                       }
                     ]
                   },
                   {
-                    "kind": ",",
-                    "start": 277,
-                    "end": 278,
-                    "text": ","
-                  },
-                  {
                     "kind": "call",
-                    "start": 283,
-                    "end": 324,
+                    "start": 11,
+                    "startCol": 4,
+                    "end": 11,
+                    "endCol": 45,
                     "children": [
                       {
                         "kind": "remote",
-                        "start": 283,
-                        "end": 292,
+                        "start": 11,
+                        "startCol": 4,
+                        "end": 11,
+                        "endCol": 13,
                         "children": [
                           {
                             "kind": "remote_module",
-                            "start": 283,
-                            "end": 286,
+                            "start": 11,
+                            "startCol": 4,
+                            "end": 11,
+                            "endCol": 7,
                             "children": [
                               {
                                 "kind": "atom",
-                                "start": 283,
-                                "end": 285,
-                                "text": "io"
-                              },
-                              {
-                                "kind": ":",
-                                "start": 285,
-                                "end": 286,
-                                "text": ":"
+                                "text": "io",
+                                "start": 11,
+                                "startCol": 4,
+                                "end": 11,
+                                "endCol": 6
                               }
                             ]
                           },
                           {
                             "kind": "atom",
-                            "start": 286,
-                            "end": 292,
-                            "text": "format"
+                            "text": "format",
+                            "start": 11,
+                            "startCol": 7,
+                            "end": 11,
+                            "endCol": 13
                           }
                         ]
                       },
                       {
                         "kind": "expr_args",
-                        "start": 292,
-                        "end": 324,
+                        "start": 11,
+                        "startCol": 13,
+                        "end": 11,
+                        "endCol": 45,
                         "children": [
                           {
-                            "kind": "(",
-                            "start": 292,
-                            "end": 293,
-                            "text": "("
-                          },
-                          {
                             "kind": "string",
-                            "start": 293,
-                            "end": 299,
-                            "text": "\"~s~n\""
-                          },
-                          {
-                            "kind": ",",
-                            "start": 299,
-                            "end": 300,
-                            "text": ","
+                            "text": "\"~s~n\"",
+                            "start": 11,
+                            "startCol": 14,
+                            "end": 11,
+                            "endCol": 20
                           },
                           {
                             "kind": "list",
-                            "start": 301,
-                            "end": 323,
+                            "start": 11,
+                            "startCol": 22,
+                            "end": 11,
+                            "endCol": 44,
                             "children": [
                               {
-                                "kind": "[",
-                                "start": 301,
-                                "end": 302,
-                                "text": "["
-                              },
-                              {
                                 "kind": "string",
-                                "start": 302,
-                                "end": 322,
-                                "text": "\"--- Even pairs ---\""
-                              },
-                              {
-                                "kind": "]",
-                                "start": 322,
-                                "end": 323,
-                                "text": "]"
+                                "text": "\"--- Even pairs ---\"",
+                                "start": 11,
+                                "startCol": 23,
+                                "end": 11,
+                                "endCol": 43
                               }
                             ]
-                          },
-                          {
-                            "kind": ")",
-                            "start": 323,
-                            "end": 324,
-                            "text": ")"
                           }
                         ]
                       }
                     ]
                   },
                   {
-                    "kind": ",",
-                    "start": 324,
-                    "end": 325,
-                    "text": ","
-                  },
-                  {
                     "kind": "call",
-                    "start": 330,
-                    "end": 428,
+                    "start": 12,
+                    "startCol": 4,
+                    "end": 14,
+                    "endCol": 11,
                     "children": [
                       {
                         "kind": "remote",
-                        "start": 330,
-                        "end": 343,
+                        "start": 12,
+                        "startCol": 4,
+                        "end": 12,
+                        "endCol": 17,
                         "children": [
                           {
                             "kind": "remote_module",
-                            "start": 330,
-                            "end": 336,
+                            "start": 12,
+                            "startCol": 4,
+                            "end": 12,
+                            "endCol": 10,
                             "children": [
                               {
                                 "kind": "atom",
-                                "start": 330,
-                                "end": 335,
-                                "text": "lists"
-                              },
-                              {
-                                "kind": ":",
-                                "start": 335,
-                                "end": 336,
-                                "text": ":"
+                                "text": "lists",
+                                "start": 12,
+                                "startCol": 4,
+                                "end": 12,
+                                "endCol": 9
                               }
                             ]
                           },
                           {
                             "kind": "atom",
-                            "start": 336,
-                            "end": 343,
-                            "text": "foreach"
+                            "text": "foreach",
+                            "start": 12,
+                            "startCol": 10,
+                            "end": 12,
+                            "endCol": 17
                           }
                         ]
                       },
                       {
                         "kind": "expr_args",
-                        "start": 343,
-                        "end": 428,
+                        "start": 12,
+                        "startCol": 17,
+                        "end": 14,
+                        "endCol": 11,
                         "children": [
                           {
-                            "kind": "(",
-                            "start": 343,
-                            "end": 344,
-                            "text": "("
-                          },
-                          {
                             "kind": "anonymous_fun",
-                            "start": 344,
-                            "end": 420,
+                            "start": 12,
+                            "startCol": 18,
+                            "end": 14,
+                            "endCol": 3,
                             "children": [
                               {
-                                "kind": "fun",
-                                "start": 344,
-                                "end": 347,
-                                "text": "fun"
-                              },
-                              {
                                 "kind": "fun_clause",
-                                "start": 347,
-                                "end": 416,
+                                "start": 12,
+                                "startCol": 21,
+                                "end": 13,
+                                "endCol": 62,
                                 "children": [
                                   {
                                     "kind": "expr_args",
-                                    "start": 347,
-                                    "end": 350,
+                                    "start": 12,
+                                    "startCol": 21,
+                                    "end": 12,
+                                    "endCol": 24,
                                     "children": [
                                       {
-                                        "kind": "(",
-                                        "start": 347,
-                                        "end": 348,
-                                        "text": "("
-                                      },
-                                      {
                                         "kind": "var",
-                                        "start": 348,
-                                        "end": 349,
-                                        "text": "P"
-                                      },
-                                      {
-                                        "kind": ")",
-                                        "start": 349,
-                                        "end": 350,
-                                        "text": ")"
+                                        "text": "P",
+                                        "start": 12,
+                                        "startCol": 22,
+                                        "end": 12,
+                                        "endCol": 23
                                       }
                                     ]
                                   },
                                   {
                                     "kind": "clause_body",
-                                    "start": 351,
-                                    "end": 416,
+                                    "start": 12,
+                                    "startCol": 25,
+                                    "end": 13,
+                                    "endCol": 62,
                                     "children": [
                                       {
-                                        "kind": "-\u003e",
-                                        "start": 351,
-                                        "end": 353,
-                                        "text": "-\u003e"
-                                      },
-                                      {
                                         "kind": "call",
-                                        "start": 358,
-                                        "end": 416,
+                                        "start": 13,
+                                        "startCol": 4,
+                                        "end": 13,
+                                        "endCol": 62,
                                         "children": [
                                           {
                                             "kind": "remote",
-                                            "start": 358,
-                                            "end": 367,
+                                            "start": 13,
+                                            "startCol": 4,
+                                            "end": 13,
+                                            "endCol": 13,
                                             "children": [
                                               {
                                                 "kind": "remote_module",
-                                                "start": 358,
-                                                "end": 361,
+                                                "start": 13,
+                                                "startCol": 4,
+                                                "end": 13,
+                                                "endCol": 7,
                                                 "children": [
                                                   {
                                                     "kind": "atom",
-                                                    "start": 358,
-                                                    "end": 360,
-                                                    "text": "io"
-                                                  },
-                                                  {
-                                                    "kind": ":",
-                                                    "start": 360,
-                                                    "end": 361,
-                                                    "text": ":"
+                                                    "text": "io",
+                                                    "start": 13,
+                                                    "startCol": 4,
+                                                    "end": 13,
+                                                    "endCol": 6
                                                   }
                                                 ]
                                               },
                                               {
                                                 "kind": "atom",
-                                                "start": 361,
-                                                "end": 367,
-                                                "text": "format"
+                                                "text": "format",
+                                                "start": 13,
+                                                "startCol": 7,
+                                                "end": 13,
+                                                "endCol": 13
                                               }
                                             ]
                                           },
                                           {
                                             "kind": "expr_args",
-                                            "start": 367,
-                                            "end": 416,
+                                            "start": 13,
+                                            "startCol": 13,
+                                            "end": 13,
+                                            "endCol": 62,
                                             "children": [
                                               {
-                                                "kind": "(",
-                                                "start": 367,
-                                                "end": 368,
-                                                "text": "("
-                                              },
-                                              {
                                                 "kind": "string",
-                                                "start": 368,
-                                                "end": 377,
-                                                "text": "\"~p ~p~n\""
-                                              },
-                                              {
-                                                "kind": ",",
-                                                "start": 377,
-                                                "end": 378,
-                                                "text": ","
+                                                "text": "\"~p ~p~n\"",
+                                                "start": 13,
+                                                "startCol": 14,
+                                                "end": 13,
+                                                "endCol": 23
                                               },
                                               {
                                                 "kind": "list",
-                                                "start": 379,
-                                                "end": 415,
+                                                "start": 13,
+                                                "startCol": 25,
+                                                "end": 13,
+                                                "endCol": 61,
                                                 "children": [
                                                   {
-                                                    "kind": "[",
-                                                    "start": 379,
-                                                    "end": 380,
-                                                    "text": "["
-                                                  },
-                                                  {
                                                     "kind": "call",
-                                                    "start": 380,
-                                                    "end": 396,
+                                                    "start": 13,
+                                                    "startCol": 26,
+                                                    "end": 13,
+                                                    "endCol": 42,
                                                     "children": [
                                                       {
                                                         "kind": "remote",
-                                                        "start": 380,
-                                                        "end": 388,
+                                                        "start": 13,
+                                                        "startCol": 26,
+                                                        "end": 13,
+                                                        "endCol": 34,
                                                         "children": [
                                                           {
                                                             "kind": "remote_module",
-                                                            "start": 380,
-                                                            "end": 385,
+                                                            "start": 13,
+                                                            "startCol": 26,
+                                                            "end": 13,
+                                                            "endCol": 31,
                                                             "children": [
                                                               {
                                                                 "kind": "atom",
-                                                                "start": 380,
-                                                                "end": 384,
-                                                                "text": "maps"
-                                                              },
-                                                              {
-                                                                "kind": ":",
-                                                                "start": 384,
-                                                                "end": 385,
-                                                                "text": ":"
+                                                                "text": "maps",
+                                                                "start": 13,
+                                                                "startCol": 26,
+                                                                "end": 13,
+                                                                "endCol": 30
                                                               }
                                                             ]
                                                           },
                                                           {
                                                             "kind": "atom",
-                                                            "start": 385,
-                                                            "end": 388,
-                                                            "text": "get"
+                                                            "text": "get",
+                                                            "start": 13,
+                                                            "startCol": 31,
+                                                            "end": 13,
+                                                            "endCol": 34
                                                           }
                                                         ]
                                                       },
                                                       {
                                                         "kind": "expr_args",
-                                                        "start": 388,
-                                                        "end": 396,
+                                                        "start": 13,
+                                                        "startCol": 34,
+                                                        "end": 13,
+                                                        "endCol": 42,
                                                         "children": [
                                                           {
-                                                            "kind": "(",
-                                                            "start": 388,
-                                                            "end": 389,
-                                                            "text": "("
-                                                          },
-                                                          {
                                                             "kind": "string",
-                                                            "start": 389,
-                                                            "end": 392,
-                                                            "text": "\"n\""
-                                                          },
-                                                          {
-                                                            "kind": ",",
-                                                            "start": 392,
-                                                            "end": 393,
-                                                            "text": ","
+                                                            "text": "\"n\"",
+                                                            "start": 13,
+                                                            "startCol": 35,
+                                                            "end": 13,
+                                                            "endCol": 38
                                                           },
                                                           {
                                                             "kind": "var",
-                                                            "start": 394,
-                                                            "end": 395,
-                                                            "text": "P"
-                                                          },
-                                                          {
-                                                            "kind": ")",
-                                                            "start": 395,
-                                                            "end": 396,
-                                                            "text": ")"
+                                                            "text": "P",
+                                                            "start": 13,
+                                                            "startCol": 40,
+                                                            "end": 13,
+                                                            "endCol": 41
                                                           }
                                                         ]
                                                       }
                                                     ]
                                                   },
                                                   {
-                                                    "kind": ",",
-                                                    "start": 396,
-                                                    "end": 397,
-                                                    "text": ","
-                                                  },
-                                                  {
                                                     "kind": "call",
-                                                    "start": 398,
-                                                    "end": 414,
+                                                    "start": 13,
+                                                    "startCol": 44,
+                                                    "end": 13,
+                                                    "endCol": 60,
                                                     "children": [
                                                       {
                                                         "kind": "remote",
-                                                        "start": 398,
-                                                        "end": 406,
+                                                        "start": 13,
+                                                        "startCol": 44,
+                                                        "end": 13,
+                                                        "endCol": 52,
                                                         "children": [
                                                           {
                                                             "kind": "remote_module",
-                                                            "start": 398,
-                                                            "end": 403,
+                                                            "start": 13,
+                                                            "startCol": 44,
+                                                            "end": 13,
+                                                            "endCol": 49,
                                                             "children": [
                                                               {
                                                                 "kind": "atom",
-                                                                "start": 398,
-                                                                "end": 402,
-                                                                "text": "maps"
-                                                              },
-                                                              {
-                                                                "kind": ":",
-                                                                "start": 402,
-                                                                "end": 403,
-                                                                "text": ":"
+                                                                "text": "maps",
+                                                                "start": 13,
+                                                                "startCol": 44,
+                                                                "end": 13,
+                                                                "endCol": 48
                                                               }
                                                             ]
                                                           },
                                                           {
                                                             "kind": "atom",
-                                                            "start": 403,
-                                                            "end": 406,
-                                                            "text": "get"
+                                                            "text": "get",
+                                                            "start": 13,
+                                                            "startCol": 49,
+                                                            "end": 13,
+                                                            "endCol": 52
                                                           }
                                                         ]
                                                       },
                                                       {
                                                         "kind": "expr_args",
-                                                        "start": 406,
-                                                        "end": 414,
+                                                        "start": 13,
+                                                        "startCol": 52,
+                                                        "end": 13,
+                                                        "endCol": 60,
                                                         "children": [
                                                           {
-                                                            "kind": "(",
-                                                            "start": 406,
-                                                            "end": 407,
-                                                            "text": "("
-                                                          },
-                                                          {
                                                             "kind": "string",
-                                                            "start": 407,
-                                                            "end": 410,
-                                                            "text": "\"l\""
-                                                          },
-                                                          {
-                                                            "kind": ",",
-                                                            "start": 410,
-                                                            "end": 411,
-                                                            "text": ","
+                                                            "text": "\"l\"",
+                                                            "start": 13,
+                                                            "startCol": 53,
+                                                            "end": 13,
+                                                            "endCol": 56
                                                           },
                                                           {
                                                             "kind": "var",
-                                                            "start": 412,
-                                                            "end": 413,
-                                                            "text": "P"
-                                                          },
-                                                          {
-                                                            "kind": ")",
-                                                            "start": 413,
-                                                            "end": 414,
-                                                            "text": ")"
+                                                            "text": "P",
+                                                            "start": 13,
+                                                            "startCol": 58,
+                                                            "end": 13,
+                                                            "endCol": 59
                                                           }
                                                         ]
                                                       }
                                                     ]
-                                                  },
-                                                  {
-                                                    "kind": "]",
-                                                    "start": 414,
-                                                    "end": 415,
-                                                    "text": "]"
                                                   }
                                                 ]
-                                              },
-                                              {
-                                                "kind": ")",
-                                                "start": 415,
-                                                "end": 416,
-                                                "text": ")"
                                               }
                                             ]
                                           }
@@ -1116,32 +828,16 @@
                                     ]
                                   }
                                 ]
-                              },
-                              {
-                                "kind": "end",
-                                "start": 417,
-                                "end": 420,
-                                "text": "end"
                               }
                             ]
                           },
                           {
-                            "kind": ",",
-                            "start": 420,
-                            "end": 421,
-                            "text": ","
-                          },
-                          {
                             "kind": "var",
-                            "start": 422,
-                            "end": 427,
-                            "text": "Pairs"
-                          },
-                          {
-                            "kind": ")",
-                            "start": 427,
-                            "end": 428,
-                            "text": ")"
+                            "text": "Pairs",
+                            "start": 14,
+                            "startCol": 5,
+                            "end": 14,
+                            "endCol": 10
                           }
                         ]
                       }
@@ -1150,12 +846,6 @@
                 ]
               }
             ]
-          },
-          {
-            "kind": ".",
-            "start": 428,
-            "end": 429,
-            "text": "."
           }
         ]
       }
