@@ -46,7 +46,7 @@ func TestInspect_Golden(t *testing.T) {
 	ensureJava(t)
 	root := repoRoot(t)
 	srcDir := filepath.Join(root, "tests", "transpiler", "x", "java")
-	outDir := filepath.Join(root, "tests", "json-ast", "x", "java")
+	outDir := filepath.Join(root, "tests", "aster", "x", "java")
 	os.MkdirAll(outDir, 0o755)
 
 	files, err := filepath.Glob(filepath.Join(srcDir, "*.java"))
@@ -62,7 +62,7 @@ func TestInspect_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("read src: %v", err)
 			}
-			prog, err := javaast.Inspect(string(data))
+			prog, err := javaast.Inspect(string(data), false)
 			if err != nil {
 				t.Skipf("inspect error: %v", err)
 				return
