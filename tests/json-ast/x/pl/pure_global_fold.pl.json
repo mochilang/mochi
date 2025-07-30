@@ -1,0 +1,39 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 27
+    },
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 27,
+      "end": 52
+    },
+    {
+      "name": "inc",
+      "params": [
+        "X",
+        "R"
+      ],
+      "body": "_11444 is _11432+_11440, _11434=_11444",
+      "start": 52,
+      "end": 105
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_11954 is 2, inc(3, _11962), writeln(_11962)",
+      "start": 105,
+      "end": 155
+    }
+  ]
+}

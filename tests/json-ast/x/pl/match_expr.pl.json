@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 24
+    },
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 24,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_11732 is 2, (2=:=1-\u003e_11750=\"one\";2=:=2-\u003e_11750=\"two\";2=:=3-\u003e_11750=\"three\";_11750=\"unknown\"), writeln(_11750)",
+      "start": 52,
+      "end": 205
+    }
+  ]
+}

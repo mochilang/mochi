@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 24
+    },
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 24,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_11684 is 7, _11690 is 4, writeln(7), (_11684=:=7-\u003ewriteln(true);writeln(false)), (_11690\u003c5-\u003ewriteln(true);writeln(false))",
+      "start": 52,
+      "end": 197
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 24
+    },
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 24,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_11486 is 8, (_11486\u003e10-\u003e_11504=\"big\";_11486\u003e5-\u003e_11504=\"medium\";_11504=\"small\"), writeln(_11504)",
+      "start": 52,
+      "end": 164
+    }
+  ]
+}

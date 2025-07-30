@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 27
+    },
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 27,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_26400=[{id:1, name:\"Alice\"}, {id:2, name:\"Bob\"}, {id:3, name:\"Charlie\"}], _26528=[{id:100, customerId:1, total:250}, {id:101, customerId:2, total:125}, {id:102, customerId:1, total:300}], _27064=[{orderId:100, orderCustomerId:1, pairedCustomerName:\"Alice\", orderTotal:250}, {orderId:100, orderCustomerId:1, pairedCustomerName:\"Bob\", orderTotal:250}, {orderId:100, orderCustomerId:1, pairedCustomerName:\"Charlie\", orderTotal:250}, {orderId:101, orderCustomerId:2, pairedCustomerName:\"Alice\", orderTotal:125}, {orderId:101, orderCustomerId:2, pairedCustomerName:\"Bob\", orderTotal:125}, {orderId:101, orderCustomerId:2, pairedCustomerName:\"Charlie\", orderTotal:125}, {orderId:102, orderCustomerId:1, pairedCustomerName:\"Alice\", orderTotal:300}, {orderId:102, orderCustomerId:1, pairedCustomerName:\"Bob\", orderTotal:300}, {orderId:102, orderCustomerId:1, pairedCustomerName:\"Charlie\", orderTotal:300}], writeln(\"--- Cross Join: All order-customer pairs ---\"), _27142={orderId:100, orderCustomerId:1, pairedCustomerName:\"Alice\", orderTotal:250}, writeln(\"Order 100 (customerId: 1 , total: $ 250 ) paired with Alice\"), _27224={orderId:100, orderCustomerId:1, pairedCustomerName:\"Bob\", orderTotal:250}, writeln(\"Order 100 (customerId: 1 , total: $ 250 ) paired with Bob\"), _27308={orderId:100, orderCustomerId:1, pairedCustomerName:\"Charlie\", orderTotal:250}, writeln(\"Order 100 (customerId: 1 , total: $ 250 ) paired with Charlie\"), _27390={orderId:101, orderCustomerId:2, pairedCustomerName:\"Alice\", orderTotal:125}, writeln(\"Order 101 (customerId: 2 , total: $ 125 ) paired with Alice\"), _27472={orderId:101, orderCustomerId:2, pairedCustomerName:\"Bob\", orderTotal:125}, writeln(\"Order 101 (customerId: 2 , total: $ 125 ) paired with Bob\"), _27556={orderId:101, orderCustomerId:2, pairedCustomerName:\"Charlie\", orderTotal:125}, writeln(\"Order 101 (customerId: 2 , total: $ 125 ) paired with Charlie\"), _27638={orderId:102, orderCustomerId:1, pairedCustomerName:\"Alice\", orderTotal:300}, writeln(\"Order 102 (customerId: 1 , total: $ 300 ) paired with Alice\"), _27720={orderId:102, orderCustomerId:1, pairedCustomerName:\"Bob\", orderTotal:300}, writeln(\"Order 102 (customerId: 1 , total: $ 300 ) paired with Bob\"), _27804={orderId:102, orderCustomerId:1, pairedCustomerName:\"Charlie\", orderTotal:300}, writeln(\"Order 102 (customerId: 1 , total: $ 300 ) paired with Charlie\")",
+      "start": 52,
+      "end": 2632
+    }
+  ]
+}

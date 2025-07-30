@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 27
+    },
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 27,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "writeln(2), writeln(3), writeln(1), writeln(2), _11664 is 4-1, sub_string(\"hello\", 1, _11664, _11682, _11684), writeln(_11684)",
+      "start": 52,
+      "end": 190
+    }
+  ]
+}

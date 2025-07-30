@@ -1,0 +1,20 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 24
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_13204=[{id:1, name:\"Alice\"}, {id:2, name:\"Bob\"}], _13268=[{id:100, customerId:1}, {id:101, customerId:2}], _13344=[{orderId:100, sku:\"a\"}, {orderId:101, sku:\"b\"}], _13432=[{name:\"Alice\", sku:\"a\"}, {name:\"Bob\", sku:\"b\"}], writeln(\"--- Multi Join ---\"), _13486={name:\"Alice\", sku:\"a\"}, writeln(\"Alice bought item a\"), _13540={name:\"Bob\", sku:\"b\"}, writeln(\"Bob bought item b\")",
+      "start": 24,
+      "end": 471
+    }
+  ]
+}

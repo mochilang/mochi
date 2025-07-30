@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 27
+    },
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 27,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_11828=\"catch\", (sub_string(_11828, _11842, _11844, _11846, \"cat\")-\u003ewriteln(true);writeln(false)), (sub_string(_11828, _11880, _11882, _11884, \"dog\")-\u003ewriteln(true);writeln(false))",
+      "start": 52,
+      "end": 220
+    }
+  ]
+}

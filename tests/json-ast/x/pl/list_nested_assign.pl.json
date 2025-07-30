@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 24
+    },
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 24,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_12158=[[1, 2], [3, 4]], nth0(1, _12158, _12168), nth0(0, _12168, _12176, _12178), nth0(0, _12184, 5, _12178), nth0(1, _12158, _12196, _12198), nth0(1, _12204, _12184, _12198), nth0(1, _12204, _12216), nth0(0, _12216, _12224), writeln(_12224)",
+      "start": 52,
+      "end": 269
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 24
+    },
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 24,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_15042=[{name:\"Alice\", age:30, city:\"Paris\"}, {name:\"Bob\", age:15, city:\"Hanoi\"}, {name:\"Charlie\", age:65, city:\"Paris\"}, {name:\"Diana\", age:45, city:\"Hanoi\"}, {name:\"Eve\", age:70, city:\"Paris\"}, {name:\"Frank\", age:22, city:\"Hanoi\"}], _15148=[{city:\"Paris\", count:3, avg_age:55}, {city:\"Hanoi\", count:3, avg_age:27.333333333333332}], writeln(\"--- People grouped by city ---\"), _15210={city:\"Paris\", count:3, avg_age:55}, writeln(\"Paris : count = 3 , avg_age = 55\"), _15280={city:\"Hanoi\", count:3, avg_age:27.333333333333332}, writeln(\"Hanoi : count = 3 , avg_age = 27.333333333333332\")",
+      "start": 52,
+      "end": 704
+    }
+  ]
+}

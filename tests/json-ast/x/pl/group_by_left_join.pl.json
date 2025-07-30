@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 24
+    },
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 24,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_14100=[{id:1, name:\"Alice\"}, {id:2, name:\"Bob\"}, {id:3, name:\"Charlie\"}], _14192=[{id:100, customerId:1}, {id:101, customerId:1}, {id:102, customerId:2}], _14304=[{name:\"Alice\", count:0}, {name:\"Bob\", count:0}, {name:\"Charlie\", count:0}], writeln(\"--- Group Left Join ---\"), _14354={name:\"Alice\", count:0}, writeln(\"Alice orders: 0\"), _14402={name:\"Bob\", count:0}, writeln(\"Bob orders: 0\"), _14450={name:\"Charlie\", count:0}, writeln(\"Charlie orders: 0\")",
+      "start": 52,
+      "end": 582
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 24
+    },
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 24,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_13326=[{id:1, name:\"Alice\"}, {id:2, name:\"Bob\"}], _13418=[{id:100, customerId:1}, {id:101, customerId:1}, {id:102, customerId:2}], _13494=[{name:\"Alice\", count:2}, {name:\"Bob\", count:1}], writeln(\"--- Orders per customer ---\"), _13544={name:\"Alice\", count:2}, writeln(\"Alice orders: 2\"), _13592={name:\"Bob\", count:1}, writeln(\"Bob orders: 1\")",
+      "start": 52,
+      "end": 459
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 24
+    },
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 24,
+      "end": 52
+    },
+    {
+      "name": "inc",
+      "params": [
+        "C",
+        "R"
+      ],
+      "body": "get_dict(n, _12152, _12162), get_dict(n, _12152, _12170), _12180 is _12162+1, put_dict(n, _12152, _12180, _12192), _12154=_12198",
+      "start": 52,
+      "end": 176
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_12798=map{n:0, tag:\"Counter\"}, inc(map{n:0, tag:\"Counter\"}, _12826), writeln(0)",
+      "start": 176,
+      "end": 275
+    }
+  ]
+}

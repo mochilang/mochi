@@ -1,0 +1,39 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 24
+    },
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 24,
+      "end": 52
+    },
+    {
+      "name": "outer",
+      "params": [
+        "X",
+        "R"
+      ],
+      "body": "inner(5, _11398), _11392=_11398",
+      "start": 52,
+      "end": 108
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "outer(3, _11896), writeln(_11896)",
+      "start": 108,
+      "end": 148
+    }
+  ]
+}

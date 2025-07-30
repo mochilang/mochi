@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 27
+    },
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 27,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_14428=[{name:\"Alice\", age:30}, {name:\"Bob\", age:15}, {name:\"Charlie\", age:65}, {name:\"Diana\", age:45}], _14576=[{name:\"Alice\", age:30, is_senior:false}, {name:\"Charlie\", age:65, is_senior:true}, {name:\"Diana\", age:45, is_senior:false}], writeln(\"--- Adults ---\"), _14634={name:\"Alice\", age:30, is_senior:false}, writeln(\"Alice is 30 \"), _14694={name:\"Charlie\", age:65, is_senior:true}, writeln(\"Charlie is 65 (senior)\"), _14756={name:\"Diana\", age:45, is_senior:false}, writeln(\"Diana is 45 \")",
+      "start": 52,
+      "end": 631
+    }
+  ]
+}

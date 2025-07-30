@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 24
+    },
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 24,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "union([1, 2], [2, 3], _12124), writeln(_12124), subtract([1, 2, 3], [2], _12164), writeln(_12164), intersection([1, 2, 3], [2, 4], _12210), writeln(_12210), append([1, 2], [2, 3], _12250), length(_12250, _12256), writeln(_12256)",
+      "start": 52,
+      "end": 265
+    }
+  ]
+}

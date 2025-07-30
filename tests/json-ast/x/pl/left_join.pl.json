@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 24
+    },
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 24,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_15496=[_15454{id:1, name:\"Alice\"}, _15478{id:2, name:\"Bob\"}], _15548=[_15504{customerId:1, id:100, total:250}, _15526{customerId:3, id:101, total:80}], _15622=[_15574{customer:_15562{id:1, name:\"Alice\"}, orderId:100, total:250}, _15600{customer:_15596{}, orderId:101, total:80}], writeln(\"--- Left Join ---\"), _15676=_15660{customer:_15648{id:1, name:\"Alice\"}, orderId:100, total:250}, write(\"Order\"), write(' '), write(100), write(' '), write(\"customer\"), write(' '), write(_15726{id:1, name:\"Alice\"}), write(' '), write(\"total\"), write(' '), writeln(250), _15784=_15768{customer:_15764{}, orderId:101, total:80}, write(\"Order\"), write(' '), write(101), write(' '), write(\"customer\"), write(' '), write(_15828{}), write(' '), write(\"total\"), write(' '), writeln(80)",
+      "start": 52,
+      "end": 824
+    }
+  ]
+}

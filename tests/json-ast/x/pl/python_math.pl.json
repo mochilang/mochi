@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 24
+    },
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 24,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_13406=3, _13436 is 3.141592653589793*_13424.pow(3, 2), _13424.sqrt(49, _13444), _13424.sin(3.141592653589793/4, _13468), _13424.log(2.718281828459045, _13486), write(\"Circle area with r =\"), write(' '), write(3), write(' '), write(\"=\u003e\"), write(' '), writeln(_13436), write(\"Square root of 49:\"), write(' '), writeln(_13444), write(\"sin(π/4):\"), write(' '), writeln(_13468), write(\"log(e):\"), write(' '), writeln(_13486)",
+      "start": 52,
+      "end": 484
+    }
+  ]
+}

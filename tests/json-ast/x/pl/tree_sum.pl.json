@@ -1,0 +1,39 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 24
+    },
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 24,
+      "end": 52
+    },
+    {
+      "name": "sum_tree",
+      "params": [
+        "T",
+        "R"
+      ],
+      "body": "(_13454=:=_13462-\u003e_13466=0;_13454=_13484{left:_13494, right:_13498, tag:\"Node\", value:_13490}-\u003e_13466=sum_tree(_13494)+_13490+sum_tree(_13498);_13466=0), _13456=_13466",
+      "start": 52,
+      "end": 252
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_14186=_14166{left:_14156, right:_14146{left:_14156, right:_14156, tag:\"Node\", value:2}, tag:\"Node\", value:1}, sum_tree(_14224{left:_14156, right:_14204{left:_14156, right:_14156, tag:\"Node\", value:2}, tag:\"Node\", value:1}, _14246), writeln(_14246)",
+      "start": 252,
+      "end": 492
+    }
+  ]
+}
