@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-07-28 12:07 GMT+7
+Last updated: 2025-07-30 21:56 GMT+7
 
-## Rosetta Checklist (280/493)
+## Rosetta Checklist (289/493)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -12,7 +12,7 @@ Last updated: 2025-07-28 12:07 GMT+7
 | 4 | 100-prisoners | ✓ | 684.0ms | 43.51MB |
 | 5 | 15-puzzle-game | ✓ | 20.0ms | 245.80KB |
 | 6 | 15-puzzle-solver | ✓ | 542.0µs | 0B |
-| 7 | 2048 | ✓ | 22.0ms | 491.66KB |
+| 7 | 2048 |   | 22.0ms | 491.66KB |
 | 8 | 21-game | ✓ | 11.0ms | 245.81KB |
 | 9 | 24-game-solve | ✓ | 70.0ms | 3.76MB |
 | 10 | 24-game | ✓ | 13.0ms | 245.81KB |
@@ -20,9 +20,9 @@ Last updated: 2025-07-28 12:07 GMT+7
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 3.37s | 698.28MB |
 | 13 | 99-bottles-of-beer-2 | ✓ | 63.0ms | 6.96MB |
 | 14 | 99-bottles-of-beer | ✓ | 14.0ms | 0B |
-| 15 | DNS-query | ✓ | 391.0µs | 0B |
-| 16 | Duffinian-numbers |   |  |  |
-| 17 | Find-if-a-point-is-within-a-triangle |   |  |  |
+| 15 | dns-query |   |  |  |
+| 16 | duffinian-numbers |   |  |  |
+| 17 | find-if-a-point-is-within-a-triangle |   |  |  |
 | 18 | a+b | ✓ | 1.0ms | 0B |
 | 19 | abbreviations-automatic | ✓ | 44.0ms | 2.96MB |
 | 20 | abbreviations-easy | ✓ | 23.0ms | 491.63KB |
@@ -336,7 +336,7 @@ Last updated: 2025-07-28 12:07 GMT+7
 | 328 | dynamic-variable-names | ✓ | 41.0ms | 38.10KB |
 | 329 | earliest-difference-between-prime-gaps | ✓ | 71.0ms | 112.08KB |
 | 330 | eban-numbers | ✓ | 79.0ms | 102.79KB |
-| 331 | ecdsa-example |   |  |  |
+| 331 | ecdsa-example | ✓ |  |  |
 | 332 | echo-server |   |  |  |
 | 333 | eertree |   |  |  |
 | 334 | egyptian-division |   |  |  |
@@ -405,16 +405,16 @@ Last updated: 2025-07-28 12:07 GMT+7
 | 397 | fairshare-between-two-and-more |   |  |  |
 | 398 | farey-sequence |   |  |  |
 | 399 | fast-fourier-transform |   |  |  |
-| 400 | fasta-format |   |  |  |
-| 401 | faulhabers-formula |   |  |  |
-| 402 | faulhabers-triangle |   |  |  |
-| 403 | feigenbaum-constant-calculation |   |  |  |
-| 404 | fermat-numbers |   |  |  |
-| 405 | fibonacci-n-step-number-sequences |   |  |  |
-| 406 | fibonacci-sequence-1 |   |  |  |
-| 407 | fibonacci-sequence-2 |   |  |  |
-| 408 | fibonacci-sequence-3 |   |  |  |
-| 409 | fibonacci-sequence-4 |   |  |  |
+| 400 | fasta-format | ✓ | 69.0ms | 94.59KB |
+| 401 | faulhabers-formula | ✓ |  |  |
+| 402 | faulhabers-triangle | ✓ |  |  |
+| 403 | feigenbaum-constant-calculation | ✓ |  |  |
+| 404 | fermat-numbers | ✓ |  |  |
+| 405 | fibonacci-n-step-number-sequences | ✓ |  |  |
+| 406 | fibonacci-sequence-1 | ✓ |  |  |
+| 407 | fibonacci-sequence-2 | ✓ |  |  |
+| 408 | fibonacci-sequence-3 | ✓ | 28.0ms | 0B |
+| 409 | fibonacci-sequence-4 | ✓ |  |  |
 | 410 | fibonacci-sequence-5 |   |  |  |
 | 411 | fibonacci-word-fractal |   |  |  |
 | 412 | fibonacci-word |   |  |  |

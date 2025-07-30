@@ -3218,6 +3218,11 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 				varTypes = saved
 				popScope(varDeclsSaved)
 				currentFuncReturn = savedRet
+				for k, v := range refVars {
+					if v {
+						savedRefs[k] = true
+					}
+				}
 				refVars = savedRefs
 				continue
 			}
@@ -3267,6 +3272,11 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 			varTypes = saved
 			popScope(savedDecls)
 			currentFuncReturn = savedRet
+			for k, v := range refVars {
+				if v {
+					savedRefs[k] = true
+				}
+			}
 			refVars = savedRefs
 			continue
 		}
@@ -3704,7 +3714,9 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				for i := len(scopeStack) - 1; i >= 0; i-- {
 					if vs, ok2 := scopeStack[i][s.Assign.Name]; ok2 {
 						vdecl = vs
-						if closureStack[i] {
+						if i < len(scopeStack)-1 && closureStack[len(closureStack)-1] {
+							refVars[s.Assign.Name] = true
+						} else if closureStack[i] {
 							refVars[s.Assign.Name] = true
 						}
 						break
