@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 472/493
+Transpiled programs: 474/493
 
-Last updated: 2025-07-28 11:52 GMT+7
+Last updated: 2025-07-30 21:05 GMT+7
 
 Checklist:
 
@@ -24,9 +24,9 @@ Checklist:
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 568.6ms | 138.9 KB |
 | 13 | 99-bottles-of-beer-2 | ✓ | 568.6ms | 1.2 KB |
 | 14 | 99-bottles-of-beer | ✓ | 568.6ms | 2.8 KB |
-| 15 | DNS-query | ✓ | 568.6ms | 128 B |
-| 16 | Duffinian-numbers | ✓ | 568.6ms | 2.5 KB |
-| 17 | Find-if-a-point-is-within-a-triangle |   |  |  |
+| 15 | dns-query |   |  |  |
+| 16 | duffinian-numbers |   |  |  |
+| 17 | find-if-a-point-is-within-a-triangle |   | 100µs | 1.0 KB |
 | 18 | a+b | ✓ | 568.6ms | 808 B |
 | 19 | abbreviations-automatic | ✓ | 568.6ms | 5.2 KB |
 | 20 | abbreviations-easy | ✓ | 568.6ms | 2.3 KB |
@@ -409,56 +409,56 @@ Checklist:
 | 397 | fairshare-between-two-and-more | ✓ | 1m5.830898s | 1.2 MB |
 | 398 | farey-sequence | ✓ | 890µs | 2.8 KB |
 | 399 | fast-fourier-transform | ✓ | 260µs | 2.8 KB |
-| 400 | fasta-format | ✓ | 77µs | 1.1 KB |
-| 401 | faulhabers-formula | ✓ | 1.172ms | 1.3 KB |
-| 402 | faulhabers-triangle | ✓ | 32µs | 744 B |
-| 403 | feigenbaum-constant-calculation | ✓ | 3.415ms | 1.1 KB |
-| 404 | fermat-numbers | ✓ | 61µs | 2.8 KB |
-| 405 | fibonacci-n-step-number-sequences | ✓ | 170µs | 3.0 KB |
+| 400 | fasta-format | ✓ | 139µs | 1.2 KB |
+| 401 | faulhabers-formula | ✓ | 1.1ms | 1.3 KB |
+| 402 | faulhabers-triangle | ✓ | 2.715ms | 904 B |
+| 403 | feigenbaum-constant-calculation | ✓ | 3.561ms | 1.1 KB |
+| 404 | fermat-numbers | ✓ | 237µs | 1.1 KB |
+| 405 | fibonacci-n-step-number-sequences |   | 170µs | 3.0 KB |
 | 406 | fibonacci-sequence-1 | ✓ | 2µs | 104 B |
 | 407 | fibonacci-sequence-2 | ✓ | 2µs | 104 B |
 | 408 | fibonacci-sequence-3 | ✓ | 2µs | 136 B |
-| 409 | fibonacci-sequence-4 | ✓ | 92µs | 912 B |
-| 410 | fibonacci-sequence-5 | ✓ | 221µs | 3.4 KB |
-| 411 | fibonacci-word-fractal | ✓ | 114µs | 840 B |
+| 409 | fibonacci-sequence-4 | ✓ | 81µs | 912 B |
+| 410 | fibonacci-sequence-5 | ✓ | 130µs | 3.4 KB |
+| 411 | fibonacci-word-fractal | ✓ | 389µs | 840 B |
 | 412 | fibonacci-word | ✓ | 32.21922s | 1.4 KB |
-| 413 | file-extension-is-in-extensions-list | ✓ | 333µs | 1.2 KB |
-| 414 | file-input-output-1 | ✓ | 26µs | 328 B |
-| 415 | file-input-output-2 | ✓ | 28µs | 368 B |
-| 416 | file-input-output-3 | ✓ | 33µs | 1.0 KB |
-| 417 | file-modification-time | ✓ | 31µs | 1.1 KB |
-| 418 | file-size-distribution | ✓ | 118µs | 1.0 KB |
-| 419 | file-size | ✓ | 41µs | 848 B |
-| 420 | filter | ✓ | 70µs | 912 B |
-| 421 | find-chess960-starting-position-identifier-2 |   |  |  |
-| 422 | find-chess960-starting-position-identifier | ✓ | 354µs | 2.8 KB |
-| 423 | find-common-directory-path | ✓ | 454µs | 1.1 KB |
-| 424 | find-duplicate-files | ✓ | 43µs | 2.9 KB |
-| 425 | find-if-a-point-is-within-a-triangle | ✓ | 100µs | 1.0 KB |
-| 426 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 636µs | 4.5 KB |
-| 427 | find-limit-of-recursion | ✓ | 1.956ms | 2.1 KB |
-| 428 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 28.702322s | 3.0 KB |
-| 429 | find-the-intersection-of-a-line-with-a-plane | ✓ | 58µs | 3.0 KB |
-| 430 | find-the-intersection-of-two-lines | ✓ | 33µs | 912 B |
-| 431 | find-the-last-sunday-of-each-month | ✓ | 47µs | 1.0 KB |
-| 432 | find-the-missing-permutation | ✓ | 50µs | 1.3 KB |
-| 433 | first-class-environments |   |  |  |
-| 434 | first-class-functions-use-numbers-analogously |   |  |  |
-| 435 | first-power-of-2-that-has-leading-decimal-digits-of-12 |   |  |  |
-| 436 | five-weekends |   |  |  |
-| 437 | fivenum-1 | ✓ | 55µs | 1.7 KB |
-| 438 | fivenum-2 | ✓ | 139µs | 1.7 KB |
-| 439 | fivenum-3 |   |  |  |
-| 440 | fixed-length-records-1 | ✓ | 45µs | 2.9 KB |
-| 441 | fixed-length-records-2 | ✓ | 28µs | 704 B |
-| 442 | fizzbuzz-1 | ✓ | 101µs | 2.7 KB |
-| 443 | fizzbuzz-2 | ✓ | 172µs | 1.0 KB |
-| 444 | fizzbuzz |   |  |  |
-| 445 | flatten-a-list-1 | ✓ | 45µs | 5.1 KB |
-| 446 | flatten-a-list-2 | ✓ | 25µs | 64 B |
-| 447 | flipping-bits-game | ✓ | 34µs | 1.3 KB |
-| 448 | flow-control-structures-1 | ✓ | 30µs | 64 B |
-| 449 | flow-control-structures-2 | ✓ | 26µs | 96 B |
+| 413 | file-extension-is-in-extensions-list | ✓ | 292µs | 1.3 KB |
+| 414 | file-input-output-1 | ✓ | 27µs | 328 B |
+| 415 | file-input-output-2 | ✓ | 50µs | 368 B |
+| 416 | file-input-output-3 | ✓ | 42µs | 1.0 KB |
+| 417 | file-modification-time | ✓ | 89µs | 1.1 KB |
+| 418 | file-size-distribution | ✓ | 161µs | 1.1 KB |
+| 419 | file-size | ✓ | 70µs | 848 B |
+| 420 | filter | ✓ | 191µs | 1.1 KB |
+| 421 | find-chess960-starting-position-identifier-2 | ✓ | 363µs | 2.9 KB |
+| 422 | find-chess960-starting-position-identifier | ✓ | 397µs | 2.8 KB |
+| 423 | find-common-directory-path | ✓ | 358µs | 1.1 KB |
+| 424 | find-duplicate-files | ✓ | 50µs | 2.9 KB |
+| 425 | find-if-a-point-is-within-a-triangle |   | 100µs | 1.0 KB |
+| 426 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 18.827ms | 4.5 KB |
+| 427 | find-limit-of-recursion | ✓ | 1.964ms | 2.1 KB |
+| 428 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   | 28.702322s | 3.0 KB |
+| 429 | find-the-intersection-of-a-line-with-a-plane | ✓ | 143µs | 3.0 KB |
+| 430 | find-the-intersection-of-two-lines | ✓ | 63µs | 912 B |
+| 431 | find-the-last-sunday-of-each-month | ✓ | 144µs | 1.0 KB |
+| 432 | find-the-missing-permutation | ✓ | 62µs | 1.3 KB |
+| 433 | first-class-environments | ✓ | 611µs | 3.0 KB |
+| 434 | first-class-functions-use-numbers-analogously | ✓ | 92µs | 840 B |
+| 435 | first-power-of-2-that-has-leading-decimal-digits-of-12 | ✓ | 485µs | 1.2 KB |
+| 436 | five-weekends | ✓ | 960µs | 848 B |
+| 437 | fivenum-1 | ✓ | 91µs | 1.7 KB |
+| 438 | fivenum-2 | ✓ | 197µs | 1.7 KB |
+| 439 | fivenum-3 | ✓ | 122µs | 1.7 KB |
+| 440 | fixed-length-records-1 | ✓ | 96µs | 3.2 KB |
+| 441 | fixed-length-records-2 | ✓ | 150µs | 3.1 KB |
+| 442 | fizzbuzz-1 | ✓ | 132µs | 2.7 KB |
+| 443 | fizzbuzz-2 | ✓ | 174µs | 1.0 KB |
+| 444 | fizzbuzz | ✓ | 136µs | 2.7 KB |
+| 445 | flatten-a-list-1 | ✓ | 114µs | 5.1 KB |
+| 446 | flatten-a-list-2 | ✓ | 21µs | 64 B |
+| 447 | flipping-bits-game | ✓ | 219µs | 1.3 KB |
+| 448 | flow-control-structures-1 | ✓ | 38µs | 64 B |
+| 449 | flow-control-structures-2 | ✓ | 21µs | 96 B |
 | 450 | flow-control-structures-3 | ✓ | 36µs | 64 B |
 | 451 | flow-control-structures-4 | ✓ | 17µs | 64 B |
 | 452 | floyd-warshall-algorithm | ✓ | 145µs | 872 B |
