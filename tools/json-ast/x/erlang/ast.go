@@ -4,7 +4,11 @@ import (
 	sitter "github.com/smacker/go-tree-sitter"
 )
 
-// Node represents an Erlang AST node converted from tree-sitter.
+// Node represents a simplified Erlang AST node converted from tree-sitter.
+//
+// Leaf nodes contain the raw source text in the Text field while internal
+// nodes only record their kind and children.  Start and End are byte offsets
+// within the source.
 type Node struct {
 	Kind     string  `json:"kind"`
 	Start    int     `json:"start"`
@@ -23,11 +27,17 @@ func convert(n *sitter.Node, src []byte) *Node {
 		Start: int(n.StartByte()),
 		End:   int(n.EndByte()),
 	}
-	if n.ChildCount() == 0 {
+
+	// Only keep raw text for leaf nodes.  Using NamedChildCount filters out
+	// punctuation and other non-semantic tokens so the resulting JSON is
+	// much smaller while still containing the important information.
+	if n.NamedChildCount() == 0 {
 		node.Text = n.Content(src)
+		return node
 	}
-	for i := 0; i < int(n.ChildCount()); i++ {
-		child := n.Child(i)
+
+	for i := 0; i < int(n.NamedChildCount()); i++ {
+		child := n.NamedChild(i)
 		if child == nil {
 			continue
 		}
