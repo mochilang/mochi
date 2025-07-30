@@ -3958,6 +3958,28 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			usesSHA256 = true
 			return &CallExpr{Func: "_sha256", Args: []Expr{arg}}, nil
 		}
+		if pr.Call.Func == "slice" && len(pr.Call.Args) == 3 {
+			base, err := convertExpr(env, pr.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			start, err := convertExpr(env, pr.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			end, err := convertExpr(env, pr.Call.Args[2])
+			if err != nil {
+				return nil, err
+			}
+			asStr := false
+			if env != nil {
+				t := types.TypeOfExpr(pr.Call.Args[0], env)
+				if types.IsStringType(t) {
+					asStr = true
+				}
+			}
+			return &SliceExpr{Base: base, Start: start, End: end, AsString: asStr}, nil
+		}
 		ce := &CallExpr{Func: pr.Call.Func}
 		var paramTypes []types.Type
 		if env != nil {

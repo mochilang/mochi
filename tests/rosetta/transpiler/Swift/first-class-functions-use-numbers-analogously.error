@@ -1,0 +1,25 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden3839778920/001/main.swift:61:17: error: cannot assign value of type '[Any]' to type '[(Double) -> Double]'
+59 |         var i: Int = 0
+60 |         while (i < Int(((numbers).count))) {
+61 |             mfs = (_append(mfs, multiplier(Double(numbers[i]), Double(inverses[i]))) as! [Any])
+   |                 |- error: cannot assign value of type '[Any]' to type '[(Double) -> Double]'
+   |                 `- note: arguments to generic parameter 'Element' ('Any' and '(Double) -> Double') are expected to be equal
+62 |             i = ((i + 1) as! Int)
+63 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3839778920/001/main.swift:62:26: warning: forced cast of 'Int' to same type has no effect
+60 |         while (i < Int(((numbers).count))) {
+61 |             mfs = (_append(mfs, multiplier(Double(numbers[i]), Double(inverses[i]))) as! [Any])
+62 |             i = ((i + 1) as! Int)
+   |                          `- warning: forced cast of 'Int' to same type has no effect
+63 |         }
+64 |         for mf in mfs {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3839778920/001/main.swift:68:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+66 |         }
+67 |     }
+68 |     _ = main()
+   |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+69 |     let _benchEnd = _now()
+70 |     let _benchMemEnd = _mem()

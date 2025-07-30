@@ -1,0 +1,296 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:44:5: error: declaration is only valid at file scope
+ 42 |     let _benchStart = _now()
+ 43 |     struct math {}
+ 44 |     extension math { static func log(_ x: Double) -> Double { Foundation.log(x) } }
+    |     `- error: declaration is only valid at file scope
+ 45 |     func entropy(_ s: String) -> Double {
+ 46 |         var counts: [String: Int] = ([:] as! [String: Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:49:76: warning: forced cast of 'String' to same type has no effect
+ 47 |         var i: Int = 0
+ 48 |         while (i < Int(((s).count))) {
+ 49 |             let ch = String(describing: String(Array(String(describing: (s as! String)))[(i as! Int)..<((i + 1) as! Int)]))
+    |                                                                            `- warning: forced cast of 'String' to same type has no effect
+ 50 |             if (counts[ch] != nil) {
+ 51 |                 counts[ch] = ((counts[ch]! + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:49:93: warning: forced cast of 'Int' to same type has no effect
+ 47 |         var i: Int = 0
+ 48 |         while (i < Int(((s).count))) {
+ 49 |             let ch = String(describing: String(Array(String(describing: (s as! String)))[(i as! Int)..<((i + 1) as! Int)]))
+    |                                                                                             `- warning: forced cast of 'Int' to same type has no effect
+ 50 |             if (counts[ch] != nil) {
+ 51 |                 counts[ch] = ((counts[ch]! + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:49:113: warning: forced cast of 'Int' to same type has no effect
+ 47 |         var i: Int = 0
+ 48 |         while (i < Int(((s).count))) {
+ 49 |             let ch = String(describing: String(Array(String(describing: (s as! String)))[(i as! Int)..<((i + 1) as! Int)]))
+    |                                                                                                                 `- warning: forced cast of 'Int' to same type has no effect
+ 50 |             if (counts[ch] != nil) {
+ 51 |                 counts[ch] = ((counts[ch]! + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:51:49: warning: forced cast of 'Int' to same type has no effect
+ 49 |             let ch = String(describing: String(Array(String(describing: (s as! String)))[(i as! Int)..<((i + 1) as! Int)]))
+ 50 |             if (counts[ch] != nil) {
+ 51 |                 counts[ch] = ((counts[ch]! + 1) as! Int)
+    |                                                 `- warning: forced cast of 'Int' to same type has no effect
+ 52 |             } else {
+ 53 |                 counts[ch] = 1
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:55:26: warning: forced cast of 'Int' to same type has no effect
+ 53 |                 counts[ch] = 1
+ 54 |             }
+ 55 |             i = ((i + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+ 56 |         }
+ 57 |         var hm: Double = 0.0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:60:13: error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+ 58 |         for k in (_keys(counts) as! [String]) {
+ 59 |             let c = Double(counts[k]!)
+ 60 |             hm = Double((hm + (c * Double((Double(math.log(Double(c))) / Double(math.log(2.0)))))))
+    |             `- error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+ 61 |         }
+ 62 |         let l = Double(((s).count))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:63:16: error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+ 61 |         }
+ 62 |         let l = Double(((s).count))
+ 63 |         return Double((Double((Double(math.log(Double(l))) / Double(math.log(2.0)))) - (hm / l)))
+    |                `- error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+ 64 |     }
+ 65 |     func fibonacciWord(_ n: Int) -> String {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:71:26: warning: forced cast of 'String' to same type has no effect
+ 69 |         while (i < n) {
+ 70 |             let tmp = b
+ 71 |             b = ((b + a) as! String)
+    |                          `- warning: forced cast of 'String' to same type has no effect
+ 72 |             a = (tmp as! String)
+ 73 |             i = ((i + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:72:22: warning: forced cast of 'String' to same type has no effect
+ 70 |             let tmp = b
+ 71 |             b = ((b + a) as! String)
+ 72 |             a = (tmp as! String)
+    |                      `- warning: forced cast of 'String' to same type has no effect
+ 73 |             i = ((i + 1) as! Int)
+ 74 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:73:26: warning: forced cast of 'Int' to same type has no effect
+ 71 |             b = ((b + a) as! String)
+ 72 |             a = (tmp as! String)
+ 73 |             i = ((i + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+ 74 |         }
+ 75 |         return (a as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:75:19: warning: forced cast of 'String' to same type has no effect
+ 73 |             i = ((i + 1) as! Int)
+ 74 |         }
+ 75 |         return (a as! String)
+    |                   `- warning: forced cast of 'String' to same type has no effect
+ 76 |     }
+ 77 |     func main() {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:81:57: warning: forced cast of 'Int' to same type has no effect
+ 79 |         var n: Int = 1
+ 80 |         while (n < 10) {
+ 81 |             let s = String(describing: fibonacciWord((n as! Int)))
+    |                                                         `- warning: forced cast of 'Int' to same type has no effect
+ 82 |             print(_p((((((String(describing: pad((_p(n) as! String), 3)) + String(describing: pad((_p(Int(((s).count))) as! String), 9))) + "  ") + String(describing: fmt(Double(entropy((s as! String)))))) + "  ") + s)))
+ 83 |             n = ((n + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:82:57: warning: forced cast of 'String' to same type has no effect
+ 80 |         while (n < 10) {
+ 81 |             let s = String(describing: fibonacciWord((n as! Int)))
+ 82 |             print(_p((((((String(describing: pad((_p(n) as! String), 3)) + String(describing: pad((_p(Int(((s).count))) as! String), 9))) + "  ") + String(describing: fmt(Double(entropy((s as! String)))))) + "  ") + s)))
+    |                                                         `- warning: forced cast of 'String' to same type has no effect
+ 83 |             n = ((n + 1) as! Int)
+ 84 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:82:121: warning: forced cast of 'String' to same type has no effect
+ 80 |         while (n < 10) {
+ 81 |             let s = String(describing: fibonacciWord((n as! Int)))
+ 82 |             print(_p((((((String(describing: pad((_p(n) as! String), 3)) + String(describing: pad((_p(Int(((s).count))) as! String), 9))) + "  ") + String(describing: fmt(Double(entropy((s as! String)))))) + "  ") + s)))
+    |                                                                                                                         `- warning: forced cast of 'String' to same type has no effect
+ 83 |             n = ((n + 1) as! Int)
+ 84 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:82:190: warning: forced cast of 'String' to same type has no effect
+ 80 |         while (n < 10) {
+ 81 |             let s = String(describing: fibonacciWord((n as! Int)))
+ 82 |             print(_p((((((String(describing: pad((_p(n) as! String), 3)) + String(describing: pad((_p(Int(((s).count))) as! String), 9))) + "  ") + String(describing: fmt(Double(entropy((s as! String)))))) + "  ") + s)))
+    |                                                                                                                                                                                              `- warning: forced cast of 'String' to same type has no effect
+ 83 |             n = ((n + 1) as! Int)
+ 84 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:83:26: warning: forced cast of 'Int' to same type has no effect
+ 81 |             let s = String(describing: fibonacciWord((n as! Int)))
+ 82 |             print(_p((((((String(describing: pad((_p(n) as! String), 3)) + String(describing: pad((_p(Int(((s).count))) as! String), 9))) + "  ") + String(describing: fmt(Double(entropy((s as! String)))))) + "  ") + s)))
+ 83 |             n = ((n + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+ 84 |         }
+ 85 |         while (n <= 37) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:86:57: warning: forced cast of 'Int' to same type has no effect
+ 84 |         }
+ 85 |         while (n <= 37) {
+ 86 |             let s = String(describing: fibonacciWord((n as! Int)))
+    |                                                         `- warning: forced cast of 'Int' to same type has no effect
+ 87 |             print(_p((((String(describing: pad((_p(n) as! String), 3)) + String(describing: pad((_p(Int(((s).count))) as! String), 9))) + "  ") + String(describing: fmt(Double(entropy((s as! String))))))))
+ 88 |             n = ((n + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:87:55: warning: forced cast of 'String' to same type has no effect
+ 85 |         while (n <= 37) {
+ 86 |             let s = String(describing: fibonacciWord((n as! Int)))
+ 87 |             print(_p((((String(describing: pad((_p(n) as! String), 3)) + String(describing: pad((_p(Int(((s).count))) as! String), 9))) + "  ") + String(describing: fmt(Double(entropy((s as! String))))))))
+    |                                                       `- warning: forced cast of 'String' to same type has no effect
+ 88 |             n = ((n + 1) as! Int)
+ 89 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:87:119: warning: forced cast of 'String' to same type has no effect
+ 85 |         while (n <= 37) {
+ 86 |             let s = String(describing: fibonacciWord((n as! Int)))
+ 87 |             print(_p((((String(describing: pad((_p(n) as! String), 3)) + String(describing: pad((_p(Int(((s).count))) as! String), 9))) + "  ") + String(describing: fmt(Double(entropy((s as! String))))))))
+    |                                                                                                                       `- warning: forced cast of 'String' to same type has no effect
+ 88 |             n = ((n + 1) as! Int)
+ 89 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:87:188: warning: forced cast of 'String' to same type has no effect
+ 85 |         while (n <= 37) {
+ 86 |             let s = String(describing: fibonacciWord((n as! Int)))
+ 87 |             print(_p((((String(describing: pad((_p(n) as! String), 3)) + String(describing: pad((_p(Int(((s).count))) as! String), 9))) + "  ") + String(describing: fmt(Double(entropy((s as! String))))))))
+    |                                                                                                                                                                                            `- warning: forced cast of 'String' to same type has no effect
+ 88 |             n = ((n + 1) as! Int)
+ 89 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:88:26: warning: forced cast of 'Int' to same type has no effect
+ 86 |             let s = String(describing: fibonacciWord((n as! Int)))
+ 87 |             print(_p((((String(describing: pad((_p(n) as! String), 3)) + String(describing: pad((_p(Int(((s).count))) as! String), 9))) + "  ") + String(describing: fmt(Double(entropy((s as! String))))))))
+ 88 |             n = ((n + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+ 89 |         }
+ 90 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:94:28: warning: forced cast of 'String' to same type has no effect
+ 92 |         var t: String = s
+ 93 |         while (Int(((t).count)) < w) {
+ 94 |             t = ((" " + t) as! String)
+    |                            `- warning: forced cast of 'String' to same type has no effect
+ 95 |         }
+ 96 |         return (t as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:96:19: warning: forced cast of 'String' to same type has no effect
+ 94 |             t = ((" " + t) as! String)
+ 95 |         }
+ 96 |         return (t as! String)
+    |                   `- warning: forced cast of 'String' to same type has no effect
+ 97 |     }
+ 98 |     func fmt(_ x: Double) -> String {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:101:51: warning: forced cast of 'String' to same type has no effect
+ 99 |         var y: Double = (Double(floorf(Double(((x * 100000000.0) + 0.5)))) / 100000000.0)
+100 |         var s: String = _p(y)
+101 |         var dot: Int = Int((String(describing: (s as! String)).firstIndex(of: Character(String(describing: ".")))?.utf16Offset(in: String(describing: (s as! String)) ) ?? -1))
+    |                                                   `- warning: forced cast of 'String' to same type has no effect
+102 |         if (dot == (0 - 1)) {
+103 |             s = ((s + ".00000000") as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:101:154: warning: forced cast of 'String' to same type has no effect
+ 99 |         var y: Double = (Double(floorf(Double(((x * 100000000.0) + 0.5)))) / 100000000.0)
+100 |         var s: String = _p(y)
+101 |         var dot: Int = Int((String(describing: (s as! String)).firstIndex(of: Character(String(describing: ".")))?.utf16Offset(in: String(describing: (s as! String)) ) ?? -1))
+    |                                                                                                                                                          `- warning: forced cast of 'String' to same type has no effect
+102 |         if (dot == (0 - 1)) {
+103 |             s = ((s + ".00000000") as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:103:36: warning: forced cast of 'String' to same type has no effect
+101 |         var dot: Int = Int((String(describing: (s as! String)).firstIndex(of: Character(String(describing: ".")))?.utf16Offset(in: String(describing: (s as! String)) ) ?? -1))
+102 |         if (dot == (0 - 1)) {
+103 |             s = ((s + ".00000000") as! String)
+    |                                    `- warning: forced cast of 'String' to same type has no effect
+104 |         } else {
+105 |             var d: Int = ((Int(((s).count)) - dot) - 1)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:107:32: warning: forced cast of 'String' to same type has no effect
+105 |             var d: Int = ((Int(((s).count)) - dot) - 1)
+106 |             while (d < 8) {
+107 |                 s = ((s + "0") as! String)
+    |                                `- warning: forced cast of 'String' to same type has no effect
+108 |                 d = ((d + 1) as! Int)
+109 |             }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:108:30: warning: forced cast of 'Int' to same type has no effect
+106 |             while (d < 8) {
+107 |                 s = ((s + "0") as! String)
+108 |                 d = ((d + 1) as! Int)
+    |                              `- warning: forced cast of 'Int' to same type has no effect
+109 |             }
+110 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:111:19: warning: forced cast of 'String' to same type has no effect
+109 |             }
+110 |         }
+111 |         return (s as! String)
+    |                   `- warning: forced cast of 'String' to same type has no effect
+112 |     }
+113 |     func floorf(_ x: Double) -> Double {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:120:71: warning: forced cast of 'String' to same type has no effect
+118 |         var i: Int = 0
+119 |         while (i < Int(((s).count))) {
+120 |             if (String(describing: String(Array(String(describing: (s as! String)))[(i as! Int)..<((i + 1) as! Int)])) == ch) {
+    |                                                                       `- warning: forced cast of 'String' to same type has no effect
+121 |                 return (i as! Int)
+122 |             }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:120:88: warning: forced cast of 'Int' to same type has no effect
+118 |         var i: Int = 0
+119 |         while (i < Int(((s).count))) {
+120 |             if (String(describing: String(Array(String(describing: (s as! String)))[(i as! Int)..<((i + 1) as! Int)])) == ch) {
+    |                                                                                        `- warning: forced cast of 'Int' to same type has no effect
+121 |                 return (i as! Int)
+122 |             }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:120:108: warning: forced cast of 'Int' to same type has no effect
+118 |         var i: Int = 0
+119 |         while (i < Int(((s).count))) {
+120 |             if (String(describing: String(Array(String(describing: (s as! String)))[(i as! Int)..<((i + 1) as! Int)])) == ch) {
+    |                                                                                                            `- warning: forced cast of 'Int' to same type has no effect
+121 |                 return (i as! Int)
+122 |             }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:121:27: warning: forced cast of 'Int' to same type has no effect
+119 |         while (i < Int(((s).count))) {
+120 |             if (String(describing: String(Array(String(describing: (s as! String)))[(i as! Int)..<((i + 1) as! Int)])) == ch) {
+121 |                 return (i as! Int)
+    |                           `- warning: forced cast of 'Int' to same type has no effect
+122 |             }
+123 |             i = ((i + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:123:26: warning: forced cast of 'Int' to same type has no effect
+121 |                 return (i as! Int)
+122 |             }
+123 |             i = ((i + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+124 |         }
+125 |         return ((0 - 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:125:25: warning: forced cast of 'Int' to same type has no effect
+123 |             i = ((i + 1) as! Int)
+124 |         }
+125 |         return ((0 - 1) as! Int)
+    |                         `- warning: forced cast of 'Int' to same type has no effect
+126 |     }
+127 |     _ = main()
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3705600551/001/main.swift:127:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+125 |         return ((0 - 1) as! Int)
+126 |     }
+127 |     _ = main()
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+128 |     let _benchEnd = _now()
+129 |     let _benchMemEnd = _mem()
