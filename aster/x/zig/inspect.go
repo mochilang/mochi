@@ -29,6 +29,6 @@ func Inspect(src string, opts ...Options) (*Program, error) {
 	if !ok {
 		return &Program{Root: nil}, nil
 	}
-	root := SourceFile{Node: node}
+	root := SourceFile(node)
 	return &Program{Root: &root}, nil
 }

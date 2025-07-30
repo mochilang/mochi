@@ -46,7 +46,7 @@ func TestInspect_Golden(t *testing.T) {
 	ensureZig(t)
 	root := repoRoot(t)
 	srcDir := filepath.Join(root, "tests", "transpiler", "x", "zig")
-	outDir := filepath.Join(root, "tests", "json-ast", "x", "zig")
+	outDir := filepath.Join(root, "tests", "aster", "x", "zig")
 	os.MkdirAll(outDir, 0o755)
 
 	files, err := filepath.Glob(filepath.Join(srcDir, "*.zig"))
