@@ -1,3 +1,6 @@
+## Progress (2025-07-30 21:05 +0700)
+- fix mochix build (progress 103/105)
+
 ## Progress (2025-07-28 05:11 UTC)
 - rosetta cs: update result for currying (progress 103/104)
 
@@ -1450,6 +1453,7 @@
 
 ## Progress (2025-07-22 03:14 +0000)
 - cs transpiler: 100/102 tests compiled
+
 
 
 

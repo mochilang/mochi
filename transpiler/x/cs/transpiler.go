@@ -732,6 +732,13 @@ type UnaryExpr struct {
 
 func (u *UnaryExpr) emit(w io.Writer) {
 	t := typeOfExpr(u.Val)
+	if u.Op == "-" && t == "BigRat" {
+		usesBigRat = true
+		fmt.Fprint(w, "_neg(")
+		u.Val.emit(w)
+		fmt.Fprint(w, ")")
+		return
+	}
 	if (u.Op == "-" || u.Op == "+") && (t == "" || t == "object") {
 		fmt.Fprintf(w, "%s((dynamic)", u.Op)
 		u.Val.emit(w)
@@ -4397,6 +4404,7 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\tstatic BigRat _sub(object a, object b) { var x=_bigrat(a, null); var y=_bigrat(b, null); return new BigRat(x.num*y.den - y.num*x.den, x.den*y.den); }\n")
 		buf.WriteString("\tstatic BigRat _mul(object a, object b) { var x=_bigrat(a, null); var y=_bigrat(b, null); return new BigRat(x.num*y.num, x.den*y.den); }\n")
 		buf.WriteString("\tstatic BigRat _div(object a, object b) { var x=_bigrat(a, null); var y=_bigrat(b, null); return new BigRat(x.num*y.den, x.den*y.num); }\n")
+		buf.WriteString("\tstatic BigRat _neg(object a) { var x=_bigrat(a, null); return new BigRat(BigInteger.Negate(x.num), x.den); }\n")
 		buf.WriteString("\tstatic BigInteger _num(object x) { return x is BigRat br ? br.num : _toBigInt(x); }\n")
 		buf.WriteString("\tstatic BigInteger _denom(object x) { return x is BigRat br ? br.den : BigInteger.One; }\n")
 	}
