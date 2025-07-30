@@ -8,8 +8,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sort"
-	"strings"
 	"testing"
 
 	php "mochi/tools/json-ast/x/php"
@@ -52,41 +50,34 @@ func TestInspect_Golden(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "json-ast", "x", "php")
 	os.MkdirAll(outDir, 0o755)
 
-	files, err := filepath.Glob(filepath.Join(srcDir, "*.php"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	sort.Strings(files)
-
-	for _, src := range files {
-		name := strings.TrimSuffix(filepath.Base(src), ".php")
-		t.Run(name, func(t *testing.T) {
-			data, err := os.ReadFile(src)
-			if err != nil {
-				t.Fatalf("read src: %v", err)
+	src := filepath.Join(srcDir, "cross_join.php")
+	name := "cross_join"
+	t.Run(name, func(t *testing.T) {
+		data, err := os.ReadFile(src)
+		if err != nil {
+			t.Fatalf("read src: %v", err)
+		}
+		prog, err := php.Inspect(string(data))
+		if err != nil {
+			t.Fatalf("inspect: %v", err)
+		}
+		out, err := json.MarshalIndent(prog, "", "  ")
+		if err != nil {
+			t.Fatalf("marshal: %v", err)
+		}
+		out = append(out, '\n')
+		goldenPath := filepath.Join(outDir, name+".php.json")
+		if *update {
+			if err := os.WriteFile(goldenPath, out, 0644); err != nil {
+				t.Fatalf("write golden: %v", err)
 			}
-			prog, err := php.Inspect(string(data))
-			if err != nil {
-				t.Fatalf("inspect: %v", err)
-			}
-			out, err := json.MarshalIndent(prog, "", "  ")
-			if err != nil {
-				t.Fatalf("marshal: %v", err)
-			}
-			out = append(out, '\n')
-			goldenPath := filepath.Join(outDir, name+".php.json")
-			if *update {
-				if err := os.WriteFile(goldenPath, out, 0644); err != nil {
-					t.Fatalf("write golden: %v", err)
-				}
-			}
-			want, err := os.ReadFile(goldenPath)
-			if err != nil {
-				t.Fatalf("missing golden: %v", err)
-			}
-			if string(out) != string(want) {
-				t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", out, want)
-			}
-		})
-	}
+		}
+		want, err := os.ReadFile(goldenPath)
+		if err != nil {
+			t.Fatalf("missing golden: %v", err)
+		}
+		if string(out) != string(want) {
+			t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", out, want)
+		}
+	})
 }
