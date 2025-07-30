@@ -64,7 +64,7 @@ func isValueLeaf(n *sitter.Node) bool {
 		return false
 	}
 	switch n.Kind() {
-	case "simple_identifier", "type_identifier", "integer_literal",
+	case "identifier", "simple_identifier", "type_identifier", "integer_literal",
 		"string_literal", "string_content":
 		return true
 	}
