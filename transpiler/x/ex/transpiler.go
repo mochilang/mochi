@@ -1745,6 +1745,8 @@ func Emit(p *Program, benchMain bool) []byte {
 	buf.WriteString(lenHelper(1))
 	buf.WriteString(bigRatHelper(1))
 	buf.WriteString(sha256Helper(1))
+	buf.WriteString(getenvHelper(1))
+	buf.WriteString(environHelper(1))
 	var globals []Stmt
 	var funcs []Stmt
 	var main []Stmt
@@ -3178,6 +3180,14 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 		}
 		alias := pf.Target.Selector.Root
 		method := pf.Target.Selector.Tail[0]
+		if alias == "os" {
+			if (method == "Getenv" || method == "GetEnv") && len(args) == 1 {
+				return &CallExpr{Func: "_getenv", Args: args}, nil
+			}
+			if method == "Environ" && len(args) == 0 {
+				return &CallExpr{Func: "_environ", Args: nil}, nil
+			}
+		}
 		if kind, ok := builtinAliases[alias]; ok {
 			switch kind {
 			case "go_testpkg":
@@ -4021,6 +4031,24 @@ func sha256Helper(indent int) string {
 	buf.WriteString(pad + "defp _sha256(bs) do\n")
 	buf.WriteString(pad + "  bin = :erlang.list_to_binary(bs)\n")
 	buf.WriteString(pad + "  :crypto.hash(:sha256, bin) |> :erlang.binary_to_list()\n")
+	buf.WriteString(pad + "end\n")
+	return buf.String()
+}
+
+func getenvHelper(indent int) string {
+	var buf bytes.Buffer
+	pad := strings.Repeat("  ", indent)
+	buf.WriteString(pad + "defp _getenv(name) do\n")
+	buf.WriteString(pad + "  System.get_env(name)\n")
+	buf.WriteString(pad + "end\n")
+	return buf.String()
+}
+
+func environHelper(indent int) string {
+	var buf bytes.Buffer
+	pad := strings.Repeat("  ", indent)
+	buf.WriteString(pad + "defp _environ() do\n")
+	buf.WriteString(pad + "  System.get_env() |> Enum.map(fn {k, v} -> \"#{k}=#{v}\" end)\n")
 	buf.WriteString(pad + "end\n")
 	return buf.String()
 }

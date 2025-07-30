@@ -1,0 +1,201 @@
+run: exit status 1
+    warning: variable "seed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 14 │               seed = v
+    │               ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:14:15: Main._now/0
+
+    warning: variable "seeded" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 15 │               seeded = true
+    │               ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:15:15: Main._now/0
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 143 │           {i, isP} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:143:12: Main.generatePrimes/1
+
+     warning: variable "cand" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 161 │       {cand, primes} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:161:8: Main.generatePrimes/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 201 │       {factors, i, num} = try do
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:201:17: Main.primeFactors/2
+
+     warning: variable "all23" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 227 │           {all23} = if f != 2 && f != 3 do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:227:12: Main.cat/2
+
+     warning: variable "last" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 246 │         {last, unique} = Enum.reduce(pf, {last, unique}, fn f, {last, unique} ->
+     │          ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:246:10: Main.cat/2
+
+     warning: variable "ok" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 267 │               {ok} = if Main.cat(f, primes) >= c do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:267:16: Main.cat/2
+
+     warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 289 │       c = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:289:7: Main.cat/2
+
+     warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 364 │       c = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:364:7: Main.main/0
+
+     warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 402 │       c = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:402:7: Main.main/0
+
+     warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 382 │       {es, idx} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:382:12: Main.main/0
+
+    warning: function _slice/3 is unused
+    │
+ 47 │   defp _slice(base, start, len) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:47:8: Main (module)
+
+     warning: function _sha256/1 is unused
+     │
+ 106 │   defp _sha256(bs) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:106:8: Main (module)
+
+    warning: function _now/0 is unused
+    │
+  3 │   defp _now() do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:3:8: Main (module)
+
+    warning: function _mem/0 is unused
+    │
+ 28 │   defp _mem() do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:28:8: Main (module)
+
+    warning: function _lookup_host/1 is unused
+    │
+ 31 │   defp _lookup_host(host) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:31:8: Main (module)
+
+     warning: function _getenv/1 is unused
+     │
+ 110 │   defp _getenv(name) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:110:8: Main (module)
+
+     warning: function _environ/0 is unused
+     │
+ 113 │   defp _environ() do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:113:8: Main (module)
+
+    warning: function _clamp_slice/3 is unused
+    │
+ 40 │   defp _clamp_slice(n, start, stop) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:40:8: Main (module)
+
+    warning: function _bigrat_sub/2 is unused
+    │
+ 87 │   defp _bigrat_sub(a, b) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:87:8: Main (module)
+
+     warning: function _bigrat_neg/1 is unused
+     │
+ 102 │   defp _bigrat_neg(a) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:102:8: Main (module)
+
+    warning: function _bigrat_mul/2 is unused
+    │
+ 92 │   defp _bigrat_mul(a, b) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:92:8: Main (module)
+
+    warning: function _bigrat_div/2 is unused
+    │
+ 97 │   defp _bigrat_div(a, b) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:97:8: Main (module)
+
+    warning: function _bigrat_add/2 is unused
+    │
+ 82 │   defp _bigrat_add(a, b) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:82:8: Main (module)
+
+    warning: function _bigrat/2 is unused
+    │
+ 70 │   defp _bigrat(n, d) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:70:8: Main (module)
+
+    warning: function _bigrat/1 is unused
+    │
+ 67 │   defp _bigrat(v) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:67:8: Main (module)
+
+First 200 primes:
+
+** (ArithmeticError) bad argument in arithmetic expression: rem(2.0, 2)
+    :erlang.rem(2.0, 2)
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:181: anonymous fn/4 in Main.primeFactors/2
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:190: anonymous fn/5 in Main.primeFactors/2
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:202: Main.primeFactors/2
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:223: Main.cat/2
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:336: anonymous fn/4 in Main.main/0
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:345: Main.main/0
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/erd-s-selfridge-categorization-of-primes.exs:414: (file)
