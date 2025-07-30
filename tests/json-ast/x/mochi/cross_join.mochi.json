@@ -1,2373 +1,467 @@
 {
-  "ast": {
-    "pos": {
-      "Filename": "",
-      "Offset": 20,
-      "Line": 2,
-      "Column": 1
-    },
-    "statements": [
+  "file": {
+    "kind": "program",
+    "children": [
       {
-        "pos": {
-          "Filename": "",
-          "Offset": 20,
-          "Line": 2,
-          "Column": 1
-        },
-        "let": {
-          "pos": {
-            "Filename": "",
-            "Offset": 20,
-            "Line": 2,
-            "Column": 1
-          },
-          "name": "customers",
-          "value": {
-            "pos": {
-              "Filename": "",
-              "Offset": 36,
-              "Line": 2,
-              "Column": 17
-            },
-            "binary": {
-              "left": {
-                "pos": {
-                  "Filename": "",
-                  "Offset": 36,
-                  "Line": 2,
-                  "Column": 17
-                },
-                "value": {
-                  "target": {
-                    "pos": {
-                      "Filename": "",
-                      "Offset": 36,
-                      "Line": 2,
-                      "Column": 17
-                    },
-                    "list": {
-                      "elems": [
-                        {
-                          "pos": {
-                            "Filename": "",
-                            "Offset": 40,
-                            "Line": 3,
-                            "Column": 3
-                          },
-                          "binary": {
-                            "left": {
-                              "pos": {
-                                "Filename": "",
-                                "Offset": 40,
-                                "Line": 3,
-                                "Column": 3
-                              },
-                              "value": {
-                                "target": {
-                                  "pos": {
-                                    "Filename": "",
-                                    "Offset": 40,
-                                    "Line": 3,
-                                    "Column": 3
-                                  },
-                                  "map": {
-                                    "items": [
-                                      {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 42,
-                                          "Line": 3,
-                                          "Column": 5
-                                        },
-                                        "key": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 42,
-                                            "Line": 3,
-                                            "Column": 5
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 42,
-                                                "Line": 3,
-                                                "Column": 5
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 42,
-                                                    "Line": 3,
-                                                    "Column": 5
-                                                  },
-                                                  "selector": {
-                                                    "root": "id"
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        },
-                                        "value": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 46,
-                                            "Line": 3,
-                                            "Column": 9
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 46,
-                                                "Line": 3,
-                                                "Column": 9
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 46,
-                                                    "Line": 3,
-                                                    "Column": 9
-                                                  },
-                                                  "lit": {
-                                                    "pos": {
-                                                      "Filename": "",
-                                                      "Offset": 46,
-                                                      "Line": 3,
-                                                      "Column": 9
-                                                    },
-                                                    "int": 1
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      },
-                                      {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 49,
-                                          "Line": 3,
-                                          "Column": 12
-                                        },
-                                        "key": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 49,
-                                            "Line": 3,
-                                            "Column": 12
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 49,
-                                                "Line": 3,
-                                                "Column": 12
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 49,
-                                                    "Line": 3,
-                                                    "Column": 12
-                                                  },
-                                                  "selector": {
-                                                    "root": "name"
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        },
-                                        "value": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 55,
-                                            "Line": 3,
-                                            "Column": 18
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 55,
-                                                "Line": 3,
-                                                "Column": 18
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 55,
-                                                    "Line": 3,
-                                                    "Column": 18
-                                                  },
-                                                  "lit": {
-                                                    "pos": {
-                                                      "Filename": "",
-                                                      "Offset": 55,
-                                                      "Line": 3,
-                                                      "Column": 18
-                                                    },
-                                                    "str": "Alice"
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      }
-                                    ]
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        },
-                        {
-                          "pos": {
-                            "Filename": "",
-                            "Offset": 68,
-                            "Line": 4,
-                            "Column": 3
-                          },
-                          "binary": {
-                            "left": {
-                              "pos": {
-                                "Filename": "",
-                                "Offset": 68,
-                                "Line": 4,
-                                "Column": 3
-                              },
-                              "value": {
-                                "target": {
-                                  "pos": {
-                                    "Filename": "",
-                                    "Offset": 68,
-                                    "Line": 4,
-                                    "Column": 3
-                                  },
-                                  "map": {
-                                    "items": [
-                                      {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 70,
-                                          "Line": 4,
-                                          "Column": 5
-                                        },
-                                        "key": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 70,
-                                            "Line": 4,
-                                            "Column": 5
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 70,
-                                                "Line": 4,
-                                                "Column": 5
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 70,
-                                                    "Line": 4,
-                                                    "Column": 5
-                                                  },
-                                                  "selector": {
-                                                    "root": "id"
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        },
-                                        "value": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 74,
-                                            "Line": 4,
-                                            "Column": 9
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 74,
-                                                "Line": 4,
-                                                "Column": 9
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 74,
-                                                    "Line": 4,
-                                                    "Column": 9
-                                                  },
-                                                  "lit": {
-                                                    "pos": {
-                                                      "Filename": "",
-                                                      "Offset": 74,
-                                                      "Line": 4,
-                                                      "Column": 9
-                                                    },
-                                                    "int": 2
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      },
-                                      {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 77,
-                                          "Line": 4,
-                                          "Column": 12
-                                        },
-                                        "key": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 77,
-                                            "Line": 4,
-                                            "Column": 12
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 77,
-                                                "Line": 4,
-                                                "Column": 12
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 77,
-                                                    "Line": 4,
-                                                    "Column": 12
-                                                  },
-                                                  "selector": {
-                                                    "root": "name"
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        },
-                                        "value": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 83,
-                                            "Line": 4,
-                                            "Column": 18
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 83,
-                                                "Line": 4,
-                                                "Column": 18
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 83,
-                                                    "Line": 4,
-                                                    "Column": 18
-                                                  },
-                                                  "lit": {
-                                                    "pos": {
-                                                      "Filename": "",
-                                                      "Offset": 83,
-                                                      "Line": 4,
-                                                      "Column": 18
-                                                    },
-                                                    "str": "Bob"
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      }
-                                    ]
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        },
-                        {
-                          "pos": {
-                            "Filename": "",
-                            "Offset": 94,
-                            "Line": 5,
-                            "Column": 3
-                          },
-                          "binary": {
-                            "left": {
-                              "pos": {
-                                "Filename": "",
-                                "Offset": 94,
-                                "Line": 5,
-                                "Column": 3
-                              },
-                              "value": {
-                                "target": {
-                                  "pos": {
-                                    "Filename": "",
-                                    "Offset": 94,
-                                    "Line": 5,
-                                    "Column": 3
-                                  },
-                                  "map": {
-                                    "items": [
-                                      {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 96,
-                                          "Line": 5,
-                                          "Column": 5
-                                        },
-                                        "key": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 96,
-                                            "Line": 5,
-                                            "Column": 5
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 96,
-                                                "Line": 5,
-                                                "Column": 5
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 96,
-                                                    "Line": 5,
-                                                    "Column": 5
-                                                  },
-                                                  "selector": {
-                                                    "root": "id"
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        },
-                                        "value": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 100,
-                                            "Line": 5,
-                                            "Column": 9
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 100,
-                                                "Line": 5,
-                                                "Column": 9
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 100,
-                                                    "Line": 5,
-                                                    "Column": 9
-                                                  },
-                                                  "lit": {
-                                                    "pos": {
-                                                      "Filename": "",
-                                                      "Offset": 100,
-                                                      "Line": 5,
-                                                      "Column": 9
-                                                    },
-                                                    "int": 3
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      },
-                                      {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 103,
-                                          "Line": 5,
-                                          "Column": 12
-                                        },
-                                        "key": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 103,
-                                            "Line": 5,
-                                            "Column": 12
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 103,
-                                                "Line": 5,
-                                                "Column": 12
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 103,
-                                                    "Line": 5,
-                                                    "Column": 12
-                                                  },
-                                                  "selector": {
-                                                    "root": "name"
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        },
-                                        "value": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 109,
-                                            "Line": 5,
-                                            "Column": 18
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 109,
-                                                "Line": 5,
-                                                "Column": 18
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 109,
-                                                    "Line": 5,
-                                                    "Column": 18
-                                                  },
-                                                  "lit": {
-                                                    "pos": {
-                                                      "Filename": "",
-                                                      "Offset": 109,
-                                                      "Line": 5,
-                                                      "Column": 18
-                                                    },
-                                                    "str": "Charlie"
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      }
-                                    ]
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      {
-        "pos": {
-          "Filename": "",
-          "Offset": 123,
-          "Line": 7,
-          "Column": 1
-        },
-        "let": {
-          "pos": {
-            "Filename": "",
-            "Offset": 123,
-            "Line": 7,
-            "Column": 1
-          },
-          "name": "orders",
-          "value": {
-            "pos": {
-              "Filename": "",
-              "Offset": 136,
-              "Line": 7,
-              "Column": 14
-            },
-            "binary": {
-              "left": {
-                "pos": {
-                  "Filename": "",
-                  "Offset": 136,
-                  "Line": 7,
-                  "Column": 14
-                },
-                "value": {
-                  "target": {
-                    "pos": {
-                      "Filename": "",
-                      "Offset": 136,
-                      "Line": 7,
-                      "Column": 14
-                    },
-                    "list": {
-                      "elems": [
-                        {
-                          "pos": {
-                            "Filename": "",
-                            "Offset": 140,
-                            "Line": 8,
-                            "Column": 3
-                          },
-                          "binary": {
-                            "left": {
-                              "pos": {
-                                "Filename": "",
-                                "Offset": 140,
-                                "Line": 8,
-                                "Column": 3
-                              },
-                              "value": {
-                                "target": {
-                                  "pos": {
-                                    "Filename": "",
-                                    "Offset": 140,
-                                    "Line": 8,
-                                    "Column": 3
-                                  },
-                                  "map": {
-                                    "items": [
-                                      {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 142,
-                                          "Line": 8,
-                                          "Column": 5
-                                        },
-                                        "key": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 142,
-                                            "Line": 8,
-                                            "Column": 5
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 142,
-                                                "Line": 8,
-                                                "Column": 5
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 142,
-                                                    "Line": 8,
-                                                    "Column": 5
-                                                  },
-                                                  "selector": {
-                                                    "root": "id"
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        },
-                                        "value": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 146,
-                                            "Line": 8,
-                                            "Column": 9
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 146,
-                                                "Line": 8,
-                                                "Column": 9
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 146,
-                                                    "Line": 8,
-                                                    "Column": 9
-                                                  },
-                                                  "lit": {
-                                                    "pos": {
-                                                      "Filename": "",
-                                                      "Offset": 146,
-                                                      "Line": 8,
-                                                      "Column": 9
-                                                    },
-                                                    "int": 100
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      },
-                                      {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 151,
-                                          "Line": 8,
-                                          "Column": 14
-                                        },
-                                        "key": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 151,
-                                            "Line": 8,
-                                            "Column": 14
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 151,
-                                                "Line": 8,
-                                                "Column": 14
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 151,
-                                                    "Line": 8,
-                                                    "Column": 14
-                                                  },
-                                                  "selector": {
-                                                    "root": "customerId"
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        },
-                                        "value": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 163,
-                                            "Line": 8,
-                                            "Column": 26
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 163,
-                                                "Line": 8,
-                                                "Column": 26
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 163,
-                                                    "Line": 8,
-                                                    "Column": 26
-                                                  },
-                                                  "lit": {
-                                                    "pos": {
-                                                      "Filename": "",
-                                                      "Offset": 163,
-                                                      "Line": 8,
-                                                      "Column": 26
-                                                    },
-                                                    "int": 1
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      },
-                                      {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 166,
-                                          "Line": 8,
-                                          "Column": 29
-                                        },
-                                        "key": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 166,
-                                            "Line": 8,
-                                            "Column": 29
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 166,
-                                                "Line": 8,
-                                                "Column": 29
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 166,
-                                                    "Line": 8,
-                                                    "Column": 29
-                                                  },
-                                                  "selector": {
-                                                    "root": "total"
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        },
-                                        "value": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 173,
-                                            "Line": 8,
-                                            "Column": 36
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 173,
-                                                "Line": 8,
-                                                "Column": 36
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 173,
-                                                    "Line": 8,
-                                                    "Column": 36
-                                                  },
-                                                  "lit": {
-                                                    "pos": {
-                                                      "Filename": "",
-                                                      "Offset": 173,
-                                                      "Line": 8,
-                                                      "Column": 36
-                                                    },
-                                                    "int": 250
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      }
-                                    ]
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        },
-                        {
-                          "pos": {
-                            "Filename": "",
-                            "Offset": 182,
-                            "Line": 9,
-                            "Column": 3
-                          },
-                          "binary": {
-                            "left": {
-                              "pos": {
-                                "Filename": "",
-                                "Offset": 182,
-                                "Line": 9,
-                                "Column": 3
-                              },
-                              "value": {
-                                "target": {
-                                  "pos": {
-                                    "Filename": "",
-                                    "Offset": 182,
-                                    "Line": 9,
-                                    "Column": 3
-                                  },
-                                  "map": {
-                                    "items": [
-                                      {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 184,
-                                          "Line": 9,
-                                          "Column": 5
-                                        },
-                                        "key": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 184,
-                                            "Line": 9,
-                                            "Column": 5
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 184,
-                                                "Line": 9,
-                                                "Column": 5
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 184,
-                                                    "Line": 9,
-                                                    "Column": 5
-                                                  },
-                                                  "selector": {
-                                                    "root": "id"
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        },
-                                        "value": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 188,
-                                            "Line": 9,
-                                            "Column": 9
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 188,
-                                                "Line": 9,
-                                                "Column": 9
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 188,
-                                                    "Line": 9,
-                                                    "Column": 9
-                                                  },
-                                                  "lit": {
-                                                    "pos": {
-                                                      "Filename": "",
-                                                      "Offset": 188,
-                                                      "Line": 9,
-                                                      "Column": 9
-                                                    },
-                                                    "int": 101
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      },
-                                      {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 193,
-                                          "Line": 9,
-                                          "Column": 14
-                                        },
-                                        "key": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 193,
-                                            "Line": 9,
-                                            "Column": 14
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 193,
-                                                "Line": 9,
-                                                "Column": 14
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 193,
-                                                    "Line": 9,
-                                                    "Column": 14
-                                                  },
-                                                  "selector": {
-                                                    "root": "customerId"
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        },
-                                        "value": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 205,
-                                            "Line": 9,
-                                            "Column": 26
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 205,
-                                                "Line": 9,
-                                                "Column": 26
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 205,
-                                                    "Line": 9,
-                                                    "Column": 26
-                                                  },
-                                                  "lit": {
-                                                    "pos": {
-                                                      "Filename": "",
-                                                      "Offset": 205,
-                                                      "Line": 9,
-                                                      "Column": 26
-                                                    },
-                                                    "int": 2
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      },
-                                      {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 208,
-                                          "Line": 9,
-                                          "Column": 29
-                                        },
-                                        "key": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 208,
-                                            "Line": 9,
-                                            "Column": 29
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 208,
-                                                "Line": 9,
-                                                "Column": 29
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 208,
-                                                    "Line": 9,
-                                                    "Column": 29
-                                                  },
-                                                  "selector": {
-                                                    "root": "total"
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        },
-                                        "value": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 215,
-                                            "Line": 9,
-                                            "Column": 36
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 215,
-                                                "Line": 9,
-                                                "Column": 36
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 215,
-                                                    "Line": 9,
-                                                    "Column": 36
-                                                  },
-                                                  "lit": {
-                                                    "pos": {
-                                                      "Filename": "",
-                                                      "Offset": 215,
-                                                      "Line": 9,
-                                                      "Column": 36
-                                                    },
-                                                    "int": 125
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      }
-                                    ]
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        },
-                        {
-                          "pos": {
-                            "Filename": "",
-                            "Offset": 224,
-                            "Line": 10,
-                            "Column": 3
-                          },
-                          "binary": {
-                            "left": {
-                              "pos": {
-                                "Filename": "",
-                                "Offset": 224,
-                                "Line": 10,
-                                "Column": 3
-                              },
-                              "value": {
-                                "target": {
-                                  "pos": {
-                                    "Filename": "",
-                                    "Offset": 224,
-                                    "Line": 10,
-                                    "Column": 3
-                                  },
-                                  "map": {
-                                    "items": [
-                                      {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 226,
-                                          "Line": 10,
-                                          "Column": 5
-                                        },
-                                        "key": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 226,
-                                            "Line": 10,
-                                            "Column": 5
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 226,
-                                                "Line": 10,
-                                                "Column": 5
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 226,
-                                                    "Line": 10,
-                                                    "Column": 5
-                                                  },
-                                                  "selector": {
-                                                    "root": "id"
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        },
-                                        "value": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 230,
-                                            "Line": 10,
-                                            "Column": 9
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 230,
-                                                "Line": 10,
-                                                "Column": 9
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 230,
-                                                    "Line": 10,
-                                                    "Column": 9
-                                                  },
-                                                  "lit": {
-                                                    "pos": {
-                                                      "Filename": "",
-                                                      "Offset": 230,
-                                                      "Line": 10,
-                                                      "Column": 9
-                                                    },
-                                                    "int": 102
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      },
-                                      {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 235,
-                                          "Line": 10,
-                                          "Column": 14
-                                        },
-                                        "key": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 235,
-                                            "Line": 10,
-                                            "Column": 14
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 235,
-                                                "Line": 10,
-                                                "Column": 14
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 235,
-                                                    "Line": 10,
-                                                    "Column": 14
-                                                  },
-                                                  "selector": {
-                                                    "root": "customerId"
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        },
-                                        "value": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 247,
-                                            "Line": 10,
-                                            "Column": 26
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 247,
-                                                "Line": 10,
-                                                "Column": 26
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 247,
-                                                    "Line": 10,
-                                                    "Column": 26
-                                                  },
-                                                  "lit": {
-                                                    "pos": {
-                                                      "Filename": "",
-                                                      "Offset": 247,
-                                                      "Line": 10,
-                                                      "Column": 26
-                                                    },
-                                                    "int": 1
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      },
-                                      {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 250,
-                                          "Line": 10,
-                                          "Column": 29
-                                        },
-                                        "key": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 250,
-                                            "Line": 10,
-                                            "Column": 29
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 250,
-                                                "Line": 10,
-                                                "Column": 29
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 250,
-                                                    "Line": 10,
-                                                    "Column": 29
-                                                  },
-                                                  "selector": {
-                                                    "root": "total"
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        },
-                                        "value": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 257,
-                                            "Line": 10,
-                                            "Column": 36
-                                          },
-                                          "binary": {
-                                            "left": {
-                                              "pos": {
-                                                "Filename": "",
-                                                "Offset": 257,
-                                                "Line": 10,
-                                                "Column": 36
-                                              },
-                                              "value": {
-                                                "target": {
-                                                  "pos": {
-                                                    "Filename": "",
-                                                    "Offset": 257,
-                                                    "Line": 10,
-                                                    "Column": 36
-                                                  },
-                                                  "lit": {
-                                                    "pos": {
-                                                      "Filename": "",
-                                                      "Offset": 257,
-                                                      "Line": 10,
-                                                      "Column": 36
-                                                    },
-                                                    "int": 300
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      }
-                                    ]
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      {
-        "pos": {
-          "Filename": "",
-          "Offset": 265,
-          "Line": 12,
-          "Column": 1
-        },
-        "let": {
-          "pos": {
-            "Filename": "",
-            "Offset": 265,
-            "Line": 12,
-            "Column": 1
-          },
-          "name": "result",
-          "value": {
-            "pos": {
-              "Filename": "",
-              "Offset": 278,
-              "Line": 12,
-              "Column": 14
-            },
-            "binary": {
-              "left": {
-                "pos": {
-                  "Filename": "",
-                  "Offset": 278,
-                  "Line": 12,
-                  "Column": 14
-                },
-                "value": {
-                  "target": {
-                    "pos": {
-                      "Filename": "",
-                      "Offset": 278,
-                      "Line": 12,
-                      "Column": 14
-                    },
-                    "query": {
-                      "pos": {
-                        "Filename": "",
-                        "Offset": 278,
-                        "Line": 12,
-                        "Column": 14
+        "kind": "let",
+        "text": "customers",
+        "children": [
+          {
+            "kind": "list",
+            "children": [
+              {
+                "kind": "map",
+                "children": [
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "id"
                       },
-                      "var": "o",
-                      "source": {
-                        "pos": {
-                          "Filename": "",
-                          "Offset": 288,
-                          "Line": 12,
-                          "Column": 24
-                        },
-                        "binary": {
-                          "left": {
-                            "pos": {
-                              "Filename": "",
-                              "Offset": 288,
-                              "Line": 12,
-                              "Column": 24
-                            },
-                            "value": {
-                              "target": {
-                                "pos": {
-                                  "Filename": "",
-                                  "Offset": 288,
-                                  "Line": 12,
-                                  "Column": 24
-                                },
-                                "selector": {
-                                  "root": "orders"
-                                }
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "froms": [
-                        {
-                          "pos": {
-                            "Filename": "",
-                            "Offset": 308,
-                            "Line": 13,
-                            "Column": 14
-                          },
-                          "var": "c",
-                          "src": {
-                            "pos": {
-                              "Filename": "",
-                              "Offset": 318,
-                              "Line": 13,
-                              "Column": 24
-                            },
-                            "binary": {
-                              "left": {
-                                "pos": {
-                                  "Filename": "",
-                                  "Offset": 318,
-                                  "Line": 13,
-                                  "Column": 24
-                                },
-                                "value": {
-                                  "target": {
-                                    "pos": {
-                                      "Filename": "",
-                                      "Offset": 318,
-                                      "Line": 13,
-                                      "Column": 24
-                                    },
-                                    "selector": {
-                                      "root": "customers"
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      ],
-                      "select": {
-                        "pos": {
-                          "Filename": "",
-                          "Offset": 348,
-                          "Line": 14,
-                          "Column": 21
-                        },
-                        "binary": {
-                          "left": {
-                            "pos": {
-                              "Filename": "",
-                              "Offset": 348,
-                              "Line": 14,
-                              "Column": 21
-                            },
-                            "value": {
-                              "target": {
-                                "pos": {
-                                  "Filename": "",
-                                  "Offset": 348,
-                                  "Line": 14,
-                                  "Column": 21
-                                },
-                                "map": {
-                                  "items": [
-                                    {
-                                      "pos": {
-                                        "Filename": "",
-                                        "Offset": 365,
-                                        "Line": 15,
-                                        "Column": 16
-                                      },
-                                      "key": {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 365,
-                                          "Line": 15,
-                                          "Column": 16
-                                        },
-                                        "binary": {
-                                          "left": {
-                                            "pos": {
-                                              "Filename": "",
-                                              "Offset": 365,
-                                              "Line": 15,
-                                              "Column": 16
-                                            },
-                                            "value": {
-                                              "target": {
-                                                "pos": {
-                                                  "Filename": "",
-                                                  "Offset": 365,
-                                                  "Line": 15,
-                                                  "Column": 16
-                                                },
-                                                "selector": {
-                                                  "root": "orderId"
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      },
-                                      "value": {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 374,
-                                          "Line": 15,
-                                          "Column": 25
-                                        },
-                                        "binary": {
-                                          "left": {
-                                            "pos": {
-                                              "Filename": "",
-                                              "Offset": 374,
-                                              "Line": 15,
-                                              "Column": 25
-                                            },
-                                            "value": {
-                                              "target": {
-                                                "pos": {
-                                                  "Filename": "",
-                                                  "Offset": 374,
-                                                  "Line": 15,
-                                                  "Column": 25
-                                                },
-                                                "selector": {
-                                                  "root": "o",
-                                                  "tail": [
-                                                    "id"
-                                                  ]
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      }
-                                    },
-                                    {
-                                      "pos": {
-                                        "Filename": "",
-                                        "Offset": 395,
-                                        "Line": 16,
-                                        "Column": 16
-                                      },
-                                      "key": {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 395,
-                                          "Line": 16,
-                                          "Column": 16
-                                        },
-                                        "binary": {
-                                          "left": {
-                                            "pos": {
-                                              "Filename": "",
-                                              "Offset": 395,
-                                              "Line": 16,
-                                              "Column": 16
-                                            },
-                                            "value": {
-                                              "target": {
-                                                "pos": {
-                                                  "Filename": "",
-                                                  "Offset": 395,
-                                                  "Line": 16,
-                                                  "Column": 16
-                                                },
-                                                "selector": {
-                                                  "root": "orderCustomerId"
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      },
-                                      "value": {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 412,
-                                          "Line": 16,
-                                          "Column": 33
-                                        },
-                                        "binary": {
-                                          "left": {
-                                            "pos": {
-                                              "Filename": "",
-                                              "Offset": 412,
-                                              "Line": 16,
-                                              "Column": 33
-                                            },
-                                            "value": {
-                                              "target": {
-                                                "pos": {
-                                                  "Filename": "",
-                                                  "Offset": 412,
-                                                  "Line": 16,
-                                                  "Column": 33
-                                                },
-                                                "selector": {
-                                                  "root": "o",
-                                                  "tail": [
-                                                    "customerId"
-                                                  ]
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      }
-                                    },
-                                    {
-                                      "pos": {
-                                        "Filename": "",
-                                        "Offset": 441,
-                                        "Line": 17,
-                                        "Column": 16
-                                      },
-                                      "key": {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 441,
-                                          "Line": 17,
-                                          "Column": 16
-                                        },
-                                        "binary": {
-                                          "left": {
-                                            "pos": {
-                                              "Filename": "",
-                                              "Offset": 441,
-                                              "Line": 17,
-                                              "Column": 16
-                                            },
-                                            "value": {
-                                              "target": {
-                                                "pos": {
-                                                  "Filename": "",
-                                                  "Offset": 441,
-                                                  "Line": 17,
-                                                  "Column": 16
-                                                },
-                                                "selector": {
-                                                  "root": "pairedCustomerName"
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      },
-                                      "value": {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 461,
-                                          "Line": 17,
-                                          "Column": 36
-                                        },
-                                        "binary": {
-                                          "left": {
-                                            "pos": {
-                                              "Filename": "",
-                                              "Offset": 461,
-                                              "Line": 17,
-                                              "Column": 36
-                                            },
-                                            "value": {
-                                              "target": {
-                                                "pos": {
-                                                  "Filename": "",
-                                                  "Offset": 461,
-                                                  "Line": 17,
-                                                  "Column": 36
-                                                },
-                                                "selector": {
-                                                  "root": "c",
-                                                  "tail": [
-                                                    "name"
-                                                  ]
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      }
-                                    },
-                                    {
-                                      "pos": {
-                                        "Filename": "",
-                                        "Offset": 484,
-                                        "Line": 18,
-                                        "Column": 16
-                                      },
-                                      "key": {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 484,
-                                          "Line": 18,
-                                          "Column": 16
-                                        },
-                                        "binary": {
-                                          "left": {
-                                            "pos": {
-                                              "Filename": "",
-                                              "Offset": 484,
-                                              "Line": 18,
-                                              "Column": 16
-                                            },
-                                            "value": {
-                                              "target": {
-                                                "pos": {
-                                                  "Filename": "",
-                                                  "Offset": 484,
-                                                  "Line": 18,
-                                                  "Column": 16
-                                                },
-                                                "selector": {
-                                                  "root": "orderTotal"
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      },
-                                      "value": {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 496,
-                                          "Line": 18,
-                                          "Column": 28
-                                        },
-                                        "binary": {
-                                          "left": {
-                                            "pos": {
-                                              "Filename": "",
-                                              "Offset": 496,
-                                              "Line": 18,
-                                              "Column": 28
-                                            },
-                                            "value": {
-                                              "target": {
-                                                "pos": {
-                                                  "Filename": "",
-                                                  "Offset": 496,
-                                                  "Line": 18,
-                                                  "Column": 28
-                                                },
-                                                "selector": {
-                                                  "root": "o",
-                                                  "tail": [
-                                                    "total"
-                                                  ]
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      }
-                                    }
-                                  ]
-                                }
-                              }
-                            }
-                          }
-                        }
+                      {
+                        "kind": "int",
+                        "text": "1"
                       }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      {
-        "pos": {
-          "Filename": "",
-          "Offset": 519,
-          "Line": 20,
-          "Column": 1
-        },
-        "expr": {
-          "pos": {
-            "Filename": "",
-            "Offset": 519,
-            "Line": 20,
-            "Column": 1
-          },
-          "expr": {
-            "pos": {
-              "Filename": "",
-              "Offset": 519,
-              "Line": 20,
-              "Column": 1
-            },
-            "binary": {
-              "left": {
-                "pos": {
-                  "Filename": "",
-                  "Offset": 519,
-                  "Line": 20,
-                  "Column": 1
-                },
-                "value": {
-                  "target": {
-                    "pos": {
-                      "Filename": "",
-                      "Offset": 519,
-                      "Line": 20,
-                      "Column": 1
-                    },
-                    "call": {
-                      "pos": {
-                        "Filename": "",
-                        "Offset": 519,
-                        "Line": 20,
-                        "Column": 1
-                      },
-                      "func": "print",
-                      "args": [
-                        {
-                          "pos": {
-                            "Filename": "",
-                            "Offset": 525,
-                            "Line": 20,
-                            "Column": 7
-                          },
-                          "binary": {
-                            "left": {
-                              "pos": {
-                                "Filename": "",
-                                "Offset": 525,
-                                "Line": 20,
-                                "Column": 7
-                              },
-                              "value": {
-                                "target": {
-                                  "pos": {
-                                    "Filename": "",
-                                    "Offset": 525,
-                                    "Line": 20,
-                                    "Column": 7
-                                  },
-                                  "lit": {
-                                    "pos": {
-                                      "Filename": "",
-                                      "Offset": 525,
-                                      "Line": 20,
-                                      "Column": 7
-                                    },
-                                    "str": "--- Cross Join: All order-customer pairs ---"
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      {
-        "pos": {
-          "Filename": "",
-          "Offset": 573,
-          "Line": 21,
-          "Column": 1
-        },
-        "for": {
-          "pos": {
-            "Filename": "",
-            "Offset": 573,
-            "Line": 21,
-            "Column": 1
-          },
-          "name": "entry",
-          "source": {
-            "pos": {
-              "Filename": "",
-              "Offset": 586,
-              "Line": 21,
-              "Column": 14
-            },
-            "binary": {
-              "left": {
-                "pos": {
-                  "Filename": "",
-                  "Offset": 586,
-                  "Line": 21,
-                  "Column": 14
-                },
-                "value": {
-                  "target": {
-                    "pos": {
-                      "Filename": "",
-                      "Offset": 586,
-                      "Line": 21,
-                      "Column": 14
-                    },
-                    "selector": {
-                      "root": "result"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "body": [
-            {
-              "pos": {
-                "Filename": "",
-                "Offset": 597,
-                "Line": 22,
-                "Column": 3
-              },
-              "expr": {
-                "pos": {
-                  "Filename": "",
-                  "Offset": 597,
-                  "Line": 22,
-                  "Column": 3
-                },
-                "expr": {
-                  "pos": {
-                    "Filename": "",
-                    "Offset": 597,
-                    "Line": 22,
-                    "Column": 3
+                    ]
                   },
-                  "binary": {
-                    "left": {
-                      "pos": {
-                        "Filename": "",
-                        "Offset": 597,
-                        "Line": 22,
-                        "Column": 3
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "name"
                       },
-                      "value": {
-                        "target": {
-                          "pos": {
-                            "Filename": "",
-                            "Offset": 597,
-                            "Line": 22,
-                            "Column": 3
+                      {
+                        "kind": "string",
+                        "text": "Alice"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "map",
+                "children": [
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "id"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "2"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "name"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "Bob"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "map",
+                "children": [
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "id"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "3"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "name"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "Charlie"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "let",
+        "text": "orders",
+        "children": [
+          {
+            "kind": "list",
+            "children": [
+              {
+                "kind": "map",
+                "children": [
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "id"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "100"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "customerId"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "1"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "total"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "250"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "map",
+                "children": [
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "id"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "101"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "customerId"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "2"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "total"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "125"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "map",
+                "children": [
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "id"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "102"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "customerId"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "1"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "total"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "300"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "let",
+        "text": "result",
+        "children": [
+          {
+            "kind": "query",
+            "text": "o",
+            "children": [
+              {
+                "kind": "source",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "orders"
+                  }
+                ]
+              },
+              {
+                "kind": "from",
+                "text": "c",
+                "children": [
+                  {
+                    "kind": "source",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "customers"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "select",
+                "children": [
+                  {
+                    "kind": "map",
+                    "children": [
+                      {
+                        "kind": "entry",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "orderId"
                           },
-                          "call": {
-                            "pos": {
-                              "Filename": "",
-                              "Offset": 597,
-                              "Line": 22,
-                              "Column": 3
-                            },
-                            "func": "print",
-                            "args": [
+                          {
+                            "kind": "selector",
+                            "text": "id",
+                            "children": [
                               {
-                                "pos": {
-                                  "Filename": "",
-                                  "Offset": 603,
-                                  "Line": 22,
-                                  "Column": 9
-                                },
-                                "binary": {
-                                  "left": {
-                                    "pos": {
-                                      "Filename": "",
-                                      "Offset": 603,
-                                      "Line": 22,
-                                      "Column": 9
-                                    },
-                                    "value": {
-                                      "target": {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 603,
-                                          "Line": 22,
-                                          "Column": 9
-                                        },
-                                        "lit": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 603,
-                                            "Line": 22,
-                                            "Column": 9
-                                          },
-                                          "str": "Order"
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              },
-                              {
-                                "pos": {
-                                  "Filename": "",
-                                  "Offset": 612,
-                                  "Line": 22,
-                                  "Column": 18
-                                },
-                                "binary": {
-                                  "left": {
-                                    "pos": {
-                                      "Filename": "",
-                                      "Offset": 612,
-                                      "Line": 22,
-                                      "Column": 18
-                                    },
-                                    "value": {
-                                      "target": {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 612,
-                                          "Line": 22,
-                                          "Column": 18
-                                        },
-                                        "selector": {
-                                          "root": "entry",
-                                          "tail": [
-                                            "orderId"
-                                          ]
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              },
-                              {
-                                "pos": {
-                                  "Filename": "",
-                                  "Offset": 635,
-                                  "Line": 23,
-                                  "Column": 9
-                                },
-                                "binary": {
-                                  "left": {
-                                    "pos": {
-                                      "Filename": "",
-                                      "Offset": 635,
-                                      "Line": 23,
-                                      "Column": 9
-                                    },
-                                    "value": {
-                                      "target": {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 635,
-                                          "Line": 23,
-                                          "Column": 9
-                                        },
-                                        "lit": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 635,
-                                            "Line": 23,
-                                            "Column": 9
-                                          },
-                                          "str": "(customerId:"
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              },
-                              {
-                                "pos": {
-                                  "Filename": "",
-                                  "Offset": 651,
-                                  "Line": 23,
-                                  "Column": 25
-                                },
-                                "binary": {
-                                  "left": {
-                                    "pos": {
-                                      "Filename": "",
-                                      "Offset": 651,
-                                      "Line": 23,
-                                      "Column": 25
-                                    },
-                                    "value": {
-                                      "target": {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 651,
-                                          "Line": 23,
-                                          "Column": 25
-                                        },
-                                        "selector": {
-                                          "root": "entry",
-                                          "tail": [
-                                            "orderCustomerId"
-                                          ]
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              },
-                              {
-                                "pos": {
-                                  "Filename": "",
-                                  "Offset": 682,
-                                  "Line": 24,
-                                  "Column": 9
-                                },
-                                "binary": {
-                                  "left": {
-                                    "pos": {
-                                      "Filename": "",
-                                      "Offset": 682,
-                                      "Line": 24,
-                                      "Column": 9
-                                    },
-                                    "value": {
-                                      "target": {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 682,
-                                          "Line": 24,
-                                          "Column": 9
-                                        },
-                                        "lit": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 682,
-                                            "Line": 24,
-                                            "Column": 9
-                                          },
-                                          "str": ", total: $"
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              },
-                              {
-                                "pos": {
-                                  "Filename": "",
-                                  "Offset": 696,
-                                  "Line": 24,
-                                  "Column": 23
-                                },
-                                "binary": {
-                                  "left": {
-                                    "pos": {
-                                      "Filename": "",
-                                      "Offset": 696,
-                                      "Line": 24,
-                                      "Column": 23
-                                    },
-                                    "value": {
-                                      "target": {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 696,
-                                          "Line": 24,
-                                          "Column": 23
-                                        },
-                                        "selector": {
-                                          "root": "entry",
-                                          "tail": [
-                                            "orderTotal"
-                                          ]
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              },
-                              {
-                                "pos": {
-                                  "Filename": "",
-                                  "Offset": 722,
-                                  "Line": 25,
-                                  "Column": 9
-                                },
-                                "binary": {
-                                  "left": {
-                                    "pos": {
-                                      "Filename": "",
-                                      "Offset": 722,
-                                      "Line": 25,
-                                      "Column": 9
-                                    },
-                                    "value": {
-                                      "target": {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 722,
-                                          "Line": 25,
-                                          "Column": 9
-                                        },
-                                        "lit": {
-                                          "pos": {
-                                            "Filename": "",
-                                            "Offset": 722,
-                                            "Line": 25,
-                                            "Column": 9
-                                          },
-                                          "str": ") paired with"
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              },
-                              {
-                                "pos": {
-                                  "Filename": "",
-                                  "Offset": 739,
-                                  "Line": 25,
-                                  "Column": 26
-                                },
-                                "binary": {
-                                  "left": {
-                                    "pos": {
-                                      "Filename": "",
-                                      "Offset": 739,
-                                      "Line": 25,
-                                      "Column": 26
-                                    },
-                                    "value": {
-                                      "target": {
-                                        "pos": {
-                                          "Filename": "",
-                                          "Offset": 739,
-                                          "Line": 25,
-                                          "Column": 26
-                                        },
-                                        "selector": {
-                                          "root": "entry",
-                                          "tail": [
-                                            "pairedCustomerName"
-                                          ]
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
+                                "kind": "selector",
+                                "text": "o"
                               }
                             ]
                           }
-                        }
+                        ]
+                      },
+                      {
+                        "kind": "entry",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "orderCustomerId"
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "customerId",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "o"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "entry",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "pairedCustomerName"
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "name",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "c"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "entry",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "orderTotal"
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "total",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "o"
+                              }
+                            ]
+                          }
+                        ]
                       }
-                    }
+                    ]
                   }
-                }
+                ]
               }
-            }
-          ]
-        }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "string",
+            "text": "--- Cross Join: All order-customer pairs ---"
+          }
+        ]
+      },
+      {
+        "kind": "for",
+        "text": "entry",
+        "children": [
+          {
+            "kind": "in",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "result"
+              }
+            ]
+          },
+          {
+            "kind": "block",
+            "children": [
+              {
+                "kind": "call",
+                "text": "print",
+                "children": [
+                  {
+                    "kind": "string",
+                    "text": "Order"
+                  },
+                  {
+                    "kind": "selector",
+                    "text": "orderId",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "entry"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "string",
+                    "text": "(customerId:"
+                  },
+                  {
+                    "kind": "selector",
+                    "text": "orderCustomerId",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "entry"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "string",
+                    "text": ", total: $"
+                  },
+                  {
+                    "kind": "selector",
+                    "text": "orderTotal",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "entry"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "string",
+                    "text": ") paired with"
+                  },
+                  {
+                    "kind": "selector",
+                    "text": "pairedCustomerName",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "entry"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     ]
   }
