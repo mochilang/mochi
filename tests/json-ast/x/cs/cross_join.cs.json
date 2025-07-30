@@ -1,201 +1,130 @@
 {
-  "types": [
-    {
-      "name": "Customer",
-      "kind": "struct",
-      "access": "",
-      "startline": 6,
-      "endline": 10,
-      "fields": [
-        {
-          "name": "id",
-          "type": "int",
-          "access": "public",
-          "line": 7,
-          "value": "",
-          "static": false,
-          "doc": ""
-        },
-        {
-          "name": "name",
-          "type": "string",
-          "access": "public",
-          "line": 8,
-          "value": "",
-          "static": false,
-          "doc": ""
-        }
-      ],
-      "methods": [
-        {
-          "name": "ToString",
-          "params": [],
-          "ret": "string",
-          "access": "public",
-          "static": false,
-          "ast": {
-            "kind": "block"
-          },
-          "startline": 9,
-          "endline": 9,
-          "doc": ""
-        }
-      ],
-      "doc": ""
-    },
-    {
-      "name": "Order",
-      "kind": "struct",
-      "access": "",
-      "startline": 11,
-      "endline": 16,
-      "fields": [
-        {
-          "name": "id",
-          "type": "int",
-          "access": "public",
-          "line": 12,
-          "value": "",
-          "static": false,
-          "doc": ""
-        },
-        {
-          "name": "customerId",
-          "type": "int",
-          "access": "public",
-          "line": 13,
-          "value": "",
-          "static": false,
-          "doc": ""
-        },
-        {
-          "name": "total",
-          "type": "int",
-          "access": "public",
-          "line": 14,
-          "value": "",
-          "static": false,
-          "doc": ""
-        }
-      ],
-      "methods": [
-        {
-          "name": "ToString",
-          "params": [],
-          "ret": "string",
-          "access": "public",
-          "static": false,
-          "ast": {
-            "kind": "block"
-          },
-          "startline": 15,
-          "endline": 15,
-          "doc": ""
-        }
-      ],
-      "doc": ""
-    },
-    {
-      "name": "OResult",
-      "kind": "struct",
-      "access": "",
-      "startline": 17,
-      "endline": 23,
-      "fields": [
-        {
-          "name": "orderId",
-          "type": "int",
-          "access": "public",
-          "line": 18,
-          "value": "",
-          "static": false,
-          "doc": ""
-        },
-        {
-          "name": "orderCustomerId",
-          "type": "int",
-          "access": "public",
-          "line": 19,
-          "value": "",
-          "static": false,
-          "doc": ""
-        },
-        {
-          "name": "pairedCustomerName",
-          "type": "string",
-          "access": "public",
-          "line": 20,
-          "value": "",
-          "static": false,
-          "doc": ""
-        },
-        {
-          "name": "orderTotal",
-          "type": "int",
-          "access": "public",
-          "line": 21,
-          "value": "",
-          "static": false,
-          "doc": ""
-        }
-      ],
-      "methods": [
-        {
-          "name": "ToString",
-          "params": [],
-          "ret": "string",
-          "access": "public",
-          "static": false,
-          "ast": {
-            "kind": "block"
-          },
-          "startline": 22,
-          "endline": 22,
-          "doc": ""
-        }
-      ],
-      "doc": ""
-    },
-    {
-      "name": "Program",
-      "kind": "class",
-      "access": "",
-      "startline": 24,
-      "endline": 34,
-      "fields": [
-        {
-          "name": "customers",
-          "type": "Customer[]",
-          "access": "",
-          "line": 25,
-          "value": "new Customer[]{new Customer{id = 1, name = \"Alice\"}, new Customer{id = 2, name = \"Bob\"}, new Customer{id = 3, name = \"Charlie\"}}",
-          "ast": {
-            "kind": "array",
+  "file": {
+    "kind": "compilation_unit",
+    "start": 0,
+    "end": 1722,
+    "children": [
+      {
+        "kind": "comment",
+        "start": 0,
+        "end": 55
+      },
+      {
+        "kind": "using_directive",
+        "start": 56,
+        "end": 69,
+        "children": [
+          {
+            "kind": "identifier",
+            "start": 62,
+            "end": 68
+          }
+        ]
+      },
+      {
+        "kind": "using_directive",
+        "start": 70,
+        "end": 103,
+        "children": [
+          {
+            "kind": "qualified_name",
+            "start": 76,
+            "end": 102,
             "children": [
               {
-                "kind": "new",
-                "value": "Customer",
+                "kind": "qualified_name",
+                "start": 76,
+                "end": 94,
                 "children": [
                   {
-                    "kind": "init",
+                    "kind": "identifier",
+                    "start": 76,
+                    "end": 82
+                  },
+                  {
+                    "kind": "identifier",
+                    "start": 83,
+                    "end": 94
+                  }
+                ]
+              },
+              {
+                "kind": "identifier",
+                "start": 95,
+                "end": 102
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "using_directive",
+        "start": 104,
+        "end": 122,
+        "children": [
+          {
+            "kind": "qualified_name",
+            "start": 110,
+            "end": 121,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 110,
+                "end": 116
+              },
+              {
+                "kind": "identifier",
+                "start": 117,
+                "end": 121
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "struct_declaration",
+        "start": 124,
+        "end": 270,
+        "children": [
+          {
+            "kind": "identifier",
+            "start": 131,
+            "end": 139
+          },
+          {
+            "kind": "declaration_list",
+            "start": 140,
+            "end": 270,
+            "children": [
+              {
+                "kind": "field_declaration",
+                "start": 146,
+                "end": 160,
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "start": 146,
+                    "end": 152
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "start": 153,
+                    "end": 159,
                     "children": [
                       {
-                        "kind": "field",
-                        "value": "id",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "1"
-                          }
-                        ]
+                        "kind": "predefined_type",
+                        "start": 153,
+                        "end": 156
                       },
                       {
-                        "kind": "field",
-                        "value": "name",
+                        "kind": "variable_declarator",
+                        "start": 157,
+                        "end": 159,
                         "children": [
                           {
-                            "kind": "literal",
-                            "value": "Alice"
+                            "kind": "identifier",
+                            "start": 157,
+                            "end": 159
                           }
                         ]
                       }
@@ -204,29 +133,34 @@
                 ]
               },
               {
-                "kind": "new",
-                "value": "Customer",
+                "kind": "field_declaration",
+                "start": 165,
+                "end": 184,
                 "children": [
                   {
-                    "kind": "init",
+                    "kind": "modifier",
+                    "start": 165,
+                    "end": 171
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "start": 172,
+                    "end": 183,
                     "children": [
                       {
-                        "kind": "field",
-                        "value": "id",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "2"
-                          }
-                        ]
+                        "kind": "predefined_type",
+                        "start": 172,
+                        "end": 178
                       },
                       {
-                        "kind": "field",
-                        "value": "name",
+                        "kind": "variable_declarator",
+                        "start": 179,
+                        "end": 183,
                         "children": [
                           {
-                            "kind": "literal",
-                            "value": "Bob"
+                            "kind": "identifier",
+                            "start": 179,
+                            "end": 183
                           }
                         ]
                       }
@@ -235,29 +169,158 @@
                 ]
               },
               {
-                "kind": "new",
-                "value": "Customer",
+                "kind": "method_declaration",
+                "start": 189,
+                "end": 268,
                 "children": [
                   {
-                    "kind": "init",
+                    "kind": "modifier",
+                    "start": 189,
+                    "end": 195
+                  },
+                  {
+                    "kind": "modifier",
+                    "start": 196,
+                    "end": 204
+                  },
+                  {
+                    "kind": "predefined_type",
+                    "start": 205,
+                    "end": 211
+                  },
+                  {
+                    "kind": "identifier",
+                    "start": 212,
+                    "end": 220
+                  },
+                  {
+                    "kind": "parameter_list",
+                    "start": 220,
+                    "end": 222
+                  },
+                  {
+                    "kind": "arrow_expression_clause",
+                    "start": 223,
+                    "end": 267,
                     "children": [
                       {
-                        "kind": "field",
-                        "value": "id",
+                        "kind": "interpolated_string_expression",
+                        "start": 226,
+                        "end": 267,
                         "children": [
                           {
-                            "kind": "literal",
-                            "value": "3"
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "field",
-                        "value": "name",
-                        "children": [
+                            "kind": "interpolation_start",
+                            "start": 226,
+                            "end": 227
+                          },
                           {
-                            "kind": "literal",
-                            "value": "Charlie"
+                            "kind": "string_content",
+                            "start": 228,
+                            "end": 230
+                          },
+                          {
+                            "kind": "escape_sequence",
+                            "start": 230,
+                            "end": 232
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 232,
+                            "end": 234
+                          },
+                          {
+                            "kind": "escape_sequence",
+                            "start": 234,
+                            "end": 236
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 236,
+                            "end": 238
+                          },
+                          {
+                            "kind": "interpolation",
+                            "start": 238,
+                            "end": 242,
+                            "children": [
+                              {
+                                "kind": "interpolation_brace",
+                                "start": 238,
+                                "end": 239
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 239,
+                                "end": 241
+                              },
+                              {
+                                "kind": "interpolation_brace",
+                                "start": 241,
+                                "end": 242
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 242,
+                            "end": 244
+                          },
+                          {
+                            "kind": "escape_sequence",
+                            "start": 244,
+                            "end": 246
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 246,
+                            "end": 250
+                          },
+                          {
+                            "kind": "escape_sequence",
+                            "start": 250,
+                            "end": 252
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 252,
+                            "end": 254
+                          },
+                          {
+                            "kind": "escape_sequence",
+                            "start": 254,
+                            "end": 256
+                          },
+                          {
+                            "kind": "interpolation",
+                            "start": 256,
+                            "end": 262,
+                            "children": [
+                              {
+                                "kind": "interpolation_brace",
+                                "start": 256,
+                                "end": 257
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 257,
+                                "end": 261
+                              },
+                              {
+                                "kind": "interpolation_brace",
+                                "start": 261,
+                                "end": 262
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "escape_sequence",
+                            "start": 262,
+                            "end": 264
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 264,
+                            "end": 266
                           }
                         ]
                       }
@@ -266,53 +329,53 @@
                 ]
               }
             ]
+          }
+        ]
+      },
+      {
+        "kind": "struct_declaration",
+        "start": 271,
+        "end": 467,
+        "children": [
+          {
+            "kind": "identifier",
+            "start": 278,
+            "end": 283
           },
-          "static": true,
-          "doc": ""
-        },
-        {
-          "name": "orders",
-          "type": "Order[]",
-          "access": "",
-          "line": 26,
-          "value": "new Order[]{new Order{id = 100, customerId = 1, total = 250}, new Order{id = 101, customerId = 2, total = 125}, new Order{id = 102, customerId = 1, total = 300}}",
-          "ast": {
-            "kind": "array",
+          {
+            "kind": "declaration_list",
+            "start": 284,
+            "end": 467,
             "children": [
               {
-                "kind": "new",
-                "value": "Order",
+                "kind": "field_declaration",
+                "start": 290,
+                "end": 304,
                 "children": [
                   {
-                    "kind": "init",
+                    "kind": "modifier",
+                    "start": 290,
+                    "end": 296
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "start": 297,
+                    "end": 303,
                     "children": [
                       {
-                        "kind": "field",
-                        "value": "id",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "100"
-                          }
-                        ]
+                        "kind": "predefined_type",
+                        "start": 297,
+                        "end": 300
                       },
                       {
-                        "kind": "field",
-                        "value": "customerId",
+                        "kind": "variable_declarator",
+                        "start": 301,
+                        "end": 303,
                         "children": [
                           {
-                            "kind": "literal",
-                            "value": "1"
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "field",
-                        "value": "total",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "250"
+                            "kind": "identifier",
+                            "start": 301,
+                            "end": 303
                           }
                         ]
                       }
@@ -321,39 +384,34 @@
                 ]
               },
               {
-                "kind": "new",
-                "value": "Order",
+                "kind": "field_declaration",
+                "start": 309,
+                "end": 331,
                 "children": [
                   {
-                    "kind": "init",
+                    "kind": "modifier",
+                    "start": 309,
+                    "end": 315
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "start": 316,
+                    "end": 330,
                     "children": [
                       {
-                        "kind": "field",
-                        "value": "id",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "101"
-                          }
-                        ]
+                        "kind": "predefined_type",
+                        "start": 316,
+                        "end": 319
                       },
                       {
-                        "kind": "field",
-                        "value": "customerId",
+                        "kind": "variable_declarator",
+                        "start": 320,
+                        "end": 330,
                         "children": [
                           {
-                            "kind": "literal",
-                            "value": "2"
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "field",
-                        "value": "total",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "125"
+                            "kind": "identifier",
+                            "start": 320,
+                            "end": 330
                           }
                         ]
                       }
@@ -362,39 +420,231 @@
                 ]
               },
               {
-                "kind": "new",
-                "value": "Order",
+                "kind": "field_declaration",
+                "start": 336,
+                "end": 353,
                 "children": [
                   {
-                    "kind": "init",
+                    "kind": "modifier",
+                    "start": 336,
+                    "end": 342
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "start": 343,
+                    "end": 352,
                     "children": [
                       {
-                        "kind": "field",
-                        "value": "id",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "102"
-                          }
-                        ]
+                        "kind": "predefined_type",
+                        "start": 343,
+                        "end": 346
                       },
                       {
-                        "kind": "field",
-                        "value": "customerId",
+                        "kind": "variable_declarator",
+                        "start": 347,
+                        "end": 352,
                         "children": [
                           {
-                            "kind": "literal",
-                            "value": "1"
+                            "kind": "identifier",
+                            "start": 347,
+                            "end": 352
                           }
                         ]
-                      },
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "method_declaration",
+                "start": 358,
+                "end": 465,
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "start": 358,
+                    "end": 364
+                  },
+                  {
+                    "kind": "modifier",
+                    "start": 365,
+                    "end": 373
+                  },
+                  {
+                    "kind": "predefined_type",
+                    "start": 374,
+                    "end": 380
+                  },
+                  {
+                    "kind": "identifier",
+                    "start": 381,
+                    "end": 389
+                  },
+                  {
+                    "kind": "parameter_list",
+                    "start": 389,
+                    "end": 391
+                  },
+                  {
+                    "kind": "arrow_expression_clause",
+                    "start": 392,
+                    "end": 464,
+                    "children": [
                       {
-                        "kind": "field",
-                        "value": "total",
+                        "kind": "interpolated_string_expression",
+                        "start": 395,
+                        "end": 464,
                         "children": [
                           {
-                            "kind": "literal",
-                            "value": "300"
+                            "kind": "interpolation_start",
+                            "start": 395,
+                            "end": 396
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 397,
+                            "end": 399
+                          },
+                          {
+                            "kind": "escape_sequence",
+                            "start": 399,
+                            "end": 401
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 401,
+                            "end": 403
+                          },
+                          {
+                            "kind": "escape_sequence",
+                            "start": 403,
+                            "end": 405
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 405,
+                            "end": 407
+                          },
+                          {
+                            "kind": "interpolation",
+                            "start": 407,
+                            "end": 411,
+                            "children": [
+                              {
+                                "kind": "interpolation_brace",
+                                "start": 407,
+                                "end": 408
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 408,
+                                "end": 410
+                              },
+                              {
+                                "kind": "interpolation_brace",
+                                "start": 410,
+                                "end": 411
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 411,
+                            "end": 413
+                          },
+                          {
+                            "kind": "escape_sequence",
+                            "start": 413,
+                            "end": 415
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 415,
+                            "end": 425
+                          },
+                          {
+                            "kind": "escape_sequence",
+                            "start": 425,
+                            "end": 427
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 427,
+                            "end": 429
+                          },
+                          {
+                            "kind": "interpolation",
+                            "start": 429,
+                            "end": 441,
+                            "children": [
+                              {
+                                "kind": "interpolation_brace",
+                                "start": 429,
+                                "end": 430
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 430,
+                                "end": 440
+                              },
+                              {
+                                "kind": "interpolation_brace",
+                                "start": 440,
+                                "end": 441
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 441,
+                            "end": 443
+                          },
+                          {
+                            "kind": "escape_sequence",
+                            "start": 443,
+                            "end": 445
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 445,
+                            "end": 450
+                          },
+                          {
+                            "kind": "escape_sequence",
+                            "start": 450,
+                            "end": 452
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 452,
+                            "end": 454
+                          },
+                          {
+                            "kind": "interpolation",
+                            "start": 454,
+                            "end": 461,
+                            "children": [
+                              {
+                                "kind": "interpolation_brace",
+                                "start": 454,
+                                "end": 455
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 455,
+                                "end": 460
+                              },
+                              {
+                                "kind": "interpolation_brace",
+                                "start": 460,
+                                "end": 461
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 461,
+                            "end": 463
                           }
                         ]
                       }
@@ -403,141 +653,1629 @@
                 ]
               }
             ]
+          }
+        ]
+      },
+      {
+        "kind": "struct_declaration",
+        "start": 468,
+        "end": 799,
+        "children": [
+          {
+            "kind": "identifier",
+            "start": 475,
+            "end": 482
           },
-          "static": true,
-          "doc": ""
-        },
-        {
-          "name": "result",
-          "type": "OResult[]",
-          "access": "",
-          "line": 27,
-          "value": "(from o in orders from c in customers select new OResult{orderId = o.id, orderCustomerId = o.customerId, pairedCustomerName = c.name, orderTotal = o.total}).ToArray()",
-          "ast": {
-            "kind": "call",
-            "value": "ToArray",
+          {
+            "kind": "declaration_list",
+            "start": 483,
+            "end": 799,
             "children": [
               {
-                "kind": "unknown"
-              }
-            ]
-          },
-          "static": true,
-          "doc": ""
-        }
-      ],
-      "methods": [
-        {
-          "name": "Main",
-          "params": [],
-          "ret": "void",
-          "access": "",
-          "static": true,
-          "ast": {
-            "kind": "block",
-            "children": [
-              {
-                "kind": "call",
-                "value": "print",
+                "kind": "field_declaration",
+                "start": 489,
+                "end": 508,
                 "children": [
                   {
-                    "kind": "literal",
-                    "value": "--- Cross Join: All order-customer pairs ---"
+                    "kind": "modifier",
+                    "start": 489,
+                    "end": 495
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "start": 496,
+                    "end": 507,
+                    "children": [
+                      {
+                        "kind": "predefined_type",
+                        "start": 496,
+                        "end": 499
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "start": 500,
+                        "end": 507,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 500,
+                            "end": 507
+                          }
+                        ]
+                      }
+                    ]
                   }
                 ]
               },
               {
-                "kind": "for",
-                "value": "entry",
+                "kind": "field_declaration",
+                "start": 513,
+                "end": 540,
                 "children": [
                   {
-                    "kind": "range",
+                    "kind": "modifier",
+                    "start": 513,
+                    "end": 519
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "start": 520,
+                    "end": 539,
                     "children": [
                       {
-                        "kind": "ident",
-                        "value": "result"
+                        "kind": "predefined_type",
+                        "start": 520,
+                        "end": 523
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "start": 524,
+                        "end": 539,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 524,
+                            "end": 539
+                          }
+                        ]
                       }
                     ]
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "start": 545,
+                "end": 578,
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "start": 545,
+                    "end": 551
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "start": 552,
+                    "end": 577,
+                    "children": [
+                      {
+                        "kind": "predefined_type",
+                        "start": 552,
+                        "end": 558
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "start": 559,
+                        "end": 577,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 559,
+                            "end": 577
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "start": 583,
+                "end": 605,
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "start": 583,
+                    "end": 589
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "start": 590,
+                    "end": 604,
+                    "children": [
+                      {
+                        "kind": "predefined_type",
+                        "start": 590,
+                        "end": 593
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "start": 594,
+                        "end": 604,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 594,
+                            "end": 604
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "method_declaration",
+                "start": 610,
+                "end": 797,
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "start": 610,
+                    "end": 616
+                  },
+                  {
+                    "kind": "modifier",
+                    "start": 617,
+                    "end": 625
+                  },
+                  {
+                    "kind": "predefined_type",
+                    "start": 626,
+                    "end": 632
+                  },
+                  {
+                    "kind": "identifier",
+                    "start": 633,
+                    "end": 641
+                  },
+                  {
+                    "kind": "parameter_list",
+                    "start": 641,
+                    "end": 643
+                  },
+                  {
+                    "kind": "arrow_expression_clause",
+                    "start": 644,
+                    "end": 796,
+                    "children": [
+                      {
+                        "kind": "interpolated_string_expression",
+                        "start": 647,
+                        "end": 796,
+                        "children": [
+                          {
+                            "kind": "interpolation_start",
+                            "start": 647,
+                            "end": 648
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 649,
+                            "end": 651
+                          },
+                          {
+                            "kind": "escape_sequence",
+                            "start": 651,
+                            "end": 653
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 653,
+                            "end": 660
+                          },
+                          {
+                            "kind": "escape_sequence",
+                            "start": 660,
+                            "end": 662
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 662,
+                            "end": 664
+                          },
+                          {
+                            "kind": "interpolation",
+                            "start": 664,
+                            "end": 673,
+                            "children": [
+                              {
+                                "kind": "interpolation_brace",
+                                "start": 664,
+                                "end": 665
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 665,
+                                "end": 672
+                              },
+                              {
+                                "kind": "interpolation_brace",
+                                "start": 672,
+                                "end": 673
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 673,
+                            "end": 675
+                          },
+                          {
+                            "kind": "escape_sequence",
+                            "start": 675,
+                            "end": 677
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 677,
+                            "end": 692
+                          },
+                          {
+                            "kind": "escape_sequence",
+                            "start": 692,
+                            "end": 694
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 694,
+                            "end": 696
+                          },
+                          {
+                            "kind": "interpolation",
+                            "start": 696,
+                            "end": 713,
+                            "children": [
+                              {
+                                "kind": "interpolation_brace",
+                                "start": 696,
+                                "end": 697
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 697,
+                                "end": 712
+                              },
+                              {
+                                "kind": "interpolation_brace",
+                                "start": 712,
+                                "end": 713
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 713,
+                            "end": 715
+                          },
+                          {
+                            "kind": "escape_sequence",
+                            "start": 715,
+                            "end": 717
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 717,
+                            "end": 735
+                          },
+                          {
+                            "kind": "escape_sequence",
+                            "start": 735,
+                            "end": 737
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 737,
+                            "end": 739
+                          },
+                          {
+                            "kind": "escape_sequence",
+                            "start": 739,
+                            "end": 741
+                          },
+                          {
+                            "kind": "interpolation",
+                            "start": 741,
+                            "end": 761,
+                            "children": [
+                              {
+                                "kind": "interpolation_brace",
+                                "start": 741,
+                                "end": 742
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 742,
+                                "end": 760
+                              },
+                              {
+                                "kind": "interpolation_brace",
+                                "start": 760,
+                                "end": 761
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "escape_sequence",
+                            "start": 761,
+                            "end": 763
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 763,
+                            "end": 765
+                          },
+                          {
+                            "kind": "escape_sequence",
+                            "start": 765,
+                            "end": 767
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 767,
+                            "end": 777
+                          },
+                          {
+                            "kind": "escape_sequence",
+                            "start": 777,
+                            "end": 779
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 779,
+                            "end": 781
+                          },
+                          {
+                            "kind": "interpolation",
+                            "start": 781,
+                            "end": 793,
+                            "children": [
+                              {
+                                "kind": "interpolation_brace",
+                                "start": 781,
+                                "end": 782
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 782,
+                                "end": 792
+                              },
+                              {
+                                "kind": "interpolation_brace",
+                                "start": 792,
+                                "end": 793
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "start": 793,
+                            "end": 795
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "class_declaration",
+        "start": 800,
+        "end": 1721,
+        "children": [
+          {
+            "kind": "identifier",
+            "start": 806,
+            "end": 813
+          },
+          {
+            "kind": "declaration_list",
+            "start": 814,
+            "end": 1721,
+            "children": [
+              {
+                "kind": "field_declaration",
+                "start": 820,
+                "end": 979,
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "start": 820,
+                    "end": 826
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "start": 827,
+                    "end": 978,
+                    "children": [
+                      {
+                        "kind": "array_type",
+                        "start": 827,
+                        "end": 837,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 827,
+                            "end": 835
+                          },
+                          {
+                            "kind": "array_rank_specifier",
+                            "start": 835,
+                            "end": 837
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "start": 838,
+                        "end": 978,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 838,
+                            "end": 847
+                          },
+                          {
+                            "kind": "array_creation_expression",
+                            "start": 850,
+                            "end": 978,
+                            "children": [
+                              {
+                                "kind": "array_type",
+                                "start": 854,
+                                "end": 864,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 854,
+                                    "end": 862
+                                  },
+                                  {
+                                    "kind": "array_rank_specifier",
+                                    "start": 862,
+                                    "end": 864
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "initializer_expression",
+                                "start": 864,
+                                "end": 978,
+                                "children": [
+                                  {
+                                    "kind": "object_creation_expression",
+                                    "start": 865,
+                                    "end": 901,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 869,
+                                        "end": 877
+                                      },
+                                      {
+                                        "kind": "initializer_expression",
+                                        "start": 877,
+                                        "end": 901,
+                                        "children": [
+                                          {
+                                            "kind": "assignment_expression",
+                                            "start": 878,
+                                            "end": 884,
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "start": 878,
+                                                "end": 880
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "start": 883,
+                                                "end": 884
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "assignment_expression",
+                                            "start": 886,
+                                            "end": 900,
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "start": 886,
+                                                "end": 890
+                                              },
+                                              {
+                                                "kind": "string_literal",
+                                                "start": 893,
+                                                "end": 900,
+                                                "children": [
+                                                  {
+                                                    "kind": "string_literal_content",
+                                                    "start": 894,
+                                                    "end": 899
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "object_creation_expression",
+                                    "start": 903,
+                                    "end": 937,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 907,
+                                        "end": 915
+                                      },
+                                      {
+                                        "kind": "initializer_expression",
+                                        "start": 915,
+                                        "end": 937,
+                                        "children": [
+                                          {
+                                            "kind": "assignment_expression",
+                                            "start": 916,
+                                            "end": 922,
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "start": 916,
+                                                "end": 918
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "start": 921,
+                                                "end": 922
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "assignment_expression",
+                                            "start": 924,
+                                            "end": 936,
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "start": 924,
+                                                "end": 928
+                                              },
+                                              {
+                                                "kind": "string_literal",
+                                                "start": 931,
+                                                "end": 936,
+                                                "children": [
+                                                  {
+                                                    "kind": "string_literal_content",
+                                                    "start": 932,
+                                                    "end": 935
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "object_creation_expression",
+                                    "start": 939,
+                                    "end": 977,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 943,
+                                        "end": 951
+                                      },
+                                      {
+                                        "kind": "initializer_expression",
+                                        "start": 951,
+                                        "end": 977,
+                                        "children": [
+                                          {
+                                            "kind": "assignment_expression",
+                                            "start": 952,
+                                            "end": 958,
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "start": 952,
+                                                "end": 954
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "start": 957,
+                                                "end": 958
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "assignment_expression",
+                                            "start": 960,
+                                            "end": 976,
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "start": 960,
+                                                "end": 964
+                                              },
+                                              {
+                                                "kind": "string_literal",
+                                                "start": 967,
+                                                "end": 976,
+                                                "children": [
+                                                  {
+                                                    "kind": "string_literal_content",
+                                                    "start": 968,
+                                                    "end": 975
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "start": 984,
+                "end": 1170,
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "start": 984,
+                    "end": 990
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "start": 991,
+                    "end": 1169,
+                    "children": [
+                      {
+                        "kind": "array_type",
+                        "start": 991,
+                        "end": 998,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 991,
+                            "end": 996
+                          },
+                          {
+                            "kind": "array_rank_specifier",
+                            "start": 996,
+                            "end": 998
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "start": 999,
+                        "end": 1169,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 999,
+                            "end": 1005
+                          },
+                          {
+                            "kind": "array_creation_expression",
+                            "start": 1008,
+                            "end": 1169,
+                            "children": [
+                              {
+                                "kind": "array_type",
+                                "start": 1012,
+                                "end": 1019,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 1012,
+                                    "end": 1017
+                                  },
+                                  {
+                                    "kind": "array_rank_specifier",
+                                    "start": 1017,
+                                    "end": 1019
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "initializer_expression",
+                                "start": 1019,
+                                "end": 1169,
+                                "children": [
+                                  {
+                                    "kind": "object_creation_expression",
+                                    "start": 1020,
+                                    "end": 1068,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 1024,
+                                        "end": 1029
+                                      },
+                                      {
+                                        "kind": "initializer_expression",
+                                        "start": 1029,
+                                        "end": 1068,
+                                        "children": [
+                                          {
+                                            "kind": "assignment_expression",
+                                            "start": 1030,
+                                            "end": 1038,
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "start": 1030,
+                                                "end": 1032
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "start": 1035,
+                                                "end": 1038
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "assignment_expression",
+                                            "start": 1040,
+                                            "end": 1054,
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "start": 1040,
+                                                "end": 1050
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "start": 1053,
+                                                "end": 1054
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "assignment_expression",
+                                            "start": 1056,
+                                            "end": 1067,
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "start": 1056,
+                                                "end": 1061
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "start": 1064,
+                                                "end": 1067
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "object_creation_expression",
+                                    "start": 1070,
+                                    "end": 1118,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 1074,
+                                        "end": 1079
+                                      },
+                                      {
+                                        "kind": "initializer_expression",
+                                        "start": 1079,
+                                        "end": 1118,
+                                        "children": [
+                                          {
+                                            "kind": "assignment_expression",
+                                            "start": 1080,
+                                            "end": 1088,
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "start": 1080,
+                                                "end": 1082
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "start": 1085,
+                                                "end": 1088
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "assignment_expression",
+                                            "start": 1090,
+                                            "end": 1104,
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "start": 1090,
+                                                "end": 1100
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "start": 1103,
+                                                "end": 1104
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "assignment_expression",
+                                            "start": 1106,
+                                            "end": 1117,
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "start": 1106,
+                                                "end": 1111
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "start": 1114,
+                                                "end": 1117
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "object_creation_expression",
+                                    "start": 1120,
+                                    "end": 1168,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 1124,
+                                        "end": 1129
+                                      },
+                                      {
+                                        "kind": "initializer_expression",
+                                        "start": 1129,
+                                        "end": 1168,
+                                        "children": [
+                                          {
+                                            "kind": "assignment_expression",
+                                            "start": 1130,
+                                            "end": 1138,
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "start": 1130,
+                                                "end": 1132
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "start": 1135,
+                                                "end": 1138
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "assignment_expression",
+                                            "start": 1140,
+                                            "end": 1154,
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "start": 1140,
+                                                "end": 1150
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "start": 1153,
+                                                "end": 1154
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "assignment_expression",
+                                            "start": 1156,
+                                            "end": 1167,
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "start": 1156,
+                                                "end": 1161
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "start": 1164,
+                                                "end": 1167
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "start": 1175,
+                "end": 1368,
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "start": 1175,
+                    "end": 1181
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "start": 1182,
+                    "end": 1367,
+                    "children": [
+                      {
+                        "kind": "array_type",
+                        "start": 1182,
+                        "end": 1191,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 1182,
+                            "end": 1189
+                          },
+                          {
+                            "kind": "array_rank_specifier",
+                            "start": 1189,
+                            "end": 1191
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "start": 1192,
+                        "end": 1367,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 1192,
+                            "end": 1198
+                          },
+                          {
+                            "kind": "invocation_expression",
+                            "start": 1201,
+                            "end": 1367,
+                            "children": [
+                              {
+                                "kind": "member_access_expression",
+                                "start": 1201,
+                                "end": 1365,
+                                "children": [
+                                  {
+                                    "kind": "parenthesized_expression",
+                                    "start": 1201,
+                                    "end": 1357,
+                                    "children": [
+                                      {
+                                        "kind": "query_expression",
+                                        "start": 1202,
+                                        "end": 1356,
+                                        "children": [
+                                          {
+                                            "kind": "from_clause",
+                                            "start": 1202,
+                                            "end": 1218,
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "start": 1207,
+                                                "end": 1208
+                                              },
+                                              {
+                                                "kind": "identifier",
+                                                "start": 1212,
+                                                "end": 1218
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "from_clause",
+                                            "start": 1219,
+                                            "end": 1238,
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "start": 1224,
+                                                "end": 1225
+                                              },
+                                              {
+                                                "kind": "identifier",
+                                                "start": 1229,
+                                                "end": 1238
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "select_clause",
+                                            "start": 1239,
+                                            "end": 1356,
+                                            "children": [
+                                              {
+                                                "kind": "object_creation_expression",
+                                                "start": 1246,
+                                                "end": 1356,
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "start": 1250,
+                                                    "end": 1257
+                                                  },
+                                                  {
+                                                    "kind": "initializer_expression",
+                                                    "start": 1257,
+                                                    "end": 1356,
+                                                    "children": [
+                                                      {
+                                                        "kind": "assignment_expression",
+                                                        "start": 1258,
+                                                        "end": 1272,
+                                                        "children": [
+                                                          {
+                                                            "kind": "identifier",
+                                                            "start": 1258,
+                                                            "end": 1265
+                                                          },
+                                                          {
+                                                            "kind": "member_access_expression",
+                                                            "start": 1268,
+                                                            "end": 1272,
+                                                            "children": [
+                                                              {
+                                                                "kind": "identifier",
+                                                                "start": 1268,
+                                                                "end": 1269
+                                                              },
+                                                              {
+                                                                "kind": "identifier",
+                                                                "start": 1270,
+                                                                "end": 1272
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "assignment_expression",
+                                                        "start": 1274,
+                                                        "end": 1304,
+                                                        "children": [
+                                                          {
+                                                            "kind": "identifier",
+                                                            "start": 1274,
+                                                            "end": 1289
+                                                          },
+                                                          {
+                                                            "kind": "member_access_expression",
+                                                            "start": 1292,
+                                                            "end": 1304,
+                                                            "children": [
+                                                              {
+                                                                "kind": "identifier",
+                                                                "start": 1292,
+                                                                "end": 1293
+                                                              },
+                                                              {
+                                                                "kind": "identifier",
+                                                                "start": 1294,
+                                                                "end": 1304
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "assignment_expression",
+                                                        "start": 1306,
+                                                        "end": 1333,
+                                                        "children": [
+                                                          {
+                                                            "kind": "identifier",
+                                                            "start": 1306,
+                                                            "end": 1324
+                                                          },
+                                                          {
+                                                            "kind": "member_access_expression",
+                                                            "start": 1327,
+                                                            "end": 1333,
+                                                            "children": [
+                                                              {
+                                                                "kind": "identifier",
+                                                                "start": 1327,
+                                                                "end": 1328
+                                                              },
+                                                              {
+                                                                "kind": "identifier",
+                                                                "start": 1329,
+                                                                "end": 1333
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "assignment_expression",
+                                                        "start": 1335,
+                                                        "end": 1355,
+                                                        "children": [
+                                                          {
+                                                            "kind": "identifier",
+                                                            "start": 1335,
+                                                            "end": 1345
+                                                          },
+                                                          {
+                                                            "kind": "member_access_expression",
+                                                            "start": 1348,
+                                                            "end": 1355,
+                                                            "children": [
+                                                              {
+                                                                "kind": "identifier",
+                                                                "start": 1348,
+                                                                "end": 1349
+                                                              },
+                                                              {
+                                                                "kind": "identifier",
+                                                                "start": 1350,
+                                                                "end": 1355
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "start": 1358,
+                                    "end": 1365
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "argument_list",
+                                "start": 1365,
+                                "end": 1367
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "method_declaration",
+                "start": 1373,
+                "end": 1719,
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "start": 1373,
+                    "end": 1379
+                  },
+                  {
+                    "kind": "predefined_type",
+                    "start": 1380,
+                    "end": 1384
+                  },
+                  {
+                    "kind": "identifier",
+                    "start": 1385,
+                    "end": 1389
+                  },
+                  {
+                    "kind": "parameter_list",
+                    "start": 1389,
+                    "end": 1391
                   },
                   {
                     "kind": "block",
+                    "start": 1392,
+                    "end": 1719,
                     "children": [
                       {
-                        "kind": "call",
-                        "value": "print",
+                        "kind": "expression_statement",
+                        "start": 1402,
+                        "end": 1468,
                         "children": [
                           {
-                            "kind": "call",
-                            "value": "TrimEnd",
+                            "kind": "invocation_expression",
+                            "start": 1402,
+                            "end": 1467,
                             "children": [
                               {
-                                "kind": "call",
-                                "value": "Join",
+                                "kind": "member_access_expression",
+                                "start": 1402,
+                                "end": 1419,
                                 "children": [
                                   {
-                                    "kind": "ident",
-                                    "value": "string"
+                                    "kind": "identifier",
+                                    "start": 1402,
+                                    "end": 1409
                                   },
                                   {
-                                    "kind": "literal",
-                                    "value": " "
-                                  },
+                                    "kind": "identifier",
+                                    "start": 1410,
+                                    "end": 1419
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "argument_list",
+                                "start": 1419,
+                                "end": 1467,
+                                "children": [
                                   {
-                                    "kind": "array",
+                                    "kind": "argument",
+                                    "start": 1420,
+                                    "end": 1466,
                                     "children": [
                                       {
-                                        "kind": "literal",
-                                        "value": "Order"
-                                      },
-                                      {
-                                        "kind": "member",
-                                        "value": "orderId",
+                                        "kind": "string_literal",
+                                        "start": 1420,
+                                        "end": 1466,
                                         "children": [
                                           {
-                                            "kind": "ident",
-                                            "value": "entry"
+                                            "kind": "string_literal_content",
+                                            "start": 1421,
+                                            "end": 1465
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "foreach_statement",
+                        "start": 1477,
+                        "end": 1713,
+                        "children": [
+                          {
+                            "kind": "implicit_type",
+                            "start": 1486,
+                            "end": 1489
+                          },
+                          {
+                            "kind": "identifier",
+                            "start": 1490,
+                            "end": 1495
+                          },
+                          {
+                            "kind": "identifier",
+                            "start": 1499,
+                            "end": 1505
+                          },
+                          {
+                            "kind": "block",
+                            "start": 1507,
+                            "end": 1713,
+                            "children": [
+                              {
+                                "kind": "expression_statement",
+                                "start": 1513,
+                                "end": 1711,
+                                "children": [
+                                  {
+                                    "kind": "invocation_expression",
+                                    "start": 1513,
+                                    "end": 1710,
+                                    "children": [
+                                      {
+                                        "kind": "member_access_expression",
+                                        "start": 1513,
+                                        "end": 1530,
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "start": 1513,
+                                            "end": 1520
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "start": 1521,
+                                            "end": 1530
                                           }
                                         ]
                                       },
                                       {
-                                        "kind": "literal",
-                                        "value": "(customerId:"
-                                      },
-                                      {
-                                        "kind": "member",
-                                        "value": "orderCustomerId",
+                                        "kind": "argument_list",
+                                        "start": 1530,
+                                        "end": 1710,
                                         "children": [
                                           {
-                                            "kind": "ident",
-                                            "value": "entry"
-                                          }
-                                        ]
-                                      },
-                                      {
-                                        "kind": "literal",
-                                        "value": ", total: $"
-                                      },
-                                      {
-                                        "kind": "member",
-                                        "value": "orderTotal",
-                                        "children": [
-                                          {
-                                            "kind": "ident",
-                                            "value": "entry"
-                                          }
-                                        ]
-                                      },
-                                      {
-                                        "kind": "literal",
-                                        "value": ") paired with"
-                                      },
-                                      {
-                                        "kind": "member",
-                                        "value": "pairedCustomerName",
-                                        "children": [
-                                          {
-                                            "kind": "ident",
-                                            "value": "entry"
+                                            "kind": "argument",
+                                            "start": 1531,
+                                            "end": 1709,
+                                            "children": [
+                                              {
+                                                "kind": "invocation_expression",
+                                                "start": 1531,
+                                                "end": 1709,
+                                                "children": [
+                                                  {
+                                                    "kind": "member_access_expression",
+                                                    "start": 1531,
+                                                    "end": 1707,
+                                                    "children": [
+                                                      {
+                                                        "kind": "invocation_expression",
+                                                        "start": 1531,
+                                                        "end": 1699,
+                                                        "children": [
+                                                          {
+                                                            "kind": "member_access_expression",
+                                                            "start": 1531,
+                                                            "end": 1542,
+                                                            "children": [
+                                                              {
+                                                                "kind": "predefined_type",
+                                                                "start": 1531,
+                                                                "end": 1537
+                                                              },
+                                                              {
+                                                                "kind": "identifier",
+                                                                "start": 1538,
+                                                                "end": 1542
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "argument_list",
+                                                            "start": 1542,
+                                                            "end": 1699,
+                                                            "children": [
+                                                              {
+                                                                "kind": "argument",
+                                                                "start": 1543,
+                                                                "end": 1546,
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "string_literal",
+                                                                    "start": 1543,
+                                                                    "end": 1546,
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "string_literal_content",
+                                                                        "start": 1544,
+                                                                        "end": 1545
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "argument",
+                                                                "start": 1548,
+                                                                "end": 1698,
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "array_creation_expression",
+                                                                    "start": 1548,
+                                                                    "end": 1698,
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "array_type",
+                                                                        "start": 1552,
+                                                                        "end": 1560,
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "predefined_type",
+                                                                            "start": 1552,
+                                                                            "end": 1558
+                                                                          },
+                                                                          {
+                                                                            "kind": "array_rank_specifier",
+                                                                            "start": 1558,
+                                                                            "end": 1560
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "kind": "initializer_expression",
+                                                                        "start": 1560,
+                                                                        "end": 1698,
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "string_literal",
+                                                                            "start": 1561,
+                                                                            "end": 1568,
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "string_literal_content",
+                                                                                "start": 1562,
+                                                                                "end": 1567
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "kind": "member_access_expression",
+                                                                            "start": 1570,
+                                                                            "end": 1583,
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "identifier",
+                                                                                "start": 1570,
+                                                                                "end": 1575
+                                                                              },
+                                                                              {
+                                                                                "kind": "identifier",
+                                                                                "start": 1576,
+                                                                                "end": 1583
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "kind": "string_literal",
+                                                                            "start": 1585,
+                                                                            "end": 1599,
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "string_literal_content",
+                                                                                "start": 1586,
+                                                                                "end": 1598
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "kind": "member_access_expression",
+                                                                            "start": 1601,
+                                                                            "end": 1622,
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "identifier",
+                                                                                "start": 1601,
+                                                                                "end": 1606
+                                                                              },
+                                                                              {
+                                                                                "kind": "identifier",
+                                                                                "start": 1607,
+                                                                                "end": 1622
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "kind": "string_literal",
+                                                                            "start": 1624,
+                                                                            "end": 1636,
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "string_literal_content",
+                                                                                "start": 1625,
+                                                                                "end": 1635
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "kind": "member_access_expression",
+                                                                            "start": 1638,
+                                                                            "end": 1654,
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "identifier",
+                                                                                "start": 1638,
+                                                                                "end": 1643
+                                                                              },
+                                                                              {
+                                                                                "kind": "identifier",
+                                                                                "start": 1644,
+                                                                                "end": 1654
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "kind": "string_literal",
+                                                                            "start": 1656,
+                                                                            "end": 1671,
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "string_literal_content",
+                                                                                "start": 1657,
+                                                                                "end": 1670
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "kind": "member_access_expression",
+                                                                            "start": 1673,
+                                                                            "end": 1697,
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "identifier",
+                                                                                "start": 1673,
+                                                                                "end": 1678
+                                                                              },
+                                                                              {
+                                                                                "kind": "identifier",
+                                                                                "start": 1679,
+                                                                                "end": 1697
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "identifier",
+                                                        "start": 1700,
+                                                        "end": 1707
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "argument_list",
+                                                    "start": 1707,
+                                                    "end": 1709
+                                                  }
+                                                ]
+                                              }
+                                            ]
                                           }
                                         ]
                                       }
@@ -554,13 +2292,9 @@
                 ]
               }
             ]
-          },
-          "startline": 28,
-          "endline": 33,
-          "doc": ""
-        }
-      ],
-      "doc": ""
-    }
-  ]
+          }
+        ]
+      }
+    ]
+  }
 }
