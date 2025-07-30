@@ -16,14 +16,25 @@ type Program struct {
 
 // Inspect parses the given C source code using tree-sitter and returns
 // its Program structure.
+// Inspect parses the given C source code using tree-sitter and returns
+// its Program structure without position information.
 func Inspect(src string) (*Program, error) {
+	return inspect(src, false)
+}
+
+// InspectWithPositions parses the C source and keeps position fields in the AST.
+func InspectWithPositions(src string) (*Program, error) {
+	return inspect(src, true)
+}
+
+func inspect(src string, pos bool) (*Program, error) {
 	parser := sitter.NewParser()
 	parser.SetLanguage(ts.GetLanguage())
 	tree, err := parser.ParseCtx(context.Background(), nil, []byte(src))
 	if err != nil {
 		return nil, fmt.Errorf("parse: %w", err)
 	}
-	root := toNode(tree.RootNode(), []byte(src))
+	root := toNode(tree.RootNode(), []byte(src), pos)
 	return &Program{Root: root}, nil
 }
 

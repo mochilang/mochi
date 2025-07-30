@@ -10,27 +10,27 @@ import (
 // line/column pairs for easier cross language comparison.
 type Node struct {
 	Kind     string  `json:"kind"`
-	Start    int     `json:"start"`    // 1-based line number
-	StartCol int     `json:"startCol"` // 0-based column number
-	End      int     `json:"end"`      // 1-based line number
-	EndCol   int     `json:"endCol"`
 	Text     string  `json:"text,omitempty"`
+	Start    int     `json:"start,omitempty"`    // 1-based line number
+	StartCol int     `json:"startCol,omitempty"` // 0-based column number
+	End      int     `json:"end,omitempty"`      // 1-based line number
+	EndCol   int     `json:"endCol,omitempty"`
 	Children []*Node `json:"children,omitempty"`
 }
 
 // toNode converts a tree-sitter node into our Node type.
-func toNode(n *sitter.Node, src []byte) *Node {
+func toNode(n *sitter.Node, src []byte, pos bool) *Node {
 	if n == nil {
 		return nil
 	}
-	start := n.StartPoint()
-	end := n.EndPoint()
-	node := &Node{
-		Kind:     n.Type(),
-		Start:    int(start.Row) + 1,
-		StartCol: int(start.Column),
-		End:      int(end.Row) + 1,
-		EndCol:   int(end.Column),
+	node := &Node{Kind: n.Type()}
+	if pos {
+		start := n.StartPoint()
+		end := n.EndPoint()
+		node.Start = int(start.Row) + 1
+		node.StartCol = int(start.Column)
+		node.End = int(end.Row) + 1
+		node.EndCol = int(end.Column)
 	}
 
 	if n.NamedChildCount() == 0 {
@@ -49,7 +49,7 @@ func toNode(n *sitter.Node, src []byte) *Node {
 		if child == nil {
 			continue
 		}
-		if c := toNode(child, src); c != nil {
+		if c := toNode(child, src, pos); c != nil {
 			node.Children = append(node.Children, c)
 		}
 	}
