@@ -1,0 +1,121 @@
+{
+  "ast": {
+    "Name": "main",
+    "Files": null,
+    "Block": {
+      "Parent": {
+        "Parent": null,
+        "Routine": null,
+        "Labels": null,
+        "Constants": [
+          {
+            "Name": "maxint",
+            "Value": {
+              "Value": 9223372036854775807
+            }
+          }
+        ],
+        "Types": [
+          {
+            "Name": "boolean",
+            "Type": {
+              "Identifiers": [
+                "false",
+                "true"
+              ]
+            }
+          },
+          {
+            "Name": "text",
+            "Type": {
+              "ElementType": {},
+              "Packed": false
+            }
+          }
+        ],
+        "Variables": null,
+        "EnumValues": null,
+        "Procedures": null,
+        "Functions": null,
+        "Statements": null
+      },
+      "Routine": null,
+      "Labels": null,
+      "Constants": null,
+      "Types": null,
+      "Variables": [
+        {
+          "Name": "i",
+          "Type": {},
+          "IsRecordField": false,
+          "BelongsToExpr": null,
+          "BelongsToType": null
+        }
+      ],
+      "EnumValues": null,
+      "Procedures": null,
+      "Functions": null,
+      "Statements": [
+        {
+          "Name": "i",
+          "InitialExpr": {
+            "Value": 1
+          },
+          "FinalExpr": {
+            "Sign": "",
+            "First": {
+              "Value": 4
+            },
+            "Next": [
+              {
+                "Operator": "-",
+                "Term": {
+                  "Value": 1
+                }
+              }
+            ]
+          },
+          "Statement": {
+            "Statements": [
+              {
+                "AppendNewLine": true,
+                "FileVar": null,
+                "ActualParams": [
+                  {
+                    "Expr": {
+                      "Name": "i",
+                      "Type_": {},
+                      "VarDecl": {
+                        "Name": "i",
+                        "Type": {},
+                        "IsRecordField": false,
+                        "BelongsToExpr": null,
+                        "BelongsToType": null
+                      },
+                      "ParamDecl": null,
+                      "IsReturnValue": false
+                    },
+                    "Width": null,
+                    "DecimalPlaces": null
+                  }
+                ]
+              }
+            ]
+          },
+          "DownTo": false
+        }
+      ]
+    }
+  },
+  "lines": [
+    "{$mode objfpc}",
+    "program Main;",
+    "var",
+    "  i: integer;",
+    "begin",
+    "  for i := 1 to (4 - 1) do begin",
+    "  writeln(i);",
+    "end;",
+    "end."
+  ]
+}
