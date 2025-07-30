@@ -5,15 +5,8 @@
       "name": "nations",
       "type": "Data1[]",
       "expr": {
-        "kind": "Array",
-        "elems": [
-          {
-            "kind": "UnknownExpr"
-          },
-          {
-            "kind": "UnknownExpr"
-          }
-        ]
+        "kind": "NEW_ARRAY",
+        "text": "new Data1[]{new Data1(1, \"A\"), new Data1(2, \"B\")}"
       }
     },
     {
@@ -21,15 +14,8 @@
       "name": "suppliers",
       "type": "Data2[]",
       "expr": {
-        "kind": "Array",
-        "elems": [
-          {
-            "kind": "UnknownExpr"
-          },
-          {
-            "kind": "UnknownExpr"
-          }
-        ]
+        "kind": "NEW_ARRAY",
+        "text": "new Data2[]{new Data2(1, 1), new Data2(2, 2)}"
       }
     },
     {
@@ -37,18 +23,8 @@
       "name": "partsupp",
       "type": "Data3[]",
       "expr": {
-        "kind": "Array",
-        "elems": [
-          {
-            "kind": "UnknownExpr"
-          },
-          {
-            "kind": "UnknownExpr"
-          },
-          {
-            "kind": "UnknownExpr"
-          }
-        ]
+        "kind": "NEW_ARRAY",
+        "text": "new Data3[]{new Data3(100, 1, 10.0, 2), new Data3(100, 2, 20.0, 1), new Data3(200, 1, 5.0, 3)}"
       }
     },
     {
@@ -56,7 +32,8 @@
       "name": "filtered",
       "type": "java.util.List\u003cResult5\u003e",
       "expr": {
-        "kind": "UnknownExpr"
+        "kind": "NEW_CLASS",
+        "text": "new java.util.ArrayList\u003cResult5\u003e(){\n    {\n        java.util.ArrayList\u003cResult5\u003e _tmp = new java.util.ArrayList\u003c\u003e();\n        for (/*missing*/ ps : partsupp) {\n            for (/*missing*/ s : suppliers) {\n                if (s.id == ps.supplier) {\n                    for (/*missing*/ n : nations) {\n                        if (n.id == s.nation) {\n                            if ((n.name.equals(\"A\"))) {\n                                _tmp.add(new Result5(ps.part, ps.cost * ps.qty));\n                            }\n                        }\n                    }\n                }\n            }\n        }\n        java.util.ArrayList\u003cResult5\u003e list = _tmp;\n        java.util.ArrayList\u003cResult5\u003e _res = new java.util.ArrayList\u003c\u003e();\n        int skip = 0;\n        int take = -1;\n        for (int i = 0; i \u003c list.size(); i++) {\n            if (i \u003c skip) continue;\n            if (take \u003e= 0 \u0026\u0026 i \u003e= skip + take) break;\n            _res.add((Result5)list.get(i));\n        }\n        addAll(_res);\n    }\n}"
       }
     },
     {
@@ -64,7 +41,8 @@
       "name": "grouped",
       "type": "java.util.List\u003cResult8\u003e",
       "expr": {
-        "kind": "UnknownExpr"
+        "kind": "NEW_CLASS",
+        "text": "new java.util.ArrayList\u003cResult8\u003e(){\n    {\n        java.util.LinkedHashMap\u003cString, Group6\u003e _groups = new java.util.LinkedHashMap\u003c\u003e();\n        java.util.ArrayList\u003cResult8\u003e _tmp = new java.util.ArrayList\u003c\u003e();\n        for (/*missing*/ x : filtered) {\n            /*missing*/ _k = x.part;\n            String _ks = String.valueOf(_k);\n            Group6 g = _groups.get(_ks);\n            if (g == null) {\n                g = new Group6(_k, new java.util.ArrayList\u003c\u003e());\n                _groups.put(_ks, g);\n            }\n            g.items.add(x);\n        }\n        java.util.ArrayList\u003cGroup6\u003e list = new java.util.ArrayList\u003c\u003e(_groups.values());\n        java.util.ArrayList\u003cResult8\u003e _res = new java.util.ArrayList\u003c\u003e();\n        int skip = 0;\n        int take = -1;\n        for (int i = 0; i \u003c list.size(); i++) {\n            if (i \u003c skip) continue;\n            if (take \u003e= 0 \u0026\u0026 i \u003e= skip + take) break;\n            /*missing*/ g = (Group6)list.get(i);\n            _res.add(new Result8(g.key, (((new java.util.ArrayList\u003cDouble\u003e(){\n                {\n                    java.util.ArrayList\u003cDouble\u003e _tmp = new java.util.ArrayList\u003c\u003e();\n                    for (/*missing*/ r : g.items) {\n                        _tmp.add(r.value);\n                    }\n                    java.util.ArrayList\u003cDouble\u003e list = _tmp;\n                    java.util.ArrayList\u003cDouble\u003e _res = new java.util.ArrayList\u003c\u003e();\n                    int skip = 0;\n                    int take = -1;\n                    for (int i = 0; i \u003c list.size(); i++) {\n                        if (i \u003c skip) continue;\n                        if (take \u003e= 0 \u0026\u0026 i \u003e= skip + take) break;\n                        _res.add((Double)list.get(i));\n                    }\n                    addAll(_res);\n                }\n            }.stream().mapToDouble((v)-\u003e((Number)v).doubleValue()).sum()) % 1 == 0) ? (Object)(int)(new java.util.ArrayList\u003cDouble\u003e(){\n                {\n                    java.util.ArrayList\u003cDouble\u003e _tmp = new java.util.ArrayList\u003c\u003e();\n                    for (/*missing*/ r : g.items) {\n                        _tmp.add(r.value);\n                    }\n                    java.util.ArrayList\u003cDouble\u003e list = _tmp;\n                    java.util.ArrayList\u003cDouble\u003e _res = new java.util.ArrayList\u003c\u003e();\n                    int skip = 0;\n                    int take = -1;\n                    for (int i = 0; i \u003c list.size(); i++) {\n                        if (i \u003c skip) continue;\n                        if (take \u003e= 0 \u0026\u0026 i \u003e= skip + take) break;\n                        _res.add((Double)list.get(i));\n                    }\n                    addAll(_res);\n                }\n            }.stream().mapToDouble((v)-\u003e((Number)v).doubleValue()).sum()) : (Object)(new java.util.ArrayList\u003cDouble\u003e(){\n                {\n                    java.util.ArrayList\u003cDouble\u003e _tmp = new java.util.ArrayList\u003c\u003e();\n                    for (/*missing*/ r : g.items) {\n                        _tmp.add(r.value);\n                    }\n                    java.util.ArrayList\u003cDouble\u003e list = _tmp;\n                    java.util.ArrayList\u003cDouble\u003e _res = new java.util.ArrayList\u003c\u003e();\n                    int skip = 0;\n                    int take = -1;\n                    for (int i = 0; i \u003c list.size(); i++) {\n                        if (i \u003c skip) continue;\n                        if (take \u003e= 0 \u0026\u0026 i \u003e= skip + take) break;\n                        _res.add((Double)list.get(i));\n                    }\n                    addAll(_res);\n                }\n            }.stream().mapToDouble((v)-\u003e((Number)v).doubleValue()).sum()))));\n        }\n        addAll(_res);\n    }\n}"
       }
     },
     {
@@ -105,7 +83,8 @@
                 },
                 "args": [
                   {
-                    "kind": "UnknownExpr"
+                    "kind": "MEMBER_REFERENCE",
+                    "text": "String::valueOf"
                   }
                 ]
               }

@@ -5,18 +5,8 @@
       "name": "data",
       "type": "Data1[]",
       "expr": {
-        "kind": "Array",
-        "elems": [
-          {
-            "kind": "UnknownExpr"
-          },
-          {
-            "kind": "UnknownExpr"
-          },
-          {
-            "kind": "UnknownExpr"
-          }
-        ]
+        "kind": "NEW_ARRAY",
+        "text": "new Data1[]{new Data1(1, 2), new Data1(1, 1), new Data1(0, 5)}"
       }
     },
     {
@@ -24,7 +14,8 @@
       "name": "sorted",
       "type": "java.util.List\u003cData1\u003e",
       "expr": {
-        "kind": "UnknownExpr"
+        "kind": "NEW_CLASS",
+        "text": "new java.util.ArrayList\u003cData1\u003e(){\n    {\n        java.util.ArrayList\u003cData1\u003e _tmp = new java.util.ArrayList\u003c\u003e();\n        for (/*missing*/ x : data) {\n            _tmp.add(x);\n        }\n        java.util.ArrayList\u003cData1\u003e list = _tmp;\n        list.sort((a,b)-\u003e{\n            Comparable _va = (Comparable)(new Data2(a.a, a.b));\n            Comparable _vb = (Comparable)(new Data2(b.a, b.b));\n            return _va.compareTo(_vb);\n        });\n        int skip = 0;\n        int take = -1;\n        for (int i = 0; i \u003c list.size(); i++) {\n            if (i \u003c skip) continue;\n            if (take \u003e= 0 \u0026\u0026 i \u003e= skip + take) break;\n            _tmp.add((Data1)list.get(i));\n        }\n        addAll(_tmp);\n    }\n}"
       }
     },
     {
@@ -57,7 +48,8 @@
             },
             "args": [
               {
-                "kind": "UnknownExpr"
+                "kind": "MEMBER_REFERENCE",
+                "text": "String::valueOf"
               }
             ]
           }

@@ -5,21 +5,8 @@
       "name": "people",
       "type": "Person[]",
       "expr": {
-        "kind": "Array",
-        "elems": [
-          {
-            "kind": "UnknownExpr"
-          },
-          {
-            "kind": "UnknownExpr"
-          },
-          {
-            "kind": "UnknownExpr"
-          },
-          {
-            "kind": "UnknownExpr"
-          }
-        ]
+        "kind": "NEW_ARRAY",
+        "text": "new Person[]{new Person(\"Alice\", 17, \"minor\"), new Person(\"Bob\", 25, \"unknown\"), new Person(\"Charlie\", 18, \"unknown\"), new Person(\"Diana\", 16, \"minor\")}"
       }
     },
     {

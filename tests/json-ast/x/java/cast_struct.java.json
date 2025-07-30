@@ -5,7 +5,8 @@
       "name": "todo",
       "type": "Todo",
       "expr": {
-        "kind": "UnknownExpr"
+        "kind": "NEW_CLASS",
+        "text": "new Todo(\"hi\")"
       }
     },
     {

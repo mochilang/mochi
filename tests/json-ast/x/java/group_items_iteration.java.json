@@ -5,18 +5,8 @@
       "name": "data",
       "type": "Data1[]",
       "expr": {
-        "kind": "Array",
-        "elems": [
-          {
-            "kind": "UnknownExpr"
-          },
-          {
-            "kind": "UnknownExpr"
-          },
-          {
-            "kind": "UnknownExpr"
-          }
-        ]
+        "kind": "NEW_ARRAY",
+        "text": "new Data1[]{new Data1(\"a\", 1), new Data1(\"a\", 2), new Data1(\"b\", 3)}"
       }
     },
     {
@@ -24,7 +14,8 @@
       "name": "groups",
       "type": "java.util.List\u003cData1\u003e",
       "expr": {
-        "kind": "UnknownExpr"
+        "kind": "NEW_CLASS",
+        "text": "new java.util.ArrayList\u003cData1\u003e(){\n    {\n        java.util.LinkedHashMap\u003cString, Group2\u003e _groups = new java.util.LinkedHashMap\u003c\u003e();\n        java.util.ArrayList\u003cData1\u003e _tmp = new java.util.ArrayList\u003c\u003e();\n        for (/*missing*/ d : data) {\n            /*missing*/ _k = ((Integer)(d.get(\"tag\")));\n            String _ks = String.valueOf(_k);\n            Group2 g = _groups.get(_ks);\n            if (g == null) {\n                g = new Group2(_k, new java.util.ArrayList\u003c\u003e());\n                _groups.put(_ks, g);\n            }\n            g.items.add(d);\n        }\n        java.util.ArrayList\u003cGroup2\u003e list = new java.util.ArrayList\u003c\u003e(_groups.values());\n        int skip = 0;\n        int take = -1;\n        for (int i = 0; i \u003c list.size(); i++) {\n            if (i \u003c skip) continue;\n            if (take \u003e= 0 \u0026\u0026 i \u003e= skip + take) break;\n            /*missing*/ g = (Group2)list.get(i);\n            _tmp.add(g);\n        }\n        addAll(_tmp);\n    }\n}"
       }
     },
     {
@@ -32,7 +23,8 @@
       "name": "tmp",
       "type": "Object[]",
       "expr": {
-        "kind": "Array"
+        "kind": "NEW_ARRAY",
+        "text": "new int[]{}"
       }
     },
     {
@@ -40,7 +32,8 @@
       "name": "result",
       "type": "java.util.List\u003cObject\u003e",
       "expr": {
-        "kind": "UnknownExpr"
+        "kind": "NEW_CLASS",
+        "text": "new java.util.ArrayList\u003cObject\u003e(){\n    {\n        java.util.ArrayList\u003cObject\u003e _tmp = new java.util.ArrayList\u003c\u003e();\n        for (/*missing*/ r : tmp) {\n            _tmp.add(r);\n        }\n        java.util.ArrayList\u003cObject\u003e list = _tmp;\n        list.sort((a,b)-\u003e{\n            Comparable _va = (Comparable)(a.tag);\n            Comparable _vb = (Comparable)(b.tag);\n            return _va.compareTo(_vb);\n        });\n        int skip = 0;\n        int take = -1;\n        for (int i = 0; i \u003c list.size(); i++) {\n            if (i \u003c skip) continue;\n            if (take \u003e= 0 \u0026\u0026 i \u003e= skip + take) break;\n            _tmp.add((Object)list.get(i));\n        }\n        addAll(_tmp);\n    }\n}"
       }
     },
     {
@@ -182,7 +175,8 @@
                     },
                     "args": [
                       {
-                        "kind": "UnknownExpr"
+                        "kind": "NEW_CLASS",
+                        "text": "new Data3(g.key, total)"
                       }
                     ]
                   }
@@ -191,7 +185,8 @@
             },
             "args": [
               {
-                "kind": "UnknownExpr"
+                "kind": "MEMBER_REFERENCE",
+                "text": "Object[]::new"
               }
             ]
           }
@@ -228,7 +223,8 @@
             },
             "args": [
               {
-                "kind": "UnknownExpr"
+                "kind": "MEMBER_REFERENCE",
+                "text": "String::valueOf"
               }
             ]
           }

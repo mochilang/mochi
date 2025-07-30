@@ -41,21 +41,8 @@
             },
             "args": [
               {
-                "kind": "Array",
-                "elems": [
-                  {
-                    "kind": "Literal",
-                    "value": "1"
-                  },
-                  {
-                    "kind": "Literal",
-                    "value": "2"
-                  },
-                  {
-                    "kind": "Literal",
-                    "value": "3"
-                  }
-                ]
+                "kind": "NEW_ARRAY",
+                "text": "new int[]{1, 2, 3}"
               },
               {
                 "kind": "Literal",
@@ -111,21 +98,8 @@
             },
             "args": [
               {
-                "kind": "Array",
-                "elems": [
-                  {
-                    "kind": "Literal",
-                    "value": "1"
-                  },
-                  {
-                    "kind": "Literal",
-                    "value": "2"
-                  },
-                  {
-                    "kind": "Literal",
-                    "value": "3"
-                  }
-                ]
+                "kind": "NEW_ARRAY",
+                "text": "new int[]{1, 2, 3}"
               },
               {
                 "kind": "Literal",

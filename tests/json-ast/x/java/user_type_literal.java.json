@@ -5,7 +5,8 @@
       "name": "book",
       "type": "Book",
       "expr": {
-        "kind": "UnknownExpr"
+        "kind": "NEW_CLASS",
+        "text": "new Book(\"Go\", new Person(\"Bob\", 42))"
       }
     },
     {

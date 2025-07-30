@@ -5,7 +5,8 @@
       "name": "m",
       "type": "Data1",
       "expr": {
-        "kind": "UnknownExpr"
+        "kind": "NEW_CLASS",
+        "text": "new Data1(1, 2)"
       }
     },
     {
