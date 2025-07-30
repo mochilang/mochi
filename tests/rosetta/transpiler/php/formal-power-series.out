@@ -1,0 +1,8 @@
+Warning: Undefined variable $sin in /workspace/mochi/tests/rosetta/transpiler/php/formal-power-series.php on line 118
+sin:  0.00000   1.00000   0.00000   0.00000   0.00000   0.00000
+cos:  1.00000   0.00000   0.00000   0.00000   0.00000   0.00000
+{
+  "duration_us": 252,
+  "memory_bytes": 144,
+  "name": "main"
+}
