@@ -9,7 +9,7 @@ import (
 
 // Program represents a parsed Haskell module.
 type Program struct {
-	Root *Node `json:"root"`
+	Root *Haskell `json:"root"`
 }
 
 // Inspect parses the provided Haskell source code using tree-sitter and
@@ -25,9 +25,9 @@ func Inspect(src string, includePos ...bool) (*Program, error) {
 	if len(includePos) > 0 && includePos[0] {
 		pos = true
 	}
-	root := convert(tree.RootNode(), []byte(src), pos)
-	if root == nil {
-		root = &Node{}
+	n := convert(tree.RootNode(), []byte(src), pos)
+	if n == nil {
+		n = &Node{}
 	}
-	return &Program{Root: root}, nil
+	return &Program{Root: (*Haskell)(n)}, nil
 }
