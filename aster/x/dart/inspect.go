@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	ts "github.com/UserNobody14/tree-sitter-dart/bindings/go"
-	sitter "github.com/smacker/go-tree-sitter"
+	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
 // Program represents a parsed Dart source file.
@@ -23,7 +23,7 @@ func Inspect(src string) (*Program, error) {
 func InspectWithOptions(src string, opts Options) (*Program, error) {
 	parser := sitter.NewParser()
 	parser.SetLanguage(sitter.NewLanguage(ts.Language()))
-	tree := parser.Parse(nil, []byte(src))
+	tree := parser.Parse([]byte(src), nil)
 	root := (*ProgramNode)(toNode(tree.RootNode(), []byte(src), opts.IncludePos))
 	return &Program{Root: root}, nil
 }
