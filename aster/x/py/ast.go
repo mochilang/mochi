@@ -1,6 +1,6 @@
 package py
 
-import sitter "github.com/smacker/go-tree-sitter"
+import sitter "github.com/tree-sitter/go-tree-sitter"
 
 // Node represents a simplified Python AST node converted from tree-sitter.
 // Positional fields are omitted from JSON when zero so callers can decide
