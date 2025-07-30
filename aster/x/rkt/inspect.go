@@ -18,7 +18,9 @@ type Program struct {
 // resulting AST nodes include line and column information.
 func Inspect(src string, withPos bool) (*Program, error) {
 	p := sitter.NewParser()
+	defer p.Close()
 	p.SetLanguage(sitter.NewLanguage(racket.Language()))
 	tree := p.Parse([]byte(src), nil)
+	defer tree.Close()
 	return convertProgram(tree.RootNode(), []byte(src), withPos), nil
 }
