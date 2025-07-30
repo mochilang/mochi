@@ -2516,18 +2516,22 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 							break
 						}
 					}
-					// treat as regular method call
-					methodArgs := []Expr{n.Target}
+					// call the function stored in the field
+					var args []Expr
 					for _, a := range op.Call.Args {
 						arg, err := convertExpr(a, env)
 						if err != nil {
 							return nil, err
 						}
-						methodArgs = append(methodArgs, arg)
+						args = append(args, arg)
 					}
-					expr = &CallExpr{Func: lit.Value, Args: methodArgs}
+					expr = &InvokeExpr{Callee: expr, Args: args}
+					if fn, ok := t.(types.FuncType); ok {
+						t = fn.Return
+					} else {
+						t = types.AnyType{}
+					}
 					break
-					//return nil, fmt.Errorf("unsupported call %s", lit.Value)
 				}
 			default:
 				var args []Expr

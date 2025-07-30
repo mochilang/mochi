@@ -1,0 +1,6 @@
+run error: exit status 1
+list: undefined;
+ cannot use before initialization
+  context...:
+   /workspace/mochi/tests/rosetta/transpiler/Racket/ftp.rkt:58:0
+   body of "/workspace/mochi/tests/rosetta/transpiler/Racket/ftp.rkt"

@@ -1,0 +1,8 @@
+run error: exit status 1
+list-ref: index reaches a non-pair
+  index: 0
+  in: '#hash((#t . "Fizz") (#f . "1"))
+  context...:
+   /workspace/mochi/tests/rosetta/transpiler/Racket/fizzbuzz-2.rkt:59:0
+   /workspace/mochi/tests/rosetta/transpiler/Racket/fizzbuzz-2.rkt:58:0
+   body of "/workspace/mochi/tests/rosetta/transpiler/Racket/fizzbuzz-2.rkt"
