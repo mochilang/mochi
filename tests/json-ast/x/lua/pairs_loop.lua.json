@@ -1,122 +1,199 @@
 {
-  "stmts": [
-    {
-      "Names": [
-        "_",
-        "v"
-      ],
-      "Exprs": [
-        {
-          "Func": {
-            "Value": "ipairs"
-          },
-          "Receiver": null,
-          "Method": "",
-          "Args": [
-            {
-              "Fields": [
-                {
-                  "Key": null,
-                  "Value": {
-                    "Value": "10"
-                  }
-                },
-                {
-                  "Key": null,
-                  "Value": {
-                    "Value": "20"
-                  }
-                }
-              ]
-            }
-          ],
-          "AdjustRet": false
-        }
-      ],
-      "Stmts": [
-        {
-          "Expr": {
-            "Func": {
-              "Value": "print"
-            },
-            "Receiver": null,
-            "Method": "",
-            "Args": [
+  "root": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "for_statement",
+        "children": [
+          {
+            "kind": "for_generic",
+            "children": [
               {
-                "Value": "v"
-              }
-            ],
-            "AdjustRet": false
-          }
-        }
-      ]
-    },
-    {
-      "Lhs": [
-        {
-          "Value": "m"
-        }
-      ],
-      "Rhs": [
-        {
-          "Fields": [
-            {
-              "Key": {
-                "Value": "a"
+                "kind": "identifier_list",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "_"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "v"
+                  }
+                ]
               },
-              "Value": {
-                "Value": "1"
-              }
-            },
-            {
-              "Key": {
-                "Value": "b"
-              },
-              "Value": {
-                "Value": "2"
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "Names": [
-        "_",
-        "v"
-      ],
-      "Exprs": [
-        {
-          "Func": {
-            "Value": "pairs"
-          },
-          "Receiver": null,
-          "Method": "",
-          "Args": [
-            {
-              "Value": "m"
-            }
-          ],
-          "AdjustRet": false
-        }
-      ],
-      "Stmts": [
-        {
-          "Expr": {
-            "Func": {
-              "Value": "print"
-            },
-            "Receiver": null,
-            "Method": "",
-            "Args": [
               {
-                "Value": "v"
+                "kind": "function_call",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "ipairs"
+                  },
+                  {
+                    "kind": "function_arguments",
+                    "children": [
+                      {
+                        "kind": "tableconstructor",
+                        "children": [
+                          {
+                            "kind": "fieldlist",
+                            "children": [
+                              {
+                                "kind": "field",
+                                "children": [
+                                  {
+                                    "kind": "number",
+                                    "text": "10"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "field",
+                                "children": [
+                                  {
+                                    "kind": "number",
+                                    "text": "20"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
               }
-            ],
-            "AdjustRet": false
+            ]
+          },
+          {
+            "kind": "function_call",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "print"
+              },
+              {
+                "kind": "function_arguments",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "v"
+                  }
+                ]
+              }
+            ]
           }
-        }
-      ]
-    }
-  ]
+        ]
+      },
+      {
+        "kind": "variable_declaration",
+        "children": [
+          {
+            "kind": "variable_declarator",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "\nm"
+              }
+            ]
+          },
+          {
+            "kind": "tableconstructor",
+            "children": [
+              {
+                "kind": "fieldlist",
+                "children": [
+                  {
+                    "kind": "field",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "a"
+                      },
+                      {
+                        "kind": "number",
+                        "text": "1"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "b"
+                      },
+                      {
+                        "kind": "number",
+                        "text": "2"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "for_statement",
+        "children": [
+          {
+            "kind": "for_generic",
+            "children": [
+              {
+                "kind": "identifier_list",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "_"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "v"
+                  }
+                ]
+              },
+              {
+                "kind": "function_call",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "pairs"
+                  },
+                  {
+                    "kind": "function_arguments",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "m"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "function_call",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "print"
+              },
+              {
+                "kind": "function_arguments",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "v"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }
