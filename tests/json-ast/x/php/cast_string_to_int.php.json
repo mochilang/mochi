@@ -1,314 +1,157 @@
 {
-  "root": [
+  "statements": [
     {
-      "nodeType": "Stmt_Echo",
-      "attributes": {
-        "startLine": 2,
-        "startTokenPos": 1,
-        "startFilePos": 6,
-        "endLine": 2,
-        "endTokenPos": 35,
-        "endFilePos": 99
-      },
-      "exprs": [
+      "kind": "echo_statement",
+      "children": [
         {
-          "nodeType": "Expr_Ternary",
-          "attributes": {
-            "startLine": 2,
-            "startTokenPos": 4,
-            "startFilePos": 12,
-            "endLine": 2,
-            "endTokenPos": 30,
-            "endFilePos": 88
-          },
-          "cond": {
-            "nodeType": "Expr_FuncCall",
-            "attributes": {
-              "startLine": 2,
-              "startTokenPos": 4,
-              "startFilePos": 12,
-              "endLine": 2,
-              "endTokenPos": 10,
-              "endFilePos": 35
-            },
-            "name": {
-              "nodeType": "Name",
-              "attributes": {
-                "startLine": 2,
-                "startTokenPos": 4,
-                "startFilePos": 12,
-                "endLine": 2,
-                "endTokenPos": 4,
-                "endFilePos": 19
-              },
-              "name": "is_float"
-            },
-            "args": [
-              {
-                "nodeType": "Arg",
-                "attributes": {
-                  "startLine": 2,
-                  "startTokenPos": 6,
-                  "startFilePos": 21,
-                  "endLine": 2,
-                  "endTokenPos": 9,
-                  "endFilePos": 34
-                },
-                "name": null,
-                "value": {
-                  "nodeType": "Expr_FuncCall",
-                  "attributes": {
-                    "startLine": 2,
-                    "startTokenPos": 6,
-                    "startFilePos": 21,
-                    "endLine": 2,
-                    "endTokenPos": 9,
-                    "endFilePos": 34
-                  },
-                  "name": {
-                    "nodeType": "Name",
-                    "attributes": {
-                      "startLine": 2,
-                      "startTokenPos": 6,
-                      "startFilePos": 21,
-                      "endLine": 2,
-                      "endTokenPos": 6,
-                      "endFilePos": 26
-                    },
-                    "name": "intval"
-                  },
-                  "args": [
+          "kind": "sequence_expression",
+          "children": [
+            {
+              "kind": "parenthesized_expression",
+              "children": [
+                {
+                  "kind": "conditional_expression",
+                  "children": [
                     {
-                      "nodeType": "Arg",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 8,
-                        "startFilePos": 28,
-                        "endLine": 2,
-                        "endTokenPos": 8,
-                        "endFilePos": 33
-                      },
-                      "name": null,
-                      "value": {
-                        "nodeType": "Scalar_String",
-                        "attributes": {
-                          "startLine": 2,
-                          "startTokenPos": 8,
-                          "startFilePos": 28,
-                          "endLine": 2,
-                          "endTokenPos": 8,
-                          "endFilePos": 33,
-                          "kind": 2,
-                          "rawValue": "\"1995\""
+                      "kind": "function_call_expression",
+                      "children": [
+                        {
+                          "kind": "name",
+                          "text": "is_float"
                         },
-                        "value": "1995"
-                      },
-                      "byRef": false,
-                      "unpack": false
+                        {
+                          "kind": "arguments",
+                          "children": [
+                            {
+                              "kind": "argument",
+                              "children": [
+                                {
+                                  "kind": "function_call_expression",
+                                  "children": [
+                                    {
+                                      "kind": "name",
+                                      "text": "intval"
+                                    },
+                                    {
+                                      "kind": "arguments",
+                                      "children": [
+                                        {
+                                          "kind": "argument",
+                                          "children": [
+                                            {
+                                              "kind": "encapsed_string",
+                                              "children": [
+                                                {
+                                                  "kind": "string_content",
+                                                  "text": "1995"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "function_call_expression",
+                      "children": [
+                        {
+                          "kind": "name",
+                          "text": "json_encode"
+                        },
+                        {
+                          "kind": "arguments",
+                          "children": [
+                            {
+                              "kind": "argument",
+                              "children": [
+                                {
+                                  "kind": "function_call_expression",
+                                  "children": [
+                                    {
+                                      "kind": "name",
+                                      "text": "intval"
+                                    },
+                                    {
+                                      "kind": "arguments",
+                                      "children": [
+                                        {
+                                          "kind": "argument",
+                                          "children": [
+                                            {
+                                              "kind": "encapsed_string",
+                                              "children": [
+                                                {
+                                                  "kind": "string_content",
+                                                  "text": "1995"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "argument",
+                              "children": [
+                                {
+                                  "kind": "integer",
+                                  "text": "1344"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "function_call_expression",
+                      "children": [
+                        {
+                          "kind": "name",
+                          "text": "intval"
+                        },
+                        {
+                          "kind": "arguments",
+                          "children": [
+                            {
+                              "kind": "argument",
+                              "children": [
+                                {
+                                  "kind": "encapsed_string",
+                                  "children": [
+                                    {
+                                      "kind": "string_content",
+                                      "text": "1995"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
                     }
                   ]
-                },
-                "byRef": false,
-                "unpack": false
-              }
-            ]
-          },
-          "if": {
-            "nodeType": "Expr_FuncCall",
-            "attributes": {
-              "startLine": 2,
-              "startTokenPos": 14,
-              "startFilePos": 39,
-              "endLine": 2,
-              "endTokenPos": 23,
-              "endFilePos": 71
+                }
+              ]
             },
-            "name": {
-              "nodeType": "Name",
-              "attributes": {
-                "startLine": 2,
-                "startTokenPos": 14,
-                "startFilePos": 39,
-                "endLine": 2,
-                "endTokenPos": 14,
-                "endFilePos": 49
-              },
-              "name": "json_encode"
-            },
-            "args": [
-              {
-                "nodeType": "Arg",
-                "attributes": {
-                  "startLine": 2,
-                  "startTokenPos": 16,
-                  "startFilePos": 51,
-                  "endLine": 2,
-                  "endTokenPos": 19,
-                  "endFilePos": 64
-                },
-                "name": null,
-                "value": {
-                  "nodeType": "Expr_FuncCall",
-                  "attributes": {
-                    "startLine": 2,
-                    "startTokenPos": 16,
-                    "startFilePos": 51,
-                    "endLine": 2,
-                    "endTokenPos": 19,
-                    "endFilePos": 64
-                  },
-                  "name": {
-                    "nodeType": "Name",
-                    "attributes": {
-                      "startLine": 2,
-                      "startTokenPos": 16,
-                      "startFilePos": 51,
-                      "endLine": 2,
-                      "endTokenPos": 16,
-                      "endFilePos": 56
-                    },
-                    "name": "intval"
-                  },
-                  "args": [
-                    {
-                      "nodeType": "Arg",
-                      "attributes": {
-                        "startLine": 2,
-                        "startTokenPos": 18,
-                        "startFilePos": 58,
-                        "endLine": 2,
-                        "endTokenPos": 18,
-                        "endFilePos": 63
-                      },
-                      "name": null,
-                      "value": {
-                        "nodeType": "Scalar_String",
-                        "attributes": {
-                          "startLine": 2,
-                          "startTokenPos": 18,
-                          "startFilePos": 58,
-                          "endLine": 2,
-                          "endTokenPos": 18,
-                          "endFilePos": 63,
-                          "kind": 2,
-                          "rawValue": "\"1995\""
-                        },
-                        "value": "1995"
-                      },
-                      "byRef": false,
-                      "unpack": false
-                    }
-                  ]
-                },
-                "byRef": false,
-                "unpack": false
-              },
-              {
-                "nodeType": "Arg",
-                "attributes": {
-                  "startLine": 2,
-                  "startTokenPos": 22,
-                  "startFilePos": 67,
-                  "endLine": 2,
-                  "endTokenPos": 22,
-                  "endFilePos": 70
-                },
-                "name": null,
-                "value": {
-                  "nodeType": "Scalar_Int",
-                  "attributes": {
-                    "startLine": 2,
-                    "startTokenPos": 22,
-                    "startFilePos": 67,
-                    "endLine": 2,
-                    "endTokenPos": 22,
-                    "endFilePos": 70,
-                    "rawValue": "1344",
-                    "kind": 10
-                  },
-                  "value": 1344
-                },
-                "byRef": false,
-                "unpack": false
-              }
-            ]
-          },
-          "else": {
-            "nodeType": "Expr_FuncCall",
-            "attributes": {
-              "startLine": 2,
-              "startTokenPos": 27,
-              "startFilePos": 75,
-              "endLine": 2,
-              "endTokenPos": 30,
-              "endFilePos": 88
-            },
-            "name": {
-              "nodeType": "Name",
-              "attributes": {
-                "startLine": 2,
-                "startTokenPos": 27,
-                "startFilePos": 75,
-                "endLine": 2,
-                "endTokenPos": 27,
-                "endFilePos": 80
-              },
-              "name": "intval"
-            },
-            "args": [
-              {
-                "nodeType": "Arg",
-                "attributes": {
-                  "startLine": 2,
-                  "startTokenPos": 29,
-                  "startFilePos": 82,
-                  "endLine": 2,
-                  "endTokenPos": 29,
-                  "endFilePos": 87
-                },
-                "name": null,
-                "value": {
-                  "nodeType": "Scalar_String",
-                  "attributes": {
-                    "startLine": 2,
-                    "startTokenPos": 29,
-                    "startFilePos": 82,
-                    "endLine": 2,
-                    "endTokenPos": 29,
-                    "endFilePos": 87,
-                    "kind": 2,
-                    "rawValue": "\"1995\""
-                  },
-                  "value": "1995"
-                },
-                "byRef": false,
-                "unpack": false
-              }
-            ]
-          }
-        },
-        {
-          "nodeType": "Expr_ConstFetch",
-          "attributes": {
-            "startLine": 2,
-            "startTokenPos": 34,
-            "startFilePos": 92,
-            "endLine": 2,
-            "endTokenPos": 34,
-            "endFilePos": 98
-          },
-          "name": {
-            "nodeType": "Name",
-            "attributes": {
-              "startLine": 2,
-              "startTokenPos": 34,
-              "startFilePos": 92,
-              "endLine": 2,
-              "endTokenPos": 34,
-              "endFilePos": 98
-            },
-            "name": "PHP_EOL"
-          }
+            {
+              "kind": "name",
+              "text": "PHP_EOL"
+            }
+          ]
         }
       ]
     }

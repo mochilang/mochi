@@ -27,6 +27,57 @@ type Node struct {
 	Children []*Node `json:"children,omitempty"`
 }
 
+// Typed aliases mirror the tree-sitter named nodes that appear in the
+// converted AST.  They allow Program to expose a slightly more structured API
+// without duplicating the Node fields for each kind.
+type (
+	AnonymousFunctionCreationExpression Node
+	AnonymousFunctionUseClause          Node
+	Argument                            Node
+	Arguments                           Node
+	ArrayCreationExpression             Node
+	ArrayElementInitializer             Node
+	ArrowFunction                       Node
+	AssignmentExpression                Node
+	AugmentedAssignmentExpression       Node
+	BinaryExpression                    Node
+	CastExpression                      Node
+	CompoundStatement                   Node
+	ConditionalExpression               Node
+	EchoStatement                       Node
+	ElseClause                          Node
+	EncapsedString                      Node
+	ExpressionStatement                 Node
+	Float                               Node
+	ForStatement                        Node
+	ForeachStatement                    Node
+	FormalParameters                    Node
+	FunctionCallExpression              Node
+	FunctionDefinition                  Node
+	GlobalDeclaration                   Node
+	IfStatement                         Node
+	Integer                             Node
+	ListLiteral                         Node
+	MatchBlock                          Node
+	MatchConditionList                  Node
+	MatchConditionalExpression          Node
+	MatchDefaultExpression              Node
+	MatchExpression                     Node
+	Name                                Node
+	Pair                                Node
+	ParenthesizedExpression             Node
+	ReturnStatement                     Node
+	SequenceExpression                  Node
+	SimpleParameter                     Node
+	String                              Node
+	StringContent                       Node
+	SubscriptExpression                 Node
+	UnaryOpExpression                   Node
+	UpdateExpression                    Node
+	VariableName                        Node
+	WhileStatement                      Node
+)
+
 // Options configures how the AST is generated.
 type Options struct {
 	// Positions controls whether location information is populated.
