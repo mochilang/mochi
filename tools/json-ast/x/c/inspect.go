@@ -10,8 +10,9 @@ import (
 )
 
 // Program is the root of a parsed C translation unit.
+// Program represents a parsed C translation unit.
 type Program struct {
-	Root *Node `json:"root"`
+	Root *TranslationUnit `json:"root"`
 }
 
 // Inspect parses the given C source code using tree-sitter and returns
@@ -34,8 +35,8 @@ func inspect(src string, pos bool) (*Program, error) {
 	if err != nil {
 		return nil, fmt.Errorf("parse: %w", err)
 	}
-	root := toNode(tree.RootNode(), []byte(src), pos)
-	return &Program{Root: root}, nil
+	root := convert(tree.RootNode(), []byte(src), pos)
+	return &Program{Root: (*TranslationUnit)(root)}, nil
 }
 
 // MarshalJSON ensures stable output ordering.
