@@ -1,7 +1,7 @@
 package cpp
 
 import (
-	sitter "github.com/smacker/go-tree-sitter"
+	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
 // Node represents a tree-sitter node in a generic form with position
@@ -40,10 +40,10 @@ func convert(n *sitter.Node, src []byte, opts Options) *Node {
 	if n == nil {
 		return nil
 	}
-	node := &Node{Kind: n.Type()}
+	node := &Node{Kind: n.Kind()}
 	if opts.WithPositions {
-		start := n.StartPoint()
-		end := n.EndPoint()
+		start := n.StartPosition()
+		end := n.EndPosition()
 		node.Start = int(start.Row) + 1
 		node.End = int(end.Row) + 1
 		node.StartCol = int(start.Column)
@@ -51,14 +51,14 @@ func convert(n *sitter.Node, src []byte, opts Options) *Node {
 	}
 
 	if n.NamedChildCount() == 0 {
-		if isValueNode(n.Type()) || n.Type() == "comment" {
-			node.Text = n.Content(src)
+		if isValueNode(n.Kind()) || n.Kind() == "comment" {
+			node.Text = n.Utf8Text(src)
 		} else {
 			return nil
 		}
 	}
 
-	for i := 0; i < int(n.NamedChildCount()); i++ {
+	for i := uint(0); i < n.NamedChildCount(); i++ {
 		child := n.NamedChild(i)
 		if child == nil {
 			continue
