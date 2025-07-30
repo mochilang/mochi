@@ -5,18 +5,8 @@
       "name": "people",
       "type": "Person[]",
       "expr": {
-        "kind": "Array",
-        "elems": [
-          {
-            "kind": "UnknownExpr"
-          },
-          {
-            "kind": "UnknownExpr"
-          },
-          {
-            "kind": "UnknownExpr"
-          }
-        ]
+        "kind": "NEW_ARRAY",
+        "text": "new Person[]{new Person(\"Alice\", 30, \"alice@example.com\"), new Person(\"Bob\", 15, \"bob@example.com\"), new Person(\"Charlie\", 20, \"charlie@example.com\")}"
       }
     },
     {
@@ -24,7 +14,8 @@
       "name": "adults",
       "type": "java.util.List\u003cResult2\u003e",
       "expr": {
-        "kind": "UnknownExpr"
+        "kind": "NEW_CLASS",
+        "text": "new java.util.ArrayList\u003cResult2\u003e(){\n    {\n        java.util.ArrayList\u003cResult2\u003e _tmp = new java.util.ArrayList\u003c\u003e();\n        for (/*missing*/ p : people) {\n            if (p.age \u003e= 18) {\n                _tmp.add(new Result2(p.name, p.email));\n            }\n        }\n        java.util.ArrayList\u003cResult2\u003e list = _tmp;\n        java.util.ArrayList\u003cResult2\u003e _res = new java.util.ArrayList\u003c\u003e();\n        int skip = 0;\n        int take = -1;\n        for (int i = 0; i \u003c list.size(); i++) {\n            if (i \u003c skip) continue;\n            if (take \u003e= 0 \u0026\u0026 i \u003e= skip + take) break;\n            _res.add((Result2)list.get(i));\n        }\n        addAll(_res);\n    }\n}"
       }
     },
     {

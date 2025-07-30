@@ -5,15 +5,8 @@
       "name": "people",
       "type": "Data1[]",
       "expr": {
-        "kind": "Array",
-        "elems": [
-          {
-            "kind": "UnknownExpr"
-          },
-          {
-            "kind": "UnknownExpr"
-          }
-        ]
+        "kind": "NEW_ARRAY",
+        "text": "new Data1[]{new Data1(\"Alice\", 30), new Data1(\"Bob\", 25)}"
       }
     },
     {
@@ -24,7 +17,8 @@
         {
           "kind": "If",
           "cond": {
-            "kind": "UnknownExpr"
+            "kind": "INSTANCE_OF",
+            "text": "o instanceof java.util.Map\u003c?, ?\u003e mm"
           },
           "then": [
             {
@@ -32,7 +26,8 @@
               "name": "m",
               "type": "java.util.LinkedHashMap\u003cString, Object\u003e",
               "expr": {
-                "kind": "UnknownExpr"
+                "kind": "NEW_CLASS",
+                "text": "new java.util.LinkedHashMap\u003c\u003e()"
               }
             },
             {
@@ -69,7 +64,8 @@
           "name": "m",
           "type": "java.util.LinkedHashMap\u003cString, Object\u003e",
           "expr": {
-            "kind": "UnknownExpr"
+            "kind": "NEW_CLASS",
+            "text": "new java.util.LinkedHashMap\u003c\u003e()"
           }
         },
         {
@@ -95,8 +91,7 @@
           },
           "body": [
             {
-              "kind": "Unknown",
-              "type": "TRY"
+              "kind": "TRY"
             }
           ]
         },
@@ -151,7 +146,8 @@
               "name": "parts",
               "type": "java.util.List\u003cString\u003e",
               "expr": {
-                "kind": "UnknownExpr"
+                "kind": "NEW_CLASS",
+                "text": "new java.util.ArrayList\u003c\u003e()"
               }
             },
             {
@@ -188,7 +184,8 @@
                 {
                   "kind": "If",
                   "cond": {
-                    "kind": "UnknownExpr"
+                    "kind": "INSTANCE_OF",
+                    "text": "v instanceof String"
                   },
                   "then": [
                     {

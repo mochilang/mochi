@@ -5,12 +5,8 @@
       "name": "nation",
       "type": "Data1[]",
       "expr": {
-        "kind": "Array",
-        "elems": [
-          {
-            "kind": "UnknownExpr"
-          }
-        ]
+        "kind": "NEW_ARRAY",
+        "text": "new Data1[]{new Data1(1, \"BRAZIL\")}"
       }
     },
     {
@@ -18,12 +14,8 @@
       "name": "customer",
       "type": "Data2[]",
       "expr": {
-        "kind": "Array",
-        "elems": [
-          {
-            "kind": "UnknownExpr"
-          }
-        ]
+        "kind": "NEW_ARRAY",
+        "text": "new Data2[]{new Data2(1, \"Alice\", 100.0, 1, \"123 St\", \"123-456\", \"Loyal\")}"
       }
     },
     {
@@ -31,15 +23,8 @@
       "name": "orders",
       "type": "Data3[]",
       "expr": {
-        "kind": "Array",
-        "elems": [
-          {
-            "kind": "UnknownExpr"
-          },
-          {
-            "kind": "UnknownExpr"
-          }
-        ]
+        "kind": "NEW_ARRAY",
+        "text": "new Data3[]{new Data3(1000, 1, \"1993-10-15\"), new Data3(2000, 1, \"1994-01-02\")}"
       }
     },
     {
@@ -47,15 +32,8 @@
       "name": "lineitem",
       "type": "Data4[]",
       "expr": {
-        "kind": "Array",
-        "elems": [
-          {
-            "kind": "UnknownExpr"
-          },
-          {
-            "kind": "UnknownExpr"
-          }
-        ]
+        "kind": "NEW_ARRAY",
+        "text": "new Data4[]{new Data4(1000, \"R\", 1000.0, 0.1), new Data4(2000, \"N\", 500.0, 0.0)}"
       }
     },
     {
@@ -81,7 +59,8 @@
       "name": "result",
       "type": "java.util.List\u003cResult8\u003e",
       "expr": {
-        "kind": "UnknownExpr"
+        "kind": "NEW_CLASS",
+        "text": "new java.util.ArrayList\u003cResult8\u003e(){\n    {\n        java.util.LinkedHashMap\u003cString, Group6\u003e _groups = new java.util.LinkedHashMap\u003c\u003e();\n        java.util.ArrayList\u003cResult8\u003e _tmp = new java.util.ArrayList\u003c\u003e();\n        for (/*missing*/ c : customer) {\n            for (/*missing*/ o : orders) {\n                if (o.o_custkey == c.c_custkey) {\n                    for (/*missing*/ l : lineitem) {\n                        if (l.l_orderkey == o.o_orderkey) {\n                            for (/*missing*/ n : nation) {\n                                if (n.n_nationkey == c.c_nationkey) {\n                                    if ((o.o_orderdate.compareTo(start_date) \u003e= 0) \u0026\u0026 o.o_orderdate \u003c end_date \u0026\u0026 l.l_returnflag == \"R\") {\n                                        /*missing*/ _k = new Data5(c.c_custkey, c.c_name, c.c_acctbal, c.c_address, c.c_phone, c.c_comment, n.n_name);\n                                        String _ks = String.valueOf(_k);\n                                        Group6 g = _groups.get(_ks);\n                                        if (g == null) {\n                                            g = new Group6(_k, new java.util.ArrayList\u003c\u003e());\n                                            _groups.put(_ks, g);\n                                        }\n                                        g.items.add(new Item6(c, o, l, n));\n                                    }\n                                }\n                            }\n                        }\n                    }\n                }\n            }\n        }\n        java.util.ArrayList\u003cGroup6\u003e list = new java.util.ArrayList\u003c\u003e(_groups.values());\n        list.sort((a,b)-\u003e{\n            Comparable _va = (Comparable)((((new java.util.ArrayList\u003cInteger\u003e(){\n                {\n                    java.util.ArrayList\u003cInteger\u003e _tmp = new java.util.ArrayList\u003c\u003e();\n                    for (/*missing*/ x : a.items) {\n                        _tmp.add(x.l.l_extendedprice * (1 - x.l.l_discount));\n                    }\n                    java.util.ArrayList\u003cInteger\u003e list = _tmp;\n                    int skip = 0;\n                    int take = -1;\n                    for (int i = 0; i \u003c list.size(); i++) {\n                        if (i \u003c skip) continue;\n                        if (take \u003e= 0 \u0026\u0026 i \u003e= skip + take) break;\n                        _tmp.add((Integer)list.get(i));\n                    }\n                    addAll(_tmp);\n                }\n            }.stream().mapToDouble((v)-\u003e((Number)v).doubleValue()).sum()) % 1 == 0) ? (Object)(int)(new java.util.ArrayList\u003cInteger\u003e(){\n                {\n                    java.util.ArrayList\u003cInteger\u003e _tmp = new java.util.ArrayList\u003c\u003e();\n                    for (/*missing*/ x : a.items) {\n                        _tmp.add(x.l.l_extendedprice * (1 - x.l.l_discount));\n                    }\n                    java.util.ArrayList\u003cInteger\u003e list = _tmp;\n                    int skip = 0;\n                    int take = -1;\n                    for (int i = 0; i \u003c list.size(); i++) {\n                        if (i \u003c skip) continue;\n                        if (take \u003e= 0 \u0026\u0026 i \u003e= skip + take) break;\n                        _tmp.add((Integer)list.get(i));\n                    }\n                    addAll(_tmp);\n                }\n            }.stream().mapToDouble((v)-\u003e((Number)v).doubleValue()).sum()) : (Object)(new java.util.ArrayList\u003cInteger\u003e(){\n                {\n                    java.util.ArrayList\u003cInteger\u003e _tmp = new java.util.ArrayList\u003c\u003e();\n                    for (/*missing*/ x : a.items) {\n                        _tmp.add(x.l.l_extendedprice * (1 - x.l.l_discount));\n                    }\n                    java.util.ArrayList\u003cInteger\u003e list = _tmp;\n                    int skip = 0;\n                    int take = -1;\n                    for (int i = 0; i \u003c list.size(); i++) {\n                        if (i \u003c skip) continue;\n                        if (take \u003e= 0 \u0026\u0026 i \u003e= skip + take) break;\n                        _tmp.add((Integer)list.get(i));\n                    }\n                    addAll(_tmp);\n                }\n            }.stream().mapToDouble((v)-\u003e((Number)v).doubleValue()).sum())));\n            Comparable _vb = (Comparable)((((new java.util.ArrayList\u003cInteger\u003e(){\n                {\n                    java.util.ArrayList\u003cInteger\u003e _tmp = new java.util.ArrayList\u003c\u003e();\n                    for (/*missing*/ x : b.items) {\n                        _tmp.add(x.l.l_extendedprice * (1 - x.l.l_discount));\n                    }\n                    java.util.ArrayList\u003cInteger\u003e list = _tmp;\n                    int skip = 0;\n                    int take = -1;\n                    for (int i = 0; i \u003c list.size(); i++) {\n                        if (i \u003c skip) continue;\n                        if (take \u003e= 0 \u0026\u0026 i \u003e= skip + take) break;\n                        _tmp.add((Integer)list.get(i));\n                    }\n                    addAll(_tmp);\n                }\n            }.stream().mapToDouble((v)-\u003e((Number)v).doubleValue()).sum()) % 1 == 0) ? (Object)(int)(new java.util.ArrayList\u003cInteger\u003e(){\n                {\n                    java.util.ArrayList\u003cInteger\u003e _tmp = new java.util.ArrayList\u003c\u003e();\n                    for (/*missing*/ x : b.items) {\n                        _tmp.add(x.l.l_extendedprice * (1 - x.l.l_discount));\n                    }\n                    java.util.ArrayList\u003cInteger\u003e list = _tmp;\n                    int skip = 0;\n                    int take = -1;\n                    for (int i = 0; i \u003c list.size(); i++) {\n                        if (i \u003c skip) continue;\n                        if (take \u003e= 0 \u0026\u0026 i \u003e= skip + take) break;\n                        _tmp.add((Integer)list.get(i));\n                    }\n                    addAll(_tmp);\n                }\n            }.stream().mapToDouble((v)-\u003e((Number)v).doubleValue()).sum()) : (Object)(new java.util.ArrayList\u003cInteger\u003e(){\n                {\n                    java.util.ArrayList\u003cInteger\u003e _tmp = new java.util.ArrayList\u003c\u003e();\n                    for (/*missing*/ x : b.items) {\n                        _tmp.add(x.l.l_extendedprice * (1 - x.l.l_discount));\n                    }\n                    java.util.ArrayList\u003cInteger\u003e list = _tmp;\n                    int skip = 0;\n                    int take = -1;\n                    for (int i = 0; i \u003c list.size(); i++) {\n                        if (i \u003c skip) continue;\n                        if (take \u003e= 0 \u0026\u0026 i \u003e= skip + take) break;\n                        _tmp.add((Integer)list.get(i));\n                    }\n                    addAll(_tmp);\n                }\n            }.stream().mapToDouble((v)-\u003e((Number)v).doubleValue()).sum())));\n            return _vb.compareTo(_va);\n        });\n        int skip = 0;\n        int take = -1;\n        for (int i = 0; i \u003c list.size(); i++) {\n            if (i \u003c skip) continue;\n            if (take \u003e= 0 \u0026\u0026 i \u003e= skip + take) break;\n            /*missing*/ g = (Group6)list.get(i);\n            _tmp.add(new Result8(g.key.c_custkey, g.key.c_name, (((new java.util.ArrayList\u003cInteger\u003e(){\n                {\n                    java.util.ArrayList\u003cInteger\u003e _tmp = new java.util.ArrayList\u003c\u003e();\n                    for (/*missing*/ x : g.items) {\n                        _tmp.add(x.l.l_extendedprice * (1 - x.l.l_discount));\n                    }\n                    java.util.ArrayList\u003cInteger\u003e list = _tmp;\n                    int skip = 0;\n                    int take = -1;\n                    for (int i = 0; i \u003c list.size(); i++) {\n                        if (i \u003c skip) continue;\n                        if (take \u003e= 0 \u0026\u0026 i \u003e= skip + take) break;\n                        _tmp.add((Integer)list.get(i));\n                    }\n                    addAll(_tmp);\n                }\n            }.stream().mapToDouble((v)-\u003e((Number)v).doubleValue()).sum()) % 1 == 0) ? (Object)(int)(new java.util.ArrayList\u003cInteger\u003e(){\n                {\n                    java.util.ArrayList\u003cInteger\u003e _tmp = new java.util.ArrayList\u003c\u003e();\n                    for (/*missing*/ x : g.items) {\n                        _tmp.add(x.l.l_extendedprice * (1 - x.l.l_discount));\n                    }\n                    java.util.ArrayList\u003cInteger\u003e list = _tmp;\n                    int skip = 0;\n                    int take = -1;\n                    for (int i = 0; i \u003c list.size(); i++) {\n                        if (i \u003c skip) continue;\n                        if (take \u003e= 0 \u0026\u0026 i \u003e= skip + take) break;\n                        _tmp.add((Integer)list.get(i));\n                    }\n                    addAll(_tmp);\n                }\n            }.stream().mapToDouble((v)-\u003e((Number)v).doubleValue()).sum()) : (Object)(new java.util.ArrayList\u003cInteger\u003e(){\n                {\n                    java.util.ArrayList\u003cInteger\u003e _tmp = new java.util.ArrayList\u003c\u003e();\n                    for (/*missing*/ x : g.items) {\n                        _tmp.add(x.l.l_extendedprice * (1 - x.l.l_discount));\n                    }\n                    java.util.ArrayList\u003cInteger\u003e list = _tmp;\n                    int skip = 0;\n                    int take = -1;\n                    for (int i = 0; i \u003c list.size(); i++) {\n                        if (i \u003c skip) continue;\n                        if (take \u003e= 0 \u0026\u0026 i \u003e= skip + take) break;\n                        _tmp.add((Integer)list.get(i));\n                    }\n                    addAll(_tmp);\n                }\n            }.stream().mapToDouble((v)-\u003e((Number)v).doubleValue()).sum())), g.key.c_acctbal, g.key.n_name, g.key.c_address, g.key.c_phone, g.key.c_comment));\n        }\n        addAll(_tmp);\n    }\n}"
       }
     },
     {
@@ -114,7 +93,8 @@
             },
             "args": [
               {
-                "kind": "UnknownExpr"
+                "kind": "MEMBER_REFERENCE",
+                "text": "String::valueOf"
               }
             ]
           }

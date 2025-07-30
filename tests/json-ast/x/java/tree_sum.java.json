@@ -5,7 +5,8 @@
       "name": "t",
       "type": "Node",
       "expr": {
-        "kind": "UnknownExpr"
+        "kind": "NEW_CLASS",
+        "text": "new Node(Leaf, 1, new Node(Leaf, 2, Leaf))"
       }
     },
     {

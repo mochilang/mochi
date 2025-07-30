@@ -5,21 +5,8 @@
       "name": "people",
       "type": "Data1[]",
       "expr": {
-        "kind": "Array",
-        "elems": [
-          {
-            "kind": "UnknownExpr"
-          },
-          {
-            "kind": "UnknownExpr"
-          },
-          {
-            "kind": "UnknownExpr"
-          },
-          {
-            "kind": "UnknownExpr"
-          }
-        ]
+        "kind": "NEW_ARRAY",
+        "text": "new Data1[]{new Data1(\"Alice\", 30), new Data1(\"Bob\", 15), new Data1(\"Charlie\", 65), new Data1(\"Diana\", 45)}"
       }
     },
     {
@@ -27,7 +14,8 @@
       "name": "adults",
       "type": "java.util.List\u003cResult3\u003e",
       "expr": {
-        "kind": "UnknownExpr"
+        "kind": "NEW_CLASS",
+        "text": "new java.util.ArrayList\u003cResult3\u003e(){\n    {\n        java.util.ArrayList\u003cResult3\u003e _tmp = new java.util.ArrayList\u003c\u003e();\n        for (/*missing*/ person : people) {\n            if (person.age \u003e= 18) {\n                _tmp.add(new Result3(person.name, person.age, person.age \u003e= 60));\n            }\n        }\n        java.util.ArrayList\u003cResult3\u003e list = _tmp;\n        java.util.ArrayList\u003cResult3\u003e _res = new java.util.ArrayList\u003c\u003e();\n        int skip = 0;\n        int take = -1;\n        for (int i = 0; i \u003c list.size(); i++) {\n            if (i \u003c skip) continue;\n            if (take \u003e= 0 \u0026\u0026 i \u003e= skip + take) break;\n            _res.add((Result3)list.get(i));\n        }\n        addAll(_res);\n    }\n}"
       }
     },
     {
@@ -38,7 +26,8 @@
         {
           "kind": "If",
           "cond": {
-            "kind": "UnknownExpr"
+            "kind": "INSTANCE_OF",
+            "text": "v instanceof String"
           },
           "then": [
             {

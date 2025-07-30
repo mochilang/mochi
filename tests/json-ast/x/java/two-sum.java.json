@@ -12,25 +12,8 @@
         },
         "args": [
           {
-            "kind": "Array",
-            "elems": [
-              {
-                "kind": "Literal",
-                "value": "2"
-              },
-              {
-                "kind": "Literal",
-                "value": "7"
-              },
-              {
-                "kind": "Literal",
-                "value": "11"
-              },
-              {
-                "kind": "Literal",
-                "value": "15"
-              }
-            ]
+            "kind": "NEW_ARRAY",
+            "text": "new int[]{2, 7, 11, 15}"
           },
           {
             "kind": "Literal",
@@ -129,17 +112,8 @@
                     {
                       "kind": "Return",
                       "expr": {
-                        "kind": "Array",
-                        "elems": [
-                          {
-                            "kind": "Ident",
-                            "name": "i"
-                          },
-                          {
-                            "kind": "Ident",
-                            "name": "j"
-                          }
-                        ]
+                        "kind": "NEW_ARRAY",
+                        "text": "new int[]{i, j}"
                       }
                     }
                   ]
@@ -151,17 +125,8 @@
         {
           "kind": "Return",
           "expr": {
-            "kind": "Array",
-            "elems": [
-              {
-                "kind": "Literal",
-                "value": "-1"
-              },
-              {
-                "kind": "Literal",
-                "value": "-1"
-              }
-            ]
+            "kind": "NEW_ARRAY",
+            "text": "new int[]{-1, -1}"
           }
         }
       ],

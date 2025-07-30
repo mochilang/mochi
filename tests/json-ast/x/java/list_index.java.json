@@ -5,21 +5,8 @@
       "name": "xs",
       "type": "int[]",
       "expr": {
-        "kind": "Array",
-        "elems": [
-          {
-            "kind": "Literal",
-            "value": "10"
-          },
-          {
-            "kind": "Literal",
-            "value": "20"
-          },
-          {
-            "kind": "Literal",
-            "value": "30"
-          }
-        ]
+        "kind": "NEW_ARRAY",
+        "text": "new int[]{10, 20, 30}"
       }
     },
     {

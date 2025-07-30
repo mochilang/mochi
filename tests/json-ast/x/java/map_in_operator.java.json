@@ -5,7 +5,8 @@
       "name": "m",
       "type": "java.util.Map",
       "expr": {
-        "kind": "UnknownExpr"
+        "kind": "NEW_CLASS",
+        "text": "new java.util.LinkedHashMap\u003cString, String\u003e(){\n    {\n        put(1, \"a\");\n        put(2, \"b\");\n    }\n}"
       }
     },
     {
