@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"flag"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -37,8 +36,8 @@ func repoRoot(t *testing.T) string {
 }
 
 func ensureBabashka(t *testing.T) {
-	if _, err := exec.LookPath("bb"); err != nil {
-		t.Skip("bb not installed")
+	if err := clj.EnsureBabashka(); err != nil {
+		t.Skipf("bb not installed: %v", err)
 	}
 }
 

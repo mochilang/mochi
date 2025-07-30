@@ -1,89 +1,225 @@
 {
   "forms": [
-    [
-      "ns",
-      "main"
-    ],
-    [
-      "require",
-      [
-        "quote",
-        "clojure.set"
-      ]
-    ],
-    [
-      "def",
-      "nums",
-      [
-        1,
-        2,
-        3
-      ]
-    ],
-    [
-      "def",
-      "letters",
-      [
-        "A",
-        "B"
-      ]
-    ],
-    [
-      "def",
-      "pairs",
-      [
-        "for",
-        [
-          "n",
-          "nums",
-          "l",
-          "letters",
-          "when",
-          [
-            "=",
-            [
-              "mod",
-              "n",
-              2
-            ],
-            0
-          ]
-        ],
+    {
+      "list": [
         {
-          "l": "l",
-          "n": "n"
+          "sym": "ns"
+        },
+        {
+          "sym": "main"
         }
       ]
-    ],
-    [
-      "defn",
-      "-main",
-      [],
-      [
-        "println",
-        "--- Even pairs ---"
-      ],
-      [
-        "doseq",
-        [
-          "p",
-          "pairs"
-        ],
-        [
-          "println",
-          [
-            "n",
-            "p"
-          ],
-          [
-            "l",
-            "p"
+    },
+    {
+      "list": [
+        {
+          "sym": "require"
+        },
+        {
+          "list": [
+            {
+              "sym": "quote"
+            },
+            {
+              "sym": "clojure.set"
+            }
           ]
-        ]
+        }
       ]
-    ],
-    [
-      "-main"
-    ]
+    },
+    {
+      "list": [
+        {
+          "sym": "def"
+        },
+        {
+          "sym": "nums"
+        },
+        {
+          "vector": [
+            {
+              "num": 1
+            },
+            {
+              "num": 2
+            },
+            {
+              "num": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "sym": "def"
+        },
+        {
+          "sym": "letters"
+        },
+        {
+          "vector": [
+            {
+              "str": "A"
+            },
+            {
+              "str": "B"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "sym": "def"
+        },
+        {
+          "sym": "pairs"
+        },
+        {
+          "list": [
+            {
+              "sym": "for"
+            },
+            {
+              "vector": [
+                {
+                  "sym": "n"
+                },
+                {
+                  "sym": "nums"
+                },
+                {
+                  "sym": "l"
+                },
+                {
+                  "sym": "letters"
+                },
+                {
+                  "kw": ":when"
+                },
+                {
+                  "list": [
+                    {
+                      "sym": "="
+                    },
+                    {
+                      "list": [
+                        {
+                          "sym": "mod"
+                        },
+                        {
+                          "sym": "n"
+                        },
+                        {
+                          "num": 2
+                        }
+                      ]
+                    },
+                    {
+                      "num": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "map": [
+                {
+                  "key": {
+                    "kw": ":n"
+                  },
+                  "val": {
+                    "sym": "n"
+                  }
+                },
+                {
+                  "key": {
+                    "kw": ":l"
+                  },
+                  "val": {
+                    "sym": "l"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "sym": "defn"
+        },
+        {
+          "sym": "-main"
+        },
+        {},
+        {
+          "list": [
+            {
+              "sym": "println"
+            },
+            {
+              "str": "--- Even pairs ---"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "sym": "doseq"
+            },
+            {
+              "vector": [
+                {
+                  "sym": "p"
+                },
+                {
+                  "sym": "pairs"
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "sym": "println"
+                },
+                {
+                  "list": [
+                    {
+                      "kw": ":n"
+                    },
+                    {
+                      "sym": "p"
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "kw": ":l"
+                    },
+                    {
+                      "sym": "p"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "sym": "-main"
+        }
+      ]
+    }
   ]
 }
