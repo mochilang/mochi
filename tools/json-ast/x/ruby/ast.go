@@ -9,14 +9,14 @@ import (
 
 // Node represents a node in the Ruby syntax tree as produced by tree-sitter.
 type Node struct {
-	Type     string
-	Value    string
-	Line     int
-	Col      int
-	Children []Node
-	EndLine  int
-	EndCol   int
-	Source   string
+        Type     string `json:"type"`
+        Text     string `json:"text,omitempty"`
+        Line     int    `json:"line"`
+        Col      int    `json:"col"`
+        Children []Node `json:"children,omitempty"`
+        EndLine  int    `json:"endLine"`
+        EndCol   int    `json:"endCol"`
+        Source   string `json:"source,omitempty"`
 }
 
 // Parse converts Ruby source code into a Node tree using tree-sitter.
@@ -49,9 +49,9 @@ func convert(n *sitter.Node, src []byte) Node {
 		EndLine: int(end.Row) + 1,
 		EndCol:  int(end.Column),
 	}
-	if n.ChildCount() == 0 {
-		node.Value = n.Content(src)
-	}
+       if n.ChildCount() == 0 {
+               node.Text = n.Content(src)
+       }
 	for i := 0; i < int(n.NamedChildCount()); i++ {
 		child := n.NamedChild(i)
 		node.Children = append(node.Children, convert(child, src))
