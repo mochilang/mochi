@@ -291,9 +291,11 @@ type BenchStmt struct {
 
 func (b *BenchStmt) emit(w io.Writer) {
 	fmt.Fprintln(w, "(let* ([_start_mem (current-memory-use)] [_start (now)])")
+	fmt.Fprintln(w, "  (let/ec _return (begin")
 	for _, st := range b.Body {
 		st.emit(w)
 	}
+	fmt.Fprintln(w, "  ))")
 	fmt.Fprintln(w, "  (let* ([_end (now)] [_end_mem (current-memory-use)]")
 	fmt.Fprintln(w, "         [_dur (- _end _start)]")
 	fmt.Fprintln(w, "         [_dur_us _dur]")
@@ -1576,6 +1578,16 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 			)
 			if env != nil {
 				env.SetVar(alias+".LookupHost", types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.ListType{Elem: types.AnyType{}}, Pure: false}, false)
+			}
+		} else if st.Import.Lang != nil && *st.Import.Lang == "go" && st.Import.Path == "os" {
+			r.Stmts = append(r.Stmts,
+				&RawStmt{Code: fmt.Sprintf("(define (%s_Getenv name) (or (getenv name) \"\"))", alias)},
+				&RawStmt{Code: fmt.Sprintf("(define (%s_Environ)", alias)},
+				&RawStmt{Code: "  (for/list ([n (environment-variables-names (current-environment-variables))]) (let ([s (bytes->string/utf-8 n)]) (string-append s \"=\" (or (getenv s) \"\"))))"},
+			)
+			if env != nil {
+				env.SetVar(alias+".Getenv", types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.StringType{}, Pure: true}, false)
+				env.SetVar(alias+".Environ", types.FuncType{Params: []types.Type{}, Return: types.ListType{Elem: types.StringType{}}, Pure: true}, false)
 			}
 		} else if st.Import.Auto && st.Import.Path == "mochi/runtime/ffi/go/testpkg" {
 			if alias == "" {

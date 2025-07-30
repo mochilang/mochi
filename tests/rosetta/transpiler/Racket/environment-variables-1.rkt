@@ -56,9 +56,9 @@
 (define (panic msg) (error msg))
 
 (let* ([_start_mem (current-memory-use)] [_start (now)])
-(define apple 0)
-(define banana (let ([__l apple] [__r 1]) (if (and (string? __l) (string? __r)) (string-append __l __r) (+ __l __r))))
-(define cherry (let ([__l banana] [__r 1]) (if (and (string? __l) (string? __r)) (string-append __l __r) (+ __l __r))))
+(define (os_Getenv name) (or (getenv name) ""))
+(define (os_Environ) (for/list ([n (environment-variables-names (current-environment-variables))]) (string-append n "=" (or (getenv n) ""))))
+(displayln (os_Getenv "SHELL"))
   (let* ([_end (now)] [_end_mem (current-memory-use)]
          [_dur (- _end _start)]
          [_dur_us _dur]
