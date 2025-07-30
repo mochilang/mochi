@@ -1,7 +1,7 @@
 package erlang
 
 import (
-	sitter "github.com/smacker/go-tree-sitter"
+        sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
 // Node represents an Erlang AST node produced from tree-sitter.  Leaf nodes
