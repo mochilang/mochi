@@ -5,19 +5,75 @@
       "name": "people",
       "type": "Person[]",
       "expr": {
-        "kind": "Array",
+        "kind": "NEW_ARRAY",
         "elems": [
           {
-            "kind": "UnknownExpr"
+            "kind": "NEW_CLASS",
+            "args": [
+              {
+                "kind": "String",
+                "value": "Alice"
+              },
+              {
+                "kind": "Literal",
+                "value": "17"
+              },
+              {
+                "kind": "String",
+                "value": "minor"
+              }
+            ]
           },
           {
-            "kind": "UnknownExpr"
+            "kind": "NEW_CLASS",
+            "args": [
+              {
+                "kind": "String",
+                "value": "Bob"
+              },
+              {
+                "kind": "Literal",
+                "value": "25"
+              },
+              {
+                "kind": "String",
+                "value": "unknown"
+              }
+            ]
           },
           {
-            "kind": "UnknownExpr"
+            "kind": "NEW_CLASS",
+            "args": [
+              {
+                "kind": "String",
+                "value": "Charlie"
+              },
+              {
+                "kind": "Literal",
+                "value": "18"
+              },
+              {
+                "kind": "String",
+                "value": "unknown"
+              }
+            ]
           },
           {
-            "kind": "UnknownExpr"
+            "kind": "NEW_CLASS",
+            "args": [
+              {
+                "kind": "String",
+                "value": "Diana"
+              },
+              {
+                "kind": "Literal",
+                "value": "16"
+              },
+              {
+                "kind": "String",
+                "value": "minor"
+              }
+            ]
           }
         ]
       }

@@ -5,19 +5,59 @@
       "name": "customers",
       "type": "Data1[]",
       "expr": {
-        "kind": "Array",
+        "kind": "NEW_ARRAY",
         "elems": [
           {
-            "kind": "UnknownExpr"
+            "kind": "NEW_CLASS",
+            "args": [
+              {
+                "kind": "Literal",
+                "value": "1"
+              },
+              {
+                "kind": "String",
+                "value": "Alice"
+              }
+            ]
           },
           {
-            "kind": "UnknownExpr"
+            "kind": "NEW_CLASS",
+            "args": [
+              {
+                "kind": "Literal",
+                "value": "2"
+              },
+              {
+                "kind": "String",
+                "value": "Bob"
+              }
+            ]
           },
           {
-            "kind": "UnknownExpr"
+            "kind": "NEW_CLASS",
+            "args": [
+              {
+                "kind": "Literal",
+                "value": "3"
+              },
+              {
+                "kind": "String",
+                "value": "Charlie"
+              }
+            ]
           },
           {
-            "kind": "UnknownExpr"
+            "kind": "NEW_CLASS",
+            "args": [
+              {
+                "kind": "Literal",
+                "value": "4"
+              },
+              {
+                "kind": "String",
+                "value": "Diana"
+              }
+            ]
           }
         ]
       }
@@ -27,19 +67,75 @@
       "name": "orders",
       "type": "Data2[]",
       "expr": {
-        "kind": "Array",
+        "kind": "NEW_ARRAY",
         "elems": [
           {
-            "kind": "UnknownExpr"
+            "kind": "NEW_CLASS",
+            "args": [
+              {
+                "kind": "Literal",
+                "value": "100"
+              },
+              {
+                "kind": "Literal",
+                "value": "1"
+              },
+              {
+                "kind": "Literal",
+                "value": "250"
+              }
+            ]
           },
           {
-            "kind": "UnknownExpr"
+            "kind": "NEW_CLASS",
+            "args": [
+              {
+                "kind": "Literal",
+                "value": "101"
+              },
+              {
+                "kind": "Literal",
+                "value": "2"
+              },
+              {
+                "kind": "Literal",
+                "value": "125"
+              }
+            ]
           },
           {
-            "kind": "UnknownExpr"
+            "kind": "NEW_CLASS",
+            "args": [
+              {
+                "kind": "Literal",
+                "value": "102"
+              },
+              {
+                "kind": "Literal",
+                "value": "1"
+              },
+              {
+                "kind": "Literal",
+                "value": "300"
+              }
+            ]
           },
           {
-            "kind": "UnknownExpr"
+            "kind": "NEW_CLASS",
+            "args": [
+              {
+                "kind": "Literal",
+                "value": "103"
+              },
+              {
+                "kind": "Literal",
+                "value": "5"
+              },
+              {
+                "kind": "Literal",
+                "value": "80"
+              }
+            ]
           }
         ]
       }
@@ -49,7 +145,196 @@
       "name": "result",
       "type": "java.util.List\u003cResult4\u003e",
       "expr": {
-        "kind": "UnknownExpr"
+        "kind": "NEW_CLASS",
+        "body": [
+          {
+            "kind": "VarDecl",
+            "name": "_tmp",
+            "type": "java.util.ArrayList\u003cResult4\u003e",
+            "expr": {
+              "kind": "NEW_CLASS"
+            }
+          },
+          {
+            "kind": "ForEach",
+            "name": "o",
+            "expr": {
+              "kind": "Ident",
+              "name": "orders"
+            },
+            "body": [
+              {
+                "kind": "ForEach",
+                "name": "c",
+                "expr": {
+                  "kind": "Ident",
+                  "name": "customers"
+                },
+                "body": [
+                  {
+                    "kind": "If",
+                    "cond": {
+                      "kind": "Binary",
+                      "left": {
+                        "kind": "Cast",
+                        "value": "Integer",
+                        "expr": {
+                          "kind": "Call",
+                          "target": {
+                            "kind": "Member",
+                            "name": "get",
+                            "expr": {
+                              "kind": "Ident",
+                              "name": "o"
+                            }
+                          },
+                          "args": [
+                            {
+                              "kind": "String",
+                              "value": "customerId"
+                            }
+                          ]
+                        }
+                      },
+                      "right": {
+                        "kind": "Member",
+                        "name": "id",
+                        "expr": {
+                          "kind": "Ident",
+                          "name": "c"
+                        }
+                      },
+                      "op": "EQUAL_TO"
+                    },
+                    "then": [
+                      {
+                        "kind": "Expr"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "VarDecl",
+            "name": "list",
+            "type": "java.util.ArrayList\u003cResult4\u003e",
+            "expr": {
+              "kind": "Ident",
+              "name": "_tmp"
+            }
+          },
+          {
+            "kind": "VarDecl",
+            "name": "skip",
+            "type": "int",
+            "expr": {
+              "kind": "Literal",
+              "value": "0"
+            }
+          },
+          {
+            "kind": "VarDecl",
+            "name": "take",
+            "type": "int",
+            "expr": {
+              "kind": "Literal",
+              "value": "-1"
+            }
+          },
+          {
+            "kind": "ForRange",
+            "name": "i",
+            "start": {
+              "kind": "Literal",
+              "value": "0"
+            },
+            "end": {
+              "kind": "Call",
+              "target": {
+                "kind": "Member",
+                "name": "size",
+                "expr": {
+                  "kind": "Ident",
+                  "name": "list"
+                }
+              }
+            },
+            "body": [
+              {
+                "kind": "If",
+                "cond": {
+                  "kind": "Binary",
+                  "left": {
+                    "kind": "Ident",
+                    "name": "i"
+                  },
+                  "right": {
+                    "kind": "Ident",
+                    "name": "skip"
+                  },
+                  "op": "LESS_THAN"
+                },
+                "then": [
+                  {
+                    "kind": "Continue"
+                  }
+                ]
+              },
+              {
+                "kind": "If",
+                "cond": {
+                  "kind": "Binary",
+                  "left": {
+                    "kind": "Binary",
+                    "left": {
+                      "kind": "Ident",
+                      "name": "take"
+                    },
+                    "right": {
+                      "kind": "Literal",
+                      "value": "0"
+                    },
+                    "op": "GREATER_THAN_EQUAL"
+                  },
+                  "right": {
+                    "kind": "Binary",
+                    "left": {
+                      "kind": "Ident",
+                      "name": "i"
+                    },
+                    "right": {
+                      "kind": "Binary",
+                      "left": {
+                        "kind": "Ident",
+                        "name": "skip"
+                      },
+                      "right": {
+                        "kind": "Ident",
+                        "name": "take"
+                      },
+                      "op": "PLUS"
+                    },
+                    "op": "GREATER_THAN_EQUAL"
+                  },
+                  "op": "CONDITIONAL_AND"
+                },
+                "then": [
+                  {
+                    "kind": "Break"
+                  }
+                ]
+              },
+              {
+                "kind": "Expr"
+              }
+            ]
+          },
+          {
+            "kind": "Expr"
+          }
+        ]
       }
     },
     {

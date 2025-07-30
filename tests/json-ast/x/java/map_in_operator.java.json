@@ -5,7 +5,15 @@
       "name": "m",
       "type": "java.util.Map",
       "expr": {
-        "kind": "UnknownExpr"
+        "kind": "NEW_CLASS",
+        "body": [
+          {
+            "kind": "Expr"
+          },
+          {
+            "kind": "Expr"
+          }
+        ]
       }
     },
     {

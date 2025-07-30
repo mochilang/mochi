@@ -74,7 +74,7 @@
                         },
                         "args": [
                           {
-                            "kind": "Array",
+                            "kind": "NEW_ARRAY",
                             "elems": [
                               {
                                 "kind": "Literal",
@@ -108,7 +108,7 @@
                         },
                         "args": [
                           {
-                            "kind": "Array",
+                            "kind": "NEW_ARRAY",
                             "elems": [
                               {
                                 "kind": "Literal",
@@ -182,7 +182,7 @@
                     },
                     "args": [
                       {
-                        "kind": "Array",
+                        "kind": "NEW_ARRAY",
                         "elems": [
                           {
                             "kind": "Literal",
@@ -229,7 +229,7 @@
                           },
                           "args": [
                             {
-                              "kind": "Array",
+                              "kind": "NEW_ARRAY",
                               "elems": [
                                 {
                                   "kind": "Literal",
@@ -327,7 +327,7 @@
                     },
                     "args": [
                       {
-                        "kind": "Array",
+                        "kind": "NEW_ARRAY",
                         "elems": [
                           {
                             "kind": "Literal",
@@ -374,7 +374,7 @@
                           },
                           "args": [
                             {
-                              "kind": "Array",
+                              "kind": "NEW_ARRAY",
                               "elems": [
                                 {
                                   "kind": "Literal",
@@ -478,7 +478,7 @@
                   },
                   "args": [
                     {
-                      "kind": "Array",
+                      "kind": "NEW_ARRAY",
                       "elems": [
                         {
                           "kind": "Literal",
@@ -512,7 +512,7 @@
                   },
                   "args": [
                     {
-                      "kind": "Array",
+                      "kind": "NEW_ARRAY",
                       "elems": [
                         {
                           "kind": "Literal",

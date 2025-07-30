@@ -5,7 +5,26 @@
       "name": "book",
       "type": "Book",
       "expr": {
-        "kind": "UnknownExpr"
+        "kind": "NEW_CLASS",
+        "args": [
+          {
+            "kind": "String",
+            "value": "Go"
+          },
+          {
+            "kind": "NEW_CLASS",
+            "args": [
+              {
+                "kind": "String",
+                "value": "Bob"
+              },
+              {
+                "kind": "Literal",
+                "value": "42"
+              }
+            ]
+          }
+        ]
       }
     },
     {

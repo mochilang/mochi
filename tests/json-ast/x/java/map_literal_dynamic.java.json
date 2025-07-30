@@ -23,7 +23,17 @@
       "name": "m",
       "type": "Data1",
       "expr": {
-        "kind": "UnknownExpr"
+        "kind": "NEW_CLASS",
+        "args": [
+          {
+            "kind": "Ident",
+            "name": "x"
+          },
+          {
+            "kind": "Ident",
+            "name": "y"
+          }
+        ]
       }
     },
     {
