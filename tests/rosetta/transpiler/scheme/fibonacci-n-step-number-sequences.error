@@ -1,0 +1,18 @@
+exit status 70
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+WARNING: importing already defined binding: display
+WARNING: importing already defined binding: write
+ERROR on line 213 of file /workspace/mochi/tests/rosetta/transpiler/scheme/fibonacci-n-step-number-sequences.scm: undefined variable: slice
+  called from loop7 on line 189 of file /workspace/mochi/tests/rosetta/transpiler/scheme/fibonacci-n-step-number-sequences.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 160 of file /workspace/mochi/tests/rosetta/transpiler/scheme/fibonacci-n-step-number-sequences.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 248 of file /workspace/mochi/tests/rosetta/transpiler/scheme/fibonacci-n-step-number-sequences.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 281 of file /workspace/mochi/tests/rosetta/transpiler/scheme/fibonacci-n-step-number-sequences.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+Searching for modules exporting slice ...
+... none found.
