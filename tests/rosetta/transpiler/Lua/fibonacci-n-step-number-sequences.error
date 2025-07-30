@@ -1,0 +1,7 @@
+exit status 1
+lua: ...tta/transpiler/Lua/fibonacci-n-step-number-sequences.lua:115: attempt to call a nil value (global 'slice')
+stack traceback:
+	...tta/transpiler/Lua/fibonacci-n-step-number-sequences.lua:115: in function 'gen'
+	...tta/transpiler/Lua/fibonacci-n-step-number-sequences.lua:137: in function 'main'
+	...tta/transpiler/Lua/fibonacci-n-step-number-sequences.lua:142: in main chunk
+	[C]: in ?

@@ -1,0 +1,2 @@
+exit status 1
+lua: ...palindromic-numbers-in-both-binary-and-ternary-bases.lua:51: 'end' expected (to close 'function' at line 40) near 'local'
