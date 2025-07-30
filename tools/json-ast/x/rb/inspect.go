@@ -5,8 +5,9 @@ package rb
 // The structure mirrors the Node type produced by this package's Ruby parser
 // which offers a typed representation of Ruby's AST compared to the generic
 // S-expression returned by ripper.
+// Program wraps the root Node returned by the parser.
 type Program struct {
-	AST *Node `json:"ast"`
+	Root *Node `json:"root"`
 }
 
 // Inspect parses the given Ruby source code and returns a Program describing
@@ -16,8 +17,5 @@ func Inspect(src string) (*Program, error) {
 	if err != nil {
 		return nil, err
 	}
-	// The root node stores the full source in the Source field which is not
-	// needed in the JSON output. Clear it to reduce noise.
-	node.Source = ""
-	return &Program{AST: node}, nil
+	return &Program{Root: node}, nil
 }

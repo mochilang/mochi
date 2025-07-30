@@ -7,16 +7,21 @@ import (
 	ruby "github.com/smacker/go-tree-sitter/ruby"
 )
 
-// Node represents a node in the Ruby syntax tree.
+// IncludePositions controls whether parsed nodes include position
+// information. When false (the default) the position fields will
+// be omitted from the marshalled JSON because they remain zero.
+var IncludePositions bool
+
+// Node represents a simplified Ruby AST node. Only meaningful tokens
+// contain text. Position information can be optionally included.
 type Node struct {
-	Type     string
-	Value    string
-	Line     int
-	Col      int
-	Children []Node
-	EndLine  int
-	EndCol   int
-	Source   string
+	Kind     string  `json:"kind"`
+	Text     string  `json:"text,omitempty"`
+	Start    int     `json:"start,omitempty"`
+	StartCol int     `json:"startCol,omitempty"`
+	End      int     `json:"end,omitempty"`
+	EndCol   int     `json:"endCol,omitempty"`
+	Children []*Node `json:"children,omitempty"`
 }
 
 // Parse converts Ruby source code into a Node tree using tree-sitter.
@@ -25,8 +30,7 @@ func Parse(src string) (*Node, error) {
 	parser.SetLanguage(ruby.GetLanguage())
 	tree := parser.Parse(nil, []byte(src))
 	root := convertNode(tree.RootNode(), []byte(src))
-	root.Source = src
-	return &root, nil
+	return root, nil
 }
 
 // ParseFile reads Ruby source code from a file and parses it using Parse.
@@ -38,22 +42,53 @@ func ParseFile(path string) (*Node, error) {
 	return Parse(string(data))
 }
 
-func convertNode(n *sitter.Node, src []byte) Node {
+func convertNode(n *sitter.Node, src []byte) *Node {
+	if n == nil {
+		return nil
+	}
+
 	start := n.StartPoint()
 	end := n.EndPoint()
-	node := Node{
-		Type:    n.Type(),
-		Line:    int(start.Row) + 1,
-		Col:     int(start.Column),
-		EndLine: int(end.Row) + 1,
-		EndCol:  int(end.Column),
+	node := &Node{Kind: n.Type()}
+
+	if IncludePositions {
+		node.Start = int(start.Row) + 1
+		node.StartCol = int(start.Column)
+		node.End = int(end.Row) + 1
+		node.EndCol = int(end.Column)
 	}
-	if n.ChildCount() == 0 {
-		node.Value = n.Content(src)
+
+	if n.NamedChildCount() == 0 {
+		if isValueNode(n.Type()) {
+			node.Text = n.Content(src)
+		} else {
+			return nil
+		}
 	}
+
 	for i := 0; i < int(n.NamedChildCount()); i++ {
 		child := n.NamedChild(i)
-		node.Children = append(node.Children, convertNode(child, src))
+		if child == nil {
+			continue
+		}
+		if c := convertNode(child, src); c != nil {
+			node.Children = append(node.Children, c)
+		}
+	}
+
+	if len(node.Children) == 0 && node.Text == "" {
+		return nil
 	}
 	return node
+}
+
+func isValueNode(kind string) bool {
+	switch kind {
+	case "identifier", "constant", "integer", "float", "simple_symbol",
+		"hash_key_symbol", "symbol", "string_content", "true", "false",
+		"nil", "comment":
+		return true
+	default:
+		return false
+	}
 }
