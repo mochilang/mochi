@@ -1,7 +1,7 @@
 package elixir
 
 import (
-	sitter "github.com/smacker/go-tree-sitter"
+	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
 // Node represents a tree-sitter node in a compact form. Position information is
@@ -61,9 +61,9 @@ func convert(n *sitter.Node, src []byte, pos bool) *Node {
 		return nil
 	}
 
-	start := n.StartPoint()
-	end := n.EndPoint()
-	node := &Node{Kind: n.Type()}
+	start := n.StartPosition()
+	end := n.EndPosition()
+	node := &Node{Kind: n.Kind()}
 	if pos {
 		node.Start = int(start.Row) + 1
 		node.StartCol = int(start.Column)
@@ -73,14 +73,14 @@ func convert(n *sitter.Node, src []byte, pos bool) *Node {
 
 	if n.NamedChildCount() == 0 {
 		if isValueNode(node.Kind) {
-			node.Text = n.Content(src)
+			node.Text = n.Utf8Text(src)
 		} else {
 			// Skip pure syntax leaves with no semantic value
 			return nil
 		}
 	}
 
-	for i := 0; i < int(n.NamedChildCount()); i++ {
+	for i := uint(0); i < n.NamedChildCount(); i++ {
 		child := n.NamedChild(i)
 		if child == nil {
 			continue

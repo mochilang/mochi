@@ -2,10 +2,9 @@ package elixir
 
 import (
 	"context"
-	"fmt"
 
-	sitter "github.com/smacker/go-tree-sitter"
-	ts "github.com/smacker/go-tree-sitter/elixir"
+	sitter "github.com/tree-sitter/go-tree-sitter"
+	ts "github.com/tree-sitter/tree-sitter-elixir/bindings/go"
 )
 
 // Inspect parses Elixir source code using tree-sitter and returns the Program.
@@ -13,11 +12,8 @@ import (
 // When includePos is false the resulting JSON omits all position information.
 func Inspect(src string, includePos bool) (*Program, error) {
 	parser := sitter.NewParser()
-	parser.SetLanguage(ts.GetLanguage())
-	tree, err := parser.ParseCtx(context.Background(), nil, []byte(src))
-	if err != nil {
-		return nil, fmt.Errorf("parse: %w", err)
-	}
+	parser.SetLanguage(sitter.NewLanguage(ts.Language()))
+	tree := parser.ParseCtx(context.Background(), []byte(src), nil)
 	n := convert(tree.RootNode(), []byte(src), includePos)
 	if n == nil {
 		return &Program{Root: nil}, nil
