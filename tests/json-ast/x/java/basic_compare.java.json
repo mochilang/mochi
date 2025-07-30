@@ -1,97 +1,264 @@
 {
-  "body": [
-    {
-      "kind": "VarDecl",
-      "name": "a",
-      "type": "int",
-      "expr": {
-        "kind": "Binary",
-        "left": {
-          "kind": "Literal",
-          "value": "10"
-        },
-        "right": {
-          "kind": "Literal",
-          "value": "3"
-        },
-        "op": "MINUS"
-      }
-    },
-    {
-      "kind": "VarDecl",
-      "name": "b",
-      "type": "int",
-      "expr": {
-        "kind": "Binary",
-        "left": {
-          "kind": "Literal",
-          "value": "2"
-        },
-        "right": {
-          "kind": "Literal",
-          "value": "2"
-        },
-        "op": "PLUS"
-      }
-    },
-    {
-      "kind": "Print",
-      "expr": {
-        "kind": "Ident",
-        "name": "a"
-      }
-    },
-    {
-      "kind": "Print",
-      "expr": {
-        "kind": "Cond",
-        "cond": {
-          "kind": "Binary",
-          "left": {
-            "kind": "Ident",
-            "name": "a"
+  "root": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "class_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "Main"
           },
-          "right": {
-            "kind": "Literal",
-            "value": "7"
-          },
-          "op": "EQUAL_TO"
-        },
-        "then": {
-          "kind": "Literal",
-          "value": "1"
-        },
-        "else": {
-          "kind": "Literal",
-          "value": "0"
-        }
+          {
+            "kind": "class_body",
+            "children": [
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "variable_declarator",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "a"
+                      },
+                      {
+                        "kind": "binary_expression",
+                        "children": [
+                          {
+                            "kind": "decimal_integer_literal",
+                            "text": "10"
+                          },
+                          {
+                            "kind": "decimal_integer_literal",
+                            "text": "3"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "variable_declarator",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "b"
+                      },
+                      {
+                        "kind": "binary_expression",
+                        "children": [
+                          {
+                            "kind": "decimal_integer_literal",
+                            "text": "2"
+                          },
+                          {
+                            "kind": "decimal_integer_literal",
+                            "text": "2"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "method_declaration",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "main"
+                  },
+                  {
+                    "kind": "formal_parameters",
+                    "children": [
+                      {
+                        "kind": "formal_parameter",
+                        "children": [
+                          {
+                            "kind": "array_type",
+                            "children": [
+                              {
+                                "kind": "type_identifier",
+                                "text": "String"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "args"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "block",
+                    "children": [
+                      {
+                        "kind": "expression_statement",
+                        "children": [
+                          {
+                            "kind": "method_invocation",
+                            "children": [
+                              {
+                                "kind": "field_access",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "System"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "out"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "println"
+                              },
+                              {
+                                "kind": "argument_list",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "a"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "expression_statement",
+                        "children": [
+                          {
+                            "kind": "method_invocation",
+                            "children": [
+                              {
+                                "kind": "field_access",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "System"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "out"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "println"
+                              },
+                              {
+                                "kind": "argument_list",
+                                "children": [
+                                  {
+                                    "kind": "ternary_expression",
+                                    "children": [
+                                      {
+                                        "kind": "binary_expression",
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "text": "a"
+                                          },
+                                          {
+                                            "kind": "decimal_integer_literal",
+                                            "text": "7"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "decimal_integer_literal",
+                                        "text": "1"
+                                      },
+                                      {
+                                        "kind": "decimal_integer_literal",
+                                        "text": "0"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "expression_statement",
+                        "children": [
+                          {
+                            "kind": "method_invocation",
+                            "children": [
+                              {
+                                "kind": "field_access",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "System"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "out"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "println"
+                              },
+                              {
+                                "kind": "argument_list",
+                                "children": [
+                                  {
+                                    "kind": "ternary_expression",
+                                    "children": [
+                                      {
+                                        "kind": "binary_expression",
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "text": "b"
+                                          },
+                                          {
+                                            "kind": "decimal_integer_literal",
+                                            "text": "5"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "decimal_integer_literal",
+                                        "text": "1"
+                                      },
+                                      {
+                                        "kind": "decimal_integer_literal",
+                                        "text": "0"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
-    },
-    {
-      "kind": "Print",
-      "expr": {
-        "kind": "Cond",
-        "cond": {
-          "kind": "Binary",
-          "left": {
-            "kind": "Ident",
-            "name": "b"
-          },
-          "right": {
-            "kind": "Literal",
-            "value": "5"
-          },
-          "op": "LESS_THAN"
-        },
-        "then": {
-          "kind": "Literal",
-          "value": "1"
-        },
-        "else": {
-          "kind": "Literal",
-          "value": "0"
-        }
-      }
-    }
-  ]
+    ]
+  }
 }

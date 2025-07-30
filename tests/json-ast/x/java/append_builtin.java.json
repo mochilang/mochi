@@ -1,132 +1,301 @@
 {
-  "body": [
-    {
-      "kind": "VarDecl",
-      "name": "a",
-      "type": "int[]",
-      "expr": {
-        "kind": "NEW_ARRAY",
-        "elems": [
+  "root": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "class_declaration",
+        "children": [
           {
-            "kind": "Literal",
-            "value": "1"
+            "kind": "identifier",
+            "text": "Main"
           },
           {
-            "kind": "Literal",
-            "value": "2"
-          }
-        ]
-      }
-    },
-    {
-      "kind": "Print",
-      "expr": {
-        "kind": "Call",
-        "target": {
-          "kind": "Member",
-          "name": "toString",
-          "expr": {
-            "kind": "Member",
-            "name": "Arrays",
-            "expr": {
-              "kind": "Member",
-              "name": "util",
-              "expr": {
-                "kind": "Ident",
-                "name": "java"
-              }
-            }
-          }
-        },
-        "args": [
-          {
-            "kind": "Call",
-            "target": {
-              "kind": "Member",
-              "name": "toArray",
-              "expr": {
-                "kind": "Call",
-                "target": {
-                  "kind": "Member",
-                  "name": "concat",
-                  "expr": {
-                    "kind": "Member",
-                    "name": "IntStream",
-                    "expr": {
-                      "kind": "Member",
-                      "name": "stream",
-                      "expr": {
-                        "kind": "Member",
-                        "name": "util",
-                        "expr": {
-                          "kind": "Ident",
-                          "name": "java"
-                        }
-                      }
-                    }
-                  }
-                },
-                "args": [
+            "kind": "class_body",
+            "children": [
+              {
+                "kind": "field_declaration",
+                "children": [
                   {
-                    "kind": "Call",
-                    "target": {
-                      "kind": "Member",
-                      "name": "stream",
-                      "expr": {
-                        "kind": "Member",
-                        "name": "Arrays",
-                        "expr": {
-                          "kind": "Member",
-                          "name": "util",
-                          "expr": {
-                            "kind": "Ident",
-                            "name": "java"
-                          }
-                        }
-                      }
-                    },
-                    "args": [
+                    "kind": "variable_declarator",
+                    "children": [
                       {
-                        "kind": "Ident",
-                        "name": "a"
+                        "kind": "identifier",
+                        "text": "a"
+                      },
+                      {
+                        "kind": "array_creation_expression",
+                        "children": [
+                          {
+                            "kind": "array_initializer",
+                            "children": [
+                              {
+                                "kind": "decimal_integer_literal",
+                                "text": "1"
+                              },
+                              {
+                                "kind": "decimal_integer_literal",
+                                "text": "2"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "method_declaration",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "main"
+                  },
+                  {
+                    "kind": "formal_parameters",
+                    "children": [
+                      {
+                        "kind": "formal_parameter",
+                        "children": [
+                          {
+                            "kind": "array_type",
+                            "children": [
+                              {
+                                "kind": "type_identifier",
+                                "text": "String"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "args"
+                          }
+                        ]
                       }
                     ]
                   },
                   {
-                    "kind": "Call",
-                    "target": {
-                      "kind": "Member",
-                      "name": "of",
-                      "expr": {
-                        "kind": "Member",
-                        "name": "IntStream",
-                        "expr": {
-                          "kind": "Member",
-                          "name": "stream",
-                          "expr": {
-                            "kind": "Member",
-                            "name": "util",
-                            "expr": {
-                              "kind": "Ident",
-                              "name": "java"
-                            }
-                          }
-                        }
-                      }
-                    },
-                    "args": [
+                    "kind": "block",
+                    "children": [
                       {
-                        "kind": "Literal",
-                        "value": "3"
+                        "kind": "expression_statement",
+                        "children": [
+                          {
+                            "kind": "method_invocation",
+                            "children": [
+                              {
+                                "kind": "field_access",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "System"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "out"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "println"
+                              },
+                              {
+                                "kind": "argument_list",
+                                "children": [
+                                  {
+                                    "kind": "method_invocation",
+                                    "children": [
+                                      {
+                                        "kind": "field_access",
+                                        "children": [
+                                          {
+                                            "kind": "field_access",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "java"
+                                              },
+                                              {
+                                                "kind": "identifier",
+                                                "text": "util"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "Arrays"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "text": "toString"
+                                      },
+                                      {
+                                        "kind": "argument_list",
+                                        "children": [
+                                          {
+                                            "kind": "method_invocation",
+                                            "children": [
+                                              {
+                                                "kind": "method_invocation",
+                                                "children": [
+                                                  {
+                                                    "kind": "field_access",
+                                                    "children": [
+                                                      {
+                                                        "kind": "field_access",
+                                                        "children": [
+                                                          {
+                                                            "kind": "field_access",
+                                                            "children": [
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "java"
+                                                              },
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "util"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "stream"
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "identifier",
+                                                        "text": "IntStream"
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "concat"
+                                                  },
+                                                  {
+                                                    "kind": "argument_list",
+                                                    "children": [
+                                                      {
+                                                        "kind": "method_invocation",
+                                                        "children": [
+                                                          {
+                                                            "kind": "field_access",
+                                                            "children": [
+                                                              {
+                                                                "kind": "field_access",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "text": "java"
+                                                                  },
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "text": "util"
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "Arrays"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "stream"
+                                                          },
+                                                          {
+                                                            "kind": "argument_list",
+                                                            "children": [
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "a"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "method_invocation",
+                                                        "children": [
+                                                          {
+                                                            "kind": "field_access",
+                                                            "children": [
+                                                              {
+                                                                "kind": "field_access",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "field_access",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "java"
+                                                                      },
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "util"
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "text": "stream"
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "IntStream"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "of"
+                                                          },
+                                                          {
+                                                            "kind": "argument_list",
+                                                            "children": [
+                                                              {
+                                                                "kind": "decimal_integer_literal",
+                                                                "text": "3"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "identifier",
+                                                "text": "toArray"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
                       }
                     ]
                   }
                 ]
               }
-            }
+            ]
           }
         ]
       }
-    }
-  ]
+    ]
+  }
 }

@@ -24,6 +24,84 @@ type Node struct {
 	Children []*Node `json:"children,omitempty"`
 }
 
+// Typed aliases expose a more structured API while still using Node for the
+// underlying representation. Only node kinds that appear in golden tests are
+// enumerated here. Additional kinds will still be represented by Node at
+// runtime.
+type (
+	ProgramNode              Node
+	Assign                   Node
+	Block                    Node
+	Binary                   Node
+	Break                    Node
+	Call                     Node
+	Cast                     Node
+	Cond                     Node
+	Continue                 Node
+	Expr                     Node
+	FnDecl                   Node
+	ForEach                  Node
+	ForRange                 Node
+	InstanceOf               Node
+	Ident                    Node
+	If                       Node
+	Index                    Node
+	Lambda                   Node
+	Literal                  Node
+	MemberReference          Node
+	Member                   Node
+	NewArray                 Node
+	NewClass                 Node
+	NullLiteral              Node
+	Print                    Node
+	Return                   Node
+	String                   Node
+	Try                      Node
+	Unary                    Node
+	VarDecl                  Node
+	While                    Node
+	ArgumentList             Node
+	ArrayCreationExpression  Node
+	ArrayInitializer         Node
+	ArrayType                Node
+	AssignmentExpression     Node
+	BinaryExpression         Node
+	BlockStmt                Node
+	CastExpression           Node
+	ClassBody                Node
+	ClassDeclaration         Node
+	ConstructorBody          Node
+	ConstructorDeclaration   Node
+	DecimalIntegerLiteral    Node
+	EnhancedForStatement     Node
+	ExpressionStatement      Node
+	False                    Node
+	FieldAccess              Node
+	FieldDeclaration         Node
+	ForStatement             Node
+	FormalParameter          Node
+	FormalParameters         Node
+	GenericType              Node
+	Identifier               Node
+	IfStatement              Node
+	LocalVariableDeclaration Node
+	MethodDeclaration        Node
+	MethodInvocation         Node
+	ObjectCreationExpression Node
+	ParenthesizedExpression  Node
+	ReturnStatement          Node
+	ScopedTypeIdentifier     Node
+	StringFragment           Node
+	StringLiteral            Node
+	This                     Node
+	True                     Node
+	TypeArguments            Node
+	TypeIdentifier           Node
+	UnaryExpression          Node
+	UpdateExpression         Node
+	VariableDeclarator       Node
+)
+
 // convert creates a Node from a tree-sitter node.
 func convert(n *sitter.Node, src []byte) *Node {
 	if n == nil {

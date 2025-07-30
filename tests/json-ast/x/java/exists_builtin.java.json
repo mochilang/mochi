@@ -1,204 +1,668 @@
 {
-  "body": [
-    {
-      "kind": "VarDecl",
-      "name": "data",
-      "type": "int[]",
-      "expr": {
-        "kind": "NEW_ARRAY",
-        "elems": [
+  "root": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "class_declaration",
+        "children": [
           {
-            "kind": "Literal",
-            "value": "1"
+            "kind": "identifier",
+            "text": "Main"
           },
           {
-            "kind": "Literal",
-            "value": "2"
-          }
-        ]
-      }
-    },
-    {
-      "kind": "VarDecl",
-      "name": "flag",
-      "type": "boolean",
-      "expr": {
-        "kind": "Call",
-        "target": {
-          "kind": "Ident",
-          "name": "exists"
-        },
-        "args": [
-          {
-            "kind": "NEW_CLASS",
-            "body": [
+            "kind": "class_body",
+            "children": [
               {
-                "kind": "VarDecl",
-                "name": "_tmp",
-                "type": "java.util.ArrayList\u003cInteger\u003e",
-                "expr": {
-                  "kind": "NEW_CLASS"
-                }
-              },
-              {
-                "kind": "ForEach",
-                "name": "x",
-                "expr": {
-                  "kind": "Ident",
-                  "name": "data"
-                },
-                "body": [
+                "kind": "field_declaration",
+                "children": [
                   {
-                    "kind": "If",
-                    "cond": {
-                      "kind": "Binary",
-                      "left": {
-                        "kind": "Ident",
-                        "name": "x"
-                      },
-                      "right": {
-                        "kind": "Literal",
-                        "value": "1"
-                      },
-                      "op": "EQUAL_TO"
-                    },
-                    "then": [
+                    "kind": "variable_declarator",
+                    "children": [
                       {
-                        "kind": "Expr"
+                        "kind": "identifier",
+                        "text": "data"
+                      },
+                      {
+                        "kind": "array_creation_expression",
+                        "children": [
+                          {
+                            "kind": "array_initializer",
+                            "children": [
+                              {
+                                "kind": "decimal_integer_literal",
+                                "text": "1"
+                              },
+                              {
+                                "kind": "decimal_integer_literal",
+                                "text": "2"
+                              }
+                            ]
+                          }
+                        ]
                       }
                     ]
                   }
                 ]
               },
               {
-                "kind": "VarDecl",
-                "name": "list",
-                "type": "java.util.ArrayList\u003cInteger\u003e",
-                "expr": {
-                  "kind": "Ident",
-                  "name": "_tmp"
-                }
-              },
-              {
-                "kind": "VarDecl",
-                "name": "skip",
-                "type": "int",
-                "expr": {
-                  "kind": "Literal",
-                  "value": "0"
-                }
-              },
-              {
-                "kind": "VarDecl",
-                "name": "take",
-                "type": "int",
-                "expr": {
-                  "kind": "Literal",
-                  "value": "-1"
-                }
-              },
-              {
-                "kind": "ForRange",
-                "name": "i",
-                "start": {
-                  "kind": "Literal",
-                  "value": "0"
-                },
-                "end": {
-                  "kind": "Call",
-                  "target": {
-                    "kind": "Member",
-                    "name": "size",
-                    "expr": {
-                      "kind": "Ident",
-                      "name": "list"
-                    }
-                  }
-                },
-                "body": [
+                "kind": "field_declaration",
+                "children": [
                   {
-                    "kind": "If",
-                    "cond": {
-                      "kind": "Binary",
-                      "left": {
-                        "kind": "Ident",
-                        "name": "i"
-                      },
-                      "right": {
-                        "kind": "Ident",
-                        "name": "skip"
-                      },
-                      "op": "LESS_THAN"
-                    },
-                    "then": [
+                    "kind": "variable_declarator",
+                    "children": [
                       {
-                        "kind": "Continue"
+                        "kind": "identifier",
+                        "text": "flag"
+                      },
+                      {
+                        "kind": "method_invocation",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "exists"
+                          },
+                          {
+                            "kind": "argument_list",
+                            "children": [
+                              {
+                                "kind": "object_creation_expression",
+                                "children": [
+                                  {
+                                    "kind": "generic_type",
+                                    "children": [
+                                      {
+                                        "kind": "scoped_type_identifier",
+                                        "children": [
+                                          {
+                                            "kind": "scoped_type_identifier",
+                                            "children": [
+                                              {
+                                                "kind": "type_identifier",
+                                                "text": "java"
+                                              },
+                                              {
+                                                "kind": "type_identifier",
+                                                "text": "util"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "type_identifier",
+                                            "text": "ArrayList"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "type_arguments",
+                                        "children": [
+                                          {
+                                            "kind": "type_identifier",
+                                            "text": "Integer"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "class_body",
+                                    "children": [
+                                      {
+                                        "kind": "block",
+                                        "children": [
+                                          {
+                                            "kind": "local_variable_declaration",
+                                            "children": [
+                                              {
+                                                "kind": "generic_type",
+                                                "children": [
+                                                  {
+                                                    "kind": "scoped_type_identifier",
+                                                    "children": [
+                                                      {
+                                                        "kind": "scoped_type_identifier",
+                                                        "children": [
+                                                          {
+                                                            "kind": "type_identifier",
+                                                            "text": "java"
+                                                          },
+                                                          {
+                                                            "kind": "type_identifier",
+                                                            "text": "util"
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "type_identifier",
+                                                        "text": "ArrayList"
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "type_arguments",
+                                                    "children": [
+                                                      {
+                                                        "kind": "type_identifier",
+                                                        "text": "Integer"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "variable_declarator",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "_tmp"
+                                                  },
+                                                  {
+                                                    "kind": "object_creation_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "generic_type",
+                                                        "children": [
+                                                          {
+                                                            "kind": "scoped_type_identifier",
+                                                            "children": [
+                                                              {
+                                                                "kind": "scoped_type_identifier",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "type_identifier",
+                                                                    "text": "java"
+                                                                  },
+                                                                  {
+                                                                    "kind": "type_identifier",
+                                                                    "text": "util"
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "type_identifier",
+                                                                "text": "ArrayList"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "enhanced_for_statement",
+                                            "children": [
+                                              {
+                                                "kind": "type_identifier",
+                                                "text": "var"
+                                              },
+                                              {
+                                                "kind": "identifier",
+                                                "text": "x"
+                                              },
+                                              {
+                                                "kind": "identifier",
+                                                "text": "data"
+                                              },
+                                              {
+                                                "kind": "block",
+                                                "children": [
+                                                  {
+                                                    "kind": "if_statement",
+                                                    "children": [
+                                                      {
+                                                        "kind": "parenthesized_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "binary_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "x"
+                                                              },
+                                                              {
+                                                                "kind": "decimal_integer_literal",
+                                                                "text": "1"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "block",
+                                                        "children": [
+                                                          {
+                                                            "kind": "expression_statement",
+                                                            "children": [
+                                                              {
+                                                                "kind": "method_invocation",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "text": "_tmp"
+                                                                  },
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "text": "add"
+                                                                  },
+                                                                  {
+                                                                    "kind": "argument_list",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "x"
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "local_variable_declaration",
+                                            "children": [
+                                              {
+                                                "kind": "generic_type",
+                                                "children": [
+                                                  {
+                                                    "kind": "scoped_type_identifier",
+                                                    "children": [
+                                                      {
+                                                        "kind": "scoped_type_identifier",
+                                                        "children": [
+                                                          {
+                                                            "kind": "type_identifier",
+                                                            "text": "java"
+                                                          },
+                                                          {
+                                                            "kind": "type_identifier",
+                                                            "text": "util"
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "type_identifier",
+                                                        "text": "ArrayList"
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "type_arguments",
+                                                    "children": [
+                                                      {
+                                                        "kind": "type_identifier",
+                                                        "text": "Integer"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "variable_declarator",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "list"
+                                                  },
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "_tmp"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "local_variable_declaration",
+                                            "children": [
+                                              {
+                                                "kind": "variable_declarator",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "skip"
+                                                  },
+                                                  {
+                                                    "kind": "decimal_integer_literal",
+                                                    "text": "0"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "local_variable_declaration",
+                                            "children": [
+                                              {
+                                                "kind": "variable_declarator",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "take"
+                                                  },
+                                                  {
+                                                    "kind": "unary_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "decimal_integer_literal",
+                                                        "text": "1"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "for_statement",
+                                            "children": [
+                                              {
+                                                "kind": "local_variable_declaration",
+                                                "children": [
+                                                  {
+                                                    "kind": "variable_declarator",
+                                                    "children": [
+                                                      {
+                                                        "kind": "identifier",
+                                                        "text": "i"
+                                                      },
+                                                      {
+                                                        "kind": "decimal_integer_literal",
+                                                        "text": "0"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "binary_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "i"
+                                                  },
+                                                  {
+                                                    "kind": "method_invocation",
+                                                    "children": [
+                                                      {
+                                                        "kind": "identifier",
+                                                        "text": "list"
+                                                      },
+                                                      {
+                                                        "kind": "identifier",
+                                                        "text": "size"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "update_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "i"
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "block",
+                                                "children": [
+                                                  {
+                                                    "kind": "if_statement",
+                                                    "children": [
+                                                      {
+                                                        "kind": "parenthesized_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "binary_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "i"
+                                                              },
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "skip"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "if_statement",
+                                                    "children": [
+                                                      {
+                                                        "kind": "parenthesized_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "binary_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "binary_expression",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "text": "take"
+                                                                  },
+                                                                  {
+                                                                    "kind": "decimal_integer_literal",
+                                                                    "text": "0"
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "binary_expression",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "text": "i"
+                                                                  },
+                                                                  {
+                                                                    "kind": "binary_expression",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "skip"
+                                                                      },
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "take"
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "expression_statement",
+                                                    "children": [
+                                                      {
+                                                        "kind": "method_invocation",
+                                                        "children": [
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "_tmp"
+                                                          },
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "add"
+                                                          },
+                                                          {
+                                                            "kind": "argument_list",
+                                                            "children": [
+                                                              {
+                                                                "kind": "cast_expression",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "type_identifier",
+                                                                    "text": "Integer"
+                                                                  },
+                                                                  {
+                                                                    "kind": "method_invocation",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "list"
+                                                                      },
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "get"
+                                                                      },
+                                                                      {
+                                                                        "kind": "argument_list",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "identifier",
+                                                                            "text": "i"
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "expression_statement",
+                                            "children": [
+                                              {
+                                                "kind": "method_invocation",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "addAll"
+                                                  },
+                                                  {
+                                                    "kind": "argument_list",
+                                                    "children": [
+                                                      {
+                                                        "kind": "identifier",
+                                                        "text": "_tmp"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
                       }
                     ]
-                  },
-                  {
-                    "kind": "If",
-                    "cond": {
-                      "kind": "Binary",
-                      "left": {
-                        "kind": "Binary",
-                        "left": {
-                          "kind": "Ident",
-                          "name": "take"
-                        },
-                        "right": {
-                          "kind": "Literal",
-                          "value": "0"
-                        },
-                        "op": "GREATER_THAN_EQUAL"
-                      },
-                      "right": {
-                        "kind": "Binary",
-                        "left": {
-                          "kind": "Ident",
-                          "name": "i"
-                        },
-                        "right": {
-                          "kind": "Binary",
-                          "left": {
-                            "kind": "Ident",
-                            "name": "skip"
-                          },
-                          "right": {
-                            "kind": "Ident",
-                            "name": "take"
-                          },
-                          "op": "PLUS"
-                        },
-                        "op": "GREATER_THAN_EQUAL"
-                      },
-                      "op": "CONDITIONAL_AND"
-                    },
-                    "then": [
-                      {
-                        "kind": "Break"
-                      }
-                    ]
-                  },
-                  {
-                    "kind": "Expr"
                   }
                 ]
               },
               {
-                "kind": "Expr"
+                "kind": "method_declaration",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "main"
+                  },
+                  {
+                    "kind": "formal_parameters",
+                    "children": [
+                      {
+                        "kind": "formal_parameter",
+                        "children": [
+                          {
+                            "kind": "array_type",
+                            "children": [
+                              {
+                                "kind": "type_identifier",
+                                "text": "String"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "args"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "block",
+                    "children": [
+                      {
+                        "kind": "expression_statement",
+                        "children": [
+                          {
+                            "kind": "method_invocation",
+                            "children": [
+                              {
+                                "kind": "field_access",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "System"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "out"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "println"
+                              },
+                              {
+                                "kind": "argument_list",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "flag"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
               }
             ]
           }
         ]
       }
-    },
-    {
-      "kind": "Print",
-      "expr": {
-        "kind": "Ident",
-        "name": "flag"
-      }
-    }
-  ]
+    ]
+  }
 }

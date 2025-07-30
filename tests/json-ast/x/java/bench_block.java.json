@@ -1,231 +1,1030 @@
 {
-  "body": [
-    {
-      "kind": "VarDecl",
-      "name": "_nowSeeded",
-      "type": "boolean",
-      "expr": {
-        "kind": "Literal",
-        "value": "false"
-      }
-    },
-    {
-      "kind": "VarDecl",
-      "name": "_nowSeed",
-      "type": "int"
-    },
-    {
-      "kind": "FnDecl",
-      "name": "_now",
-      "type": "int",
-      "body": [
-        {
-          "kind": "If",
-          "cond": {
-            "kind": "Unary",
-            "expr": {
-              "kind": "Ident",
-              "name": "_nowSeeded"
-            },
-            "op": "LOGICAL_COMPLEMENT"
+  "root": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "class_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "Main"
           },
-          "then": [
-            {
-              "kind": "VarDecl",
-              "name": "s",
-              "type": "String",
-              "expr": {
-                "kind": "Call",
-                "target": {
-                  "kind": "Member",
-                  "name": "getenv",
-                  "expr": {
-                    "kind": "Ident",
-                    "name": "System"
-                  }
-                },
-                "args": [
+          {
+            "kind": "class_body",
+            "children": [
+              {
+                "kind": "method_declaration",
+                "children": [
                   {
-                    "kind": "String",
-                    "value": "MOCHI_NOW_SEED"
+                    "kind": "identifier",
+                    "text": "main"
+                  },
+                  {
+                    "kind": "formal_parameters",
+                    "children": [
+                      {
+                        "kind": "formal_parameter",
+                        "children": [
+                          {
+                            "kind": "array_type",
+                            "children": [
+                              {
+                                "kind": "type_identifier",
+                                "text": "String"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "args"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "block",
+                    "children": [
+                      {
+                        "kind": "block",
+                        "children": [
+                          {
+                            "kind": "local_variable_declaration",
+                            "children": [
+                              {
+                                "kind": "variable_declarator",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "_benchStart"
+                                  },
+                                  {
+                                    "kind": "method_invocation",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "_now"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "local_variable_declaration",
+                            "children": [
+                              {
+                                "kind": "variable_declarator",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "_benchMem"
+                                  },
+                                  {
+                                    "kind": "method_invocation",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "_mem"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "local_variable_declaration",
+                            "children": [
+                              {
+                                "kind": "variable_declarator",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "n"
+                                  },
+                                  {
+                                    "kind": "decimal_integer_literal",
+                                    "text": "1000"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "local_variable_declaration",
+                            "children": [
+                              {
+                                "kind": "variable_declarator",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "s"
+                                  },
+                                  {
+                                    "kind": "decimal_integer_literal",
+                                    "text": "0"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "for_statement",
+                            "children": [
+                              {
+                                "kind": "local_variable_declaration",
+                                "children": [
+                                  {
+                                    "kind": "variable_declarator",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "i"
+                                      },
+                                      {
+                                        "kind": "decimal_integer_literal",
+                                        "text": "1"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "binary_expression",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "i"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "n"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "update_expression",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "i"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "block",
+                                "children": [
+                                  {
+                                    "kind": "expression_statement",
+                                    "children": [
+                                      {
+                                        "kind": "assignment_expression",
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "text": "s"
+                                          },
+                                          {
+                                            "kind": "binary_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "s"
+                                              },
+                                              {
+                                                "kind": "identifier",
+                                                "text": "i"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "local_variable_declaration",
+                            "children": [
+                              {
+                                "kind": "variable_declarator",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "_benchDuration"
+                                  },
+                                  {
+                                    "kind": "binary_expression",
+                                    "children": [
+                                      {
+                                        "kind": "parenthesized_expression",
+                                        "children": [
+                                          {
+                                            "kind": "binary_expression",
+                                            "children": [
+                                              {
+                                                "kind": "method_invocation",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "_now"
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "identifier",
+                                                "text": "_benchStart"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "decimal_integer_literal",
+                                        "text": "1000"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "local_variable_declaration",
+                            "children": [
+                              {
+                                "kind": "variable_declarator",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "_benchMemory"
+                                  },
+                                  {
+                                    "kind": "binary_expression",
+                                    "children": [
+                                      {
+                                        "kind": "method_invocation",
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "text": "_mem"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "text": "_benchMem"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "expression_statement",
+                            "children": [
+                              {
+                                "kind": "method_invocation",
+                                "children": [
+                                  {
+                                    "kind": "field_access",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "System"
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "text": "out"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "println"
+                                  },
+                                  {
+                                    "kind": "argument_list",
+                                    "children": [
+                                      {
+                                        "kind": "string_literal",
+                                        "children": [
+                                          {
+                                            "kind": "string_fragment",
+                                            "text": "{"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "expression_statement",
+                            "children": [
+                              {
+                                "kind": "method_invocation",
+                                "children": [
+                                  {
+                                    "kind": "field_access",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "System"
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "text": "out"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "println"
+                                  },
+                                  {
+                                    "kind": "argument_list",
+                                    "children": [
+                                      {
+                                        "kind": "binary_expression",
+                                        "children": [
+                                          {
+                                            "kind": "binary_expression",
+                                            "children": [
+                                              {
+                                                "kind": "string_literal",
+                                                "children": [
+                                                  {
+                                                    "kind": "string_fragment",
+                                                    "text": "  "
+                                                  },
+                                                  {
+                                                    "kind": "string_fragment",
+                                                    "text": "duration_us"
+                                                  },
+                                                  {
+                                                    "kind": "string_fragment",
+                                                    "text": ": "
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "identifier",
+                                                "text": "_benchDuration"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "string_literal",
+                                            "children": [
+                                              {
+                                                "kind": "string_fragment",
+                                                "text": ","
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "expression_statement",
+                            "children": [
+                              {
+                                "kind": "method_invocation",
+                                "children": [
+                                  {
+                                    "kind": "field_access",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "System"
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "text": "out"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "println"
+                                  },
+                                  {
+                                    "kind": "argument_list",
+                                    "children": [
+                                      {
+                                        "kind": "binary_expression",
+                                        "children": [
+                                          {
+                                            "kind": "binary_expression",
+                                            "children": [
+                                              {
+                                                "kind": "string_literal",
+                                                "children": [
+                                                  {
+                                                    "kind": "string_fragment",
+                                                    "text": "  "
+                                                  },
+                                                  {
+                                                    "kind": "string_fragment",
+                                                    "text": "memory_bytes"
+                                                  },
+                                                  {
+                                                    "kind": "string_fragment",
+                                                    "text": ": "
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "identifier",
+                                                "text": "_benchMemory"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "string_literal",
+                                            "children": [
+                                              {
+                                                "kind": "string_fragment",
+                                                "text": ","
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "expression_statement",
+                            "children": [
+                              {
+                                "kind": "method_invocation",
+                                "children": [
+                                  {
+                                    "kind": "field_access",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "System"
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "text": "out"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "println"
+                                  },
+                                  {
+                                    "kind": "argument_list",
+                                    "children": [
+                                      {
+                                        "kind": "string_literal",
+                                        "children": [
+                                          {
+                                            "kind": "string_fragment",
+                                            "text": "  "
+                                          },
+                                          {
+                                            "kind": "string_fragment",
+                                            "text": "name"
+                                          },
+                                          {
+                                            "kind": "string_fragment",
+                                            "text": ": "
+                                          },
+                                          {
+                                            "kind": "string_fragment",
+                                            "text": "simple"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "expression_statement",
+                            "children": [
+                              {
+                                "kind": "method_invocation",
+                                "children": [
+                                  {
+                                    "kind": "field_access",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "System"
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "text": "out"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "println"
+                                  },
+                                  {
+                                    "kind": "argument_list",
+                                    "children": [
+                                      {
+                                        "kind": "string_literal",
+                                        "children": [
+                                          {
+                                            "kind": "string_fragment",
+                                            "text": "}"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "variable_declarator",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "_nowSeeded"
+                      },
+                      {
+                        "kind": "false",
+                        "text": "false"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "variable_declarator",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "_nowSeed"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "method_declaration",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "_now"
+                  },
+                  {
+                    "kind": "block",
+                    "children": [
+                      {
+                        "kind": "if_statement",
+                        "children": [
+                          {
+                            "kind": "parenthesized_expression",
+                            "children": [
+                              {
+                                "kind": "unary_expression",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "_nowSeeded"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "block",
+                            "children": [
+                              {
+                                "kind": "local_variable_declaration",
+                                "children": [
+                                  {
+                                    "kind": "type_identifier",
+                                    "text": "String"
+                                  },
+                                  {
+                                    "kind": "variable_declarator",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "s"
+                                      },
+                                      {
+                                        "kind": "method_invocation",
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "text": "System"
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "getenv"
+                                          },
+                                          {
+                                            "kind": "argument_list",
+                                            "children": [
+                                              {
+                                                "kind": "string_literal",
+                                                "children": [
+                                                  {
+                                                    "kind": "string_fragment",
+                                                    "text": "MOCHI_NOW_SEED"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "if_statement",
+                                "children": [
+                                  {
+                                    "kind": "parenthesized_expression",
+                                    "children": [
+                                      {
+                                        "kind": "binary_expression",
+                                        "children": [
+                                          {
+                                            "kind": "binary_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "s"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "unary_expression",
+                                            "children": [
+                                              {
+                                                "kind": "method_invocation",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "s"
+                                                  },
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "isEmpty"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "block",
+                                    "children": [
+                                      {
+                                        "kind": "try_statement",
+                                        "children": [
+                                          {
+                                            "kind": "block",
+                                            "children": [
+                                              {
+                                                "kind": "expression_statement",
+                                                "children": [
+                                                  {
+                                                    "kind": "assignment_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "identifier",
+                                                        "text": "_nowSeed"
+                                                      },
+                                                      {
+                                                        "kind": "method_invocation",
+                                                        "children": [
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "Integer"
+                                                          },
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "parseInt"
+                                                          },
+                                                          {
+                                                            "kind": "argument_list",
+                                                            "children": [
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "s"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "expression_statement",
+                                                "children": [
+                                                  {
+                                                    "kind": "assignment_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "identifier",
+                                                        "text": "_nowSeeded"
+                                                      },
+                                                      {
+                                                        "kind": "true",
+                                                        "text": "true"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "catch_clause",
+                                            "children": [
+                                              {
+                                                "kind": "catch_formal_parameter",
+                                                "children": [
+                                                  {
+                                                    "kind": "catch_type",
+                                                    "children": [
+                                                      {
+                                                        "kind": "type_identifier",
+                                                        "text": "Exception"
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "e"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "if_statement",
+                        "children": [
+                          {
+                            "kind": "parenthesized_expression",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "_nowSeeded"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "block",
+                            "children": [
+                              {
+                                "kind": "expression_statement",
+                                "children": [
+                                  {
+                                    "kind": "assignment_expression",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "_nowSeed"
+                                      },
+                                      {
+                                        "kind": "cast_expression",
+                                        "children": [
+                                          {
+                                            "kind": "parenthesized_expression",
+                                            "children": [
+                                              {
+                                                "kind": "binary_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "parenthesized_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "binary_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "binary_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "_nowSeed"
+                                                              },
+                                                              {
+                                                                "kind": "decimal_integer_literal",
+                                                                "text": "1664525L"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "decimal_integer_literal",
+                                                            "text": "1013904223"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "decimal_integer_literal",
+                                                    "text": "2147483647"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "return_statement",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "_nowSeed"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "return_statement",
+                        "children": [
+                          {
+                            "kind": "cast_expression",
+                            "children": [
+                              {
+                                "kind": "method_invocation",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "System"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "currentTimeMillis"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "method_declaration",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "_mem"
+                  },
+                  {
+                    "kind": "block",
+                    "children": [
+                      {
+                        "kind": "local_variable_declaration",
+                        "children": [
+                          {
+                            "kind": "type_identifier",
+                            "text": "Runtime"
+                          },
+                          {
+                            "kind": "variable_declarator",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "rt"
+                              },
+                              {
+                                "kind": "method_invocation",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "Runtime"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "getRuntime"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "return_statement",
+                        "children": [
+                          {
+                            "kind": "cast_expression",
+                            "children": [
+                              {
+                                "kind": "parenthesized_expression",
+                                "children": [
+                                  {
+                                    "kind": "binary_expression",
+                                    "children": [
+                                      {
+                                        "kind": "method_invocation",
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "text": "rt"
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "totalMemory"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "method_invocation",
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "text": "rt"
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "freeMemory"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
                   }
                 ]
               }
-            },
-            {
-              "kind": "If",
-              "cond": {
-                "kind": "Binary",
-                "left": {
-                  "kind": "Binary",
-                  "left": {
-                    "kind": "Ident",
-                    "name": "s"
-                  },
-                  "right": {
-                    "kind": "NULL_LITERAL"
-                  },
-                  "op": "NOT_EQUAL_TO"
-                },
-                "right": {
-                  "kind": "Unary",
-                  "expr": {
-                    "kind": "Call",
-                    "target": {
-                      "kind": "Member",
-                      "name": "isEmpty",
-                      "expr": {
-                        "kind": "Ident",
-                        "name": "s"
-                      }
-                    }
-                  },
-                  "op": "LOGICAL_COMPLEMENT"
-                },
-                "op": "CONDITIONAL_AND"
-              },
-              "then": [
-                {
-                  "kind": "TRY"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "kind": "If",
-          "cond": {
-            "kind": "Ident",
-            "name": "_nowSeeded"
-          },
-          "then": [
-            {
-              "kind": "Assign",
-              "name": "_nowSeed",
-              "target": {
-                "kind": "Ident",
-                "name": "_nowSeed"
-              },
-              "expr": {
-                "kind": "Cast",
-                "value": "int",
-                "expr": {
-                  "kind": "Binary",
-                  "left": {
-                    "kind": "Binary",
-                    "left": {
-                      "kind": "Binary",
-                      "left": {
-                        "kind": "Ident",
-                        "name": "_nowSeed"
-                      },
-                      "right": {
-                        "kind": "Literal",
-                        "value": "1664525"
-                      },
-                      "op": "MULTIPLY"
-                    },
-                    "right": {
-                      "kind": "Literal",
-                      "value": "1013904223"
-                    },
-                    "op": "PLUS"
-                  },
-                  "right": {
-                    "kind": "Literal",
-                    "value": "2147483647"
-                  },
-                  "op": "REMAINDER"
-                }
-              }
-            },
-            {
-              "kind": "Return",
-              "expr": {
-                "kind": "Ident",
-                "name": "_nowSeed"
-              }
-            }
-          ]
-        },
-        {
-          "kind": "Return",
-          "expr": {
-            "kind": "Cast",
-            "value": "int",
-            "expr": {
-              "kind": "Call",
-              "target": {
-                "kind": "Member",
-                "name": "currentTimeMillis",
-                "expr": {
-                  "kind": "Ident",
-                  "name": "System"
-                }
-              }
-            }
+            ]
           }
-        }
-      ]
-    },
-    {
-      "kind": "FnDecl",
-      "name": "_mem",
-      "type": "int",
-      "body": [
-        {
-          "kind": "VarDecl",
-          "name": "rt",
-          "type": "Runtime",
-          "expr": {
-            "kind": "Call",
-            "target": {
-              "kind": "Member",
-              "name": "getRuntime",
-              "expr": {
-                "kind": "Ident",
-                "name": "Runtime"
-              }
-            }
-          }
-        },
-        {
-          "kind": "Return",
-          "expr": {
-            "kind": "Cast",
-            "value": "int",
-            "expr": {
-              "kind": "Binary",
-              "left": {
-                "kind": "Call",
-                "target": {
-                  "kind": "Member",
-                  "name": "totalMemory",
-                  "expr": {
-                    "kind": "Ident",
-                    "name": "rt"
-                  }
-                }
-              },
-              "right": {
-                "kind": "Call",
-                "target": {
-                  "kind": "Member",
-                  "name": "freeMemory",
-                  "expr": {
-                    "kind": "Ident",
-                    "name": "rt"
-                  }
-                }
-              },
-              "op": "MINUS"
-            }
-          }
-        }
-      ]
-    },
-    {
-      "kind": "BLOCK"
-    }
-  ]
+        ]
+      }
+    ]
+  }
 }

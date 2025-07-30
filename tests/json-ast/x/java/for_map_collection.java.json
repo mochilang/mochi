@@ -1,39 +1,422 @@
 {
-  "body": [
-    {
-      "kind": "VarDecl",
-      "name": "m",
-      "type": "Data1",
-      "expr": {
-        "kind": "NEW_CLASS",
-        "args": [
+  "root": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "class_declaration",
+        "children": [
           {
-            "kind": "Literal",
-            "value": "1"
+            "kind": "identifier",
+            "text": "Main"
           },
           {
-            "kind": "Literal",
-            "value": "2"
+            "kind": "class_body",
+            "children": [
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "type_identifier",
+                    "text": "Data1"
+                  },
+                  {
+                    "kind": "variable_declarator",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "m"
+                      },
+                      {
+                        "kind": "object_creation_expression",
+                        "children": [
+                          {
+                            "kind": "type_identifier",
+                            "text": "Data1"
+                          },
+                          {
+                            "kind": "argument_list",
+                            "children": [
+                              {
+                                "kind": "decimal_integer_literal",
+                                "text": "1"
+                              },
+                              {
+                                "kind": "decimal_integer_literal",
+                                "text": "2"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "class_declaration",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "Data1"
+                  },
+                  {
+                    "kind": "class_body",
+                    "children": [
+                      {
+                        "kind": "field_declaration",
+                        "children": [
+                          {
+                            "kind": "variable_declarator",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "a"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "field_declaration",
+                        "children": [
+                          {
+                            "kind": "variable_declarator",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "b"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "constructor_declaration",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "Data1"
+                          },
+                          {
+                            "kind": "formal_parameters",
+                            "children": [
+                              {
+                                "kind": "formal_parameter",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "a"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "formal_parameter",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "b"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "constructor_body",
+                            "children": [
+                              {
+                                "kind": "expression_statement",
+                                "children": [
+                                  {
+                                    "kind": "assignment_expression",
+                                    "children": [
+                                      {
+                                        "kind": "field_access",
+                                        "children": [
+                                          {
+                                            "kind": "this",
+                                            "text": "this"
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "a"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "text": "a"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "expression_statement",
+                                "children": [
+                                  {
+                                    "kind": "assignment_expression",
+                                    "children": [
+                                      {
+                                        "kind": "field_access",
+                                        "children": [
+                                          {
+                                            "kind": "this",
+                                            "text": "this"
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "b"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "text": "b"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "method_declaration",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "containsKey"
+                          },
+                          {
+                            "kind": "formal_parameters",
+                            "children": [
+                              {
+                                "kind": "formal_parameter",
+                                "children": [
+                                  {
+                                    "kind": "type_identifier",
+                                    "text": "String"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "k"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "block",
+                            "children": [
+                              {
+                                "kind": "if_statement",
+                                "children": [
+                                  {
+                                    "kind": "parenthesized_expression",
+                                    "children": [
+                                      {
+                                        "kind": "method_invocation",
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "text": "k"
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "equals"
+                                          },
+                                          {
+                                            "kind": "argument_list",
+                                            "children": [
+                                              {
+                                                "kind": "string_literal",
+                                                "children": [
+                                                  {
+                                                    "kind": "string_fragment",
+                                                    "text": "a"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "return_statement",
+                                    "children": [
+                                      {
+                                        "kind": "true",
+                                        "text": "true"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "if_statement",
+                                "children": [
+                                  {
+                                    "kind": "parenthesized_expression",
+                                    "children": [
+                                      {
+                                        "kind": "method_invocation",
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "text": "k"
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "equals"
+                                          },
+                                          {
+                                            "kind": "argument_list",
+                                            "children": [
+                                              {
+                                                "kind": "string_literal",
+                                                "children": [
+                                                  {
+                                                    "kind": "string_fragment",
+                                                    "text": "b"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "return_statement",
+                                    "children": [
+                                      {
+                                        "kind": "true",
+                                        "text": "true"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "return_statement",
+                                "children": [
+                                  {
+                                    "kind": "false",
+                                    "text": "false"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "method_declaration",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "main"
+                  },
+                  {
+                    "kind": "formal_parameters",
+                    "children": [
+                      {
+                        "kind": "formal_parameter",
+                        "children": [
+                          {
+                            "kind": "array_type",
+                            "children": [
+                              {
+                                "kind": "type_identifier",
+                                "text": "String"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "args"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "block",
+                    "children": [
+                      {
+                        "kind": "enhanced_for_statement",
+                        "children": [
+                          {
+                            "kind": "type_identifier",
+                            "text": "var"
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "k"
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "m"
+                          },
+                          {
+                            "kind": "block",
+                            "children": [
+                              {
+                                "kind": "expression_statement",
+                                "children": [
+                                  {
+                                    "kind": "method_invocation",
+                                    "children": [
+                                      {
+                                        "kind": "field_access",
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "text": "System"
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "out"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "text": "println"
+                                      },
+                                      {
+                                        "kind": "argument_list",
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "text": "k"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
           }
         ]
       }
-    },
-    {
-      "kind": "ForEach",
-      "name": "k",
-      "expr": {
-        "kind": "Ident",
-        "name": "m"
-      },
-      "body": [
-        {
-          "kind": "Print",
-          "expr": {
-            "kind": "Ident",
-            "name": "k"
-          }
-        }
-      ]
-    }
-  ]
+    ]
+  }
 }

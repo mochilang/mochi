@@ -1,79 +1,271 @@
 {
-  "body": [
-    {
-      "kind": "VarDecl",
-      "name": "add10",
-      "type": "java.util.function.IntUnaryOperator",
-      "expr": {
-        "kind": "Call",
-        "target": {
-          "kind": "Ident",
-          "name": "makeAdder"
-        },
-        "args": [
+  "root": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "class_declaration",
+        "children": [
           {
-            "kind": "Literal",
-            "value": "10"
-          }
-        ]
-      }
-    },
-    {
-      "kind": "FnDecl",
-      "name": "makeAdder",
-      "type": "java.util.function.IntUnaryOperator",
-      "body": [
-        {
-          "kind": "Return",
-          "expr": {
-            "kind": "Lambda",
-            "expr": {
-              "kind": "Binary",
-              "left": {
-                "kind": "Ident",
-                "name": "x"
-              },
-              "right": {
-                "kind": "Ident",
-                "name": "n"
-              },
-              "op": "PLUS"
-            },
-            "params": [
+            "kind": "identifier",
+            "text": "Main"
+          },
+          {
+            "kind": "class_body",
+            "children": [
               {
-                "name": "x",
-                "type": "int"
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "scoped_type_identifier",
+                    "children": [
+                      {
+                        "kind": "scoped_type_identifier",
+                        "children": [
+                          {
+                            "kind": "scoped_type_identifier",
+                            "children": [
+                              {
+                                "kind": "type_identifier",
+                                "text": "java"
+                              },
+                              {
+                                "kind": "type_identifier",
+                                "text": "util"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "type_identifier",
+                            "text": "function"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "type_identifier",
+                        "text": "IntUnaryOperator"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "variable_declarator",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "add10"
+                      },
+                      {
+                        "kind": "method_invocation",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "makeAdder"
+                          },
+                          {
+                            "kind": "argument_list",
+                            "children": [
+                              {
+                                "kind": "decimal_integer_literal",
+                                "text": "10"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "method_declaration",
+                "children": [
+                  {
+                    "kind": "scoped_type_identifier",
+                    "children": [
+                      {
+                        "kind": "scoped_type_identifier",
+                        "children": [
+                          {
+                            "kind": "scoped_type_identifier",
+                            "children": [
+                              {
+                                "kind": "type_identifier",
+                                "text": "java"
+                              },
+                              {
+                                "kind": "type_identifier",
+                                "text": "util"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "type_identifier",
+                            "text": "function"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "type_identifier",
+                        "text": "IntUnaryOperator"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "makeAdder"
+                  },
+                  {
+                    "kind": "formal_parameters",
+                    "children": [
+                      {
+                        "kind": "formal_parameter",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "n"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "block",
+                    "children": [
+                      {
+                        "kind": "return_statement",
+                        "children": [
+                          {
+                            "kind": "lambda_expression",
+                            "children": [
+                              {
+                                "kind": "formal_parameters",
+                                "children": [
+                                  {
+                                    "kind": "formal_parameter",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "x"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "binary_expression",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "x"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "n"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "method_declaration",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "main"
+                  },
+                  {
+                    "kind": "formal_parameters",
+                    "children": [
+                      {
+                        "kind": "formal_parameter",
+                        "children": [
+                          {
+                            "kind": "array_type",
+                            "children": [
+                              {
+                                "kind": "type_identifier",
+                                "text": "String"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "args"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "block",
+                    "children": [
+                      {
+                        "kind": "expression_statement",
+                        "children": [
+                          {
+                            "kind": "method_invocation",
+                            "children": [
+                              {
+                                "kind": "field_access",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "System"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "out"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "println"
+                              },
+                              {
+                                "kind": "argument_list",
+                                "children": [
+                                  {
+                                    "kind": "method_invocation",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "add10"
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "text": "applyAsInt"
+                                      },
+                                      {
+                                        "kind": "argument_list",
+                                        "children": [
+                                          {
+                                            "kind": "decimal_integer_literal",
+                                            "text": "7"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
               }
             ]
           }
-        }
-      ],
-      "params": [
-        {
-          "name": "n",
-          "type": "int"
-        }
-      ]
-    },
-    {
-      "kind": "Print",
-      "expr": {
-        "kind": "Call",
-        "target": {
-          "kind": "Member",
-          "name": "applyAsInt",
-          "expr": {
-            "kind": "Ident",
-            "name": "add10"
-          }
-        },
-        "args": [
-          {
-            "kind": "Literal",
-            "value": "7"
-          }
         ]
       }
-    }
-  ]
+    ]
+  }
 }
