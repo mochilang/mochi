@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os/exec"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -13,6 +14,74 @@ import (
 // Program represents a parsed Clojure source file.
 type Program struct {
 	Forms []*Node `json:"forms"`
+}
+
+// rawNode mirrors the JSON structure produced by the babashka script.
+// It is converted into the generic Node type by toNode.
+type rawNode struct {
+	Sym    string     `json:"sym,omitempty"`
+	Kw     string     `json:"kw,omitempty"`
+	Str    string     `json:"str,omitempty"`
+	Num    *float64   `json:"num,omitempty"`
+	Bool   *bool      `json:"bool,omitempty"`
+	Nil    bool       `json:"nil,omitempty"`
+	List   []*rawNode `json:"list,omitempty"`
+	Vector []*rawNode `json:"vector,omitempty"`
+	Map    []rawEntry `json:"map,omitempty"`
+}
+
+type rawEntry struct {
+	Key *rawNode `json:"key"`
+	Val *rawNode `json:"val"`
+}
+
+// toNode converts a rawNode into the generic Node representation.
+func toNode(r *rawNode) *Node {
+	if r == nil {
+		return nil
+	}
+	switch {
+	case r.Sym != "":
+		return &Node{Kind: "symbol", Text: r.Sym}
+	case r.Kw != "":
+		return &Node{Kind: "keyword", Text: r.Kw}
+	case r.Str != "":
+		return &Node{Kind: "string", Text: r.Str}
+	case r.Num != nil:
+		return &Node{Kind: "number", Text: strconv.FormatFloat(*r.Num, 'f', -1, 64)}
+	case r.Bool != nil:
+		if *r.Bool {
+			return &Node{Kind: "boolean", Text: "true"}
+		}
+		return &Node{Kind: "boolean", Text: "false"}
+	case r.Nil:
+		return &Node{Kind: "nil", Text: "nil"}
+	case len(r.List) > 0:
+		n := &Node{Kind: "list"}
+		for _, c := range r.List {
+			if cn := toNode(c); cn != nil {
+				n.Children = append(n.Children, cn)
+			}
+		}
+		return n
+	case len(r.Vector) > 0:
+		n := &Node{Kind: "vector"}
+		for _, c := range r.Vector {
+			if cn := toNode(c); cn != nil {
+				n.Children = append(n.Children, cn)
+			}
+		}
+		return n
+	case len(r.Map) > 0:
+		n := &Node{Kind: "map"}
+		for _, e := range r.Map {
+			en := &Node{Kind: "entry"}
+			en.Children = []*Node{toNode(e.Key), toNode(e.Val)}
+			n.Children = append(n.Children, en)
+		}
+		return n
+	}
+	return nil
 }
 
 const bbScript = `(require '[cheshire.core :as json])
@@ -36,6 +105,9 @@ const bbScript = `(require '[cheshire.core :as json])
 var babashkaCmd = "bb"
 
 // Inspect parses the given Clojure source code and returns a Program describing its forms.
+// Inspect parses the given Clojure source code. The returned Program uses the
+// generic Node structure defined in ast.go. Position information is not
+// currently provided.
 func Inspect(src string) (*Program, error) {
 	if err := EnsureBabashka(); err != nil {
 		return nil, err
@@ -54,9 +126,15 @@ func Inspect(src string) (*Program, error) {
 		}
 		return nil, err
 	}
-	var forms []*Node
-	if err := json.Unmarshal(out.Bytes(), &forms); err != nil {
+	var rawForms []*rawNode
+	if err := json.Unmarshal(out.Bytes(), &rawForms); err != nil {
 		return nil, err
+	}
+	var forms []*Node
+	for _, rf := range rawForms {
+		if n := toNode(rf); n != nil {
+			forms = append(forms, n)
+		}
 	}
 	return &Program{Forms: forms}, nil
 }
