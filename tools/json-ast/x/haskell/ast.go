@@ -2,28 +2,35 @@ package haskell
 
 import sitter "github.com/smacker/go-tree-sitter"
 
-// Node represents a node in the parsed Haskell AST.
+// Node represents a tree-sitter node.
+// Leaf nodes record their source text in the Text field while
+// inner nodes only keep their kind and byte offsets.
 type Node struct {
-	Type     string        `json:"node"`
-	Children []interface{} `json:"children,omitempty"`
+	Kind     string `json:"kind"`
+	Start    int    `json:"start"`
+	End      int    `json:"end"`
+	Text     string `json:"text,omitempty"`
+	Children []Node `json:"children,omitempty"`
 }
 
-// convert recursively converts a tree-sitter node into our Node structure.
-// Leaf nodes that have no named children store their source text as a string
-// in the Children slice.
+// convert transforms a tree-sitter node into the Node structure defined above.
+// Only named children are traversed to keep the result compact.
 func convert(n *sitter.Node, src []byte) Node {
-	node := Node{Type: n.Type()}
+	out := Node{
+		Kind:  n.Type(),
+		Start: int(n.StartByte()),
+		End:   int(n.EndByte()),
+	}
 	if n.NamedChildCount() == 0 {
-		// If the node has no named children we keep its raw text.
-		node.Children = append(node.Children, n.Content(src))
-		return node
+		out.Text = n.Content(src)
+		return out
 	}
 	for i := 0; i < int(n.NamedChildCount()); i++ {
 		child := n.NamedChild(i)
 		if child == nil {
 			continue
 		}
-		node.Children = append(node.Children, convert(child, src))
+		out.Children = append(out.Children, convert(child, src))
 	}
-	return node
+	return out
 }
