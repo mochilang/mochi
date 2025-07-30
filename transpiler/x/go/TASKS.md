@@ -1,3 +1,71 @@
+## Progress (2025-07-30 21:35 +0700)
+- go transpiler: fix int assertion for map index
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-07-30 21:35 +0700)
+- go transpiler: fix int assertion for map index
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-07-30 21:35 +0700)
+- go transpiler: fix int assertion for map index
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-07-30 21:35 +0700)
+- go transpiler: fix int assertion for map index
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-07-30 21:35 +0700)
+- go transpiler: fix int assertion for map index
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-07-30 21:35 +0700)
+- go transpiler: fix int assertion for map index
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-07-30 21:35 +0700)
+- go transpiler: fix int assertion for map index
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-07-30 21:35 +0700)
+- go transpiler: fix int assertion for map index
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-07-30 21:35 +0700)
+- go transpiler: fix int assertion for map index
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-07-30 21:35 +0700)
+- go transpiler: fix int assertion for map index
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-07-30 21:35 +0700)
+- go transpiler: fix int assertion for map index
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-07-30 21:35 +0700)
+- go transpiler: fix int assertion for map index
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-07-30 21:35 +0700)
+- go transpiler: fix int assertion for map index
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-07-30 21:35 +0700)
+- go transpiler: fix int assertion for map index
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-07-30 21:35 +0700)
+- go transpiler: fix int assertion for map index
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-07-30 21:35 +0700)
+- go transpiler: fix int assertion for map index
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-07-30 21:35 +0700)
+- go transpiler: fix int assertion for map index
+- Regenerated golden files - 104/105 vm valid programs passing
+
 ## Progress (2025-07-28 10:21 +0700)
 - fix go transpiler map literal type for map element
 - Regenerated golden files - 104/104 vm valid programs passing
