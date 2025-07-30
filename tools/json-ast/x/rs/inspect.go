@@ -9,12 +9,12 @@ import (
 
 // Inspect parses the given Rust source code using tree-sitter and returns
 // a Program describing its syntax tree.
-func Inspect(src string) (*Program, error) {
+func Inspect(src string, includePos bool) (*Program, error) {
 	p := sitter.NewParser()
 	p.SetLanguage(rust.GetLanguage())
 	data := []byte(src)
 	tree := p.Parse(nil, data)
-	return &Program{Root: convert(tree.RootNode(), data)}, nil
+	return &Program{Root: convert(tree.RootNode(), data, includePos)}, nil
 }
 
 // MarshalJSON implements json.Marshaler for Program, to ensure stable output.
