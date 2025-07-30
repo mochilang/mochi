@@ -1,6 +1,6 @@
 package python
 
-import sitter "github.com/smacker/go-tree-sitter"
+import sitter "github.com/tree-sitter/go-tree-sitter"
 
 // Node represents a simplified Python AST node converted from tree-sitter.
 // The positional fields are omitted from the JSON when zero so callers can
@@ -52,9 +52,9 @@ func toNode(n *sitter.Node, src []byte, withPos bool) *Node {
 		return nil
 	}
 
-	start := n.StartPoint()
-	end := n.EndPoint()
-	node := &Node{Kind: n.Type()}
+	start := n.StartPosition()
+	end := n.EndPosition()
+	node := &Node{Kind: n.Kind()}
 	if withPos {
 		node.Start = int(n.StartByte())
 		node.StartCol = int(start.Column)
@@ -63,14 +63,14 @@ func toNode(n *sitter.Node, src []byte, withPos bool) *Node {
 	}
 
 	if n.NamedChildCount() == 0 {
-		if isValueNode(n.Type()) {
-			node.Text = n.Content(src)
+		if isValueNode(n.Kind()) {
+			node.Text = n.Utf8Text(src)
 		} else {
 			return nil
 		}
 	}
 
-	for i := 0; i < int(n.NamedChildCount()); i++ {
+	for i := uint(0); i < n.NamedChildCount(); i++ {
 		child := n.NamedChild(i)
 		if child == nil {
 			continue
