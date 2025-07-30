@@ -1,7 +1,7 @@
 package gox
 
 import (
-	sitter "github.com/smacker/go-tree-sitter"
+	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
 // Node represents a simplified Go AST node converted from tree-sitter.
@@ -41,9 +41,9 @@ func convertNode(n *sitter.Node, src []byte) *Node {
 		return nil
 	}
 
-	start := n.StartPoint()
-	end := n.EndPoint()
-	node := &Node{Kind: n.Type()}
+	start := n.StartPosition()
+	end := n.EndPosition()
+	node := &Node{Kind: n.Kind()}
 	if IncludePositions {
 		node.Start = int(start.Row) + 1
 		node.StartCol = int(start.Column)
@@ -52,14 +52,14 @@ func convertNode(n *sitter.Node, src []byte) *Node {
 	}
 
 	if n.NamedChildCount() == 0 {
-		if isValueNode(n.Type()) {
-			node.Text = n.Content(src)
+		if isValueNode(n.Kind()) {
+			node.Text = string(src[n.StartByte():n.EndByte()])
 		} else {
 			return nil
 		}
 	}
 
-	for i := 0; i < int(n.NamedChildCount()); i++ {
+	for i := uint(0); i < n.NamedChildCount(); i++ {
 		child := n.NamedChild(i)
 		if child == nil {
 			continue

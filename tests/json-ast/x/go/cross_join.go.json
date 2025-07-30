@@ -20,25 +20,6 @@
         ]
       },
       {
-        "kind": "import_declaration",
-        "children": [
-          {
-            "kind": "import_spec_list",
-            "children": [
-              {
-                "kind": "import_spec",
-                "children": [
-                  {
-                    "kind": "interpreted_string_literal",
-                    "text": "\"fmt\""
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
         "kind": "var_declaration",
         "children": [
           {
@@ -122,15 +103,6 @@
                                                 "text": "Name"
                                               }
                                             ]
-                                          },
-                                          {
-                                            "kind": "literal_element",
-                                            "children": [
-                                              {
-                                                "kind": "interpreted_string_literal",
-                                                "text": "\"Alice\""
-                                              }
-                                            ]
                                           }
                                         ]
                                       }
@@ -185,15 +157,6 @@
                                               {
                                                 "kind": "identifier",
                                                 "text": "Name"
-                                              }
-                                            ]
-                                          },
-                                          {
-                                            "kind": "literal_element",
-                                            "children": [
-                                              {
-                                                "kind": "interpreted_string_literal",
-                                                "text": "\"Bob\""
                                               }
                                             ]
                                           }
@@ -252,15 +215,6 @@
                                                 "text": "Name"
                                               }
                                             ]
-                                          },
-                                          {
-                                            "kind": "literal_element",
-                                            "children": [
-                                              {
-                                                "kind": "interpreted_string_literal",
-                                                "text": "\"Charlie\""
-                                              }
-                                            ]
                                           }
                                         ]
                                       }
@@ -306,10 +260,6 @@
                           {
                             "kind": "type_identifier",
                             "text": "int"
-                          },
-                          {
-                            "kind": "raw_string_literal",
-                            "text": "`json:\"id\"`"
                           }
                         ]
                       },
@@ -323,10 +273,6 @@
                           {
                             "kind": "type_identifier",
                             "text": "string"
-                          },
-                          {
-                            "kind": "raw_string_literal",
-                            "text": "`json:\"name\"`"
                           }
                         ]
                       }
@@ -675,10 +621,6 @@
                           {
                             "kind": "type_identifier",
                             "text": "int"
-                          },
-                          {
-                            "kind": "raw_string_literal",
-                            "text": "`json:\"id\"`"
                           }
                         ]
                       },
@@ -692,10 +634,6 @@
                           {
                             "kind": "type_identifier",
                             "text": "int"
-                          },
-                          {
-                            "kind": "raw_string_literal",
-                            "text": "`json:\"customerId\"`"
                           }
                         ]
                       },
@@ -709,10 +647,6 @@
                           {
                             "kind": "type_identifier",
                             "text": "int"
-                          },
-                          {
-                            "kind": "raw_string_literal",
-                            "text": "`json:\"total\"`"
                           }
                         ]
                       }
@@ -750,10 +684,6 @@
                           {
                             "kind": "type_identifier",
                             "text": "int"
-                          },
-                          {
-                            "kind": "raw_string_literal",
-                            "text": "`json:\"orderId\"`"
                           }
                         ]
                       },
@@ -767,10 +697,6 @@
                           {
                             "kind": "type_identifier",
                             "text": "int"
-                          },
-                          {
-                            "kind": "raw_string_literal",
-                            "text": "`json:\"orderCustomerId\"`"
                           }
                         ]
                       },
@@ -784,10 +710,6 @@
                           {
                             "kind": "type_identifier",
                             "text": "string"
-                          },
-                          {
-                            "kind": "raw_string_literal",
-                            "text": "`json:\"pairedCustomerName\"`"
                           }
                         ]
                       },
@@ -801,10 +723,6 @@
                           {
                             "kind": "type_identifier",
                             "text": "int"
-                          },
-                          {
-                            "kind": "raw_string_literal",
-                            "text": "`json:\"orderTotal\"`"
                           }
                         ]
                       }
@@ -1186,15 +1104,6 @@
                             "text": "Println"
                           }
                         ]
-                      },
-                      {
-                        "kind": "argument_list",
-                        "children": [
-                          {
-                            "kind": "interpreted_string_literal",
-                            "text": "\"--- Cross Join: All order-customer pairs ---\""
-                          }
-                        ]
                       }
                     ]
                   }
@@ -1251,10 +1160,6 @@
                                 "kind": "argument_list",
                                 "children": [
                                   {
-                                    "kind": "interpreted_string_literal",
-                                    "text": "\"Order\""
-                                  },
-                                  {
                                     "kind": "selector_expression",
                                     "children": [
                                       {
@@ -1266,10 +1171,6 @@
                                         "text": "OrderID"
                                       }
                                     ]
-                                  },
-                                  {
-                                    "kind": "interpreted_string_literal",
-                                    "text": "\"(customerId:\""
                                   },
                                   {
                                     "kind": "selector_expression",
@@ -1285,10 +1186,6 @@
                                     ]
                                   },
                                   {
-                                    "kind": "interpreted_string_literal",
-                                    "text": "\", total: $\""
-                                  },
-                                  {
                                     "kind": "selector_expression",
                                     "children": [
                                       {
@@ -1300,10 +1197,6 @@
                                         "text": "OrderTotal"
                                       }
                                     ]
-                                  },
-                                  {
-                                    "kind": "interpreted_string_literal",
-                                    "text": "\") paired with\""
                                   },
                                   {
                                     "kind": "selector_expression",
