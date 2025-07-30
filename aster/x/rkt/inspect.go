@@ -1,7 +1,7 @@
 package rkt
 
 import (
-	sitter "github.com/smacker/go-tree-sitter"
+	sitter "github.com/tree-sitter/go-tree-sitter"
 	racket "github.com/tree-sitter/tree-sitter-racket/bindings/go"
 )
 
@@ -17,6 +17,6 @@ type Program struct {
 func Inspect(src string, withPos bool) (*Program, error) {
 	p := sitter.NewParser()
 	p.SetLanguage(sitter.NewLanguage(racket.Language()))
-	tree := p.Parse(nil, []byte(src))
+	tree := p.Parse([]byte(src), nil)
 	return convertProgram(tree.RootNode(), []byte(src), withPos), nil
 }
