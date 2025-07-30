@@ -1,7 +1,7 @@
 package scheme
 
 import (
-	sitter "github.com/smacker/go-tree-sitter"
+	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
 // IncludePos controls whether the conversion functions record positional
@@ -57,10 +57,10 @@ func convertNode(n *sitter.Node, src []byte) *Node {
 		return nil
 	}
 
-	node := &Node{Kind: n.Type()}
+	node := &Node{Kind: n.Kind()}
 	if IncludePos {
-		sp := n.StartPoint()
-		ep := n.EndPoint()
+		sp := n.StartPosition()
+		ep := n.EndPosition()
 		node.Start = int(sp.Row) + 1
 		node.StartCol = int(sp.Column)
 		node.End = int(ep.Row) + 1
@@ -68,14 +68,14 @@ func convertNode(n *sitter.Node, src []byte) *Node {
 	}
 
 	if n.NamedChildCount() == 0 {
-		if isValueNode(n.Type()) {
-			node.Text = n.Content(src)
+		if isValueNode(n.Kind()) {
+			node.Text = n.Utf8Text(src)
 		} else {
 			return nil
 		}
 	}
 
-	for i := 0; i < int(n.NamedChildCount()); i++ {
+	for i := uint(0); i < n.NamedChildCount(); i++ {
 		if c := convertNode(n.NamedChild(i), src); c != nil {
 			node.Children = append(node.Children, *c)
 		}
@@ -93,7 +93,7 @@ func convertProgram(root *sitter.Node, src []byte) *Program {
 		return &Program{}
 	}
 	var forms []Form
-	for i := 0; i < int(root.NamedChildCount()); i++ {
+	for i := uint(0); i < root.NamedChildCount(); i++ {
 		if n := convertNode(root.NamedChild(i), src); n != nil {
 			forms = append(forms, Form(*n))
 		}
