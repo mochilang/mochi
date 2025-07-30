@@ -1,0 +1,555 @@
+{
+  "ast": {
+    "type": "__block__",
+    "meta": {},
+    "args": [
+      {
+        "args": [
+          {
+            "ctx": "nil",
+            "meta": {
+              "column": 1,
+              "line": 2
+            },
+            "type": "customers"
+          },
+          [
+            {
+              "args": [
+                [
+                  "id",
+                  1
+                ],
+                [
+                  "name",
+                  "Alice"
+                ]
+              ],
+              "meta": {
+                "column": 14,
+                "line": 2
+              },
+              "type": "%{}"
+            },
+            {
+              "args": [
+                [
+                  "id",
+                  2
+                ],
+                [
+                  "name",
+                  "Bob"
+                ]
+              ],
+              "meta": {
+                "column": 39,
+                "line": 2
+              },
+              "type": "%{}"
+            },
+            {
+              "args": [
+                [
+                  "id",
+                  3
+                ],
+                [
+                  "name",
+                  "Charlie"
+                ]
+              ],
+              "meta": {
+                "column": 62,
+                "line": 2
+              },
+              "type": "%{}"
+            }
+          ]
+        ],
+        "meta": {
+          "column": 11,
+          "line": 2
+        },
+        "type": "="
+      },
+      {
+        "args": [
+          {
+            "ctx": "nil",
+            "meta": {
+              "column": 1,
+              "line": 3
+            },
+            "type": "orders"
+          },
+          [
+            {
+              "args": [
+                [
+                  "id",
+                  100
+                ],
+                [
+                  "customerId",
+                  1
+                ],
+                [
+                  "total",
+                  250
+                ]
+              ],
+              "meta": {
+                "column": 11,
+                "line": 3
+              },
+              "type": "%{}"
+            },
+            {
+              "args": [
+                [
+                  "id",
+                  101
+                ],
+                [
+                  "customerId",
+                  2
+                ],
+                [
+                  "total",
+                  125
+                ]
+              ],
+              "meta": {
+                "column": 50,
+                "line": 3
+              },
+              "type": "%{}"
+            },
+            {
+              "args": [
+                [
+                  "id",
+                  102
+                ],
+                [
+                  "customerId",
+                  1
+                ],
+                [
+                  "total",
+                  300
+                ]
+              ],
+              "meta": {
+                "column": 89,
+                "line": 3
+              },
+              "type": "%{}"
+            }
+          ]
+        ],
+        "meta": {
+          "column": 8,
+          "line": 3
+        },
+        "type": "="
+      },
+      {
+        "args": [
+          {
+            "ctx": "nil",
+            "meta": {
+              "column": 1,
+              "line": 4
+            },
+            "type": "result"
+          },
+          {
+            "args": [
+              {
+                "args": [
+                  {
+                    "ctx": "nil",
+                    "meta": {
+                      "column": 14,
+                      "line": 4
+                    },
+                    "type": "o"
+                  },
+                  {
+                    "ctx": "nil",
+                    "meta": {
+                      "column": 19,
+                      "line": 4
+                    },
+                    "type": "orders"
+                  }
+                ],
+                "meta": {
+                  "column": 16,
+                  "line": 4
+                },
+                "type": "\u003c-"
+              },
+              {
+                "args": [
+                  {
+                    "ctx": "nil",
+                    "meta": {
+                      "column": 27,
+                      "line": 4
+                    },
+                    "type": "c"
+                  },
+                  {
+                    "ctx": "nil",
+                    "meta": {
+                      "column": 32,
+                      "line": 4
+                    },
+                    "type": "customers"
+                  }
+                ],
+                "meta": {
+                  "column": 29,
+                  "line": 4
+                },
+                "type": "\u003c-"
+              },
+              [
+                [
+                  "do",
+                  {
+                    "args": [
+                      [
+                        "orderId",
+                        {
+                          "args": [],
+                          "meta": {
+                            "column": 16,
+                            "line": 6,
+                            "no_parens": "true"
+                          },
+                          "type": "o . :id"
+                        }
+                      ],
+                      [
+                        "orderCustomerId",
+                        {
+                          "args": [],
+                          "meta": {
+                            "column": 24,
+                            "line": 7,
+                            "no_parens": "true"
+                          },
+                          "type": "o . :customerId"
+                        }
+                      ],
+                      [
+                        "pairedCustomerName",
+                        {
+                          "args": [],
+                          "meta": {
+                            "column": 27,
+                            "line": 8,
+                            "no_parens": "true"
+                          },
+                          "type": "c . :name"
+                        }
+                      ],
+                      [
+                        "orderTotal",
+                        {
+                          "args": [],
+                          "meta": {
+                            "column": 19,
+                            "line": 9,
+                            "no_parens": "true"
+                          },
+                          "type": "o . :total"
+                        }
+                      ]
+                    ],
+                    "meta": {
+                      "column": 3,
+                      "line": 5
+                    },
+                    "type": "%{}"
+                  }
+                ]
+              ]
+            ],
+            "meta": {
+              "column": 10,
+              "line": 4
+            },
+            "type": "for"
+          }
+        ],
+        "meta": {
+          "column": 8,
+          "line": 4
+        },
+        "type": "="
+      },
+      {
+        "args": [
+          "--- Cross Join: All order-customer pairs ---"
+        ],
+        "meta": {
+          "column": 4,
+          "line": 12
+        },
+        "type": "IO . :puts"
+      },
+      {
+        "args": [
+          {
+            "ctx": "nil",
+            "meta": {
+              "column": 11,
+              "line": 13
+            },
+            "type": "result"
+          },
+          {
+            "args": [
+              {
+                "args": [
+                  [
+                    {
+                      "ctx": "nil",
+                      "meta": {
+                        "column": 22,
+                        "line": 13
+                      },
+                      "type": "entry"
+                    }
+                  ],
+                  {
+                    "args": [
+                      {
+                        "args": [
+                          "Order ",
+                          {
+                            "args": [
+                              {
+                                "args": [
+                                  {
+                                    "args": [
+                                      {
+                                        "args": [],
+                                        "meta": {
+                                          "column": 41,
+                                          "line": 14,
+                                          "no_parens": "true"
+                                        },
+                                        "type": "entry . :orderId"
+                                      }
+                                    ],
+                                    "meta": {
+                                      "column": 27,
+                                      "line": 14
+                                    },
+                                    "type": "Kernel . :inspect"
+                                  }
+                                ],
+                                "meta": {
+                                  "column": 18,
+                                  "from_interpolation": "true",
+                                  "line": 14
+                                },
+                                "type": "Kernel . :to_string"
+                              },
+                              {
+                                "ctx": "nil",
+                                "meta": {
+                                  "column": 18,
+                                  "line": 14
+                                },
+                                "type": "binary"
+                              }
+                            ],
+                            "meta": {
+                              "column": 18,
+                              "line": 14
+                            },
+                            "type": "::"
+                          },
+                          " (customerId: ",
+                          {
+                            "args": [
+                              {
+                                "args": [
+                                  {
+                                    "args": [
+                                      {
+                                        "args": [],
+                                        "meta": {
+                                          "column": 87,
+                                          "line": 14,
+                                          "no_parens": "true"
+                                        },
+                                        "type": "entry . :orderCustomerId"
+                                      }
+                                    ],
+                                    "meta": {
+                                      "column": 73,
+                                      "line": 14
+                                    },
+                                    "type": "Kernel . :inspect"
+                                  }
+                                ],
+                                "meta": {
+                                  "column": 64,
+                                  "from_interpolation": "true",
+                                  "line": 14
+                                },
+                                "type": "Kernel . :to_string"
+                              },
+                              {
+                                "ctx": "nil",
+                                "meta": {
+                                  "column": 64,
+                                  "line": 14
+                                },
+                                "type": "binary"
+                              }
+                            ],
+                            "meta": {
+                              "column": 64,
+                              "line": 14
+                            },
+                            "type": "::"
+                          },
+                          " , total: $ ",
+                          {
+                            "args": [
+                              {
+                                "args": [
+                                  {
+                                    "args": [
+                                      {
+                                        "args": [],
+                                        "meta": {
+                                          "column": 139,
+                                          "line": 14,
+                                          "no_parens": "true"
+                                        },
+                                        "type": "entry . :orderTotal"
+                                      }
+                                    ],
+                                    "meta": {
+                                      "column": 125,
+                                      "line": 14
+                                    },
+                                    "type": "Kernel . :inspect"
+                                  }
+                                ],
+                                "meta": {
+                                  "column": 116,
+                                  "from_interpolation": "true",
+                                  "line": 14
+                                },
+                                "type": "Kernel . :to_string"
+                              },
+                              {
+                                "ctx": "nil",
+                                "meta": {
+                                  "column": 116,
+                                  "line": 14
+                                },
+                                "type": "binary"
+                              }
+                            ],
+                            "meta": {
+                              "column": 116,
+                              "line": 14
+                            },
+                            "type": "::"
+                          },
+                          " ) paired with ",
+                          {
+                            "args": [
+                              {
+                                "args": [
+                                  {
+                                    "args": [
+                                      {
+                                        "args": [],
+                                        "meta": {
+                                          "column": 189,
+                                          "line": 14,
+                                          "no_parens": "true"
+                                        },
+                                        "type": "entry . :pairedCustomerName"
+                                      }
+                                    ],
+                                    "meta": {
+                                      "column": 175,
+                                      "line": 14
+                                    },
+                                    "type": "Kernel . :inspect"
+                                  }
+                                ],
+                                "meta": {
+                                  "column": 166,
+                                  "from_interpolation": "true",
+                                  "line": 14
+                                },
+                                "type": "Kernel . :to_string"
+                              },
+                              {
+                                "ctx": "nil",
+                                "meta": {
+                                  "column": 166,
+                                  "line": 14
+                                },
+                                "type": "binary"
+                              }
+                            ],
+                            "meta": {
+                              "column": 166,
+                              "line": 14
+                            },
+                            "type": "::"
+                          }
+                        ],
+                        "meta": {
+                          "column": 11,
+                          "line": 14
+                        },
+                        "type": "\u003c\u003c\u003e\u003e"
+                      }
+                    ],
+                    "meta": {
+                      "column": 6,
+                      "line": 14
+                    },
+                    "type": "IO . :puts"
+                  }
+                ],
+                "meta": {
+                  "column": 28,
+                  "line": 13
+                },
+                "type": "-\u003e"
+              }
+            ],
+            "meta": {
+              "column": 19,
+              "line": 13
+            },
+            "type": "fn"
+          }
+        ],
+        "meta": {
+          "column": 6,
+          "line": 13
+        },
+        "type": "Enum . :each"
+      }
+    ]
+  }
+}
