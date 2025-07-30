@@ -1,15 +1,2109 @@
 {
-  "funcs": [],
-  "prints": [
-    {
-      "expr": "let customers = [[(\"id\", 1); (\"name\", \"Alice\")]; [(\"id\", 2); (\"name\", \"Bob\")]; [(\"id\", 3); (\"name\", \"Charlie\")]] in\n  let orders = [[(\"id\", 100); (\"customerId\", 1); (\"total\", 250)]; [(\"id\", 101); (\"customerId\", 2); (\"total\", 125)]; [(\"id\", 102); (\"customerId\", 1); (\"total\", 300)]] in\n  let result = (List.concat (List.map (fun o -\u003e (List.map (fun c -\u003e [(\"orderId\", (List.assoc \"id\" o)); (\"orderCustomerId\", (List.assoc \"customerId\" o)); (\"pairedCustomerName\", (List.assoc \"name\" c)); (\"orderTotal\", (List.assoc \"total\" o))]) customers)) orders)) in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [\"--- Cross Join: All order-customer pairs ---\"]));\n  (try List.iter (fun entry -\u003e\n    try\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [\"Order\"; string_of_int (List.assoc \"orderId\" entry)); \"(customerId:\"; string_of_int (List.assoc \"orderCustomerId\" entry)); \", total: $\"; string_of_int (List.assoc \"orderTotal\" entry)); \") paired with\"; (List.assoc \"pairedCustomerName\" entry)]));\n    with Continue -\u003e ()) result with Break -\u003e ())",
-      "line": 3,
-      "col": 1,
-      "endLine": 11,
-      "endCol": 50,
-      "snippet": "let () =\n  let customers = [[(\"id\", 1); (\"name\", \"Alice\")]; [(\"id\", 2); (\"name\", \"Bob\")]; [(\"id\", 3); (\"name\", \"Charlie\")]] in\n  let orders = [[(\"id\", 100); (\"customerId\", 1); (\"total\", 250)]; [(\"id\", 101); (\"customerId\", 2); (\"total\", 125)]; [(\"id\", 102); (\"customerId\", 1); (\"total\", 300)]] in\n  let result = (List.concat (List.map (fun o -\u003e (List.map (fun c -\u003e [(\"orderId\", (List.assoc \"id\" o)); (\"orderCustomerId\", (List.assoc \"customerId\" o)); (\"pairedCustomerName\", (List.assoc \"name\" c)); (\"orderTotal\", (List.assoc \"total\" o))]) customers)) orders)) in\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [\"--- Cross Join: All order-customer pairs ---\"]));\n  (try List.iter (fun entry -\u003e\n    try\n  print_endline (String.concat \" \" (List.filter (fun s -\u003e s \u003c\u003e \"\") [\"Order\"; string_of_int (List.assoc \"orderId\" entry)); \"(customerId:\"; string_of_int (List.assoc \"orderCustomerId\" entry)); \", total: $\"; string_of_int (List.assoc \"orderTotal\" entry)); \") paired with\"; (List.assoc \"pairedCustomerName\" entry)]));\n    with Continue -\u003e ()) result with Break -\u003e ())"
-    }
-  ],
-  "types": [],
-  "vars": []
+  "file": {
+    "kind": "compilation_unit",
+    "start": 0,
+    "end": 1155,
+    "children": [
+      {
+        "kind": "comment",
+        "start": 0,
+        "end": 70
+      },
+      {
+        "kind": "value_definition",
+        "start": 72,
+        "end": 1154,
+        "children": [
+          {
+            "kind": "let_binding",
+            "start": 76,
+            "end": 1154,
+            "children": [
+              {
+                "kind": "unit",
+                "start": 76,
+                "end": 78
+              },
+              {
+                "kind": "let_expression",
+                "start": 83,
+                "end": 1154,
+                "children": [
+                  {
+                    "kind": "value_definition",
+                    "start": 83,
+                    "end": 195,
+                    "children": [
+                      {
+                        "kind": "let_binding",
+                        "start": 87,
+                        "end": 195,
+                        "children": [
+                          {
+                            "kind": "value_name",
+                            "start": 87,
+                            "end": 96
+                          },
+                          {
+                            "kind": "list_expression",
+                            "start": 99,
+                            "end": 195,
+                            "children": [
+                              {
+                                "kind": "list_expression",
+                                "start": 100,
+                                "end": 130,
+                                "children": [
+                                  {
+                                    "kind": "parenthesized_expression",
+                                    "start": 101,
+                                    "end": 110,
+                                    "children": [
+                                      {
+                                        "kind": "product_expression",
+                                        "start": 102,
+                                        "end": 109,
+                                        "children": [
+                                          {
+                                            "kind": "string",
+                                            "start": 102,
+                                            "end": 106,
+                                            "children": [
+                                              {
+                                                "kind": "string_content",
+                                                "start": 103,
+                                                "end": 105
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "number",
+                                            "start": 108,
+                                            "end": 109
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "parenthesized_expression",
+                                    "start": 112,
+                                    "end": 129,
+                                    "children": [
+                                      {
+                                        "kind": "product_expression",
+                                        "start": 113,
+                                        "end": 128,
+                                        "children": [
+                                          {
+                                            "kind": "string",
+                                            "start": 113,
+                                            "end": 119,
+                                            "children": [
+                                              {
+                                                "kind": "string_content",
+                                                "start": 114,
+                                                "end": 118
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "string",
+                                            "start": 121,
+                                            "end": 128,
+                                            "children": [
+                                              {
+                                                "kind": "string_content",
+                                                "start": 122,
+                                                "end": 127
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "list_expression",
+                                "start": 132,
+                                "end": 160,
+                                "children": [
+                                  {
+                                    "kind": "parenthesized_expression",
+                                    "start": 133,
+                                    "end": 142,
+                                    "children": [
+                                      {
+                                        "kind": "product_expression",
+                                        "start": 134,
+                                        "end": 141,
+                                        "children": [
+                                          {
+                                            "kind": "string",
+                                            "start": 134,
+                                            "end": 138,
+                                            "children": [
+                                              {
+                                                "kind": "string_content",
+                                                "start": 135,
+                                                "end": 137
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "number",
+                                            "start": 140,
+                                            "end": 141
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "parenthesized_expression",
+                                    "start": 144,
+                                    "end": 159,
+                                    "children": [
+                                      {
+                                        "kind": "product_expression",
+                                        "start": 145,
+                                        "end": 158,
+                                        "children": [
+                                          {
+                                            "kind": "string",
+                                            "start": 145,
+                                            "end": 151,
+                                            "children": [
+                                              {
+                                                "kind": "string_content",
+                                                "start": 146,
+                                                "end": 150
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "string",
+                                            "start": 153,
+                                            "end": 158,
+                                            "children": [
+                                              {
+                                                "kind": "string_content",
+                                                "start": 154,
+                                                "end": 157
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "list_expression",
+                                "start": 162,
+                                "end": 194,
+                                "children": [
+                                  {
+                                    "kind": "parenthesized_expression",
+                                    "start": 163,
+                                    "end": 172,
+                                    "children": [
+                                      {
+                                        "kind": "product_expression",
+                                        "start": 164,
+                                        "end": 171,
+                                        "children": [
+                                          {
+                                            "kind": "string",
+                                            "start": 164,
+                                            "end": 168,
+                                            "children": [
+                                              {
+                                                "kind": "string_content",
+                                                "start": 165,
+                                                "end": 167
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "number",
+                                            "start": 170,
+                                            "end": 171
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "parenthesized_expression",
+                                    "start": 174,
+                                    "end": 193,
+                                    "children": [
+                                      {
+                                        "kind": "product_expression",
+                                        "start": 175,
+                                        "end": 192,
+                                        "children": [
+                                          {
+                                            "kind": "string",
+                                            "start": 175,
+                                            "end": 181,
+                                            "children": [
+                                              {
+                                                "kind": "string_content",
+                                                "start": 176,
+                                                "end": 180
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "string",
+                                            "start": 183,
+                                            "end": 192,
+                                            "children": [
+                                              {
+                                                "kind": "string_content",
+                                                "start": 184,
+                                                "end": 191
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "let_expression",
+                    "start": 201,
+                    "end": 1154,
+                    "children": [
+                      {
+                        "kind": "value_definition",
+                        "start": 201,
+                        "end": 364,
+                        "children": [
+                          {
+                            "kind": "let_binding",
+                            "start": 205,
+                            "end": 364,
+                            "children": [
+                              {
+                                "kind": "value_name",
+                                "start": 205,
+                                "end": 211
+                              },
+                              {
+                                "kind": "list_expression",
+                                "start": 214,
+                                "end": 364,
+                                "children": [
+                                  {
+                                    "kind": "list_expression",
+                                    "start": 215,
+                                    "end": 263,
+                                    "children": [
+                                      {
+                                        "kind": "parenthesized_expression",
+                                        "start": 216,
+                                        "end": 227,
+                                        "children": [
+                                          {
+                                            "kind": "product_expression",
+                                            "start": 217,
+                                            "end": 226,
+                                            "children": [
+                                              {
+                                                "kind": "string",
+                                                "start": 217,
+                                                "end": 221,
+                                                "children": [
+                                                  {
+                                                    "kind": "string_content",
+                                                    "start": 218,
+                                                    "end": 220
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "number",
+                                                "start": 223,
+                                                "end": 226
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "parenthesized_expression",
+                                        "start": 229,
+                                        "end": 246,
+                                        "children": [
+                                          {
+                                            "kind": "product_expression",
+                                            "start": 230,
+                                            "end": 245,
+                                            "children": [
+                                              {
+                                                "kind": "string",
+                                                "start": 230,
+                                                "end": 242,
+                                                "children": [
+                                                  {
+                                                    "kind": "string_content",
+                                                    "start": 231,
+                                                    "end": 241
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "number",
+                                                "start": 244,
+                                                "end": 245
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "parenthesized_expression",
+                                        "start": 248,
+                                        "end": 262,
+                                        "children": [
+                                          {
+                                            "kind": "product_expression",
+                                            "start": 249,
+                                            "end": 261,
+                                            "children": [
+                                              {
+                                                "kind": "string",
+                                                "start": 249,
+                                                "end": 256,
+                                                "children": [
+                                                  {
+                                                    "kind": "string_content",
+                                                    "start": 250,
+                                                    "end": 255
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "number",
+                                                "start": 258,
+                                                "end": 261
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "list_expression",
+                                    "start": 265,
+                                    "end": 313,
+                                    "children": [
+                                      {
+                                        "kind": "parenthesized_expression",
+                                        "start": 266,
+                                        "end": 277,
+                                        "children": [
+                                          {
+                                            "kind": "product_expression",
+                                            "start": 267,
+                                            "end": 276,
+                                            "children": [
+                                              {
+                                                "kind": "string",
+                                                "start": 267,
+                                                "end": 271,
+                                                "children": [
+                                                  {
+                                                    "kind": "string_content",
+                                                    "start": 268,
+                                                    "end": 270
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "number",
+                                                "start": 273,
+                                                "end": 276
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "parenthesized_expression",
+                                        "start": 279,
+                                        "end": 296,
+                                        "children": [
+                                          {
+                                            "kind": "product_expression",
+                                            "start": 280,
+                                            "end": 295,
+                                            "children": [
+                                              {
+                                                "kind": "string",
+                                                "start": 280,
+                                                "end": 292,
+                                                "children": [
+                                                  {
+                                                    "kind": "string_content",
+                                                    "start": 281,
+                                                    "end": 291
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "number",
+                                                "start": 294,
+                                                "end": 295
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "parenthesized_expression",
+                                        "start": 298,
+                                        "end": 312,
+                                        "children": [
+                                          {
+                                            "kind": "product_expression",
+                                            "start": 299,
+                                            "end": 311,
+                                            "children": [
+                                              {
+                                                "kind": "string",
+                                                "start": 299,
+                                                "end": 306,
+                                                "children": [
+                                                  {
+                                                    "kind": "string_content",
+                                                    "start": 300,
+                                                    "end": 305
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "number",
+                                                "start": 308,
+                                                "end": 311
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "list_expression",
+                                    "start": 315,
+                                    "end": 363,
+                                    "children": [
+                                      {
+                                        "kind": "parenthesized_expression",
+                                        "start": 316,
+                                        "end": 327,
+                                        "children": [
+                                          {
+                                            "kind": "product_expression",
+                                            "start": 317,
+                                            "end": 326,
+                                            "children": [
+                                              {
+                                                "kind": "string",
+                                                "start": 317,
+                                                "end": 321,
+                                                "children": [
+                                                  {
+                                                    "kind": "string_content",
+                                                    "start": 318,
+                                                    "end": 320
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "number",
+                                                "start": 323,
+                                                "end": 326
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "parenthesized_expression",
+                                        "start": 329,
+                                        "end": 346,
+                                        "children": [
+                                          {
+                                            "kind": "product_expression",
+                                            "start": 330,
+                                            "end": 345,
+                                            "children": [
+                                              {
+                                                "kind": "string",
+                                                "start": 330,
+                                                "end": 342,
+                                                "children": [
+                                                  {
+                                                    "kind": "string_content",
+                                                    "start": 331,
+                                                    "end": 341
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "number",
+                                                "start": 344,
+                                                "end": 345
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "parenthesized_expression",
+                                        "start": 348,
+                                        "end": 362,
+                                        "children": [
+                                          {
+                                            "kind": "product_expression",
+                                            "start": 349,
+                                            "end": 361,
+                                            "children": [
+                                              {
+                                                "kind": "string",
+                                                "start": 349,
+                                                "end": 356,
+                                                "children": [
+                                                  {
+                                                    "kind": "string_content",
+                                                    "start": 350,
+                                                    "end": 355
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "number",
+                                                "start": 358,
+                                                "end": 361
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "let_expression",
+                        "start": 370,
+                        "end": 1154,
+                        "children": [
+                          {
+                            "kind": "value_definition",
+                            "start": 370,
+                            "end": 629,
+                            "children": [
+                              {
+                                "kind": "let_binding",
+                                "start": 374,
+                                "end": 629,
+                                "children": [
+                                  {
+                                    "kind": "value_name",
+                                    "start": 374,
+                                    "end": 380
+                                  },
+                                  {
+                                    "kind": "parenthesized_expression",
+                                    "start": 383,
+                                    "end": 629,
+                                    "children": [
+                                      {
+                                        "kind": "application_expression",
+                                        "start": 384,
+                                        "end": 628,
+                                        "children": [
+                                          {
+                                            "kind": "value_path",
+                                            "start": 384,
+                                            "end": 395,
+                                            "children": [
+                                              {
+                                                "kind": "module_path",
+                                                "start": 384,
+                                                "end": 388,
+                                                "children": [
+                                                  {
+                                                    "kind": "module_name",
+                                                    "start": 384,
+                                                    "end": 388
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "value_name",
+                                                "start": 389,
+                                                "end": 395
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "parenthesized_expression",
+                                            "start": 396,
+                                            "end": 628,
+                                            "children": [
+                                              {
+                                                "kind": "application_expression",
+                                                "start": 397,
+                                                "end": 627,
+                                                "children": [
+                                                  {
+                                                    "kind": "value_path",
+                                                    "start": 397,
+                                                    "end": 405,
+                                                    "children": [
+                                                      {
+                                                        "kind": "module_path",
+                                                        "start": 397,
+                                                        "end": 401,
+                                                        "children": [
+                                                          {
+                                                            "kind": "module_name",
+                                                            "start": 397,
+                                                            "end": 401
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "value_name",
+                                                        "start": 402,
+                                                        "end": 405
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "parenthesized_expression",
+                                                    "start": 406,
+                                                    "end": 620,
+                                                    "children": [
+                                                      {
+                                                        "kind": "fun_expression",
+                                                        "start": 407,
+                                                        "end": 619,
+                                                        "children": [
+                                                          {
+                                                            "kind": "parameter",
+                                                            "start": 411,
+                                                            "end": 412,
+                                                            "children": [
+                                                              {
+                                                                "kind": "value_pattern",
+                                                                "start": 411,
+                                                                "end": 412
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "parenthesized_expression",
+                                                            "start": 416,
+                                                            "end": 619,
+                                                            "children": [
+                                                              {
+                                                                "kind": "application_expression",
+                                                                "start": 417,
+                                                                "end": 618,
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "value_path",
+                                                                    "start": 417,
+                                                                    "end": 425,
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "module_path",
+                                                                        "start": 417,
+                                                                        "end": 421,
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "module_name",
+                                                                            "start": 417,
+                                                                            "end": 421
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "kind": "value_name",
+                                                                        "start": 422,
+                                                                        "end": 425
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "kind": "parenthesized_expression",
+                                                                    "start": 426,
+                                                                    "end": 608,
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "fun_expression",
+                                                                        "start": 427,
+                                                                        "end": 607,
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "parameter",
+                                                                            "start": 431,
+                                                                            "end": 432,
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "value_pattern",
+                                                                                "start": 431,
+                                                                                "end": 432
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "kind": "list_expression",
+                                                                            "start": 436,
+                                                                            "end": 607,
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "parenthesized_expression",
+                                                                                "start": 437,
+                                                                                "end": 469,
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "product_expression",
+                                                                                    "start": 438,
+                                                                                    "end": 468,
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "string",
+                                                                                        "start": 438,
+                                                                                        "end": 447,
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "string_content",
+                                                                                            "start": 439,
+                                                                                            "end": 446
+                                                                                          }
+                                                                                        ]
+                                                                                      },
+                                                                                      {
+                                                                                        "kind": "parenthesized_expression",
+                                                                                        "start": 449,
+                                                                                        "end": 468,
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "application_expression",
+                                                                                            "start": 450,
+                                                                                            "end": 467,
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "kind": "value_path",
+                                                                                                "start": 450,
+                                                                                                "end": 460,
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "module_path",
+                                                                                                    "start": 450,
+                                                                                                    "end": 454,
+                                                                                                    "children": [
+                                                                                                      {
+                                                                                                        "kind": "module_name",
+                                                                                                        "start": 450,
+                                                                                                        "end": 454
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "kind": "value_name",
+                                                                                                    "start": 455,
+                                                                                                    "end": 460
+                                                                                                  }
+                                                                                                ]
+                                                                                              },
+                                                                                              {
+                                                                                                "kind": "string",
+                                                                                                "start": 461,
+                                                                                                "end": 465,
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "string_content",
+                                                                                                    "start": 462,
+                                                                                                    "end": 464
+                                                                                                  }
+                                                                                                ]
+                                                                                              },
+                                                                                              {
+                                                                                                "kind": "value_path",
+                                                                                                "start": 466,
+                                                                                                "end": 467,
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "value_name",
+                                                                                                    "start": 466,
+                                                                                                    "end": 467
+                                                                                                  }
+                                                                                                ]
+                                                                                              }
+                                                                                            ]
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "parenthesized_expression",
+                                                                                "start": 471,
+                                                                                "end": 519,
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "product_expression",
+                                                                                    "start": 472,
+                                                                                    "end": 518,
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "string",
+                                                                                        "start": 472,
+                                                                                        "end": 489,
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "string_content",
+                                                                                            "start": 473,
+                                                                                            "end": 488
+                                                                                          }
+                                                                                        ]
+                                                                                      },
+                                                                                      {
+                                                                                        "kind": "parenthesized_expression",
+                                                                                        "start": 491,
+                                                                                        "end": 518,
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "application_expression",
+                                                                                            "start": 492,
+                                                                                            "end": 517,
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "kind": "value_path",
+                                                                                                "start": 492,
+                                                                                                "end": 502,
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "module_path",
+                                                                                                    "start": 492,
+                                                                                                    "end": 496,
+                                                                                                    "children": [
+                                                                                                      {
+                                                                                                        "kind": "module_name",
+                                                                                                        "start": 492,
+                                                                                                        "end": 496
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "kind": "value_name",
+                                                                                                    "start": 497,
+                                                                                                    "end": 502
+                                                                                                  }
+                                                                                                ]
+                                                                                              },
+                                                                                              {
+                                                                                                "kind": "string",
+                                                                                                "start": 503,
+                                                                                                "end": 515,
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "string_content",
+                                                                                                    "start": 504,
+                                                                                                    "end": 514
+                                                                                                  }
+                                                                                                ]
+                                                                                              },
+                                                                                              {
+                                                                                                "kind": "value_path",
+                                                                                                "start": 516,
+                                                                                                "end": 517,
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "value_name",
+                                                                                                    "start": 516,
+                                                                                                    "end": 517
+                                                                                                  }
+                                                                                                ]
+                                                                                              }
+                                                                                            ]
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "parenthesized_expression",
+                                                                                "start": 521,
+                                                                                "end": 566,
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "product_expression",
+                                                                                    "start": 522,
+                                                                                    "end": 565,
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "string",
+                                                                                        "start": 522,
+                                                                                        "end": 542,
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "string_content",
+                                                                                            "start": 523,
+                                                                                            "end": 541
+                                                                                          }
+                                                                                        ]
+                                                                                      },
+                                                                                      {
+                                                                                        "kind": "parenthesized_expression",
+                                                                                        "start": 544,
+                                                                                        "end": 565,
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "application_expression",
+                                                                                            "start": 545,
+                                                                                            "end": 564,
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "kind": "value_path",
+                                                                                                "start": 545,
+                                                                                                "end": 555,
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "module_path",
+                                                                                                    "start": 545,
+                                                                                                    "end": 549,
+                                                                                                    "children": [
+                                                                                                      {
+                                                                                                        "kind": "module_name",
+                                                                                                        "start": 545,
+                                                                                                        "end": 549
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "kind": "value_name",
+                                                                                                    "start": 550,
+                                                                                                    "end": 555
+                                                                                                  }
+                                                                                                ]
+                                                                                              },
+                                                                                              {
+                                                                                                "kind": "string",
+                                                                                                "start": 556,
+                                                                                                "end": 562,
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "string_content",
+                                                                                                    "start": 557,
+                                                                                                    "end": 561
+                                                                                                  }
+                                                                                                ]
+                                                                                              },
+                                                                                              {
+                                                                                                "kind": "value_path",
+                                                                                                "start": 563,
+                                                                                                "end": 564,
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "value_name",
+                                                                                                    "start": 563,
+                                                                                                    "end": 564
+                                                                                                  }
+                                                                                                ]
+                                                                                              }
+                                                                                            ]
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "parenthesized_expression",
+                                                                                "start": 568,
+                                                                                "end": 606,
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "product_expression",
+                                                                                    "start": 569,
+                                                                                    "end": 605,
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "string",
+                                                                                        "start": 569,
+                                                                                        "end": 581,
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "string_content",
+                                                                                            "start": 570,
+                                                                                            "end": 580
+                                                                                          }
+                                                                                        ]
+                                                                                      },
+                                                                                      {
+                                                                                        "kind": "parenthesized_expression",
+                                                                                        "start": 583,
+                                                                                        "end": 605,
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "application_expression",
+                                                                                            "start": 584,
+                                                                                            "end": 604,
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "kind": "value_path",
+                                                                                                "start": 584,
+                                                                                                "end": 594,
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "module_path",
+                                                                                                    "start": 584,
+                                                                                                    "end": 588,
+                                                                                                    "children": [
+                                                                                                      {
+                                                                                                        "kind": "module_name",
+                                                                                                        "start": 584,
+                                                                                                        "end": 588
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "kind": "value_name",
+                                                                                                    "start": 589,
+                                                                                                    "end": 594
+                                                                                                  }
+                                                                                                ]
+                                                                                              },
+                                                                                              {
+                                                                                                "kind": "string",
+                                                                                                "start": 595,
+                                                                                                "end": 602,
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "string_content",
+                                                                                                    "start": 596,
+                                                                                                    "end": 601
+                                                                                                  }
+                                                                                                ]
+                                                                                              },
+                                                                                              {
+                                                                                                "kind": "value_path",
+                                                                                                "start": 603,
+                                                                                                "end": 604,
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "value_name",
+                                                                                                    "start": 603,
+                                                                                                    "end": 604
+                                                                                                  }
+                                                                                                ]
+                                                                                              }
+                                                                                            ]
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "kind": "value_path",
+                                                                    "start": 609,
+                                                                    "end": 618,
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "value_name",
+                                                                        "start": 609,
+                                                                        "end": 618
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "value_path",
+                                                    "start": 621,
+                                                    "end": 627,
+                                                    "children": [
+                                                      {
+                                                        "kind": "value_name",
+                                                        "start": 621,
+                                                        "end": 627
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "sequence_expression",
+                            "start": 635,
+                            "end": 1154,
+                            "children": [
+                              {
+                                "kind": "application_expression",
+                                "start": 635,
+                                "end": 750,
+                                "children": [
+                                  {
+                                    "kind": "value_path",
+                                    "start": 635,
+                                    "end": 648,
+                                    "children": [
+                                      {
+                                        "kind": "value_name",
+                                        "start": 635,
+                                        "end": 648
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "parenthesized_expression",
+                                    "start": 649,
+                                    "end": 750,
+                                    "children": [
+                                      {
+                                        "kind": "application_expression",
+                                        "start": 650,
+                                        "end": 749,
+                                        "children": [
+                                          {
+                                            "kind": "value_path",
+                                            "start": 650,
+                                            "end": 663,
+                                            "children": [
+                                              {
+                                                "kind": "module_path",
+                                                "start": 650,
+                                                "end": 656,
+                                                "children": [
+                                                  {
+                                                    "kind": "module_name",
+                                                    "start": 650,
+                                                    "end": 656
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "value_name",
+                                                "start": 657,
+                                                "end": 663
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "string",
+                                            "start": 664,
+                                            "end": 667,
+                                            "children": [
+                                              {
+                                                "kind": "string_content",
+                                                "start": 665,
+                                                "end": 666
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "parenthesized_expression",
+                                            "start": 668,
+                                            "end": 749,
+                                            "children": [
+                                              {
+                                                "kind": "application_expression",
+                                                "start": 669,
+                                                "end": 748,
+                                                "children": [
+                                                  {
+                                                    "kind": "value_path",
+                                                    "start": 669,
+                                                    "end": 680,
+                                                    "children": [
+                                                      {
+                                                        "kind": "module_path",
+                                                        "start": 669,
+                                                        "end": 673,
+                                                        "children": [
+                                                          {
+                                                            "kind": "module_name",
+                                                            "start": 669,
+                                                            "end": 673
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "value_name",
+                                                        "start": 674,
+                                                        "end": 680
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "parenthesized_expression",
+                                                    "start": 681,
+                                                    "end": 699,
+                                                    "children": [
+                                                      {
+                                                        "kind": "fun_expression",
+                                                        "start": 682,
+                                                        "end": 698,
+                                                        "children": [
+                                                          {
+                                                            "kind": "parameter",
+                                                            "start": 686,
+                                                            "end": 687,
+                                                            "children": [
+                                                              {
+                                                                "kind": "value_pattern",
+                                                                "start": 686,
+                                                                "end": 687
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "infix_expression",
+                                                            "start": 691,
+                                                            "end": 698,
+                                                            "children": [
+                                                              {
+                                                                "kind": "value_path",
+                                                                "start": 691,
+                                                                "end": 692,
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "value_name",
+                                                                    "start": 691,
+                                                                    "end": 692
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "rel_operator",
+                                                                "start": 693,
+                                                                "end": 695
+                                                              },
+                                                              {
+                                                                "kind": "string",
+                                                                "start": 696,
+                                                                "end": 698
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "list_expression",
+                                                    "start": 700,
+                                                    "end": 748,
+                                                    "children": [
+                                                      {
+                                                        "kind": "string",
+                                                        "start": 701,
+                                                        "end": 747,
+                                                        "children": [
+                                                          {
+                                                            "kind": "string_content",
+                                                            "start": 702,
+                                                            "end": 746
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "parenthesized_expression",
+                                "start": 754,
+                                "end": 1154,
+                                "children": [
+                                  {
+                                    "kind": "try_expression",
+                                    "start": 755,
+                                    "end": 1153,
+                                    "children": [
+                                      {
+                                        "kind": "application_expression",
+                                        "start": 759,
+                                        "end": 1136,
+                                        "children": [
+                                          {
+                                            "kind": "value_path",
+                                            "start": 759,
+                                            "end": 768,
+                                            "children": [
+                                              {
+                                                "kind": "module_path",
+                                                "start": 759,
+                                                "end": 763,
+                                                "children": [
+                                                  {
+                                                    "kind": "module_name",
+                                                    "start": 759,
+                                                    "end": 763
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "value_name",
+                                                "start": 764,
+                                                "end": 768
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "parenthesized_expression",
+                                            "start": 769,
+                                            "end": 1129,
+                                            "children": [
+                                              {
+                                                "kind": "fun_expression",
+                                                "start": 770,
+                                                "end": 1128,
+                                                "children": [
+                                                  {
+                                                    "kind": "parameter",
+                                                    "start": 774,
+                                                    "end": 779,
+                                                    "children": [
+                                                      {
+                                                        "kind": "value_pattern",
+                                                        "start": 774,
+                                                        "end": 779
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "try_expression",
+                                                    "start": 787,
+                                                    "end": 1128,
+                                                    "children": [
+                                                      {
+                                                        "kind": "sequence_expression",
+                                                        "start": 793,
+                                                        "end": 1104,
+                                                        "children": [
+                                                          {
+                                                            "kind": "application_expression",
+                                                            "start": 793,
+                                                            "end": 980,
+                                                            "children": [
+                                                              {
+                                                                "kind": "value_path",
+                                                                "start": 793,
+                                                                "end": 806,
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "value_name",
+                                                                    "start": 793,
+                                                                    "end": 806
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "parenthesized_expression",
+                                                                "start": 807,
+                                                                "end": 980,
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "sequence_expression",
+                                                                    "start": 808,
+                                                                    "end": 979,
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "application_expression",
+                                                                        "start": 808,
+                                                                        "end": 911,
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "value_path",
+                                                                            "start": 808,
+                                                                            "end": 821,
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "module_path",
+                                                                                "start": 808,
+                                                                                "end": 814,
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "module_name",
+                                                                                    "start": 808,
+                                                                                    "end": 814
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "value_name",
+                                                                                "start": 815,
+                                                                                "end": 821
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "kind": "string",
+                                                                            "start": 822,
+                                                                            "end": 825,
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "string_content",
+                                                                                "start": 823,
+                                                                                "end": 824
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "kind": "parenthesized_expression",
+                                                                            "start": 826,
+                                                                            "end": 911,
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "application_expression",
+                                                                                "start": 827,
+                                                                                "end": 910,
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "value_path",
+                                                                                    "start": 827,
+                                                                                    "end": 838,
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "module_path",
+                                                                                        "start": 827,
+                                                                                        "end": 831,
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "module_name",
+                                                                                            "start": 827,
+                                                                                            "end": 831
+                                                                                          }
+                                                                                        ]
+                                                                                      },
+                                                                                      {
+                                                                                        "kind": "value_name",
+                                                                                        "start": 832,
+                                                                                        "end": 838
+                                                                                      }
+                                                                                    ]
+                                                                                  },
+                                                                                  {
+                                                                                    "kind": "parenthesized_expression",
+                                                                                    "start": 839,
+                                                                                    "end": 857,
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "fun_expression",
+                                                                                        "start": 840,
+                                                                                        "end": 856,
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "parameter",
+                                                                                            "start": 844,
+                                                                                            "end": 845,
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "kind": "value_pattern",
+                                                                                                "start": 844,
+                                                                                                "end": 845
+                                                                                              }
+                                                                                            ]
+                                                                                          },
+                                                                                          {
+                                                                                            "kind": "infix_expression",
+                                                                                            "start": 849,
+                                                                                            "end": 856,
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "kind": "value_path",
+                                                                                                "start": 849,
+                                                                                                "end": 850,
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "value_name",
+                                                                                                    "start": 849,
+                                                                                                    "end": 850
+                                                                                                  }
+                                                                                                ]
+                                                                                              },
+                                                                                              {
+                                                                                                "kind": "rel_operator",
+                                                                                                "start": 851,
+                                                                                                "end": 853
+                                                                                              },
+                                                                                              {
+                                                                                                "kind": "string",
+                                                                                                "start": 854,
+                                                                                                "end": 856
+                                                                                              }
+                                                                                            ]
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  },
+                                                                                  {
+                                                                                    "kind": "list_expression",
+                                                                                    "start": 858,
+                                                                                    "end": 910,
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "string",
+                                                                                        "start": 859,
+                                                                                        "end": 866,
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "string_content",
+                                                                                            "start": 860,
+                                                                                            "end": 865
+                                                                                          }
+                                                                                        ]
+                                                                                      },
+                                                                                      {
+                                                                                        "kind": "application_expression",
+                                                                                        "start": 868,
+                                                                                        "end": 910,
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "value_path",
+                                                                                            "start": 868,
+                                                                                            "end": 881,
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "kind": "value_name",
+                                                                                                "start": 868,
+                                                                                                "end": 881
+                                                                                              }
+                                                                                            ]
+                                                                                          },
+                                                                                          {
+                                                                                            "kind": "parenthesized_expression",
+                                                                                            "start": 882,
+                                                                                            "end": 910,
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "kind": "application_expression",
+                                                                                                "start": 883,
+                                                                                                "end": 909,
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "value_path",
+                                                                                                    "start": 883,
+                                                                                                    "end": 893,
+                                                                                                    "children": [
+                                                                                                      {
+                                                                                                        "kind": "module_path",
+                                                                                                        "start": 883,
+                                                                                                        "end": 887,
+                                                                                                        "children": [
+                                                                                                          {
+                                                                                                            "kind": "module_name",
+                                                                                                            "start": 883,
+                                                                                                            "end": 887
+                                                                                                          }
+                                                                                                        ]
+                                                                                                      },
+                                                                                                      {
+                                                                                                        "kind": "value_name",
+                                                                                                        "start": 888,
+                                                                                                        "end": 893
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "kind": "string",
+                                                                                                    "start": 894,
+                                                                                                    "end": 903,
+                                                                                                    "children": [
+                                                                                                      {
+                                                                                                        "kind": "string_content",
+                                                                                                        "start": 895,
+                                                                                                        "end": 902
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "kind": "value_path",
+                                                                                                    "start": 904,
+                                                                                                    "end": 909,
+                                                                                                    "children": [
+                                                                                                      {
+                                                                                                        "kind": "value_name",
+                                                                                                        "start": 904,
+                                                                                                        "end": 909
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  }
+                                                                                                ]
+                                                                                              }
+                                                                                            ]
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "kind": "sequence_expression",
+                                                                        "start": 913,
+                                                                        "end": 979,
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "string",
+                                                                            "start": 913,
+                                                                            "end": 927,
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "string_content",
+                                                                                "start": 914,
+                                                                                "end": 926
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "kind": "application_expression",
+                                                                            "start": 929,
+                                                                            "end": 979,
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "value_path",
+                                                                                "start": 929,
+                                                                                "end": 942,
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "value_name",
+                                                                                    "start": 929,
+                                                                                    "end": 942
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "parenthesized_expression",
+                                                                                "start": 943,
+                                                                                "end": 979,
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "application_expression",
+                                                                                    "start": 944,
+                                                                                    "end": 978,
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "value_path",
+                                                                                        "start": 944,
+                                                                                        "end": 954,
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "module_path",
+                                                                                            "start": 944,
+                                                                                            "end": 948,
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "kind": "module_name",
+                                                                                                "start": 944,
+                                                                                                "end": 948
+                                                                                              }
+                                                                                            ]
+                                                                                          },
+                                                                                          {
+                                                                                            "kind": "value_name",
+                                                                                            "start": 949,
+                                                                                            "end": 954
+                                                                                          }
+                                                                                        ]
+                                                                                      },
+                                                                                      {
+                                                                                        "kind": "string",
+                                                                                        "start": 955,
+                                                                                        "end": 972,
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "string_content",
+                                                                                            "start": 956,
+                                                                                            "end": 971
+                                                                                          }
+                                                                                        ]
+                                                                                      },
+                                                                                      {
+                                                                                        "kind": "value_path",
+                                                                                        "start": 973,
+                                                                                        "end": 978,
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "value_name",
+                                                                                            "start": 973,
+                                                                                            "end": 978
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "sequence_expression",
+                                                            "start": 982,
+                                                            "end": 1104,
+                                                            "children": [
+                                                              {
+                                                                "kind": "string",
+                                                                "start": 982,
+                                                                "end": 994,
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "string_content",
+                                                                    "start": 983,
+                                                                    "end": 993
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "sequence_expression",
+                                                                "start": 996,
+                                                                "end": 1104,
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "application_expression",
+                                                                    "start": 996,
+                                                                    "end": 1041,
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "value_path",
+                                                                        "start": 996,
+                                                                        "end": 1009,
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "value_name",
+                                                                            "start": 996,
+                                                                            "end": 1009
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "kind": "parenthesized_expression",
+                                                                        "start": 1010,
+                                                                        "end": 1041,
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "application_expression",
+                                                                            "start": 1011,
+                                                                            "end": 1040,
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "value_path",
+                                                                                "start": 1011,
+                                                                                "end": 1021,
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "module_path",
+                                                                                    "start": 1011,
+                                                                                    "end": 1015,
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "module_name",
+                                                                                        "start": 1011,
+                                                                                        "end": 1015
+                                                                                      }
+                                                                                    ]
+                                                                                  },
+                                                                                  {
+                                                                                    "kind": "value_name",
+                                                                                    "start": 1016,
+                                                                                    "end": 1021
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "string",
+                                                                                "start": 1022,
+                                                                                "end": 1034,
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "string_content",
+                                                                                    "start": 1023,
+                                                                                    "end": 1033
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "value_path",
+                                                                                "start": 1035,
+                                                                                "end": 1040,
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "value_name",
+                                                                                    "start": 1035,
+                                                                                    "end": 1040
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "kind": "ERROR",
+                                                                    "start": 1041,
+                                                                    "end": 1042
+                                                                  },
+                                                                  {
+                                                                    "kind": "sequence_expression",
+                                                                    "start": 1044,
+                                                                    "end": 1104,
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "string",
+                                                                        "start": 1044,
+                                                                        "end": 1059,
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "string_content",
+                                                                            "start": 1045,
+                                                                            "end": 1058
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "kind": "sequence_expression",
+                                                                        "start": 1061,
+                                                                        "end": 1104,
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "parenthesized_expression",
+                                                                            "start": 1061,
+                                                                            "end": 1100,
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "application_expression",
+                                                                                "start": 1062,
+                                                                                "end": 1099,
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "value_path",
+                                                                                    "start": 1062,
+                                                                                    "end": 1072,
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "module_path",
+                                                                                        "start": 1062,
+                                                                                        "end": 1066,
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "module_name",
+                                                                                            "start": 1062,
+                                                                                            "end": 1066
+                                                                                          }
+                                                                                        ]
+                                                                                      },
+                                                                                      {
+                                                                                        "kind": "value_name",
+                                                                                        "start": 1067,
+                                                                                        "end": 1072
+                                                                                      }
+                                                                                    ]
+                                                                                  },
+                                                                                  {
+                                                                                    "kind": "string",
+                                                                                    "start": 1073,
+                                                                                    "end": 1093,
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "string_content",
+                                                                                        "start": 1074,
+                                                                                        "end": 1092
+                                                                                      }
+                                                                                    ]
+                                                                                  },
+                                                                                  {
+                                                                                    "kind": "value_path",
+                                                                                    "start": 1094,
+                                                                                    "end": 1099,
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "value_name",
+                                                                                        "start": 1094,
+                                                                                        "end": 1099
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "kind": "ERROR",
+                                                                            "start": 1100,
+                                                                            "end": 1103
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "match_case",
+                                                        "start": 1114,
+                                                        "end": 1128,
+                                                        "children": [
+                                                          {
+                                                            "kind": "constructor_path",
+                                                            "start": 1114,
+                                                            "end": 1122,
+                                                            "children": [
+                                                              {
+                                                                "kind": "constructor_name",
+                                                                "start": 1114,
+                                                                "end": 1122
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "unit",
+                                                            "start": 1126,
+                                                            "end": 1128
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "value_path",
+                                            "start": 1130,
+                                            "end": 1136,
+                                            "children": [
+                                              {
+                                                "kind": "value_name",
+                                                "start": 1130,
+                                                "end": 1136
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "match_case",
+                                        "start": 1142,
+                                        "end": 1153,
+                                        "children": [
+                                          {
+                                            "kind": "constructor_path",
+                                            "start": 1142,
+                                            "end": 1147,
+                                            "children": [
+                                              {
+                                                "kind": "constructor_name",
+                                                "start": 1142,
+                                                "end": 1147
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "unit",
+                                            "start": 1151,
+                                            "end": 1153
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }
