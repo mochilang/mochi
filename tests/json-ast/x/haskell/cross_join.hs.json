@@ -1,156 +1,206 @@
 {
   "root": {
     "kind": "haskell",
-    "start": 0,
-    "end": 1412,
+    "start": 1,
+    "startCol": 0,
+    "end": 39,
+    "endCol": 0,
     "children": [
       {
         "kind": "pragma",
-        "start": 0,
-        "end": 38,
-        "text": "{-# LANGUAGE DuplicateRecordFields #-}"
+        "text": "{-# LANGUAGE DuplicateRecordFields #-}",
+        "start": 1,
+        "startCol": 0,
+        "end": 1,
+        "endCol": 38
       },
       {
         "kind": "pragma",
-        "start": 39,
-        "end": 75,
-        "text": "{-# LANGUAGE OverloadedRecordDot #-}"
+        "text": "{-# LANGUAGE OverloadedRecordDot #-}",
+        "start": 2,
+        "startCol": 0,
+        "end": 2,
+        "endCol": 36
       },
       {
         "kind": "pragma",
-        "start": 76,
-        "end": 109,
-        "text": "{-# LANGUAGE NoFieldSelectors #-}"
+        "text": "{-# LANGUAGE NoFieldSelectors #-}",
+        "start": 3,
+        "startCol": 0,
+        "end": 3,
+        "endCol": 33
       },
       {
         "kind": "imports",
-        "start": 110,
-        "end": 288,
+        "start": 4,
+        "startCol": 0,
+        "end": 6,
+        "endCol": 0,
         "children": [
           {
             "kind": "import",
-            "start": 110,
-            "end": 219,
+            "start": 4,
+            "startCol": 0,
+            "end": 4,
+            "endCol": 109,
             "children": [
               {
                 "kind": "module",
-                "start": 117,
-                "end": 124,
+                "start": 4,
+                "startCol": 7,
+                "end": 4,
+                "endCol": 14,
                 "children": [
                   {
                     "kind": "module_id",
-                    "start": 117,
-                    "end": 124,
-                    "text": "Prelude"
+                    "text": "Prelude",
+                    "start": 4,
+                    "startCol": 7,
+                    "end": 4,
+                    "endCol": 14
                   }
                 ]
               },
               {
                 "kind": "import_list",
-                "start": 132,
-                "end": 219,
+                "start": 4,
+                "startCol": 22,
+                "end": 4,
+                "endCol": 109,
                 "children": [
                   {
                     "kind": "import_name",
-                    "start": 133,
-                    "end": 143,
+                    "start": 4,
+                    "startCol": 23,
+                    "end": 4,
+                    "endCol": 33,
                     "children": [
                       {
                         "kind": "variable",
-                        "start": 133,
-                        "end": 143,
-                        "text": "customerId"
+                        "text": "customerId",
+                        "start": 4,
+                        "startCol": 23,
+                        "end": 4,
+                        "endCol": 33
                       }
                     ]
                   },
                   {
                     "kind": "import_name",
-                    "start": 145,
-                    "end": 147,
+                    "start": 4,
+                    "startCol": 35,
+                    "end": 4,
+                    "endCol": 37,
                     "children": [
                       {
                         "kind": "variable",
-                        "start": 145,
-                        "end": 147,
-                        "text": "id"
+                        "text": "id",
+                        "start": 4,
+                        "startCol": 35,
+                        "end": 4,
+                        "endCol": 37
                       }
                     ]
                   },
                   {
                     "kind": "import_name",
-                    "start": 149,
-                    "end": 153,
+                    "start": 4,
+                    "startCol": 39,
+                    "end": 4,
+                    "endCol": 43,
                     "children": [
                       {
                         "kind": "variable",
-                        "start": 149,
-                        "end": 153,
-                        "text": "name"
+                        "text": "name",
+                        "start": 4,
+                        "startCol": 39,
+                        "end": 4,
+                        "endCol": 43
                       }
                     ]
                   },
                   {
                     "kind": "import_name",
-                    "start": 155,
-                    "end": 170,
+                    "start": 4,
+                    "startCol": 45,
+                    "end": 4,
+                    "endCol": 60,
                     "children": [
                       {
                         "kind": "variable",
-                        "start": 155,
-                        "end": 170,
-                        "text": "orderCustomerId"
+                        "text": "orderCustomerId",
+                        "start": 4,
+                        "startCol": 45,
+                        "end": 4,
+                        "endCol": 60
                       }
                     ]
                   },
                   {
                     "kind": "import_name",
-                    "start": 172,
-                    "end": 179,
+                    "start": 4,
+                    "startCol": 62,
+                    "end": 4,
+                    "endCol": 69,
                     "children": [
                       {
                         "kind": "variable",
-                        "start": 172,
-                        "end": 179,
-                        "text": "orderId"
+                        "text": "orderId",
+                        "start": 4,
+                        "startCol": 62,
+                        "end": 4,
+                        "endCol": 69
                       }
                     ]
                   },
                   {
                     "kind": "import_name",
-                    "start": 181,
-                    "end": 191,
+                    "start": 4,
+                    "startCol": 71,
+                    "end": 4,
+                    "endCol": 81,
                     "children": [
                       {
                         "kind": "variable",
-                        "start": 181,
-                        "end": 191,
-                        "text": "orderTotal"
+                        "text": "orderTotal",
+                        "start": 4,
+                        "startCol": 71,
+                        "end": 4,
+                        "endCol": 81
                       }
                     ]
                   },
                   {
                     "kind": "import_name",
-                    "start": 193,
-                    "end": 211,
+                    "start": 4,
+                    "startCol": 83,
+                    "end": 4,
+                    "endCol": 101,
                     "children": [
                       {
                         "kind": "variable",
-                        "start": 193,
-                        "end": 211,
-                        "text": "pairedCustomerName"
+                        "text": "pairedCustomerName",
+                        "start": 4,
+                        "startCol": 83,
+                        "end": 4,
+                        "endCol": 101
                       }
                     ]
                   },
                   {
                     "kind": "import_name",
-                    "start": 213,
-                    "end": 218,
+                    "start": 4,
+                    "startCol": 103,
+                    "end": 4,
+                    "endCol": 108,
                     "children": [
                       {
                         "kind": "variable",
-                        "start": 213,
-                        "end": 218,
-                        "text": "total"
+                        "text": "total",
+                        "start": 4,
+                        "startCol": 103,
+                        "end": 4,
+                        "endCol": 108
                       }
                     ]
                   }
@@ -160,103 +210,137 @@
           },
           {
             "kind": "comment",
-            "start": 220,
-            "end": 287,
-            "text": "-- Generated by Mochi transpiler v0.10.34 on 2025-07-21 21:09 GMT+7"
+            "text": "-- Generated by Mochi transpiler v0.10.34 on 2025-07-21 21:09 GMT+7",
+            "start": 5,
+            "startCol": 0,
+            "end": 5,
+            "endCol": 67
           }
         ]
       },
       {
         "kind": "declarations",
-        "start": 288,
-        "end": 1412,
+        "start": 6,
+        "startCol": 0,
+        "end": 39,
+        "endCol": 0,
         "children": [
           {
             "kind": "data_type",
-            "start": 288,
-            "end": 366,
+            "start": 6,
+            "startCol": 0,
+            "end": 9,
+            "endCol": 19,
             "children": [
               {
                 "kind": "name",
-                "start": 293,
-                "end": 301,
-                "text": "GenType1"
+                "text": "GenType1",
+                "start": 6,
+                "startCol": 5,
+                "end": 6,
+                "endCol": 13
               },
               {
                 "kind": "data_constructors",
-                "start": 304,
-                "end": 350,
+                "start": 6,
+                "startCol": 16,
+                "end": 9,
+                "endCol": 3,
                 "children": [
                   {
                     "kind": "data_constructor",
-                    "start": 304,
-                    "end": 350,
+                    "start": 6,
+                    "startCol": 16,
+                    "end": 9,
+                    "endCol": 3,
                     "children": [
                       {
                         "kind": "record",
-                        "start": 304,
-                        "end": 350,
+                        "start": 6,
+                        "startCol": 16,
+                        "end": 9,
+                        "endCol": 3,
                         "children": [
                           {
                             "kind": "constructor",
-                            "start": 304,
-                            "end": 312,
-                            "text": "GenType1"
+                            "text": "GenType1",
+                            "start": 6,
+                            "startCol": 16,
+                            "end": 6,
+                            "endCol": 24
                           },
                           {
                             "kind": "fields",
-                            "start": 315,
-                            "end": 350,
+                            "start": 7,
+                            "startCol": 2,
+                            "end": 9,
+                            "endCol": 3,
                             "children": [
                               {
                                 "kind": "field",
-                                "start": 317,
-                                "end": 326,
+                                "start": 7,
+                                "startCol": 4,
+                                "end": 7,
+                                "endCol": 13,
                                 "children": [
                                   {
                                     "kind": "field_name",
-                                    "start": 317,
-                                    "end": 319,
+                                    "start": 7,
+                                    "startCol": 4,
+                                    "end": 7,
+                                    "endCol": 6,
                                     "children": [
                                       {
                                         "kind": "variable",
-                                        "start": 317,
-                                        "end": 319,
-                                        "text": "id"
+                                        "text": "id",
+                                        "start": 7,
+                                        "startCol": 4,
+                                        "end": 7,
+                                        "endCol": 6
                                       }
                                     ]
                                   },
                                   {
                                     "kind": "name",
-                                    "start": 323,
-                                    "end": 326,
-                                    "text": "Int"
+                                    "text": "Int",
+                                    "start": 7,
+                                    "startCol": 10,
+                                    "end": 7,
+                                    "endCol": 13
                                   }
                                 ]
                               },
                               {
                                 "kind": "field",
-                                "start": 332,
-                                "end": 346,
+                                "start": 8,
+                                "startCol": 4,
+                                "end": 8,
+                                "endCol": 18,
                                 "children": [
                                   {
                                     "kind": "field_name",
-                                    "start": 332,
-                                    "end": 336,
+                                    "start": 8,
+                                    "startCol": 4,
+                                    "end": 8,
+                                    "endCol": 8,
                                     "children": [
                                       {
                                         "kind": "variable",
-                                        "start": 332,
-                                        "end": 336,
-                                        "text": "name"
+                                        "text": "name",
+                                        "start": 8,
+                                        "startCol": 4,
+                                        "end": 8,
+                                        "endCol": 8
                                       }
                                     ]
                                   },
                                   {
                                     "kind": "name",
-                                    "start": 340,
-                                    "end": 346,
-                                    "text": "String"
+                                    "text": "String",
+                                    "start": 8,
+                                    "startCol": 12,
+                                    "end": 8,
+                                    "endCol": 18
                                   }
                                 ]
                               }
@@ -270,19 +354,25 @@
               },
               {
                 "kind": "deriving",
-                "start": 351,
-                "end": 366,
+                "start": 9,
+                "startCol": 4,
+                "end": 9,
+                "endCol": 19,
                 "children": [
                   {
                     "kind": "parens",
-                    "start": 360,
-                    "end": 366,
+                    "start": 9,
+                    "startCol": 13,
+                    "end": 9,
+                    "endCol": 19,
                     "children": [
                       {
                         "kind": "name",
-                        "start": 361,
-                        "end": 365,
-                        "text": "Show"
+                        "text": "Show",
+                        "start": 9,
+                        "startCol": 14,
+                        "end": 9,
+                        "endCol": 18
                       }
                     ]
                   }
@@ -292,116 +382,154 @@
           },
           {
             "kind": "data_type",
-            "start": 369,
-            "end": 468,
+            "start": 12,
+            "startCol": 0,
+            "end": 16,
+            "endCol": 19,
             "children": [
               {
                 "kind": "name",
-                "start": 374,
-                "end": 382,
-                "text": "GenType2"
+                "text": "GenType2",
+                "start": 12,
+                "startCol": 5,
+                "end": 12,
+                "endCol": 13
               },
               {
                 "kind": "data_constructors",
-                "start": 385,
-                "end": 452,
+                "start": 12,
+                "startCol": 16,
+                "end": 16,
+                "endCol": 3,
                 "children": [
                   {
                     "kind": "data_constructor",
-                    "start": 385,
-                    "end": 452,
+                    "start": 12,
+                    "startCol": 16,
+                    "end": 16,
+                    "endCol": 3,
                     "children": [
                       {
                         "kind": "record",
-                        "start": 385,
-                        "end": 452,
+                        "start": 12,
+                        "startCol": 16,
+                        "end": 16,
+                        "endCol": 3,
                         "children": [
                           {
                             "kind": "constructor",
-                            "start": 385,
-                            "end": 393,
-                            "text": "GenType2"
+                            "text": "GenType2",
+                            "start": 12,
+                            "startCol": 16,
+                            "end": 12,
+                            "endCol": 24
                           },
                           {
                             "kind": "fields",
-                            "start": 396,
-                            "end": 452,
+                            "start": 13,
+                            "startCol": 2,
+                            "end": 16,
+                            "endCol": 3,
                             "children": [
                               {
                                 "kind": "field",
-                                "start": 398,
-                                "end": 407,
+                                "start": 13,
+                                "startCol": 4,
+                                "end": 13,
+                                "endCol": 13,
                                 "children": [
                                   {
                                     "kind": "field_name",
-                                    "start": 398,
-                                    "end": 400,
+                                    "start": 13,
+                                    "startCol": 4,
+                                    "end": 13,
+                                    "endCol": 6,
                                     "children": [
                                       {
                                         "kind": "variable",
-                                        "start": 398,
-                                        "end": 400,
-                                        "text": "id"
+                                        "text": "id",
+                                        "start": 13,
+                                        "startCol": 4,
+                                        "end": 13,
+                                        "endCol": 6
                                       }
                                     ]
                                   },
                                   {
                                     "kind": "name",
-                                    "start": 404,
-                                    "end": 407,
-                                    "text": "Int"
+                                    "text": "Int",
+                                    "start": 13,
+                                    "startCol": 10,
+                                    "end": 13,
+                                    "endCol": 13
                                   }
                                 ]
                               },
                               {
                                 "kind": "field",
-                                "start": 413,
-                                "end": 430,
+                                "start": 14,
+                                "startCol": 4,
+                                "end": 14,
+                                "endCol": 21,
                                 "children": [
                                   {
                                     "kind": "field_name",
-                                    "start": 413,
-                                    "end": 423,
+                                    "start": 14,
+                                    "startCol": 4,
+                                    "end": 14,
+                                    "endCol": 14,
                                     "children": [
                                       {
                                         "kind": "variable",
-                                        "start": 413,
-                                        "end": 423,
-                                        "text": "customerId"
+                                        "text": "customerId",
+                                        "start": 14,
+                                        "startCol": 4,
+                                        "end": 14,
+                                        "endCol": 14
                                       }
                                     ]
                                   },
                                   {
                                     "kind": "name",
-                                    "start": 427,
-                                    "end": 430,
-                                    "text": "Int"
+                                    "text": "Int",
+                                    "start": 14,
+                                    "startCol": 18,
+                                    "end": 14,
+                                    "endCol": 21
                                   }
                                 ]
                               },
                               {
                                 "kind": "field",
-                                "start": 436,
-                                "end": 448,
+                                "start": 15,
+                                "startCol": 4,
+                                "end": 15,
+                                "endCol": 16,
                                 "children": [
                                   {
                                     "kind": "field_name",
-                                    "start": 436,
-                                    "end": 441,
+                                    "start": 15,
+                                    "startCol": 4,
+                                    "end": 15,
+                                    "endCol": 9,
                                     "children": [
                                       {
                                         "kind": "variable",
-                                        "start": 436,
-                                        "end": 441,
-                                        "text": "total"
+                                        "text": "total",
+                                        "start": 15,
+                                        "startCol": 4,
+                                        "end": 15,
+                                        "endCol": 9
                                       }
                                     ]
                                   },
                                   {
                                     "kind": "name",
-                                    "start": 445,
-                                    "end": 448,
-                                    "text": "Int"
+                                    "text": "Int",
+                                    "start": 15,
+                                    "startCol": 13,
+                                    "end": 15,
+                                    "endCol": 16
                                   }
                                 ]
                               }
@@ -415,19 +543,25 @@
               },
               {
                 "kind": "deriving",
-                "start": 453,
-                "end": 468,
+                "start": 16,
+                "startCol": 4,
+                "end": 16,
+                "endCol": 19,
                 "children": [
                   {
                     "kind": "parens",
-                    "start": 462,
-                    "end": 468,
+                    "start": 16,
+                    "startCol": 13,
+                    "end": 16,
+                    "endCol": 19,
                     "children": [
                       {
                         "kind": "name",
-                        "start": 463,
-                        "end": 467,
-                        "text": "Show"
+                        "text": "Show",
+                        "start": 16,
+                        "startCol": 14,
+                        "end": 16,
+                        "endCol": 18
                       }
                     ]
                   }
@@ -437,142 +571,188 @@
           },
           {
             "kind": "data_type",
-            "start": 471,
-            "end": 619,
+            "start": 19,
+            "startCol": 0,
+            "end": 24,
+            "endCol": 19,
             "children": [
               {
                 "kind": "name",
-                "start": 476,
-                "end": 484,
-                "text": "GenType3"
+                "text": "GenType3",
+                "start": 19,
+                "startCol": 5,
+                "end": 19,
+                "endCol": 13
               },
               {
                 "kind": "data_constructors",
-                "start": 487,
-                "end": 603,
+                "start": 19,
+                "startCol": 16,
+                "end": 24,
+                "endCol": 3,
                 "children": [
                   {
                     "kind": "data_constructor",
-                    "start": 487,
-                    "end": 603,
+                    "start": 19,
+                    "startCol": 16,
+                    "end": 24,
+                    "endCol": 3,
                     "children": [
                       {
                         "kind": "record",
-                        "start": 487,
-                        "end": 603,
+                        "start": 19,
+                        "startCol": 16,
+                        "end": 24,
+                        "endCol": 3,
                         "children": [
                           {
                             "kind": "constructor",
-                            "start": 487,
-                            "end": 495,
-                            "text": "GenType3"
+                            "text": "GenType3",
+                            "start": 19,
+                            "startCol": 16,
+                            "end": 19,
+                            "endCol": 24
                           },
                           {
                             "kind": "fields",
-                            "start": 498,
-                            "end": 603,
+                            "start": 20,
+                            "startCol": 2,
+                            "end": 24,
+                            "endCol": 3,
                             "children": [
                               {
                                 "kind": "field",
-                                "start": 500,
-                                "end": 514,
+                                "start": 20,
+                                "startCol": 4,
+                                "end": 20,
+                                "endCol": 18,
                                 "children": [
                                   {
                                     "kind": "field_name",
-                                    "start": 500,
-                                    "end": 507,
+                                    "start": 20,
+                                    "startCol": 4,
+                                    "end": 20,
+                                    "endCol": 11,
                                     "children": [
                                       {
                                         "kind": "variable",
-                                        "start": 500,
-                                        "end": 507,
-                                        "text": "orderId"
+                                        "text": "orderId",
+                                        "start": 20,
+                                        "startCol": 4,
+                                        "end": 20,
+                                        "endCol": 11
                                       }
                                     ]
                                   },
                                   {
                                     "kind": "name",
-                                    "start": 511,
-                                    "end": 514,
-                                    "text": "Int"
+                                    "text": "Int",
+                                    "start": 20,
+                                    "startCol": 15,
+                                    "end": 20,
+                                    "endCol": 18
                                   }
                                 ]
                               },
                               {
                                 "kind": "field",
-                                "start": 520,
-                                "end": 542,
+                                "start": 21,
+                                "startCol": 4,
+                                "end": 21,
+                                "endCol": 26,
                                 "children": [
                                   {
                                     "kind": "field_name",
-                                    "start": 520,
-                                    "end": 535,
+                                    "start": 21,
+                                    "startCol": 4,
+                                    "end": 21,
+                                    "endCol": 19,
                                     "children": [
                                       {
                                         "kind": "variable",
-                                        "start": 520,
-                                        "end": 535,
-                                        "text": "orderCustomerId"
+                                        "text": "orderCustomerId",
+                                        "start": 21,
+                                        "startCol": 4,
+                                        "end": 21,
+                                        "endCol": 19
                                       }
                                     ]
                                   },
                                   {
                                     "kind": "name",
-                                    "start": 539,
-                                    "end": 542,
-                                    "text": "Int"
+                                    "text": "Int",
+                                    "start": 21,
+                                    "startCol": 23,
+                                    "end": 21,
+                                    "endCol": 26
                                   }
                                 ]
                               },
                               {
                                 "kind": "field",
-                                "start": 548,
-                                "end": 576,
+                                "start": 22,
+                                "startCol": 4,
+                                "end": 22,
+                                "endCol": 32,
                                 "children": [
                                   {
                                     "kind": "field_name",
-                                    "start": 548,
-                                    "end": 566,
+                                    "start": 22,
+                                    "startCol": 4,
+                                    "end": 22,
+                                    "endCol": 22,
                                     "children": [
                                       {
                                         "kind": "variable",
-                                        "start": 548,
-                                        "end": 566,
-                                        "text": "pairedCustomerName"
+                                        "text": "pairedCustomerName",
+                                        "start": 22,
+                                        "startCol": 4,
+                                        "end": 22,
+                                        "endCol": 22
                                       }
                                     ]
                                   },
                                   {
                                     "kind": "name",
-                                    "start": 570,
-                                    "end": 576,
-                                    "text": "String"
+                                    "text": "String",
+                                    "start": 22,
+                                    "startCol": 26,
+                                    "end": 22,
+                                    "endCol": 32
                                   }
                                 ]
                               },
                               {
                                 "kind": "field",
-                                "start": 582,
-                                "end": 599,
+                                "start": 23,
+                                "startCol": 4,
+                                "end": 23,
+                                "endCol": 21,
                                 "children": [
                                   {
                                     "kind": "field_name",
-                                    "start": 582,
-                                    "end": 592,
+                                    "start": 23,
+                                    "startCol": 4,
+                                    "end": 23,
+                                    "endCol": 14,
                                     "children": [
                                       {
                                         "kind": "variable",
-                                        "start": 582,
-                                        "end": 592,
-                                        "text": "orderTotal"
+                                        "text": "orderTotal",
+                                        "start": 23,
+                                        "startCol": 4,
+                                        "end": 23,
+                                        "endCol": 14
                                       }
                                     ]
                                   },
                                   {
                                     "kind": "name",
-                                    "start": 596,
-                                    "end": 599,
-                                    "text": "Int"
+                                    "text": "Int",
+                                    "start": 23,
+                                    "startCol": 18,
+                                    "end": 23,
+                                    "endCol": 21
                                   }
                                 ]
                               }
@@ -586,19 +766,25 @@
               },
               {
                 "kind": "deriving",
-                "start": 604,
-                "end": 619,
+                "start": 24,
+                "startCol": 4,
+                "end": 24,
+                "endCol": 19,
                 "children": [
                   {
                     "kind": "parens",
-                    "start": 613,
-                    "end": 619,
+                    "start": 24,
+                    "startCol": 13,
+                    "end": 24,
+                    "endCol": 19,
                     "children": [
                       {
                         "kind": "name",
-                        "start": 614,
-                        "end": 618,
-                        "text": "Show"
+                        "text": "Show",
+                        "start": 24,
+                        "startCol": 14,
+                        "end": 24,
+                        "endCol": 18
                       }
                     ]
                   }
@@ -608,64 +794,86 @@
           },
           {
             "kind": "bind",
-            "start": 622,
-            "end": 739,
+            "start": 27,
+            "startCol": 0,
+            "end": 27,
+            "endCol": 117,
             "children": [
               {
                 "kind": "variable",
-                "start": 622,
-                "end": 631,
-                "text": "customers"
+                "text": "customers",
+                "start": 27,
+                "startCol": 0,
+                "end": 27,
+                "endCol": 9
               },
               {
                 "kind": "match",
-                "start": 632,
-                "end": 739,
+                "start": 27,
+                "startCol": 10,
+                "end": 27,
+                "endCol": 117,
                 "children": [
                   {
                     "kind": "list",
-                    "start": 634,
-                    "end": 739,
+                    "start": 27,
+                    "startCol": 12,
+                    "end": 27,
+                    "endCol": 117,
                     "children": [
                       {
                         "kind": "record",
-                        "start": 635,
-                        "end": 668,
+                        "start": 27,
+                        "startCol": 13,
+                        "end": 27,
+                        "endCol": 46,
                         "children": [
                           {
                             "kind": "constructor",
-                            "start": 635,
-                            "end": 643,
-                            "text": "GenType1"
+                            "text": "GenType1",
+                            "start": 27,
+                            "startCol": 13,
+                            "end": 27,
+                            "endCol": 21
                           },
                           {
                             "kind": "field_update",
-                            "start": 645,
-                            "end": 651,
+                            "start": 27,
+                            "startCol": 23,
+                            "end": 27,
+                            "endCol": 29,
                             "children": [
                               {
                                 "kind": "field_name",
-                                "start": 645,
-                                "end": 647,
+                                "start": 27,
+                                "startCol": 23,
+                                "end": 27,
+                                "endCol": 25,
                                 "children": [
                                   {
                                     "kind": "variable",
-                                    "start": 645,
-                                    "end": 647,
-                                    "text": "id"
+                                    "text": "id",
+                                    "start": 27,
+                                    "startCol": 23,
+                                    "end": 27,
+                                    "endCol": 25
                                   }
                                 ]
                               },
                               {
                                 "kind": "literal",
-                                "start": 650,
-                                "end": 651,
+                                "start": 27,
+                                "startCol": 28,
+                                "end": 27,
+                                "endCol": 29,
                                 "children": [
                                   {
                                     "kind": "integer",
-                                    "start": 650,
-                                    "end": 651,
-                                    "text": "1"
+                                    "text": "1",
+                                    "start": 27,
+                                    "startCol": 28,
+                                    "end": 27,
+                                    "endCol": 29
                                   }
                                 ]
                               }
@@ -673,32 +881,42 @@
                           },
                           {
                             "kind": "field_update",
-                            "start": 653,
-                            "end": 667,
+                            "start": 27,
+                            "startCol": 31,
+                            "end": 27,
+                            "endCol": 45,
                             "children": [
                               {
                                 "kind": "field_name",
-                                "start": 653,
-                                "end": 657,
+                                "start": 27,
+                                "startCol": 31,
+                                "end": 27,
+                                "endCol": 35,
                                 "children": [
                                   {
                                     "kind": "variable",
-                                    "start": 653,
-                                    "end": 657,
-                                    "text": "name"
+                                    "text": "name",
+                                    "start": 27,
+                                    "startCol": 31,
+                                    "end": 27,
+                                    "endCol": 35
                                   }
                                 ]
                               },
                               {
                                 "kind": "literal",
-                                "start": 660,
-                                "end": 667,
+                                "start": 27,
+                                "startCol": 38,
+                                "end": 27,
+                                "endCol": 45,
                                 "children": [
                                   {
                                     "kind": "string",
-                                    "start": 660,
-                                    "end": 667,
-                                    "text": "\"Alice\""
+                                    "text": "\"Alice\"",
+                                    "start": 27,
+                                    "startCol": 38,
+                                    "end": 27,
+                                    "endCol": 45
                                   }
                                 ]
                               }
@@ -708,43 +926,57 @@
                       },
                       {
                         "kind": "record",
-                        "start": 670,
-                        "end": 701,
+                        "start": 27,
+                        "startCol": 48,
+                        "end": 27,
+                        "endCol": 79,
                         "children": [
                           {
                             "kind": "constructor",
-                            "start": 670,
-                            "end": 678,
-                            "text": "GenType1"
+                            "text": "GenType1",
+                            "start": 27,
+                            "startCol": 48,
+                            "end": 27,
+                            "endCol": 56
                           },
                           {
                             "kind": "field_update",
-                            "start": 680,
-                            "end": 686,
+                            "start": 27,
+                            "startCol": 58,
+                            "end": 27,
+                            "endCol": 64,
                             "children": [
                               {
                                 "kind": "field_name",
-                                "start": 680,
-                                "end": 682,
+                                "start": 27,
+                                "startCol": 58,
+                                "end": 27,
+                                "endCol": 60,
                                 "children": [
                                   {
                                     "kind": "variable",
-                                    "start": 680,
-                                    "end": 682,
-                                    "text": "id"
+                                    "text": "id",
+                                    "start": 27,
+                                    "startCol": 58,
+                                    "end": 27,
+                                    "endCol": 60
                                   }
                                 ]
                               },
                               {
                                 "kind": "literal",
-                                "start": 685,
-                                "end": 686,
+                                "start": 27,
+                                "startCol": 63,
+                                "end": 27,
+                                "endCol": 64,
                                 "children": [
                                   {
                                     "kind": "integer",
-                                    "start": 685,
-                                    "end": 686,
-                                    "text": "2"
+                                    "text": "2",
+                                    "start": 27,
+                                    "startCol": 63,
+                                    "end": 27,
+                                    "endCol": 64
                                   }
                                 ]
                               }
@@ -752,32 +984,42 @@
                           },
                           {
                             "kind": "field_update",
-                            "start": 688,
-                            "end": 700,
+                            "start": 27,
+                            "startCol": 66,
+                            "end": 27,
+                            "endCol": 78,
                             "children": [
                               {
                                 "kind": "field_name",
-                                "start": 688,
-                                "end": 692,
+                                "start": 27,
+                                "startCol": 66,
+                                "end": 27,
+                                "endCol": 70,
                                 "children": [
                                   {
                                     "kind": "variable",
-                                    "start": 688,
-                                    "end": 692,
-                                    "text": "name"
+                                    "text": "name",
+                                    "start": 27,
+                                    "startCol": 66,
+                                    "end": 27,
+                                    "endCol": 70
                                   }
                                 ]
                               },
                               {
                                 "kind": "literal",
-                                "start": 695,
-                                "end": 700,
+                                "start": 27,
+                                "startCol": 73,
+                                "end": 27,
+                                "endCol": 78,
                                 "children": [
                                   {
                                     "kind": "string",
-                                    "start": 695,
-                                    "end": 700,
-                                    "text": "\"Bob\""
+                                    "text": "\"Bob\"",
+                                    "start": 27,
+                                    "startCol": 73,
+                                    "end": 27,
+                                    "endCol": 78
                                   }
                                 ]
                               }
@@ -787,43 +1029,57 @@
                       },
                       {
                         "kind": "record",
-                        "start": 703,
-                        "end": 738,
+                        "start": 27,
+                        "startCol": 81,
+                        "end": 27,
+                        "endCol": 116,
                         "children": [
                           {
                             "kind": "constructor",
-                            "start": 703,
-                            "end": 711,
-                            "text": "GenType1"
+                            "text": "GenType1",
+                            "start": 27,
+                            "startCol": 81,
+                            "end": 27,
+                            "endCol": 89
                           },
                           {
                             "kind": "field_update",
-                            "start": 713,
-                            "end": 719,
+                            "start": 27,
+                            "startCol": 91,
+                            "end": 27,
+                            "endCol": 97,
                             "children": [
                               {
                                 "kind": "field_name",
-                                "start": 713,
-                                "end": 715,
+                                "start": 27,
+                                "startCol": 91,
+                                "end": 27,
+                                "endCol": 93,
                                 "children": [
                                   {
                                     "kind": "variable",
-                                    "start": 713,
-                                    "end": 715,
-                                    "text": "id"
+                                    "text": "id",
+                                    "start": 27,
+                                    "startCol": 91,
+                                    "end": 27,
+                                    "endCol": 93
                                   }
                                 ]
                               },
                               {
                                 "kind": "literal",
-                                "start": 718,
-                                "end": 719,
+                                "start": 27,
+                                "startCol": 96,
+                                "end": 27,
+                                "endCol": 97,
                                 "children": [
                                   {
                                     "kind": "integer",
-                                    "start": 718,
-                                    "end": 719,
-                                    "text": "3"
+                                    "text": "3",
+                                    "start": 27,
+                                    "startCol": 96,
+                                    "end": 27,
+                                    "endCol": 97
                                   }
                                 ]
                               }
@@ -831,32 +1087,42 @@
                           },
                           {
                             "kind": "field_update",
-                            "start": 721,
-                            "end": 737,
+                            "start": 27,
+                            "startCol": 99,
+                            "end": 27,
+                            "endCol": 115,
                             "children": [
                               {
                                 "kind": "field_name",
-                                "start": 721,
-                                "end": 725,
+                                "start": 27,
+                                "startCol": 99,
+                                "end": 27,
+                                "endCol": 103,
                                 "children": [
                                   {
                                     "kind": "variable",
-                                    "start": 721,
-                                    "end": 725,
-                                    "text": "name"
+                                    "text": "name",
+                                    "start": 27,
+                                    "startCol": 99,
+                                    "end": 27,
+                                    "endCol": 103
                                   }
                                 ]
                               },
                               {
                                 "kind": "literal",
-                                "start": 728,
-                                "end": 737,
+                                "start": 27,
+                                "startCol": 106,
+                                "end": 27,
+                                "endCol": 115,
                                 "children": [
                                   {
                                     "kind": "string",
-                                    "start": 728,
-                                    "end": 737,
-                                    "text": "\"Charlie\""
+                                    "text": "\"Charlie\"",
+                                    "start": 27,
+                                    "startCol": 106,
+                                    "end": 27,
+                                    "endCol": 115
                                   }
                                 ]
                               }
@@ -872,64 +1138,86 @@
           },
           {
             "kind": "bind",
-            "start": 741,
-            "end": 900,
+            "start": 29,
+            "startCol": 0,
+            "end": 29,
+            "endCol": 159,
             "children": [
               {
                 "kind": "variable",
-                "start": 741,
-                "end": 747,
-                "text": "orders"
+                "text": "orders",
+                "start": 29,
+                "startCol": 0,
+                "end": 29,
+                "endCol": 6
               },
               {
                 "kind": "match",
-                "start": 748,
-                "end": 900,
+                "start": 29,
+                "startCol": 7,
+                "end": 29,
+                "endCol": 159,
                 "children": [
                   {
                     "kind": "list",
-                    "start": 750,
-                    "end": 900,
+                    "start": 29,
+                    "startCol": 9,
+                    "end": 29,
+                    "endCol": 159,
                     "children": [
                       {
                         "kind": "record",
-                        "start": 751,
-                        "end": 799,
+                        "start": 29,
+                        "startCol": 10,
+                        "end": 29,
+                        "endCol": 58,
                         "children": [
                           {
                             "kind": "constructor",
-                            "start": 751,
-                            "end": 759,
-                            "text": "GenType2"
+                            "text": "GenType2",
+                            "start": 29,
+                            "startCol": 10,
+                            "end": 29,
+                            "endCol": 18
                           },
                           {
                             "kind": "field_update",
-                            "start": 761,
-                            "end": 769,
+                            "start": 29,
+                            "startCol": 20,
+                            "end": 29,
+                            "endCol": 28,
                             "children": [
                               {
                                 "kind": "field_name",
-                                "start": 761,
-                                "end": 763,
+                                "start": 29,
+                                "startCol": 20,
+                                "end": 29,
+                                "endCol": 22,
                                 "children": [
                                   {
                                     "kind": "variable",
-                                    "start": 761,
-                                    "end": 763,
-                                    "text": "id"
+                                    "text": "id",
+                                    "start": 29,
+                                    "startCol": 20,
+                                    "end": 29,
+                                    "endCol": 22
                                   }
                                 ]
                               },
                               {
                                 "kind": "literal",
-                                "start": 766,
-                                "end": 769,
+                                "start": 29,
+                                "startCol": 25,
+                                "end": 29,
+                                "endCol": 28,
                                 "children": [
                                   {
                                     "kind": "integer",
-                                    "start": 766,
-                                    "end": 769,
-                                    "text": "100"
+                                    "text": "100",
+                                    "start": 29,
+                                    "startCol": 25,
+                                    "end": 29,
+                                    "endCol": 28
                                   }
                                 ]
                               }
@@ -937,32 +1225,42 @@
                           },
                           {
                             "kind": "field_update",
-                            "start": 771,
-                            "end": 785,
+                            "start": 29,
+                            "startCol": 30,
+                            "end": 29,
+                            "endCol": 44,
                             "children": [
                               {
                                 "kind": "field_name",
-                                "start": 771,
-                                "end": 781,
+                                "start": 29,
+                                "startCol": 30,
+                                "end": 29,
+                                "endCol": 40,
                                 "children": [
                                   {
                                     "kind": "variable",
-                                    "start": 771,
-                                    "end": 781,
-                                    "text": "customerId"
+                                    "text": "customerId",
+                                    "start": 29,
+                                    "startCol": 30,
+                                    "end": 29,
+                                    "endCol": 40
                                   }
                                 ]
                               },
                               {
                                 "kind": "literal",
-                                "start": 784,
-                                "end": 785,
+                                "start": 29,
+                                "startCol": 43,
+                                "end": 29,
+                                "endCol": 44,
                                 "children": [
                                   {
                                     "kind": "integer",
-                                    "start": 784,
-                                    "end": 785,
-                                    "text": "1"
+                                    "text": "1",
+                                    "start": 29,
+                                    "startCol": 43,
+                                    "end": 29,
+                                    "endCol": 44
                                   }
                                 ]
                               }
@@ -970,32 +1268,42 @@
                           },
                           {
                             "kind": "field_update",
-                            "start": 787,
-                            "end": 798,
+                            "start": 29,
+                            "startCol": 46,
+                            "end": 29,
+                            "endCol": 57,
                             "children": [
                               {
                                 "kind": "field_name",
-                                "start": 787,
-                                "end": 792,
+                                "start": 29,
+                                "startCol": 46,
+                                "end": 29,
+                                "endCol": 51,
                                 "children": [
                                   {
                                     "kind": "variable",
-                                    "start": 787,
-                                    "end": 792,
-                                    "text": "total"
+                                    "text": "total",
+                                    "start": 29,
+                                    "startCol": 46,
+                                    "end": 29,
+                                    "endCol": 51
                                   }
                                 ]
                               },
                               {
                                 "kind": "literal",
-                                "start": 795,
-                                "end": 798,
+                                "start": 29,
+                                "startCol": 54,
+                                "end": 29,
+                                "endCol": 57,
                                 "children": [
                                   {
                                     "kind": "integer",
-                                    "start": 795,
-                                    "end": 798,
-                                    "text": "250"
+                                    "text": "250",
+                                    "start": 29,
+                                    "startCol": 54,
+                                    "end": 29,
+                                    "endCol": 57
                                   }
                                 ]
                               }
@@ -1005,43 +1313,57 @@
                       },
                       {
                         "kind": "record",
-                        "start": 801,
-                        "end": 849,
+                        "start": 29,
+                        "startCol": 60,
+                        "end": 29,
+                        "endCol": 108,
                         "children": [
                           {
                             "kind": "constructor",
-                            "start": 801,
-                            "end": 809,
-                            "text": "GenType2"
+                            "text": "GenType2",
+                            "start": 29,
+                            "startCol": 60,
+                            "end": 29,
+                            "endCol": 68
                           },
                           {
                             "kind": "field_update",
-                            "start": 811,
-                            "end": 819,
+                            "start": 29,
+                            "startCol": 70,
+                            "end": 29,
+                            "endCol": 78,
                             "children": [
                               {
                                 "kind": "field_name",
-                                "start": 811,
-                                "end": 813,
+                                "start": 29,
+                                "startCol": 70,
+                                "end": 29,
+                                "endCol": 72,
                                 "children": [
                                   {
                                     "kind": "variable",
-                                    "start": 811,
-                                    "end": 813,
-                                    "text": "id"
+                                    "text": "id",
+                                    "start": 29,
+                                    "startCol": 70,
+                                    "end": 29,
+                                    "endCol": 72
                                   }
                                 ]
                               },
                               {
                                 "kind": "literal",
-                                "start": 816,
-                                "end": 819,
+                                "start": 29,
+                                "startCol": 75,
+                                "end": 29,
+                                "endCol": 78,
                                 "children": [
                                   {
                                     "kind": "integer",
-                                    "start": 816,
-                                    "end": 819,
-                                    "text": "101"
+                                    "text": "101",
+                                    "start": 29,
+                                    "startCol": 75,
+                                    "end": 29,
+                                    "endCol": 78
                                   }
                                 ]
                               }
@@ -1049,32 +1371,42 @@
                           },
                           {
                             "kind": "field_update",
-                            "start": 821,
-                            "end": 835,
+                            "start": 29,
+                            "startCol": 80,
+                            "end": 29,
+                            "endCol": 94,
                             "children": [
                               {
                                 "kind": "field_name",
-                                "start": 821,
-                                "end": 831,
+                                "start": 29,
+                                "startCol": 80,
+                                "end": 29,
+                                "endCol": 90,
                                 "children": [
                                   {
                                     "kind": "variable",
-                                    "start": 821,
-                                    "end": 831,
-                                    "text": "customerId"
+                                    "text": "customerId",
+                                    "start": 29,
+                                    "startCol": 80,
+                                    "end": 29,
+                                    "endCol": 90
                                   }
                                 ]
                               },
                               {
                                 "kind": "literal",
-                                "start": 834,
-                                "end": 835,
+                                "start": 29,
+                                "startCol": 93,
+                                "end": 29,
+                                "endCol": 94,
                                 "children": [
                                   {
                                     "kind": "integer",
-                                    "start": 834,
-                                    "end": 835,
-                                    "text": "2"
+                                    "text": "2",
+                                    "start": 29,
+                                    "startCol": 93,
+                                    "end": 29,
+                                    "endCol": 94
                                   }
                                 ]
                               }
@@ -1082,32 +1414,42 @@
                           },
                           {
                             "kind": "field_update",
-                            "start": 837,
-                            "end": 848,
+                            "start": 29,
+                            "startCol": 96,
+                            "end": 29,
+                            "endCol": 107,
                             "children": [
                               {
                                 "kind": "field_name",
-                                "start": 837,
-                                "end": 842,
+                                "start": 29,
+                                "startCol": 96,
+                                "end": 29,
+                                "endCol": 101,
                                 "children": [
                                   {
                                     "kind": "variable",
-                                    "start": 837,
-                                    "end": 842,
-                                    "text": "total"
+                                    "text": "total",
+                                    "start": 29,
+                                    "startCol": 96,
+                                    "end": 29,
+                                    "endCol": 101
                                   }
                                 ]
                               },
                               {
                                 "kind": "literal",
-                                "start": 845,
-                                "end": 848,
+                                "start": 29,
+                                "startCol": 104,
+                                "end": 29,
+                                "endCol": 107,
                                 "children": [
                                   {
                                     "kind": "integer",
-                                    "start": 845,
-                                    "end": 848,
-                                    "text": "125"
+                                    "text": "125",
+                                    "start": 29,
+                                    "startCol": 104,
+                                    "end": 29,
+                                    "endCol": 107
                                   }
                                 ]
                               }
@@ -1117,43 +1459,57 @@
                       },
                       {
                         "kind": "record",
-                        "start": 851,
-                        "end": 899,
+                        "start": 29,
+                        "startCol": 110,
+                        "end": 29,
+                        "endCol": 158,
                         "children": [
                           {
                             "kind": "constructor",
-                            "start": 851,
-                            "end": 859,
-                            "text": "GenType2"
+                            "text": "GenType2",
+                            "start": 29,
+                            "startCol": 110,
+                            "end": 29,
+                            "endCol": 118
                           },
                           {
                             "kind": "field_update",
-                            "start": 861,
-                            "end": 869,
+                            "start": 29,
+                            "startCol": 120,
+                            "end": 29,
+                            "endCol": 128,
                             "children": [
                               {
                                 "kind": "field_name",
-                                "start": 861,
-                                "end": 863,
+                                "start": 29,
+                                "startCol": 120,
+                                "end": 29,
+                                "endCol": 122,
                                 "children": [
                                   {
                                     "kind": "variable",
-                                    "start": 861,
-                                    "end": 863,
-                                    "text": "id"
+                                    "text": "id",
+                                    "start": 29,
+                                    "startCol": 120,
+                                    "end": 29,
+                                    "endCol": 122
                                   }
                                 ]
                               },
                               {
                                 "kind": "literal",
-                                "start": 866,
-                                "end": 869,
+                                "start": 29,
+                                "startCol": 125,
+                                "end": 29,
+                                "endCol": 128,
                                 "children": [
                                   {
                                     "kind": "integer",
-                                    "start": 866,
-                                    "end": 869,
-                                    "text": "102"
+                                    "text": "102",
+                                    "start": 29,
+                                    "startCol": 125,
+                                    "end": 29,
+                                    "endCol": 128
                                   }
                                 ]
                               }
@@ -1161,32 +1517,42 @@
                           },
                           {
                             "kind": "field_update",
-                            "start": 871,
-                            "end": 885,
+                            "start": 29,
+                            "startCol": 130,
+                            "end": 29,
+                            "endCol": 144,
                             "children": [
                               {
                                 "kind": "field_name",
-                                "start": 871,
-                                "end": 881,
+                                "start": 29,
+                                "startCol": 130,
+                                "end": 29,
+                                "endCol": 140,
                                 "children": [
                                   {
                                     "kind": "variable",
-                                    "start": 871,
-                                    "end": 881,
-                                    "text": "customerId"
+                                    "text": "customerId",
+                                    "start": 29,
+                                    "startCol": 130,
+                                    "end": 29,
+                                    "endCol": 140
                                   }
                                 ]
                               },
                               {
                                 "kind": "literal",
-                                "start": 884,
-                                "end": 885,
+                                "start": 29,
+                                "startCol": 143,
+                                "end": 29,
+                                "endCol": 144,
                                 "children": [
                                   {
                                     "kind": "integer",
-                                    "start": 884,
-                                    "end": 885,
-                                    "text": "1"
+                                    "text": "1",
+                                    "start": 29,
+                                    "startCol": 143,
+                                    "end": 29,
+                                    "endCol": 144
                                   }
                                 ]
                               }
@@ -1194,32 +1560,42 @@
                           },
                           {
                             "kind": "field_update",
-                            "start": 887,
-                            "end": 898,
+                            "start": 29,
+                            "startCol": 146,
+                            "end": 29,
+                            "endCol": 157,
                             "children": [
                               {
                                 "kind": "field_name",
-                                "start": 887,
-                                "end": 892,
+                                "start": 29,
+                                "startCol": 146,
+                                "end": 29,
+                                "endCol": 151,
                                 "children": [
                                   {
                                     "kind": "variable",
-                                    "start": 887,
-                                    "end": 892,
-                                    "text": "total"
+                                    "text": "total",
+                                    "start": 29,
+                                    "startCol": 146,
+                                    "end": 29,
+                                    "endCol": 151
                                   }
                                 ]
                               },
                               {
                                 "kind": "literal",
-                                "start": 895,
-                                "end": 898,
+                                "start": 29,
+                                "startCol": 154,
+                                "end": 29,
+                                "endCol": 157,
                                 "children": [
                                   {
                                     "kind": "integer",
-                                    "start": 895,
-                                    "end": 898,
-                                    "text": "300"
+                                    "text": "300",
+                                    "start": 29,
+                                    "startCol": 154,
+                                    "end": 29,
+                                    "endCol": 157
                                   }
                                 ]
                               }
@@ -1235,75 +1611,101 @@
           },
           {
             "kind": "bind",
-            "start": 902,
-            "end": 1051,
+            "start": 31,
+            "startCol": 0,
+            "end": 31,
+            "endCol": 149,
             "children": [
               {
                 "kind": "variable",
-                "start": 902,
-                "end": 908,
-                "text": "result"
+                "text": "result",
+                "start": 31,
+                "startCol": 0,
+                "end": 31,
+                "endCol": 6
               },
               {
                 "kind": "match",
-                "start": 909,
-                "end": 1051,
+                "start": 31,
+                "startCol": 7,
+                "end": 31,
+                "endCol": 149,
                 "children": [
                   {
                     "kind": "list_comprehension",
-                    "start": 911,
-                    "end": 1051,
+                    "start": 31,
+                    "startCol": 9,
+                    "end": 31,
+                    "endCol": 149,
                     "children": [
                       {
                         "kind": "record",
-                        "start": 912,
-                        "end": 1020,
+                        "start": 31,
+                        "startCol": 10,
+                        "end": 31,
+                        "endCol": 118,
                         "children": [
                           {
                             "kind": "constructor",
-                            "start": 912,
-                            "end": 920,
-                            "text": "GenType3"
+                            "text": "GenType3",
+                            "start": 31,
+                            "startCol": 10,
+                            "end": 31,
+                            "endCol": 18
                           },
                           {
                             "kind": "field_update",
-                            "start": 922,
-                            "end": 936,
+                            "start": 31,
+                            "startCol": 20,
+                            "end": 31,
+                            "endCol": 34,
                             "children": [
                               {
                                 "kind": "field_name",
-                                "start": 922,
-                                "end": 929,
+                                "start": 31,
+                                "startCol": 20,
+                                "end": 31,
+                                "endCol": 27,
                                 "children": [
                                   {
                                     "kind": "variable",
-                                    "start": 922,
-                                    "end": 929,
-                                    "text": "orderId"
+                                    "text": "orderId",
+                                    "start": 31,
+                                    "startCol": 20,
+                                    "end": 31,
+                                    "endCol": 27
                                   }
                                 ]
                               },
                               {
                                 "kind": "projection",
-                                "start": 932,
-                                "end": 936,
+                                "start": 31,
+                                "startCol": 30,
+                                "end": 31,
+                                "endCol": 34,
                                 "children": [
                                   {
                                     "kind": "variable",
-                                    "start": 932,
-                                    "end": 933,
-                                    "text": "o"
+                                    "text": "o",
+                                    "start": 31,
+                                    "startCol": 30,
+                                    "end": 31,
+                                    "endCol": 31
                                   },
                                   {
                                     "kind": "field_name",
-                                    "start": 934,
-                                    "end": 936,
+                                    "start": 31,
+                                    "startCol": 32,
+                                    "end": 31,
+                                    "endCol": 34,
                                     "children": [
                                       {
                                         "kind": "variable",
-                                        "start": 934,
-                                        "end": 936,
-                                        "text": "id"
+                                        "text": "id",
+                                        "start": 31,
+                                        "startCol": 32,
+                                        "end": 31,
+                                        "endCol": 34
                                       }
                                     ]
                                   }
@@ -1313,43 +1715,57 @@
                           },
                           {
                             "kind": "field_update",
-                            "start": 938,
-                            "end": 968,
+                            "start": 31,
+                            "startCol": 36,
+                            "end": 31,
+                            "endCol": 66,
                             "children": [
                               {
                                 "kind": "field_name",
-                                "start": 938,
-                                "end": 953,
+                                "start": 31,
+                                "startCol": 36,
+                                "end": 31,
+                                "endCol": 51,
                                 "children": [
                                   {
                                     "kind": "variable",
-                                    "start": 938,
-                                    "end": 953,
-                                    "text": "orderCustomerId"
+                                    "text": "orderCustomerId",
+                                    "start": 31,
+                                    "startCol": 36,
+                                    "end": 31,
+                                    "endCol": 51
                                   }
                                 ]
                               },
                               {
                                 "kind": "projection",
-                                "start": 956,
-                                "end": 968,
+                                "start": 31,
+                                "startCol": 54,
+                                "end": 31,
+                                "endCol": 66,
                                 "children": [
                                   {
                                     "kind": "variable",
-                                    "start": 956,
-                                    "end": 957,
-                                    "text": "o"
+                                    "text": "o",
+                                    "start": 31,
+                                    "startCol": 54,
+                                    "end": 31,
+                                    "endCol": 55
                                   },
                                   {
                                     "kind": "field_name",
-                                    "start": 958,
-                                    "end": 968,
+                                    "start": 31,
+                                    "startCol": 56,
+                                    "end": 31,
+                                    "endCol": 66,
                                     "children": [
                                       {
                                         "kind": "variable",
-                                        "start": 958,
-                                        "end": 968,
-                                        "text": "customerId"
+                                        "text": "customerId",
+                                        "start": 31,
+                                        "startCol": 56,
+                                        "end": 31,
+                                        "endCol": 66
                                       }
                                     ]
                                   }
@@ -1359,43 +1775,57 @@
                           },
                           {
                             "kind": "field_update",
-                            "start": 970,
-                            "end": 997,
+                            "start": 31,
+                            "startCol": 68,
+                            "end": 31,
+                            "endCol": 95,
                             "children": [
                               {
                                 "kind": "field_name",
-                                "start": 970,
-                                "end": 988,
+                                "start": 31,
+                                "startCol": 68,
+                                "end": 31,
+                                "endCol": 86,
                                 "children": [
                                   {
                                     "kind": "variable",
-                                    "start": 970,
-                                    "end": 988,
-                                    "text": "pairedCustomerName"
+                                    "text": "pairedCustomerName",
+                                    "start": 31,
+                                    "startCol": 68,
+                                    "end": 31,
+                                    "endCol": 86
                                   }
                                 ]
                               },
                               {
                                 "kind": "projection",
-                                "start": 991,
-                                "end": 997,
+                                "start": 31,
+                                "startCol": 89,
+                                "end": 31,
+                                "endCol": 95,
                                 "children": [
                                   {
                                     "kind": "variable",
-                                    "start": 991,
-                                    "end": 992,
-                                    "text": "c"
+                                    "text": "c",
+                                    "start": 31,
+                                    "startCol": 89,
+                                    "end": 31,
+                                    "endCol": 90
                                   },
                                   {
                                     "kind": "field_name",
-                                    "start": 993,
-                                    "end": 997,
+                                    "start": 31,
+                                    "startCol": 91,
+                                    "end": 31,
+                                    "endCol": 95,
                                     "children": [
                                       {
                                         "kind": "variable",
-                                        "start": 993,
-                                        "end": 997,
-                                        "text": "name"
+                                        "text": "name",
+                                        "start": 31,
+                                        "startCol": 91,
+                                        "end": 31,
+                                        "endCol": 95
                                       }
                                     ]
                                   }
@@ -1405,43 +1835,57 @@
                           },
                           {
                             "kind": "field_update",
-                            "start": 999,
-                            "end": 1019,
+                            "start": 31,
+                            "startCol": 97,
+                            "end": 31,
+                            "endCol": 117,
                             "children": [
                               {
                                 "kind": "field_name",
-                                "start": 999,
-                                "end": 1009,
+                                "start": 31,
+                                "startCol": 97,
+                                "end": 31,
+                                "endCol": 107,
                                 "children": [
                                   {
                                     "kind": "variable",
-                                    "start": 999,
-                                    "end": 1009,
-                                    "text": "orderTotal"
+                                    "text": "orderTotal",
+                                    "start": 31,
+                                    "startCol": 97,
+                                    "end": 31,
+                                    "endCol": 107
                                   }
                                 ]
                               },
                               {
                                 "kind": "projection",
-                                "start": 1012,
-                                "end": 1019,
+                                "start": 31,
+                                "startCol": 110,
+                                "end": 31,
+                                "endCol": 117,
                                 "children": [
                                   {
                                     "kind": "variable",
-                                    "start": 1012,
-                                    "end": 1013,
-                                    "text": "o"
+                                    "text": "o",
+                                    "start": 31,
+                                    "startCol": 110,
+                                    "end": 31,
+                                    "endCol": 111
                                   },
                                   {
                                     "kind": "field_name",
-                                    "start": 1014,
-                                    "end": 1019,
+                                    "start": 31,
+                                    "startCol": 112,
+                                    "end": 31,
+                                    "endCol": 117,
                                     "children": [
                                       {
                                         "kind": "variable",
-                                        "start": 1014,
-                                        "end": 1019,
-                                        "text": "total"
+                                        "text": "total",
+                                        "start": 31,
+                                        "startCol": 112,
+                                        "end": 31,
+                                        "endCol": 117
                                       }
                                     ]
                                   }
@@ -1453,44 +1897,58 @@
                       },
                       {
                         "kind": "qualifiers",
-                        "start": 1023,
-                        "end": 1050,
+                        "start": 31,
+                        "startCol": 121,
+                        "end": 31,
+                        "endCol": 148,
                         "children": [
                           {
                             "kind": "generator",
-                            "start": 1023,
-                            "end": 1034,
+                            "start": 31,
+                            "startCol": 121,
+                            "end": 31,
+                            "endCol": 132,
                             "children": [
                               {
                                 "kind": "variable",
-                                "start": 1023,
-                                "end": 1024,
-                                "text": "o"
+                                "text": "o",
+                                "start": 31,
+                                "startCol": 121,
+                                "end": 31,
+                                "endCol": 122
                               },
                               {
                                 "kind": "variable",
-                                "start": 1028,
-                                "end": 1034,
-                                "text": "orders"
+                                "text": "orders",
+                                "start": 31,
+                                "startCol": 126,
+                                "end": 31,
+                                "endCol": 132
                               }
                             ]
                           },
                           {
                             "kind": "generator",
-                            "start": 1036,
-                            "end": 1050,
+                            "start": 31,
+                            "startCol": 134,
+                            "end": 31,
+                            "endCol": 148,
                             "children": [
                               {
                                 "kind": "variable",
-                                "start": 1036,
-                                "end": 1037,
-                                "text": "c"
+                                "text": "c",
+                                "start": 31,
+                                "startCol": 134,
+                                "end": 31,
+                                "endCol": 135
                               },
                               {
                                 "kind": "variable",
-                                "start": 1041,
-                                "end": 1050,
-                                "text": "customers"
+                                "text": "customers",
+                                "start": 31,
+                                "startCol": 139,
+                                "end": 31,
+                                "endCol": 148
                               }
                             ]
                           }
@@ -1504,31 +1962,41 @@
           },
           {
             "kind": "signature",
-            "start": 1053,
-            "end": 1066,
+            "start": 33,
+            "startCol": 0,
+            "end": 33,
+            "endCol": 13,
             "children": [
               {
                 "kind": "variable",
-                "start": 1053,
-                "end": 1057,
-                "text": "main"
+                "text": "main",
+                "start": 33,
+                "startCol": 0,
+                "end": 33,
+                "endCol": 4
               },
               {
                 "kind": "apply",
-                "start": 1061,
-                "end": 1066,
+                "start": 33,
+                "startCol": 8,
+                "end": 33,
+                "endCol": 13,
                 "children": [
                   {
                     "kind": "name",
-                    "start": 1061,
-                    "end": 1063,
-                    "text": "IO"
+                    "text": "IO",
+                    "start": 33,
+                    "startCol": 8,
+                    "end": 33,
+                    "endCol": 10
                   },
                   {
                     "kind": "unit",
-                    "start": 1064,
-                    "end": 1066,
-                    "text": "()"
+                    "text": "()",
+                    "start": 33,
+                    "startCol": 11,
+                    "end": 33,
+                    "endCol": 13
                   }
                 ]
               }
@@ -1536,51 +2004,69 @@
           },
           {
             "kind": "bind",
-            "start": 1067,
-            "end": 1411,
+            "start": 34,
+            "startCol": 0,
+            "end": 38,
+            "endCol": 16,
             "children": [
               {
                 "kind": "variable",
-                "start": 1067,
-                "end": 1071,
-                "text": "main"
+                "text": "main",
+                "start": 34,
+                "startCol": 0,
+                "end": 34,
+                "endCol": 4
               },
               {
                 "kind": "match",
-                "start": 1072,
-                "end": 1411,
+                "start": 34,
+                "startCol": 5,
+                "end": 38,
+                "endCol": 16,
                 "children": [
                   {
                     "kind": "do",
-                    "start": 1074,
-                    "end": 1411,
+                    "start": 34,
+                    "startCol": 7,
+                    "end": 38,
+                    "endCol": 16,
                     "children": [
                       {
                         "kind": "exp",
-                        "start": 1081,
-                        "end": 1136,
+                        "start": 35,
+                        "startCol": 4,
+                        "end": 35,
+                        "endCol": 59,
                         "children": [
                           {
                             "kind": "apply",
-                            "start": 1081,
-                            "end": 1136,
+                            "start": 35,
+                            "startCol": 4,
+                            "end": 35,
+                            "endCol": 59,
                             "children": [
                               {
                                 "kind": "variable",
-                                "start": 1081,
-                                "end": 1089,
-                                "text": "putStrLn"
+                                "text": "putStrLn",
+                                "start": 35,
+                                "startCol": 4,
+                                "end": 35,
+                                "endCol": 12
                               },
                               {
                                 "kind": "literal",
-                                "start": 1090,
-                                "end": 1136,
+                                "start": 35,
+                                "startCol": 13,
+                                "end": 35,
+                                "endCol": 59,
                                 "children": [
                                   {
                                     "kind": "string",
-                                    "start": 1090,
-                                    "end": 1136,
-                                    "text": "\"--- Cross Join: All order-customer pairs ---\""
+                                    "text": "\"--- Cross Join: All order-customer pairs ---\"",
+                                    "start": 35,
+                                    "startCol": 13,
+                                    "end": 35,
+                                    "endCol": 59
                                   }
                                 ]
                               }
@@ -1590,159 +2076,215 @@
                       },
                       {
                         "kind": "exp",
-                        "start": 1141,
-                        "end": 1411,
+                        "start": 36,
+                        "startCol": 4,
+                        "end": 38,
+                        "endCol": 16,
                         "children": [
                           {
                             "kind": "apply",
-                            "start": 1141,
-                            "end": 1411,
+                            "start": 36,
+                            "startCol": 4,
+                            "end": 38,
+                            "endCol": 16,
                             "children": [
                               {
                                 "kind": "apply",
-                                "start": 1141,
-                                "end": 1404,
+                                "start": 36,
+                                "startCol": 4,
+                                "end": 38,
+                                "endCol": 9,
                                 "children": [
                                   {
                                     "kind": "variable",
-                                    "start": 1141,
-                                    "end": 1146,
-                                    "text": "mapM_"
+                                    "text": "mapM_",
+                                    "start": 36,
+                                    "startCol": 4,
+                                    "end": 36,
+                                    "endCol": 9
                                   },
                                   {
                                     "kind": "parens",
-                                    "start": 1147,
-                                    "end": 1404,
+                                    "start": 36,
+                                    "startCol": 10,
+                                    "end": 38,
+                                    "endCol": 9,
                                     "children": [
                                       {
                                         "kind": "lambda",
-                                        "start": 1148,
-                                        "end": 1394,
+                                        "start": 36,
+                                        "startCol": 11,
+                                        "end": 37,
+                                        "endCol": 233,
                                         "children": [
                                           {
                                             "kind": "patterns",
-                                            "start": 1149,
-                                            "end": 1154,
+                                            "start": 36,
+                                            "startCol": 12,
+                                            "end": 36,
+                                            "endCol": 17,
                                             "children": [
                                               {
                                                 "kind": "variable",
-                                                "start": 1149,
-                                                "end": 1154,
-                                                "text": "entry"
+                                                "text": "entry",
+                                                "start": 36,
+                                                "startCol": 12,
+                                                "end": 36,
+                                                "endCol": 17
                                               }
                                             ]
                                           },
                                           {
                                             "kind": "do",
-                                            "start": 1158,
-                                            "end": 1394,
+                                            "start": 36,
+                                            "startCol": 21,
+                                            "end": 37,
+                                            "endCol": 233,
                                             "children": [
                                               {
                                                 "kind": "exp",
-                                                "start": 1169,
-                                                "end": 1394,
+                                                "start": 37,
+                                                "startCol": 8,
+                                                "end": 37,
+                                                "endCol": 233,
                                                 "children": [
                                                   {
                                                     "kind": "apply",
-                                                    "start": 1169,
-                                                    "end": 1394,
+                                                    "start": 37,
+                                                    "startCol": 8,
+                                                    "end": 37,
+                                                    "endCol": 233,
                                                     "children": [
                                                       {
                                                         "kind": "variable",
-                                                        "start": 1169,
-                                                        "end": 1177,
-                                                        "text": "putStrLn"
+                                                        "text": "putStrLn",
+                                                        "start": 37,
+                                                        "startCol": 8,
+                                                        "end": 37,
+                                                        "endCol": 16
                                                       },
                                                       {
                                                         "kind": "parens",
-                                                        "start": 1178,
-                                                        "end": 1394,
+                                                        "start": 37,
+                                                        "startCol": 17,
+                                                        "end": 37,
+                                                        "endCol": 233,
                                                         "children": [
                                                           {
                                                             "kind": "infix",
-                                                            "start": 1179,
-                                                            "end": 1393,
+                                                            "start": 37,
+                                                            "startCol": 18,
+                                                            "end": 37,
+                                                            "endCol": 232,
                                                             "children": [
                                                               {
                                                                 "kind": "literal",
-                                                                "start": 1179,
-                                                                "end": 1186,
+                                                                "start": 37,
+                                                                "startCol": 18,
+                                                                "end": 37,
+                                                                "endCol": 25,
                                                                 "children": [
                                                                   {
                                                                     "kind": "string",
-                                                                    "start": 1179,
-                                                                    "end": 1186,
-                                                                    "text": "\"Order\""
+                                                                    "text": "\"Order\"",
+                                                                    "start": 37,
+                                                                    "startCol": 18,
+                                                                    "end": 37,
+                                                                    "endCol": 25
                                                                   }
                                                                 ]
                                                               },
                                                               {
                                                                 "kind": "operator",
-                                                                "start": 1187,
-                                                                "end": 1189,
-                                                                "text": "++"
+                                                                "text": "++",
+                                                                "start": 37,
+                                                                "startCol": 26,
+                                                                "end": 37,
+                                                                "endCol": 28
                                                               },
                                                               {
                                                                 "kind": "infix",
-                                                                "start": 1190,
-                                                                "end": 1393,
+                                                                "start": 37,
+                                                                "startCol": 29,
+                                                                "end": 37,
+                                                                "endCol": 232,
                                                                 "children": [
                                                                   {
                                                                     "kind": "literal",
-                                                                    "start": 1190,
-                                                                    "end": 1193,
+                                                                    "start": 37,
+                                                                    "startCol": 29,
+                                                                    "end": 37,
+                                                                    "endCol": 32,
                                                                     "children": [
                                                                       {
                                                                         "kind": "string",
-                                                                        "start": 1190,
-                                                                        "end": 1193,
-                                                                        "text": "\" \""
+                                                                        "text": "\" \"",
+                                                                        "start": 37,
+                                                                        "startCol": 29,
+                                                                        "end": 37,
+                                                                        "endCol": 32
                                                                       }
                                                                     ]
                                                                   },
                                                                   {
                                                                     "kind": "operator",
-                                                                    "start": 1194,
-                                                                    "end": 1196,
-                                                                    "text": "++"
+                                                                    "text": "++",
+                                                                    "start": 37,
+                                                                    "startCol": 33,
+                                                                    "end": 37,
+                                                                    "endCol": 35
                                                                   },
                                                                   {
                                                                     "kind": "infix",
-                                                                    "start": 1197,
-                                                                    "end": 1393,
+                                                                    "start": 37,
+                                                                    "startCol": 36,
+                                                                    "end": 37,
+                                                                    "endCol": 232,
                                                                     "children": [
                                                                       {
                                                                         "kind": "apply",
-                                                                        "start": 1197,
-                                                                        "end": 1215,
+                                                                        "start": 37,
+                                                                        "startCol": 36,
+                                                                        "end": 37,
+                                                                        "endCol": 54,
                                                                         "children": [
                                                                           {
                                                                             "kind": "variable",
-                                                                            "start": 1197,
-                                                                            "end": 1201,
-                                                                            "text": "show"
+                                                                            "text": "show",
+                                                                            "start": 37,
+                                                                            "startCol": 36,
+                                                                            "end": 37,
+                                                                            "endCol": 40
                                                                           },
                                                                           {
                                                                             "kind": "projection",
-                                                                            "start": 1202,
-                                                                            "end": 1215,
+                                                                            "start": 37,
+                                                                            "startCol": 41,
+                                                                            "end": 37,
+                                                                            "endCol": 54,
                                                                             "children": [
                                                                               {
                                                                                 "kind": "variable",
-                                                                                "start": 1202,
-                                                                                "end": 1207,
-                                                                                "text": "entry"
+                                                                                "text": "entry",
+                                                                                "start": 37,
+                                                                                "startCol": 41,
+                                                                                "end": 37,
+                                                                                "endCol": 46
                                                                               },
                                                                               {
                                                                                 "kind": "field_name",
-                                                                                "start": 1208,
-                                                                                "end": 1215,
+                                                                                "start": 37,
+                                                                                "startCol": 47,
+                                                                                "end": 37,
+                                                                                "endCol": 54,
                                                                                 "children": [
                                                                                   {
                                                                                     "kind": "variable",
-                                                                                    "start": 1208,
-                                                                                    "end": 1215,
-                                                                                    "text": "orderId"
+                                                                                    "text": "orderId",
+                                                                                    "start": 37,
+                                                                                    "startCol": 47,
+                                                                                    "end": 37,
+                                                                                    "endCol": 54
                                                                                   }
                                                                                 ]
                                                                               }
@@ -1752,119 +2294,159 @@
                                                                       },
                                                                       {
                                                                         "kind": "operator",
-                                                                        "start": 1216,
-                                                                        "end": 1218,
-                                                                        "text": "++"
+                                                                        "text": "++",
+                                                                        "start": 37,
+                                                                        "startCol": 55,
+                                                                        "end": 37,
+                                                                        "endCol": 57
                                                                       },
                                                                       {
                                                                         "kind": "infix",
-                                                                        "start": 1219,
-                                                                        "end": 1393,
+                                                                        "start": 37,
+                                                                        "startCol": 58,
+                                                                        "end": 37,
+                                                                        "endCol": 232,
                                                                         "children": [
                                                                           {
                                                                             "kind": "literal",
-                                                                            "start": 1219,
-                                                                            "end": 1222,
+                                                                            "start": 37,
+                                                                            "startCol": 58,
+                                                                            "end": 37,
+                                                                            "endCol": 61,
                                                                             "children": [
                                                                               {
                                                                                 "kind": "string",
-                                                                                "start": 1219,
-                                                                                "end": 1222,
-                                                                                "text": "\" \""
+                                                                                "text": "\" \"",
+                                                                                "start": 37,
+                                                                                "startCol": 58,
+                                                                                "end": 37,
+                                                                                "endCol": 61
                                                                               }
                                                                             ]
                                                                           },
                                                                           {
                                                                             "kind": "operator",
-                                                                            "start": 1223,
-                                                                            "end": 1225,
-                                                                            "text": "++"
+                                                                            "text": "++",
+                                                                            "start": 37,
+                                                                            "startCol": 62,
+                                                                            "end": 37,
+                                                                            "endCol": 64
                                                                           },
                                                                           {
                                                                             "kind": "infix",
-                                                                            "start": 1226,
-                                                                            "end": 1393,
+                                                                            "start": 37,
+                                                                            "startCol": 65,
+                                                                            "end": 37,
+                                                                            "endCol": 232,
                                                                             "children": [
                                                                               {
                                                                                 "kind": "literal",
-                                                                                "start": 1226,
-                                                                                "end": 1240,
+                                                                                "start": 37,
+                                                                                "startCol": 65,
+                                                                                "end": 37,
+                                                                                "endCol": 79,
                                                                                 "children": [
                                                                                   {
                                                                                     "kind": "string",
-                                                                                    "start": 1226,
-                                                                                    "end": 1240,
-                                                                                    "text": "\"(customerId:\""
+                                                                                    "text": "\"(customerId:\"",
+                                                                                    "start": 37,
+                                                                                    "startCol": 65,
+                                                                                    "end": 37,
+                                                                                    "endCol": 79
                                                                                   }
                                                                                 ]
                                                                               },
                                                                               {
                                                                                 "kind": "operator",
-                                                                                "start": 1241,
-                                                                                "end": 1243,
-                                                                                "text": "++"
+                                                                                "text": "++",
+                                                                                "start": 37,
+                                                                                "startCol": 80,
+                                                                                "end": 37,
+                                                                                "endCol": 82
                                                                               },
                                                                               {
                                                                                 "kind": "infix",
-                                                                                "start": 1244,
-                                                                                "end": 1393,
+                                                                                "start": 37,
+                                                                                "startCol": 83,
+                                                                                "end": 37,
+                                                                                "endCol": 232,
                                                                                 "children": [
                                                                                   {
                                                                                     "kind": "literal",
-                                                                                    "start": 1244,
-                                                                                    "end": 1247,
+                                                                                    "start": 37,
+                                                                                    "startCol": 83,
+                                                                                    "end": 37,
+                                                                                    "endCol": 86,
                                                                                     "children": [
                                                                                       {
                                                                                         "kind": "string",
-                                                                                        "start": 1244,
-                                                                                        "end": 1247,
-                                                                                        "text": "\" \""
+                                                                                        "text": "\" \"",
+                                                                                        "start": 37,
+                                                                                        "startCol": 83,
+                                                                                        "end": 37,
+                                                                                        "endCol": 86
                                                                                       }
                                                                                     ]
                                                                                   },
                                                                                   {
                                                                                     "kind": "operator",
-                                                                                    "start": 1248,
-                                                                                    "end": 1250,
-                                                                                    "text": "++"
+                                                                                    "text": "++",
+                                                                                    "start": 37,
+                                                                                    "startCol": 87,
+                                                                                    "end": 37,
+                                                                                    "endCol": 89
                                                                                   },
                                                                                   {
                                                                                     "kind": "infix",
-                                                                                    "start": 1251,
-                                                                                    "end": 1393,
+                                                                                    "start": 37,
+                                                                                    "startCol": 90,
+                                                                                    "end": 37,
+                                                                                    "endCol": 232,
                                                                                     "children": [
                                                                                       {
                                                                                         "kind": "apply",
-                                                                                        "start": 1251,
-                                                                                        "end": 1277,
+                                                                                        "start": 37,
+                                                                                        "startCol": 90,
+                                                                                        "end": 37,
+                                                                                        "endCol": 116,
                                                                                         "children": [
                                                                                           {
                                                                                             "kind": "variable",
-                                                                                            "start": 1251,
-                                                                                            "end": 1255,
-                                                                                            "text": "show"
+                                                                                            "text": "show",
+                                                                                            "start": 37,
+                                                                                            "startCol": 90,
+                                                                                            "end": 37,
+                                                                                            "endCol": 94
                                                                                           },
                                                                                           {
                                                                                             "kind": "projection",
-                                                                                            "start": 1256,
-                                                                                            "end": 1277,
+                                                                                            "start": 37,
+                                                                                            "startCol": 95,
+                                                                                            "end": 37,
+                                                                                            "endCol": 116,
                                                                                             "children": [
                                                                                               {
                                                                                                 "kind": "variable",
-                                                                                                "start": 1256,
-                                                                                                "end": 1261,
-                                                                                                "text": "entry"
+                                                                                                "text": "entry",
+                                                                                                "start": 37,
+                                                                                                "startCol": 95,
+                                                                                                "end": 37,
+                                                                                                "endCol": 100
                                                                                               },
                                                                                               {
                                                                                                 "kind": "field_name",
-                                                                                                "start": 1262,
-                                                                                                "end": 1277,
+                                                                                                "start": 37,
+                                                                                                "startCol": 101,
+                                                                                                "end": 37,
+                                                                                                "endCol": 116,
                                                                                                 "children": [
                                                                                                   {
                                                                                                     "kind": "variable",
-                                                                                                    "start": 1262,
-                                                                                                    "end": 1277,
-                                                                                                    "text": "orderCustomerId"
+                                                                                                    "text": "orderCustomerId",
+                                                                                                    "start": 37,
+                                                                                                    "startCol": 101,
+                                                                                                    "end": 37,
+                                                                                                    "endCol": 116
                                                                                                   }
                                                                                                 ]
                                                                                               }
@@ -1874,119 +2456,159 @@
                                                                                       },
                                                                                       {
                                                                                         "kind": "operator",
-                                                                                        "start": 1278,
-                                                                                        "end": 1280,
-                                                                                        "text": "++"
+                                                                                        "text": "++",
+                                                                                        "start": 37,
+                                                                                        "startCol": 117,
+                                                                                        "end": 37,
+                                                                                        "endCol": 119
                                                                                       },
                                                                                       {
                                                                                         "kind": "infix",
-                                                                                        "start": 1281,
-                                                                                        "end": 1393,
+                                                                                        "start": 37,
+                                                                                        "startCol": 120,
+                                                                                        "end": 37,
+                                                                                        "endCol": 232,
                                                                                         "children": [
                                                                                           {
                                                                                             "kind": "literal",
-                                                                                            "start": 1281,
-                                                                                            "end": 1284,
+                                                                                            "start": 37,
+                                                                                            "startCol": 120,
+                                                                                            "end": 37,
+                                                                                            "endCol": 123,
                                                                                             "children": [
                                                                                               {
                                                                                                 "kind": "string",
-                                                                                                "start": 1281,
-                                                                                                "end": 1284,
-                                                                                                "text": "\" \""
+                                                                                                "text": "\" \"",
+                                                                                                "start": 37,
+                                                                                                "startCol": 120,
+                                                                                                "end": 37,
+                                                                                                "endCol": 123
                                                                                               }
                                                                                             ]
                                                                                           },
                                                                                           {
                                                                                             "kind": "operator",
-                                                                                            "start": 1285,
-                                                                                            "end": 1287,
-                                                                                            "text": "++"
+                                                                                            "text": "++",
+                                                                                            "start": 37,
+                                                                                            "startCol": 124,
+                                                                                            "end": 37,
+                                                                                            "endCol": 126
                                                                                           },
                                                                                           {
                                                                                             "kind": "infix",
-                                                                                            "start": 1288,
-                                                                                            "end": 1393,
+                                                                                            "start": 37,
+                                                                                            "startCol": 127,
+                                                                                            "end": 37,
+                                                                                            "endCol": 232,
                                                                                             "children": [
                                                                                               {
                                                                                                 "kind": "literal",
-                                                                                                "start": 1288,
-                                                                                                "end": 1300,
+                                                                                                "start": 37,
+                                                                                                "startCol": 127,
+                                                                                                "end": 37,
+                                                                                                "endCol": 139,
                                                                                                 "children": [
                                                                                                   {
                                                                                                     "kind": "string",
-                                                                                                    "start": 1288,
-                                                                                                    "end": 1300,
-                                                                                                    "text": "\", total: $\""
+                                                                                                    "text": "\", total: $\"",
+                                                                                                    "start": 37,
+                                                                                                    "startCol": 127,
+                                                                                                    "end": 37,
+                                                                                                    "endCol": 139
                                                                                                   }
                                                                                                 ]
                                                                                               },
                                                                                               {
                                                                                                 "kind": "operator",
-                                                                                                "start": 1301,
-                                                                                                "end": 1303,
-                                                                                                "text": "++"
+                                                                                                "text": "++",
+                                                                                                "start": 37,
+                                                                                                "startCol": 140,
+                                                                                                "end": 37,
+                                                                                                "endCol": 142
                                                                                               },
                                                                                               {
                                                                                                 "kind": "infix",
-                                                                                                "start": 1304,
-                                                                                                "end": 1393,
+                                                                                                "start": 37,
+                                                                                                "startCol": 143,
+                                                                                                "end": 37,
+                                                                                                "endCol": 232,
                                                                                                 "children": [
                                                                                                   {
                                                                                                     "kind": "literal",
-                                                                                                    "start": 1304,
-                                                                                                    "end": 1307,
+                                                                                                    "start": 37,
+                                                                                                    "startCol": 143,
+                                                                                                    "end": 37,
+                                                                                                    "endCol": 146,
                                                                                                     "children": [
                                                                                                       {
                                                                                                         "kind": "string",
-                                                                                                        "start": 1304,
-                                                                                                        "end": 1307,
-                                                                                                        "text": "\" \""
+                                                                                                        "text": "\" \"",
+                                                                                                        "start": 37,
+                                                                                                        "startCol": 143,
+                                                                                                        "end": 37,
+                                                                                                        "endCol": 146
                                                                                                       }
                                                                                                     ]
                                                                                                   },
                                                                                                   {
                                                                                                     "kind": "operator",
-                                                                                                    "start": 1308,
-                                                                                                    "end": 1310,
-                                                                                                    "text": "++"
+                                                                                                    "text": "++",
+                                                                                                    "start": 37,
+                                                                                                    "startCol": 147,
+                                                                                                    "end": 37,
+                                                                                                    "endCol": 149
                                                                                                   },
                                                                                                   {
                                                                                                     "kind": "infix",
-                                                                                                    "start": 1311,
-                                                                                                    "end": 1393,
+                                                                                                    "start": 37,
+                                                                                                    "startCol": 150,
+                                                                                                    "end": 37,
+                                                                                                    "endCol": 232,
                                                                                                     "children": [
                                                                                                       {
                                                                                                         "kind": "apply",
-                                                                                                        "start": 1311,
-                                                                                                        "end": 1332,
+                                                                                                        "start": 37,
+                                                                                                        "startCol": 150,
+                                                                                                        "end": 37,
+                                                                                                        "endCol": 171,
                                                                                                         "children": [
                                                                                                           {
                                                                                                             "kind": "variable",
-                                                                                                            "start": 1311,
-                                                                                                            "end": 1315,
-                                                                                                            "text": "show"
+                                                                                                            "text": "show",
+                                                                                                            "start": 37,
+                                                                                                            "startCol": 150,
+                                                                                                            "end": 37,
+                                                                                                            "endCol": 154
                                                                                                           },
                                                                                                           {
                                                                                                             "kind": "projection",
-                                                                                                            "start": 1316,
-                                                                                                            "end": 1332,
+                                                                                                            "start": 37,
+                                                                                                            "startCol": 155,
+                                                                                                            "end": 37,
+                                                                                                            "endCol": 171,
                                                                                                             "children": [
                                                                                                               {
                                                                                                                 "kind": "variable",
-                                                                                                                "start": 1316,
-                                                                                                                "end": 1321,
-                                                                                                                "text": "entry"
+                                                                                                                "text": "entry",
+                                                                                                                "start": 37,
+                                                                                                                "startCol": 155,
+                                                                                                                "end": 37,
+                                                                                                                "endCol": 160
                                                                                                               },
                                                                                                               {
                                                                                                                 "kind": "field_name",
-                                                                                                                "start": 1322,
-                                                                                                                "end": 1332,
+                                                                                                                "start": 37,
+                                                                                                                "startCol": 161,
+                                                                                                                "end": 37,
+                                                                                                                "endCol": 171,
                                                                                                                 "children": [
                                                                                                                   {
                                                                                                                     "kind": "variable",
-                                                                                                                    "start": 1322,
-                                                                                                                    "end": 1332,
-                                                                                                                    "text": "orderTotal"
+                                                                                                                    "text": "orderTotal",
+                                                                                                                    "start": 37,
+                                                                                                                    "startCol": 161,
+                                                                                                                    "end": 37,
+                                                                                                                    "endCol": 171
                                                                                                                   }
                                                                                                                 ]
                                                                                                               }
@@ -1996,103 +2618,137 @@
                                                                                                       },
                                                                                                       {
                                                                                                         "kind": "operator",
-                                                                                                        "start": 1333,
-                                                                                                        "end": 1335,
-                                                                                                        "text": "++"
+                                                                                                        "text": "++",
+                                                                                                        "start": 37,
+                                                                                                        "startCol": 172,
+                                                                                                        "end": 37,
+                                                                                                        "endCol": 174
                                                                                                       },
                                                                                                       {
                                                                                                         "kind": "infix",
-                                                                                                        "start": 1336,
-                                                                                                        "end": 1393,
+                                                                                                        "start": 37,
+                                                                                                        "startCol": 175,
+                                                                                                        "end": 37,
+                                                                                                        "endCol": 232,
                                                                                                         "children": [
                                                                                                           {
                                                                                                             "kind": "literal",
-                                                                                                            "start": 1336,
-                                                                                                            "end": 1339,
+                                                                                                            "start": 37,
+                                                                                                            "startCol": 175,
+                                                                                                            "end": 37,
+                                                                                                            "endCol": 178,
                                                                                                             "children": [
                                                                                                               {
                                                                                                                 "kind": "string",
-                                                                                                                "start": 1336,
-                                                                                                                "end": 1339,
-                                                                                                                "text": "\" \""
+                                                                                                                "text": "\" \"",
+                                                                                                                "start": 37,
+                                                                                                                "startCol": 175,
+                                                                                                                "end": 37,
+                                                                                                                "endCol": 178
                                                                                                               }
                                                                                                             ]
                                                                                                           },
                                                                                                           {
                                                                                                             "kind": "operator",
-                                                                                                            "start": 1340,
-                                                                                                            "end": 1342,
-                                                                                                            "text": "++"
+                                                                                                            "text": "++",
+                                                                                                            "start": 37,
+                                                                                                            "startCol": 179,
+                                                                                                            "end": 37,
+                                                                                                            "endCol": 181
                                                                                                           },
                                                                                                           {
                                                                                                             "kind": "infix",
-                                                                                                            "start": 1343,
-                                                                                                            "end": 1393,
+                                                                                                            "start": 37,
+                                                                                                            "startCol": 182,
+                                                                                                            "end": 37,
+                                                                                                            "endCol": 232,
                                                                                                             "children": [
                                                                                                               {
                                                                                                                 "kind": "literal",
-                                                                                                                "start": 1343,
-                                                                                                                "end": 1358,
+                                                                                                                "start": 37,
+                                                                                                                "startCol": 182,
+                                                                                                                "end": 37,
+                                                                                                                "endCol": 197,
                                                                                                                 "children": [
                                                                                                                   {
                                                                                                                     "kind": "string",
-                                                                                                                    "start": 1343,
-                                                                                                                    "end": 1358,
-                                                                                                                    "text": "\") paired with\""
+                                                                                                                    "text": "\") paired with\"",
+                                                                                                                    "start": 37,
+                                                                                                                    "startCol": 182,
+                                                                                                                    "end": 37,
+                                                                                                                    "endCol": 197
                                                                                                                   }
                                                                                                                 ]
                                                                                                               },
                                                                                                               {
                                                                                                                 "kind": "operator",
-                                                                                                                "start": 1359,
-                                                                                                                "end": 1361,
-                                                                                                                "text": "++"
+                                                                                                                "text": "++",
+                                                                                                                "start": 37,
+                                                                                                                "startCol": 198,
+                                                                                                                "end": 37,
+                                                                                                                "endCol": 200
                                                                                                               },
                                                                                                               {
                                                                                                                 "kind": "infix",
-                                                                                                                "start": 1362,
-                                                                                                                "end": 1393,
+                                                                                                                "start": 37,
+                                                                                                                "startCol": 201,
+                                                                                                                "end": 37,
+                                                                                                                "endCol": 232,
                                                                                                                 "children": [
                                                                                                                   {
                                                                                                                     "kind": "literal",
-                                                                                                                    "start": 1362,
-                                                                                                                    "end": 1365,
+                                                                                                                    "start": 37,
+                                                                                                                    "startCol": 201,
+                                                                                                                    "end": 37,
+                                                                                                                    "endCol": 204,
                                                                                                                     "children": [
                                                                                                                       {
                                                                                                                         "kind": "string",
-                                                                                                                        "start": 1362,
-                                                                                                                        "end": 1365,
-                                                                                                                        "text": "\" \""
+                                                                                                                        "text": "\" \"",
+                                                                                                                        "start": 37,
+                                                                                                                        "startCol": 201,
+                                                                                                                        "end": 37,
+                                                                                                                        "endCol": 204
                                                                                                                       }
                                                                                                                     ]
                                                                                                                   },
                                                                                                                   {
                                                                                                                     "kind": "operator",
-                                                                                                                    "start": 1366,
-                                                                                                                    "end": 1368,
-                                                                                                                    "text": "++"
+                                                                                                                    "text": "++",
+                                                                                                                    "start": 37,
+                                                                                                                    "startCol": 205,
+                                                                                                                    "end": 37,
+                                                                                                                    "endCol": 207
                                                                                                                   },
                                                                                                                   {
                                                                                                                     "kind": "projection",
-                                                                                                                    "start": 1369,
-                                                                                                                    "end": 1393,
+                                                                                                                    "start": 37,
+                                                                                                                    "startCol": 208,
+                                                                                                                    "end": 37,
+                                                                                                                    "endCol": 232,
                                                                                                                     "children": [
                                                                                                                       {
                                                                                                                         "kind": "variable",
-                                                                                                                        "start": 1369,
-                                                                                                                        "end": 1374,
-                                                                                                                        "text": "entry"
+                                                                                                                        "text": "entry",
+                                                                                                                        "start": 37,
+                                                                                                                        "startCol": 208,
+                                                                                                                        "end": 37,
+                                                                                                                        "endCol": 213
                                                                                                                       },
                                                                                                                       {
                                                                                                                         "kind": "field_name",
-                                                                                                                        "start": 1375,
-                                                                                                                        "end": 1393,
+                                                                                                                        "start": 37,
+                                                                                                                        "startCol": 214,
+                                                                                                                        "end": 37,
+                                                                                                                        "endCol": 232,
                                                                                                                         "children": [
                                                                                                                           {
                                                                                                                             "kind": "variable",
-                                                                                                                            "start": 1375,
-                                                                                                                            "end": 1393,
-                                                                                                                            "text": "pairedCustomerName"
+                                                                                                                            "text": "pairedCustomerName",
+                                                                                                                            "start": 37,
+                                                                                                                            "startCol": 214,
+                                                                                                                            "end": 37,
+                                                                                                                            "endCol": 232
                                                                                                                           }
                                                                                                                         ]
                                                                                                                       }
@@ -2142,9 +2798,11 @@
                               },
                               {
                                 "kind": "variable",
-                                "start": 1405,
-                                "end": 1411,
-                                "text": "result"
+                                "text": "result",
+                                "start": 38,
+                                "startCol": 10,
+                                "end": 38,
+                                "endCol": 16
                               }
                             ]
                           }
