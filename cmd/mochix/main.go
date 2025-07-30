@@ -525,13 +525,13 @@ func runInspect(cmd *InspectCmd) error {
 	case "cpp", "c++":
 		prog, err = cppast.Inspect(src)
 	case "cs", "csharp":
-		prog, err = csast.Inspect(src, false)
+		prog, err = csast.Inspect(src)
 	case "dart":
 		prog, err = dartast.Inspect(src)
 	case "elixir", "ex":
-		prog, err = elixirast.Inspect(src, false)
+		prog, err = elixirast.Inspect(src)
 	case "fs", "fsharp":
-		prog, err = fsast.Inspect(src, false)
+		prog, err = fsast.Inspect(src)
 	case "go":
 		prog, err = goast.Inspect(src)
 	case "haskell":
@@ -539,7 +539,7 @@ func runInspect(cmd *InspectCmd) error {
 	case "hs":
 		prog, err = hsast.Inspect(src)
 	case "java":
-		prog, err = javaast.Inspect(src)
+		prog, err = javaast.Inspect(src, false)
 	case "kotlin", "kt":
 		prog, err = kotlinast.Inspect(src)
 	case "lua":
@@ -557,7 +557,7 @@ func runInspect(cmd *InspectCmd) error {
 	case "prolog":
 		prog, err = prologast.Inspect(src)
 	case "py", "python":
-		prog, err = pyast.Inspect(src, false)
+		prog, err = pyast.Inspect(src)
 	case "rb", "ruby":
 		prog, err = rbast.Inspect(src)
 	case "rkt", "racket":
