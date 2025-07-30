@@ -46,6 +46,7 @@ type Program struct {
 	UseBreak     bool
 	UseReturn    bool
 	UseSubstring bool
+	UsePadStart  bool
 	UseSHA256    bool
 }
 
@@ -63,6 +64,7 @@ var (
 	usesBreak     bool
 	usesReturn    bool
 	usesSubstring bool
+	usesPadStart  bool
 	usesSHA256    bool
 	benchMain     bool
 	currentReturn string
@@ -109,6 +111,13 @@ const helperSubstring = `let _substring (s:string) (start:int) (finish:int) =
     if en > len then en <- len
     if st > en then st <- en
     s.Substring(st, en - st)
+`
+
+const helperPadStart = `let _padStart (s:string) (width:int) (pad:string) =
+    let mutable out = s
+    while out.Length < width do
+        out <- pad + out
+    out
 `
 
 const helperSHA256 = `let _sha256 (bs:int array) : int array =
@@ -1618,10 +1627,8 @@ func (b *BinaryExpr) emit(w io.Writer) {
 type IntLit struct{ Value int64 }
 
 func (i *IntLit) emit(w io.Writer) {
-	if i.Value > math.MaxInt32 {
-		fmt.Fprintf(w, "%d", i.Value-1<<32)
-	} else if i.Value < math.MinInt32 {
-		fmt.Fprintf(w, "%d", i.Value)
+	if i.Value > math.MaxInt32 || i.Value < math.MinInt32 {
+		fmt.Fprintf(w, "%dL", i.Value)
 	} else {
 		fmt.Fprintf(w, "%d", i.Value)
 	}
@@ -2552,6 +2559,10 @@ func Emit(prog *Program) []byte {
 		buf.WriteString(helperSubstring)
 		buf.WriteString("\n")
 	}
+	if prog.UsePadStart {
+		buf.WriteString(helperPadStart)
+		buf.WriteString("\n")
+	}
 	if prog.UseSHA256 {
 		buf.WriteString(helperSHA256)
 		buf.WriteString("\n")
@@ -2642,6 +2653,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesBreak = false
 	usesReturn = false
 	usesSubstring = false
+	usesPadStart = false
 	usesSHA256 = false
 	currentReturn = ""
 	p := &Program{}
@@ -2685,6 +2697,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	p.UseBreak = usesBreak
 	p.UseReturn = usesReturn
 	p.UseSubstring = usesSubstring
+	p.UsePadStart = usesPadStart
 	p.UseSHA256 = usesSHA256
 	return p, nil
 }
@@ -3489,6 +3502,18 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("lower expects 1 arg")
 			}
 			return &MethodCallExpr{Target: args[0], Name: "ToLower"}, nil
+		case "padStart":
+			if len(args) != 3 {
+				return nil, fmt.Errorf("padStart expects 3 args")
+			}
+			usesPadStart = true
+			return &CallExpr{Func: "_padStart", Args: args}, nil
+		case "slice":
+			if len(args) != 3 {
+				return nil, fmt.Errorf("slice expects 3 args")
+			}
+			isStr := inferType(args[0]) == "string"
+			return &SliceExpr{Target: args[0], Start: args[1], End: args[2], IsString: isStr}, nil
 		case "indexOf":
 			if len(args) != 2 {
 				return nil, fmt.Errorf("indexOf expects 2 args")
