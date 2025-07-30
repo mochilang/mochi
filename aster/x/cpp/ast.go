@@ -25,6 +25,37 @@ type Node struct {
 	Children []*Node `json:"children,omitempty"`
 }
 
+// Typed aliases expose a slightly richer structure when composing a Program.
+// Only node kinds that either hold useful values or appear in the golden tests
+// are enumerated here. Additional kinds are represented by Node at runtime.
+type (
+	TranslationUnit        Node
+	PreprocInclude         Node
+	FunctionDefinition     Node
+	FunctionDeclarator     Node
+	CompoundStatement      Node
+	ExpressionStatement    Node
+	ReturnStatement        Node
+	CallExpression         Node
+	ArgumentList           Node
+	BinaryExpression       Node
+	QualifiedIdentifier    Node
+	NamespaceIdentifier    Node
+	FieldIdentifier        Node
+	PrimitiveType          Node
+	TypeIdentifier         Node
+	Identifier             Node
+	NumberLiteral          Node
+	CharLiteral            Node
+	StringLiteral          Node
+	StringContent          Node
+	EscapeSequence         Node
+	Auto                   Node
+	Character              Node
+	LambdaCaptureSpecifier Node
+	Comment                Node
+)
+
 // Options controls how the AST is produced.
 type Options struct {
 	// WithPositions toggles whether position fields are populated.
