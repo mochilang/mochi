@@ -2397,6 +2397,7 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	t := types.TypeOfPrimaryBasic(pf.Target, env)
 	ops := pf.Ops
 	if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) > 0 {
 		tailOps := make([]*parser.PostfixOp, 0, len(pf.Target.Selector.Tail))
@@ -2411,10 +2412,22 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			if n, ok := expr.(*Name); ok {
 				if _, ok := importedModules[n.Name]; ok {
 					expr = &Name{Name: n.Name + "_" + op.Field.Name}
+					t = types.AnyType{}
 					break
 				}
 			}
 			expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}, IsMap: true}
+			if st, ok := t.(types.StructType); ok {
+				if ft, ok2 := st.Fields[op.Field.Name]; ok2 {
+					t = ft
+				} else {
+					t = types.AnyType{}
+				}
+			} else if mt, ok := t.(types.MapType); ok {
+				t = mt.Value
+			} else {
+				t = types.AnyType{}
+			}
 		case op.Call != nil:
 			switch n := expr.(type) {
 			case *Name:
@@ -2422,6 +2435,11 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				expr, err = convertCall(&parser.CallExpr{Func: n.Name, Args: op.Call.Args}, env)
 				if err != nil {
 					return nil, err
+				}
+				if ft, err := env.GetVar(n.Name); err == nil {
+					if fn, ok := ft.(types.FuncType); ok {
+						t = fn.Return
+					}
 				}
 			case *IndexExpr:
 				if mod, ok := n.Target.(*Name); ok {
@@ -2432,6 +2450,11 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 							expr, err = convertCall(&parser.CallExpr{Func: fn, Args: op.Call.Args}, env)
 							if err != nil {
 								return nil, err
+							}
+							if ft, err := env.GetVar(fn); err == nil {
+								if fnType, ok := ft.(types.FuncType); ok {
+									t = fnType.Return
+								}
 							}
 							break
 						}
@@ -2516,40 +2539,27 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 					args = append(args, arg)
 				}
 				expr = &InvokeExpr{Callee: expr, Args: args}
+				t = types.AnyType{}
 			}
 		case op.Index != nil && op.Index.Colon == nil:
 			idx, err := convertExpr(op.Index.Start, env)
 			if err != nil {
 				return nil, err
 			}
-			idxType := types.TypeOfExpr(op.Index.Start, env)
-			numericIdx := types.IsNumericType(idxType)
-			isStr := types.IsStringPrimary(pf.Target, env)
-			isMap := types.IsMapPrimary(pf.Target, env)
-			if !isMap {
-				if types.IsMapType(types.TypeOfPrimary(pf.Target, env)) {
-					isMap = true
-				}
-			}
-			if !isMap && !isStr {
-				if _, ok := idx.(*StringLit); ok {
-					isMap = true
-				} else if _, ok := idxType.(types.StringType); ok {
-					isMap = true
-				} else if types.IsMapType(types.TypeOfPrimary(pf.Target, env)) {
-					isMap = true
-				}
-			}
-			if !isMap {
-				if ex, ok := expr.(*IndexExpr); ok && ex.IsMap {
-					// Propagate only when indexing a real map
-					// or when the index is not numeric.
-					if !numericIdx && types.IsMapType(types.TypeOfPrimary(pf.Target, env)) {
-						isMap = true
-					}
-				}
-			}
+			isStr := types.IsStringType(t)
+			isMap := types.IsMapType(t)
 			expr = &IndexExpr{Target: expr, Index: idx, IsString: isStr, IsMap: isMap}
+			if isMap {
+				if mt, ok := t.(types.MapType); ok {
+					t = mt.Value
+				} else {
+					t = types.AnyType{}
+				}
+			} else if lt, ok := t.(types.ListType); ok {
+				t = lt.Elem
+			} else {
+				t = types.AnyType{}
+			}
 		case op.Index != nil && op.Index.Colon != nil:
 			if op.Index.Colon2 != nil || op.Index.Step != nil {
 				return nil, fmt.Errorf("slice step not supported")
@@ -2820,6 +2830,10 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 	case "substring":
 		if len(args) == 3 {
 			return &CallExpr{Func: "slice", Args: args}, nil
+		}
+	case "substr":
+		if len(args) == 3 {
+			return &CallExpr{Func: "substring", Args: args}, nil
 		}
 	case "slice":
 		if len(args) == 3 {
