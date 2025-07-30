@@ -12,7 +12,7 @@ type Program struct {
 // If opts is nil, default options are used.
 func Inspect(src string, opts *Options) (*Program, error) {
 	parser := newParser()
-	tree := parser.Parse(nil, []byte(src))
+	tree := parser.Parse([]byte(src), nil)
 	var o Options
 	if opts != nil {
 		o = *opts
