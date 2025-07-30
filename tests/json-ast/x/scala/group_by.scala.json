@@ -1,0 +1,1733 @@
+{
+  "root": {
+    "type": "compilation_unit",
+    "children": [
+      {
+        "type": "comment",
+        "children": [
+          {
+            "type": "//",
+            "text": "//"
+          }
+        ]
+      },
+      {
+        "type": "import_declaration",
+        "children": [
+          {
+            "type": "import",
+            "text": "import"
+          },
+          {
+            "type": "identifier",
+            "text": "scala"
+          },
+          {
+            "type": ".",
+            "text": "."
+          },
+          {
+            "type": "identifier",
+            "text": "collection"
+          },
+          {
+            "type": ".",
+            "text": "."
+          },
+          {
+            "type": "identifier",
+            "text": "mutable"
+          },
+          {
+            "type": ".",
+            "text": "."
+          },
+          {
+            "type": "namespace_selectors",
+            "children": [
+              {
+                "type": "{",
+                "text": "{"
+              },
+              {
+                "type": "identifier",
+                "text": "ArrayBuffer"
+              },
+              {
+                "type": ",",
+                "text": ","
+              },
+              {
+                "type": "identifier",
+                "text": "Map"
+              },
+              {
+                "type": "}",
+                "text": "}"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "object_definition",
+        "children": [
+          {
+            "type": "object",
+            "text": "object"
+          },
+          {
+            "type": "identifier",
+            "text": "Main"
+          },
+          {
+            "type": "template_body",
+            "children": [
+              {
+                "type": "{",
+                "text": "{"
+              },
+              {
+                "type": "class_definition",
+                "children": [
+                  {
+                    "type": "case",
+                    "text": "case"
+                  },
+                  {
+                    "type": "class",
+                    "text": "class"
+                  },
+                  {
+                    "type": "identifier",
+                    "text": "Item"
+                  },
+                  {
+                    "type": "class_parameters",
+                    "children": [
+                      {
+                        "type": "(",
+                        "text": "("
+                      },
+                      {
+                        "type": "class_parameter",
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "text": "name"
+                          },
+                          {
+                            "type": ":",
+                            "text": ":"
+                          },
+                          {
+                            "type": "type_identifier",
+                            "text": "String"
+                          }
+                        ]
+                      },
+                      {
+                        "type": ",",
+                        "text": ","
+                      },
+                      {
+                        "type": "class_parameter",
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "text": "age"
+                          },
+                          {
+                            "type": ":",
+                            "text": ":"
+                          },
+                          {
+                            "type": "type_identifier",
+                            "text": "Int"
+                          }
+                        ]
+                      },
+                      {
+                        "type": ",",
+                        "text": ","
+                      },
+                      {
+                        "type": "class_parameter",
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "text": "city"
+                          },
+                          {
+                            "type": ":",
+                            "text": ":"
+                          },
+                          {
+                            "type": "type_identifier",
+                            "text": "String"
+                          }
+                        ]
+                      },
+                      {
+                        "type": ")",
+                        "text": ")"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "function_definition",
+                "children": [
+                  {
+                    "type": "def",
+                    "text": "def"
+                  },
+                  {
+                    "type": "identifier",
+                    "text": "main"
+                  },
+                  {
+                    "type": "parameters",
+                    "children": [
+                      {
+                        "type": "(",
+                        "text": "("
+                      },
+                      {
+                        "type": "parameter",
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "text": "args"
+                          },
+                          {
+                            "type": ":",
+                            "text": ":"
+                          },
+                          {
+                            "type": "generic_type",
+                            "children": [
+                              {
+                                "type": "type_identifier",
+                                "text": "Array"
+                              },
+                              {
+                                "type": "type_arguments",
+                                "children": [
+                                  {
+                                    "type": "[",
+                                    "text": "["
+                                  },
+                                  {
+                                    "type": "type_identifier",
+                                    "text": "String"
+                                  },
+                                  {
+                                    "type": "]",
+                                    "text": "]"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": ")",
+                        "text": ")"
+                      }
+                    ]
+                  },
+                  {
+                    "type": ":",
+                    "text": ":"
+                  },
+                  {
+                    "type": "type_identifier",
+                    "text": "Unit"
+                  },
+                  {
+                    "type": "=",
+                    "text": "="
+                  },
+                  {
+                    "type": "block",
+                    "children": [
+                      {
+                        "type": "{",
+                        "text": "{"
+                      },
+                      {
+                        "type": "val_definition",
+                        "children": [
+                          {
+                            "type": "val",
+                            "text": "val"
+                          },
+                          {
+                            "type": "identifier",
+                            "text": "people"
+                          },
+                          {
+                            "type": ":",
+                            "text": ":"
+                          },
+                          {
+                            "type": "generic_type",
+                            "children": [
+                              {
+                                "type": "type_identifier",
+                                "text": "ArrayBuffer"
+                              },
+                              {
+                                "type": "type_arguments",
+                                "children": [
+                                  {
+                                    "type": "[",
+                                    "text": "["
+                                  },
+                                  {
+                                    "type": "type_identifier",
+                                    "text": "Item"
+                                  },
+                                  {
+                                    "type": "]",
+                                    "text": "]"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "type": "=",
+                            "text": "="
+                          },
+                          {
+                            "type": "call_expression",
+                            "children": [
+                              {
+                                "type": "identifier",
+                                "text": "ArrayBuffer"
+                              },
+                              {
+                                "type": "arguments",
+                                "children": [
+                                  {
+                                    "type": "(",
+                                    "text": "("
+                                  },
+                                  {
+                                    "type": "call_expression",
+                                    "children": [
+                                      {
+                                        "type": "identifier",
+                                        "text": "Item"
+                                      },
+                                      {
+                                        "type": "arguments",
+                                        "children": [
+                                          {
+                                            "type": "(",
+                                            "text": "("
+                                          },
+                                          {
+                                            "type": "string",
+                                            "text": "\"Alice\""
+                                          },
+                                          {
+                                            "type": ",",
+                                            "text": ","
+                                          },
+                                          {
+                                            "type": "integer_literal",
+                                            "text": "30"
+                                          },
+                                          {
+                                            "type": ",",
+                                            "text": ","
+                                          },
+                                          {
+                                            "type": "string",
+                                            "text": "\"Paris\""
+                                          },
+                                          {
+                                            "type": ")",
+                                            "text": ")"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": ",",
+                                    "text": ","
+                                  },
+                                  {
+                                    "type": "call_expression",
+                                    "children": [
+                                      {
+                                        "type": "identifier",
+                                        "text": "Item"
+                                      },
+                                      {
+                                        "type": "arguments",
+                                        "children": [
+                                          {
+                                            "type": "(",
+                                            "text": "("
+                                          },
+                                          {
+                                            "type": "string",
+                                            "text": "\"Bob\""
+                                          },
+                                          {
+                                            "type": ",",
+                                            "text": ","
+                                          },
+                                          {
+                                            "type": "integer_literal",
+                                            "text": "15"
+                                          },
+                                          {
+                                            "type": ",",
+                                            "text": ","
+                                          },
+                                          {
+                                            "type": "string",
+                                            "text": "\"Hanoi\""
+                                          },
+                                          {
+                                            "type": ")",
+                                            "text": ")"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": ",",
+                                    "text": ","
+                                  },
+                                  {
+                                    "type": "call_expression",
+                                    "children": [
+                                      {
+                                        "type": "identifier",
+                                        "text": "Item"
+                                      },
+                                      {
+                                        "type": "arguments",
+                                        "children": [
+                                          {
+                                            "type": "(",
+                                            "text": "("
+                                          },
+                                          {
+                                            "type": "string",
+                                            "text": "\"Charlie\""
+                                          },
+                                          {
+                                            "type": ",",
+                                            "text": ","
+                                          },
+                                          {
+                                            "type": "integer_literal",
+                                            "text": "65"
+                                          },
+                                          {
+                                            "type": ",",
+                                            "text": ","
+                                          },
+                                          {
+                                            "type": "string",
+                                            "text": "\"Paris\""
+                                          },
+                                          {
+                                            "type": ")",
+                                            "text": ")"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": ",",
+                                    "text": ","
+                                  },
+                                  {
+                                    "type": "call_expression",
+                                    "children": [
+                                      {
+                                        "type": "identifier",
+                                        "text": "Item"
+                                      },
+                                      {
+                                        "type": "arguments",
+                                        "children": [
+                                          {
+                                            "type": "(",
+                                            "text": "("
+                                          },
+                                          {
+                                            "type": "string",
+                                            "text": "\"Diana\""
+                                          },
+                                          {
+                                            "type": ",",
+                                            "text": ","
+                                          },
+                                          {
+                                            "type": "integer_literal",
+                                            "text": "45"
+                                          },
+                                          {
+                                            "type": ",",
+                                            "text": ","
+                                          },
+                                          {
+                                            "type": "string",
+                                            "text": "\"Hanoi\""
+                                          },
+                                          {
+                                            "type": ")",
+                                            "text": ")"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": ",",
+                                    "text": ","
+                                  },
+                                  {
+                                    "type": "call_expression",
+                                    "children": [
+                                      {
+                                        "type": "identifier",
+                                        "text": "Item"
+                                      },
+                                      {
+                                        "type": "arguments",
+                                        "children": [
+                                          {
+                                            "type": "(",
+                                            "text": "("
+                                          },
+                                          {
+                                            "type": "string",
+                                            "text": "\"Eve\""
+                                          },
+                                          {
+                                            "type": ",",
+                                            "text": ","
+                                          },
+                                          {
+                                            "type": "integer_literal",
+                                            "text": "70"
+                                          },
+                                          {
+                                            "type": ",",
+                                            "text": ","
+                                          },
+                                          {
+                                            "type": "string",
+                                            "text": "\"Paris\""
+                                          },
+                                          {
+                                            "type": ")",
+                                            "text": ")"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": ",",
+                                    "text": ","
+                                  },
+                                  {
+                                    "type": "call_expression",
+                                    "children": [
+                                      {
+                                        "type": "identifier",
+                                        "text": "Item"
+                                      },
+                                      {
+                                        "type": "arguments",
+                                        "children": [
+                                          {
+                                            "type": "(",
+                                            "text": "("
+                                          },
+                                          {
+                                            "type": "string",
+                                            "text": "\"Frank\""
+                                          },
+                                          {
+                                            "type": ",",
+                                            "text": ","
+                                          },
+                                          {
+                                            "type": "integer_literal",
+                                            "text": "22"
+                                          },
+                                          {
+                                            "type": ",",
+                                            "text": ","
+                                          },
+                                          {
+                                            "type": "string",
+                                            "text": "\"Hanoi\""
+                                          },
+                                          {
+                                            "type": ")",
+                                            "text": ")"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": ")",
+                                    "text": ")"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "val_definition",
+                        "children": [
+                          {
+                            "type": "val",
+                            "text": "val"
+                          },
+                          {
+                            "type": "identifier",
+                            "text": "stats"
+                          },
+                          {
+                            "type": ":",
+                            "text": ":"
+                          },
+                          {
+                            "type": "generic_type",
+                            "children": [
+                              {
+                                "type": "type_identifier",
+                                "text": "ArrayBuffer"
+                              },
+                              {
+                                "type": "type_arguments",
+                                "children": [
+                                  {
+                                    "type": "[",
+                                    "text": "["
+                                  },
+                                  {
+                                    "type": "type_identifier",
+                                    "text": "Any"
+                                  },
+                                  {
+                                    "type": "]",
+                                    "text": "]"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "type": "=",
+                            "text": "="
+                          },
+                          {
+                            "type": "ERROR",
+                            "children": [
+                              {
+                                "type": "call_expression",
+                                "children": [
+                                  {
+                                    "type": "field_expression",
+                                    "children": [
+                                      {
+                                        "type": "call_expression",
+                                        "children": [
+                                          {
+                                            "type": "field_expression",
+                                            "children": [
+                                              {
+                                                "type": "call_expression",
+                                                "children": [
+                                                  {
+                                                    "type": "field_expression",
+                                                    "children": [
+                                                      {
+                                                        "type": "call_expression",
+                                                        "children": [
+                                                          {
+                                                            "type": "field_expression",
+                                                            "children": [
+                                                              {
+                                                                "type": "identifier",
+                                                                "text": "ArrayBuffer"
+                                                              },
+                                                              {
+                                                                "type": ".",
+                                                                "text": "."
+                                                              },
+                                                              {
+                                                                "type": "identifier",
+                                                                "text": "from"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "type": "arguments",
+                                                            "children": [
+                                                              {
+                                                                "type": "(",
+                                                                "text": "("
+                                                              },
+                                                              {
+                                                                "type": "parenthesized_expression",
+                                                                "children": [
+                                                                  {
+                                                                    "type": "(",
+                                                                    "text": "("
+                                                                  },
+                                                                  {
+                                                                    "type": "for_expression",
+                                                                    "children": [
+                                                                      {
+                                                                        "type": "for",
+                                                                        "text": "for"
+                                                                      },
+                                                                      {
+                                                                        "type": "(",
+                                                                        "text": "("
+                                                                      },
+                                                                      {
+                                                                        "type": "enumerators",
+                                                                        "children": [
+                                                                          {
+                                                                            "type": "enumerator",
+                                                                            "children": [
+                                                                              {
+                                                                                "type": "identifier",
+                                                                                "text": "person"
+                                                                              },
+                                                                              {
+                                                                                "type": "\u003c-",
+                                                                                "text": "\u003c-"
+                                                                              },
+                                                                              {
+                                                                                "type": "identifier",
+                                                                                "text": "people"
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "type": ")",
+                                                                        "text": ")"
+                                                                      },
+                                                                      {
+                                                                        "type": "yield",
+                                                                        "text": "yield"
+                                                                      },
+                                                                      {
+                                                                        "type": "tuple_expression",
+                                                                        "children": [
+                                                                          {
+                                                                            "type": "(",
+                                                                            "text": "("
+                                                                          },
+                                                                          {
+                                                                            "type": "field_expression",
+                                                                            "children": [
+                                                                              {
+                                                                                "type": "identifier",
+                                                                                "text": "person"
+                                                                              },
+                                                                              {
+                                                                                "type": ".",
+                                                                                "text": "."
+                                                                              },
+                                                                              {
+                                                                                "type": "identifier",
+                                                                                "text": "city"
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "type": ",",
+                                                                            "text": ","
+                                                                          },
+                                                                          {
+                                                                            "type": "call_expression",
+                                                                            "children": [
+                                                                              {
+                                                                                "type": "identifier",
+                                                                                "text": "Map"
+                                                                              },
+                                                                              {
+                                                                                "type": "arguments",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "type": "(",
+                                                                                    "text": "("
+                                                                                  },
+                                                                                  {
+                                                                                    "type": "infix_expression",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "type": "string",
+                                                                                        "text": "\"person\""
+                                                                                      },
+                                                                                      {
+                                                                                        "type": "operator_identifier",
+                                                                                        "text": "-\u003e"
+                                                                                      },
+                                                                                      {
+                                                                                        "type": "identifier",
+                                                                                        "text": "person"
+                                                                                      }
+                                                                                    ]
+                                                                                  },
+                                                                                  {
+                                                                                    "type": ")",
+                                                                                    "text": ")"
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "type": ")",
+                                                                            "text": ")"
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "type": ")",
+                                                                    "text": ")"
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "type": ")",
+                                                                "text": ")"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "type": ".",
+                                                        "text": "."
+                                                      },
+                                                      {
+                                                        "type": "identifier",
+                                                        "text": "groupBy"
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "type": "arguments",
+                                                    "children": [
+                                                      {
+                                                        "type": "(",
+                                                        "text": "("
+                                                      },
+                                                      {
+                                                        "type": "field_expression",
+                                                        "children": [
+                                                          {
+                                                            "type": "wildcard",
+                                                            "children": [
+                                                              {
+                                                                "type": "_",
+                                                                "text": "_"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "type": ".",
+                                                            "text": "."
+                                                          },
+                                                          {
+                                                            "type": "identifier",
+                                                            "text": "_1"
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "type": ")",
+                                                        "text": ")"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "type": ".",
+                                                "text": "."
+                                              },
+                                              {
+                                                "type": "identifier",
+                                                "text": "map"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "type": "case_block",
+                                            "children": [
+                                              {
+                                                "type": "{",
+                                                "text": "{"
+                                              },
+                                              {
+                                                "type": "case_clause",
+                                                "children": [
+                                                  {
+                                                    "type": "case",
+                                                    "text": "case"
+                                                  },
+                                                  {
+                                                    "type": "tuple_pattern",
+                                                    "children": [
+                                                      {
+                                                        "type": "(",
+                                                        "text": "("
+                                                      },
+                                                      {
+                                                        "type": "identifier",
+                                                        "text": "k"
+                                                      },
+                                                      {
+                                                        "type": ",",
+                                                        "text": ","
+                                                      },
+                                                      {
+                                                        "type": "identifier",
+                                                        "text": "arr"
+                                                      },
+                                                      {
+                                                        "type": ")",
+                                                        "text": ")"
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "type": "=\u003e",
+                                                    "text": "=\u003e"
+                                                  },
+                                                  {
+                                                    "type": "call_expression",
+                                                    "children": [
+                                                      {
+                                                        "type": "identifier",
+                                                        "text": "Map"
+                                                      },
+                                                      {
+                                                        "type": "arguments",
+                                                        "children": [
+                                                          {
+                                                            "type": "(",
+                                                            "text": "("
+                                                          },
+                                                          {
+                                                            "type": "infix_expression",
+                                                            "children": [
+                                                              {
+                                                                "type": "string",
+                                                                "text": "\"key\""
+                                                              },
+                                                              {
+                                                                "type": "operator_identifier",
+                                                                "text": "-\u003e"
+                                                              },
+                                                              {
+                                                                "type": "identifier",
+                                                                "text": "k"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "type": ",",
+                                                            "text": ","
+                                                          },
+                                                          {
+                                                            "type": "infix_expression",
+                                                            "children": [
+                                                              {
+                                                                "type": "string",
+                                                                "text": "\"items\""
+                                                              },
+                                                              {
+                                                                "type": "operator_identifier",
+                                                                "text": "-\u003e"
+                                                              },
+                                                              {
+                                                                "type": "call_expression",
+                                                                "children": [
+                                                                  {
+                                                                    "type": "identifier",
+                                                                    "text": "ArrayBuffer"
+                                                                  },
+                                                                  {
+                                                                    "type": "arguments",
+                                                                    "children": [
+                                                                      {
+                                                                        "type": "(",
+                                                                        "text": "("
+                                                                      },
+                                                                      {
+                                                                        "type": "ascription_expression",
+                                                                        "children": [
+                                                                          {
+                                                                            "type": "field_expression",
+                                                                            "children": [
+                                                                              {
+                                                                                "type": "call_expression",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "type": "field_expression",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "type": "identifier",
+                                                                                        "text": "arr"
+                                                                                      },
+                                                                                      {
+                                                                                        "type": ".",
+                                                                                        "text": "."
+                                                                                      },
+                                                                                      {
+                                                                                        "type": "identifier",
+                                                                                        "text": "map"
+                                                                                      }
+                                                                                    ]
+                                                                                  },
+                                                                                  {
+                                                                                    "type": "arguments",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "type": "(",
+                                                                                        "text": "("
+                                                                                      },
+                                                                                      {
+                                                                                        "type": "field_expression",
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "type": "wildcard",
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "type": "_",
+                                                                                                "text": "_"
+                                                                                              }
+                                                                                            ]
+                                                                                          },
+                                                                                          {
+                                                                                            "type": ".",
+                                                                                            "text": "."
+                                                                                          },
+                                                                                          {
+                                                                                            "type": "identifier",
+                                                                                            "text": "_2"
+                                                                                          }
+                                                                                        ]
+                                                                                      },
+                                                                                      {
+                                                                                        "type": ")",
+                                                                                        "text": ")"
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "type": ".",
+                                                                                "text": "."
+                                                                              },
+                                                                              {
+                                                                                "type": "identifier",
+                                                                                "text": "toSeq"
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "type": ":",
+                                                                            "text": ":"
+                                                                          },
+                                                                          {
+                                                                            "type": "repeated_parameter_type",
+                                                                            "children": [
+                                                                              {
+                                                                                "type": "wildcard",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "type": "_",
+                                                                                    "text": "_"
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "type": "*",
+                                                                                "text": "*"
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "type": ")",
+                                                                        "text": ")"
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "type": ")",
+                                                            "text": ")"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "type": "}",
+                                                "text": "}"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "type": ".",
+                                        "text": "."
+                                      },
+                                      {
+                                        "type": "identifier",
+                                        "text": "map"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "arguments",
+                                    "children": [
+                                      {
+                                        "type": "(",
+                                        "text": "("
+                                      },
+                                      {
+                                        "type": "lambda_expression",
+                                        "children": [
+                                          {
+                                            "type": "identifier",
+                                            "text": "g"
+                                          },
+                                          {
+                                            "type": "=\u003e",
+                                            "text": "=\u003e"
+                                          },
+                                          {
+                                            "type": "call_expression",
+                                            "children": [
+                                              {
+                                                "type": "identifier",
+                                                "text": "Map"
+                                              },
+                                              {
+                                                "type": "arguments",
+                                                "children": [
+                                                  {
+                                                    "type": "(",
+                                                    "text": "("
+                                                  },
+                                                  {
+                                                    "type": "infix_expression",
+                                                    "children": [
+                                                      {
+                                                        "type": "string",
+                                                        "text": "\"city\""
+                                                      },
+                                                      {
+                                                        "type": "operator_identifier",
+                                                        "text": "-\u003e"
+                                                      },
+                                                      {
+                                                        "type": "call_expression",
+                                                        "children": [
+                                                          {
+                                                            "type": "identifier",
+                                                            "text": "g"
+                                                          },
+                                                          {
+                                                            "type": "arguments",
+                                                            "children": [
+                                                              {
+                                                                "type": "(",
+                                                                "text": "("
+                                                              },
+                                                              {
+                                                                "type": "string",
+                                                                "text": "\"key\""
+                                                              },
+                                                              {
+                                                                "type": ")",
+                                                                "text": ")"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "type": ",",
+                                                    "text": ","
+                                                  },
+                                                  {
+                                                    "type": "infix_expression",
+                                                    "children": [
+                                                      {
+                                                        "type": "string",
+                                                        "text": "\"count\""
+                                                      },
+                                                      {
+                                                        "type": "operator_identifier",
+                                                        "text": "-\u003e"
+                                                      },
+                                                      {
+                                                        "type": "field_expression",
+                                                        "children": [
+                                                          {
+                                                            "type": "call_expression",
+                                                            "children": [
+                                                              {
+                                                                "type": "identifier",
+                                                                "text": "g"
+                                                              },
+                                                              {
+                                                                "type": "arguments",
+                                                                "children": [
+                                                                  {
+                                                                    "type": "(",
+                                                                    "text": "("
+                                                                  },
+                                                                  {
+                                                                    "type": "string",
+                                                                    "text": "\"items\""
+                                                                  },
+                                                                  {
+                                                                    "type": ")",
+                                                                    "text": ")"
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "type": ".",
+                                                            "text": "."
+                                                          },
+                                                          {
+                                                            "type": "identifier",
+                                                            "text": "size"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "type": ",",
+                                                    "text": ","
+                                                  },
+                                                  {
+                                                    "type": "infix_expression",
+                                                    "children": [
+                                                      {
+                                                        "type": "infix_expression",
+                                                        "children": [
+                                                          {
+                                                            "type": "string",
+                                                            "text": "\"avg_age\""
+                                                          },
+                                                          {
+                                                            "type": "operator_identifier",
+                                                            "text": "-\u003e"
+                                                          },
+                                                          {
+                                                            "type": "field_expression",
+                                                            "children": [
+                                                              {
+                                                                "type": "parenthesized_expression",
+                                                                "children": [
+                                                                  {
+                                                                    "type": "(",
+                                                                    "text": "("
+                                                                  },
+                                                                  {
+                                                                    "type": "for_expression",
+                                                                    "children": [
+                                                                      {
+                                                                        "type": "for",
+                                                                        "text": "for"
+                                                                      },
+                                                                      {
+                                                                        "type": "(",
+                                                                        "text": "("
+                                                                      },
+                                                                      {
+                                                                        "type": "enumerators",
+                                                                        "children": [
+                                                                          {
+                                                                            "type": "enumerator",
+                                                                            "children": [
+                                                                              {
+                                                                                "type": "identifier",
+                                                                                "text": "p"
+                                                                              },
+                                                                              {
+                                                                                "type": "\u003c-",
+                                                                                "text": "\u003c-"
+                                                                              },
+                                                                              {
+                                                                                "type": "identifier",
+                                                                                "text": "g"
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "type": ")",
+                                                                        "text": ")"
+                                                                      },
+                                                                      {
+                                                                        "type": "yield",
+                                                                        "text": "yield"
+                                                                      },
+                                                                      {
+                                                                        "type": "field_expression",
+                                                                        "children": [
+                                                                          {
+                                                                            "type": "identifier",
+                                                                            "text": "p"
+                                                                          },
+                                                                          {
+                                                                            "type": ".",
+                                                                            "text": "."
+                                                                          },
+                                                                          {
+                                                                            "type": "identifier",
+                                                                            "text": "age"
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "type": ")",
+                                                                    "text": ")"
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "type": ".",
+                                                                "text": "."
+                                                              },
+                                                              {
+                                                                "type": "identifier",
+                                                                "text": "sum"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "type": "operator_identifier",
+                                                        "text": "/"
+                                                      },
+                                                      {
+                                                        "type": "field_expression",
+                                                        "children": [
+                                                          {
+                                                            "type": "parenthesized_expression",
+                                                            "children": [
+                                                              {
+                                                                "type": "(",
+                                                                "text": "("
+                                                              },
+                                                              {
+                                                                "type": "for_expression",
+                                                                "children": [
+                                                                  {
+                                                                    "type": "for",
+                                                                    "text": "for"
+                                                                  },
+                                                                  {
+                                                                    "type": "(",
+                                                                    "text": "("
+                                                                  },
+                                                                  {
+                                                                    "type": "enumerators",
+                                                                    "children": [
+                                                                      {
+                                                                        "type": "enumerator",
+                                                                        "children": [
+                                                                          {
+                                                                            "type": "identifier",
+                                                                            "text": "p"
+                                                                          },
+                                                                          {
+                                                                            "type": "\u003c-",
+                                                                            "text": "\u003c-"
+                                                                          },
+                                                                          {
+                                                                            "type": "identifier",
+                                                                            "text": "g"
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "type": ")",
+                                                                    "text": ")"
+                                                                  },
+                                                                  {
+                                                                    "type": "yield",
+                                                                    "text": "yield"
+                                                                  },
+                                                                  {
+                                                                    "type": "field_expression",
+                                                                    "children": [
+                                                                      {
+                                                                        "type": "identifier",
+                                                                        "text": "p"
+                                                                      },
+                                                                      {
+                                                                        "type": ".",
+                                                                        "text": "."
+                                                                      },
+                                                                      {
+                                                                        "type": "identifier",
+                                                                        "text": "age"
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "type": ")",
+                                                                "text": ")"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "type": ".",
+                                                            "text": "."
+                                                          },
+                                                          {
+                                                            "type": "identifier",
+                                                            "text": "size"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "type": ")",
+                                                    "text": ")"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "type": ")",
+                                        "text": ")"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "type": ")",
+                                "text": ")"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "indented_block",
+                            "children": [
+                              {
+                                "type": "call_expression",
+                                "children": [
+                                  {
+                                    "type": "identifier",
+                                    "text": "println"
+                                  },
+                                  {
+                                    "type": "arguments",
+                                    "children": [
+                                      {
+                                        "type": "(",
+                                        "text": "("
+                                      },
+                                      {
+                                        "type": "string",
+                                        "text": "\"--- People grouped by city ---\""
+                                      },
+                                      {
+                                        "type": ")",
+                                        "text": ")"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "for_expression",
+                                "children": [
+                                  {
+                                    "type": "for",
+                                    "text": "for"
+                                  },
+                                  {
+                                    "type": "(",
+                                    "text": "("
+                                  },
+                                  {
+                                    "type": "enumerators",
+                                    "children": [
+                                      {
+                                        "type": "enumerator",
+                                        "children": [
+                                          {
+                                            "type": "identifier",
+                                            "text": "s"
+                                          },
+                                          {
+                                            "type": "\u003c-",
+                                            "text": "\u003c-"
+                                          },
+                                          {
+                                            "type": "identifier",
+                                            "text": "stats"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": ")",
+                                    "text": ")"
+                                  },
+                                  {
+                                    "type": "block",
+                                    "children": [
+                                      {
+                                        "type": "{",
+                                        "text": "{"
+                                      },
+                                      {
+                                        "type": "call_expression",
+                                        "children": [
+                                          {
+                                            "type": "identifier",
+                                            "text": "println"
+                                          },
+                                          {
+                                            "type": "arguments",
+                                            "children": [
+                                              {
+                                                "type": "(",
+                                                "text": "("
+                                              },
+                                              {
+                                                "type": "call_expression",
+                                                "children": [
+                                                  {
+                                                    "type": "field_expression",
+                                                    "children": [
+                                                      {
+                                                        "type": "call_expression",
+                                                        "children": [
+                                                          {
+                                                            "type": "identifier",
+                                                            "text": "List"
+                                                          },
+                                                          {
+                                                            "type": "arguments",
+                                                            "children": [
+                                                              {
+                                                                "type": "(",
+                                                                "text": "("
+                                                              },
+                                                              {
+                                                                "type": "field_expression",
+                                                                "children": [
+                                                                  {
+                                                                    "type": "identifier",
+                                                                    "text": "s"
+                                                                  },
+                                                                  {
+                                                                    "type": ".",
+                                                                    "text": "."
+                                                                  },
+                                                                  {
+                                                                    "type": "identifier",
+                                                                    "text": "city"
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "type": ",",
+                                                                "text": ","
+                                                              },
+                                                              {
+                                                                "type": "string",
+                                                                "text": "\": count =\""
+                                                              },
+                                                              {
+                                                                "type": ",",
+                                                                "text": ","
+                                                              },
+                                                              {
+                                                                "type": "field_expression",
+                                                                "children": [
+                                                                  {
+                                                                    "type": "identifier",
+                                                                    "text": "s"
+                                                                  },
+                                                                  {
+                                                                    "type": ".",
+                                                                    "text": "."
+                                                                  },
+                                                                  {
+                                                                    "type": "identifier",
+                                                                    "text": "count"
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "type": ",",
+                                                                "text": ","
+                                                              },
+                                                              {
+                                                                "type": "string",
+                                                                "text": "\", avg_age =\""
+                                                              },
+                                                              {
+                                                                "type": ",",
+                                                                "text": ","
+                                                              },
+                                                              {
+                                                                "type": "field_expression",
+                                                                "children": [
+                                                                  {
+                                                                    "type": "identifier",
+                                                                    "text": "s"
+                                                                  },
+                                                                  {
+                                                                    "type": ".",
+                                                                    "text": "."
+                                                                  },
+                                                                  {
+                                                                    "type": "identifier",
+                                                                    "text": "avg_age"
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "type": ")",
+                                                                "text": ")"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "type": ".",
+                                                        "text": "."
+                                                      },
+                                                      {
+                                                        "type": "identifier",
+                                                        "text": "mkString"
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "type": "arguments",
+                                                    "children": [
+                                                      {
+                                                        "type": "(",
+                                                        "text": "("
+                                                      },
+                                                      {
+                                                        "type": "string",
+                                                        "text": "\" \""
+                                                      },
+                                                      {
+                                                        "type": ")",
+                                                        "text": ")"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "type": ")",
+                                                "text": ")"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "type": "}",
+                                        "text": "}"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "}",
+                        "text": "}"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "}",
+                "text": "}"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

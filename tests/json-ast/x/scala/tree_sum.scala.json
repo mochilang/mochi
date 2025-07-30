@@ -1,3 +1,745 @@
 {
-  "tree": "Block(List(Import(Select(Select(Ident(TermName(\"scala\")), TermName(\"collection\")), TermName(\"mutable\")), List(ImportSelector(TermName(\"ArrayBuffer\"), 93, TermName(\"ArrayBuffer\"), 93), ImportSelector(TermName(\"Map\"), 106, TermName(\"Map\"), 106))), ModuleDef(Modifiers(), TermName(\"Main\"), Template(List(Select(Ident(scala), TypeName(\"AnyRef\"))), noSelfType, List(DefDef(Modifiers(), termNames.CONSTRUCTOR, List(), List(List()), TypeTree(), Block(List(pendingSuperCall), Literal(Constant(())))), ClassDef(Modifiers(ABSTRACT | INTERFACE | SEALED | DEFAULTPARAM/TRAIT), TypeName(\"Tree\"), List(), Template(List(Select(Ident(scala), TypeName(\"AnyRef\"))), noSelfType, List())), ModuleDef(Modifiers(CASE), TermName(\"Leaf\"), Template(List(Ident(TypeName(\"Tree\")), Select(Ident(scala), TypeName(\"Product\")), Select(Ident(scala), TypeName(\"Serializable\"))), noSelfType, List(DefDef(Modifiers(), termNames.CONSTRUCTOR, List(), List(List()), TypeTree(), Block(List(pendingSuperCall), Literal(Constant(()))))))), ClassDef(Modifiers(CASE), TypeName(\"Node\"), List(), Template(List(Ident(TypeName(\"Tree\")), Select(Ident(scala), TypeName(\"Product\")), Select(Ident(scala), TypeName(\"Serializable\"))), noSelfType, List(ValDef(Modifiers(CASEACCESSOR | PARAMACCESSOR), TermName(\"left\"), Ident(TypeName(\"Any\")), EmptyTree), ValDef(Modifiers(CASEACCESSOR | PARAMACCESSOR), TermName(\"value\"), Ident(TypeName(\"Int\")), EmptyTree), ValDef(Modifiers(CASEACCESSOR | PARAMACCESSOR), TermName(\"right\"), Ident(TypeName(\"Any\")), EmptyTree), DefDef(Modifiers(), termNames.CONSTRUCTOR, List(), List(List(ValDef(Modifiers(PARAM | PARAMACCESSOR), TermName(\"left\"), Ident(TypeName(\"Any\")), EmptyTree), ValDef(Modifiers(PARAM | PARAMACCESSOR), TermName(\"value\"), Ident(TypeName(\"Int\")), EmptyTree), ValDef(Modifiers(PARAM | PARAMACCESSOR), TermName(\"right\"), Ident(TypeName(\"Any\")), EmptyTree))), TypeTree(), Block(List(pendingSuperCall), Literal(Constant(()))))))), DefDef(Modifiers(), TermName(\"sum_tree\"), List(), List(List(ValDef(Modifiers(PARAM), TermName(\"t\"), Ident(TypeName(\"Any\")), EmptyTree))), Ident(TypeName(\"Int\")), Return(Match(Ident(TermName(\"t\")), List(CaseDef(Ident(TermName(\"Leaf\")), EmptyTree, Literal(Constant(0))), CaseDef(Apply(Ident(TermName(\"Node\")), List(Bind(TermName(\"left\"), Ident(termNames.WILDCARD)), Bind(TermName(\"value\"), Ident(termNames.WILDCARD)), Bind(TermName(\"right\"), Ident(termNames.WILDCARD)))), EmptyTree, Apply(Select(Apply(Select(Apply(Ident(TermName(\"sum_tree\")), List(Ident(TermName(\"left\")))), TermName(\"$plus\")), List(Ident(TermName(\"value\")))), TermName(\"$plus\")), List(Apply(Ident(TermName(\"sum_tree\")), List(Ident(TermName(\"right\"))))))))))), DefDef(Modifiers(), TermName(\"main\"), List(), List(List(ValDef(Modifiers(PARAM), TermName(\"args\"), AppliedTypeTree(Ident(TypeName(\"Array\")), List(Ident(TypeName(\"String\")))), EmptyTree))), Ident(TypeName(\"Unit\")), Block(List(ValDef(Modifiers(), TermName(\"t\"), Ident(TypeName(\"Node\")), Apply(Ident(TermName(\"Node\")), List(Ident(TermName(\"Leaf\")), Literal(Constant(1)), Apply(Ident(TermName(\"Node\")), List(Ident(TermName(\"Leaf\")), Literal(Constant(2)), Ident(TermName(\"Leaf\")))))))), Apply(Ident(TermName(\"println\")), List(Apply(Ident(TermName(\"sum_tree\")), List(Ident(TermName(\"t\")))))))))))), Literal(Constant(())))"
+  "root": {
+    "type": "compilation_unit",
+    "children": [
+      {
+        "type": "comment",
+        "children": [
+          {
+            "type": "//",
+            "text": "//"
+          }
+        ]
+      },
+      {
+        "type": "import_declaration",
+        "children": [
+          {
+            "type": "import",
+            "text": "import"
+          },
+          {
+            "type": "identifier",
+            "text": "scala"
+          },
+          {
+            "type": ".",
+            "text": "."
+          },
+          {
+            "type": "identifier",
+            "text": "collection"
+          },
+          {
+            "type": ".",
+            "text": "."
+          },
+          {
+            "type": "identifier",
+            "text": "mutable"
+          },
+          {
+            "type": ".",
+            "text": "."
+          },
+          {
+            "type": "namespace_selectors",
+            "children": [
+              {
+                "type": "{",
+                "text": "{"
+              },
+              {
+                "type": "identifier",
+                "text": "ArrayBuffer"
+              },
+              {
+                "type": ",",
+                "text": ","
+              },
+              {
+                "type": "identifier",
+                "text": "Map"
+              },
+              {
+                "type": "}",
+                "text": "}"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "object_definition",
+        "children": [
+          {
+            "type": "object",
+            "text": "object"
+          },
+          {
+            "type": "identifier",
+            "text": "Main"
+          },
+          {
+            "type": "template_body",
+            "children": [
+              {
+                "type": "{",
+                "text": "{"
+              },
+              {
+                "type": "trait_definition",
+                "children": [
+                  {
+                    "type": "modifiers",
+                    "children": [
+                      {
+                        "type": "sealed",
+                        "text": "sealed"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "trait",
+                    "text": "trait"
+                  },
+                  {
+                    "type": "identifier",
+                    "text": "Tree"
+                  }
+                ]
+              },
+              {
+                "type": "object_definition",
+                "children": [
+                  {
+                    "type": "case",
+                    "text": "case"
+                  },
+                  {
+                    "type": "object",
+                    "text": "object"
+                  },
+                  {
+                    "type": "identifier",
+                    "text": "Leaf"
+                  },
+                  {
+                    "type": "extends_clause",
+                    "children": [
+                      {
+                        "type": "extends",
+                        "text": "extends"
+                      },
+                      {
+                        "type": "type_identifier",
+                        "text": "Tree"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "class_definition",
+                "children": [
+                  {
+                    "type": "case",
+                    "text": "case"
+                  },
+                  {
+                    "type": "class",
+                    "text": "class"
+                  },
+                  {
+                    "type": "identifier",
+                    "text": "Node"
+                  },
+                  {
+                    "type": "class_parameters",
+                    "children": [
+                      {
+                        "type": "(",
+                        "text": "("
+                      },
+                      {
+                        "type": "class_parameter",
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "text": "left"
+                          },
+                          {
+                            "type": ":",
+                            "text": ":"
+                          },
+                          {
+                            "type": "type_identifier",
+                            "text": "Any"
+                          }
+                        ]
+                      },
+                      {
+                        "type": ",",
+                        "text": ","
+                      },
+                      {
+                        "type": "class_parameter",
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "text": "value"
+                          },
+                          {
+                            "type": ":",
+                            "text": ":"
+                          },
+                          {
+                            "type": "type_identifier",
+                            "text": "Int"
+                          }
+                        ]
+                      },
+                      {
+                        "type": ",",
+                        "text": ","
+                      },
+                      {
+                        "type": "class_parameter",
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "text": "right"
+                          },
+                          {
+                            "type": ":",
+                            "text": ":"
+                          },
+                          {
+                            "type": "type_identifier",
+                            "text": "Any"
+                          }
+                        ]
+                      },
+                      {
+                        "type": ")",
+                        "text": ")"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "extends_clause",
+                    "children": [
+                      {
+                        "type": "extends",
+                        "text": "extends"
+                      },
+                      {
+                        "type": "type_identifier",
+                        "text": "Tree"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "function_definition",
+                "children": [
+                  {
+                    "type": "def",
+                    "text": "def"
+                  },
+                  {
+                    "type": "identifier",
+                    "text": "sum_tree"
+                  },
+                  {
+                    "type": "parameters",
+                    "children": [
+                      {
+                        "type": "(",
+                        "text": "("
+                      },
+                      {
+                        "type": "parameter",
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "text": "t"
+                          },
+                          {
+                            "type": ":",
+                            "text": ":"
+                          },
+                          {
+                            "type": "type_identifier",
+                            "text": "Any"
+                          }
+                        ]
+                      },
+                      {
+                        "type": ")",
+                        "text": ")"
+                      }
+                    ]
+                  },
+                  {
+                    "type": ":",
+                    "text": ":"
+                  },
+                  {
+                    "type": "type_identifier",
+                    "text": "Int"
+                  },
+                  {
+                    "type": "=",
+                    "text": "="
+                  },
+                  {
+                    "type": "block",
+                    "children": [
+                      {
+                        "type": "{",
+                        "text": "{"
+                      },
+                      {
+                        "type": "match_expression",
+                        "children": [
+                          {
+                            "type": "return_expression",
+                            "children": [
+                              {
+                                "type": "return",
+                                "text": "return"
+                              },
+                              {
+                                "type": "identifier",
+                                "text": "t"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "match",
+                            "text": "match"
+                          },
+                          {
+                            "type": "case_block",
+                            "children": [
+                              {
+                                "type": "{",
+                                "text": "{"
+                              },
+                              {
+                                "type": "case_clause",
+                                "children": [
+                                  {
+                                    "type": "case",
+                                    "text": "case"
+                                  },
+                                  {
+                                    "type": "identifier",
+                                    "text": "Leaf"
+                                  },
+                                  {
+                                    "type": "=\u003e",
+                                    "text": "=\u003e"
+                                  },
+                                  {
+                                    "type": "integer_literal",
+                                    "text": "0"
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "case_clause",
+                                "children": [
+                                  {
+                                    "type": "case",
+                                    "text": "case"
+                                  },
+                                  {
+                                    "type": "case_class_pattern",
+                                    "children": [
+                                      {
+                                        "type": "type_identifier",
+                                        "text": "Node"
+                                      },
+                                      {
+                                        "type": "(",
+                                        "text": "("
+                                      },
+                                      {
+                                        "type": "identifier",
+                                        "text": "left"
+                                      },
+                                      {
+                                        "type": ",",
+                                        "text": ","
+                                      },
+                                      {
+                                        "type": "identifier",
+                                        "text": "value"
+                                      },
+                                      {
+                                        "type": ",",
+                                        "text": ","
+                                      },
+                                      {
+                                        "type": "identifier",
+                                        "text": "right"
+                                      },
+                                      {
+                                        "type": ")",
+                                        "text": ")"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "=\u003e",
+                                    "text": "=\u003e"
+                                  },
+                                  {
+                                    "type": "infix_expression",
+                                    "children": [
+                                      {
+                                        "type": "infix_expression",
+                                        "children": [
+                                          {
+                                            "type": "call_expression",
+                                            "children": [
+                                              {
+                                                "type": "identifier",
+                                                "text": "sum_tree"
+                                              },
+                                              {
+                                                "type": "arguments",
+                                                "children": [
+                                                  {
+                                                    "type": "(",
+                                                    "text": "("
+                                                  },
+                                                  {
+                                                    "type": "identifier",
+                                                    "text": "left"
+                                                  },
+                                                  {
+                                                    "type": ")",
+                                                    "text": ")"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "type": "operator_identifier",
+                                            "text": "+"
+                                          },
+                                          {
+                                            "type": "identifier",
+                                            "text": "value"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "type": "operator_identifier",
+                                        "text": "+"
+                                      },
+                                      {
+                                        "type": "call_expression",
+                                        "children": [
+                                          {
+                                            "type": "identifier",
+                                            "text": "sum_tree"
+                                          },
+                                          {
+                                            "type": "arguments",
+                                            "children": [
+                                              {
+                                                "type": "(",
+                                                "text": "("
+                                              },
+                                              {
+                                                "type": "identifier",
+                                                "text": "right"
+                                              },
+                                              {
+                                                "type": ")",
+                                                "text": ")"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "}",
+                                "text": "}"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "}",
+                        "text": "}"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "function_definition",
+                "children": [
+                  {
+                    "type": "def",
+                    "text": "def"
+                  },
+                  {
+                    "type": "identifier",
+                    "text": "main"
+                  },
+                  {
+                    "type": "parameters",
+                    "children": [
+                      {
+                        "type": "(",
+                        "text": "("
+                      },
+                      {
+                        "type": "parameter",
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "text": "args"
+                          },
+                          {
+                            "type": ":",
+                            "text": ":"
+                          },
+                          {
+                            "type": "generic_type",
+                            "children": [
+                              {
+                                "type": "type_identifier",
+                                "text": "Array"
+                              },
+                              {
+                                "type": "type_arguments",
+                                "children": [
+                                  {
+                                    "type": "[",
+                                    "text": "["
+                                  },
+                                  {
+                                    "type": "type_identifier",
+                                    "text": "String"
+                                  },
+                                  {
+                                    "type": "]",
+                                    "text": "]"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": ")",
+                        "text": ")"
+                      }
+                    ]
+                  },
+                  {
+                    "type": ":",
+                    "text": ":"
+                  },
+                  {
+                    "type": "type_identifier",
+                    "text": "Unit"
+                  },
+                  {
+                    "type": "=",
+                    "text": "="
+                  },
+                  {
+                    "type": "block",
+                    "children": [
+                      {
+                        "type": "{",
+                        "text": "{"
+                      },
+                      {
+                        "type": "val_definition",
+                        "children": [
+                          {
+                            "type": "val",
+                            "text": "val"
+                          },
+                          {
+                            "type": "identifier",
+                            "text": "t"
+                          },
+                          {
+                            "type": ":",
+                            "text": ":"
+                          },
+                          {
+                            "type": "type_identifier",
+                            "text": "Node"
+                          },
+                          {
+                            "type": "=",
+                            "text": "="
+                          },
+                          {
+                            "type": "call_expression",
+                            "children": [
+                              {
+                                "type": "identifier",
+                                "text": "Node"
+                              },
+                              {
+                                "type": "arguments",
+                                "children": [
+                                  {
+                                    "type": "(",
+                                    "text": "("
+                                  },
+                                  {
+                                    "type": "identifier",
+                                    "text": "Leaf"
+                                  },
+                                  {
+                                    "type": ",",
+                                    "text": ","
+                                  },
+                                  {
+                                    "type": "integer_literal",
+                                    "text": "1"
+                                  },
+                                  {
+                                    "type": ",",
+                                    "text": ","
+                                  },
+                                  {
+                                    "type": "call_expression",
+                                    "children": [
+                                      {
+                                        "type": "identifier",
+                                        "text": "Node"
+                                      },
+                                      {
+                                        "type": "arguments",
+                                        "children": [
+                                          {
+                                            "type": "(",
+                                            "text": "("
+                                          },
+                                          {
+                                            "type": "identifier",
+                                            "text": "Leaf"
+                                          },
+                                          {
+                                            "type": ",",
+                                            "text": ","
+                                          },
+                                          {
+                                            "type": "integer_literal",
+                                            "text": "2"
+                                          },
+                                          {
+                                            "type": ",",
+                                            "text": ","
+                                          },
+                                          {
+                                            "type": "identifier",
+                                            "text": "Leaf"
+                                          },
+                                          {
+                                            "type": ")",
+                                            "text": ")"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": ")",
+                                    "text": ")"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "call_expression",
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "text": "println"
+                          },
+                          {
+                            "type": "arguments",
+                            "children": [
+                              {
+                                "type": "(",
+                                "text": "("
+                              },
+                              {
+                                "type": "call_expression",
+                                "children": [
+                                  {
+                                    "type": "identifier",
+                                    "text": "sum_tree"
+                                  },
+                                  {
+                                    "type": "arguments",
+                                    "children": [
+                                      {
+                                        "type": "(",
+                                        "text": "("
+                                      },
+                                      {
+                                        "type": "identifier",
+                                        "text": "t"
+                                      },
+                                      {
+                                        "type": ")",
+                                        "text": ")"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "type": ")",
+                                "text": ")"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "}",
+                        "text": "}"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "}",
+                "text": "}"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

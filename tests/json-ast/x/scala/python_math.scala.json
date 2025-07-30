@@ -1,3 +1,896 @@
 {
-  "tree": "Block(List(Import(Select(Select(Ident(TermName(\"scala\")), TermName(\"collection\")), TermName(\"mutable\")), List(ImportSelector(TermName(\"ArrayBuffer\"), 93, TermName(\"ArrayBuffer\"), 93), ImportSelector(TermName(\"Map\"), 106, TermName(\"Map\"), 106))), ModuleDef(Modifiers(), TermName(\"Main\"), Template(List(Select(Ident(scala), TypeName(\"AnyRef\"))), noSelfType, List(DefDef(Modifiers(), termNames.CONSTRUCTOR, List(), List(List()), TypeTree(), Block(List(pendingSuperCall), Literal(Constant(())))), DefDef(Modifiers(), TermName(\"main\"), List(), List(List(ValDef(Modifiers(PARAM), TermName(\"args\"), AppliedTypeTree(Ident(TypeName(\"Array\")), List(Ident(TypeName(\"String\")))), EmptyTree))), Ident(TypeName(\"Unit\")), Block(List(ValDef(Modifiers(), TermName(\"r\"), Ident(TypeName(\"Double\")), Literal(Constant(3.0))), ValDef(Modifiers(), TermName(\"area\"), TypeTree(), Apply(Select(Select(Ident(TermName(\"math\")), TermName(\"Pi\")), TermName(\"$times\")), List(Apply(Select(Ident(TermName(\"math\")), TermName(\"pow\")), List(Ident(TermName(\"r\")), Literal(Constant(2.0))))))), ValDef(Modifiers(), TermName(\"root\"), TypeTree(), Apply(Select(Ident(TermName(\"math\")), TermName(\"sqrt\")), List(Literal(Constant(49.0))))), ValDef(Modifiers(), TermName(\"sin45\"), TypeTree(), Apply(Select(Ident(TermName(\"math\")), TermName(\"sin\")), List(Apply(Select(Select(Ident(TermName(\"math\")), TermName(\"Pi\")), TermName(\"$div\")), List(Literal(Constant(4.0))))))), ValDef(Modifiers(), TermName(\"log_e\"), TypeTree(), Apply(Select(Ident(TermName(\"math\")), TermName(\"log\")), List(Select(Ident(TermName(\"math\")), TermName(\"E\"))))), Apply(Ident(TermName(\"println\")), List(Apply(Select(Apply(Ident(TermName(\"List\")), List(Literal(Constant(\"Circle area with r =\")), Ident(TermName(\"r\")), Literal(Constant(\"=\u003e\")), Ident(TermName(\"area\")))), TermName(\"mkString\")), List(Literal(Constant(\" \")))))), Apply(Ident(TermName(\"println\")), List(Apply(Select(Apply(Ident(TermName(\"List\")), List(Literal(Constant(\"Square root of 49:\")), Ident(TermName(\"root\")))), TermName(\"mkString\")), List(Literal(Constant(\" \")))))), Apply(Ident(TermName(\"println\")), List(Apply(Select(Apply(Ident(TermName(\"List\")), List(Literal(Constant(\"sin(π/4):\")), Ident(TermName(\"sin45\")))), TermName(\"mkString\")), List(Literal(Constant(\" \"))))))), Apply(Ident(TermName(\"println\")), List(Apply(Select(Apply(Ident(TermName(\"List\")), List(Literal(Constant(\"log(e):\")), Ident(TermName(\"log_e\")))), TermName(\"mkString\")), List(Literal(Constant(\" \")))))))))))), Literal(Constant(())))"
+  "root": {
+    "type": "compilation_unit",
+    "children": [
+      {
+        "type": "comment",
+        "children": [
+          {
+            "type": "//",
+            "text": "//"
+          }
+        ]
+      },
+      {
+        "type": "import_declaration",
+        "children": [
+          {
+            "type": "import",
+            "text": "import"
+          },
+          {
+            "type": "identifier",
+            "text": "scala"
+          },
+          {
+            "type": ".",
+            "text": "."
+          },
+          {
+            "type": "identifier",
+            "text": "collection"
+          },
+          {
+            "type": ".",
+            "text": "."
+          },
+          {
+            "type": "identifier",
+            "text": "mutable"
+          },
+          {
+            "type": ".",
+            "text": "."
+          },
+          {
+            "type": "namespace_selectors",
+            "children": [
+              {
+                "type": "{",
+                "text": "{"
+              },
+              {
+                "type": "identifier",
+                "text": "ArrayBuffer"
+              },
+              {
+                "type": ",",
+                "text": ","
+              },
+              {
+                "type": "identifier",
+                "text": "Map"
+              },
+              {
+                "type": "}",
+                "text": "}"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "object_definition",
+        "children": [
+          {
+            "type": "object",
+            "text": "object"
+          },
+          {
+            "type": "identifier",
+            "text": "Main"
+          },
+          {
+            "type": "template_body",
+            "children": [
+              {
+                "type": "{",
+                "text": "{"
+              },
+              {
+                "type": "function_definition",
+                "children": [
+                  {
+                    "type": "def",
+                    "text": "def"
+                  },
+                  {
+                    "type": "identifier",
+                    "text": "main"
+                  },
+                  {
+                    "type": "parameters",
+                    "children": [
+                      {
+                        "type": "(",
+                        "text": "("
+                      },
+                      {
+                        "type": "parameter",
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "text": "args"
+                          },
+                          {
+                            "type": ":",
+                            "text": ":"
+                          },
+                          {
+                            "type": "generic_type",
+                            "children": [
+                              {
+                                "type": "type_identifier",
+                                "text": "Array"
+                              },
+                              {
+                                "type": "type_arguments",
+                                "children": [
+                                  {
+                                    "type": "[",
+                                    "text": "["
+                                  },
+                                  {
+                                    "type": "type_identifier",
+                                    "text": "String"
+                                  },
+                                  {
+                                    "type": "]",
+                                    "text": "]"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": ")",
+                        "text": ")"
+                      }
+                    ]
+                  },
+                  {
+                    "type": ":",
+                    "text": ":"
+                  },
+                  {
+                    "type": "type_identifier",
+                    "text": "Unit"
+                  },
+                  {
+                    "type": "=",
+                    "text": "="
+                  },
+                  {
+                    "type": "block",
+                    "children": [
+                      {
+                        "type": "{",
+                        "text": "{"
+                      },
+                      {
+                        "type": "val_definition",
+                        "children": [
+                          {
+                            "type": "val",
+                            "text": "val"
+                          },
+                          {
+                            "type": "identifier",
+                            "text": "r"
+                          },
+                          {
+                            "type": ":",
+                            "text": ":"
+                          },
+                          {
+                            "type": "type_identifier",
+                            "text": "Double"
+                          },
+                          {
+                            "type": "=",
+                            "text": "="
+                          },
+                          {
+                            "type": "floating_point_literal",
+                            "text": "3.0"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "val_definition",
+                        "children": [
+                          {
+                            "type": "val",
+                            "text": "val"
+                          },
+                          {
+                            "type": "identifier",
+                            "text": "area"
+                          },
+                          {
+                            "type": "=",
+                            "text": "="
+                          },
+                          {
+                            "type": "infix_expression",
+                            "children": [
+                              {
+                                "type": "field_expression",
+                                "children": [
+                                  {
+                                    "type": "identifier",
+                                    "text": "math"
+                                  },
+                                  {
+                                    "type": ".",
+                                    "text": "."
+                                  },
+                                  {
+                                    "type": "identifier",
+                                    "text": "Pi"
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "operator_identifier",
+                                "text": "*"
+                              },
+                              {
+                                "type": "call_expression",
+                                "children": [
+                                  {
+                                    "type": "field_expression",
+                                    "children": [
+                                      {
+                                        "type": "identifier",
+                                        "text": "math"
+                                      },
+                                      {
+                                        "type": ".",
+                                        "text": "."
+                                      },
+                                      {
+                                        "type": "identifier",
+                                        "text": "pow"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "arguments",
+                                    "children": [
+                                      {
+                                        "type": "(",
+                                        "text": "("
+                                      },
+                                      {
+                                        "type": "identifier",
+                                        "text": "r"
+                                      },
+                                      {
+                                        "type": ",",
+                                        "text": ","
+                                      },
+                                      {
+                                        "type": "floating_point_literal",
+                                        "text": "2.0"
+                                      },
+                                      {
+                                        "type": ")",
+                                        "text": ")"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "val_definition",
+                        "children": [
+                          {
+                            "type": "val",
+                            "text": "val"
+                          },
+                          {
+                            "type": "identifier",
+                            "text": "root"
+                          },
+                          {
+                            "type": "=",
+                            "text": "="
+                          },
+                          {
+                            "type": "call_expression",
+                            "children": [
+                              {
+                                "type": "field_expression",
+                                "children": [
+                                  {
+                                    "type": "identifier",
+                                    "text": "math"
+                                  },
+                                  {
+                                    "type": ".",
+                                    "text": "."
+                                  },
+                                  {
+                                    "type": "identifier",
+                                    "text": "sqrt"
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "arguments",
+                                "children": [
+                                  {
+                                    "type": "(",
+                                    "text": "("
+                                  },
+                                  {
+                                    "type": "floating_point_literal",
+                                    "text": "49.0"
+                                  },
+                                  {
+                                    "type": ")",
+                                    "text": ")"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "val_definition",
+                        "children": [
+                          {
+                            "type": "val",
+                            "text": "val"
+                          },
+                          {
+                            "type": "identifier",
+                            "text": "sin45"
+                          },
+                          {
+                            "type": "=",
+                            "text": "="
+                          },
+                          {
+                            "type": "call_expression",
+                            "children": [
+                              {
+                                "type": "field_expression",
+                                "children": [
+                                  {
+                                    "type": "identifier",
+                                    "text": "math"
+                                  },
+                                  {
+                                    "type": ".",
+                                    "text": "."
+                                  },
+                                  {
+                                    "type": "identifier",
+                                    "text": "sin"
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "arguments",
+                                "children": [
+                                  {
+                                    "type": "(",
+                                    "text": "("
+                                  },
+                                  {
+                                    "type": "infix_expression",
+                                    "children": [
+                                      {
+                                        "type": "field_expression",
+                                        "children": [
+                                          {
+                                            "type": "identifier",
+                                            "text": "math"
+                                          },
+                                          {
+                                            "type": ".",
+                                            "text": "."
+                                          },
+                                          {
+                                            "type": "identifier",
+                                            "text": "Pi"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "type": "operator_identifier",
+                                        "text": "/"
+                                      },
+                                      {
+                                        "type": "floating_point_literal",
+                                        "text": "4.0"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": ")",
+                                    "text": ")"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "val_definition",
+                        "children": [
+                          {
+                            "type": "val",
+                            "text": "val"
+                          },
+                          {
+                            "type": "identifier",
+                            "text": "log_e"
+                          },
+                          {
+                            "type": "=",
+                            "text": "="
+                          },
+                          {
+                            "type": "call_expression",
+                            "children": [
+                              {
+                                "type": "field_expression",
+                                "children": [
+                                  {
+                                    "type": "identifier",
+                                    "text": "math"
+                                  },
+                                  {
+                                    "type": ".",
+                                    "text": "."
+                                  },
+                                  {
+                                    "type": "identifier",
+                                    "text": "log"
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "arguments",
+                                "children": [
+                                  {
+                                    "type": "(",
+                                    "text": "("
+                                  },
+                                  {
+                                    "type": "field_expression",
+                                    "children": [
+                                      {
+                                        "type": "identifier",
+                                        "text": "math"
+                                      },
+                                      {
+                                        "type": ".",
+                                        "text": "."
+                                      },
+                                      {
+                                        "type": "identifier",
+                                        "text": "E"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": ")",
+                                    "text": ")"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "call_expression",
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "text": "println"
+                          },
+                          {
+                            "type": "arguments",
+                            "children": [
+                              {
+                                "type": "(",
+                                "text": "("
+                              },
+                              {
+                                "type": "call_expression",
+                                "children": [
+                                  {
+                                    "type": "field_expression",
+                                    "children": [
+                                      {
+                                        "type": "call_expression",
+                                        "children": [
+                                          {
+                                            "type": "identifier",
+                                            "text": "List"
+                                          },
+                                          {
+                                            "type": "arguments",
+                                            "children": [
+                                              {
+                                                "type": "(",
+                                                "text": "("
+                                              },
+                                              {
+                                                "type": "string",
+                                                "text": "\"Circle area with r =\""
+                                              },
+                                              {
+                                                "type": ",",
+                                                "text": ","
+                                              },
+                                              {
+                                                "type": "identifier",
+                                                "text": "r"
+                                              },
+                                              {
+                                                "type": ",",
+                                                "text": ","
+                                              },
+                                              {
+                                                "type": "string",
+                                                "text": "\"=\u003e\""
+                                              },
+                                              {
+                                                "type": ",",
+                                                "text": ","
+                                              },
+                                              {
+                                                "type": "identifier",
+                                                "text": "area"
+                                              },
+                                              {
+                                                "type": ")",
+                                                "text": ")"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "type": ".",
+                                        "text": "."
+                                      },
+                                      {
+                                        "type": "identifier",
+                                        "text": "mkString"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "arguments",
+                                    "children": [
+                                      {
+                                        "type": "(",
+                                        "text": "("
+                                      },
+                                      {
+                                        "type": "string",
+                                        "text": "\" \""
+                                      },
+                                      {
+                                        "type": ")",
+                                        "text": ")"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "type": ")",
+                                "text": ")"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "call_expression",
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "text": "println"
+                          },
+                          {
+                            "type": "arguments",
+                            "children": [
+                              {
+                                "type": "(",
+                                "text": "("
+                              },
+                              {
+                                "type": "call_expression",
+                                "children": [
+                                  {
+                                    "type": "field_expression",
+                                    "children": [
+                                      {
+                                        "type": "call_expression",
+                                        "children": [
+                                          {
+                                            "type": "identifier",
+                                            "text": "List"
+                                          },
+                                          {
+                                            "type": "arguments",
+                                            "children": [
+                                              {
+                                                "type": "(",
+                                                "text": "("
+                                              },
+                                              {
+                                                "type": "string",
+                                                "text": "\"Square root of 49:\""
+                                              },
+                                              {
+                                                "type": ",",
+                                                "text": ","
+                                              },
+                                              {
+                                                "type": "identifier",
+                                                "text": "root"
+                                              },
+                                              {
+                                                "type": ")",
+                                                "text": ")"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "type": ".",
+                                        "text": "."
+                                      },
+                                      {
+                                        "type": "identifier",
+                                        "text": "mkString"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "arguments",
+                                    "children": [
+                                      {
+                                        "type": "(",
+                                        "text": "("
+                                      },
+                                      {
+                                        "type": "string",
+                                        "text": "\" \""
+                                      },
+                                      {
+                                        "type": ")",
+                                        "text": ")"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "type": ")",
+                                "text": ")"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "call_expression",
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "text": "println"
+                          },
+                          {
+                            "type": "arguments",
+                            "children": [
+                              {
+                                "type": "(",
+                                "text": "("
+                              },
+                              {
+                                "type": "call_expression",
+                                "children": [
+                                  {
+                                    "type": "field_expression",
+                                    "children": [
+                                      {
+                                        "type": "call_expression",
+                                        "children": [
+                                          {
+                                            "type": "identifier",
+                                            "text": "List"
+                                          },
+                                          {
+                                            "type": "arguments",
+                                            "children": [
+                                              {
+                                                "type": "(",
+                                                "text": "("
+                                              },
+                                              {
+                                                "type": "string",
+                                                "text": "\"sin(π/4):\""
+                                              },
+                                              {
+                                                "type": ",",
+                                                "text": ","
+                                              },
+                                              {
+                                                "type": "identifier",
+                                                "text": "sin45"
+                                              },
+                                              {
+                                                "type": ")",
+                                                "text": ")"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "type": ".",
+                                        "text": "."
+                                      },
+                                      {
+                                        "type": "identifier",
+                                        "text": "mkString"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "arguments",
+                                    "children": [
+                                      {
+                                        "type": "(",
+                                        "text": "("
+                                      },
+                                      {
+                                        "type": "string",
+                                        "text": "\" \""
+                                      },
+                                      {
+                                        "type": ")",
+                                        "text": ")"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "type": ")",
+                                "text": ")"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "call_expression",
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "text": "println"
+                          },
+                          {
+                            "type": "arguments",
+                            "children": [
+                              {
+                                "type": "(",
+                                "text": "("
+                              },
+                              {
+                                "type": "call_expression",
+                                "children": [
+                                  {
+                                    "type": "field_expression",
+                                    "children": [
+                                      {
+                                        "type": "call_expression",
+                                        "children": [
+                                          {
+                                            "type": "identifier",
+                                            "text": "List"
+                                          },
+                                          {
+                                            "type": "arguments",
+                                            "children": [
+                                              {
+                                                "type": "(",
+                                                "text": "("
+                                              },
+                                              {
+                                                "type": "string",
+                                                "text": "\"log(e):\""
+                                              },
+                                              {
+                                                "type": ",",
+                                                "text": ","
+                                              },
+                                              {
+                                                "type": "identifier",
+                                                "text": "log_e"
+                                              },
+                                              {
+                                                "type": ")",
+                                                "text": ")"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "type": ".",
+                                        "text": "."
+                                      },
+                                      {
+                                        "type": "identifier",
+                                        "text": "mkString"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "arguments",
+                                    "children": [
+                                      {
+                                        "type": "(",
+                                        "text": "("
+                                      },
+                                      {
+                                        "type": "string",
+                                        "text": "\" \""
+                                      },
+                                      {
+                                        "type": ")",
+                                        "text": ")"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "type": ")",
+                                "text": ")"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "}",
+                        "text": "}"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "}",
+                "text": "}"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }
