@@ -1252,6 +1252,9 @@ func safeName(n string) string {
 	if reserved[n] || builtinConsts[n] {
 		return n + "_"
 	}
+	if n != "" && unicode.IsUpper(rune(n[0])) {
+		n = strings.ToLower(n[:1]) + n[1:]
+	}
 	return n
 }
 
@@ -1458,7 +1461,7 @@ func (i *ImportStmt) emit(e *emitter) {
 		io.WriteString(e.w, "  def self.sin(x); Math.sin(x); end\n")
 		io.WriteString(e.w, "  def self.log(x); Math.log(x); end\n")
 		io.WriteString(e.w, "end\n")
-		io.WriteString(e.w, i.Alias+" = PythonMath")
+		fmt.Fprintf(e.w, "def %s; PythonMath; end\n", i.Alias)
 	case "go_testpkg":
 		io.WriteString(e.w, "require 'digest'\n")
 		io.WriteString(e.w, "module Testpkg\n")
@@ -1799,16 +1802,13 @@ type ForInStmt struct {
 }
 
 func (f *ForInStmt) emit(e *emitter) {
-	// When iterating over a map index like `m[x]`, Ruby's `each` would
-	// yield key/value pairs. The source Mochi semantics expect iteration
-	// over the keys, so append `.keys` in this case.
-	if _, ok := f.Iterable.(*IndexExpr); ok && !f.CharEach {
-		f.Iterable.emit(e)
-		io.WriteString(e.w, ".keys")
-	} else {
-		f.Iterable.emit(e)
-	}
-	if f.CharEach {
+	// convertFor already rewrites map iterations to call `.keys` when
+	// necessary, so simply emit the iterable here. If type information was
+	// unavailable and we are iterating over an index expression, default to
+	// iterating over characters.
+	_, isIndex := f.Iterable.(*IndexExpr)
+	f.Iterable.emit(e)
+	if f.CharEach || isIndex {
 		io.WriteString(e.w, ".each_char do |")
 	} else {
 		io.WriteString(e.w, ".each do |")
@@ -2343,7 +2343,7 @@ func valueToExpr(v interface{}, typ *parser.TypeRef) Expr {
 			items[i] = MapItem{Key: &StringLit{Value: k}, Value: expr}
 		}
 		if typ != nil && typ.Simple != nil {
-			return &StructNewExpr{Name: identName(toTypeName(*typ.Simple)), Fields: fields}
+			return &StructNewExpr{Name: toTypeName(*typ.Simple), Fields: fields}
 		}
 		return &MapLit{Items: items}
 	case []interface{}:
@@ -2425,7 +2425,7 @@ func fieldAccess(expr Expr, t types.Type, name string) (Expr, types.Type) {
 			return &IndexExpr{Target: expr, Index: &StringLit{Value: name}}, ty.Fields[name]
 		}
 		if ft, ok := ty.Fields[name]; ok {
-			return &FieldExpr{Target: expr, Name: name}, ft
+			return &FieldExpr{Target: expr, Name: fieldName(name)}, ft
 		}
 	case types.MapType:
 		return &IndexExpr{Target: expr, Index: &StringLit{Value: name}}, ty.Value
@@ -2434,13 +2434,13 @@ func fieldAccess(expr Expr, t types.Type, name string) (Expr, types.Type) {
 		if vt, err := currentEnv.GetVar(id.Name); err == nil {
 			if st, ok := vt.(types.StructType); ok {
 				if ft, ok := st.Fields[name]; ok {
-					return &FieldExpr{Target: expr, Name: name}, ft
+					return &FieldExpr{Target: expr, Name: fieldName(name)}, ft
 				}
 			}
 		}
 	}
 	// default to struct-style access when type information is unknown
-	return &FieldExpr{Target: expr, Name: name}, nil
+	return &FieldExpr{Target: expr, Name: fieldName(name)}, nil
 }
 
 func isSimpleIdent(e *parser.Expr) (string, bool) {
@@ -2824,7 +2824,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				}
 			}
 			if len(fields) > 0 || len(methods) > 0 {
-				name := identName(toTypeName(st.Type.Name))
+				name := toTypeName(st.Type.Name)
 				return &StructDefStmt{Name: name, Fields: fields, Methods: methods}, nil
 			}
 		}
@@ -4080,7 +4080,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			fields[i] = StructField{Name: fieldName(f.Name), Value: v}
 		}
-		return &StructNewExpr{Name: identName(toTypeName(p.Struct.Name)), Fields: fields}, nil
+		return &StructNewExpr{Name: toTypeName(p.Struct.Name), Fields: fields}, nil
 	case p.Match != nil:
 		return convertMatchExpr(p.Match)
 	case p.If != nil:
