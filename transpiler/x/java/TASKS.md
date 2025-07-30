@@ -1,4 +1,44 @@
-## Progress (2025-07-30 21:42 +0700)
+## Progress (2025-07-30 17:36 UTC)
+- java rosetta: support top level initializations (8da863ec62)
+
+- java rosetta: support top level initializations (8da863ec62)
+
+- java rosetta: support top level initializations (8da863ec62)
+
+- java rosetta: support top level initializations (8da863ec62)
+
+- java rosetta: support top level initializations (8da863ec62)
+
+- java rosetta: add elementary cellular automaton infinite (91827d13b0)
+
+- java rosetta: add elementary cellular automaton infinite (91827d13b0)
+
+- java rosetta: add elementary cellular automaton infinite (91827d13b0)
+
+- java rosetta: add elementary cellular automaton infinite (91827d13b0)
+
+- java rosetta: add elementary cellular automaton infinite (91827d13b0)
+
+- java transpiler: handle function argument references (415915dd22)
+
+- java transpiler: handle function argument references (415915dd22)
+
+- java rosetta: add ekg-sequence-convergence output (b155c1d815)
+
+- java rosetta: add ekg-sequence-convergence output (b155c1d815)
+
+- java rosetta: add ekg-sequence-convergence output (b155c1d815)
+
+- java rosetta: add output for egyptian-division (56916a721b)
+
+- java rosetta: add output for egyptian-division (56916a721b)
+
+- rosetta java: add benchmark instrumentation (0331f612c6)
+
+- rosetta java: add benchmark instrumentation (0331f612c6)
+
+- rosetta java: add benchmark instrumentation (0331f612c6)
+
 - java transpiler: handle bigrat/bigint unary and slice builtins (a36b6863e7)
 
 - java transpiler: handle bigrat/bigint unary and slice builtins (a36b6863e7)

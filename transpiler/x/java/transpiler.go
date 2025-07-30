@@ -15,7 +15,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"unicode"
 
 	"gopkg.in/yaml.v3"
 	"mochi/parser"
@@ -1113,14 +1112,137 @@ func exprUsesVar(e Expr, name string) bool {
 	if e == nil {
 		return false
 	}
-	s := exprString(e)
-	target := sanitize(name)
-	fields := strings.FieldsFunc(s, func(r rune) bool {
-		return !(unicode.IsLetter(r) || unicode.IsDigit(r) || r == '_')
-	})
-	for _, f := range fields {
-		if f == target {
+	switch ex := e.(type) {
+	case *VarExpr:
+		return ex.Name == name
+	case *UnaryExpr:
+		return exprUsesVar(ex.Value, name)
+	case *BinaryExpr:
+		return exprUsesVar(ex.Left, name) || exprUsesVar(ex.Right, name)
+	case *CallExpr:
+		if ex.Func == name {
 			return true
+		}
+		for _, a := range ex.Args {
+			if exprUsesVar(a, name) {
+				return true
+			}
+		}
+	case *MethodCallExpr:
+		if exprUsesVar(ex.Target, name) {
+			return true
+		}
+		for _, a := range ex.Args {
+			if exprUsesVar(a, name) {
+				return true
+			}
+		}
+	case *FieldExpr:
+		return exprUsesVar(ex.Target, name)
+	case *IndexExpr:
+		if exprUsesVar(ex.Target, name) {
+			return true
+		}
+		if exprUsesVar(ex.Index, name) {
+			return true
+		}
+	case *TernaryExpr:
+		return exprUsesVar(ex.Cond, name) || exprUsesVar(ex.Then, name) || exprUsesVar(ex.Else, name)
+	case *ListLit:
+		for _, v := range ex.Elems {
+			if exprUsesVar(v, name) {
+				return true
+			}
+		}
+	case *MapLit:
+		for _, k := range ex.Keys {
+			if exprUsesVar(k, name) {
+				return true
+			}
+		}
+		for _, v := range ex.Values {
+			if exprUsesVar(v, name) {
+				return true
+			}
+		}
+	case *LambdaExpr:
+		for _, p := range ex.Params {
+			if p.Name == name {
+				return false
+			}
+		}
+		for _, st := range ex.Body {
+			if stmtUsesVar(st, name) {
+				return true
+			}
+		}
+	case *GroupExpr:
+		return exprUsesVar(ex.Expr, name)
+	}
+	return false
+}
+
+func stmtUsesVar(s Stmt, name string) bool {
+	switch st := s.(type) {
+	case *ExprStmt:
+		return exprUsesVar(st.Expr, name)
+	case *AssignStmt:
+		if st.Name == name {
+			return true
+		}
+		return exprUsesVar(st.Expr, name)
+	case *IndexAssignStmt:
+		if exprUsesVar(st.Target, name) {
+			return true
+		}
+		for _, idx := range st.Indices {
+			if exprUsesVar(idx, name) {
+				return true
+			}
+		}
+		return exprUsesVar(st.Expr, name)
+	case *ReturnStmt:
+		return exprUsesVar(st.Expr, name)
+	case *IfStmt:
+		if exprUsesVar(st.Cond, name) {
+			return true
+		}
+		for _, b := range st.Then {
+			if stmtUsesVar(b, name) {
+				return true
+			}
+		}
+		for _, b := range st.Else {
+			if stmtUsesVar(b, name) {
+				return true
+			}
+		}
+	case *WhileStmt:
+		if exprUsesVar(st.Cond, name) {
+			return true
+		}
+		for _, b := range st.Body {
+			if stmtUsesVar(b, name) {
+				return true
+			}
+		}
+	case *ForRangeStmt:
+		if exprUsesVar(st.Start, name) || exprUsesVar(st.End, name) {
+			return true
+		}
+		for _, b := range st.Body {
+			if stmtUsesVar(b, name) {
+				return true
+			}
+		}
+	case *ForEachStmt:
+		if exprUsesVar(st.Iterable, name) {
+			return true
+		}
+		for _, b := range st.Body {
+			if stmtUsesVar(b, name) {
+				return true
+			}
 		}
 	}
 	return false
@@ -2011,6 +2133,11 @@ type VarExpr struct {
 	Type string
 }
 
+// MethodRefExpr represents a method reference like Main::foo.
+type MethodRefExpr struct {
+	Name string
+}
+
 func (v *VarExpr) emit(w io.Writer) {
 	name := sanitize(v.Name)
 	if refVars[v.Name] {
@@ -2018,6 +2145,10 @@ func (v *VarExpr) emit(w io.Writer) {
 	} else {
 		fmt.Fprint(w, name)
 	}
+}
+
+func (m *MethodRefExpr) emit(w io.Writer) {
+	fmt.Fprintf(w, "Main::%s", sanitize(m.Name))
 }
 
 // FieldExpr represents obj.field access.
@@ -4525,6 +4656,16 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					}
 				}
 			}
+			if params, ok2 := funcParams[p.Call.Func]; ok2 && i < len(params) {
+				pt := params[i]
+				if strings.HasPrefix(pt, "fn(") {
+					if v, okv := ex.(*VarExpr); okv {
+						if _, ok := funcRet[v.Name]; ok {
+							ex = &MethodRefExpr{Name: v.Name}
+						}
+					}
+				}
+			}
 			args[i] = ex
 		}
 		name := p.Call.Func
@@ -5371,12 +5512,18 @@ func Emit(prog *Program) []byte {
 	scopeStack = []map[string]*VarStmt{varDecls}
 	// emit type declarations and global variables first
 	for _, st := range prog.Stmts {
-		switch st.(type) {
+		switch v := st.(type) {
 		case *TypeDeclStmt, *InterfaceDeclStmt:
 			st.emit(&buf, "    ")
 			buf.WriteByte('\n')
-		case *LetStmt, *VarStmt:
-			st.emit(&buf, "    ")
+		case *LetStmt:
+			saved := *v
+			saved.Expr = nil
+			saved.emit(&buf, "    ")
+		case *VarStmt:
+			saved := *v
+			saved.Expr = nil
+			saved.emit(&buf, "    ")
 		}
 	}
 	if len(prog.Stmts) > 0 {
@@ -5489,9 +5636,17 @@ func Emit(prog *Program) []byte {
 	if benchMain {
 		var body []Stmt
 		for _, st := range prog.Stmts {
-			switch st.(type) {
-			case *LetStmt, *VarStmt, *TypeDeclStmt, *InterfaceDeclStmt:
-				// already emitted as globals or declarations
+			switch v := st.(type) {
+			case *LetStmt:
+				if v.Expr != nil {
+					body = append(body, &AssignStmt{Name: v.Name, Expr: v.Expr, Type: v.Type})
+				}
+			case *VarStmt:
+				if v.Expr != nil {
+					body = append(body, &AssignStmt{Name: v.Name, Expr: v.Expr, Type: v.Type})
+				}
+			case *TypeDeclStmt, *InterfaceDeclStmt:
+				// already emitted
 			default:
 				body = append(body, st)
 			}
@@ -5500,9 +5655,17 @@ func Emit(prog *Program) []byte {
 		bs.emit(&buf, "        ")
 	} else {
 		for _, st := range prog.Stmts {
-			switch st.(type) {
-			case *LetStmt, *VarStmt, *TypeDeclStmt, *InterfaceDeclStmt:
-				// already emitted as globals or declarations
+			switch v := st.(type) {
+			case *LetStmt:
+				if v.Expr != nil {
+					(&AssignStmt{Name: v.Name, Expr: v.Expr, Type: v.Type}).emit(&buf, "        ")
+				}
+			case *VarStmt:
+				if v.Expr != nil {
+					(&AssignStmt{Name: v.Name, Expr: v.Expr, Type: v.Type}).emit(&buf, "        ")
+				}
+			case *TypeDeclStmt, *InterfaceDeclStmt:
+				// already emitted
 			default:
 				st.emit(&buf, "        ")
 			}
