@@ -11,8 +11,8 @@ type Program struct {
 // Inspect parses PHP source code using tree-sitter and returns its AST.
 // If opts is nil, default options are used.
 func Inspect(src string, opts *Options) (*Program, error) {
-	parser := newParser()
-	tree := parser.Parse(nil, []byte(src))
+        parser := newParser()
+        tree := parser.Parse([]byte(src), nil)
 	var o Options
 	if opts != nil {
 		o = *opts

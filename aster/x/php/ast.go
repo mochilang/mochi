@@ -1,10 +1,10 @@
 package php
 
 import (
-	"strings"
+        "strings"
 
-	sitter "github.com/smacker/go-tree-sitter"
-	phpts "github.com/smacker/go-tree-sitter/php"
+        sitter "github.com/tree-sitter/go-tree-sitter"
+        phpts "github.com/tree-sitter/tree-sitter-php/bindings/go"
 )
 
 // Node represents a tree-sitter node in PHP's syntax tree.
@@ -92,10 +92,10 @@ func convert(n *sitter.Node, src []byte, opts Options) *Node {
 		return nil
 	}
 
-	node := &Node{Kind: n.Type()}
+        node := &Node{Kind: n.Kind()}
 	if opts.Positions {
-		start := n.StartPoint()
-		end := n.EndPoint()
+                start := n.StartPosition()
+                end := n.EndPosition()
 		node.Start = int(start.Row) + 1
 		node.StartCol = int(start.Column)
 		node.End = int(end.Row) + 1
@@ -103,8 +103,8 @@ func convert(n *sitter.Node, src []byte, opts Options) *Node {
 	}
 
 	if n.NamedChildCount() == 0 {
-		if isValueNode(n.Type()) {
-			text := n.Content(src)
+                if isValueNode(n.Kind()) {
+                        text := n.Utf8Text(src)
 			if strings.TrimSpace(text) == "" {
 				return nil
 			}
@@ -114,8 +114,8 @@ func convert(n *sitter.Node, src []byte, opts Options) *Node {
 		}
 	}
 
-	for i := 0; i < int(n.NamedChildCount()); i++ {
-		child := n.NamedChild(i)
+        for i := 0; i < int(n.NamedChildCount()); i++ {
+                child := n.NamedChild(uint(i))
 		if child == nil {
 			continue
 		}
@@ -141,7 +141,7 @@ func isValueNode(kind string) bool {
 
 // newParser returns a tree-sitter parser for PHP.
 func newParser() *sitter.Parser {
-	p := sitter.NewParser()
-	p.SetLanguage(phpts.GetLanguage())
-	return p
+        p := sitter.NewParser()
+        p.SetLanguage(sitter.NewLanguage(phpts.LanguagePHP()))
+        return p
 }
