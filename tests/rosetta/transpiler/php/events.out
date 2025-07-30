@@ -4,7 +4,7 @@ task start
 program signaling event
 event reset by task
 {
-  "duration_us": 40,
+  "duration_us": 57,
   "memory_bytes": 96,
   "name": "main"
 }

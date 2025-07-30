@@ -30,7 +30,7 @@ $__start_mem = memory_get_usage();
 $__start = _now();
   $os = ['Getenv' => 'getenv', 'Environ' => '_environ'];
   function hasPrefix($s, $p) {
-  global $name, $prefix;
+  global $os, $name, $prefix;
   if (strlen($p) > strlen($s)) {
   return false;
 }

@@ -2,7 +2,7 @@
 (5^3)^2 = 15625
 5^(3^2) = 1953125
 {
-  "duration_us": 27,
+  "duration_us": 110,
   "memory_bytes": 160,
   "name": "main"
 }
