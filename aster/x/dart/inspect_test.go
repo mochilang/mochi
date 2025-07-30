@@ -38,7 +38,7 @@ func repoRoot(t *testing.T) string {
 func TestInspect_Golden(t *testing.T) {
 	root := repoRoot(t)
 	srcDir := filepath.Join(root, "tests", "transpiler", "x", "dart")
-	outDir := filepath.Join(root, "tests", "json-ast", "x", "dart")
+	outDir := filepath.Join(root, "tests", "aster", "x", "dart")
 	os.MkdirAll(outDir, 0o755)
 
 	files, err := filepath.Glob(filepath.Join(srcDir, "*.dart"))
