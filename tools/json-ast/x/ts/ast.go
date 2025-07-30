@@ -19,11 +19,15 @@ type Node struct {
 
 // Program represents a parsed TypeScript source file.
 type Program struct {
-	Root Node `json:"root"`
+	Statements []Node `json:"statements"`
 }
 
-// convertNode converts a tree-sitter node to our Node AST representation.
-func convertNode(n *sitter.Node, src []byte) Node {
+// convertNode converts a tree-sitter node into our Node representation.
+// Non-value leaves are omitted to keep the JSON small.
+func convertNode(n *sitter.Node, src []byte) *Node {
+	if n == nil {
+		return nil
+	}
 	start := n.StartPoint()
 	end := n.EndPoint()
 	node := Node{
@@ -35,12 +39,33 @@ func convertNode(n *sitter.Node, src []byte) Node {
 	}
 
 	if n.NamedChildCount() == 0 {
-		node.Text = n.Content(src)
+		if isValueNode(node.Kind) {
+			node.Text = n.Content(src)
+		} else {
+			return nil
+		}
 	}
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
 		child := n.NamedChild(i)
-		node.Children = append(node.Children, convertNode(child, src))
+		if c := convertNode(child, src); c != nil {
+			node.Children = append(node.Children, *c)
+		}
 	}
-	return node
+
+	if len(node.Children) == 0 && node.Text == "" {
+		return nil
+	}
+
+	return &node
+}
+
+// isValueNode reports whether a node type represents a value that should be kept.
+func isValueNode(kind string) bool {
+	switch kind {
+	case "identifier", "property_identifier", "type_identifier", "number", "string_fragment", "predefined_type", "comment":
+		return true
+	default:
+		return false
+	}
 }

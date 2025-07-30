@@ -11,6 +11,13 @@ func Inspect(src string) (*Program, error) {
 	p := sitter.NewParser()
 	p.SetLanguage(tstypescript.GetLanguage())
 	tree := p.Parse(nil, []byte(src))
-	root := convertNode(tree.RootNode(), []byte(src))
-	return &Program{Root: root}, nil
+	root := tree.RootNode()
+	var stmts []Node
+	for i := 0; i < int(root.NamedChildCount()); i++ {
+		child := root.NamedChild(i)
+		if n := convertNode(child, []byte(src)); n != nil {
+			stmts = append(stmts, *n)
+		}
+	}
+	return &Program{Statements: stmts}, nil
 }
