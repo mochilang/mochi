@@ -1,3 +1,5 @@
+//go:build slow
+
 package rkt
 
 import sitter "github.com/tree-sitter/go-tree-sitter"

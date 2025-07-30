@@ -43,6 +43,8 @@ require github.com/tree-sitter/tree-sitter-scala v0.24.0
 
 require github.com/tree-sitter-grammars/tree-sitter-lua v0.3.0
 
+require github.com/smacker/go-tree-sitter v0.0.0-20240827094217-dd81d9e9be82 // indirect
+
 require (
 	github.com/alexflint/go-scalar v1.2.0 // indirect
 	github.com/apache/arrow-go/v18 v18.4.0 // indirect

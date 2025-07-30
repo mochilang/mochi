@@ -1,3 +1,5 @@
+//go:build slow
+
 package fs
 
 type Var struct {
