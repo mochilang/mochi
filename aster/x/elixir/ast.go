@@ -6,6 +6,12 @@ import (
 	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
+// IncludePositions controls whether converted nodes include location
+// information. When false (the default) the position fields remain zero
+// and will be omitted from the marshalled JSON due to the `omitempty`
+// struct tags.
+var IncludePositions bool
+
 // Node represents a tree-sitter node in a compact form. Position information is
 // stored using line and column numbers to make the output easier to read. Leaf
 // nodes that contain a textual value keep that value in the Text field.
@@ -53,12 +59,11 @@ type Program struct {
 	Root *Source `json:"root"`
 }
 
-// convert recursively converts a tree-sitter node into our Node representation.
-// It skips leaf nodes that do not carry any semantic value to keep the produced
-// JSON minimal.
-// convert recursively converts a tree-sitter node into a Node. When pos is
-// false, location fields are left zero so they are omitted from the JSON output.
-func convert(n *sitter.Node, src []byte, pos bool) *Node {
+// convert recursively converts a tree-sitter node into a Node. It skips leaf
+// nodes that do not carry any semantic value so the resulting JSON stays
+// compact. When IncludePositions is false, all position fields remain zero and
+// are omitted from the marshalled output.
+func convert(n *sitter.Node, src []byte) *Node {
 	if n == nil {
 		return nil
 	}
@@ -66,7 +71,7 @@ func convert(n *sitter.Node, src []byte, pos bool) *Node {
 	start := n.StartPosition()
 	end := n.EndPosition()
 	node := &Node{Kind: n.Kind()}
-	if pos {
+	if IncludePositions {
 		node.Start = int(start.Row) + 1
 		node.StartCol = int(start.Column)
 		node.End = int(end.Row) + 1
@@ -87,7 +92,7 @@ func convert(n *sitter.Node, src []byte, pos bool) *Node {
 		if child == nil {
 			continue
 		}
-		if c := convert(child, src, pos); c != nil {
+		if c := convert(child, src); c != nil {
 			node.Children = append(node.Children, c)
 		}
 	}
