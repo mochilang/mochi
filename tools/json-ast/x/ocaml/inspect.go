@@ -13,5 +13,8 @@ func Inspect(src string) (*Program, error) {
 	data := []byte(src)
 	tree := p.Parse(nil, data)
 	root := convert(tree.RootNode(), data)
-	return &Program{File: File{Node: root}}, nil
+	if root == nil {
+		return &Program{}, nil
+	}
+	return &Program{File: File{Node: *root}}, nil
 }
