@@ -8,6 +8,9 @@ import (
 // that carry a meaningful value (identifiers, literals, comments) populate the
 // Text field; purely syntactic leaves are omitted.  Start and End are 1-based
 // line numbers while StartCol and EndCol are zero-based column positions.
+// Node mirrors a tree-sitter node.  Only leaf nodes that carry a semantic
+// value populate the Text field.  Position fields are omitted unless requested
+// via Option.Positions.
 type Node struct {
 	Kind     string  `json:"kind"`
 	Text     string  `json:"text,omitempty"`
@@ -17,6 +20,9 @@ type Node struct {
 	EndCol   int     `json:"endCol,omitempty"`
 	Children []*Node `json:"children,omitempty"`
 }
+
+// SourceFile is the root of an Erlang program.
+type SourceFile struct{ Node }
 
 // Option controls how the AST is generated.
 type Option struct {

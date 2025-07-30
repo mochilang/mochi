@@ -9,8 +9,9 @@ import (
 )
 
 // Program represents a parsed Erlang file composed of Node structs.
+// Program represents a parsed Erlang source file.
 type Program struct {
-	Root *Node `json:"root"`
+	Root *SourceFile `json:"root"`
 }
 
 // InspectWithOption parses Erlang source code using tree-sitter and returns a Program.
@@ -22,7 +23,10 @@ func InspectWithOption(src string, opt Option) (*Program, error) {
 		return nil, fmt.Errorf("parse: %w", err)
 	}
 	root := convert(tree.RootNode(), []byte(src), opt)
-	return &Program{Root: root}, nil
+	if root == nil {
+		return &Program{}, nil
+	}
+	return &Program{Root: &SourceFile{Node: *root}}, nil
 }
 
 // Inspect parses Erlang source code using tree-sitter and returns a Program.
