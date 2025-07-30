@@ -18,9 +18,6 @@
         {
           "list": [
             {
-              "sym": "quote"
-            },
-            {
               "sym": "clojure.set"
             }
           ]
