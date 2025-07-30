@@ -1,0 +1,15 @@
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/rosetta/transpiler/Pascal/arithmetic-evaluation.pas
+arithmetic-evaluation.pas(83,3) Note: Local variable "parseIntStr_i" not used
+arithmetic-evaluation.pas(84,3) Note: Local variable "parseIntStr_n" not used
+arithmetic-evaluation.pas(115,20) Error: Incompatible types: got "Res" expected "LongInt"
+arithmetic-evaluation.pas(116,34) Error: Illegal qualifier
+arithmetic-evaluation.pas(117,22) Error: Illegal qualifier
+arithmetic-evaluation.pas(126,20) Error: Incompatible types: got "Res" expected "LongInt"
+arithmetic-evaluation.pas(127,34) Error: Illegal qualifier
+arithmetic-evaluation.pas(128,22) Error: Illegal qualifier
+arithmetic-evaluation.pas(277) Fatal: There were 6 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

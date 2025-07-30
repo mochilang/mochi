@@ -1,3 +1,129 @@
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
+## Progress (2025-07-31 00:46 +0700)
+- pascal transpiler: handle variant array append (progress 88/105)
+
 ## Progress (2025-07-30 23:15 +0700)
 - pascal: add bigrat support (progress 88/105)
 

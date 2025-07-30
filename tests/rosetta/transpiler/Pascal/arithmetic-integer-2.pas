@@ -37,14 +37,25 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  myVar: real;
+procedure main(); forward;
+procedure main();
+var
+  main_a: integer;
+  main_b: integer;
+begin
+  main_a := 12345678;
+  main_b := 98765;
+  writeln((((IntToStr(main_a) + ' + ') + IntToStr(main_b)) + ' = ') + IntToStr(main_a + main_b));
+  writeln((((IntToStr(main_a) + ' - ') + IntToStr(main_b)) + ' = ') + IntToStr(main_a - main_b));
+  writeln((((IntToStr(main_a) + ' * ') + IntToStr(main_b)) + ' = ') + IntToStr(main_a * main_b));
+  writeln((((IntToStr(main_a) + ' quo ') + IntToStr(main_b)) + ' = ') + IntToStr(Trunc(main_a div main_b)));
+  writeln((((IntToStr(main_a) + ' rem ') + IntToStr(main_b)) + ' = ') + IntToStr(main_a mod main_b));
+end;
 begin
   init_now();
   bench_mem_0 := _mem();
   bench_start_0 := _bench_now();
-  myVar := 3.14;
-  writeln('value as float:', ' ', myVar);
-  writeln('address: <not available>');
+  main();
   Sleep(1);
   bench_memdiff_0 := _mem() - bench_mem_0;
   bench_dur_0 := (_bench_now() - bench_start_0) div 1000;

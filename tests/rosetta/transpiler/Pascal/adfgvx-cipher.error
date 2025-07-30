@@ -2,10 +2,10 @@ Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /workspace/mochi/tests/rosetta/transpiler/Pascal/adfgvx-cipher.pas
-adfgvx-cipher.pas(138,21) Error: Incompatible types: got "Empty Set" expected "LongInt"
-adfgvx-cipher.pas(141,42) Error: Incompatible types: got "LongInt" expected "ShortString"
-adfgvx-cipher.pas(144,17) Error: Type mismatch
-adfgvx-cipher.pas(149,21) Error: Illegal qualifier
-adfgvx-cipher.pas(149,32) Fatal: Syntax error, "THEN" expected but "[" found
+adfgvx-cipher.pas(152,21) Error: Incompatible types: got "Empty Set" expected "LongInt"
+adfgvx-cipher.pas(155,42) Error: Incompatible types: got "LongInt" expected "ShortString"
+adfgvx-cipher.pas(158,17) Error: Type mismatch
+adfgvx-cipher.pas(163,21) Error: Illegal qualifier
+adfgvx-cipher.pas(163,32) Fatal: Syntax error, "THEN" expected but "[" found
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode

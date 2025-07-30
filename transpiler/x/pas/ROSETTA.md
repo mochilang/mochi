@@ -2,7 +2,7 @@
 
 Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pascal`.
 
-## Rosetta Checklist (33/491) - updated 2025-07-30 16:35 UTC
+## Rosetta Checklist (57/491) - updated 2025-07-30 17:54 UTC
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 571.223ms | 128 B |
@@ -38,45 +38,45 @@ Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pa
 | 31 | active-directory-search-for-a-user | ✓ |  |  |
 | 32 | active-object | ✓ | 1µs |  |
 | 33 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 1µs | 2.7 KB |
-| 34 | additive-primes |   |  |  |
-| 35 | address-of-a-variable |   |  |  |
+| 34 | additive-primes | ✓ | 1µs |  |
+| 35 | address-of-a-variable | ✓ | 1µs |  |
 | 36 | adfgvx-cipher |   |  |  |
-| 37 | aks-test-for-primes |   |  |  |
+| 37 | aks-test-for-primes | ✓ | 2µs |  |
 | 38 | algebraic-data-types |   |  |  |
 | 39 | align-columns |   |  |  |
 | 40 | aliquot-sequence-classifications |   |  |  |
 | 41 | almkvist-giullera-formula-for-pi |   |  |  |
-| 42 | almost-prime |   |  |  |
-| 43 | amb |   |  |  |
-| 44 | amicable-pairs |   |  |  |
+| 42 | almost-prime | ✓ | 2µs |  |
+| 43 | amb | ✓ | 1µs |  |
+| 44 | amicable-pairs | ✓ | 323µs |  |
 | 45 | anagrams-deranged-anagrams |   |  |  |
 | 46 | anagrams |   |  |  |
 | 47 | angle-difference-between-two-bearings-1 |   |  |  |
 | 48 | angle-difference-between-two-bearings-2 |   |  |  |
 | 49 | angles-geometric-normalization-and-conversion |   |  |  |
-| 50 | animate-a-pendulum |   |  |  |
-| 51 | animation |   |  |  |
-| 52 | anonymous-recursion-1 |   |  |  |
-| 53 | anonymous-recursion-2 |   |  |  |
-| 54 | anonymous-recursion |   |  |  |
-| 55 | anti-primes |   |  |  |
-| 56 | append-a-record-to-the-end-of-a-text-file |   |  |  |
-| 57 | apply-a-callback-to-an-array-1 |   |  |  |
+| 50 | animate-a-pendulum | ✓ | 1µs | 64 B |
+| 51 | animation | ✓ | 1µs |  |
+| 52 | anonymous-recursion-1 | ✓ | 1µs |  |
+| 53 | anonymous-recursion-2 | ✓ | 1µs |  |
+| 54 | anonymous-recursion | ✓ | 1µs |  |
+| 55 | anti-primes | ✓ | 43µs |  |
+| 56 | append-a-record-to-the-end-of-a-text-file | ✓ | 1µs |  |
+| 57 | apply-a-callback-to-an-array-1 | ✓ | 1µs | 64 B |
 | 58 | apply-a-callback-to-an-array-2 |   |  |  |
-| 59 | apply-a-digital-filter-direct-form-ii-transposed- |   |  |  |
+| 59 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 1µs | 512 B |
 | 60 | approximate-equality |   |  |  |
-| 61 | arbitrary-precision-integers-included- |   |  |  |
-| 62 | archimedean-spiral |   |  |  |
+| 61 | arbitrary-precision-integers-included- | ✓ | 1µs | 64 B |
+| 62 | archimedean-spiral | ✓ | 3µs | 224 B |
 | 63 | arena-storage-pool |   |  |  |
-| 64 | arithmetic-complex |   |  |  |
+| 64 | arithmetic-complex | ✓ | 1µs |  |
 | 65 | arithmetic-derivative |   |  |  |
 | 66 | arithmetic-evaluation |   |  |  |
-| 67 | arithmetic-geometric-mean-calculate-pi |   |  |  |
-| 68 | arithmetic-geometric-mean |   |  |  |
-| 69 | arithmetic-integer-1 |   |  |  |
-| 70 | arithmetic-integer-2 |   |  |  |
-| 71 | arithmetic-numbers |   |  |  |
-| 72 | arithmetic-rational |   |  |  |
+| 67 | arithmetic-geometric-mean-calculate-pi | ✓ | 1µs |  |
+| 68 | arithmetic-geometric-mean | ✓ | 1µs |  |
+| 69 | arithmetic-integer-1 | ✓ | 1µs |  |
+| 70 | arithmetic-integer-2 | ✓ | 1µs |  |
+| 71 | arithmetic-numbers | ✓ |  |  |
+| 72 | arithmetic-rational | ✓ | 2µs |  |
 | 73 | array-concatenation |   |  |  |
 | 74 | array-length |   |  |  |
 | 75 | arrays |   |  |  |

@@ -1,0 +1,15 @@
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/rosetta/transpiler/Pascal/angles-geometric-normalization-and-conversion.pas
+angles-geometric-normalization-and-conversion.pas(59,10) Error: Operator is not overloaded: "Real" mod "SmallInt"
+angles-geometric-normalization-and-conversion.pas(63,10) Error: Operator is not overloaded: "Real" mod "SmallInt"
+angles-geometric-normalization-and-conversion.pas(67,10) Error: Operator is not overloaded: "Real" mod "SmallInt"
+angles-geometric-normalization-and-conversion.pas(71,10) Error: Operator is not overloaded: "Real" mod "Extended"
+angles-geometric-normalization-and-conversion.pas(128,7) Error: Incompatible types: got "Real" expected "LongInt"
+angles-geometric-normalization-and-conversion.pas(132,7) Error: Incompatible types: got "Real" expected "LongInt"
+angles-geometric-normalization-and-conversion.pas(136,7) Error: Incompatible types: got "Real" expected "LongInt"
+angles-geometric-normalization-and-conversion.pas(140,7) Error: Incompatible types: got "Real" expected "LongInt"
+angles-geometric-normalization-and-conversion.pas(158) Fatal: There were 8 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

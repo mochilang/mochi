@@ -24,7 +24,21 @@ begin
     _now := Integer(GetTickCount64()*1000);
   end;
 end;
+function _bench_now(): int64;
+begin
+  _bench_now := GetTickCount64()*1000;
+end;
+function _mem(): int64;
+var h: TFPCHeapStatus;
+begin
+  h := GetFPCHeapStatus;
+  _mem := h.CurrHeapUsed;
+end;
 var
+  bench_start_0: integer;
+  bench_dur_0: integer;
+  bench_mem_0: int64;
+  bench_memdiff_0: int64;
   adfgvx: string;
   alphabet: string;
 function shuffleStr(s: string): string; forward;
@@ -81,7 +95,7 @@ begin
   createPolybius_labels := [];
   createPolybius_li := 0;
   while createPolybius_li < Length(adfgvx) do begin
-  createPolybius_labels := concat(createPolybius_labels, [copy(adfgvx, createPolybius_li, (createPolybius_li + 1 - (createPolybius_li)))]);
+  createPolybius_labels := concat(createPolybius_labels, [copy(adfgvx, createPolybius_li+1, (createPolybius_li + 1 - (createPolybius_li)))]);
   createPolybius_li := createPolybius_li + 1;
 end;
   writeln('6 x 6 Polybius square:' + #10 + '');
@@ -188,7 +202,7 @@ begin
   encrypt_labels := [];
   encrypt_li := 0;
   while encrypt_li < Length(adfgvx) do begin
-  encrypt_labels := concat(encrypt_labels, [copy(adfgvx, encrypt_li, (encrypt_li + 1 - (encrypt_li)))]);
+  encrypt_labels := concat(encrypt_labels, [copy(adfgvx, encrypt_li+1, (encrypt_li + 1 - (encrypt_li)))]);
   encrypt_li := encrypt_li + 1;
 end;
   encrypt_temp := '';
@@ -396,7 +410,17 @@ begin
 end;
 begin
   init_now();
+  bench_mem_0 := _mem();
+  bench_start_0 := _bench_now();
   adfgvx := 'ADFGVX';
   alphabet := 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   main();
+  Sleep(1);
+  bench_memdiff_0 := _mem() - bench_mem_0;
+  bench_dur_0 := (_bench_now() - bench_start_0) div 1000;
+  writeln('{');
+  writeln(('  "duration_us": ' + IntToStr(bench_dur_0)) + ',');
+  writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
+  writeln(('  "name": "' + 'main') + '"');
+  writeln('}');
 end.

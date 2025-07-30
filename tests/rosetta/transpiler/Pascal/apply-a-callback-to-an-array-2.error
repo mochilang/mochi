@@ -1,0 +1,11 @@
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/rosetta/transpiler/Pascal/apply-a-callback-to-an-array-2.pas
+apply-a-callback-to-an-array-2.pas(51,33) Error: Type identifier expected
+apply-a-callback-to-an-array-2.pas(52,31) Error: Type identifier expected
+apply-a-callback-to-an-array-2.pas(56,33) Error: Type identifier expected
+apply-a-callback-to-an-array-2.pas(61,4) Error: Illegal expression
+apply-a-callback-to-an-array-2.pas(61,4) Fatal: Syntax error, ";" expected but "(" found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

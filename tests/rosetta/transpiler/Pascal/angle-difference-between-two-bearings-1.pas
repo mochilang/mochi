@@ -37,14 +37,30 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  myVar: real;
+  testCases: array of array of real;
+  tc: integer;
+function angleDiff(b1: real; b2: real): real; forward;
+function angleDiff(b1: real; b2: real): real;
+var
+  angleDiff_d: real;
+begin
+  angleDiff_d := b2 - b1;
+  if angleDiff_d < (0 - 180) then begin
+  exit(angleDiff_d + 360);
+end;
+  if angleDiff_d > 180 then begin
+  exit(angleDiff_d - 360);
+end;
+  exit(angleDiff_d);
+end;
 begin
   init_now();
   bench_mem_0 := _mem();
   bench_start_0 := _bench_now();
-  myVar := 3.14;
-  writeln('value as float:', ' ', myVar);
-  writeln('address: <not available>');
+  testCases := [[20, 45], [0 - 45, 45], [0 - 85, 90], [0 - 95, 90], [0 - 45, 125], [0 - 45, 145], [29.4803, 0 - 88.6381], [0 - 78.3251, 0 - 159.036]];
+  for tc in testCases do begin
+  writeln(angleDiff(tc[0], tc[1]));
+end;
   Sleep(1);
   bench_memdiff_0 := _mem() - bench_mem_0;
   bench_dur_0 := (_bench_now() - bench_start_0) div 1000;
