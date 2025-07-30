@@ -3933,49 +3933,14 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 	}
 	fixListLits(val, env)
 	ret := currentRetType
-	if ret != "" && ret != "any" {
+	if ret != "" {
 		exprType := toGoTypeFromType(types.ExprType(rs.Value, env))
-		if exprType == "" && strings.HasPrefix(ret, "map[") {
-			exprType = ret
-		}
 		if exprType == "" {
-			if um, ok := val.(*UnionMatchExpr); ok && um.Type != "" {
-				exprType = um.Type
-			} else {
-				exprType = "any"
-			}
+			exprType = "any"
 		}
-		if ll, ok := val.(*ListLit); ok && strings.HasPrefix(ret, "[]") {
-			if ll.ElemType == "" || ll.ElemType == "any" {
-				ll.ElemType = ret[2:]
-				exprType = ret
-			}
-			updateListLitType(ll, toTypeFromGoType(ret))
-			wrapFuncList(ll, env)
-		}
-		if ml, ok := val.(*MapLit); ok && strings.HasPrefix(ret, "map[") {
-			if mt, ok2 := toTypeFromGoType(ret).(types.MapType); ok2 {
-				ml.KeyType = toGoTypeFromType(mt.Key)
-				ml.ValueType = toGoTypeFromType(mt.Value)
-				exprType = ret
-			}
-		}
-		if exprType != ret {
-			if exprType == "" && (strings.HasPrefix(ret, "map[") || strings.HasPrefix(ret, "[]")) {
-				// allow untyped map/list returns without assertion
-			} else {
-				if ret == "*big.Rat" {
-					if _, ok := val.(*BigRatBinaryExpr); ok {
-						exprType = ret
-					} else if ce, ok2 := val.(*CallExpr); ok2 && ce.Func == "_bigrat" {
-						exprType = ret
-					}
-				}
-				if exprType != ret {
-					if ae, ok := val.(*AssertExpr); !(ok && ae.Type == ret) {
-						val = &AssertExpr{Expr: val, Type: ret}
-					}
-				}
+		if exprType != ret && ret != "any" {
+			if ae, ok := val.(*AssertExpr); !(ok && ae.Type == ret) {
+				val = &AssertExpr{Expr: val, Type: ret}
 			}
 		}
 	}
@@ -4248,16 +4213,26 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 							newExpr = &BinaryExpr{Left: left, Op: ops[i].Op, Right: right}
 						}
 						if newExpr == nil {
-							if _, ok := typesList[i].(types.AnyType); ok {
-								if _, isNull := left.(*NullLit); !isNull {
-									left = &CallExpr{Func: "_toFloat", Args: []Expr{left}}
-									usesFloatConv = true
-								}
+							lNull := false
+							rNull := false
+							if _, ok := left.(*NullLit); ok {
+								lNull = true
 							}
-							if _, ok := typesList[i+1].(types.AnyType); ok {
-								if _, isNull := right.(*NullLit); !isNull {
-									right = &CallExpr{Func: "_toFloat", Args: []Expr{right}}
-									usesFloatConv = true
+							if _, ok := right.(*NullLit); ok {
+								rNull = true
+							}
+							if !(ops[i].Op == "==" || ops[i].Op == "!=") || (!lNull && !rNull) {
+								if _, ok := typesList[i].(types.AnyType); ok {
+									if !lNull && !isIntType(typesList[i+1]) {
+										left = &CallExpr{Func: "_toFloat", Args: []Expr{left}}
+										usesFloatConv = true
+									}
+								}
+								if _, ok := typesList[i+1].(types.AnyType); ok {
+									if !rNull && !isIntType(typesList[i]) {
+										right = &CallExpr{Func: "_toFloat", Args: []Expr{right}}
+										usesFloatConv = true
+									}
 								}
 							}
 						}

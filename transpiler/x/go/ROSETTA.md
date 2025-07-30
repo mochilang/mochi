@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 372/493
-Last updated: 2025-07-28 10:21 +0700
+Completed programs: 371/493
+Last updated: 2025-07-30 21:35 +0700
 
 Checklist:
 
@@ -21,9 +21,9 @@ Checklist:
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 1.88s | 307.56MB |
 | 13 | 99-bottles-of-beer-2 | ✓ | 12.0ms | 629.10KB |
 | 14 | 99-bottles-of-beer | ✓ | 720.0µs | 14.70KB |
-| 15 | DNS-query | ✓ | 341.0ms | 211.02KB |
-| 16 | Duffinian-numbers |   |  |  |
-| 17 | Find-if-a-point-is-within-a-triangle |   |  |  |
+| 15 | dns-query |   |  |  |
+| 16 | duffinian-numbers |   |  |  |
+| 17 | find-if-a-point-is-within-a-triangle |   |  |  |
 | 18 | a+b | ✓ | 464.0µs | 4.91KB |
 | 19 | abbreviations-automatic | ✓ | 16.0ms | 1.96MB |
 | 20 | abbreviations-easy | ✓ | 6.0ms | 1.24MB |
@@ -96,14 +96,14 @@ Checklist:
 | 87 | average-loop-length | ✓ | 17.0ms | 935.52KB |
 | 88 | averages-arithmetic-mean | ✓ | 98.0µs | 2.41KB |
 | 89 | averages-mean-time-of-day | ✓ | 56.0µs | 984B |
-| 90 | averages-median-1 | ✓ | 52.0µs | 984B |
-| 91 | averages-median-2 | ✓ | 158.0µs | 984B |
-| 92 | averages-median-3 | ✓ | 125.0µs | 984B |
-| 93 | averages-mode | ✓ | 69.0µs | 1.63KB |
-| 94 | averages-pythagorean-means | ✓ | 46.0µs | 1.26KB |
-| 95 | averages-root-mean-square | ✓ | 113.0µs | 1000B |
-| 96 | averages-simple-moving-average | ✓ | 140.0µs | 2.33KB |
-| 97 | avl-tree | ✓ | 163.0µs | 13.68KB |
+| 90 | averages-median-1 | ✓ | 798.0µs | 984B |
+| 91 | averages-median-2 | ✓ | 2.0ms | 984B |
+| 92 | averages-median-3 | ✓ | 427.0µs | 984B |
+| 93 | averages-mode | ✓ | 1.0ms | 1.65KB |
+| 94 | averages-pythagorean-means | ✓ | 1.0ms | 1.26KB |
+| 95 | averages-root-mean-square | ✓ | 476.0µs | 1000B |
+| 96 | averages-simple-moving-average | ✓ | 550.0µs | 2.33KB |
+| 97 | avl-tree | ✓ | 1.0ms | 13.68KB |
 | 98 | b-zier-curves-intersections | ✓ | 600.0µs | 539.52KB |
 | 99 | babbage-problem | ✓ | 108.0µs | 1.09KB |
 | 100 | babylonian-spiral | ✓ | 162.0µs | 55.46KB |
