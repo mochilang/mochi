@@ -3,8 +3,8 @@ package kotlin
 import (
 	"encoding/json"
 
-	sitter "github.com/smacker/go-tree-sitter"
-	ts "github.com/smacker/go-tree-sitter/kotlin"
+	tskotlin "github.com/fwcd/tree-sitter-kotlin/bindings/go"
+	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
 // Program represents a parsed Kotlin source file.
@@ -26,7 +26,7 @@ func Inspect(src string, opts ...Option) (*Program, error) {
 		withPos = opts[0].WithPositions
 	}
 	p := sitter.NewParser()
-	p.SetLanguage(ts.GetLanguage())
+	p.SetLanguage(sitter.NewLanguage(tskotlin.Language()))
 	data := []byte(src)
 	tree := p.Parse(nil, data)
 	root := convert(tree.RootNode(), data, withPos)

@@ -10,6 +10,7 @@ require (
 	github.com/charmbracelet/fang v0.3.0
 	github.com/chzyer/readline v1.5.1
 	github.com/fatih/color v1.18.0
+	github.com/fwcd/tree-sitter-kotlin v0.0.0-20250428180758-57fb4560ba86
 	github.com/google/uuid v1.6.0
 	github.com/lib/pq v1.10.9
 	github.com/marcboeker/go-duckdb v1.8.5
@@ -24,18 +25,13 @@ require (
 	github.com/tree-sitter/tree-sitter-c v0.23.4
 	github.com/tree-sitter/tree-sitter-c-sharp v0.23.1
 	github.com/tree-sitter/tree-sitter-cpp v0.23.4
-	github.com/tree-sitter/tree-sitter-elixir v0.3.4
-	github.com/tree-sitter/tree-sitter-fsharp v0.1.0
 	github.com/tree-sitter/tree-sitter-go v0.23.4
 	github.com/tree-sitter/tree-sitter-haskell v0.23.1
 	github.com/tree-sitter/tree-sitter-java v0.23.5
 	github.com/tree-sitter/tree-sitter-ocaml v0.24.2
 	github.com/tree-sitter/tree-sitter-php v0.23.11
 	github.com/tree-sitter/tree-sitter-python v0.23.6
-	github.com/tree-sitter/tree-sitter-racket v0.24.7
 	github.com/tree-sitter/tree-sitter-ruby v0.23.1
-	github.com/tree-sitter/tree-sitter-scheme v0.24.7
-	github.com/tree-sitter/tree-sitter-swift v0.0.0-20250623040733-277b583bbb02
 	github.com/tree-sitter/tree-sitter-typescript v0.23.2
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	github.com/yuin/gopher-lua v1.1.1
