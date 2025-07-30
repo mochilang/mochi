@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/vm/valid` lives in `tests/transpiler/x/py`.
-Last updated: 2025-07-28 10:14 GMT+7
+Last updated: 2025-07-30 21:26 GMT+7
 
-## VM Golden Test Checklist (104/104)
+## VM Golden Test Checklist (104/105)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -75,6 +75,7 @@ Last updated: 2025-07-28 10:14 GMT+7
 - [x] nested_function
 - [x] order_by_map
 - [x] outer_join
+- [ ] pairs_loop
 - [x] partial_application
 - [x] print_hello
 - [x] pure_fold

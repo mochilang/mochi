@@ -4149,6 +4149,161 @@ func filterNames(list, remove []string) []string {
 	return out
 }
 
+func gatherNames(stmts []Stmt) map[string]bool {
+	names := map[string]bool{}
+	var ve func(Expr)
+	var vs func(Stmt)
+	ve = func(e Expr) {
+		switch ex := e.(type) {
+		case *Name:
+			names[ex.Name] = true
+		case *CallExpr:
+			ve(ex.Func)
+			for _, a := range ex.Args {
+				ve(a)
+			}
+		case *BinaryExpr:
+			ve(ex.Left)
+			ve(ex.Right)
+		case *UnaryExpr:
+			ve(ex.Expr)
+		case *CondExpr:
+			ve(ex.Cond)
+			ve(ex.Then)
+			ve(ex.Else)
+		case *FieldExpr:
+			ve(ex.Target)
+		case *IndexExpr:
+			ve(ex.Target)
+			ve(ex.Index)
+		case *SliceExpr:
+			ve(ex.Target)
+			if ex.Start != nil {
+				ve(ex.Start)
+			}
+			if ex.End != nil {
+				ve(ex.End)
+			}
+			if ex.Step != nil {
+				ve(ex.Step)
+			}
+		case *ParenExpr:
+			ve(ex.Expr)
+		case *ListLit:
+			for _, el := range ex.Elems {
+				ve(el)
+			}
+		case *DictLit:
+			for i := range ex.Keys {
+				ve(ex.Keys[i])
+				ve(ex.Values[i])
+			}
+		case *ListComp:
+			ve(ex.Iter)
+			ve(ex.Expr)
+			if ex.Cond != nil {
+				ve(ex.Cond)
+			}
+		case *MultiListComp:
+			for _, it := range ex.Iters {
+				ve(it)
+			}
+			ve(ex.Expr)
+			if ex.Cond != nil {
+				ve(ex.Cond)
+			}
+		case *LambdaExpr:
+			ve(ex.Expr)
+		}
+	}
+	vs = func(s Stmt) {
+		switch st := s.(type) {
+		case *ExprStmt:
+			ve(st.Expr)
+		case *LetStmt:
+			if st.Expr != nil {
+				ve(st.Expr)
+			}
+		case *VarStmt:
+			if st.Expr != nil {
+				ve(st.Expr)
+			}
+		case *AssignStmt:
+			if st.Expr != nil {
+				ve(st.Expr)
+			}
+		case *ReturnStmt:
+			if st.Expr != nil {
+				ve(st.Expr)
+			}
+		case *WhileStmt:
+			ve(st.Cond)
+			for _, b := range st.Body {
+				vs(b)
+			}
+		case *ForStmt:
+			ve(st.Iter)
+			for _, b := range st.Body {
+				vs(b)
+			}
+		case *IfStmt:
+			ve(st.Cond)
+			for _, b := range st.Then {
+				vs(b)
+			}
+			for _, b := range st.Else {
+				vs(b)
+			}
+		case *FieldAssignStmt:
+			ve(st.Target)
+			ve(st.Value)
+		case *IndexAssignStmt:
+			ve(st.Target)
+			ve(st.Index)
+			ve(st.Value)
+		case *BenchStmt:
+			for _, b := range st.Body {
+				vs(b)
+			}
+		case *FuncDef:
+			for _, b := range st.Body {
+				vs(b)
+			}
+		case *DataClassDef:
+			for _, m := range st.Methods {
+				for _, b := range m.Body {
+					vs(b)
+				}
+			}
+		}
+	}
+	for _, st := range stmts {
+		vs(st)
+	}
+	return names
+}
+
+func capturedVars(body []Stmt, local, parent *types.Env) []string {
+	names := gatherNames(body)
+	for n := range local.Types() {
+		delete(names, n)
+	}
+	var out []string
+	for n := range names {
+		if n == "True" || n == "False" || n == "None" {
+			continue
+		}
+		if _, err := parent.GetVar(n); err == nil {
+			if _, ok := parent.GetFunc(n); ok {
+				continue
+			}
+			out = append(out, n)
+		}
+	}
+	sort.Strings(out)
+	return out
+}
+
 func convertExpr(e *parser.Expr) (Expr, error) {
 	if e == nil {
 		return nil, fmt.Errorf("nil expr")
@@ -4863,7 +5018,19 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		globals := detectGlobals(body, fenv, genv)
 		nonlocals := detectNonlocals(body, fenv, currentEnv)
 		nonlocals = filterNames(nonlocals, globals)
-		extraFuncs = append(extraFuncs, &FuncDef{Name: genName, Params: params, Nonlocals: nonlocals, Globals: globals, Body: body})
+		captured := capturedVars(body, fenv, currentEnv)
+		defParams := append(append([]string{}, captured...), params...)
+		extraFuncs = append(extraFuncs, &FuncDef{Name: genName, Params: defParams, Nonlocals: nonlocals, Globals: globals, Body: body})
+		if len(captured) > 0 {
+			var args []Expr
+			for _, n := range captured {
+				args = append(args, &Name{Name: n})
+			}
+			for _, p := range params {
+				args = append(args, &Name{Name: p})
+			}
+			return &LambdaExpr{Params: params, Expr: &CallExpr{Func: &Name{Name: genName}, Args: args}}, nil
+		}
 		return &Name{Name: genName}, nil
 	case p.If != nil:
 		return convertIfExpr(p.If)
