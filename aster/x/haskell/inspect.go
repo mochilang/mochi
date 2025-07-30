@@ -3,7 +3,7 @@ package haskell
 import (
 	"context"
 
-	sitter "github.com/smacker/go-tree-sitter"
+	sitter "github.com/tree-sitter/go-tree-sitter"
 	tsHaskell "github.com/tree-sitter/tree-sitter-haskell/bindings/go"
 )
 
@@ -16,10 +16,7 @@ type Program struct {
 func InspectWithOption(src string, opt Option) (*Program, error) {
 	parser := sitter.NewParser()
 	parser.SetLanguage(sitter.NewLanguage(tsHaskell.Language()))
-	tree, err := parser.ParseCtx(context.Background(), nil, []byte(src))
-	if err != nil {
-		return nil, err
-	}
+	tree := parser.ParseCtx(context.Background(), []byte(src), nil)
 	root := convert(tree.RootNode(), []byte(src), opt)
 	if root == nil {
 		root = &Node{}

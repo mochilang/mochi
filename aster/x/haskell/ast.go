@@ -1,6 +1,6 @@
 package haskell
 
-import sitter "github.com/smacker/go-tree-sitter"
+import sitter "github.com/tree-sitter/go-tree-sitter"
 
 // Node represents a tree-sitter node.
 // Leaf nodes record their source text in the Text field while
@@ -80,10 +80,10 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 	if n == nil {
 		return nil
 	}
-	node := &Node{Kind: n.Type()}
+	node := &Node{Kind: n.Kind()}
 	if opt.Positions {
-		start := n.StartPoint()
-		end := n.EndPoint()
+		start := n.StartPosition()
+		end := n.EndPosition()
 		node.Start = int(start.Row) + 1
 		node.StartCol = int(start.Column)
 		node.End = int(end.Row) + 1
@@ -91,15 +91,15 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 	}
 
 	if n.NamedChildCount() == 0 {
-		if !isValueNode(n.Type()) {
+		if !isValueNode(n.Kind()) {
 			// skip syntax-only leaves
 			return nil
 		}
-		node.Text = n.Content(src)
+		node.Text = n.Utf8Text(src)
 		return node
 	}
 
-	for i := 0; i < int(n.NamedChildCount()); i++ {
+	for i := uint(0); i < n.NamedChildCount(); i++ {
 		child := convert(n.NamedChild(i), src, opt)
 		if child != nil {
 			node.Children = append(node.Children, *child)
