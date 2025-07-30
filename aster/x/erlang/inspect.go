@@ -6,8 +6,8 @@ import (
 	"context"
 	"fmt"
 
-	sitter "github.com/smacker/go-tree-sitter"
-	tserlang "mochi/third_party/tree-sitter-erlang/bindings/go"
+        sitter "github.com/tree-sitter/go-tree-sitter"
+        tserlang "github.com/tree-sitter/tree-sitter-erlang/bindings/go"
 )
 
 // Program represents a parsed Erlang file composed of Node structs.
