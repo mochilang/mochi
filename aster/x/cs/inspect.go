@@ -9,16 +9,15 @@ import (
 
 // Program is defined in ast.go and composes Node values.
 
-// Inspect parses the given C# source code using tree-sitter and returns
-// a Program describing its syntax tree.
-// Inspect parses the given C# source code using tree-sitter. When withPos is
-// true the returned AST includes position information.
-func Inspect(src string, withPos bool) (*Program, error) {
+// Inspect parses the given C# source code using tree-sitter and returns a
+// Program describing its syntax tree. Position information is included only when
+// IncludePositions is set to true.
+func Inspect(src string) (*Program, error) {
 	p := sitter.NewParser()
 	p.SetLanguage(sitter.NewLanguage(csharp.Language()))
 	data := []byte(src)
 	tree := p.Parse(data, nil)
-	return &Program{File: (*CompilationUnit)(toNode(tree.RootNode(), data, withPos))}, nil
+	return &Program{File: (*CompilationUnit)(toNode(tree.RootNode(), data))}, nil
 }
 
 // MarshalJSON implements json.Marshaler for Program to ensure stable output.

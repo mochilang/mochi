@@ -2,6 +2,12 @@ package cs
 
 import sitter "github.com/tree-sitter/go-tree-sitter"
 
+// IncludePositions controls whether positional information is populated when
+// converting tree-sitter nodes. When false (the default) all position fields
+// remain zero and are omitted from the marshalled JSON due to the omitempty
+// struct tags.
+var IncludePositions bool
+
 // Node models a portion of the C# syntax tree as returned by tree-sitter.
 // Only leaves carrying a textual value populate the Text field. Position
 // information is stored using 1-indexed line numbers and zero-indexed
@@ -14,8 +20,8 @@ type Node struct {
 	Kind     string  `json:"kind"`
 	Text     string  `json:"text,omitempty"`
 	Start    int     `json:"start,omitempty"`
-	StartCol int     `json:"startCol,omitempty"`
 	End      int     `json:"end,omitempty"`
+	StartCol int     `json:"startCol,omitempty"`
 	EndCol   int     `json:"endCol,omitempty"`
 	Children []*Node `json:"children,omitempty"`
 }
@@ -48,21 +54,21 @@ type Program struct {
 // convert builds a Node tree starting from the given tree-sitter node. Pure
 // syntax leaf nodes without textual value are omitted from the resulting tree
 // so the JSON output remains compact.
-// toNode converts a tree-sitter node into our Node structure. When withPos is
-// true the resulting Node includes line and column information. Pure syntax
-// leaves without textual value are skipped so that the resulting JSON remains
-// compact.
-func toNode(n *sitter.Node, src []byte, withPos bool) *Node {
+// toNode converts a tree-sitter node into our Node structure. When
+// IncludePositions is true the resulting Node records line and column
+// information. Pure syntax leaves without textual value are skipped so the
+// resulting JSON remains compact.
+func toNode(n *sitter.Node, src []byte) *Node {
 	if n == nil {
 		return nil
 	}
 	node := &Node{Kind: n.Kind()}
-	if withPos {
+	if IncludePositions {
 		sp := n.StartPosition()
 		ep := n.EndPosition()
 		node.Start = int(sp.Row) + 1
-		node.StartCol = int(sp.Column)
 		node.End = int(ep.Row) + 1
+		node.StartCol = int(sp.Column)
 		node.EndCol = int(ep.Column)
 	}
 
@@ -76,7 +82,7 @@ func toNode(n *sitter.Node, src []byte, withPos bool) *Node {
 
 	for i := uint(0); i < n.NamedChildCount(); i++ {
 		c := n.NamedChild(i)
-		if child := toNode(c, src, withPos); child != nil {
+		if child := toNode(c, src); child != nil {
 			node.Children = append(node.Children, child)
 		}
 	}
