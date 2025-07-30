@@ -1,548 +1,795 @@
 {
-  "types": [
-    {
-      "name": "Customer",
-      "kind": "struct",
-      "access": "",
-      "startline": 6,
-      "endline": 10,
-      "fields": [
-        {
-          "name": "id",
-          "type": "int",
-          "access": "public",
-          "line": 7,
-          "value": "",
-          "static": false,
-          "doc": ""
-        },
-        {
-          "name": "name",
-          "type": "string",
-          "access": "public",
-          "line": 8,
-          "value": "",
-          "static": false,
-          "doc": ""
-        }
-      ],
-      "methods": [
-        {
-          "name": "ToString",
-          "params": [],
-          "ret": "string",
-          "access": "public",
-          "static": false,
-          "ast": {
-            "kind": "block"
-          },
-          "startline": 9,
-          "endline": 9,
-          "doc": ""
-        }
-      ],
-      "doc": ""
-    },
-    {
-      "name": "Order",
-      "kind": "struct",
-      "access": "",
-      "startline": 11,
-      "endline": 15,
-      "fields": [
-        {
-          "name": "id",
-          "type": "int",
-          "access": "public",
-          "line": 12,
-          "value": "",
-          "static": false,
-          "doc": ""
-        },
-        {
-          "name": "customerId",
-          "type": "int",
-          "access": "public",
-          "line": 13,
-          "value": "",
-          "static": false,
-          "doc": ""
-        }
-      ],
-      "methods": [
-        {
-          "name": "ToString",
-          "params": [],
-          "ret": "string",
-          "access": "public",
-          "static": false,
-          "ast": {
-            "kind": "block"
-          },
-          "startline": 14,
-          "endline": 14,
-          "doc": ""
-        }
-      ],
-      "doc": ""
-    },
-    {
-      "name": "GRow",
-      "kind": "struct",
-      "access": "",
-      "startline": 16,
-      "endline": 20,
-      "fields": [
-        {
-          "name": "c",
-          "type": "Customer",
-          "access": "public",
-          "line": 17,
-          "value": "",
-          "static": false,
-          "doc": ""
-        },
-        {
-          "name": "o",
-          "type": "Order",
-          "access": "public",
-          "line": 18,
-          "value": "",
-          "static": false,
-          "doc": ""
-        }
-      ],
-      "methods": [
-        {
-          "name": "ToString",
-          "params": [],
-          "ret": "string",
-          "access": "public",
-          "static": false,
-          "ast": {
-            "kind": "block"
-          },
-          "startline": 19,
-          "endline": 19,
-          "doc": ""
-        }
-      ],
-      "doc": ""
-    },
-    {
-      "name": "GGroup",
-      "kind": "struct",
-      "access": "",
-      "startline": 21,
-      "endline": 25,
-      "fields": [
-        {
-          "name": "key",
-          "type": "string",
-          "access": "public",
-          "line": 22,
-          "value": "",
-          "static": false,
-          "doc": ""
-        },
-        {
-          "name": "items",
-          "type": "GRow[]",
-          "access": "public",
-          "line": 23,
-          "value": "",
-          "static": false,
-          "doc": ""
-        }
-      ],
-      "methods": [
-        {
-          "name": "ToString",
-          "params": [],
-          "ret": "string",
-          "access": "public",
-          "static": false,
-          "ast": {
-            "kind": "block"
-          },
-          "startline": 24,
-          "endline": 24,
-          "doc": ""
-        }
-      ],
-      "doc": ""
-    },
-    {
-      "name": "GResult",
-      "kind": "struct",
-      "access": "",
-      "startline": 26,
-      "endline": 30,
-      "fields": [
-        {
-          "name": "name",
-          "type": "string",
-          "access": "public",
-          "line": 27,
-          "value": "",
-          "static": false,
-          "doc": ""
-        },
-        {
-          "name": "count",
-          "type": "int",
-          "access": "public",
-          "line": 28,
-          "value": "",
-          "static": false,
-          "doc": ""
-        }
-      ],
-      "methods": [
-        {
-          "name": "ToString",
-          "params": [],
-          "ret": "string",
-          "access": "public",
-          "static": false,
-          "ast": {
-            "kind": "block"
-          },
-          "startline": 29,
-          "endline": 29,
-          "doc": ""
-        }
-      ],
-      "doc": ""
-    },
-    {
-      "name": "Program",
-      "kind": "class",
-      "access": "",
-      "startline": 31,
-      "endline": 41,
-      "fields": [
-        {
-          "name": "customers",
-          "type": "Customer[]",
-          "access": "",
-          "line": 32,
-          "value": "new Customer[]{new Customer{id = 1, name = \"Alice\"}, new Customer{id = 2, name = \"Bob\"}, new Customer{id = 3, name = \"Charlie\"}}",
-          "ast": {
-            "kind": "array",
+  "file": {
+    "kind": "compilation_unit",
+    "children": [
+      {
+        "kind": "comment",
+        "text": "// Generated by Mochi 0.10.34 on 2025-07-21 22:29 +0700"
+      },
+      {
+        "kind": "using_directive",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "System"
+          }
+        ]
+      },
+      {
+        "kind": "using_directive",
+        "children": [
+          {
+            "kind": "qualified_name",
             "children": [
               {
-                "kind": "new",
-                "value": "Customer",
+                "kind": "qualified_name",
                 "children": [
                   {
-                    "kind": "init",
-                    "children": [
-                      {
-                        "kind": "field",
-                        "value": "id",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "1"
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "field",
-                        "value": "name",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "Alice"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "kind": "new",
-                "value": "Customer",
-                "children": [
-                  {
-                    "kind": "init",
-                    "children": [
-                      {
-                        "kind": "field",
-                        "value": "id",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "2"
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "field",
-                        "value": "name",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "Bob"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "kind": "new",
-                "value": "Customer",
-                "children": [
-                  {
-                    "kind": "init",
-                    "children": [
-                      {
-                        "kind": "field",
-                        "value": "id",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "3"
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "field",
-                        "value": "name",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "Charlie"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          "static": true,
-          "doc": ""
-        },
-        {
-          "name": "orders",
-          "type": "Order[]",
-          "access": "",
-          "line": 33,
-          "value": "new Order[]{new Order{id = 100, customerId = 1}, new Order{id = 101, customerId = 1}, new Order{id = 102, customerId = 2}}",
-          "ast": {
-            "kind": "array",
-            "children": [
-              {
-                "kind": "new",
-                "value": "Order",
-                "children": [
-                  {
-                    "kind": "init",
-                    "children": [
-                      {
-                        "kind": "field",
-                        "value": "id",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "100"
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "field",
-                        "value": "customerId",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "1"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "kind": "new",
-                "value": "Order",
-                "children": [
-                  {
-                    "kind": "init",
-                    "children": [
-                      {
-                        "kind": "field",
-                        "value": "id",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "101"
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "field",
-                        "value": "customerId",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "1"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "kind": "new",
-                "value": "Order",
-                "children": [
-                  {
-                    "kind": "init",
-                    "children": [
-                      {
-                        "kind": "field",
-                        "value": "id",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "102"
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "field",
-                        "value": "customerId",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "2"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          "static": true,
-          "doc": ""
-        },
-        {
-          "name": "stats",
-          "type": "GResult[]",
-          "access": "",
-          "line": 34,
-          "value": "(from c in customers join o in orders on c.id equals o.customerId into oTmp from o in oTmp.DefaultIfEmpty() group new GRow{c = c, o = o} by c.name into gTmp let g = new GGroup{ key = gTmp.Key, items = gTmp.ToArray() } select new GResult{name = g.key, count = (from r in g.items where r.o select r).ToArray().Length}).ToArray()",
-          "ast": {
-            "kind": "call",
-            "value": "ToArray",
-            "children": [
-              {
-                "kind": "unknown"
-              }
-            ]
-          },
-          "static": true,
-          "doc": ""
-        }
-      ],
-      "methods": [
-        {
-          "name": "Main",
-          "params": [],
-          "ret": "void",
-          "access": "",
-          "static": true,
-          "ast": {
-            "kind": "block",
-            "children": [
-              {
-                "kind": "call",
-                "value": "print",
-                "children": [
-                  {
-                    "kind": "literal",
-                    "value": "--- Group Left Join ---"
-                  }
-                ]
-              },
-              {
-                "kind": "for",
-                "value": "s",
-                "children": [
-                  {
-                    "kind": "range",
-                    "children": [
-                      {
-                        "kind": "ident",
-                        "value": "stats"
-                      }
-                    ]
+                    "kind": "identifier",
+                    "text": "System"
                   },
                   {
-                    "kind": "block",
+                    "kind": "identifier",
+                    "text": "Collections"
+                  }
+                ]
+              },
+              {
+                "kind": "identifier",
+                "text": "Generic"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "using_directive",
+        "children": [
+          {
+            "kind": "qualified_name",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "System"
+              },
+              {
+                "kind": "identifier",
+                "text": "Linq"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "struct_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "Customer"
+          },
+          {
+            "kind": "declaration_list",
+            "children": [
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "variable_declaration",
                     "children": [
                       {
-                        "kind": "call",
-                        "value": "print",
+                        "kind": "predefined_type",
+                        "text": "int"
+                      },
+                      {
+                        "kind": "variable_declarator",
                         "children": [
                           {
-                            "kind": "binary",
-                            "value": "+",
+                            "kind": "identifier",
+                            "text": "id"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "predefined_type",
+                        "text": "string"
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "name"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "method_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "modifier",
+                    "text": "override"
+                  },
+                  {
+                    "kind": "predefined_type",
+                    "text": "string"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "ToString"
+                  },
+                  {
+                    "kind": "arrow_expression_clause",
+                    "children": [
+                      {
+                        "kind": "interpolated_string_expression",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "{{'id': "
+                          },
+                          {
+                            "kind": "interpolation",
                             "children": [
                               {
-                                "kind": "literal",
-                                "value": "["
-                              },
+                                "kind": "identifier",
+                                "text": "id"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": ", 'name': '"
+                          },
+                          {
+                            "kind": "interpolation",
+                            "children": [
                               {
-                                "kind": "binary",
-                                "value": "+",
+                                "kind": "identifier",
+                                "text": "name"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": "'}}"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "struct_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "Order"
+          },
+          {
+            "kind": "declaration_list",
+            "children": [
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "predefined_type",
+                        "text": "int"
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "id"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "predefined_type",
+                        "text": "int"
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "customerId"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "method_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "modifier",
+                    "text": "override"
+                  },
+                  {
+                    "kind": "predefined_type",
+                    "text": "string"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "ToString"
+                  },
+                  {
+                    "kind": "arrow_expression_clause",
+                    "children": [
+                      {
+                        "kind": "interpolated_string_expression",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "{{'id': "
+                          },
+                          {
+                            "kind": "interpolation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "id"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": ", 'customerId': "
+                          },
+                          {
+                            "kind": "interpolation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "customerId"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": "}}"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "struct_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "GRow"
+          },
+          {
+            "kind": "declaration_list",
+            "children": [
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "Customer"
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "c"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "Order"
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "o"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "method_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "modifier",
+                    "text": "override"
+                  },
+                  {
+                    "kind": "predefined_type",
+                    "text": "string"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "ToString"
+                  },
+                  {
+                    "kind": "arrow_expression_clause",
+                    "children": [
+                      {
+                        "kind": "interpolated_string_expression",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "{{'c': "
+                          },
+                          {
+                            "kind": "interpolation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "c"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": ", 'o': "
+                          },
+                          {
+                            "kind": "interpolation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "o"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": "}}"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "struct_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "GGroup"
+          },
+          {
+            "kind": "declaration_list",
+            "children": [
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "predefined_type",
+                        "text": "string"
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "key"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "array_type",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "GRow"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "items"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "method_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "modifier",
+                    "text": "override"
+                  },
+                  {
+                    "kind": "predefined_type",
+                    "text": "string"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "ToString"
+                  },
+                  {
+                    "kind": "arrow_expression_clause",
+                    "children": [
+                      {
+                        "kind": "interpolated_string_expression",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "{{'key': '"
+                          },
+                          {
+                            "kind": "interpolation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "key"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": "', 'items': "
+                          },
+                          {
+                            "kind": "interpolation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "items"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": "}}"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "struct_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "GResult"
+          },
+          {
+            "kind": "declaration_list",
+            "children": [
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "predefined_type",
+                        "text": "string"
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "name"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "predefined_type",
+                        "text": "int"
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "count"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "method_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "modifier",
+                    "text": "override"
+                  },
+                  {
+                    "kind": "predefined_type",
+                    "text": "string"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "ToString"
+                  },
+                  {
+                    "kind": "arrow_expression_clause",
+                    "children": [
+                      {
+                        "kind": "interpolated_string_expression",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "{{'name': '"
+                          },
+                          {
+                            "kind": "interpolation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "name"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": "', 'count': "
+                          },
+                          {
+                            "kind": "interpolation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "count"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": "}}"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "class_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "Program"
+          },
+          {
+            "kind": "declaration_list",
+            "children": [
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "static"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "array_type",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "Customer"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "customers"
+                          },
+                          {
+                            "kind": "array_creation_expression",
+                            "children": [
+                              {
+                                "kind": "array_type",
                                 "children": [
                                   {
-                                    "kind": "call",
-                                    "value": "Join",
+                                    "kind": "identifier",
+                                    "text": "Customer"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "initializer_expression",
+                                "children": [
+                                  {
+                                    "kind": "object_creation_expression",
                                     "children": [
                                       {
-                                        "kind": "ident",
-                                        "value": "string"
+                                        "kind": "identifier",
+                                        "text": "Customer"
                                       },
                                       {
-                                        "kind": "literal",
-                                        "value": ","
-                                      },
-                                      {
-                                        "kind": "array",
+                                        "kind": "initializer_expression",
                                         "children": [
                                           {
-                                            "kind": "member",
-                                            "value": "name",
+                                            "kind": "assignment_expression",
                                             "children": [
                                               {
-                                                "kind": "ident",
-                                                "value": "s"
+                                                "kind": "identifier",
+                                                "text": "id"
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "text": "1"
                                               }
                                             ]
                                           },
                                           {
-                                            "kind": "literal",
-                                            "value": "orders:"
-                                          },
-                                          {
-                                            "kind": "member",
-                                            "value": "count",
+                                            "kind": "assignment_expression",
                                             "children": [
                                               {
-                                                "kind": "ident",
-                                                "value": "s"
+                                                "kind": "identifier",
+                                                "text": "name"
                                               }
                                             ]
                                           }
@@ -551,8 +798,850 @@
                                     ]
                                   },
                                   {
-                                    "kind": "literal",
-                                    "value": "]"
+                                    "kind": "object_creation_expression",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "Customer"
+                                      },
+                                      {
+                                        "kind": "initializer_expression",
+                                        "children": [
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "id"
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "text": "2"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "name"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "object_creation_expression",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "Customer"
+                                      },
+                                      {
+                                        "kind": "initializer_expression",
+                                        "children": [
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "id"
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "text": "3"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "name"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "static"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "array_type",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "Order"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "orders"
+                          },
+                          {
+                            "kind": "array_creation_expression",
+                            "children": [
+                              {
+                                "kind": "array_type",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "Order"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "initializer_expression",
+                                "children": [
+                                  {
+                                    "kind": "object_creation_expression",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "Order"
+                                      },
+                                      {
+                                        "kind": "initializer_expression",
+                                        "children": [
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "id"
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "text": "100"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "customerId"
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "text": "1"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "object_creation_expression",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "Order"
+                                      },
+                                      {
+                                        "kind": "initializer_expression",
+                                        "children": [
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "id"
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "text": "101"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "customerId"
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "text": "1"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "object_creation_expression",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "Order"
+                                      },
+                                      {
+                                        "kind": "initializer_expression",
+                                        "children": [
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "id"
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "text": "102"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "customerId"
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "text": "2"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "static"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "array_type",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "GResult"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "stats"
+                          },
+                          {
+                            "kind": "invocation_expression",
+                            "children": [
+                              {
+                                "kind": "member_access_expression",
+                                "children": [
+                                  {
+                                    "kind": "parenthesized_expression",
+                                    "children": [
+                                      {
+                                        "kind": "query_expression",
+                                        "children": [
+                                          {
+                                            "kind": "from_clause",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "c"
+                                              },
+                                              {
+                                                "kind": "identifier",
+                                                "text": "customers"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "join_clause",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "o"
+                                              },
+                                              {
+                                                "kind": "identifier",
+                                                "text": "orders"
+                                              },
+                                              {
+                                                "kind": "member_access_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "c"
+                                                  },
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "id"
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "member_access_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "o"
+                                                  },
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "customerId"
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "join_into_clause",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "oTmp"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "from_clause",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "o"
+                                              },
+                                              {
+                                                "kind": "invocation_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "member_access_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "identifier",
+                                                        "text": "oTmp"
+                                                      },
+                                                      {
+                                                        "kind": "identifier",
+                                                        "text": "DefaultIfEmpty"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "group_clause",
+                                            "children": [
+                                              {
+                                                "kind": "object_creation_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "GRow"
+                                                  },
+                                                  {
+                                                    "kind": "initializer_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "assignment_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "c"
+                                                          },
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "c"
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "assignment_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "o"
+                                                          },
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "o"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "member_access_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "c"
+                                                  },
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "name"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "gTmp"
+                                          },
+                                          {
+                                            "kind": "let_clause",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "g"
+                                              },
+                                              {
+                                                "kind": "object_creation_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "GGroup"
+                                                  },
+                                                  {
+                                                    "kind": "initializer_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "assignment_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "key"
+                                                          },
+                                                          {
+                                                            "kind": "member_access_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "gTmp"
+                                                              },
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "Key"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "assignment_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "items"
+                                                          },
+                                                          {
+                                                            "kind": "invocation_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "member_access_expression",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "text": "gTmp"
+                                                                  },
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "text": "ToArray"
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "select_clause",
+                                            "children": [
+                                              {
+                                                "kind": "object_creation_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "GResult"
+                                                  },
+                                                  {
+                                                    "kind": "initializer_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "assignment_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "name"
+                                                          },
+                                                          {
+                                                            "kind": "member_access_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "g"
+                                                              },
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "key"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "assignment_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "count"
+                                                          },
+                                                          {
+                                                            "kind": "member_access_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "invocation_expression",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "member_access_expression",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "parenthesized_expression",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "query_expression",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "from_clause",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "identifier",
+                                                                                    "text": "r"
+                                                                                  },
+                                                                                  {
+                                                                                    "kind": "member_access_expression",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "identifier",
+                                                                                        "text": "g"
+                                                                                      },
+                                                                                      {
+                                                                                        "kind": "identifier",
+                                                                                        "text": "items"
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "where_clause",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "member_access_expression",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "identifier",
+                                                                                        "text": "r"
+                                                                                      },
+                                                                                      {
+                                                                                        "kind": "identifier",
+                                                                                        "text": "o"
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "select_clause",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "identifier",
+                                                                                    "text": "r"
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "ToArray"
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "Length"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "ToArray"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "method_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "static"
+                  },
+                  {
+                    "kind": "predefined_type",
+                    "text": "void"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "Main"
+                  },
+                  {
+                    "kind": "block",
+                    "children": [
+                      {
+                        "kind": "expression_statement",
+                        "children": [
+                          {
+                            "kind": "invocation_expression",
+                            "children": [
+                              {
+                                "kind": "member_access_expression",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "Console"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "WriteLine"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "foreach_statement",
+                        "children": [
+                          {
+                            "kind": "implicit_type",
+                            "text": "var"
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "s"
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "stats"
+                          },
+                          {
+                            "kind": "block",
+                            "children": [
+                              {
+                                "kind": "expression_statement",
+                                "children": [
+                                  {
+                                    "kind": "invocation_expression",
+                                    "children": [
+                                      {
+                                        "kind": "member_access_expression",
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "text": "Console"
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "WriteLine"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "argument_list",
+                                        "children": [
+                                          {
+                                            "kind": "argument",
+                                            "children": [
+                                              {
+                                                "kind": "parenthesized_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "binary_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "parenthesized_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "binary_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "invocation_expression",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "member_access_expression",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "predefined_type",
+                                                                        "text": "string"
+                                                                      },
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "Join"
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "kind": "argument_list",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "argument",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "array_creation_expression",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "array_type",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "predefined_type",
+                                                                                    "text": "object"
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "initializer_expression",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "member_access_expression",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "identifier",
+                                                                                        "text": "s"
+                                                                                      },
+                                                                                      {
+                                                                                        "kind": "identifier",
+                                                                                        "text": "name"
+                                                                                      }
+                                                                                    ]
+                                                                                  },
+                                                                                  {
+                                                                                    "kind": "member_access_expression",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "identifier",
+                                                                                        "text": "s"
+                                                                                      },
+                                                                                      {
+                                                                                        "kind": "identifier",
+                                                                                        "text": "count"
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
                                   }
                                 ]
                               }
@@ -565,13 +1654,9 @@
                 ]
               }
             ]
-          },
-          "startline": 35,
-          "endline": 40,
-          "doc": ""
-        }
-      ],
-      "doc": ""
-    }
-  ]
+          }
+        ]
+      }
+    ]
+  }
 }
