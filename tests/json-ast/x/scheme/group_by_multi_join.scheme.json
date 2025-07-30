@@ -1,145 +1,196 @@
 {
   "forms": [
     {
-      "list": [
+      "kind": "comment",
+      "text": ";; Generated on 2025-07-21 19:10 +0700"
+    },
+    {
+      "kind": "list",
+      "children": [
         {
-          "atom": "import"
+          "kind": "symbol",
+          "text": "import"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "srfi"
+              "kind": "symbol",
+              "text": "srfi"
             },
             {
-              "atom": "69"
+              "kind": "number",
+              "text": "69"
             }
           ]
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "scheme"
+              "kind": "symbol",
+              "text": "scheme"
             },
             {
-              "atom": "sort"
+              "kind": "symbol",
+              "text": "sort"
             }
           ]
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "chibi"
+              "kind": "symbol",
+              "text": "chibi"
             },
             {
-              "atom": "string"
+              "kind": "symbol",
+              "text": "string"
             }
           ]
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "define"
+          "kind": "symbol",
+          "text": "define"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "to-str"
+              "kind": "symbol",
+              "text": "to-str"
             },
             {
-              "atom": "x"
+              "kind": "symbol",
+              "text": "x"
             }
           ]
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "cond"
+              "kind": "symbol",
+              "text": "cond"
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "hash-table?"
+                      "kind": "symbol",
+                      "text": "hash-table?"
                     },
                     {
-                      "atom": "x"
+                      "kind": "symbol",
+                      "text": "x"
                     }
                   ]
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "let*"
+                      "kind": "symbol",
+                      "text": "let*"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "list": [
+                          "kind": "list",
+                          "children": [
                             {
-                              "atom": "pairs"
+                              "kind": "symbol",
+                              "text": "pairs"
                             },
                             {
-                              "list": [
+                              "kind": "list",
+                              "children": [
                                 {
-                                  "atom": "hash-table-\u003ealist"
+                                  "kind": "symbol",
+                                  "text": "hash-table-\u003ealist"
                                 },
                                 {
-                                  "atom": "x"
+                                  "kind": "symbol",
+                                  "text": "x"
                                 }
                               ]
                             }
                           ]
                         },
                         {
-                          "list": [
+                          "kind": "list",
+                          "children": [
                             {
-                              "atom": "pairs"
+                              "kind": "symbol",
+                              "text": "pairs"
                             },
                             {
-                              "list": [
+                              "kind": "list",
+                              "children": [
                                 {
-                                  "atom": "list-sort"
+                                  "kind": "symbol",
+                                  "text": "list-sort"
                                 },
                                 {
-                                  "list": [
+                                  "kind": "list",
+                                  "children": [
                                     {
-                                      "atom": "lambda"
+                                      "kind": "symbol",
+                                      "text": "lambda"
                                     },
                                     {
-                                      "list": [
+                                      "kind": "list",
+                                      "children": [
                                         {
-                                          "atom": "a"
+                                          "kind": "symbol",
+                                          "text": "a"
                                         },
                                         {
-                                          "atom": "b"
+                                          "kind": "symbol",
+                                          "text": "b"
                                         }
                                       ]
                                     },
                                     {
-                                      "list": [
+                                      "kind": "list",
+                                      "children": [
                                         {
-                                          "atom": "string\u003c?"
+                                          "kind": "symbol",
+                                          "text": "string\u003c?"
                                         },
                                         {
-                                          "list": [
+                                          "kind": "list",
+                                          "children": [
                                             {
-                                              "atom": "car"
+                                              "kind": "symbol",
+                                              "text": "car"
                                             },
                                             {
-                                              "atom": "a"
+                                              "kind": "symbol",
+                                              "text": "a"
                                             }
                                           ]
                                         },
                                         {
-                                          "list": [
+                                          "kind": "list",
+                                          "children": [
                                             {
-                                              "atom": "car"
+                                              "kind": "symbol",
+                                              "text": "car"
                                             },
                                             {
-                                              "atom": "b"
+                                              "kind": "symbol",
+                                              "text": "b"
                                             }
                                           ]
                                         }
@@ -148,7 +199,8 @@
                                   ]
                                 },
                                 {
-                                  "atom": "pairs"
+                                  "kind": "symbol",
+                                  "text": "pairs"
                                 }
                               ]
                             }
@@ -157,68 +209,91 @@
                       ]
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "string-append"
+                          "kind": "symbol",
+                          "text": "string-append"
                         },
                         {
-                          "atom": "{"
+                          "kind": "string",
+                          "text": "\"{\""
                         },
                         {
-                          "list": [
+                          "kind": "list",
+                          "children": [
                             {
-                              "atom": "string-join"
+                              "kind": "symbol",
+                              "text": "string-join"
                             },
                             {
-                              "list": [
+                              "kind": "list",
+                              "children": [
                                 {
-                                  "atom": "map"
+                                  "kind": "symbol",
+                                  "text": "map"
                                 },
                                 {
-                                  "list": [
+                                  "kind": "list",
+                                  "children": [
                                     {
-                                      "atom": "lambda"
+                                      "kind": "symbol",
+                                      "text": "lambda"
                                     },
                                     {
-                                      "list": [
+                                      "kind": "list",
+                                      "children": [
                                         {
-                                          "atom": "kv"
+                                          "kind": "symbol",
+                                          "text": "kv"
                                         }
                                       ]
                                     },
                                     {
-                                      "list": [
+                                      "kind": "list",
+                                      "children": [
                                         {
-                                          "atom": "string-append"
+                                          "kind": "symbol",
+                                          "text": "string-append"
                                         },
                                         {
-                                          "atom": "'"
+                                          "kind": "string",
+                                          "text": "\"'\""
                                         },
                                         {
-                                          "list": [
+                                          "kind": "list",
+                                          "children": [
                                             {
-                                              "atom": "car"
+                                              "kind": "symbol",
+                                              "text": "car"
                                             },
                                             {
-                                              "atom": "kv"
+                                              "kind": "symbol",
+                                              "text": "kv"
                                             }
                                           ]
                                         },
                                         {
-                                          "atom": "': "
+                                          "kind": "string",
+                                          "text": "\"': \""
                                         },
                                         {
-                                          "list": [
+                                          "kind": "list",
+                                          "children": [
                                             {
-                                              "atom": "to-str"
+                                              "kind": "symbol",
+                                              "text": "to-str"
                                             },
                                             {
-                                              "list": [
+                                              "kind": "list",
+                                              "children": [
                                                 {
-                                                  "atom": "cdr"
+                                                  "kind": "symbol",
+                                                  "text": "cdr"
                                                 },
                                                 {
-                                                  "atom": "kv"
+                                                  "kind": "symbol",
+                                                  "text": "kv"
                                                 }
                                               ]
                                             }
@@ -229,17 +304,20 @@
                                   ]
                                 },
                                 {
-                                  "atom": "pairs"
+                                  "kind": "symbol",
+                                  "text": "pairs"
                                 }
                               ]
                             },
                             {
-                              "atom": ", "
+                              "kind": "string",
+                              "text": "\", \""
                             }
                           ]
                         },
                         {
-                          "atom": "}"
+                          "kind": "string",
+                          "text": "\"}\""
                         }
                       ]
                     }
@@ -248,194 +326,118 @@
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "list?"
+                      "kind": "symbol",
+                      "text": "list?"
                     },
                     {
-                      "atom": "x"
+                      "kind": "symbol",
+                      "text": "x"
                     }
                   ]
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "string-append"
+                      "kind": "symbol",
+                      "text": "string-append"
                     },
                     {
-                      "atom": "["
+                      "kind": "string",
+                      "text": "\"[\""
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "string-join"
+                          "kind": "symbol",
+                          "text": "string-join"
                         },
                         {
-                          "list": [
+                          "kind": "list",
+                          "children": [
                             {
-                              "atom": "map"
+                              "kind": "symbol",
+                              "text": "map"
                             },
                             {
-                              "atom": "to-str"
+                              "kind": "symbol",
+                              "text": "to-str"
                             },
                             {
-                              "atom": "x"
+                              "kind": "symbol",
+                              "text": "x"
                             }
                           ]
                         },
                         {
-                          "atom": ", "
+                          "kind": "string",
+                          "text": "\", \""
                         }
                       ]
                     },
                     {
-                      "atom": "]"
+                      "kind": "string",
+                      "text": "\"]\""
                     }
                   ]
                 }
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "string?"
+                      "kind": "symbol",
+                      "text": "string?"
                     },
                     {
-                      "atom": "x"
+                      "kind": "symbol",
+                      "text": "x"
                     }
                   ]
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "string-append"
+                      "kind": "symbol",
+                      "text": "string-append"
                     },
                     {
-                      "atom": "\""
-                    },
-                    {
-                      "atom": "x"
-                    },
-                    {
-                      "atom": "\""
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "list": [
-                {
-                  "atom": "else"
-                },
-                {
-                  "list": [
-                    {
-                      "atom": "number-\u003estring"
-                    },
-                    {
-                      "atom": "x"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "list": [
-        {
-          "atom": "define"
-        },
-        {
-          "atom": "nations"
-        },
-        {
-          "list": [
-            {
-              "atom": "list"
-            },
-            {
-              "list": [
-                {
-                  "atom": "alist-\u003ehash-table"
-                },
-                {
-                  "list": [
-                    {
-                      "atom": "list"
-                    },
-                    {
-                      "list": [
-                        {
-                          "atom": "cons"
-                        },
-                        {
-                          "atom": "id"
-                        },
-                        {
-                          "atom": "1"
-                        }
-                      ]
-                    },
-                    {
-                      "list": [
-                        {
-                          "atom": "cons"
-                        },
-                        {
-                          "atom": "name"
-                        },
-                        {
-                          "atom": "A"
-                        }
-                      ]
+                      "kind": "symbol",
+                      "text": "x"
                     }
                   ]
                 }
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "alist-\u003ehash-table"
+                  "kind": "symbol",
+                  "text": "else"
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "list"
+                      "kind": "symbol",
+                      "text": "number-\u003estring"
                     },
                     {
-                      "list": [
-                        {
-                          "atom": "cons"
-                        },
-                        {
-                          "atom": "id"
-                        },
-                        {
-                          "atom": "2"
-                        }
-                      ]
-                    },
-                    {
-                      "list": [
-                        {
-                          "atom": "cons"
-                        },
-                        {
-                          "atom": "name"
-                        },
-                        {
-                          "atom": "B"
-                        }
-                      ]
+                      "kind": "symbol",
+                      "text": "x"
                     }
                   ]
                 }
@@ -446,51 +448,68 @@
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "define"
+          "kind": "symbol",
+          "text": "define"
         },
         {
-          "atom": "suppliers"
+          "kind": "symbol",
+          "text": "nations"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "list"
+              "kind": "symbol",
+              "text": "list"
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "alist-\u003ehash-table"
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "list"
+                      "kind": "symbol",
+                      "text": "list"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "id"
+                          "kind": "string",
+                          "text": "\"id\""
                         },
                         {
-                          "atom": "1"
+                          "kind": "number",
+                          "text": "1"
                         }
                       ]
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "nation"
+                          "kind": "string",
+                          "text": "\"name\""
                         },
                         {
-                          "atom": "1"
+                          "kind": "string",
+                          "text": "\"A\""
                         }
                       ]
                     }
@@ -499,38 +518,50 @@
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "alist-\u003ehash-table"
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "list"
+                      "kind": "symbol",
+                      "text": "list"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "id"
+                          "kind": "string",
+                          "text": "\"id\""
                         },
                         {
-                          "atom": "2"
+                          "kind": "number",
+                          "text": "2"
                         }
                       ]
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "nation"
+                          "kind": "string",
+                          "text": "\"name\""
                         },
                         {
-                          "atom": "2"
+                          "kind": "string",
+                          "text": "\"B\""
                         }
                       ]
                     }
@@ -543,77 +574,68 @@
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "define"
+          "kind": "symbol",
+          "text": "define"
         },
         {
-          "atom": "partsupp"
+          "kind": "symbol",
+          "text": "suppliers"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "list"
+              "kind": "symbol",
+              "text": "list"
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "alist-\u003ehash-table"
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "list"
+                      "kind": "symbol",
+                      "text": "list"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "part"
+                          "kind": "string",
+                          "text": "\"id\""
                         },
                         {
-                          "atom": "100"
+                          "kind": "number",
+                          "text": "1"
                         }
                       ]
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "supplier"
+                          "kind": "string",
+                          "text": "\"nation\""
                         },
                         {
-                          "atom": "1"
-                        }
-                      ]
-                    },
-                    {
-                      "list": [
-                        {
-                          "atom": "cons"
-                        },
-                        {
-                          "atom": "cost"
-                        },
-                        {
-                          "atom": "10.0"
-                        }
-                      ]
-                    },
-                    {
-                      "list": [
-                        {
-                          "atom": "cons"
-                        },
-                        {
-                          "atom": "qty"
-                        },
-                        {
-                          "atom": "2"
+                          "kind": "number",
+                          "text": "1"
                         }
                       ]
                     }
@@ -622,130 +644,50 @@
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "alist-\u003ehash-table"
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "list"
+                      "kind": "symbol",
+                      "text": "list"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "part"
+                          "kind": "string",
+                          "text": "\"id\""
                         },
                         {
-                          "atom": "100"
+                          "kind": "number",
+                          "text": "2"
                         }
                       ]
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "supplier"
+                          "kind": "string",
+                          "text": "\"nation\""
                         },
                         {
-                          "atom": "2"
-                        }
-                      ]
-                    },
-                    {
-                      "list": [
-                        {
-                          "atom": "cons"
-                        },
-                        {
-                          "atom": "cost"
-                        },
-                        {
-                          "atom": "20.0"
-                        }
-                      ]
-                    },
-                    {
-                      "list": [
-                        {
-                          "atom": "cons"
-                        },
-                        {
-                          "atom": "qty"
-                        },
-                        {
-                          "atom": "1"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "list": [
-                {
-                  "atom": "alist-\u003ehash-table"
-                },
-                {
-                  "list": [
-                    {
-                      "atom": "list"
-                    },
-                    {
-                      "list": [
-                        {
-                          "atom": "cons"
-                        },
-                        {
-                          "atom": "part"
-                        },
-                        {
-                          "atom": "200"
-                        }
-                      ]
-                    },
-                    {
-                      "list": [
-                        {
-                          "atom": "cons"
-                        },
-                        {
-                          "atom": "supplier"
-                        },
-                        {
-                          "atom": "1"
-                        }
-                      ]
-                    },
-                    {
-                      "list": [
-                        {
-                          "atom": "cons"
-                        },
-                        {
-                          "atom": "cost"
-                        },
-                        {
-                          "atom": "5.0"
-                        }
-                      ]
-                    },
-                    {
-                      "list": [
-                        {
-                          "atom": "cons"
-                        },
-                        {
-                          "atom": "qty"
-                        },
-                        {
-                          "atom": "3"
+                          "kind": "number",
+                          "text": "2"
                         }
                       ]
                     }
@@ -758,29 +700,102 @@
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "define"
+          "kind": "symbol",
+          "text": "define"
         },
         {
-          "atom": "filtered"
+          "kind": "symbol",
+          "text": "partsupp"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "let"
+              "kind": "symbol",
+              "text": "list"
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "list": [
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
+                },
+                {
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "res1"
+                      "kind": "symbol",
+                      "text": "list"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "list"
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"part\""
+                        },
+                        {
+                          "kind": "number",
+                          "text": "100"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"supplier\""
+                        },
+                        {
+                          "kind": "number",
+                          "text": "1"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"cost\""
+                        },
+                        {
+                          "kind": "number",
+                          "text": "10.0"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"qty\""
+                        },
+                        {
+                          "kind": "number",
+                          "text": "2"
                         }
                       ]
                     }
@@ -789,127 +804,387 @@
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "begin"
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "for-each"
+                      "kind": "symbol",
+                      "text": "list"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "lambda"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "list": [
+                          "kind": "string",
+                          "text": "\"part\""
+                        },
+                        {
+                          "kind": "number",
+                          "text": "100"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"supplier\""
+                        },
+                        {
+                          "kind": "number",
+                          "text": "2"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"cost\""
+                        },
+                        {
+                          "kind": "number",
+                          "text": "20.0"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"qty\""
+                        },
+                        {
+                          "kind": "number",
+                          "text": "1"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "list"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"part\""
+                        },
+                        {
+                          "kind": "number",
+                          "text": "200"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"supplier\""
+                        },
+                        {
+                          "kind": "number",
+                          "text": "1"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"cost\""
+                        },
+                        {
+                          "kind": "number",
+                          "text": "5.0"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"qty\""
+                        },
+                        {
+                          "kind": "number",
+                          "text": "3"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "define"
+        },
+        {
+          "kind": "symbol",
+          "text": "filtered"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "let"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "res1"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "list"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "begin"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "for-each"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "lambda"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
                             {
-                              "atom": "ps"
+                              "kind": "symbol",
+                              "text": "ps"
                             }
                           ]
                         },
                         {
-                          "list": [
+                          "kind": "list",
+                          "children": [
                             {
-                              "atom": "for-each"
+                              "kind": "symbol",
+                              "text": "for-each"
                             },
                             {
-                              "list": [
+                              "kind": "list",
+                              "children": [
                                 {
-                                  "atom": "lambda"
+                                  "kind": "symbol",
+                                  "text": "lambda"
                                 },
                                 {
-                                  "list": [
+                                  "kind": "list",
+                                  "children": [
                                     {
-                                      "atom": "s"
+                                      "kind": "symbol",
+                                      "text": "s"
                                     }
                                   ]
                                 },
                                 {
-                                  "list": [
+                                  "kind": "list",
+                                  "children": [
                                     {
-                                      "atom": "for-each"
+                                      "kind": "symbol",
+                                      "text": "for-each"
                                     },
                                     {
-                                      "list": [
+                                      "kind": "list",
+                                      "children": [
                                         {
-                                          "atom": "lambda"
+                                          "kind": "symbol",
+                                          "text": "lambda"
                                         },
                                         {
-                                          "list": [
+                                          "kind": "list",
+                                          "children": [
                                             {
-                                              "atom": "n"
+                                              "kind": "symbol",
+                                              "text": "n"
                                             }
                                           ]
                                         },
                                         {
-                                          "list": [
+                                          "kind": "list",
+                                          "children": [
                                             {
-                                              "atom": "if"
+                                              "kind": "symbol",
+                                              "text": "if"
                                             },
                                             {
-                                              "list": [
+                                              "kind": "list",
+                                              "children": [
                                                 {
-                                                  "atom": "and"
+                                                  "kind": "symbol",
+                                                  "text": "and"
                                                 },
                                                 {
-                                                  "list": [
+                                                  "kind": "list",
+                                                  "children": [
                                                     {
-                                                      "atom": "and"
+                                                      "kind": "symbol",
+                                                      "text": "and"
                                                     },
                                                     {
-                                                      "list": [
+                                                      "kind": "list",
+                                                      "children": [
                                                         {
-                                                          "atom": "string=?"
+                                                          "kind": "symbol",
+                                                          "text": "string=?"
                                                         },
                                                         {
-                                                          "list": [
+                                                          "kind": "list",
+                                                          "children": [
                                                             {
-                                                              "atom": "hash-table-ref"
+                                                              "kind": "symbol",
+                                                              "text": "hash-table-ref"
                                                             },
                                                             {
-                                                              "atom": "n"
+                                                              "kind": "symbol",
+                                                              "text": "n"
                                                             },
                                                             {
-                                                              "atom": "name"
+                                                              "kind": "string",
+                                                              "text": "\"name\""
                                                             }
                                                           ]
                                                         },
                                                         {
-                                                          "atom": "A"
+                                                          "kind": "string",
+                                                          "text": "\"A\""
                                                         }
                                                       ]
                                                     },
                                                     {
-                                                      "list": [
+                                                      "kind": "list",
+                                                      "children": [
                                                         {
-                                                          "atom": "="
+                                                          "kind": "symbol",
+                                                          "text": "="
                                                         },
                                                         {
-                                                          "list": [
+                                                          "kind": "list",
+                                                          "children": [
                                                             {
-                                                              "atom": "hash-table-ref"
+                                                              "kind": "symbol",
+                                                              "text": "hash-table-ref"
                                                             },
                                                             {
-                                                              "atom": "s"
+                                                              "kind": "symbol",
+                                                              "text": "s"
                                                             },
                                                             {
-                                                              "atom": "id"
+                                                              "kind": "string",
+                                                              "text": "\"id\""
                                                             }
                                                           ]
                                                         },
                                                         {
-                                                          "list": [
+                                                          "kind": "list",
+                                                          "children": [
                                                             {
-                                                              "atom": "hash-table-ref"
+                                                              "kind": "symbol",
+                                                              "text": "hash-table-ref"
                                                             },
                                                             {
-                                                              "atom": "ps"
+                                                              "kind": "symbol",
+                                                              "text": "ps"
                                                             },
                                                             {
-                                                              "atom": "supplier"
+                                                              "kind": "string",
+                                                              "text": "\"supplier\""
                                                             }
                                                           ]
                                                         }
@@ -918,33 +1193,43 @@
                                                   ]
                                                 },
                                                 {
-                                                  "list": [
+                                                  "kind": "list",
+                                                  "children": [
                                                     {
-                                                      "atom": "="
+                                                      "kind": "symbol",
+                                                      "text": "="
                                                     },
                                                     {
-                                                      "list": [
+                                                      "kind": "list",
+                                                      "children": [
                                                         {
-                                                          "atom": "hash-table-ref"
+                                                          "kind": "symbol",
+                                                          "text": "hash-table-ref"
                                                         },
                                                         {
-                                                          "atom": "n"
+                                                          "kind": "symbol",
+                                                          "text": "n"
                                                         },
                                                         {
-                                                          "atom": "id"
+                                                          "kind": "string",
+                                                          "text": "\"id\""
                                                         }
                                                       ]
                                                     },
                                                     {
-                                                      "list": [
+                                                      "kind": "list",
+                                                      "children": [
                                                         {
-                                                          "atom": "hash-table-ref"
+                                                          "kind": "symbol",
+                                                          "text": "hash-table-ref"
                                                         },
                                                         {
-                                                          "atom": "s"
+                                                          "kind": "symbol",
+                                                          "text": "s"
                                                         },
                                                         {
-                                                          "atom": "nation"
+                                                          "kind": "string",
+                                                          "text": "\"nation\""
                                                         }
                                                       ]
                                                     }
@@ -953,95 +1238,127 @@
                                               ]
                                             },
                                             {
-                                              "list": [
+                                              "kind": "list",
+                                              "children": [
                                                 {
-                                                  "atom": "set!"
+                                                  "kind": "symbol",
+                                                  "text": "set!"
                                                 },
                                                 {
-                                                  "atom": "res1"
+                                                  "kind": "symbol",
+                                                  "text": "res1"
                                                 },
                                                 {
-                                                  "list": [
+                                                  "kind": "list",
+                                                  "children": [
                                                     {
-                                                      "atom": "append"
+                                                      "kind": "symbol",
+                                                      "text": "append"
                                                     },
                                                     {
-                                                      "atom": "res1"
+                                                      "kind": "symbol",
+                                                      "text": "res1"
                                                     },
                                                     {
-                                                      "list": [
+                                                      "kind": "list",
+                                                      "children": [
                                                         {
-                                                          "atom": "list"
+                                                          "kind": "symbol",
+                                                          "text": "list"
                                                         },
                                                         {
-                                                          "list": [
+                                                          "kind": "list",
+                                                          "children": [
                                                             {
-                                                              "atom": "alist-\u003ehash-table"
+                                                              "kind": "symbol",
+                                                              "text": "alist-\u003ehash-table"
                                                             },
                                                             {
-                                                              "list": [
+                                                              "kind": "list",
+                                                              "children": [
                                                                 {
-                                                                  "atom": "list"
+                                                                  "kind": "symbol",
+                                                                  "text": "list"
                                                                 },
                                                                 {
-                                                                  "list": [
+                                                                  "kind": "list",
+                                                                  "children": [
                                                                     {
-                                                                      "atom": "cons"
+                                                                      "kind": "symbol",
+                                                                      "text": "cons"
                                                                     },
                                                                     {
-                                                                      "atom": "part"
+                                                                      "kind": "string",
+                                                                      "text": "\"part\""
                                                                     },
                                                                     {
-                                                                      "list": [
+                                                                      "kind": "list",
+                                                                      "children": [
                                                                         {
-                                                                          "atom": "hash-table-ref"
+                                                                          "kind": "symbol",
+                                                                          "text": "hash-table-ref"
                                                                         },
                                                                         {
-                                                                          "atom": "ps"
+                                                                          "kind": "symbol",
+                                                                          "text": "ps"
                                                                         },
                                                                         {
-                                                                          "atom": "part"
+                                                                          "kind": "string",
+                                                                          "text": "\"part\""
                                                                         }
                                                                       ]
                                                                     }
                                                                   ]
                                                                 },
                                                                 {
-                                                                  "list": [
+                                                                  "kind": "list",
+                                                                  "children": [
                                                                     {
-                                                                      "atom": "cons"
+                                                                      "kind": "symbol",
+                                                                      "text": "cons"
                                                                     },
                                                                     {
-                                                                      "atom": "value"
+                                                                      "kind": "string",
+                                                                      "text": "\"value\""
                                                                     },
                                                                     {
-                                                                      "list": [
+                                                                      "kind": "list",
+                                                                      "children": [
                                                                         {
-                                                                          "atom": "*"
+                                                                          "kind": "symbol",
+                                                                          "text": "*"
                                                                         },
                                                                         {
-                                                                          "list": [
+                                                                          "kind": "list",
+                                                                          "children": [
                                                                             {
-                                                                              "atom": "hash-table-ref"
+                                                                              "kind": "symbol",
+                                                                              "text": "hash-table-ref"
                                                                             },
                                                                             {
-                                                                              "atom": "ps"
+                                                                              "kind": "symbol",
+                                                                              "text": "ps"
                                                                             },
                                                                             {
-                                                                              "atom": "cost"
+                                                                              "kind": "string",
+                                                                              "text": "\"cost\""
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "list": [
+                                                                          "kind": "list",
+                                                                          "children": [
                                                                             {
-                                                                              "atom": "hash-table-ref"
+                                                                              "kind": "symbol",
+                                                                              "text": "hash-table-ref"
                                                                             },
                                                                             {
-                                                                              "atom": "ps"
+                                                                              "kind": "symbol",
+                                                                              "text": "ps"
                                                                             },
                                                                             {
-                                                                              "atom": "qty"
+                                                                              "kind": "string",
+                                                                              "text": "\"qty\""
                                                                             }
                                                                           ]
                                                                         }
@@ -1060,12 +1377,15 @@
                                               ]
                                             },
                                             {
-                                              "list": [
+                                              "kind": "list",
+                                              "children": [
                                                 {
-                                                  "atom": "quote"
+                                                  "kind": "symbol",
+                                                  "text": "quote"
                                                 },
                                                 {
-                                                  "atom": "nil"
+                                                  "kind": "symbol",
+                                                  "text": "nil"
                                                 }
                                               ]
                                             }
@@ -1074,26 +1394,30 @@
                                       ]
                                     },
                                     {
-                                      "atom": "nations"
+                                      "kind": "symbol",
+                                      "text": "nations"
                                     }
                                   ]
                                 }
                               ]
                             },
                             {
-                              "atom": "suppliers"
+                              "kind": "symbol",
+                              "text": "suppliers"
                             }
                           ]
                         }
                       ]
                     },
                     {
-                      "atom": "partsupp"
+                      "kind": "symbol",
+                      "text": "partsupp"
                     }
                   ]
                 },
                 {
-                  "atom": "res1"
+                  "kind": "symbol",
+                  "text": "res1"
                 }
               ]
             }
@@ -1102,43 +1426,57 @@
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "define"
+          "kind": "symbol",
+          "text": "define"
         },
         {
-          "atom": "grouped"
+          "kind": "symbol",
+          "text": "grouped"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "let"
+              "kind": "symbol",
+              "text": "let"
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "groups3"
+                      "kind": "symbol",
+                      "text": "groups3"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "make-hash-table"
+                          "kind": "symbol",
+                          "text": "make-hash-table"
                         }
                       ]
                     }
                   ]
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "res6"
+                      "kind": "symbol",
+                      "text": "res6"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "list"
+                          "kind": "symbol",
+                          "text": "list"
                         }
                       ]
                     }
@@ -1147,72 +1485,92 @@
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "begin"
+                  "kind": "symbol",
+                  "text": "begin"
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "for-each"
+                      "kind": "symbol",
+                      "text": "for-each"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "lambda"
+                          "kind": "symbol",
+                          "text": "lambda"
                         },
                         {
-                          "list": [
+                          "kind": "list",
+                          "children": [
                             {
-                              "atom": "x"
+                              "kind": "symbol",
+                              "text": "x"
                             }
                           ]
                         },
                         {
-                          "list": [
+                          "kind": "list",
+                          "children": [
                             {
-                              "atom": "let*"
+                              "kind": "symbol",
+                              "text": "let*"
                             },
                             {
-                              "list": [
+                              "kind": "list",
+                              "children": [
                                 {
-                                  "list": [
+                                  "kind": "list",
+                                  "children": [
                                     {
-                                      "atom": "k5"
+                                      "kind": "symbol",
+                                      "text": "k5"
                                     },
                                     {
-                                      "list": [
+                                      "kind": "list",
+                                      "children": [
                                         {
-                                          "atom": "hash-table-ref"
+                                          "kind": "symbol",
+                                          "text": "hash-table-ref"
                                         },
                                         {
-                                          "atom": "x"
+                                          "kind": "symbol",
+                                          "text": "x"
                                         },
                                         {
-                                          "atom": "part"
+                                          "kind": "string",
+                                          "text": "\"part\""
                                         }
                                       ]
                                     }
                                   ]
                                 },
                                 {
-                                  "list": [
+                                  "kind": "list",
+                                  "children": [
                                     {
-                                      "atom": "g4"
+                                      "kind": "symbol",
+                                      "text": "g4"
                                     },
                                     {
-                                      "list": [
+                                      "kind": "list",
+                                      "children": [
                                         {
-                                          "atom": "hash-table-ref/default"
+                                          "kind": "symbol",
+                                          "text": "hash-table-ref/default"
                                         },
                                         {
-                                          "atom": "groups3"
+                                          "kind": "symbol",
+                                          "text": "groups3"
                                         },
                                         {
-                                          "atom": "k5"
-                                        },
-                                        {
-                                          "atom": "#f"
+                                          "kind": "symbol",
+                                          "text": "k5"
                                         }
                                       ]
                                     }
@@ -1221,73 +1579,98 @@
                               ]
                             },
                             {
-                              "list": [
+                              "kind": "list",
+                              "children": [
                                 {
-                                  "atom": "begin"
+                                  "kind": "symbol",
+                                  "text": "begin"
                                 },
                                 {
-                                  "list": [
+                                  "kind": "list",
+                                  "children": [
                                     {
-                                      "atom": "if"
+                                      "kind": "symbol",
+                                      "text": "if"
                                     },
                                     {
-                                      "list": [
+                                      "kind": "list",
+                                      "children": [
                                         {
-                                          "atom": "not"
+                                          "kind": "symbol",
+                                          "text": "not"
                                         },
                                         {
-                                          "atom": "g4"
+                                          "kind": "symbol",
+                                          "text": "g4"
                                         }
                                       ]
                                     },
                                     {
-                                      "list": [
+                                      "kind": "list",
+                                      "children": [
                                         {
-                                          "atom": "begin"
+                                          "kind": "symbol",
+                                          "text": "begin"
                                         },
                                         {
-                                          "list": [
+                                          "kind": "list",
+                                          "children": [
                                             {
-                                              "atom": "set!"
+                                              "kind": "symbol",
+                                              "text": "set!"
                                             },
                                             {
-                                              "atom": "g4"
+                                              "kind": "symbol",
+                                              "text": "g4"
                                             },
                                             {
-                                              "list": [
+                                              "kind": "list",
+                                              "children": [
                                                 {
-                                                  "atom": "alist-\u003ehash-table"
+                                                  "kind": "symbol",
+                                                  "text": "alist-\u003ehash-table"
                                                 },
                                                 {
-                                                  "list": [
+                                                  "kind": "list",
+                                                  "children": [
                                                     {
-                                                      "atom": "list"
+                                                      "kind": "symbol",
+                                                      "text": "list"
                                                     },
                                                     {
-                                                      "list": [
+                                                      "kind": "list",
+                                                      "children": [
                                                         {
-                                                          "atom": "cons"
+                                                          "kind": "symbol",
+                                                          "text": "cons"
                                                         },
                                                         {
-                                                          "atom": "key"
+                                                          "kind": "string",
+                                                          "text": "\"key\""
                                                         },
                                                         {
-                                                          "atom": "k5"
+                                                          "kind": "symbol",
+                                                          "text": "k5"
                                                         }
                                                       ]
                                                     },
                                                     {
-                                                      "list": [
+                                                      "kind": "list",
+                                                      "children": [
                                                         {
-                                                          "atom": "cons"
+                                                          "kind": "symbol",
+                                                          "text": "cons"
                                                         },
                                                         {
-                                                          "atom": "items"
+                                                          "kind": "string",
+                                                          "text": "\"items\""
                                                         },
                                                         {
-                                                          "list": [
+                                                          "kind": "list",
+                                                          "children": [
                                                             {
-                                                              "atom": "list"
+                                                              "kind": "symbol",
+                                                              "text": "list"
                                                             }
                                                           ]
                                                         }
@@ -1300,71 +1683,92 @@
                                           ]
                                         },
                                         {
-                                          "list": [
+                                          "kind": "list",
+                                          "children": [
                                             {
-                                              "atom": "hash-table-set!"
+                                              "kind": "symbol",
+                                              "text": "hash-table-set!"
                                             },
                                             {
-                                              "atom": "groups3"
+                                              "kind": "symbol",
+                                              "text": "groups3"
                                             },
                                             {
-                                              "atom": "k5"
+                                              "kind": "symbol",
+                                              "text": "k5"
                                             },
                                             {
-                                              "atom": "g4"
+                                              "kind": "symbol",
+                                              "text": "g4"
                                             }
                                           ]
                                         }
                                       ]
                                     },
                                     {
-                                      "list": [
+                                      "kind": "list",
+                                      "children": [
                                         {
-                                          "atom": "quote"
+                                          "kind": "symbol",
+                                          "text": "quote"
                                         },
                                         {
-                                          "atom": "nil"
+                                          "kind": "symbol",
+                                          "text": "nil"
                                         }
                                       ]
                                     }
                                   ]
                                 },
                                 {
-                                  "list": [
+                                  "kind": "list",
+                                  "children": [
                                     {
-                                      "atom": "hash-table-set!"
+                                      "kind": "symbol",
+                                      "text": "hash-table-set!"
                                     },
                                     {
-                                      "atom": "g4"
+                                      "kind": "symbol",
+                                      "text": "g4"
                                     },
                                     {
-                                      "atom": "items"
+                                      "kind": "string",
+                                      "text": "\"items\""
                                     },
                                     {
-                                      "list": [
+                                      "kind": "list",
+                                      "children": [
                                         {
-                                          "atom": "append"
+                                          "kind": "symbol",
+                                          "text": "append"
                                         },
                                         {
-                                          "list": [
+                                          "kind": "list",
+                                          "children": [
                                             {
-                                              "atom": "hash-table-ref"
+                                              "kind": "symbol",
+                                              "text": "hash-table-ref"
                                             },
                                             {
-                                              "atom": "g4"
+                                              "kind": "symbol",
+                                              "text": "g4"
                                             },
                                             {
-                                              "atom": "items"
+                                              "kind": "string",
+                                              "text": "\"items\""
                                             }
                                           ]
                                         },
                                         {
-                                          "list": [
+                                          "kind": "list",
+                                          "children": [
                                             {
-                                              "atom": "list"
+                                              "kind": "symbol",
+                                              "text": "list"
                                             },
                                             {
-                                              "atom": "x"
+                                              "kind": "symbol",
+                                              "text": "x"
                                             }
                                           ]
                                         }
@@ -1379,113 +1783,152 @@
                       ]
                     },
                     {
-                      "atom": "filtered"
+                      "kind": "symbol",
+                      "text": "filtered"
                     }
                   ]
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "for-each"
+                      "kind": "symbol",
+                      "text": "for-each"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "lambda"
+                          "kind": "symbol",
+                          "text": "lambda"
                         },
                         {
-                          "list": [
+                          "kind": "list",
+                          "children": [
                             {
-                              "atom": "g"
+                              "kind": "symbol",
+                              "text": "g"
                             }
                           ]
                         },
                         {
-                          "list": [
+                          "kind": "list",
+                          "children": [
                             {
-                              "atom": "set!"
+                              "kind": "symbol",
+                              "text": "set!"
                             },
                             {
-                              "atom": "res6"
+                              "kind": "symbol",
+                              "text": "res6"
                             },
                             {
-                              "list": [
+                              "kind": "list",
+                              "children": [
                                 {
-                                  "atom": "append"
+                                  "kind": "symbol",
+                                  "text": "append"
                                 },
                                 {
-                                  "atom": "res6"
+                                  "kind": "symbol",
+                                  "text": "res6"
                                 },
                                 {
-                                  "list": [
+                                  "kind": "list",
+                                  "children": [
                                     {
-                                      "atom": "list"
+                                      "kind": "symbol",
+                                      "text": "list"
                                     },
                                     {
-                                      "list": [
+                                      "kind": "list",
+                                      "children": [
                                         {
-                                          "atom": "alist-\u003ehash-table"
+                                          "kind": "symbol",
+                                          "text": "alist-\u003ehash-table"
                                         },
                                         {
-                                          "list": [
+                                          "kind": "list",
+                                          "children": [
                                             {
-                                              "atom": "list"
+                                              "kind": "symbol",
+                                              "text": "list"
                                             },
                                             {
-                                              "list": [
+                                              "kind": "list",
+                                              "children": [
                                                 {
-                                                  "atom": "cons"
+                                                  "kind": "symbol",
+                                                  "text": "cons"
                                                 },
                                                 {
-                                                  "atom": "part"
+                                                  "kind": "string",
+                                                  "text": "\"part\""
                                                 },
                                                 {
-                                                  "list": [
+                                                  "kind": "list",
+                                                  "children": [
                                                     {
-                                                      "atom": "hash-table-ref"
+                                                      "kind": "symbol",
+                                                      "text": "hash-table-ref"
                                                     },
                                                     {
-                                                      "atom": "g"
+                                                      "kind": "symbol",
+                                                      "text": "g"
                                                     },
                                                     {
-                                                      "atom": "key"
+                                                      "kind": "string",
+                                                      "text": "\"key\""
                                                     }
                                                   ]
                                                 }
                                               ]
                                             },
                                             {
-                                              "list": [
+                                              "kind": "list",
+                                              "children": [
                                                 {
-                                                  "atom": "cons"
+                                                  "kind": "symbol",
+                                                  "text": "cons"
                                                 },
                                                 {
-                                                  "atom": "total"
+                                                  "kind": "string",
+                                                  "text": "\"total\""
                                                 },
                                                 {
-                                                  "list": [
+                                                  "kind": "list",
+                                                  "children": [
                                                     {
-                                                      "atom": "apply"
+                                                      "kind": "symbol",
+                                                      "text": "apply"
                                                     },
                                                     {
-                                                      "atom": "+"
+                                                      "kind": "symbol",
+                                                      "text": "+"
                                                     },
                                                     {
-                                                      "list": [
+                                                      "kind": "list",
+                                                      "children": [
                                                         {
-                                                          "atom": "let"
+                                                          "kind": "symbol",
+                                                          "text": "let"
                                                         },
                                                         {
-                                                          "list": [
+                                                          "kind": "list",
+                                                          "children": [
                                                             {
-                                                              "list": [
+                                                              "kind": "list",
+                                                              "children": [
                                                                 {
-                                                                  "atom": "res2"
+                                                                  "kind": "symbol",
+                                                                  "text": "res2"
                                                                 },
                                                                 {
-                                                                  "list": [
+                                                                  "kind": "list",
+                                                                  "children": [
                                                                     {
-                                                                      "atom": "list"
+                                                                      "kind": "symbol",
+                                                                      "text": "list"
                                                                     }
                                                                   ]
                                                                 }
@@ -1494,58 +1937,78 @@
                                                           ]
                                                         },
                                                         {
-                                                          "list": [
+                                                          "kind": "list",
+                                                          "children": [
                                                             {
-                                                              "atom": "begin"
+                                                              "kind": "symbol",
+                                                              "text": "begin"
                                                             },
                                                             {
-                                                              "list": [
+                                                              "kind": "list",
+                                                              "children": [
                                                                 {
-                                                                  "atom": "for-each"
+                                                                  "kind": "symbol",
+                                                                  "text": "for-each"
                                                                 },
                                                                 {
-                                                                  "list": [
+                                                                  "kind": "list",
+                                                                  "children": [
                                                                     {
-                                                                      "atom": "lambda"
+                                                                      "kind": "symbol",
+                                                                      "text": "lambda"
                                                                     },
                                                                     {
-                                                                      "list": [
+                                                                      "kind": "list",
+                                                                      "children": [
                                                                         {
-                                                                          "atom": "r"
+                                                                          "kind": "symbol",
+                                                                          "text": "r"
                                                                         }
                                                                       ]
                                                                     },
                                                                     {
-                                                                      "list": [
+                                                                      "kind": "list",
+                                                                      "children": [
                                                                         {
-                                                                          "atom": "set!"
+                                                                          "kind": "symbol",
+                                                                          "text": "set!"
                                                                         },
                                                                         {
-                                                                          "atom": "res2"
+                                                                          "kind": "symbol",
+                                                                          "text": "res2"
                                                                         },
                                                                         {
-                                                                          "list": [
+                                                                          "kind": "list",
+                                                                          "children": [
                                                                             {
-                                                                              "atom": "append"
+                                                                              "kind": "symbol",
+                                                                              "text": "append"
                                                                             },
                                                                             {
-                                                                              "atom": "res2"
+                                                                              "kind": "symbol",
+                                                                              "text": "res2"
                                                                             },
                                                                             {
-                                                                              "list": [
+                                                                              "kind": "list",
+                                                                              "children": [
                                                                                 {
-                                                                                  "atom": "list"
+                                                                                  "kind": "symbol",
+                                                                                  "text": "list"
                                                                                 },
                                                                                 {
-                                                                                  "list": [
+                                                                                  "kind": "list",
+                                                                                  "children": [
                                                                                     {
-                                                                                      "atom": "hash-table-ref"
+                                                                                      "kind": "symbol",
+                                                                                      "text": "hash-table-ref"
                                                                                     },
                                                                                     {
-                                                                                      "atom": "r"
+                                                                                      "kind": "symbol",
+                                                                                      "text": "r"
                                                                                     },
                                                                                     {
-                                                                                      "atom": "value"
+                                                                                      "kind": "string",
+                                                                                      "text": "\"value\""
                                                                                     }
                                                                                   ]
                                                                                 }
@@ -1558,22 +2021,27 @@
                                                                   ]
                                                                 },
                                                                 {
-                                                                  "list": [
+                                                                  "kind": "list",
+                                                                  "children": [
                                                                     {
-                                                                      "atom": "hash-table-ref"
+                                                                      "kind": "symbol",
+                                                                      "text": "hash-table-ref"
                                                                     },
                                                                     {
-                                                                      "atom": "g"
+                                                                      "kind": "symbol",
+                                                                      "text": "g"
                                                                     },
                                                                     {
-                                                                      "atom": "items"
+                                                                      "kind": "string",
+                                                                      "text": "\"items\""
                                                                     }
                                                                   ]
                                                                 }
                                                               ]
                                                             },
                                                             {
-                                                              "atom": "res2"
+                                                              "kind": "symbol",
+                                                              "text": "res2"
                                                             }
                                                           ]
                                                         }
@@ -1596,19 +2064,23 @@
                       ]
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "hash-table-values"
+                          "kind": "symbol",
+                          "text": "hash-table-values"
                         },
                         {
-                          "atom": "groups3"
+                          "kind": "symbol",
+                          "text": "groups3"
                         }
                       ]
                     }
                   ]
                 },
                 {
-                  "atom": "res6"
+                  "kind": "symbol",
+                  "text": "res6"
                 }
               ]
             }
@@ -1617,26 +2089,33 @@
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "display"
+          "kind": "symbol",
+          "text": "display"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "to-str"
+              "kind": "symbol",
+              "text": "to-str"
             },
             {
-              "atom": "grouped"
+              "kind": "symbol",
+              "text": "grouped"
             }
           ]
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "newline"
+          "kind": "symbol",
+          "text": "newline"
         }
       ]
     }

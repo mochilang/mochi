@@ -1,88 +1,119 @@
 {
   "forms": [
     {
-      "list": [
+      "kind": "comment",
+      "text": ";; Generated on 2025-07-21 17:26 +0700"
+    },
+    {
+      "kind": "list",
+      "children": [
         {
-          "atom": "import"
+          "kind": "symbol",
+          "text": "import"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "srfi"
+              "kind": "symbol",
+              "text": "srfi"
             },
             {
-              "atom": "1"
+              "kind": "number",
+              "text": "1"
             }
           ]
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "srfi"
+              "kind": "symbol",
+              "text": "srfi"
             },
             {
-              "atom": "69"
+              "kind": "number",
+              "text": "69"
             }
           ]
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "chibi"
+              "kind": "symbol",
+              "text": "chibi"
             },
             {
-              "atom": "string"
+              "kind": "symbol",
+              "text": "string"
             }
           ]
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "display"
+          "kind": "symbol",
+          "text": "display"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "take"
+              "kind": "symbol",
+              "text": "take"
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "drop"
+                  "kind": "symbol",
+                  "text": "drop"
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "list"
+                      "kind": "symbol",
+                      "text": "list"
                     },
                     {
-                      "atom": "1"
+                      "kind": "number",
+                      "text": "1"
                     },
                     {
-                      "atom": "2"
+                      "kind": "number",
+                      "text": "2"
                     },
                     {
-                      "atom": "3"
+                      "kind": "number",
+                      "text": "3"
                     }
                   ]
                 },
                 {
-                  "atom": "1"
+                  "kind": "number",
+                  "text": "1"
                 }
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "-"
+                  "kind": "symbol",
+                  "text": "-"
                 },
                 {
-                  "atom": "3"
+                  "kind": "number",
+                  "text": "3"
                 },
                 {
-                  "atom": "1"
+                  "kind": "number",
+                  "text": "1"
                 }
               ]
             }
@@ -91,58 +122,76 @@
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "newline"
+          "kind": "symbol",
+          "text": "newline"
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "display"
+          "kind": "symbol",
+          "text": "display"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "take"
+              "kind": "symbol",
+              "text": "take"
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "drop"
+                  "kind": "symbol",
+                  "text": "drop"
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "list"
+                      "kind": "symbol",
+                      "text": "list"
                     },
                     {
-                      "atom": "1"
+                      "kind": "number",
+                      "text": "1"
                     },
                     {
-                      "atom": "2"
+                      "kind": "number",
+                      "text": "2"
                     },
                     {
-                      "atom": "3"
+                      "kind": "number",
+                      "text": "3"
                     }
                   ]
                 },
                 {
-                  "atom": "0"
+                  "kind": "number",
+                  "text": "0"
                 }
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "-"
+                  "kind": "symbol",
+                  "text": "-"
                 },
                 {
-                  "atom": "2"
+                  "kind": "number",
+                  "text": "2"
                 },
                 {
-                  "atom": "0"
+                  "kind": "number",
+                  "text": "0"
                 }
               ]
             }
@@ -151,39 +200,50 @@
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "newline"
+          "kind": "symbol",
+          "text": "newline"
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "display"
+          "kind": "symbol",
+          "text": "display"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "substring"
+              "kind": "symbol",
+              "text": "substring"
             },
             {
-              "atom": "hello"
+              "kind": "string",
+              "text": "\"hello\""
             },
             {
-              "atom": "1"
+              "kind": "number",
+              "text": "1"
             },
             {
-              "atom": "4"
+              "kind": "number",
+              "text": "4"
             }
           ]
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "newline"
+          "kind": "symbol",
+          "text": "newline"
         }
       ]
     }

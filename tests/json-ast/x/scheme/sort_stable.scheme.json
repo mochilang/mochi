@@ -1,88 +1,120 @@
 {
   "forms": [
     {
-      "list": [
+      "kind": "comment",
+      "text": ";; Generated on 2025-07-21 17:26 +0700"
+    },
+    {
+      "kind": "list",
+      "children": [
         {
-          "atom": "import"
+          "kind": "symbol",
+          "text": "import"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "srfi"
+              "kind": "symbol",
+              "text": "srfi"
             },
             {
-              "atom": "1"
+              "kind": "number",
+              "text": "1"
             }
           ]
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "srfi"
+              "kind": "symbol",
+              "text": "srfi"
             },
             {
-              "atom": "69"
+              "kind": "number",
+              "text": "69"
             }
           ]
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "chibi"
+              "kind": "symbol",
+              "text": "chibi"
             },
             {
-              "atom": "string"
+              "kind": "symbol",
+              "text": "string"
             }
           ]
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "define"
+          "kind": "symbol",
+          "text": "define"
         },
         {
-          "atom": "items"
+          "kind": "symbol",
+          "text": "items"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "list"
+              "kind": "symbol",
+              "text": "list"
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "alist-\u003ehash-table"
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "list"
+                      "kind": "symbol",
+                      "text": "list"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "n"
+                          "kind": "string",
+                          "text": "\"n\""
                         },
                         {
-                          "atom": "1"
+                          "kind": "number",
+                          "text": "1"
                         }
                       ]
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "v"
+                          "kind": "string",
+                          "text": "\"v\""
                         },
                         {
-                          "atom": "a"
+                          "kind": "string",
+                          "text": "\"a\""
                         }
                       ]
                     }
@@ -91,38 +123,50 @@
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "alist-\u003ehash-table"
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "list"
+                      "kind": "symbol",
+                      "text": "list"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "n"
+                          "kind": "string",
+                          "text": "\"n\""
                         },
                         {
-                          "atom": "1"
+                          "kind": "number",
+                          "text": "1"
                         }
                       ]
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "v"
+                          "kind": "string",
+                          "text": "\"v\""
                         },
                         {
-                          "atom": "b"
+                          "kind": "string",
+                          "text": "\"b\""
                         }
                       ]
                     }
@@ -131,38 +175,50 @@
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "alist-\u003ehash-table"
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "list"
+                      "kind": "symbol",
+                      "text": "list"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "n"
+                          "kind": "string",
+                          "text": "\"n\""
                         },
                         {
-                          "atom": "2"
+                          "kind": "number",
+                          "text": "2"
                         }
                       ]
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "v"
+                          "kind": "string",
+                          "text": "\"v\""
                         },
                         {
-                          "atom": "c"
+                          "kind": "string",
+                          "text": "\"c\""
                         }
                       ]
                     }
@@ -175,29 +231,39 @@
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "define"
+          "kind": "symbol",
+          "text": "define"
         },
         {
-          "atom": "result"
+          "kind": "symbol",
+          "text": "result"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "let"
+              "kind": "symbol",
+              "text": "let"
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "res45"
+                      "kind": "symbol",
+                      "text": "res45"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "list"
+                          "kind": "symbol",
+                          "text": "list"
                         }
                       ]
                     }
@@ -206,58 +272,78 @@
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "begin"
+                  "kind": "symbol",
+                  "text": "begin"
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "for-each"
+                      "kind": "symbol",
+                      "text": "for-each"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "lambda"
+                          "kind": "symbol",
+                          "text": "lambda"
                         },
                         {
-                          "list": [
+                          "kind": "list",
+                          "children": [
                             {
-                              "atom": "i"
+                              "kind": "symbol",
+                              "text": "i"
                             }
                           ]
                         },
                         {
-                          "list": [
+                          "kind": "list",
+                          "children": [
                             {
-                              "atom": "set!"
+                              "kind": "symbol",
+                              "text": "set!"
                             },
                             {
-                              "atom": "res45"
+                              "kind": "symbol",
+                              "text": "res45"
                             },
                             {
-                              "list": [
+                              "kind": "list",
+                              "children": [
                                 {
-                                  "atom": "append"
+                                  "kind": "symbol",
+                                  "text": "append"
                                 },
                                 {
-                                  "atom": "res45"
+                                  "kind": "symbol",
+                                  "text": "res45"
                                 },
                                 {
-                                  "list": [
+                                  "kind": "list",
+                                  "children": [
                                     {
-                                      "atom": "list"
+                                      "kind": "symbol",
+                                      "text": "list"
                                     },
                                     {
-                                      "list": [
+                                      "kind": "list",
+                                      "children": [
                                         {
-                                          "atom": "hash-table-ref"
+                                          "kind": "symbol",
+                                          "text": "hash-table-ref"
                                         },
                                         {
-                                          "atom": "i"
+                                          "kind": "symbol",
+                                          "text": "i"
                                         },
                                         {
-                                          "atom": "v"
+                                          "kind": "string",
+                                          "text": "\"v\""
                                         }
                                       ]
                                     }
@@ -270,12 +356,14 @@
                       ]
                     },
                     {
-                      "atom": "items"
+                      "kind": "symbol",
+                      "text": "items"
                     }
                   ]
                 },
                 {
-                  "atom": "res45"
+                  "kind": "symbol",
+                  "text": "res45"
                 }
               ]
             }
@@ -284,19 +372,24 @@
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "display"
+          "kind": "symbol",
+          "text": "display"
         },
         {
-          "atom": "result"
+          "kind": "symbol",
+          "text": "result"
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "newline"
+          "kind": "symbol",
+          "text": "newline"
         }
       ]
     }

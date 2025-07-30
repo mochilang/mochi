@@ -1,88 +1,120 @@
 {
   "forms": [
     {
-      "list": [
+      "kind": "comment",
+      "text": ";; Generated on 2025-07-21 17:26 +0700"
+    },
+    {
+      "kind": "list",
+      "children": [
         {
-          "atom": "import"
+          "kind": "symbol",
+          "text": "import"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "srfi"
+              "kind": "symbol",
+              "text": "srfi"
             },
             {
-              "atom": "1"
+              "kind": "number",
+              "text": "1"
             }
           ]
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "srfi"
+              "kind": "symbol",
+              "text": "srfi"
             },
             {
-              "atom": "69"
+              "kind": "number",
+              "text": "69"
             }
           ]
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "chibi"
+              "kind": "symbol",
+              "text": "chibi"
             },
             {
-              "atom": "string"
+              "kind": "symbol",
+              "text": "string"
             }
           ]
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "define"
+          "kind": "symbol",
+          "text": "define"
         },
         {
-          "atom": "products"
+          "kind": "symbol",
+          "text": "products"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "list"
+              "kind": "symbol",
+              "text": "list"
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "alist-\u003ehash-table"
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "list"
+                      "kind": "symbol",
+                      "text": "list"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "name"
+                          "kind": "string",
+                          "text": "\"name\""
                         },
                         {
-                          "atom": "Laptop"
+                          "kind": "string",
+                          "text": "\"Laptop\""
                         }
                       ]
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "price"
+                          "kind": "string",
+                          "text": "\"price\""
                         },
                         {
-                          "atom": "1500"
+                          "kind": "number",
+                          "text": "1500"
                         }
                       ]
                     }
@@ -91,38 +123,50 @@
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "alist-\u003ehash-table"
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "list"
+                      "kind": "symbol",
+                      "text": "list"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "name"
+                          "kind": "string",
+                          "text": "\"name\""
                         },
                         {
-                          "atom": "Smartphone"
+                          "kind": "string",
+                          "text": "\"Smartphone\""
                         }
                       ]
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "price"
+                          "kind": "string",
+                          "text": "\"price\""
                         },
                         {
-                          "atom": "900"
+                          "kind": "number",
+                          "text": "900"
                         }
                       ]
                     }
@@ -131,38 +175,50 @@
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "alist-\u003ehash-table"
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "list"
+                      "kind": "symbol",
+                      "text": "list"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "name"
+                          "kind": "string",
+                          "text": "\"name\""
                         },
                         {
-                          "atom": "Tablet"
+                          "kind": "string",
+                          "text": "\"Tablet\""
                         }
                       ]
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "price"
+                          "kind": "string",
+                          "text": "\"price\""
                         },
                         {
-                          "atom": "600"
+                          "kind": "number",
+                          "text": "600"
                         }
                       ]
                     }
@@ -171,38 +227,50 @@
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "alist-\u003ehash-table"
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "list"
+                      "kind": "symbol",
+                      "text": "list"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "name"
+                          "kind": "string",
+                          "text": "\"name\""
                         },
                         {
-                          "atom": "Monitor"
+                          "kind": "string",
+                          "text": "\"Monitor\""
                         }
                       ]
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "price"
+                          "kind": "string",
+                          "text": "\"price\""
                         },
                         {
-                          "atom": "300"
+                          "kind": "number",
+                          "text": "300"
                         }
                       ]
                     }
@@ -211,38 +279,50 @@
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "alist-\u003ehash-table"
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "list"
+                      "kind": "symbol",
+                      "text": "list"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "name"
+                          "kind": "string",
+                          "text": "\"name\""
                         },
                         {
-                          "atom": "Keyboard"
+                          "kind": "string",
+                          "text": "\"Keyboard\""
                         }
                       ]
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "price"
+                          "kind": "string",
+                          "text": "\"price\""
                         },
                         {
-                          "atom": "100"
+                          "kind": "number",
+                          "text": "100"
                         }
                       ]
                     }
@@ -251,38 +331,50 @@
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "alist-\u003ehash-table"
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "list"
+                      "kind": "symbol",
+                      "text": "list"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "name"
+                          "kind": "string",
+                          "text": "\"name\""
                         },
                         {
-                          "atom": "Mouse"
+                          "kind": "string",
+                          "text": "\"Mouse\""
                         }
                       ]
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "price"
+                          "kind": "string",
+                          "text": "\"price\""
                         },
                         {
-                          "atom": "50"
+                          "kind": "number",
+                          "text": "50"
                         }
                       ]
                     }
@@ -291,38 +383,50 @@
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "alist-\u003ehash-table"
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "list"
+                      "kind": "symbol",
+                      "text": "list"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "name"
+                          "kind": "string",
+                          "text": "\"name\""
                         },
                         {
-                          "atom": "Headphones"
+                          "kind": "string",
+                          "text": "\"Headphones\""
                         }
                       ]
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "cons"
+                          "kind": "symbol",
+                          "text": "cons"
                         },
                         {
-                          "atom": "price"
+                          "kind": "string",
+                          "text": "\"price\""
                         },
                         {
-                          "atom": "200"
+                          "kind": "number",
+                          "text": "200"
                         }
                       ]
                     }
@@ -335,29 +439,39 @@
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "define"
+          "kind": "symbol",
+          "text": "define"
         },
         {
-          "atom": "expensive"
+          "kind": "symbol",
+          "text": "expensive"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "let"
+              "kind": "symbol",
+              "text": "let"
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "res4"
+                      "kind": "symbol",
+                      "text": "res4"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "list"
+                          "kind": "symbol",
+                          "text": "list"
                         }
                       ]
                     }
@@ -366,50 +480,67 @@
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "begin"
+                  "kind": "symbol",
+                  "text": "begin"
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "for-each"
+                      "kind": "symbol",
+                      "text": "for-each"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "lambda"
+                          "kind": "symbol",
+                          "text": "lambda"
                         },
                         {
-                          "list": [
+                          "kind": "list",
+                          "children": [
                             {
-                              "atom": "p"
+                              "kind": "symbol",
+                              "text": "p"
                             }
                           ]
                         },
                         {
-                          "list": [
+                          "kind": "list",
+                          "children": [
                             {
-                              "atom": "set!"
+                              "kind": "symbol",
+                              "text": "set!"
                             },
                             {
-                              "atom": "res4"
+                              "kind": "symbol",
+                              "text": "res4"
                             },
                             {
-                              "list": [
+                              "kind": "list",
+                              "children": [
                                 {
-                                  "atom": "append"
+                                  "kind": "symbol",
+                                  "text": "append"
                                 },
                                 {
-                                  "atom": "res4"
+                                  "kind": "symbol",
+                                  "text": "res4"
                                 },
                                 {
-                                  "list": [
+                                  "kind": "list",
+                                  "children": [
                                     {
-                                      "atom": "list"
+                                      "kind": "symbol",
+                                      "text": "list"
                                     },
                                     {
-                                      "atom": "p"
+                                      "kind": "symbol",
+                                      "text": "p"
                                     }
                                   ]
                                 }
@@ -420,12 +551,14 @@
                       ]
                     },
                     {
-                      "atom": "products"
+                      "kind": "symbol",
+                      "text": "products"
                     }
                   ]
                 },
                 {
-                  "atom": "res4"
+                  "kind": "symbol",
+                  "text": "res4"
                 }
               ]
             }
@@ -434,118 +567,154 @@
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "display"
+          "kind": "symbol",
+          "text": "display"
         },
         {
-          "atom": "--- Top products (excluding most expensive)\n   ---"
+          "kind": "string",
+          "text": "\"--- Top products (excluding most expensive)\n   ---\""
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "newline"
+          "kind": "symbol",
+          "text": "newline"
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "for-each"
+          "kind": "symbol",
+          "text": "for-each"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "lambda"
+              "kind": "symbol",
+              "text": "lambda"
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "item"
+                  "kind": "symbol",
+                  "text": "item"
                 }
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "begin"
+                  "kind": "symbol",
+                  "text": "begin"
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "display"
+                      "kind": "symbol",
+                      "text": "display"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "hash-table-ref"
+                          "kind": "symbol",
+                          "text": "hash-table-ref"
                         },
                         {
-                          "atom": "item"
+                          "kind": "symbol",
+                          "text": "item"
                         },
                         {
-                          "atom": "name"
+                          "kind": "string",
+                          "text": "\"name\""
                         }
                       ]
                     }
                   ]
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "display"
+                      "kind": "symbol",
+                      "text": "display"
                     },
                     {
-                      "atom": " "
+                      "kind": "string",
+                      "text": "\" \""
                     }
                   ]
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "display"
+                      "kind": "symbol",
+                      "text": "display"
                     },
                     {
-                      "atom": "costs $"
+                      "kind": "string",
+                      "text": "\"costs $\""
                     }
                   ]
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "display"
+                      "kind": "symbol",
+                      "text": "display"
                     },
                     {
-                      "atom": " "
+                      "kind": "string",
+                      "text": "\" \""
                     }
                   ]
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "display"
+                      "kind": "symbol",
+                      "text": "display"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "hash-table-ref"
+                          "kind": "symbol",
+                          "text": "hash-table-ref"
                         },
                         {
-                          "atom": "item"
+                          "kind": "symbol",
+                          "text": "item"
                         },
                         {
-                          "atom": "price"
+                          "kind": "string",
+                          "text": "\"price\""
                         }
                       ]
                     }
                   ]
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "newline"
+                      "kind": "symbol",
+                      "text": "newline"
                     }
                   ]
                 }
@@ -554,7 +723,8 @@
           ]
         },
         {
-          "atom": "expensive"
+          "kind": "symbol",
+          "text": "expensive"
         }
       ]
     }

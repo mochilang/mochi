@@ -1,105 +1,140 @@
 {
   "forms": [
     {
-      "list": [
+      "kind": "comment",
+      "text": ";; Generated on 2025-07-21 17:26 +0700"
+    },
+    {
+      "kind": "list",
+      "children": [
         {
-          "atom": "import"
+          "kind": "symbol",
+          "text": "import"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "srfi"
+              "kind": "symbol",
+              "text": "srfi"
             },
             {
-              "atom": "1"
+              "kind": "number",
+              "text": "1"
             }
           ]
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "srfi"
+              "kind": "symbol",
+              "text": "srfi"
             },
             {
-              "atom": "69"
+              "kind": "number",
+              "text": "69"
             }
           ]
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "chibi"
+              "kind": "symbol",
+              "text": "chibi"
             },
             {
-              "atom": "string"
+              "kind": "symbol",
+              "text": "string"
             }
           ]
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "define"
+          "kind": "symbol",
+          "text": "define"
         },
         {
-          "atom": "x"
+          "kind": "symbol",
+          "text": "x"
         },
         {
-          "atom": "12"
+          "kind": "number",
+          "text": "12"
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "define"
+          "kind": "symbol",
+          "text": "define"
         },
         {
-          "atom": "msg"
+          "kind": "symbol",
+          "text": "msg"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "if"
+              "kind": "symbol",
+              "text": "if"
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "\u003e"
+                  "kind": "symbol",
+                  "text": "\u003e"
                 },
                 {
-                  "atom": "x"
+                  "kind": "symbol",
+                  "text": "x"
                 },
                 {
-                  "atom": "10"
+                  "kind": "number",
+                  "text": "10"
                 }
               ]
             },
             {
-              "atom": "yes"
+              "kind": "string",
+              "text": "\"yes\""
             },
             {
-              "atom": "no"
+              "kind": "string",
+              "text": "\"no\""
             }
           ]
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "display"
+          "kind": "symbol",
+          "text": "display"
         },
         {
-          "atom": "msg"
+          "kind": "symbol",
+          "text": "msg"
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "newline"
+          "kind": "symbol",
+          "text": "newline"
         }
       ]
     }

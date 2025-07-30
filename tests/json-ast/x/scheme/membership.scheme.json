@@ -1,191 +1,254 @@
 {
   "forms": [
     {
-      "list": [
+      "kind": "comment",
+      "text": ";; Generated on 2025-07-21 17:26 +0700"
+    },
+    {
+      "kind": "list",
+      "children": [
         {
-          "atom": "import"
+          "kind": "symbol",
+          "text": "import"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "srfi"
+              "kind": "symbol",
+              "text": "srfi"
             },
             {
-              "atom": "1"
+              "kind": "number",
+              "text": "1"
             }
           ]
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "srfi"
+              "kind": "symbol",
+              "text": "srfi"
             },
             {
-              "atom": "69"
+              "kind": "number",
+              "text": "69"
             }
           ]
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "chibi"
+              "kind": "symbol",
+              "text": "chibi"
             },
             {
-              "atom": "string"
+              "kind": "symbol",
+              "text": "string"
             }
           ]
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "define"
+          "kind": "symbol",
+          "text": "define"
         },
         {
-          "atom": "nums"
+          "kind": "symbol",
+          "text": "nums"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "list"
+              "kind": "symbol",
+              "text": "list"
             },
             {
-              "atom": "1"
+              "kind": "number",
+              "text": "1"
             },
             {
-              "atom": "2"
+              "kind": "number",
+              "text": "2"
             },
             {
-              "atom": "3"
+              "kind": "number",
+              "text": "3"
             }
           ]
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "display"
+          "kind": "symbol",
+          "text": "display"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "if"
+              "kind": "symbol",
+              "text": "if"
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "cond"
+                  "kind": "symbol",
+                  "text": "cond"
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "string?"
+                          "kind": "symbol",
+                          "text": "string?"
                         },
                         {
-                          "atom": "nums"
+                          "kind": "symbol",
+                          "text": "nums"
                         }
                       ]
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "if"
+                          "kind": "symbol",
+                          "text": "if"
                         },
                         {
-                          "list": [
+                          "kind": "list",
+                          "children": [
                             {
-                              "atom": "string-contains"
+                              "kind": "symbol",
+                              "text": "string-contains"
                             },
                             {
-                              "atom": "nums"
+                              "kind": "symbol",
+                              "text": "nums"
                             },
                             {
-                              "atom": "2"
+                              "kind": "number",
+                              "text": "2"
                             }
                           ]
                         },
                         {
-                          "atom": "true"
+                          "kind": "string",
+                          "text": "\"true\""
                         },
                         {
-                          "atom": "false"
+                          "kind": "string",
+                          "text": "\"false\""
                         }
                       ]
                     }
                   ]
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "hash-table?"
+                          "kind": "symbol",
+                          "text": "hash-table?"
                         },
                         {
-                          "atom": "nums"
+                          "kind": "symbol",
+                          "text": "nums"
                         }
                       ]
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "if"
+                          "kind": "symbol",
+                          "text": "if"
                         },
                         {
-                          "list": [
+                          "kind": "list",
+                          "children": [
                             {
-                              "atom": "hash-table-exists?"
+                              "kind": "symbol",
+                              "text": "hash-table-exists?"
                             },
                             {
-                              "atom": "nums"
+                              "kind": "symbol",
+                              "text": "nums"
                             },
                             {
-                              "atom": "2"
+                              "kind": "number",
+                              "text": "2"
                             }
                           ]
                         },
                         {
-                          "atom": "true"
+                          "kind": "string",
+                          "text": "\"true\""
                         },
                         {
-                          "atom": "false"
+                          "kind": "string",
+                          "text": "\"false\""
                         }
                       ]
                     }
                   ]
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "else"
+                      "kind": "symbol",
+                      "text": "else"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "if"
+                          "kind": "symbol",
+                          "text": "if"
                         },
                         {
-                          "list": [
+                          "kind": "list",
+                          "children": [
                             {
-                              "atom": "member"
+                              "kind": "symbol",
+                              "text": "member"
                             },
                             {
-                              "atom": "2"
+                              "kind": "number",
+                              "text": "2"
                             },
                             {
-                              "atom": "nums"
+                              "kind": "symbol",
+                              "text": "nums"
                             }
                           ]
                         },
                         {
-                          "atom": "true"
+                          "kind": "string",
+                          "text": "\"true\""
                         },
                         {
-                          "atom": "false"
+                          "kind": "string",
+                          "text": "\"false\""
                         }
                       ]
                     }
@@ -194,145 +257,189 @@
               ]
             },
             {
-              "atom": "1"
+              "kind": "number",
+              "text": "1"
             },
             {
-              "atom": "0"
+              "kind": "number",
+              "text": "0"
             }
           ]
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "newline"
+          "kind": "symbol",
+          "text": "newline"
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "display"
+          "kind": "symbol",
+          "text": "display"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "if"
+              "kind": "symbol",
+              "text": "if"
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "cond"
+                  "kind": "symbol",
+                  "text": "cond"
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "string?"
+                          "kind": "symbol",
+                          "text": "string?"
                         },
                         {
-                          "atom": "nums"
+                          "kind": "symbol",
+                          "text": "nums"
                         }
                       ]
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "if"
+                          "kind": "symbol",
+                          "text": "if"
                         },
                         {
-                          "list": [
+                          "kind": "list",
+                          "children": [
                             {
-                              "atom": "string-contains"
+                              "kind": "symbol",
+                              "text": "string-contains"
                             },
                             {
-                              "atom": "nums"
+                              "kind": "symbol",
+                              "text": "nums"
                             },
                             {
-                              "atom": "4"
+                              "kind": "number",
+                              "text": "4"
                             }
                           ]
                         },
                         {
-                          "atom": "true"
+                          "kind": "string",
+                          "text": "\"true\""
                         },
                         {
-                          "atom": "false"
+                          "kind": "string",
+                          "text": "\"false\""
                         }
                       ]
                     }
                   ]
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "hash-table?"
+                          "kind": "symbol",
+                          "text": "hash-table?"
                         },
                         {
-                          "atom": "nums"
+                          "kind": "symbol",
+                          "text": "nums"
                         }
                       ]
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "if"
+                          "kind": "symbol",
+                          "text": "if"
                         },
                         {
-                          "list": [
+                          "kind": "list",
+                          "children": [
                             {
-                              "atom": "hash-table-exists?"
+                              "kind": "symbol",
+                              "text": "hash-table-exists?"
                             },
                             {
-                              "atom": "nums"
+                              "kind": "symbol",
+                              "text": "nums"
                             },
                             {
-                              "atom": "4"
+                              "kind": "number",
+                              "text": "4"
                             }
                           ]
                         },
                         {
-                          "atom": "true"
+                          "kind": "string",
+                          "text": "\"true\""
                         },
                         {
-                          "atom": "false"
+                          "kind": "string",
+                          "text": "\"false\""
                         }
                       ]
                     }
                   ]
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "else"
+                      "kind": "symbol",
+                      "text": "else"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "if"
+                          "kind": "symbol",
+                          "text": "if"
                         },
                         {
-                          "list": [
+                          "kind": "list",
+                          "children": [
                             {
-                              "atom": "member"
+                              "kind": "symbol",
+                              "text": "member"
                             },
                             {
-                              "atom": "4"
+                              "kind": "number",
+                              "text": "4"
                             },
                             {
-                              "atom": "nums"
+                              "kind": "symbol",
+                              "text": "nums"
                             }
                           ]
                         },
                         {
-                          "atom": "true"
+                          "kind": "string",
+                          "text": "\"true\""
                         },
                         {
-                          "atom": "false"
+                          "kind": "string",
+                          "text": "\"false\""
                         }
                       ]
                     }
@@ -341,19 +448,23 @@
               ]
             },
             {
-              "atom": "1"
+              "kind": "number",
+              "text": "1"
             },
             {
-              "atom": "0"
+              "kind": "number",
+              "text": "0"
             }
           ]
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "newline"
+          "kind": "symbol",
+          "text": "newline"
         }
       ]
     }
