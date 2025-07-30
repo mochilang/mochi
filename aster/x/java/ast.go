@@ -2,11 +2,6 @@ package java
 
 import sitter "github.com/tree-sitter/go-tree-sitter"
 
-// IncludePos toggles whether positional information should be populated on
-// nodes produced by this package. When false, the position fields remain zero
-// and are omitted from the resulting JSON due to the `omitempty` tags.
-var IncludePos bool
-
 // Node represents a minimal JSON-serialisable AST node.  Only named
 // tree-sitter nodes are kept to reduce noise.  Leaf nodes store the raw
 // source text in Text.
@@ -24,13 +19,37 @@ type Node struct {
 	Children []*Node `json:"children,omitempty"`
 }
 
-// convert creates a Node from a tree-sitter node.
-func convert(n *sitter.Node, src []byte) *Node {
+// The following aliases mirror the node kinds that appear in the JSON output.
+// Only nodes that may hold textual values are represented to keep the
+// structure compact.
+type (
+	SourceFile          Node
+	ClassDeclaration    Node
+	MethodDeclaration   Node
+	FormalParameters    Node
+	FormalParameter     Node
+	ArrayType           Node
+	TypeIdentifier      Node
+	Identifier          Node
+	ClassBody           Node
+	Block               Node
+	ExpressionStatement Node
+	MethodInvocation    Node
+	FieldAccess         Node
+	ArgumentList        Node
+	StringLiteral       Node
+	StringFragment      Node
+)
+
+// toNode converts a tree-sitter node into our Node representation. When withPos
+// is true positional information is recorded, otherwise the fields remain zero
+// and are omitted from the JSON output.
+func toNode(n *sitter.Node, src []byte, withPos bool) *Node {
 	if n == nil {
 		return nil
 	}
 	node := &Node{Kind: n.Kind()}
-	if IncludePos {
+	if withPos {
 		sp := n.StartPosition()
 		ep := n.EndPosition()
 		node.Start = int(sp.Row) + 1
@@ -52,7 +71,7 @@ func convert(n *sitter.Node, src []byte) *Node {
 		if child == nil {
 			continue
 		}
-		if c := convert(child, src); c != nil {
+		if c := toNode(child, src, withPos); c != nil {
 			node.Children = append(node.Children, c)
 		}
 	}

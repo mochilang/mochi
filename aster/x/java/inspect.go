@@ -10,16 +10,19 @@ import (
 )
 
 // Program represents a parsed Java source file.
+// Program represents a parsed Java source file. The root node is a SourceFile.
 type Program struct {
-	Root *Node `json:"root"`
+	File *SourceFile `json:"file"`
 }
 
 // Inspect parses the given Java source code using tree-sitter and returns
 // its Program structure.
-func Inspect(src string) (*Program, error) {
+// Inspect parses the given Java source code using tree-sitter. When withPos is
+// true the returned AST includes positional information.
+func Inspect(src string, withPos bool) (*Program, error) {
 	parser := sitter.NewParser()
 	parser.SetLanguage(sitter.NewLanguage(javats.Language()))
 	tree := parser.ParseCtx(context.Background(), []byte(src), nil)
-	root := convert(tree.RootNode(), []byte(src))
-	return &Program{Root: root}, nil
+	root := toNode(tree.RootNode(), []byte(src), withPos)
+	return &Program{File: (*SourceFile)(root)}, nil
 }
