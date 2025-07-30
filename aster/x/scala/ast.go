@@ -1,7 +1,7 @@
 package scala
 
 import (
-	sitter "github.com/smacker/go-tree-sitter"
+	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
 // Node represents a simplified Scala AST node converted from tree-sitter.
@@ -34,9 +34,9 @@ func convert(n *sitter.Node, src []byte, pos bool) *Node {
 	if n == nil {
 		return nil
 	}
-	start := n.StartPoint()
-	end := n.EndPoint()
-	node := &Node{Kind: n.Type()}
+	start := n.StartPosition()
+	end := n.EndPosition()
+	node := &Node{Kind: n.Kind()}
 	if pos {
 		node.Start = int(start.Row) + 1
 		node.StartCol = int(start.Column)
@@ -45,15 +45,15 @@ func convert(n *sitter.Node, src []byte, pos bool) *Node {
 	}
 
 	if n.NamedChildCount() == 0 {
-		if isValueNode(n.Type()) {
-			node.Text = n.Content(src)
+		if isValueNode(n.Kind()) {
+			node.Text = n.Utf8Text(src)
 		} else {
 			return nil
 		}
 	}
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
-		child := convert(n.NamedChild(i), src, pos)
+		child := convert(n.NamedChild(uint(i)), src, pos)
 		if child != nil {
 			node.Children = append(node.Children, child)
 		}
