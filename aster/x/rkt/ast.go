@@ -1,6 +1,6 @@
 package rkt
 
-import sitter "github.com/smacker/go-tree-sitter"
+import sitter "github.com/tree-sitter/go-tree-sitter"
 
 // Node represents a tree-sitter node in a minimal form. Only nodes that
 // contain textual data carry a Text value while the structural information is
@@ -58,10 +58,10 @@ func convertNode(n *sitter.Node, src []byte, withPos bool) *Node {
 	if n == nil {
 		return nil
 	}
-	node := &Node{Kind: n.Type()}
+	node := &Node{Kind: n.Kind()}
 	if withPos {
-		sp := n.StartPoint()
-		ep := n.EndPoint()
+		sp := n.StartPosition()
+		ep := n.EndPosition()
 		node.Start = int(sp.Row) + 1
 		node.End = int(ep.Row) + 1
 		node.StartCol = int(sp.Column)
@@ -69,14 +69,14 @@ func convertNode(n *sitter.Node, src []byte, withPos bool) *Node {
 	}
 
 	if n.NamedChildCount() == 0 {
-		if isValueNode(n.Type()) {
-			node.Text = n.Content(src)
+		if isValueNode(n.Kind()) {
+			node.Text = n.Utf8Text(src)
 		} else {
 			return nil
 		}
 	}
 
-	for i := 0; i < int(n.NamedChildCount()); i++ {
+	for i := uint(0); i < n.NamedChildCount(); i++ {
 		child := n.NamedChild(i)
 		if c := convertNode(child, src, withPos); c != nil {
 			node.Children = append(node.Children, c)
