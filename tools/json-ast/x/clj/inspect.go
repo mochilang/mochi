@@ -13,7 +13,7 @@ import (
 
 // Program represents a parsed Clojure source file.
 type Program struct {
-	Forms []*Node `json:"forms"`
+	Forms []*Form `json:"forms"`
 }
 
 // rawNode mirrors the JSON structure produced by the babashka script.
@@ -130,10 +130,10 @@ func Inspect(src string) (*Program, error) {
 	if err := json.Unmarshal(out.Bytes(), &rawForms); err != nil {
 		return nil, err
 	}
-	var forms []*Node
+	var forms []*Form
 	for _, rf := range rawForms {
 		if n := toNode(rf); n != nil {
-			forms = append(forms, n)
+			forms = append(forms, (*Form)(n))
 		}
 	}
 	return &Program{Forms: forms}, nil
