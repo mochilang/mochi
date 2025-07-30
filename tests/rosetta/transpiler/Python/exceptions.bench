@@ -1,2 +1,5 @@
-let's foo...
-runtime error: index out of range [12] with length 0
+{
+  "duration_us": 9,
+  "memory_bytes": 13160448,
+  "name": "main"
+}

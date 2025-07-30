@@ -1,4 +1,5 @@
-File "/workspace/mochi/tests/rosetta/transpiler/Python/execute-computer-zero.py", line 42
-    else:
-    ^
-IndentationError: expected an indented block after 'if' statement on line 41
+{
+  "duration_us": 57,
+  "memory_bytes": 14462976,
+  "name": "main"
+}
