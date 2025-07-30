@@ -38,7 +38,7 @@ func repoRoot(t *testing.T) string {
 func TestInspect_Golden(t *testing.T) {
 	root := repoRoot(t)
 	srcDir := filepath.Join(root, "tests", "transpiler", "x", "rkt")
-        outDir := filepath.Join(root, "tests", "aster", "x", "rkt")
+	outDir := filepath.Join(root, "tests", "aster", "x", "rkt")
 	os.MkdirAll(outDir, 0o755)
 
 	files, err := filepath.Glob(filepath.Join(srcDir, "*.rkt"))
@@ -54,7 +54,7 @@ func TestInspect_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("read src: %v", err)
 			}
-			prog, err := rkt.Inspect(string(data), true)
+			prog, err := rkt.Inspect(string(data), rkt.Options{Positions: true})
 			if err != nil {
 				t.Fatalf("inspect: %v", err)
 			}

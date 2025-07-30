@@ -12,13 +12,22 @@ type Program struct {
 	Root *ProgramNode `json:"root"`
 }
 
-// Inspect parses Racket source code using tree-sitter and returns a Program
-// describing its syntax tree.
-// Inspect parses Racket source code using tree-sitter.  If withPos is true the
-// resulting AST nodes include line and column information.
-func Inspect(src string, withPos bool) (*Program, error) {
+// Options control how Inspect produces the AST.
+type Options struct {
+	// Positions includes line/column information when true.
+	Positions bool
+}
+
+// Inspect parses Racket source code using tree-sitter.
+// By default positional information is omitted from the returned AST. Pass
+// Options{Positions: true} to include it.
+func Inspect(src string, opts ...Options) (*Program, error) {
+	var opt Options
+	if len(opts) > 0 {
+		opt = opts[0]
+	}
 	p := sitter.NewParser()
 	p.SetLanguage(sitter.NewLanguage(racket.Language()))
 	tree := p.Parse([]byte(src), nil)
-	return convertProgram(tree.RootNode(), []byte(src), withPos), nil
+	return convertProgram(tree.RootNode(), []byte(src), opt.Positions), nil
 }

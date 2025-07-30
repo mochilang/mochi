@@ -4,19 +4,10 @@ package rkt
 
 import sitter "github.com/tree-sitter/go-tree-sitter"
 
-// Node represents a tree-sitter node in a minimal form. Only nodes that
-// contain textual data carry a Text value while the structural information is
-// expressed through the Kind and the list of Children.  This keeps the JSON
-// representation compact while still exposing all information from the parse
-// tree.
-// Node represents a node in the simplified AST.  Only leaves that carry
-// meaningful text populate the Text field.  Position fields are optional and
-// omitted when zero so the JSON output can be compact when locations are not
-// required.
-// Node represents a node in the simplified AST.  Only leaves that carry
-// textual information populate the Text field.  Position fields are optional
-// and omitted from the JSON when zero so callers can choose whether to include
-// them.
+// Node represents a simplified tree-sitter node.
+// Only leaves that carry textual content populate the Text field. Position
+// fields are optional and omitted from the JSON when zero so callers can choose
+// whether to include them.
 type Node struct {
 	Kind     string  `json:"kind"`
 	Text     string  `json:"text,omitempty"`
@@ -42,10 +33,9 @@ type (
 	Symbol      Node
 )
 
-// convertProgram converts the root tree-sitter node into a Program.
 // convertProgram converts the tree-sitter root node into our Program
-// representation. When withPos is false location fields will be left zero so
-// that they disappear from the marshalled JSON thanks to the omitempty tags.
+// representation. When withPos is false location fields remain zero so they are
+// omitted from the marshalled JSON thanks to the `omitempty` tags.
 func convertProgram(root *sitter.Node, src []byte, withPos bool) *Program {
 	if root == nil {
 		return &Program{}
