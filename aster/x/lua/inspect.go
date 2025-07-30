@@ -2,10 +2,9 @@ package lua
 
 import (
 	"context"
-	"fmt"
 
-	sitter "github.com/smacker/go-tree-sitter"
-	tslua "github.com/smacker/go-tree-sitter/lua"
+	tslua "github.com/tree-sitter-grammars/tree-sitter-lua/bindings/go"
+	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
 // Program describes a parsed Lua source file.
@@ -21,11 +20,8 @@ func Inspect(src string) (*Program, error) {
 // InspectWithPositions parses Lua source and optionally includes position information.
 func InspectWithPositions(src string, withPos bool) (*Program, error) {
 	parser := sitter.NewParser()
-	parser.SetLanguage(tslua.GetLanguage())
-	tree, err := parser.ParseCtx(context.Background(), nil, []byte(src))
-	if err != nil {
-		return nil, fmt.Errorf("parse: %w", err)
-	}
+	parser.SetLanguage(sitter.NewLanguage(tslua.Language()))
+	tree := parser.ParseCtx(context.Background(), []byte(src), nil)
 	root, _ := convertNode(tree.RootNode(), []byte(src), withPos)
 	return &Program{Root: &root}, nil
 }
