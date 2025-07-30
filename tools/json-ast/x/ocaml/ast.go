@@ -28,11 +28,60 @@ type Node struct {
 }
 
 // File is the root syntactic element of an OCaml source file.
-type File struct{ Node }
+type (
+	// CompilationUnit is the root syntactic element of an OCaml source file.
+	CompilationUnit struct{ Node }
+
+	ApplicationExpression   struct{ Node }
+	Comment                 struct{ Node }
+	ConsExpression          struct{ Node }
+	ConsPattern             struct{ Node }
+	ConstructorDeclaration  struct{ Node }
+	ConstructorName         struct{ Node }
+	ConstructorPath         struct{ Node }
+	ConstructorPattern      struct{ Node }
+	DoClause                struct{ Node }
+	ElseClause              struct{ Node }
+	ExceptionDefinition     struct{ Node }
+	ForExpression           struct{ Node }
+	FunExpression           struct{ Node }
+	IfExpression            struct{ Node }
+	InfixExpression         struct{ Node }
+	LetBinding              struct{ Node }
+	LetExpression           struct{ Node }
+	LetOpenExpression       struct{ Node }
+	ListExpression          struct{ Node }
+	MatchCase               struct{ Node }
+	MatchExpression         struct{ Node }
+	ModuleName              struct{ Node }
+	ModulePath              struct{ Node }
+	Number                  struct{ Node }
+	OpenModule              struct{ Node }
+	Parameter               struct{ Node }
+	ParenthesizedExpression struct{ Node }
+	ParenthesizedPattern    struct{ Node }
+	PrefixExpression        struct{ Node }
+	ProductExpression       struct{ Node }
+	RelOperator             struct{ Node }
+	SequenceExpression      struct{ Node }
+	String                  struct{ Node }
+	StringContent           struct{ Node }
+	ThenClause              struct{ Node }
+	TryExpression           struct{ Node }
+	TuplePattern            struct{ Node }
+	TypedExpression         struct{ Node }
+	Unit                    struct{ Node }
+	ValueDefinition         struct{ Node }
+	ValueName               struct{ Node }
+	ValuePath               struct{ Node }
+	ValuePattern            struct{ Node }
+)
+
+type File = CompilationUnit
 
 // Program wraps a parsed OCaml source file.
 type Program struct {
-	File File `json:"file"`
+	File CompilationUnit `json:"file"`
 }
 
 // convert recursively converts a tree-sitter node into a Node.

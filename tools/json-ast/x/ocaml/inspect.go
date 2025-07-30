@@ -21,5 +21,5 @@ func Inspect(src string, opts ...Options) (*Program, error) {
 	if root == nil {
 		return &Program{}, nil
 	}
-	return &Program{File: File{Node: *root}}, nil
+	return &Program{File: CompilationUnit{Node: *root}}, nil
 }
