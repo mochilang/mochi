@@ -17,6 +17,27 @@ type Node struct {
 	Children []Node `json:"children,omitempty"`
 }
 
+// Typed aliases provide a slightly richer structure when embedding Nodes into
+// a Program. Only node kinds that appear in the golden tests are enumerated
+// here. Additional kinds still use Node directly.
+type (
+	SourceFile      Node
+	TopLevelDecl    Node
+	VarDecl         Node
+	FnProto         Node
+	Block           Node
+	Statement       Node
+	ErrorUnionExpr  Node
+	SuffixExpr      Node
+	FieldOrFnCall   Node
+	FnCallArguments Node
+	Identifier      Node
+	BuiltinIdent    Node
+	StringLiteral   Node
+	BuildinTypeExpr Node
+	InitList        Node
+)
+
 // SourceFile is the root of a Zig program.
 type SourceFile struct{ Node }
 
