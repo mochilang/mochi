@@ -6,13 +6,22 @@ import sitter "github.com/smacker/go-tree-sitter"
 // Only leaves carrying a textual value populate the Text field. Position
 // information is stored using 1-indexed line numbers and zero-indexed
 // columns similar to tree-sitter's Point type.
+// IncludePositions controls whether the Start/End position fields of Node are
+// populated when building the AST.  It is disabled by default so that JSON
+// output remains compact.  When false the position fields will be omitted from
+// the marshalled JSON via "omitempty" tags.
+var IncludePositions bool
+
+// Node models a portion of the C# syntax tree as returned by tree-sitter.
+// Only leaves carrying a textual value populate the Text field. Position
+// information can optionally be included when IncludePositions is true.
 type Node struct {
 	Kind     string  `json:"kind"`
 	Text     string  `json:"text,omitempty"`
-	Start    int     `json:"start"`
-	StartCol int     `json:"startCol"`
-	End      int     `json:"end"`
-	EndCol   int     `json:"endCol"`
+	Start    int     `json:"start,omitempty"`
+	StartCol int     `json:"startCol,omitempty"`
+	End      int     `json:"end,omitempty"`
+	EndCol   int     `json:"endCol,omitempty"`
 	Children []*Node `json:"children,omitempty"`
 }
 
@@ -29,14 +38,14 @@ func convert(n *sitter.Node, src []byte) *Node {
 	if n == nil {
 		return nil
 	}
-	sp := n.StartPoint()
-	ep := n.EndPoint()
-	node := &Node{
-		Kind:     n.Type(),
-		Start:    int(sp.Row) + 1,
-		StartCol: int(sp.Column),
-		End:      int(ep.Row) + 1,
-		EndCol:   int(ep.Column),
+	node := &Node{Kind: n.Type()}
+	if IncludePositions {
+		sp := n.StartPoint()
+		ep := n.EndPoint()
+		node.Start = int(sp.Row) + 1
+		node.StartCol = int(sp.Column)
+		node.End = int(ep.Row) + 1
+		node.EndCol = int(ep.Column)
 	}
 
 	if n.NamedChildCount() == 0 {
