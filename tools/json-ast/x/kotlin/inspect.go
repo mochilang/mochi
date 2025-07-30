@@ -12,13 +12,24 @@ type Program struct {
 	Root SourceFile `json:"root"`
 }
 
+// Option configures how Inspect behaves.
+type Option struct {
+	WithPositions bool
+}
+
 // Inspect parses Kotlin source code using tree-sitter and returns its AST.
-func Inspect(src string) (*Program, error) {
+// By default positional information is omitted from the returned tree. Pass an
+// Option with WithPositions set to true to include position fields.
+func Inspect(src string, opts ...Option) (*Program, error) {
+	var withPos bool
+	if len(opts) > 0 {
+		withPos = opts[0].WithPositions
+	}
 	p := sitter.NewParser()
 	p.SetLanguage(ts.GetLanguage())
 	data := []byte(src)
 	tree := p.Parse(nil, data)
-	root := convert(tree.RootNode(), data)
+	root := convert(tree.RootNode(), data, withPos)
 	return &Program{Root: SourceFile{Node: root}}, nil
 }
 
