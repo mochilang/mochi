@@ -1,7 +1,156 @@
 {
-  "vars": null,
-  "prints": [
-    "(Seq.length (Map.ofList [(\"a\", 1); (\"b\", 2)]))"
-  ],
-  "stmts": null
+  "root": {
+    "kind": "file",
+    "children": [
+      {
+        "kind": "line_comment",
+        "text": "// Generated 2025-07-22 06:19 +0700"
+      },
+      {
+        "kind": "application_expression",
+        "children": [
+          {
+            "kind": "application_expression",
+            "children": [
+              {
+                "kind": "long_identifier_or_op",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "name": "printfn"
+                  }
+                ]
+              },
+              {
+                "kind": "const",
+                "children": [
+                  {
+                    "kind": "string",
+                    "text": "\"%d\""
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "paren_expression",
+            "children": [
+              {
+                "kind": "application_expression",
+                "children": [
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "long_identifier",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "Seq"
+                          },
+                          {
+                            "kind": "identifier",
+                            "name": "length"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "paren_expression",
+                    "children": [
+                      {
+                        "kind": "application_expression",
+                        "children": [
+                          {
+                            "kind": "long_identifier_or_op",
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "Map"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "name": "ofList"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "list_expression",
+                            "children": [
+                              {
+                                "kind": "paren_expression",
+                                "children": [
+                                  {
+                                    "kind": "tuple_expression",
+                                    "children": [
+                                      {
+                                        "kind": "const",
+                                        "children": [
+                                          {
+                                            "kind": "string",
+                                            "text": "\"a\""
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "const",
+                                        "children": [
+                                          {
+                                            "kind": "int",
+                                            "text": "1"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "paren_expression",
+                                "children": [
+                                  {
+                                    "kind": "tuple_expression",
+                                    "children": [
+                                      {
+                                        "kind": "const",
+                                        "children": [
+                                          {
+                                            "kind": "string",
+                                            "text": "\"b\""
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "const",
+                                        "children": [
+                                          {
+                                            "kind": "int",
+                                            "text": "2"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

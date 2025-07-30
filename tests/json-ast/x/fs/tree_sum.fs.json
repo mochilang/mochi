@@ -1,39 +1,532 @@
 {
-  "vars": [
-    {
-      "name": "t",
-      "expr": "Node(Leaf, 1, Node(Leaf, 2, Leaf))",
-      "mutable": false,
-      "type": "Tree",
-      "line": 0,
-      "raw": ""
-    }
-  ],
-  "prints": null,
-  "stmts": [
-    {
-      "name": "sum_tree",
-      "params": [
-        {
-          "name": "t",
-          "type": ""
-        }
-      ],
-      "ret": "",
-      "body": [
-        {
-          "expr": "match t with",
-          "line": 0,
-          "raw": ""
-        }
-      ],
-      "line": 0,
-      "raw": ""
-    },
-    {
-      "expr": "(string (sum_tree t))",
-      "line": 0,
-      "raw": ""
-    }
-  ]
+  "root": {
+    "kind": "file",
+    "children": [
+      {
+        "kind": "line_comment",
+        "text": "// Generated 2025-07-21 21:44 +0700"
+      },
+      {
+        "kind": "type_definition",
+        "children": [
+          {
+            "kind": "union_type_defn",
+            "children": [
+              {
+                "kind": "type_name",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "name": "Tree"
+                  }
+                ]
+              },
+              {
+                "kind": "union_type_cases",
+                "children": [
+                  {
+                    "kind": "union_type_case",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "Leaf"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "union_type_case",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "Node"
+                      },
+                      {
+                        "kind": "union_type_fields",
+                        "children": [
+                          {
+                            "kind": "union_type_field",
+                            "children": [
+                              {
+                                "kind": "simple_type",
+                                "children": [
+                                  {
+                                    "kind": "long_identifier",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "name": "obj"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "union_type_field",
+                            "children": [
+                              {
+                                "kind": "simple_type",
+                                "children": [
+                                  {
+                                    "kind": "long_identifier",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "name": "int"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "union_type_field",
+                            "children": [
+                              {
+                                "kind": "simple_type",
+                                "children": [
+                                  {
+                                    "kind": "long_identifier",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "name": "obj"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "ERROR",
+        "children": [
+          {
+            "kind": "function_declaration_left",
+            "children": [
+              {
+                "kind": "identifier",
+                "name": "sum_tree"
+              },
+              {
+                "kind": "argument_patterns",
+                "children": [
+                  {
+                    "kind": "long_identifier",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "t"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "match_expression",
+            "children": [
+              {
+                "kind": "long_identifier_or_op",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "name": "t"
+                  }
+                ]
+              },
+              {
+                "kind": "rules",
+                "children": [
+                  {
+                    "kind": "rule",
+                    "children": [
+                      {
+                        "kind": "identifier_pattern",
+                        "children": [
+                          {
+                            "kind": "long_identifier_or_op",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "name": "Leaf"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "const",
+                        "children": [
+                          {
+                            "kind": "int",
+                            "text": "0"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "rule",
+                    "children": [
+                      {
+                        "kind": "identifier_pattern",
+                        "children": [
+                          {
+                            "kind": "long_identifier_or_op",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "name": "Node"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "identifier_pattern",
+                            "children": [
+                              {
+                                "kind": "long_identifier_or_op",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "left"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "identifier_pattern",
+                            "children": [
+                              {
+                                "kind": "long_identifier_or_op",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "value"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "identifier_pattern",
+                                "children": [
+                                  {
+                                    "kind": "long_identifier_or_op",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "name": "right"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "infix_expression",
+                        "children": [
+                          {
+                            "kind": "paren_expression",
+                            "children": [
+                              {
+                                "kind": "infix_expression",
+                                "children": [
+                                  {
+                                    "kind": "paren_expression",
+                                    "children": [
+                                      {
+                                        "kind": "application_expression",
+                                        "children": [
+                                          {
+                                            "kind": "long_identifier_or_op",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "name": "sum_tree"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "long_identifier_or_op",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "name": "left"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "long_identifier_or_op",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "name": "value"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "paren_expression",
+                            "children": [
+                              {
+                                "kind": "application_expression",
+                                "children": [
+                                  {
+                                    "kind": "long_identifier_or_op",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "name": "sum_tree"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "long_identifier_or_op",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "name": "right"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "function_or_value_defn",
+            "children": [
+              {
+                "kind": "value_declaration_left",
+                "children": [
+                  {
+                    "kind": "identifier_pattern",
+                    "children": [
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "t"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "simple_type",
+                "children": [
+                  {
+                    "kind": "long_identifier",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "Tree"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "application_expression",
+                "children": [
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "Node"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "tuple_expression",
+                    "children": [
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "Leaf"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "tuple_expression",
+                        "children": [
+                          {
+                            "kind": "const",
+                            "children": [
+                              {
+                                "kind": "int",
+                                "text": "1"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "application_expression",
+                            "children": [
+                              {
+                                "kind": "long_identifier_or_op",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "Node"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "tuple_expression",
+                                "children": [
+                                  {
+                                    "kind": "long_identifier_or_op",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "name": "Leaf"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "tuple_expression",
+                                    "children": [
+                                      {
+                                        "kind": "const",
+                                        "children": [
+                                          {
+                                            "kind": "int",
+                                            "text": "2"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "long_identifier_or_op",
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "name": "Leaf"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "application_expression",
+            "children": [
+              {
+                "kind": "long_identifier_or_op",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "name": "printfn"
+                  }
+                ]
+              },
+              {
+                "kind": "const",
+                "children": [
+                  {
+                    "kind": "string",
+                    "text": "\"%s\""
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "paren_expression",
+            "children": [
+              {
+                "kind": "application_expression",
+                "children": [
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "string"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "paren_expression",
+                    "children": [
+                      {
+                        "kind": "application_expression",
+                        "children": [
+                          {
+                            "kind": "long_identifier_or_op",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "name": "sum_tree"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "long_identifier_or_op",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "name": "t"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

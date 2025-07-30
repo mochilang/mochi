@@ -1,7 +1,86 @@
 {
-  "vars": null,
-  "prints": [
-    "(string (\"hello \" + \"world\"))"
-  ],
-  "stmts": null
+  "root": {
+    "kind": "file",
+    "children": [
+      {
+        "kind": "line_comment",
+        "text": "// Generated 2025-07-21 18:37 +0700"
+      },
+      {
+        "kind": "application_expression",
+        "children": [
+          {
+            "kind": "application_expression",
+            "children": [
+              {
+                "kind": "long_identifier_or_op",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "name": "printfn"
+                  }
+                ]
+              },
+              {
+                "kind": "const",
+                "children": [
+                  {
+                    "kind": "string",
+                    "text": "\"%s\""
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "paren_expression",
+            "children": [
+              {
+                "kind": "application_expression",
+                "children": [
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "string"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "paren_expression",
+                    "children": [
+                      {
+                        "kind": "infix_expression",
+                        "children": [
+                          {
+                            "kind": "const",
+                            "children": [
+                              {
+                                "kind": "string",
+                                "text": "\"hello \""
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "const",
+                            "children": [
+                              {
+                                "kind": "string",
+                                "text": "\"world\""
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

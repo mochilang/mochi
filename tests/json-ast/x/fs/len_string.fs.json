@@ -1,7 +1,76 @@
 {
-  "vars": null,
-  "prints": [
-    "(String.length \"mochi\")"
-  ],
-  "stmts": null
+  "root": {
+    "kind": "file",
+    "children": [
+      {
+        "kind": "line_comment",
+        "text": "// Generated 2025-07-21 18:37 +0700"
+      },
+      {
+        "kind": "application_expression",
+        "children": [
+          {
+            "kind": "application_expression",
+            "children": [
+              {
+                "kind": "long_identifier_or_op",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "name": "printfn"
+                  }
+                ]
+              },
+              {
+                "kind": "const",
+                "children": [
+                  {
+                    "kind": "string",
+                    "text": "\"%d\""
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "paren_expression",
+            "children": [
+              {
+                "kind": "application_expression",
+                "children": [
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "long_identifier",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "String"
+                          },
+                          {
+                            "kind": "identifier",
+                            "name": "length"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "const",
+                    "children": [
+                      {
+                        "kind": "string",
+                        "text": "\"mochi\""
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

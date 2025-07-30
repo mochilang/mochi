@@ -1,27 +1,735 @@
 {
-  "vars": [
-    {
-      "name": "people",
-      "expr": "[{ name = \"Alice\"; age = 17; status = \"minor\" }; { name = \"Bob\"; age = 25; status = \"unknown\" }; { name = \"Charlie\"; age = 18; status = \"unknown\" }; { name = \"Diana\"; age = 16; status = \"minor\" }]",
-      "mutable": false,
-      "type": "struct list",
-      "line": 0,
-      "raw": ""
-    }
-  ],
-  "prints": null,
-  "stmts": [
-    {
-      "name": "people",
-      "index": "",
-      "expr": "List.map (fun item -\u003e if age \u003e= 18 then { { item with status = \"adult\" } with age = age + 1 } else item) people",
-      "line": 0,
-      "raw": ""
-    },
-    {
-      "expr": "\"ok\"",
-      "line": 0,
-      "raw": ""
-    }
-  ]
+  "root": {
+    "kind": "file",
+    "children": [
+      {
+        "kind": "line_comment",
+        "text": "// Generated 2025-07-21 21:44 +0700"
+      },
+      {
+        "kind": "type_definition",
+        "children": [
+          {
+            "kind": "record_type_defn",
+            "children": [
+              {
+                "kind": "type_name",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "name": "Person"
+                  }
+                ]
+              },
+              {
+                "kind": "record_fields",
+                "children": [
+                  {
+                    "kind": "record_field",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "name"
+                      },
+                      {
+                        "kind": "simple_type",
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "name": "string"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "record_field",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "age"
+                      },
+                      {
+                        "kind": "simple_type",
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "name": "int"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "record_field",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "status"
+                      },
+                      {
+                        "kind": "simple_type",
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "name": "string"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "value_declaration",
+        "children": [
+          {
+            "kind": "function_or_value_defn",
+            "children": [
+              {
+                "kind": "value_declaration_left",
+                "children": [
+                  {
+                    "kind": "identifier_pattern",
+                    "children": [
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "people"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "postfix_type",
+                "children": [
+                  {
+                    "kind": "simple_type",
+                    "children": [
+                      {
+                        "kind": "long_identifier",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "struct"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "long_identifier",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "list"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "list_expression",
+                "children": [
+                  {
+                    "kind": "brace_expression",
+                    "children": [
+                      {
+                        "kind": "field_initializers",
+                        "children": [
+                          {
+                            "kind": "field_initializer",
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "name"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "text": "\"Alice\""
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field_initializer",
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "age"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "int",
+                                    "text": "17"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field_initializer",
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "status"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "text": "\"minor\""
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "brace_expression",
+                    "children": [
+                      {
+                        "kind": "field_initializers",
+                        "children": [
+                          {
+                            "kind": "field_initializer",
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "name"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "text": "\"Bob\""
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field_initializer",
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "age"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "int",
+                                    "text": "25"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field_initializer",
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "status"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "text": "\"unknown\""
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "brace_expression",
+                    "children": [
+                      {
+                        "kind": "field_initializers",
+                        "children": [
+                          {
+                            "kind": "field_initializer",
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "name"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "text": "\"Charlie\""
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field_initializer",
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "age"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "int",
+                                    "text": "18"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field_initializer",
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "status"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "text": "\"unknown\""
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "brace_expression",
+                    "children": [
+                      {
+                        "kind": "field_initializers",
+                        "children": [
+                          {
+                            "kind": "field_initializer",
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "name"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "text": "\"Diana\""
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field_initializer",
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "age"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "int",
+                                    "text": "16"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field_initializer",
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "status"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "text": "\"minor\""
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "mutate_expression",
+        "children": [
+          {
+            "kind": "long_identifier_or_op",
+            "children": [
+              {
+                "kind": "identifier",
+                "name": "people"
+              }
+            ]
+          },
+          {
+            "kind": "application_expression",
+            "children": [
+              {
+                "kind": "application_expression",
+                "children": [
+                  {
+                    "kind": "application_expression",
+                    "children": [
+                      {
+                        "kind": "application_expression",
+                        "children": [
+                          {
+                            "kind": "application_expression",
+                            "children": [
+                              {
+                                "kind": "long_identifier_or_op",
+                                "children": [
+                                  {
+                                    "kind": "long_identifier",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "name": "List"
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "name": "map"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "paren_expression",
+                                "children": [
+                                  {
+                                    "kind": "fun_expression",
+                                    "children": [
+                                      {
+                                        "kind": "argument_patterns",
+                                        "children": [
+                                          {
+                                            "kind": "long_identifier",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "name": "item"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "if_expression",
+                                        "children": [
+                                          {
+                                            "kind": "infix_expression",
+                                            "children": [
+                                              {
+                                                "kind": "long_identifier_or_op",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "name": "age"
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "const",
+                                                "children": [
+                                                  {
+                                                    "kind": "int",
+                                                    "text": "18"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "brace_expression",
+                                            "children": [
+                                              {
+                                                "kind": "with_field_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "brace_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "with_field_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "long_identifier_or_op",
+                                                            "children": [
+                                                              {
+                                                                "kind": "identifier",
+                                                                "name": "item"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "field_initializers",
+                                                            "children": [
+                                                              {
+                                                                "kind": "field_initializer",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "long_identifier",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "name": "status"
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "kind": "const",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "string",
+                                                                        "text": "\"adult\""
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "field_initializers",
+                                                    "children": [
+                                                      {
+                                                        "kind": "field_initializer",
+                                                        "children": [
+                                                          {
+                                                            "kind": "long_identifier",
+                                                            "children": [
+                                                              {
+                                                                "kind": "identifier",
+                                                                "name": "age"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "infix_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "long_identifier_or_op",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "name": "age"
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "const",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "int",
+                                                                    "text": "1"
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "long_identifier_or_op",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "name": "item"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "long_identifier_or_op",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "name": "people"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "printfn"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "const",
+                    "children": [
+                      {
+                        "kind": "string",
+                        "text": "\"%s\""
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "const",
+                "children": [
+                  {
+                    "kind": "string",
+                    "text": "\"ok\""
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

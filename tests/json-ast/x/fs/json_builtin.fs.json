@@ -1,14 +1,208 @@
 {
-  "vars": [
-    {
-      "name": "m",
-      "expr": "{ a = 1; b = 2 }",
-      "mutable": false,
-      "type": "Anon1",
-      "line": 0,
-      "raw": ""
-    }
-  ],
-  "prints": null,
-  "stmts": null
+  "root": {
+    "kind": "file",
+    "children": [
+      {
+        "kind": "line_comment",
+        "text": "// Generated 2025-07-21 18:37 +0700"
+      },
+      {
+        "kind": "type_definition",
+        "children": [
+          {
+            "kind": "record_type_defn",
+            "children": [
+              {
+                "kind": "type_name",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "name": "Anon1"
+                  }
+                ]
+              },
+              {
+                "kind": "record_fields",
+                "children": [
+                  {
+                    "kind": "record_field",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "a"
+                      },
+                      {
+                        "kind": "simple_type",
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "name": "int"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "record_field",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "b"
+                      },
+                      {
+                        "kind": "simple_type",
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "name": "int"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "value_declaration",
+        "children": [
+          {
+            "kind": "function_or_value_defn",
+            "children": [
+              {
+                "kind": "value_declaration_left",
+                "children": [
+                  {
+                    "kind": "identifier_pattern",
+                    "children": [
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "m"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "simple_type",
+                "children": [
+                  {
+                    "kind": "long_identifier",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "Anon1"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "brace_expression",
+                "children": [
+                  {
+                    "kind": "field_initializers",
+                    "children": [
+                      {
+                        "kind": "field_initializer",
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "name": "a"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "const",
+                            "children": [
+                              {
+                                "kind": "int",
+                                "text": "1"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "field_initializer",
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "name": "b"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "const",
+                            "children": [
+                              {
+                                "kind": "int",
+                                "text": "2"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "application_expression",
+        "children": [
+          {
+            "kind": "long_identifier_or_op",
+            "children": [
+              {
+                "kind": "identifier",
+                "name": "json"
+              }
+            ]
+          },
+          {
+            "kind": "long_identifier_or_op",
+            "children": [
+              {
+                "kind": "long_identifier",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "name": "m"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

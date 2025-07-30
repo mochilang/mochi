@@ -1,33 +1,452 @@
 {
-  "vars": [
-    {
-      "name": "prefix",
-      "expr": "\"fore\"",
-      "mutable": false,
-      "type": "string",
-      "line": 0,
-      "raw": ""
-    },
-    {
-      "name": "s1",
-      "expr": "\"forest\"",
-      "mutable": false,
-      "type": "string",
-      "line": 0,
-      "raw": ""
-    },
-    {
-      "name": "s2",
-      "expr": "\"desert\"",
-      "mutable": false,
-      "type": "string",
-      "line": 0,
-      "raw": ""
-    }
-  ],
-  "prints": [
-    "((s1.Substring(0, (String.length prefix) - 0)) = prefix)",
-    "((s2.Substring(0, (String.length prefix) - 0)) = prefix)"
-  ],
-  "stmts": null
+  "root": {
+    "kind": "file",
+    "children": [
+      {
+        "kind": "line_comment",
+        "text": "// Generated 2025-07-21 18:37 +0700"
+      },
+      {
+        "kind": "value_declaration",
+        "children": [
+          {
+            "kind": "function_or_value_defn",
+            "children": [
+              {
+                "kind": "value_declaration_left",
+                "children": [
+                  {
+                    "kind": "identifier_pattern",
+                    "children": [
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "prefix"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "simple_type",
+                "children": [
+                  {
+                    "kind": "long_identifier",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "string"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "const",
+                "children": [
+                  {
+                    "kind": "string",
+                    "text": "\"fore\""
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "value_declaration",
+        "children": [
+          {
+            "kind": "function_or_value_defn",
+            "children": [
+              {
+                "kind": "value_declaration_left",
+                "children": [
+                  {
+                    "kind": "identifier_pattern",
+                    "children": [
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "s1"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "simple_type",
+                "children": [
+                  {
+                    "kind": "long_identifier",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "string"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "const",
+                "children": [
+                  {
+                    "kind": "string",
+                    "text": "\"forest\""
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "application_expression",
+        "children": [
+          {
+            "kind": "application_expression",
+            "children": [
+              {
+                "kind": "application_expression",
+                "children": [
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "printfn"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "const",
+                    "children": [
+                      {
+                        "kind": "string",
+                        "text": "\"%b\""
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "paren_expression",
+                "children": [
+                  {
+                    "kind": "infix_expression",
+                    "children": [
+                      {
+                        "kind": "paren_expression",
+                        "children": [
+                          {
+                            "kind": "application_expression",
+                            "children": [
+                              {
+                                "kind": "long_identifier_or_op",
+                                "children": [
+                                  {
+                                    "kind": "long_identifier",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "name": "s1"
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "name": "Substring"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "tuple_expression",
+                                "children": [
+                                  {
+                                    "kind": "const",
+                                    "children": [
+                                      {
+                                        "kind": "int",
+                                        "text": "0"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "infix_expression",
+                                    "children": [
+                                      {
+                                        "kind": "paren_expression",
+                                        "children": [
+                                          {
+                                            "kind": "application_expression",
+                                            "children": [
+                                              {
+                                                "kind": "long_identifier_or_op",
+                                                "children": [
+                                                  {
+                                                    "kind": "long_identifier",
+                                                    "children": [
+                                                      {
+                                                        "kind": "identifier",
+                                                        "name": "String"
+                                                      },
+                                                      {
+                                                        "kind": "identifier",
+                                                        "name": "length"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "long_identifier_or_op",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "name": "prefix"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "const",
+                                        "children": [
+                                          {
+                                            "kind": "int",
+                                            "text": "0"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "prefix"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "declaration_expression",
+            "children": [
+              {
+                "kind": "function_or_value_defn",
+                "children": [
+                  {
+                    "kind": "value_declaration_left",
+                    "children": [
+                      {
+                        "kind": "identifier_pattern",
+                        "children": [
+                          {
+                            "kind": "long_identifier_or_op",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "name": "s2"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "simple_type",
+                    "children": [
+                      {
+                        "kind": "long_identifier",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "string"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "const",
+                    "children": [
+                      {
+                        "kind": "string",
+                        "text": "\"desert\""
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "application_expression",
+                "children": [
+                  {
+                    "kind": "application_expression",
+                    "children": [
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "printfn"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "const",
+                        "children": [
+                          {
+                            "kind": "string",
+                            "text": "\"%b\""
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "paren_expression",
+                    "children": [
+                      {
+                        "kind": "infix_expression",
+                        "children": [
+                          {
+                            "kind": "paren_expression",
+                            "children": [
+                              {
+                                "kind": "application_expression",
+                                "children": [
+                                  {
+                                    "kind": "long_identifier_or_op",
+                                    "children": [
+                                      {
+                                        "kind": "long_identifier",
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "name": "s2"
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "name": "Substring"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "tuple_expression",
+                                    "children": [
+                                      {
+                                        "kind": "const",
+                                        "children": [
+                                          {
+                                            "kind": "int",
+                                            "text": "0"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "infix_expression",
+                                        "children": [
+                                          {
+                                            "kind": "paren_expression",
+                                            "children": [
+                                              {
+                                                "kind": "application_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "long_identifier_or_op",
+                                                    "children": [
+                                                      {
+                                                        "kind": "long_identifier",
+                                                        "children": [
+                                                          {
+                                                            "kind": "identifier",
+                                                            "name": "String"
+                                                          },
+                                                          {
+                                                            "kind": "identifier",
+                                                            "name": "length"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "long_identifier_or_op",
+                                                    "children": [
+                                                      {
+                                                        "kind": "identifier",
+                                                        "name": "prefix"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "const",
+                                            "children": [
+                                              {
+                                                "kind": "int",
+                                                "text": "0"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "long_identifier_or_op",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "name": "prefix"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

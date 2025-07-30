@@ -1,9 +1,616 @@
 {
-  "vars": null,
-  "prints": [
-    "((\"[\" + (String.concat \", \" (List.map string ([1; 2; 3].[1..(3 - 1)])))) + \"]\")",
-    "((\"[\" + (String.concat \", \" (List.map string ([1; 2; 3].[0..(2 - 1)])))) + \"]\")",
-    "(string (\"hello\".Substring(1, 4 - 1)))"
-  ],
-  "stmts": null
+  "root": {
+    "kind": "file",
+    "children": [
+      {
+        "kind": "line_comment",
+        "text": "// Generated 2025-07-21 18:37 +0700"
+      },
+      {
+        "kind": "application_expression",
+        "children": [
+          {
+            "kind": "application_expression",
+            "children": [
+              {
+                "kind": "application_expression",
+                "children": [
+                  {
+                    "kind": "application_expression",
+                    "children": [
+                      {
+                        "kind": "application_expression",
+                        "children": [
+                          {
+                            "kind": "application_expression",
+                            "children": [
+                              {
+                                "kind": "application_expression",
+                                "children": [
+                                  {
+                                    "kind": "application_expression",
+                                    "children": [
+                                      {
+                                        "kind": "long_identifier_or_op",
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "name": "printfn"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "const",
+                                        "children": [
+                                          {
+                                            "kind": "string",
+                                            "text": "\"%s\""
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "paren_expression",
+                                    "children": [
+                                      {
+                                        "kind": "infix_expression",
+                                        "children": [
+                                          {
+                                            "kind": "paren_expression",
+                                            "children": [
+                                              {
+                                                "kind": "infix_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "const",
+                                                    "children": [
+                                                      {
+                                                        "kind": "string",
+                                                        "text": "\"[\""
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "paren_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "application_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "application_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "long_identifier_or_op",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "long_identifier",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "name": "String"
+                                                                      },
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "name": "concat"
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "const",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "string",
+                                                                    "text": "\", \""
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "paren_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "application_expression",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "application_expression",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "long_identifier_or_op",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "long_identifier",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "identifier",
+                                                                                "name": "List"
+                                                                              },
+                                                                              {
+                                                                                "kind": "identifier",
+                                                                                "name": "map"
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "kind": "long_identifier_or_op",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "identifier",
+                                                                            "name": "string"
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "kind": "paren_expression",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "index_expression",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "list_expression",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "const",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "int",
+                                                                                    "text": "1"
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "const",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "int",
+                                                                                    "text": "2"
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "const",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "int",
+                                                                                    "text": "3"
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "kind": "slice_ranges",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "slice_range",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "const",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "int",
+                                                                                        "text": "1"
+                                                                                      }
+                                                                                    ]
+                                                                                  },
+                                                                                  {
+                                                                                    "kind": "paren_expression",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "infix_expression",
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "const",
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "kind": "int",
+                                                                                                "text": "3"
+                                                                                              }
+                                                                                            ]
+                                                                                          },
+                                                                                          {
+                                                                                            "kind": "const",
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "kind": "int",
+                                                                                                "text": "1"
+                                                                                              }
+                                                                                            ]
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "const",
+                                            "children": [
+                                              {
+                                                "kind": "string",
+                                                "text": "\"]\""
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "long_identifier_or_op",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "printfn"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "const",
+                            "children": [
+                              {
+                                "kind": "string",
+                                "text": "\"%s\""
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "paren_expression",
+                        "children": [
+                          {
+                            "kind": "infix_expression",
+                            "children": [
+                              {
+                                "kind": "paren_expression",
+                                "children": [
+                                  {
+                                    "kind": "infix_expression",
+                                    "children": [
+                                      {
+                                        "kind": "const",
+                                        "children": [
+                                          {
+                                            "kind": "string",
+                                            "text": "\"[\""
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "paren_expression",
+                                        "children": [
+                                          {
+                                            "kind": "application_expression",
+                                            "children": [
+                                              {
+                                                "kind": "application_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "long_identifier_or_op",
+                                                    "children": [
+                                                      {
+                                                        "kind": "long_identifier",
+                                                        "children": [
+                                                          {
+                                                            "kind": "identifier",
+                                                            "name": "String"
+                                                          },
+                                                          {
+                                                            "kind": "identifier",
+                                                            "name": "concat"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "const",
+                                                    "children": [
+                                                      {
+                                                        "kind": "string",
+                                                        "text": "\", \""
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "paren_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "application_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "application_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "long_identifier_or_op",
+                                                            "children": [
+                                                              {
+                                                                "kind": "long_identifier",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "name": "List"
+                                                                  },
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "name": "map"
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "long_identifier_or_op",
+                                                            "children": [
+                                                              {
+                                                                "kind": "identifier",
+                                                                "name": "string"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "paren_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "index_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "list_expression",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "const",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "int",
+                                                                        "text": "1"
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "kind": "const",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "int",
+                                                                        "text": "2"
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "kind": "const",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "int",
+                                                                        "text": "3"
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "slice_ranges",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "slice_range",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "const",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "int",
+                                                                            "text": "0"
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "kind": "paren_expression",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "infix_expression",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "const",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "int",
+                                                                                    "text": "2"
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "const",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "int",
+                                                                                    "text": "1"
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "text": "\"]\""
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "printfn"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "const",
+                "children": [
+                  {
+                    "kind": "string",
+                    "text": "\"%s\""
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "paren_expression",
+            "children": [
+              {
+                "kind": "application_expression",
+                "children": [
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "string"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "paren_expression",
+                    "children": [
+                      {
+                        "kind": "application_expression",
+                        "children": [
+                          {
+                            "kind": "dot_expression",
+                            "children": [
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "text": "\"hello\""
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "long_identifier_or_op",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "Substring"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "tuple_expression",
+                            "children": [
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "int",
+                                    "text": "1"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "infix_expression",
+                                "children": [
+                                  {
+                                    "kind": "const",
+                                    "children": [
+                                      {
+                                        "kind": "int",
+                                        "text": "4"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "const",
+                                    "children": [
+                                      {
+                                        "kind": "int",
+                                        "text": "1"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

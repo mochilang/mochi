@@ -1,88 +1,958 @@
 {
-  "vars": [
-    {
-      "name": "x",
-      "expr": "2",
-      "mutable": false,
-      "type": "int",
-      "line": 0,
-      "raw": ""
-    },
-    {
-      "name": "label",
-      "expr": "match x with",
-      "mutable": false,
-      "type": "string",
-      "line": 0,
-      "raw": ""
-    },
-    {
-      "name": "day",
-      "expr": "\"sun\"",
-      "mutable": false,
-      "type": "string",
-      "line": 0,
-      "raw": ""
-    },
-    {
-      "name": "mood",
-      "expr": "match day with",
-      "mutable": false,
-      "type": "string",
-      "line": 0,
-      "raw": ""
-    },
-    {
-      "name": "ok",
-      "expr": "true",
-      "mutable": false,
-      "type": "bool",
-      "line": 0,
-      "raw": ""
-    },
-    {
-      "name": "status",
-      "expr": "match ok with",
-      "mutable": false,
-      "type": "string",
-      "line": 0,
-      "raw": ""
-    }
-  ],
-  "prints": [
-    "(string label)",
-    "(string mood)",
-    "(string status)"
-  ],
-  "stmts": [
-    {
-      "name": "classify",
-      "params": [
-        {
-          "name": "n",
-          "type": ""
-        }
-      ],
-      "ret": "",
-      "body": [
-        {
-          "expr": "match n with",
-          "line": 0,
-          "raw": ""
-        }
-      ],
-      "line": 0,
-      "raw": ""
-    },
-    {
-      "expr": "(string (classify 0))",
-      "line": 0,
-      "raw": ""
-    },
-    {
-      "expr": "(string (classify 5))",
-      "line": 0,
-      "raw": ""
-    }
-  ]
+  "root": {
+    "kind": "ERROR",
+    "children": [
+      {
+        "kind": "line_comment",
+        "text": "// Generated 2025-07-21 18:37 +0700"
+      },
+      {
+        "kind": "value_declaration",
+        "children": [
+          {
+            "kind": "function_or_value_defn",
+            "children": [
+              {
+                "kind": "value_declaration_left",
+                "children": [
+                  {
+                    "kind": "identifier_pattern",
+                    "children": [
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "x"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "simple_type",
+                "children": [
+                  {
+                    "kind": "long_identifier",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "int"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "const",
+                "children": [
+                  {
+                    "kind": "int",
+                    "text": "2"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "value_declaration_left",
+        "children": [
+          {
+            "kind": "identifier_pattern",
+            "children": [
+              {
+                "kind": "long_identifier_or_op",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "name": "label"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "simple_type",
+        "children": [
+          {
+            "kind": "long_identifier",
+            "children": [
+              {
+                "kind": "identifier",
+                "name": "string"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "application_expression",
+        "children": [
+          {
+            "kind": "application_expression",
+            "children": [
+              {
+                "kind": "application_expression",
+                "children": [
+                  {
+                    "kind": "match_expression",
+                    "children": [
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "x"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "rules",
+                        "children": [
+                          {
+                            "kind": "rule",
+                            "children": [
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "int",
+                                    "text": "1"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "text": "\"one\""
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "rule",
+                            "children": [
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "int",
+                                    "text": "2"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "text": "\"two\""
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "rule",
+                            "children": [
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "int",
+                                    "text": "3"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "text": "\"three\""
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "rule",
+                            "children": [
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "text": "\"unknown\""
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "printfn"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "const",
+                "children": [
+                  {
+                    "kind": "string",
+                    "text": "\"%s\""
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "paren_expression",
+            "children": [
+              {
+                "kind": "application_expression",
+                "children": [
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "string"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "label"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_or_value_defn",
+        "children": [
+          {
+            "kind": "value_declaration_left",
+            "children": [
+              {
+                "kind": "identifier_pattern",
+                "children": [
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "day"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "simple_type",
+            "children": [
+              {
+                "kind": "long_identifier",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "name": "string"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "const",
+            "children": [
+              {
+                "kind": "string",
+                "text": "\"sun\""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "value_declaration_left",
+        "children": [
+          {
+            "kind": "identifier_pattern",
+            "children": [
+              {
+                "kind": "long_identifier_or_op",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "name": "mood"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "simple_type",
+        "children": [
+          {
+            "kind": "long_identifier",
+            "children": [
+              {
+                "kind": "identifier",
+                "name": "string"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "application_expression",
+        "children": [
+          {
+            "kind": "application_expression",
+            "children": [
+              {
+                "kind": "application_expression",
+                "children": [
+                  {
+                    "kind": "match_expression",
+                    "children": [
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "day"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "rules",
+                        "children": [
+                          {
+                            "kind": "rule",
+                            "children": [
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "text": "\"mon\""
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "text": "\"tired\""
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "rule",
+                            "children": [
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "text": "\"fri\""
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "text": "\"excited\""
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "rule",
+                            "children": [
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "text": "\"sun\""
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "text": "\"relaxed\""
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "rule",
+                            "children": [
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "text": "\"normal\""
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "printfn"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "const",
+                "children": [
+                  {
+                    "kind": "string",
+                    "text": "\"%s\""
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "paren_expression",
+            "children": [
+              {
+                "kind": "application_expression",
+                "children": [
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "string"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "mood"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_or_value_defn",
+        "children": [
+          {
+            "kind": "value_declaration_left",
+            "children": [
+              {
+                "kind": "identifier_pattern",
+                "children": [
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "ok"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "simple_type",
+            "children": [
+              {
+                "kind": "long_identifier",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "name": "bool"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "value_declaration_left",
+        "children": [
+          {
+            "kind": "identifier_pattern",
+            "children": [
+              {
+                "kind": "long_identifier_or_op",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "name": "status"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "simple_type",
+        "children": [
+          {
+            "kind": "long_identifier",
+            "children": [
+              {
+                "kind": "identifier",
+                "name": "string"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "application_expression",
+        "children": [
+          {
+            "kind": "application_expression",
+            "children": [
+              {
+                "kind": "application_expression",
+                "children": [
+                  {
+                    "kind": "match_expression",
+                    "children": [
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "ok"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "rules",
+                        "children": [
+                          {
+                            "kind": "rule",
+                            "children": [
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "text": "\"confirmed\""
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "rule",
+                            "children": [
+                              {
+                                "kind": "const",
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "text": "\"denied\""
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "printfn"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "const",
+                "children": [
+                  {
+                    "kind": "string",
+                    "text": "\"%s\""
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "paren_expression",
+            "children": [
+              {
+                "kind": "application_expression",
+                "children": [
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "string"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "status"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "value_declaration_left",
+        "children": [
+          {
+            "kind": "identifier_pattern",
+            "children": [
+              {
+                "kind": "long_identifier_or_op",
+                "children": [
+                  {
+                    "kind": "long_identifier",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "classify"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "identifier_pattern",
+                "children": [
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "n"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "application_expression",
+        "children": [
+          {
+            "kind": "application_expression",
+            "children": [
+              {
+                "kind": "application_expression",
+                "children": [
+                  {
+                    "kind": "application_expression",
+                    "children": [
+                      {
+                        "kind": "application_expression",
+                        "children": [
+                          {
+                            "kind": "application_expression",
+                            "children": [
+                              {
+                                "kind": "match_expression",
+                                "children": [
+                                  {
+                                    "kind": "long_identifier_or_op",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "name": "n"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "rules",
+                                    "children": [
+                                      {
+                                        "kind": "rule",
+                                        "children": [
+                                          {
+                                            "kind": "const",
+                                            "children": [
+                                              {
+                                                "kind": "int",
+                                                "text": "0"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "const",
+                                            "children": [
+                                              {
+                                                "kind": "string",
+                                                "text": "\"zero\""
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "rule",
+                                        "children": [
+                                          {
+                                            "kind": "const",
+                                            "children": [
+                                              {
+                                                "kind": "int",
+                                                "text": "1"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "const",
+                                            "children": [
+                                              {
+                                                "kind": "string",
+                                                "text": "\"one\""
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "rule",
+                                        "children": [
+                                          {
+                                            "kind": "const",
+                                            "children": [
+                                              {
+                                                "kind": "string",
+                                                "text": "\"many\""
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "long_identifier_or_op",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "printfn"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "const",
+                            "children": [
+                              {
+                                "kind": "string",
+                                "text": "\"%s\""
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "paren_expression",
+                        "children": [
+                          {
+                            "kind": "application_expression",
+                            "children": [
+                              {
+                                "kind": "long_identifier_or_op",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "string"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "paren_expression",
+                                "children": [
+                                  {
+                                    "kind": "application_expression",
+                                    "children": [
+                                      {
+                                        "kind": "long_identifier_or_op",
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "name": "classify"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "const",
+                                        "children": [
+                                          {
+                                            "kind": "int",
+                                            "text": "0"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "printfn"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "const",
+                "children": [
+                  {
+                    "kind": "string",
+                    "text": "\"%s\""
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "paren_expression",
+            "children": [
+              {
+                "kind": "application_expression",
+                "children": [
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "string"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "paren_expression",
+                    "children": [
+                      {
+                        "kind": "application_expression",
+                        "children": [
+                          {
+                            "kind": "long_identifier_or_op",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "name": "classify"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "const",
+                            "children": [
+                              {
+                                "kind": "int",
+                                "text": "5"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

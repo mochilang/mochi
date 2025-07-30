@@ -1,163 +1,1400 @@
 {
-  "vars": [
-    {
-      "name": "pi",
-      "expr": "System.Math.PI",
-      "mutable": false,
-      "type": "float",
-      "line": 0,
-      "raw": ""
-    },
-    {
-      "name": "e",
-      "expr": "System.Math.E",
-      "mutable": false,
-      "type": "float",
-      "line": 0,
-      "raw": ""
-    },
-    {
-      "name": "r",
-      "expr": "3.0",
-      "mutable": false,
-      "type": "float",
-      "line": 0,
-      "raw": ""
-    },
-    {
-      "name": "area",
-      "expr": "(math.pi) * (math.pow(r, 2.0))",
-      "mutable": false,
-      "type": "",
-      "line": 0,
-      "raw": ""
-    },
-    {
-      "name": "root",
-      "expr": "math.sqrt(49.0)",
-      "mutable": false,
-      "type": "",
-      "line": 0,
-      "raw": ""
-    },
-    {
-      "name": "sin45",
-      "expr": "math.sin((math.pi) / 4.0)",
-      "mutable": false,
-      "type": "",
-      "line": 0,
-      "raw": ""
-    },
-    {
-      "name": "log_e",
-      "expr": "math.log(math.e)",
-      "mutable": false,
-      "type": "",
-      "line": 0,
-      "raw": ""
-    }
-  ],
-  "prints": null,
-  "stmts": [
-    {
-      "name": "sqrt",
-      "params": [
-        {
-          "name": "x",
-          "type": ""
-        }
-      ],
-      "ret": "",
-      "body": [
-        {
-          "expr": "System.Math.Sqrt x",
-          "line": 0,
-          "raw": ""
-        }
-      ],
-      "line": 0,
-      "raw": ""
-    },
-    {
-      "name": "pow",
-      "params": [
-        {
-          "name": "x",
-          "type": ""
-        },
-        {
-          "name": "y",
-          "type": ""
-        }
-      ],
-      "ret": "",
-      "body": [
-        {
-          "expr": "System.Math.Pow x y",
-          "line": 0,
-          "raw": ""
-        }
-      ],
-      "line": 0,
-      "raw": ""
-    },
-    {
-      "name": "sin",
-      "params": [
-        {
-          "name": "x",
-          "type": ""
-        }
-      ],
-      "ret": "",
-      "body": [
-        {
-          "expr": "System.Math.Sin x",
-          "line": 0,
-          "raw": ""
-        }
-      ],
-      "line": 0,
-      "raw": ""
-    },
-    {
-      "name": "log",
-      "params": [
-        {
-          "name": "x",
-          "type": ""
-        }
-      ],
-      "ret": "",
-      "body": [
-        {
-          "expr": "System.Math.Log x",
-          "line": 0,
-          "raw": ""
-        }
-      ],
-      "line": 0,
-      "raw": ""
-    },
-    {
-      "expr": "(String.concat \" \" [string \"Circle area with r =\"; sprintf \"%.1f\" r; string \"=\u003e\"; string area])",
-      "line": 0,
-      "raw": ""
-    },
-    {
-      "expr": "(String.concat \" \" [string \"Square root of 49:\"; string root])",
-      "line": 0,
-      "raw": ""
-    },
-    {
-      "expr": "(String.concat \" \" [string \"sin(π/4):\"; string sin45])",
-      "line": 0,
-      "raw": ""
-    },
-    {
-      "expr": "(String.concat \" \" [string \"log(e):\"; string log_e])",
-      "line": 0,
-      "raw": ""
-    }
-  ]
+  "root": {
+    "kind": "file",
+    "children": [
+      {
+        "kind": "line_comment",
+        "text": "// Generated 2025-07-21 22:29 +0700"
+      },
+      {
+        "kind": "import_decl",
+        "children": [
+          {
+            "kind": "long_identifier",
+            "children": [
+              {
+                "kind": "identifier",
+                "name": "System"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "module_defn",
+        "children": [
+          {
+            "kind": "ERROR",
+            "children": [
+              {
+                "kind": "identifier",
+                "name": "math"
+              },
+              {
+                "kind": "identifier",
+                "name": "let"
+              },
+              {
+                "kind": "identifier",
+                "name": "pi"
+              }
+            ]
+          },
+          {
+            "kind": "identifier",
+            "name": "float"
+          },
+          {
+            "kind": "dot_expression",
+            "children": [
+              {
+                "kind": "long_identifier_or_op",
+                "children": [
+                  {
+                    "kind": "long_identifier",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "System"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "identifier",
+                    "name": "Math"
+                  }
+                ]
+              },
+              {
+                "kind": "long_identifier_or_op",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "name": "PI"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "value_declaration",
+        "children": [
+          {
+            "kind": "function_or_value_defn",
+            "children": [
+              {
+                "kind": "value_declaration_left",
+                "children": [
+                  {
+                    "kind": "identifier_pattern",
+                    "children": [
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "e"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "simple_type",
+                "children": [
+                  {
+                    "kind": "long_identifier",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "float"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "dot_expression",
+                "children": [
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "long_identifier",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "System"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "identifier",
+                        "name": "Math"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "E"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "value_declaration",
+        "children": [
+          {
+            "kind": "function_or_value_defn",
+            "children": [
+              {
+                "kind": "function_declaration_left",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "name": "sqrt"
+                  },
+                  {
+                    "kind": "argument_patterns",
+                    "children": [
+                      {
+                        "kind": "long_identifier",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "x"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "application_expression",
+                "children": [
+                  {
+                    "kind": "dot_expression",
+                    "children": [
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "name": "System"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "identifier",
+                            "name": "Math"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "Sqrt"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "x"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "value_declaration",
+        "children": [
+          {
+            "kind": "function_or_value_defn",
+            "children": [
+              {
+                "kind": "function_declaration_left",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "name": "pow"
+                  },
+                  {
+                    "kind": "argument_patterns",
+                    "children": [
+                      {
+                        "kind": "long_identifier",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "x"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "long_identifier",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "y"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "application_expression",
+                "children": [
+                  {
+                    "kind": "application_expression",
+                    "children": [
+                      {
+                        "kind": "dot_expression",
+                        "children": [
+                          {
+                            "kind": "long_identifier_or_op",
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "System"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "identifier",
+                                "name": "Math"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "long_identifier_or_op",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "name": "Pow"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "x"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "y"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "value_declaration",
+        "children": [
+          {
+            "kind": "function_or_value_defn",
+            "children": [
+              {
+                "kind": "function_declaration_left",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "name": "sin"
+                  },
+                  {
+                    "kind": "argument_patterns",
+                    "children": [
+                      {
+                        "kind": "long_identifier",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "x"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "application_expression",
+                "children": [
+                  {
+                    "kind": "dot_expression",
+                    "children": [
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "name": "System"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "identifier",
+                            "name": "Math"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "Sin"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "x"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "value_declaration",
+        "children": [
+          {
+            "kind": "function_or_value_defn",
+            "children": [
+              {
+                "kind": "function_declaration_left",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "name": "log"
+                  },
+                  {
+                    "kind": "argument_patterns",
+                    "children": [
+                      {
+                        "kind": "long_identifier",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "x"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "application_expression",
+                "children": [
+                  {
+                    "kind": "dot_expression",
+                    "children": [
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "name": "System"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "identifier",
+                            "name": "Math"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "Log"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "x"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "value_declaration",
+        "children": [
+          {
+            "kind": "function_or_value_defn",
+            "children": [
+              {
+                "kind": "value_declaration_left",
+                "children": [
+                  {
+                    "kind": "identifier_pattern",
+                    "children": [
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "r"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "simple_type",
+                "children": [
+                  {
+                    "kind": "long_identifier",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "float"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "value_declaration",
+        "children": [
+          {
+            "kind": "function_or_value_defn",
+            "children": [
+              {
+                "kind": "value_declaration_left",
+                "children": [
+                  {
+                    "kind": "identifier_pattern",
+                    "children": [
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "area"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "infix_expression",
+                "children": [
+                  {
+                    "kind": "paren_expression",
+                    "children": [
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "name": "math"
+                              },
+                              {
+                                "kind": "identifier",
+                                "name": "pi"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "paren_expression",
+                    "children": [
+                      {
+                        "kind": "application_expression",
+                        "children": [
+                          {
+                            "kind": "long_identifier_or_op",
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "math"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "name": "pow"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "tuple_expression",
+                            "children": [
+                              {
+                                "kind": "long_identifier_or_op",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "r"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "value_declaration",
+        "children": [
+          {
+            "kind": "function_or_value_defn",
+            "children": [
+              {
+                "kind": "value_declaration_left",
+                "children": [
+                  {
+                    "kind": "identifier_pattern",
+                    "children": [
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "root"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "application_expression",
+                "children": [
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "long_identifier",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "math"
+                          },
+                          {
+                            "kind": "identifier",
+                            "name": "sqrt"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "value_declaration",
+        "children": [
+          {
+            "kind": "function_or_value_defn",
+            "children": [
+              {
+                "kind": "value_declaration_left",
+                "children": [
+                  {
+                    "kind": "identifier_pattern",
+                    "children": [
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "sin45"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "application_expression",
+                "children": [
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "long_identifier",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "math"
+                          },
+                          {
+                            "kind": "identifier",
+                            "name": "sin"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "infix_expression",
+                    "children": [
+                      {
+                        "kind": "paren_expression",
+                        "children": [
+                          {
+                            "kind": "long_identifier_or_op",
+                            "children": [
+                              {
+                                "kind": "long_identifier",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "math"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "name": "pi"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "value_declaration",
+        "children": [
+          {
+            "kind": "function_or_value_defn",
+            "children": [
+              {
+                "kind": "value_declaration_left",
+                "children": [
+                  {
+                    "kind": "identifier_pattern",
+                    "children": [
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "log_e"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "application_expression",
+                "children": [
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "long_identifier",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "math"
+                          },
+                          {
+                            "kind": "identifier",
+                            "name": "log"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "long_identifier",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "name": "math"
+                          },
+                          {
+                            "kind": "identifier",
+                            "name": "e"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "application_expression",
+        "children": [
+          {
+            "kind": "application_expression",
+            "children": [
+              {
+                "kind": "application_expression",
+                "children": [
+                  {
+                    "kind": "application_expression",
+                    "children": [
+                      {
+                        "kind": "application_expression",
+                        "children": [
+                          {
+                            "kind": "application_expression",
+                            "children": [
+                              {
+                                "kind": "application_expression",
+                                "children": [
+                                  {
+                                    "kind": "application_expression",
+                                    "children": [
+                                      {
+                                        "kind": "application_expression",
+                                        "children": [
+                                          {
+                                            "kind": "application_expression",
+                                            "children": [
+                                              {
+                                                "kind": "application_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "long_identifier_or_op",
+                                                    "children": [
+                                                      {
+                                                        "kind": "identifier",
+                                                        "name": "printfn"
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "const",
+                                                    "children": [
+                                                      {
+                                                        "kind": "string",
+                                                        "text": "\"%s\""
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "paren_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "application_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "application_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "long_identifier_or_op",
+                                                            "children": [
+                                                              {
+                                                                "kind": "long_identifier",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "name": "String"
+                                                                  },
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "name": "concat"
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "const",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string",
+                                                                "text": "\" \""
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "list_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "application_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "long_identifier_or_op",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "name": "string"
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "const",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "string",
+                                                                    "text": "\"Circle area with r =\""
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "application_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "application_expression",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "long_identifier_or_op",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "name": "sprintf"
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "kind": "const",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "string",
+                                                                        "text": "\"%.1f\""
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "long_identifier_or_op",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "name": "r"
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "application_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "long_identifier_or_op",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "name": "string"
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "const",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "string",
+                                                                    "text": "\"=\u003e\""
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "application_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "long_identifier_or_op",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "name": "string"
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "long_identifier_or_op",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "name": "area"
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "long_identifier_or_op",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "name": "printfn"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "const",
+                                        "children": [
+                                          {
+                                            "kind": "string",
+                                            "text": "\"%s\""
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "paren_expression",
+                                    "children": [
+                                      {
+                                        "kind": "application_expression",
+                                        "children": [
+                                          {
+                                            "kind": "application_expression",
+                                            "children": [
+                                              {
+                                                "kind": "long_identifier_or_op",
+                                                "children": [
+                                                  {
+                                                    "kind": "long_identifier",
+                                                    "children": [
+                                                      {
+                                                        "kind": "identifier",
+                                                        "name": "String"
+                                                      },
+                                                      {
+                                                        "kind": "identifier",
+                                                        "name": "concat"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "const",
+                                                "children": [
+                                                  {
+                                                    "kind": "string",
+                                                    "text": "\" \""
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "list_expression",
+                                            "children": [
+                                              {
+                                                "kind": "application_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "long_identifier_or_op",
+                                                    "children": [
+                                                      {
+                                                        "kind": "identifier",
+                                                        "name": "string"
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "const",
+                                                    "children": [
+                                                      {
+                                                        "kind": "string",
+                                                        "text": "\"Square root of 49:\""
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "application_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "long_identifier_or_op",
+                                                    "children": [
+                                                      {
+                                                        "kind": "identifier",
+                                                        "name": "string"
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "long_identifier_or_op",
+                                                    "children": [
+                                                      {
+                                                        "kind": "identifier",
+                                                        "name": "root"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "long_identifier_or_op",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "printfn"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "const",
+                            "children": [
+                              {
+                                "kind": "string",
+                                "text": "\"%s\""
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "paren_expression",
+                        "children": [
+                          {
+                            "kind": "application_expression",
+                            "children": [
+                              {
+                                "kind": "application_expression",
+                                "children": [
+                                  {
+                                    "kind": "long_identifier_or_op",
+                                    "children": [
+                                      {
+                                        "kind": "long_identifier",
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "name": "String"
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "name": "concat"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "const",
+                                    "children": [
+                                      {
+                                        "kind": "string",
+                                        "text": "\" \""
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "list_expression",
+                                "children": [
+                                  {
+                                    "kind": "application_expression",
+                                    "children": [
+                                      {
+                                        "kind": "long_identifier_or_op",
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "name": "string"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "const",
+                                        "children": [
+                                          {
+                                            "kind": "string",
+                                            "text": "\"sin(π/4):\""
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "application_expression",
+                                    "children": [
+                                      {
+                                        "kind": "long_identifier_or_op",
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "name": "string"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "long_identifier_or_op",
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "name": "sin45"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "long_identifier_or_op",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "name": "printfn"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "const",
+                "children": [
+                  {
+                    "kind": "string",
+                    "text": "\"%s\""
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "paren_expression",
+            "children": [
+              {
+                "kind": "application_expression",
+                "children": [
+                  {
+                    "kind": "application_expression",
+                    "children": [
+                      {
+                        "kind": "long_identifier_or_op",
+                        "children": [
+                          {
+                            "kind": "long_identifier",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "name": "String"
+                              },
+                              {
+                                "kind": "identifier",
+                                "name": "concat"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "const",
+                        "children": [
+                          {
+                            "kind": "string",
+                            "text": "\" \""
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "list_expression",
+                    "children": [
+                      {
+                        "kind": "application_expression",
+                        "children": [
+                          {
+                            "kind": "long_identifier_or_op",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "name": "string"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "const",
+                            "children": [
+                              {
+                                "kind": "string",
+                                "text": "\"log(e):\""
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "application_expression",
+                        "children": [
+                          {
+                            "kind": "long_identifier_or_op",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "name": "string"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "long_identifier_or_op",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "name": "log_e"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }
