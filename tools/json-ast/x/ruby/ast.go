@@ -8,24 +8,25 @@ import (
 )
 
 // Node represents a node in the Ruby syntax tree as produced by tree-sitter.
+// Node represents a tree-sitter node in a simplified form. Only leaf nodes
+// store their raw source text via the Text field. Position information is
+// expressed in byte offsets to keep the structure minimal.
 type Node struct {
-	Type     string
-	Value    string
-	Line     int
-	Col      int
-	Children []Node
-	EndLine  int
-	EndCol   int
-	Source   string
+	Kind     string `json:"kind"`
+	Start    int    `json:"start"`
+	End      int    `json:"end"`
+	Text     string `json:"text,omitempty"`
+	Children []Node `json:"children,omitempty"`
 }
 
+// Parse converts Ruby source code into a Node tree using tree-sitter.
 // Parse converts Ruby source code into a Node tree using tree-sitter.
 func Parse(src string) (*Node, error) {
 	parser := sitter.NewParser()
 	parser.SetLanguage(tsruby.GetLanguage())
-	tree := parser.Parse(nil, []byte(src))
-	root := convert(tree.RootNode(), []byte(src))
-	root.Source = src
+	data := []byte(src)
+	tree := parser.Parse(nil, data)
+	root := convert(tree.RootNode(), data)
 	return &root, nil
 }
 
@@ -40,20 +41,20 @@ func ParseFile(path string) (*Node, error) {
 
 // convert converts a tree-sitter node into our Node type.
 func convert(n *sitter.Node, src []byte) Node {
-	start := n.StartPoint()
-	end := n.EndPoint()
 	node := Node{
-		Type:    n.Type(),
-		Line:    int(start.Row) + 1,
-		Col:     int(start.Column),
-		EndLine: int(end.Row) + 1,
-		EndCol:  int(end.Column),
+		Kind:  n.Type(),
+		Start: int(n.StartByte()),
+		End:   int(n.EndByte()),
 	}
 	if n.ChildCount() == 0 {
-		node.Value = n.Content(src)
+		node.Text = n.Content(src)
+		return node
 	}
-	for i := 0; i < int(n.NamedChildCount()); i++ {
-		child := n.NamedChild(i)
+	for i := 0; i < int(n.ChildCount()); i++ {
+		child := n.Child(i)
+		if child == nil {
+			continue
+		}
 		node.Children = append(node.Children, convert(child, src))
 	}
 	return node
