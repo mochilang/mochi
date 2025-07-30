@@ -890,8 +890,8 @@ type FunStmt struct {
 	EndsWithReturn bool
 }
 
-func (f *FunStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "let rec %s", sanitizeIdent(f.Name))
+func (f *FunStmt) emitWith(w io.Writer, prefix string) {
+	fmt.Fprintf(w, "%s %s", prefix, sanitizeIdent(f.Name))
 	if len(f.Params) == 0 {
 		io.WriteString(w, " ()")
 	} else {
@@ -932,6 +932,8 @@ func (f *FunStmt) emit(w io.Writer) {
 		io.WriteString(w, "\n\n")
 	}
 }
+
+func (f *FunStmt) emit(w io.Writer) { f.emitWith(w, "let rec") }
 
 // Expr is any OCaml expression that can emit itself.
 type Expr interface {
@@ -2462,6 +2464,29 @@ type StringLit struct{ Value string }
 func (s *StringLit) emit(w io.Writer)      { fmt.Fprintf(w, "%q", s.Value) }
 func (s *StringLit) emitPrint(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 
+func isConstExpr(e Expr) bool {
+	switch v := e.(type) {
+	case *IntLit, *FloatLit, *BoolLit, *StringLit:
+		return true
+	case *ListLit:
+		for _, el := range v.Elems {
+			if !isConstExpr(el) {
+				return false
+			}
+		}
+		return true
+	case *MapLit:
+		for _, it := range v.Items {
+			if !isConstExpr(it.Key) || !isConstExpr(it.Value) {
+				return false
+			}
+		}
+		return true
+	default:
+		return false
+	}
+}
+
 // BinaryExpr represents a binary operation.
 type BinaryExpr struct {
 	Left  Expr
@@ -2940,22 +2965,45 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("exception Break\nexception Continue\n\n")
 	}
 	buf.WriteString("exception Return\n\n")
+	var funs []*FunStmt
+	var vars []Stmt
 	for _, s := range p.Stmts {
 		switch st := s.(type) {
 		case *FunStmt:
-			st.emit(&buf)
+			funs = append(funs, st)
 		case *VarStmt:
-			st.emitTop(&buf)
+			if isConstExpr(st.Expr) {
+				st.emitTop(&buf)
+			} else {
+				vars = append(vars, st)
+			}
 		case *LetStmt:
-			st.emitTop(&buf)
+			if isConstExpr(st.Expr) {
+				st.emitTop(&buf)
+			}
 		}
+	}
+	if len(funs) > 0 {
+		funs[0].emitWith(&buf, "let rec")
+		for i := 1; i < len(funs); i++ {
+			funs[i].emitWith(&buf, "and")
+		}
+		buf.WriteString("\n")
 	}
 	buf.WriteString("let () =\n")
 	empty := true
+	for _, v := range vars {
+		empty = false
+		v.emit(&buf)
+	}
 	for _, s := range p.Stmts {
-		switch s.(type) {
-		case *FunStmt, *VarStmt, *LetStmt:
+		switch st := s.(type) {
+		case *FunStmt, *VarStmt:
 			continue
+		case *LetStmt:
+			if isConstExpr(st.Expr) {
+				continue
+			}
 		}
 		empty = false
 		s.emit(&buf)
@@ -3547,9 +3595,15 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		var defs []Stmt
 		var body []Stmt
 		for _, st := range pr.Stmts {
-			switch st.(type) {
-			case *FunStmt, *VarStmt, *LetStmt:
+			switch s := st.(type) {
+			case *FunStmt, *VarStmt:
 				defs = append(defs, st)
+			case *LetStmt:
+				if isConstExpr(s.Expr) {
+					defs = append(defs, st)
+				} else {
+					body = append(body, st)
+				}
 			default:
 				body = append(body, st)
 			}
