@@ -6,21 +6,36 @@ import (
 
 // Node represents a simplified Go AST node converted from tree-sitter.
 type Node struct {
-	Kind     string `json:"kind"`
-	Name     string `json:"name,omitempty"`
-	Text     string `json:"text,omitempty"`
-	Start    int    `json:"start"`
-	StartCol int    `json:"startCol"`
-	End      int    `json:"end"`
-	EndCol   int    `json:"endCol"`
-	Children []Node `json:"children,omitempty"`
+	Kind     string  `json:"kind"`
+	Text     string  `json:"text,omitempty"`
+	Start    int     `json:"start"`
+	StartCol int     `json:"startCol"`
+	End      int     `json:"end"`
+	EndCol   int     `json:"endCol"`
+	Children []*Node `json:"children,omitempty"`
+}
+
+func isValueNode(kind string) bool {
+	switch kind {
+	case "identifier", "field_identifier", "package_identifier",
+		"type_identifier", "int_literal", "interpreted_string_literal",
+		"raw_string_literal", "float_literal", "rune_literal",
+		"imaginary_literal", "nil", "true", "false", "comment":
+		return true
+	default:
+		return false
+	}
 }
 
 // convertNode converts a tree-sitter node into our Node representation.
-func convertNode(n *sitter.Node, src []byte) Node {
+func convertNode(n *sitter.Node, src []byte) *Node {
+	if n == nil {
+		return nil
+	}
+
 	start := n.StartPoint()
 	end := n.EndPoint()
-	node := Node{
+	node := &Node{
 		Kind:     n.Type(),
 		Start:    int(start.Row) + 1,
 		StartCol: int(start.Column),
@@ -29,12 +44,10 @@ func convertNode(n *sitter.Node, src []byte) Node {
 	}
 
 	if n.NamedChildCount() == 0 {
-		text := n.Content(src)
-		switch n.Type() {
-		case "identifier":
-			node.Name = text
-		default:
-			node.Text = text
+		if isValueNode(n.Type()) {
+			node.Text = n.Content(src)
+		} else {
+			return nil
 		}
 	}
 
@@ -43,7 +56,13 @@ func convertNode(n *sitter.Node, src []byte) Node {
 		if child == nil {
 			continue
 		}
-		node.Children = append(node.Children, convertNode(child, src))
+		if c := convertNode(child, src); c != nil {
+			node.Children = append(node.Children, c)
+		}
+	}
+
+	if len(node.Children) == 0 && node.Text == "" {
+		return nil
 	}
 	return node
 }
