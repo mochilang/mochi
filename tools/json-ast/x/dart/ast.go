@@ -17,6 +17,47 @@ type Node struct {
 	Children []*Node `json:"children,omitempty"`
 }
 
+// Several typed aliases mimic common Dart AST structures so Program can expose
+// a more descriptive type hierarchy while still relying on the generic Node
+// internally. Only kinds that appear in the golden test are defined here.
+type (
+	ProgramNode                     Node
+	Comment                         Node
+	ClassDefinition                 Node
+	ClassBody                       Node
+	Declaration                     Node
+	TypeIdentifier                  Node
+	Identifier                      Node
+	InitializedIdentifierList       Node
+	InitializedIdentifier           Node
+	ConstructorParam                Node
+	FormalParameterList             Node
+	FormalParameter                 Node
+	FunctionSignature               Node
+	FunctionBody                    Node
+	Block                           Node
+	ExpressionStatement             Node
+	ForStatement                    Node
+	ForLoopParts                    Node
+	ForElement                      Node
+	ListLiteral                     Node
+	Arguments                       Node
+	Argument                        Node
+	NamedArgument                   Node
+	ArgumentPart                    Node
+	ConstantConstructorSignature    Node
+	DecimalIntegerLiteral           Node
+	StringLiteral                   Node
+	EscapeSequence                  Node
+	InitializedVariableDefinition   Node
+	Label                           Node
+	LocalVariableDeclaration        Node
+	OptionalFormalParameters        Node
+	Selector                        Node
+	TypeArguments                   Node
+	UnconditionalAssignableSelector Node
+)
+
 // Options controls how the AST is generated.
 type Options struct {
 	IncludePos bool
@@ -34,9 +75,9 @@ func isValueNode(kind string) bool {
 	}
 }
 
-// convertNode recursively converts the given tree-sitter node to a Node
-// using the provided source code for leaf values.
-func convertNode(n *sitter.Node, src []byte, pos bool) *Node {
+// toNode converts the given tree-sitter node into our Node representation. Non
+// semantic leaves are dropped so the resulting JSON stays small.
+func toNode(n *sitter.Node, src []byte, pos bool) *Node {
 	if n == nil {
 		return nil
 	}
@@ -61,7 +102,7 @@ func convertNode(n *sitter.Node, src []byte, pos bool) *Node {
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
 		child := n.NamedChild(i)
-		if c := convertNode(child, src, pos); c != nil {
+		if c := toNode(child, src, pos); c != nil {
 			node.Children = append(node.Children, c)
 		}
 	}

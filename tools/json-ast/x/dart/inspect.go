@@ -9,7 +9,7 @@ import (
 
 // Program represents a parsed Dart source file.
 type Program struct {
-	Root *Node `json:"root"`
+	Root *ProgramNode `json:"root"`
 }
 
 // Inspect parses Dart source code using tree-sitter and returns
@@ -24,7 +24,7 @@ func InspectWithOptions(src string, opts Options) (*Program, error) {
 	parser := sitter.NewParser()
 	parser.SetLanguage(sitter.NewLanguage(ts.Language()))
 	tree := parser.Parse(nil, []byte(src))
-	root := convertNode(tree.RootNode(), []byte(src), opts.IncludePos)
+	root := (*ProgramNode)(toNode(tree.RootNode(), []byte(src), opts.IncludePos))
 	return &Program{Root: root}, nil
 }
 
