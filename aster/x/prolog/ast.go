@@ -3,7 +3,7 @@ package prolog
 import (
 	"encoding/json"
 	"fmt"
-	sitter "github.com/smacker/go-tree-sitter"
+	sitter "github.com/tree-sitter/go-tree-sitter"
 	"strconv"
 )
 
@@ -81,12 +81,13 @@ func toTerm(n *sitter.Node, src []byte) Term {
 		return Term{}
 	}
 	if n.ChildCount() == 0 {
-		text := n.Content(src)
-		if n.Type() == "variable" {
+		text := string(src[n.StartByte():n.EndByte()])
+		kind := n.Kind()
+		if kind == "variable" {
 			return Term{Var: text, Text: text}
 		}
-		if n.Type() == "true" || n.Type() == "false" {
-			b := n.Type() == "true"
+		if kind == "true" || kind == "false" {
+			b := kind == "true"
 			return Term{Bool: &b, Text: text}
 		}
 		if num, err := strconv.ParseFloat(text, 64); err == nil {
@@ -94,9 +95,9 @@ func toTerm(n *sitter.Node, src []byte) Term {
 		}
 		return Term{Atom: text, Text: text}
 	}
-	t := Term{Functor: n.Type(), Text: n.Type()}
+	t := Term{Functor: n.Kind(), Text: n.Kind()}
 	for i := 0; i < int(n.NamedChildCount()); i++ {
-		child := n.NamedChild(i)
+		child := n.NamedChild(uint(i))
 		t.Args = append(t.Args, toTerm(child, src))
 	}
 	return t
@@ -152,9 +153,9 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 	if n == nil {
 		return nil
 	}
-	sp := n.StartPoint()
-	ep := n.EndPoint()
-	node := &Node{Kind: n.Type()}
+	sp := n.StartPosition()
+	ep := n.EndPosition()
+	node := &Node{Kind: n.Kind()}
 	if opt.Positions {
 		node.Start = int(sp.Row) + 1
 		node.StartCol = int(sp.Column)
@@ -163,9 +164,9 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 	}
 
 	if n.NamedChildCount() == 0 {
-		switch n.Type() {
+		switch n.Kind() {
 		case "variable", "number", "atom", "true", "false", "string":
-			node.Text = n.Content(src)
+			node.Text = string(src[n.StartByte():n.EndByte()])
 		default:
 			// skip non-value leaf nodes
 			return nil
@@ -173,7 +174,7 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 	}
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
-		child := n.NamedChild(i)
+		child := n.NamedChild(uint(i))
 		c := convert(child, src, opt)
 		if c == nil {
 			continue
