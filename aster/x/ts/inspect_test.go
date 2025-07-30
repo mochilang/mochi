@@ -38,7 +38,7 @@ func TestInspect_Golden(t *testing.T) {
 	root := repoRoot(t)
 	src := filepath.Join(root, "tests", "transpiler", "x", "ts", "cross_join.ts")
 
-	outDir := filepath.Join(root, "tests", "json-ast", "x", "ts")
+    outDir := filepath.Join(root, "tests", "aster", "x", "ts")
 	os.MkdirAll(outDir, 0o755)
 
 	name := strings.TrimSuffix(filepath.Base(src), ".ts")

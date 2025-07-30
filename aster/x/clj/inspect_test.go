@@ -45,7 +45,7 @@ func TestInspect_Golden(t *testing.T) {
 	ensureBabashka(t)
 	root := repoRoot(t)
 	srcDir := filepath.Join(root, "tests", "transpiler", "x", "clj")
-	outDir := filepath.Join(root, "tests", "json-ast", "x", "clj")
+    outDir := filepath.Join(root, "tests", "aster", "x", "clj")
 	os.MkdirAll(outDir, 0o755)
 
 	files, err := filepath.Glob(filepath.Join(srcDir, "*.clj"))
