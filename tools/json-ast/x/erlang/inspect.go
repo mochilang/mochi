@@ -1,0 +1,26 @@
+package erlang
+
+import (
+	"context"
+	"fmt"
+
+	sitter "github.com/smacker/go-tree-sitter"
+	tserlang "mochi/third_party/tree-sitter-erlang/bindings/go"
+)
+
+// Program represents a parsed Erlang file composed of Node structs.
+type Program struct {
+	Root *Node `json:"root"`
+}
+
+// Inspect parses Erlang source code using tree-sitter and returns a Program.
+func Inspect(src string) (*Program, error) {
+	parser := sitter.NewParser()
+	parser.SetLanguage(tserlang.GetLanguage())
+	tree, err := parser.ParseCtx(context.Background(), nil, []byte(src))
+	if err != nil {
+		return nil, fmt.Errorf("parse: %w", err)
+	}
+	root := convert(tree.RootNode(), []byte(src))
+	return &Program{Root: root}, nil
+}
