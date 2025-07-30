@@ -2991,9 +2991,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("\n")
 	}
 	buf.WriteString("let () =\n")
-	empty := true
 	for _, v := range vars {
-		empty = false
 		v.emit(&buf)
 	}
 	for _, s := range p.Stmts {
@@ -3005,12 +3003,9 @@ func (p *Program) Emit() []byte {
 				continue
 			}
 		}
-		empty = false
 		s.emit(&buf)
 	}
-	if empty {
-		buf.WriteString("  ()")
-	}
+	buf.WriteString("  ()")
 	return buf.Bytes()
 }
 
