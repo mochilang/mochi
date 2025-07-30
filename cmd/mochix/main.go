@@ -561,9 +561,9 @@ func runInspect(cmd *InspectCmd) error {
 	case "rb", "ruby":
 		prog, err = rbast.Inspect(src)
 	case "rkt", "racket":
-		prog, err = rktast.Inspect(src, false)
+		prog, err = rktast.Inspect(src, rktast.Options{})
 	case "rs", "rust":
-		prog, err = rsast.Inspect(src, false)
+		prog, err = rsast.Inspect(src, rsast.Option{})
 	case "scala":
 		prog, err = scalaast.Inspect(src)
 	case "scheme":
