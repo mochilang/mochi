@@ -24,7 +24,7 @@ The first 40 odd Zumkeller numbers which don't end in 5 are:
  960687  999999 1024947 1054053 1072071 1073709 1095633 1108107
 1145529 1162161 1198197 1224531 1270269 1307691 1324323 1378377
 {
-  "duration_us": 5214915,
+  "duration_us": 5216838,
   "memory_bytes": 96,
   "name": "main"
 }

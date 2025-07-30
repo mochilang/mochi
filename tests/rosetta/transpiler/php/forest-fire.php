@@ -15,61 +15,126 @@ function _now() {
     }
     return hrtime(true);
 }
-function _str($x) {
-    if (is_array($x)) {
-        $isList = array_keys($x) === range(0, count($x) - 1);
-        if ($isList) {
-            $parts = [];
-            foreach ($x as $v) { $parts[] = _str($v); }
-            return '[' . implode(' ', $parts) . ']';
-        }
-        $parts = [];
-        foreach ($x as $k => $v) { $parts[] = _str($k) . ':' . _str($v); }
-        return 'map[' . implode(' ', $parts) . ']';
-    }
-    if (is_bool($x)) return $x ? 'true' : 'false';
-    if ($x === null) return 'null';
-    return strval($x);
+function repeat($s, $n) {
+    return str_repeat($s, intval($n));
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
-  $rows = 5;
-  $cols = 5;
-  $board = [];
+  $rows = 20;
+  $cols = 30;
+  $p = 0.01;
+  $f = 0.001;
+  function mochi_repeat($ch, $n) {
+  global $rows, $cols, $p, $f, $board;
+  $s = '';
+  $i = 0;
+  while ($i < $n) {
+  $s = $s . $ch;
+  $i = $i + 1;
+};
+  return $s;
+};
+  function chance($prob) {
+  global $rows, $cols, $p, $f, $board;
+  $threshold = intval($prob * 1000.0);
+  return fmod(_now(), 1000) < $threshold;
+};
+  function newBoard() {
+  global $rows, $cols, $p, $f, $board;
+  $b = [];
   $r = 0;
   while ($r < $rows) {
   $row = [];
   $c = 0;
   while ($c < $cols) {
-  $row = array_merge($row, [($r + $c) % 2]);
+  if (fmod(_now(), 2) == 0) {
+  $row = array_merge($row, ['T']);
+} else {
+  $row = array_merge($row, [' ']);
+}
   $c = $c + 1;
 };
-  $board = array_merge($board, [$row]);
+  $b = array_merge($b, [$row]);
   $r = $r + 1;
-}
-  function step($b) {
-  global $rows, $cols, $board, $row;
-  $nb = $b;
+};
+  return $b;
+};
+  function step($src) {
+  global $rows, $cols, $p, $f, $board;
+  $dst = [];
   $r = 0;
   while ($r < $rows) {
+  $row = [];
   $c = 0;
   while ($c < $cols) {
-  $nb[$r][$c] = 1 - $b[$r][$c];
+  $cell = $src[$r][$c];
+  $next = $cell;
+  if ($cell == '#') {
+  $next = ' ';
+} else {
+  if ($cell == 'T') {
+  $burning = false;
+  $dr = -1;
+  while ($dr <= 1) {
+  $dc = -1;
+  while ($dc <= 1) {
+  if ($dr != 0 || $dc != 0) {
+  $rr = $r + $dr;
+  $cc = $c + $dc;
+  if ($rr >= 0 && $rr < $rows && $cc >= 0 && $cc < $cols) {
+  if ($src[$rr][$cc] == '#') {
+  $burning = true;
+};
+};
+}
+  $dc = $dc + 1;
+};
+  $dr = $dr + 1;
+};
+  if ($burning || chance($f)) {
+  $next = '#';
+};
+} else {
+  if (chance($p)) {
+  $next = 'T';
+};
+};
+}
+  $row = array_merge($row, [$next]);
   $c = $c + 1;
 };
+  $dst = array_merge($dst, [$row]);
   $r = $r + 1;
 };
-  return $nb;
+  return $dst;
 };
-  echo rtrim('start'), PHP_EOL;
-  foreach ($board as $row) {
-  echo rtrim(_str($row)), PHP_EOL;
+  function printBoard($b) {
+  global $rows, $cols, $p, $f, $board;
+  echo rtrim(repeat('__', $cols) . '
+
+'), PHP_EOL;
+  $r = 0;
+  while ($r < $rows) {
+  $line = '';
+  $c = 0;
+  while ($c < $cols) {
+  $cell = $b[$r][$c];
+  if ($cell == ' ') {
+  $line = $line . '  ';
+} else {
+  $line = $line . ' ' . $cell;
 }
+  $c = $c + 1;
+};
+  echo rtrim($line . '
+'), PHP_EOL;
+  $r = $r + 1;
+};
+};
+  $board = newBoard();
+  printBoard($board);
   $board = step($board);
-  echo rtrim('after'), PHP_EOL;
-  foreach ($board as $row) {
-  echo rtrim(_str($row)), PHP_EOL;
-}
+  printBoard($board);
 $__end = _now();
 $__end_mem = memory_get_usage();
 $__duration = intdiv($__end - $__start, 1000);

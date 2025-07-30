@@ -9,7 +9,7 @@
 140 -2.6190499787063E+61
 170 -7.2238193780475E+64
 {
-  "duration_us": 88,
+  "duration_us": 75,
   "memory_bytes": 128,
   "name": "main"
 }

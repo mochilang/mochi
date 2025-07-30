@@ -2,17 +2,17 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-30 21:14 +0700
+Last updated: 2025-07-30 21:21 +0700
 
-## Checklist (468/493)
+## Checklist (482/493)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 137µs | 136 B |
-| 2 | 100-doors-3 | ✓ | 43µs | 224 B |
-| 3 | 100-doors | ✓ | 52µs | 2.7 KB |
-| 4 | 100-prisoners | ✓ | 173.611ms | 96 B |
-| 5 | 15-puzzle-game | ✓ | 261µs | 8.6 KB |
-| 6 | 15-puzzle-solver | ✓ | 43µs | 1.6 KB |
+| 1 | 100-doors-2 | ✓ | 97µs | 136 B |
+| 2 | 100-doors-3 | ✓ | 44µs | 224 B |
+| 3 | 100-doors | ✓ | 91µs | 2.7 KB |
+| 4 | 100-prisoners | ✓ | 176.587ms | 96 B |
+| 5 | 15-puzzle-game | ✓ | 140µs | 8.6 KB |
+| 6 | 15-puzzle-solver | ✓ | 66µs | 1.6 KB |
 | 7 | 2048 | ✓ |  |  |
 | 8 | 21-game | ✓ | 45µs | 8.1 KB |
 | 9 | 24-game-solve | ✓ | 5.126ms | 320 B |
@@ -457,46 +457,46 @@ Last updated: 2025-07-30 21:14 +0700
 | 448 | flow-control-structures-1 | ✓ | 33µs | 96 B |
 | 449 | flow-control-structures-2 | ✓ | 32µs | 96 B |
 | 450 | flow-control-structures-3 | ✓ | 35µs | 96 B |
-| 451 | flow-control-structures-4 | ✓ | 43µs | 96 B |
-| 452 | floyd-warshall-algorithm | ✓ | 29µs | 96 B |
-| 453 | floyd-warshall-algorithm2 |   |  |  |
-| 454 | floyds-triangle | ✓ | 75µs | 96 B |
-| 455 | forest-fire | ✓ | 146µs | 1.5 KB |
-| 456 | fork-2 |   |  |  |
-| 457 | fork | ✓ | 50µs | 128 B |
-| 458 | formal-power-series |   |  |  |
-| 459 | formatted-numeric-output |   |  |  |
-| 460 | forward-difference | ✓ | 131µs | 504 B |
-| 461 | four-bit-adder-1 | ✓ | 73µs | 96 B |
-| 462 | four-is-magic | ✓ | 254µs | 192 B |
+| 451 | flow-control-structures-4 | ✓ | 91µs | 96 B |
+| 452 | floyd-warshall-algorithm | ✓ | 204µs | 4.8 KB |
+| 453 | floyd-warshall-algorithm2 | ✓ | 137µs | 4.3 KB |
+| 454 | floyds-triangle | ✓ | 73µs | 96 B |
+| 455 | forest-fire | ✓ | 650µs | 14.5 KB |
+| 456 | fork-2 | ✓ | 44µs | 128 B |
+| 457 | fork | ✓ | 40µs | 128 B |
+| 458 | formal-power-series | ✓ | 252µs | 144 B |
+| 459 | formatted-numeric-output | ✓ | 118µs | 96 B |
+| 460 | forward-difference | ✓ | 104µs | 504 B |
+| 461 | four-bit-adder-1 | ✓ | 65µs | 96 B |
+| 462 | four-is-magic | ✓ | 118µs | 192 B |
 | 463 | four-is-the-number-of-letters-in-the-... |   |  |  |
-| 464 | fractal-tree |   |  |  |
-| 465 | fractran |   |  |  |
-| 466 | french-republican-calendar |   |  |  |
-| 467 | ftp | ✓ | 47µs | 160 B |
-| 468 | function-frequency |   |  |  |
-| 469 | function-prototype |   |  |  |
-| 470 | functional-coverage-tree |   |  |  |
-| 471 | fusc-sequence |   |  |  |
-| 472 | gamma-function | ✓ | 88µs | 128 B |
-| 473 | general-fizzbuzz | ✓ | 52µs | 96 B |
-| 474 | generic-swap | ✓ | 37µs | 96 B |
-| 475 | get-system-command-output | ✓ | 30µs | 96 B |
-| 476 | giuga-numbers | ✓ | 110µs | 96 B |
-| 477 | globally-replace-text-in-several-files | ✓ | 26µs | 96 B |
-| 478 | goldbachs-comet | ✓ | 2.066ms | 96 B |
-| 479 | golden-ratio-convergence | ✓ | 31µs | 96 B |
-| 480 | graph-colouring | ✓ | 28µs | 96 B |
-| 481 | gray-code | ✓ | 607µs | 96 B |
-| 482 | gui-component-interaction |   |  |  |
-| 483 | gui-enabling-disabling-of-controls |   |  |  |
-| 484 | gui-maximum-window-dimensions |   |  |  |
-| 485 | http | ✓ | 66.47ms | 536 B |
-| 486 | image-noise | ✓ | 25.155ms | 1.3 KB |
-| 487 | loops-increment-loop-index-within-loop-body | ✓ | 148.413ms | 128 B |
-| 488 | md5 | ✓ | 14µs | 1.2 KB |
-| 489 | nim-game | ✓ | 46µs | 8.1 KB |
-| 490 | plasma-effect | ✓ | 24.507ms | 480 B |
-| 491 | sorting-algorithms-bubble-sort | ✓ | 59µs | 504 B |
-| 492 | window-management | ✓ | 54µs | 96 B |
-| 493 | zumkeller-numbers | ✓ | 5.214915s | 96 B |
+| 464 | fractal-tree | ✓ | 1.069ms | 320 B |
+| 465 | fractran | ✓ | 4.362877s | 96 B |
+| 466 | french-republican-calendar | ✓ | 78µs | 1.1 KB |
+| 467 | ftp | ✓ | 150µs | 160 B |
+| 468 | function-frequency | ✓ | 311µs | 96 B |
+| 469 | function-prototype | ✓ |  |  |
+| 470 | functional-coverage-tree | ✓ | 446µs | 18.7 KB |
+| 471 | fusc-sequence | ✓ | 205µs | 96 B |
+| 472 | gamma-function | ✓ | 75µs | 128 B |
+| 473 | general-fizzbuzz | ✓ | 67µs | 96 B |
+| 474 | generic-swap | ✓ | 45µs | 96 B |
+| 475 | get-system-command-output | ✓ | 33µs | 96 B |
+| 476 | giuga-numbers | ✓ | 92µs | 96 B |
+| 477 | globally-replace-text-in-several-files | ✓ | 68µs | 96 B |
+| 478 | goldbachs-comet | ✓ | 2.197ms | 96 B |
+| 479 | golden-ratio-convergence | ✓ | 54µs | 96 B |
+| 480 | graph-colouring | ✓ | 33µs | 96 B |
+| 481 | gray-code | ✓ | 624µs | 96 B |
+| 482 | gui-component-interaction | ✓ | 157µs | 8.3 KB |
+| 483 | gui-enabling-disabling-of-controls | ✓ | 84µs | 96 B |
+| 484 | gui-maximum-window-dimensions | ✓ | 75µs | 96 B |
+| 485 | http | ✓ | 20.905ms | 536 B |
+| 486 | image-noise | ✓ | 18.821ms | 1.3 KB |
+| 487 | loops-increment-loop-index-within-loop-body | ✓ | 146.316ms | 128 B |
+| 488 | md5 | ✓ | 38µs | 1.6 KB |
+| 489 | nim-game | ✓ | 110µs | 8.1 KB |
+| 490 | plasma-effect | ✓ | 25.028ms | 480 B |
+| 491 | sorting-algorithms-bubble-sort | ✓ | 309µs | 504 B |
+| 492 | window-management | ✓ | 89µs | 96 B |
+| 493 | zumkeller-numbers | ✓ | 5.216838s | 96 B |

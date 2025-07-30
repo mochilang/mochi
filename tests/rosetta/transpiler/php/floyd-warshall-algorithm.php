@@ -15,9 +15,121 @@ function _now() {
     }
     return hrtime(true);
 }
+function _str($x) {
+    if (is_array($x)) {
+        $isList = array_keys($x) === range(0, count($x) - 1);
+        if ($isList) {
+            $parts = [];
+            foreach ($x as $v) { $parts[] = _str($v); }
+            return '[' . implode(' ', $parts) . ']';
+        }
+        $parts = [];
+        foreach ($x as $k => $v) { $parts[] = _str($k) . ':' . _str($v); }
+        return 'map[' . implode(' ', $parts) . ']';
+    }
+    if (is_bool($x)) return $x ? 'true' : 'false';
+    if ($x === null) return 'null';
+    return strval($x);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
-  echo rtrim('shortest paths computed'), PHP_EOL;
+  function main() {
+  $INF = 1000000000;
+  $n = 4;
+  $dist = [];
+  $next = [];
+  $i = 0;
+  while ($i < $n) {
+  $row = [];
+  $nrow = [];
+  $j = 0;
+  while ($j < $n) {
+  if ($i == $j) {
+  $row = array_merge($row, [0]);
+} else {
+  $row = array_merge($row, [$INF]);
+}
+  $nrow = array_merge($nrow, [0 - 1]);
+  $j = $j + 1;
+};
+  $dist = array_merge($dist, [$row]);
+  $next = array_merge($next, [$nrow]);
+  $i = $i + 1;
+};
+  $dist[0][2] = -2;
+  $next[0][2] = 2;
+  $dist[2][3] = 2;
+  $next[2][3] = 3;
+  $dist[3][1] = -1;
+  $next[3][1] = 1;
+  $dist[1][0] = 4;
+  $next[1][0] = 0;
+  $dist[1][2] = 3;
+  $next[1][2] = 2;
+  $k = 0;
+  while ($k < $n) {
+  $i = 0;
+  while ($i < $n) {
+  $j = 0;
+  while ($j < $n) {
+  if ($dist[$i][$k] < $INF && $dist[$k][$j] < $INF) {
+  $alt = $dist[$i][$k] + $dist[$k][$j];
+  if ($alt < $dist[$i][$j]) {
+  $dist[$i][$j] = $alt;
+  $next[$i][$j] = $next[$i][$k];
+};
+}
+  $j = $j + 1;
+};
+  $i = $i + 1;
+};
+  $k = $k + 1;
+};
+  $path = null;
+$path = function($u, $v) use (&$path, $INF, $n, $dist, $next, $i, $row, $nrow, $j, $k, $alt) {
+  $ui = $u - 1;
+  $vi = $v - 1;
+  if ($next[$ui][$vi] == 0 - 1) {
+  return [];
+}
+  $p = [$u];
+  $cur = $ui;
+  while ($cur != $vi) {
+  $cur = $next[$cur][$vi];
+  $p = array_merge($p, [$cur + 1]);
+};
+  return $p;
+};
+  $pathStr = null;
+$pathStr = function($p) use (&$pathStr, $INF, $n, $dist, $next, $i, $row, $nrow, $j, $k, $alt, $path) {
+  $s = '';
+  $first = true;
+  $idx = 0;
+  while ($idx < count($p)) {
+  $x = $p[$idx];
+  if (!$first) {
+  $s = $s . ' -> ';
+}
+  $s = $s . _str($x);
+  $first = false;
+  $idx = $idx + 1;
+};
+  return $s;
+};
+  echo rtrim('pair\tdist\tpath'), PHP_EOL;
+  $a = 0;
+  while ($a < $n) {
+  $b = 0;
+  while ($b < $n) {
+  if ($a != $b) {
+  echo rtrim(_str($a + 1) . ' -> ' . _str($b + 1) . '\t' . _str($dist[$a][$b]) . '\t' . $pathStr($path($a + 1, $b + 1))), PHP_EOL;
+}
+  $b = $b + 1;
+};
+  $a = $a + 1;
+};
+};
+  main();
 $__end = _now();
 $__end_mem = memory_get_usage();
 $__duration = intdiv($__end - $__start, 1000);

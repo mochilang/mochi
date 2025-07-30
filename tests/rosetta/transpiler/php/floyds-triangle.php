@@ -31,23 +31,46 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
+function _intdiv($a, $b) {
+    if (function_exists('bcdiv')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcdiv($sa, $sb, 0));
+    }
+    return intdiv($a, $b);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function floyd($n) {
   echo rtrim('Floyd ' . _str($n) . ':'), PHP_EOL;
-  $num = 1;
+  $lowerLeftCorner = _intdiv($n * ($n - 1), 2) + 1;
+  $lastInColumn = $lowerLeftCorner;
+  $lastInRow = 1;
+  $i = 1;
   $row = 1;
-  while ($row <= $n) {
-  $col = 0;
   $line = '';
-  while ($col < $row) {
-  $line = $line . _str($num) . ' ';
-  $num = $num + 1;
-  $col = $col + 1;
-};
+  while ($row <= $n) {
+  $w = strlen(_str($lastInColumn));
+  if ($i < $lastInRow) {
+  $line = $line . pad(_str($i), $w) . ' ';
+  $lastInColumn = $lastInColumn + 1;
+} else {
+  $line = $line . pad(_str($i), $w);
   echo rtrim($line), PHP_EOL;
+  $line = '';
   $row = $row + 1;
+  $lastInRow = $lastInRow + $row;
+  $lastInColumn = $lowerLeftCorner;
+}
+  $i = $i + 1;
 };
+};
+  function pad($s, $w) {
+  $t = $s;
+  while (strlen($t) < $w) {
+  $t = ' ' . $t;
+};
+  return $t;
 };
   floyd(5);
   floyd(14);

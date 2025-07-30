@@ -1,7 +1,7 @@
 The first 4 Giuga numbers are:
 [30, 858, 1722, 66198]
 {
-  "duration_us": 110,
+  "duration_us": 92,
   "memory_bytes": 96,
   "name": "main"
 }

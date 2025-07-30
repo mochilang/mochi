@@ -3,6 +3,7 @@
 package php
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -301,6 +302,7 @@ var phpReserved = map[string]struct{}{
 	"xor":         {},
 	"trim":        {},
 	"copy":        {},
+	"extract":     {},
 	"new":         {},
 	"New":         {},
 	"echo":        {},
@@ -350,6 +352,12 @@ func addGlobalFunc(name string) {
 type Program struct {
 	Env   *types.Env
 	Stmts []Stmt
+}
+
+func exprString(e Expr) string {
+	var buf bytes.Buffer
+	e.emit(&buf)
+	return buf.String()
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -2557,9 +2565,11 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				}
 				if t := types.TypeOfPrimary(base, transpileEnv); t != nil {
 					if st, ok := t.(types.StructType); ok && st.Name != "" {
-						call := st.Name + "_" + method
-						args = append([]Expr{e}, args...)
-						return &CallExpr{Func: call, Args: args}, nil
+						if _, ok := st.Methods[method]; ok {
+							call := st.Name + "_" + method
+							args = append([]Expr{e}, args...)
+							return &CallExpr{Func: call, Args: args}, nil
+						}
 					}
 				}
 				// Fallback: search all known structs for this method
@@ -2571,7 +2581,8 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 					}
 				}
 			}
-			return nil, fmt.Errorf("method %s not supported", method)
+			call := fmt.Sprintf("%s['%s']", exprString(e), method)
+			return &CallExpr{Func: call, Args: args}, nil
 		}
 	}
 
@@ -3163,7 +3174,22 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					continue
 				}
 				uses = append(uses, "&"+n)
+			} else {
+				uses = append(uses, n)
 			}
+		}
+		// remove duplicates from captured variables
+		if len(uses) > 1 {
+			uniq := make([]string, 0, len(uses))
+			seen := map[string]struct{}{}
+			for _, u := range uses {
+				if _, ok := seen[u]; ok {
+					continue
+				}
+				seen[u] = struct{}{}
+				uniq = append(uniq, u)
+			}
+			uses = uniq
 		}
 		return &ClosureExpr{Params: params, RefParams: refFlags, Uses: uses, Body: body}, nil
 	case p.If != nil:
@@ -3445,6 +3471,18 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				}
 				uses = append(uses, "&"+g)
 			}
+		}
+		if len(uses) > 1 {
+			uniq := make([]string, 0, len(uses))
+			seen := map[string]struct{}{}
+			for _, u := range uses {
+				if _, ok := seen[u]; ok {
+					continue
+				}
+				seen[u] = struct{}{}
+				uniq = append(uniq, u)
+			}
+			uses = uniq
 		}
 		if wasTop {
 			decl := &FuncDecl{Name: name, Params: params, RefParams: refFlags, Body: body}
@@ -4437,35 +4475,35 @@ func isBoolExpr(e Expr) bool {
 }
 
 func isIntExpr(e Expr) bool {
-        switch v := e.(type) {
-        case *IntLit:
-                return true
-        case *Var:
-                if transpileEnv != nil {
-                        if t, err := transpileEnv.GetVar(v.Name); err == nil {
-                                if _, ok := t.(types.IntType); ok {
-                                        return true
-                                }
-                        }
-                }
-        case *BinaryExpr:
-                switch v.Op {
-                case "+", "-", "*", "/", "%":
-                        return isIntExpr(v.Left) && isIntExpr(v.Right)
-                }
-        case *GroupExpr:
-                return isIntExpr(v.X)
-        case *IntDivExpr:
-                return isIntExpr(v.Left) && isIntExpr(v.Right)
-        case *CondExpr:
-                return isIntExpr(v.Then) && isIntExpr(v.Else)
-       case *CallExpr:
-               switch v.Func {
-               case "intval", "_intdiv", "_iadd", "_isub", "_imul", "_idiv", "_imod":
-                       return true
-               }
-        }
-        return false
+	switch v := e.(type) {
+	case *IntLit:
+		return true
+	case *Var:
+		if transpileEnv != nil {
+			if t, err := transpileEnv.GetVar(v.Name); err == nil {
+				if _, ok := t.(types.IntType); ok {
+					return true
+				}
+			}
+		}
+	case *BinaryExpr:
+		switch v.Op {
+		case "+", "-", "*", "/", "%":
+			return isIntExpr(v.Left) && isIntExpr(v.Right)
+		}
+	case *GroupExpr:
+		return isIntExpr(v.X)
+	case *IntDivExpr:
+		return isIntExpr(v.Left) && isIntExpr(v.Right)
+	case *CondExpr:
+		return isIntExpr(v.Then) && isIntExpr(v.Else)
+	case *CallExpr:
+		switch v.Func {
+		case "intval", "_intdiv", "_iadd", "_isub", "_imul", "_idiv", "_imod":
+			return true
+		}
+	}
+	return false
 }
 
 func isBigIntExpr(e Expr) bool {
