@@ -1,5 +1,21 @@
 # 📦 CHANGELOG.md
 
+## [0.10.50] – 2025-07-30T16:21:04+07:00
+
+### Added
+
+* Typed JSON AST nodes across many languages
+* Optional position flags and root aliases
+* Minimal AST outputs regenerated
+
+### Changed
+
+* Golden JSON AST samples refreshed
+
+### Fixed
+
+* Minor parser issues for typed nodes
+
 ## [0.10.49] – 2025-07-30T09:15:33+07:00
 
 ### Added
