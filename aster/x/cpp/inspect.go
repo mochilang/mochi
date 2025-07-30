@@ -1,11 +1,8 @@
 package cpp
 
 import (
-	"context"
-	"fmt"
-
-	sitter "github.com/smacker/go-tree-sitter"
-	ts "github.com/smacker/go-tree-sitter/cpp"
+	sitter "github.com/tree-sitter/go-tree-sitter"
+	ts "github.com/tree-sitter/tree-sitter-cpp/bindings/go"
 )
 
 // Program is the root of a parsed C++ translation unit.
@@ -22,11 +19,8 @@ type Program struct {
 // opts.WithPositions is set to true.
 func Inspect(src string, opts ...Options) (*Program, error) {
 	parser := sitter.NewParser()
-	parser.SetLanguage(ts.GetLanguage())
-	tree, err := parser.ParseCtx(context.Background(), nil, []byte(src))
-	if err != nil {
-		return nil, fmt.Errorf("parse: %w", err)
-	}
+	parser.SetLanguage(sitter.NewLanguage(ts.Language()))
+	tree := parser.Parse([]byte(src), nil)
 	var o Options
 	if len(opts) > 0 {
 		o = opts[0]
