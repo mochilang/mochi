@@ -3,25 +3,49 @@
 package fs
 
 import (
-	a2fs "mochi/tools/a2mochi/x/fs"
+	"encoding/json"
+	"os"
+	"os/exec"
+	"strings"
+
+	_ "embed"
 )
 
-// Program represents a parsed F# source file.
+// Program describes a simplified F# program structure extracted using the
+// official compiler service.
 type Program struct {
-	Vars   []a2fs.Var  `json:"vars"`
-	Prints []string    `json:"prints"`
-	Stmts  []a2fs.Stmt `json:"stmts"`
+	Vars   []Var    `json:"vars"`
+	Prints []string `json:"prints"`
+	Stmts  []Stmt   `json:"stmts"`
 }
 
-// Inspect parses F# source code using the official F# parser and returns its Program representation.
+//go:embed parse.fsx
+var parseScript string
+
+// Inspect parses F# code using the official F# compiler service via
+// a helper F# script executed with `fsharpi`.
 func Inspect(src string) (*Program, error) {
-	p, err := a2fs.Parse(src)
+	tmp, err := os.CreateTemp("", "parse-*.fsx")
 	if err != nil {
 		return nil, err
 	}
-	return &Program{
-		Vars:   p.Vars,
-		Prints: p.Prints,
-		Stmts:  p.Stmts,
-	}, nil
+	if _, err := tmp.WriteString(parseScript); err != nil {
+		tmp.Close()
+		os.Remove(tmp.Name())
+		return nil, err
+	}
+	tmp.Close()
+	defer os.Remove(tmp.Name())
+
+	cmd := exec.Command("dotnet", "fsi", "--quiet", tmp.Name())
+	cmd.Stdin = strings.NewReader(src)
+	out, err := cmd.Output()
+	if err != nil {
+		return nil, err
+	}
+	var p Program
+	if err := json.Unmarshal(out, &p); err != nil {
+		return nil, err
+	}
+	return &p, nil
 }
