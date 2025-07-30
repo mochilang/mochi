@@ -14,7 +14,8 @@ func Inspect(src string, includePos bool) (*Program, error) {
 	p.SetLanguage(rust.GetLanguage())
 	data := []byte(src)
 	tree := p.Parse(nil, data)
-	return &Program{Root: convert(tree.RootNode(), data, includePos)}, nil
+	root := convert(tree.RootNode(), data, includePos)
+	return &Program{Root: (*SourceFile)(root)}, nil
 }
 
 // MarshalJSON implements json.Marshaler for Program, to ensure stable output.
