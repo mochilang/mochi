@@ -2556,6 +2556,34 @@ func (u *UnaryExpr) emit(w io.Writer) {
 		}
 		return
 	}
+	if u.Op == "-" {
+		t := inferType(u.Value)
+		if t == "bigrat" {
+			needBigRat = true
+			fmt.Fprint(w, "_sub(_bigrat(0, null), ")
+			if _, ok := u.Value.(*BinaryExpr); ok {
+				fmt.Fprint(w, "(")
+				u.Value.emit(w)
+				fmt.Fprint(w, "))")
+			} else {
+				u.Value.emit(w)
+				fmt.Fprint(w, ")")
+			}
+			return
+		}
+		if t == "bigint" {
+			fmt.Fprint(w, "(")
+			if _, ok := u.Value.(*BinaryExpr); ok {
+				fmt.Fprint(w, "(")
+				u.Value.emit(w)
+				fmt.Fprint(w, ")")
+			} else {
+				u.Value.emit(w)
+			}
+			fmt.Fprint(w, ").negate()")
+			return
+		}
+	}
 	fmt.Fprint(w, u.Op)
 	if _, ok := u.Value.(*BinaryExpr); ok {
 		fmt.Fprint(w, "(")
@@ -2997,6 +3025,18 @@ func arrayElemType(e Expr) string {
 			return strings.TrimSuffix(strings.TrimPrefix(t, "java.util.List<"), ">")
 		}
 		return ""
+	case *CallExpr:
+		if t, ok := funcRet[ex.Func]; ok {
+			if strings.HasSuffix(t, "[]") {
+				return strings.TrimSuffix(t, "[]")
+			}
+			if strings.HasPrefix(t, "java.util.List<") && strings.HasSuffix(t, ">") {
+				return strings.TrimSuffix(strings.TrimPrefix(t, "java.util.List<"), ">")
+			}
+		}
+		if t := inferType(ex); strings.HasSuffix(t, "[]") {
+			return strings.TrimSuffix(t, "[]")
+		}
 	case *VarExpr:
 		t := ex.Type
 		if t == "" {
@@ -3378,7 +3418,11 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			varDecls[s.Let.Name] = vs
 			scopeStack[len(scopeStack)-1][s.Let.Name] = vs
 			if t != "" {
-				varTypes[s.Let.Name] = t
+				if strings.HasPrefix(t, "fn(") {
+					varTypes[s.Let.Name] = javaType(t)
+				} else {
+					varTypes[s.Let.Name] = t
+				}
 			}
 			if ml, ok := e.(*MapLit); ok {
 				if len(ml.Fields) > 0 {
@@ -4387,8 +4431,16 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 			} else if v, ok := expr.(*VarExpr); ok {
 				if v.Name == "int" && len(args) == 1 {
 					expr = &IntCastExpr{Value: args[0]}
-				} else if t, ok := varTypes[v.Name]; ok && (strings.HasPrefix(t, "fn") || strings.HasPrefix(t, "java.util.function.Function")) {
-					expr = &MethodCallExpr{Target: expr, Name: "apply", Args: args}
+				} else if t, ok := varTypes[v.Name]; ok {
+					if strings.HasPrefix(t, "fn") || strings.HasPrefix(t, "java.util.function.Function") {
+						expr = &MethodCallExpr{Target: expr, Name: "apply", Args: args}
+					} else if strings.HasPrefix(t, "java.util.function.Supplier") {
+						expr = &MethodCallExpr{Target: expr, Name: "get", Args: args}
+					} else if strings.HasPrefix(t, "java.util.function.Consumer") || strings.HasPrefix(t, "java.util.function.BiConsumer") {
+						expr = &MethodCallExpr{Target: expr, Name: "accept", Args: args}
+					} else {
+						expr = &CallExpr{Func: v.Name, Args: args}
+					}
 				} else {
 					expr = &CallExpr{Func: v.Name, Args: args}
 				}
@@ -4582,8 +4634,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if name == "str" && len(args) == 1 {
 			return &CallExpr{Func: "String.valueOf", Args: args}, nil
 		}
-		if name == "substring" && len(args) == 3 {
+		if (name == "substring" || name == "substr") && len(args) == 3 {
 			return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
+		}
+		if name == "slice" && len(args) == 3 {
+			return &SliceExpr{Value: args[0], Start: args[1], End: args[2]}, nil
 		}
 		if name == "split" && len(args) == 2 {
 			return &MethodCallExpr{Target: args[0], Name: "split", Args: []Expr{args[1]}}, nil
