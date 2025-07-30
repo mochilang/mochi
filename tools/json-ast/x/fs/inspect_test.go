@@ -57,7 +57,7 @@ func TestInspect_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("read src: %v", err)
 			}
-			prog, err := fs.Inspect(string(data))
+			prog, err := fs.Inspect(string(data), false)
 			if err != nil {
 				t.Fatalf("inspect: %v", err)
 			}

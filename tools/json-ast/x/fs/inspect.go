@@ -11,10 +11,11 @@ type Program struct {
 }
 
 // Inspect parses F# code using tree-sitter and returns its Program representation.
-func Inspect(src string) (*Program, error) {
+// When withPos is false, positional information is omitted from the resulting AST.
+func Inspect(src string, withPos bool) (*Program, error) {
 	parser := sitter.NewParser()
 	parser.SetLanguage(sitter.NewLanguage(fsharp.LanguageFSharp()))
 	tree := parser.Parse(nil, []byte(src))
-	root := convertNode(tree.RootNode(), []byte(src))
+	root := convertNode(tree.RootNode(), []byte(src), withPos)
 	return &Program{Root: root}, nil
 }
