@@ -16,6 +16,15 @@ type Term struct {
 	Atom    string   `json:"-"`
 	Number  *float64 `json:"-"`
 	Bool    *bool    `json:"-"`
+	Text    string   `json:"-"`
+}
+
+// Node is a simplified representation used in the JSON output. Only meaningful
+// tokens are preserved. Text contains the literal token string for leaves.
+type Node struct {
+	Kind     string `json:"kind"`
+	Text     string `json:"text,omitempty"`
+	Children []Node `json:"children,omitempty"`
 }
 
 // Clause describes a predicate clause.
@@ -43,23 +52,67 @@ func toTerm(n *sitter.Node, src []byte) Term {
 	if n.ChildCount() == 0 {
 		text := n.Content(src)
 		if n.Type() == "variable" {
-			return Term{Var: text}
+			return Term{Var: text, Text: text}
 		}
 		if n.Type() == "true" || n.Type() == "false" {
 			b := n.Type() == "true"
-			return Term{Bool: &b}
+			return Term{Bool: &b, Text: text}
 		}
 		if num, err := strconv.ParseFloat(text, 64); err == nil {
-			return Term{Number: &num}
+			return Term{Number: &num, Text: text}
 		}
-		return Term{Atom: text}
+		return Term{Atom: text, Text: text}
 	}
-	t := Term{Functor: n.Type()}
+	t := Term{Functor: n.Type(), Text: n.Type()}
 	for i := 0; i < int(n.NamedChildCount()); i++ {
 		child := n.NamedChild(i)
 		t.Args = append(t.Args, toTerm(child, src))
 	}
 	return t
+}
+
+// termToNode converts a parsed Term into the simplified Node representation.
+func termToNode(t Term) Node {
+	switch {
+	case t.Var != "":
+		return Node{Kind: "var", Text: t.Var}
+	case t.Number != nil:
+		return Node{Kind: "number", Text: t.Text}
+	case t.Bool != nil:
+		return Node{Kind: "bool", Text: t.Text}
+	case t.Atom != "":
+		return Node{Kind: "atom", Text: t.Atom}
+	case t.List != nil:
+		n := Node{Kind: "list"}
+		for _, el := range t.List {
+			n.Children = append(n.Children, termToNode(el))
+		}
+		return n
+	case t.Functor != "":
+		n := Node{Kind: t.Functor}
+		for _, a := range t.Args {
+			n.Children = append(n.Children, termToNode(a))
+		}
+		return n
+	default:
+		return Node{Kind: "unknown"}
+	}
+}
+
+// programToNode converts a Program parsed by SWI-Prolog into a Node tree.
+func programToNode(p *Program) Node {
+	root := Node{Kind: "program"}
+	for _, c := range p.Clauses {
+		clause := Node{Kind: "clause"}
+		head := Node{Kind: c.Name}
+		for _, p := range c.Params {
+			head.Children = append(head.Children, termToNode(p))
+		}
+		clause.Children = append(clause.Children, head)
+		clause.Children = append(clause.Children, termToNode(c.Goal))
+		root.Children = append(root.Children, clause)
+	}
+	return root
 }
 
 // UnmarshalJSON decodes a term from the JSON form produced by the inspector script.
@@ -74,6 +127,7 @@ func (t *Term) UnmarshalJSON(b []byte) error {
 	t.Atom = ""
 	t.Number = nil
 	t.Bool = nil
+	t.Text = ""
 	switch b[0] {
 	case '{':
 		var obj map[string]json.RawMessage
@@ -84,6 +138,7 @@ func (t *Term) UnmarshalJSON(b []byte) error {
 			if err := json.Unmarshal(v, &t.Var); err != nil {
 				return err
 			}
+			t.Text = t.Var
 			return nil
 		}
 		if f, ok := obj["functor"]; ok {
@@ -95,6 +150,7 @@ func (t *Term) UnmarshalJSON(b []byte) error {
 					return err
 				}
 			}
+			t.Text = t.Functor
 			return nil
 		}
 		for k, v := range obj {
@@ -103,24 +159,39 @@ func (t *Term) UnmarshalJSON(b []byte) error {
 				return err
 			}
 			t.Functor = "{}"
-			t.Args = append(t.Args, Term{Functor: ":", Args: []Term{{Atom: k}, child}})
+			t.Args = append(t.Args, Term{Functor: ":", Args: []Term{{Atom: k, Text: k}, child}})
 		}
+		t.Text = "{}"
 		return nil
 	case '[':
-		return json.Unmarshal(b, &t.List)
+		if err := json.Unmarshal(b, &t.List); err != nil {
+			return err
+		}
+		t.Text = "[]"
+		return nil
 	case '"':
-		return json.Unmarshal(b, &t.Atom)
+		if err := json.Unmarshal(b, &t.Atom); err != nil {
+			return err
+		}
+		t.Text = t.Atom
+		return nil
 	case 't', 'f':
 		var v bool
 		if err := json.Unmarshal(b, &v); err != nil {
 			return err
 		}
 		t.Bool = &v
+		if v {
+			t.Text = "true"
+		} else {
+			t.Text = "false"
+		}
 		return nil
 	default:
 		var num float64
 		if err := json.Unmarshal(b, &num); err == nil {
 			t.Number = &num
+			t.Text = fmt.Sprintf("%v", num)
 			return nil
 		}
 	}
