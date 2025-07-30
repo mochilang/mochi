@@ -16,13 +16,13 @@ var IncludePos bool
 // Text field populated so the resulting JSON remains compact. Position fields
 // are optional and only populated when IncludePos is true.
 type Node struct {
-	Kind     string `json:"kind"`
-	Text     string `json:"text,omitempty"`
-	Start    int    `json:"start,omitempty"`
-	StartCol int    `json:"startCol,omitempty"`
-	End      int    `json:"end,omitempty"`
-	EndCol   int    `json:"endCol,omitempty"`
-	Children []Node `json:"children,omitempty"`
+	Kind     string  `json:"kind"`
+	Text     string  `json:"text,omitempty"`
+	Start    int     `json:"start,omitempty"`
+	StartCol int     `json:"startCol,omitempty"`
+	End      int     `json:"end,omitempty"`
+	EndCol   int     `json:"endCol,omitempty"`
+	Children []*Node `json:"children,omitempty"`
 }
 
 // The following typed aliases mirror the subset of tree-sitter node kinds that
@@ -39,7 +39,7 @@ type (
 
 // Program represents a parsed Scheme source file.
 type Program struct {
-	Forms []Form `json:"forms"`
+	Forms []*Form `json:"forms"`
 }
 
 // isValueNode reports whether the given kind should keep its text content. Only
@@ -79,7 +79,7 @@ func convertNode(n *sitter.Node, src []byte) *Node {
 
 	for i := uint(0); i < n.NamedChildCount(); i++ {
 		if c := convertNode(n.NamedChild(i), src); c != nil {
-			node.Children = append(node.Children, *c)
+			node.Children = append(node.Children, c)
 		}
 	}
 
@@ -94,10 +94,10 @@ func convertProgram(root *sitter.Node, src []byte) *Program {
 	if root == nil {
 		return &Program{}
 	}
-	var forms []Form
+	var forms []*Form
 	for i := uint(0); i < root.NamedChildCount(); i++ {
 		if n := convertNode(root.NamedChild(i), src); n != nil {
-			forms = append(forms, Form(*n))
+			forms = append(forms, (*Form)(n))
 		}
 	}
 	return &Program{Forms: forms}
