@@ -2,7 +2,9 @@ package zig
 
 import sitter "github.com/smacker/go-tree-sitter"
 
-// Node represents a tree-sitter node in Zig's syntax tree.
+// Node represents a tree-sitter node in Zig's syntax tree. Only named nodes are
+// included so that punctuation tokens are omitted from the output. Leaf nodes
+// carry their textual content in the Text field.
 type Node struct {
 	Type     string `json:"type"`
 	Start    int    `json:"start"`
@@ -18,11 +20,11 @@ func convertNode(n *sitter.Node, src []byte) Node {
 		Start: int(n.StartByte()),
 		End:   int(n.EndByte()),
 	}
-	if n.ChildCount() == 0 {
+	if n.NamedChildCount() == 0 {
 		node.Text = n.Content(src)
 	}
-	for i := 0; i < int(n.ChildCount()); i++ {
-		child := n.Child(i)
+	for i := 0; i < int(n.NamedChildCount()); i++ {
+		child := n.NamedChild(i)
 		if child == nil {
 			continue
 		}
