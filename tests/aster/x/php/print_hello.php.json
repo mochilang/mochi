@@ -1,0 +1,27 @@
+{
+  "statements": [
+    {
+      "kind": "echo_statement",
+      "children": [
+        {
+          "kind": "sequence_expression",
+          "children": [
+            {
+              "kind": "encapsed_string",
+              "children": [
+                {
+                  "kind": "string_content",
+                  "text": "hello"
+                }
+              ]
+            },
+            {
+              "kind": "name",
+              "text": "PHP_EOL"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

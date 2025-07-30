@@ -47,7 +47,7 @@ func TestInspect_Golden(t *testing.T) {
 	ensurePHP(t)
 	root := repoRoot(t)
 	srcDir := filepath.Join(root, "tests", "transpiler", "x", "php")
-	outDir := filepath.Join(root, "tests", "json-ast", "x", "php")
+	outDir := filepath.Join(root, "tests", "aster", "x", "php")
 	os.MkdirAll(outDir, 0o755)
 
 	src := filepath.Join(srcDir, "cross_join.php")
