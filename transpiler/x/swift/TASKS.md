@@ -1,6 +1,6 @@
-## Progress (2025-07-28 11:57 +0700)
-- swift: support dynamic len and fix cholesky
-- Generated golden tests for 102/104 programs
+## Progress (2025-07-30 21:21 +0700)
+- swift transpiler: add substr builtin; rosetta 402
+- Generated golden tests for 102/105 programs
 - Updated README checklist and output artifacts
 
 # Swift Transpiler Tasks

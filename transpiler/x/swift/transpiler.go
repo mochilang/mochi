@@ -998,7 +998,15 @@ func (c *CastExpr) emit(w io.Writer) {
 			c.Expr.emit(w)
 			return
 		}
-		if force {
+		if t == "Double" {
+			fmt.Fprint(w, "Double(")
+			c.Expr.emit(w)
+			fmt.Fprint(w, ")")
+		} else if t == "BigInt" {
+			fmt.Fprint(w, "BigInt(")
+			c.Expr.emit(w)
+			fmt.Fprint(w, ")")
+		} else if force {
 			fmt.Fprint(w, "(")
 			c.Expr.emit(w)
 			fmt.Fprintf(w, " as! %s)", t)
@@ -1231,7 +1239,7 @@ func (c *CallExpr) emit(w io.Writer) {
 			fmt.Fprint(w, ".max()!)")
 			return
 		}
-	case "substring":
+	case "substring", "substr":
 		if len(c.Args) == 3 {
 			fmt.Fprint(w, "String(Array(String(describing: ")
 			c.Args[0].emit(w)
@@ -1725,6 +1733,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    }\n")
 		buf.WriteString("}\n")
 		buf.WriteString("extension Int { init(_ b: BigInt) { self = b.toInt() } }\n")
+		buf.WriteString("extension Double { init(_ b: BigInt) { self = Double(b.toInt()) } }\n")
 	}
 	needJSON := false
 	for _, st := range p.Stmts {

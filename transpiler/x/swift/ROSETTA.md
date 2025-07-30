@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 209/493
-Last updated: 2025-07-28 11:57 +0700
+Completed: 212/493
+Last updated: 2025-07-30 21:21 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -21,9 +21,9 @@ Last updated: 2025-07-28 11:57 +0700
 | 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
 | 13 | 99-bottles-of-beer-2 | ✓ | 32.737ms | 3.1 MB |
 | 14 | 99-bottles-of-beer | ✓ | 502µs | 3.2 MB |
-| 15 | DNS-query | ✓ | 798µs | 3.4 MB |
-| 16 | Duffinian-numbers |   |  |  |
-| 17 | Find-if-a-point-is-within-a-triangle |   |  |  |
+| 15 | dns-query |   |  |  |
+| 16 | duffinian-numbers |   |  |  |
+| 17 | find-if-a-point-is-within-a-triangle |   |  |  |
 | 18 | a+b | ✓ | 404µs | 3.2 MB |
 | 19 | abbreviations-automatic | ✓ | 27.126ms | 3.1 MB |
 | 20 | abbreviations-easy | ✓ | 11.509ms | 3.2 MB |
@@ -406,10 +406,10 @@ Last updated: 2025-07-28 11:57 +0700
 | 397 | fairshare-between-two-and-more |   |  |  |
 | 398 | farey-sequence |   |  |  |
 | 399 | fast-fourier-transform | ✓ | 238µs | 3.0 MB |
-| 400 | fasta-format |   |  |  |
-| 401 | faulhabers-formula |   |  |  |
-| 402 | faulhabers-triangle |   |  |  |
-| 403 | feigenbaum-constant-calculation |   |  |  |
+| 400 | fasta-format | ✓ | 822µs | 3.1 MB |
+| 401 | faulhabers-formula | ✓ | 1.162ms | 3.1 MB |
+| 402 | faulhabers-triangle | ✓ | 1.772ms | 3.3 MB |
+| 403 | feigenbaum-constant-calculation | ✓ | 1.687ms | 3.2 MB |
 | 404 | fermat-numbers |   |  |  |
 | 405 | fibonacci-n-step-number-sequences |   |  |  |
 | 406 | fibonacci-sequence-1 |   |  |  |
