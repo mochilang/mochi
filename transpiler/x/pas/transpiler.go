@@ -149,6 +149,7 @@ type Program struct {
 	UseMem        bool
 	NeedBenchNow  bool
 	UseInput      bool
+	UseBigRat     bool
 	Maps          []MapLitDef
 }
 
@@ -490,6 +491,11 @@ func (c *CastExpr) emit(w io.Writer) {
 		io.WriteString(w, "Int64(")
 		c.Expr.emit(w)
 		io.WriteString(w, ")")
+	case "bigrat":
+		currProg.UseBigRat = true
+		io.WriteString(w, "_bigrat(")
+		c.Expr.emit(w)
+		io.WriteString(w, ")")
 	case "float":
 		io.WriteString(w, "Double(")
 		c.Expr.emit(w)
@@ -503,11 +509,19 @@ func (c *CastExpr) emit(w io.Writer) {
 type UnaryExpr struct {
 	Op   string
 	Expr Expr
+	Rat  bool
 }
 
 func (u *UnaryExpr) isBool() bool { return u.Op == "not " }
 
 func (u *UnaryExpr) emit(w io.Writer) {
+	if u.Op == "-" && u.Rat {
+		currProg.UseBigRat = true
+		io.WriteString(w, "_sub(_bigrat(0), ")
+		u.Expr.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
 	fmt.Fprint(w, u.Op)
 	switch u.Expr.(type) {
 	case *BinaryExpr:
@@ -526,6 +540,7 @@ type BinaryExpr struct {
 	Right Expr
 	Bool  bool
 	Real  bool // use real division for '/'
+	Rat   bool // operation on BigRat
 }
 
 type ContainsExpr struct {
@@ -656,6 +671,28 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		b.Right.emit(w)
 		io.WriteString(w, ") <> 0")
 		return
+	}
+	if b.Rat {
+		currProg.UseBigRat = true
+		fn := ""
+		switch b.Op {
+		case "+":
+			fn = "_add"
+		case "-":
+			fn = "_sub"
+		case "*":
+			fn = "_mul"
+		case "/":
+			fn = "_div"
+		}
+		if fn != "" {
+			io.WriteString(w, fn+"(")
+			b.Left.emit(w)
+			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
 	}
 	if _, ok := b.Left.(*BinaryExpr); ok {
 		io.WriteString(w, "(")
@@ -845,6 +882,7 @@ func (a *AssignStmt) emit(w io.Writer) {
 
 // Emit renders Pascal code for the program with a deterministic header.
 func (p *Program) Emit() []byte {
+	currProg = p
 	var buf bytes.Buffer
 	buf.WriteString("{$mode objfpc}\nprogram Main;\n")
 	var uses []string
@@ -915,6 +953,18 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseInput {
 		buf.WriteString("function _input(): string;\nvar s: string;\nbegin\n  if EOF(Input) then s := '' else ReadLn(s);\n  _input := s;\nend;\n")
+	}
+	if p.UseBigRat {
+		buf.WriteString("type BigRat = record num: int64; den: int64; end;\n")
+		buf.WriteString("function _gcd(a, b: int64): int64;\nvar t: int64;\nbegin\n  while b <> 0 do begin\n    t := b;\n    b := a mod b;\n    a := t;\n  end;\n  if a < 0 then a := -a;\n  _gcd := a;\nend;\n")
+		buf.WriteString("function _bigrat(n: int64): BigRat;\nbegin\n  _bigrat.num := n; _bigrat.den := 1;\nend;\n")
+		buf.WriteString("function _bigrat2(n, d: int64): BigRat;\nvar g: int64;\nbegin\n  if d < 0 then begin n := -n; d := -d; end;\n  g := _gcd(n, d);\n  _bigrat2.num := n div g;\n  _bigrat2.den := d div g;\nend;\n")
+		buf.WriteString("function _add(a, b: BigRat): BigRat;\nbegin\n  _add := _bigrat2(a.num*b.den + b.num*a.den, a.den*b.den);\nend;\n")
+		buf.WriteString("function _sub(a, b: BigRat): BigRat;\nbegin\n  _sub := _bigrat2(a.num*b.den - b.num*a.den, a.den*b.den);\nend;\n")
+		buf.WriteString("function _mul(a, b: BigRat): BigRat;\nbegin\n  _mul := _bigrat2(a.num*b.num, a.den*b.den);\nend;\n")
+		buf.WriteString("function _div(a, b: BigRat): BigRat;\nbegin\n  _div := _bigrat2(a.num*b.den, a.den*b.num);\nend;\n")
+		buf.WriteString("function num(r: BigRat): int64; begin num := r.num; end;\n")
+		buf.WriteString("function denom(r: BigRat): int64; begin denom := r.den; end;\n")
 	}
 	if p.UseLookupHost {
 		buf.WriteString("type VariantArray = array of Variant;\n")
@@ -2104,7 +2154,10 @@ func convertBenchBlock(env *types.Env, bench *parser.BenchBlock, varTypes map[st
 		&AssignStmt{Name: memStart, Expr: &CallExpr{Name: "_mem"}},
 		&AssignStmt{Name: startName, Expr: &CallExpr{Name: "_bench_now"}},
 	}
+	prevFunc := currentFunc
+	currentFunc = bench.Name
 	body, err := convertBody(env, bench.Body, varTypes)
+	currentFunc = prevFunc
 	if err != nil {
 		return nil, err
 	}
@@ -2200,12 +2253,20 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 				}
 			}
 			be = &BinaryExpr{Op: op, Left: left, Right: right}
+			lt := inferType(left)
+			rt := inferType(right)
+			if lt == "BigRat" || rt == "BigRat" {
+				be.Rat = true
+			}
 		case "/":
 			be = &BinaryExpr{Op: "/", Left: left, Right: right}
 			lt := inferType(left)
 			rt := inferType(right)
 			if lt == "real" || rt == "real" {
 				be.Real = true
+			}
+			if lt == "BigRat" || rt == "BigRat" {
+				be.Rat = true
 			}
 		case "==":
 			be = &BinaryExpr{Op: "=", Left: left, Right: right, Bool: true}
@@ -2514,6 +2575,9 @@ func zeroValue(typ string) Expr {
 		return &IntLit{Value: 0}
 	case "string":
 		return &StringLit{Value: ""}
+	case "BigRat":
+		currProg.UseBigRat = true
+		return &CallExpr{Name: "_bigrat", Args: []Expr{&IntLit{Value: 0}}}
 	default:
 		for _, r := range currProg.Records {
 			if r.Name == typ {
@@ -3366,6 +3430,9 @@ func typeFromSimple(s string) string {
 		return "real"
 	case "bigint":
 		return "int64"
+	case "bigrat":
+		currProg.UseBigRat = true
+		return "BigRat"
 	default:
 		return s
 	}
@@ -3381,6 +3448,9 @@ func pasTypeFromType(t types.Type) string {
 		return "integer"
 	case types.FloatType:
 		return "real"
+	case types.BigRatType:
+		currProg.UseBigRat = true
+		return "BigRat"
 	case types.StructType:
 		return v.Name
 	case types.ListType:
@@ -3417,7 +3487,8 @@ func convertUnary(env *types.Env, u *parser.Unary) (Expr, error) {
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		switch u.Ops[i] {
 		case "-":
-			expr = &UnaryExpr{Op: "-", Expr: expr}
+			rat := inferType(expr) == "BigRat"
+			expr = &UnaryExpr{Op: "-", Expr: expr, Rat: rat}
 		case "!":
 			expr = &UnaryExpr{Op: "not ", Expr: expr}
 		default:
@@ -3608,7 +3679,7 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil:
 			target := *op.Cast.Type.Simple
 			switch target {
-			case "int", "float":
+			case "int", "float", "bigrat":
 				expr = &CastExpr{Expr: expr, Type: target}
 			default:
 				expr = expr
@@ -3702,10 +3773,16 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			}
 			if t == "real" {
 				name = "FloatToStr"
+				currProg.UseSysUtils = true
+			} else if t == "BigRat" {
+				currProg.UseSysUtils = true
+				numCall := &CallExpr{Name: "IntToStr", Args: []Expr{&CallExpr{Name: "num", Args: args}}}
+				denCall := &CallExpr{Name: "IntToStr", Args: []Expr{&CallExpr{Name: "denom", Args: args}}}
+				return &BinaryExpr{Op: "+", Left: &BinaryExpr{Op: "+", Left: numCall, Right: &StringLit{Value: "/"}}, Right: denCall}, nil
 			} else {
 				name = "IntToStr"
+				currProg.UseSysUtils = true
 			}
-			currProg.UseSysUtils = true
 		} else if name == "upper" && len(args) == 1 {
 			currProg.UseSysUtils = true
 			return &CallExpr{Name: "UpperCase", Args: args}, nil
@@ -3758,6 +3835,12 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				}
 				return &ValuesExpr{Elems: elems}, nil
 			}
+		} else if name == "num" && len(args) == 1 {
+			currProg.UseBigRat = true
+			return &CallExpr{Name: "num", Args: args}, nil
+		} else if name == "denom" && len(args) == 1 {
+			currProg.UseBigRat = true
+			return &CallExpr{Name: "denom", Args: args}, nil
 		} else if name == "now" && len(args) == 0 {
 			currProg.UseSysUtils = true
 			currProg.UseNow = true
@@ -4079,6 +4162,9 @@ func inferType(e Expr) string {
 		}
 		lt := inferType(v.Left)
 		rt := inferType(v.Right)
+		if lt == "BigRat" || rt == "BigRat" {
+			return "BigRat"
+		}
 		if lt == rt {
 			return lt
 		}
@@ -4100,6 +4186,8 @@ func inferType(e Expr) string {
 		case "avg":
 			return "real"
 		case "min", "max":
+			return "integer"
+		case "num", "denom":
 			return "integer"
 		case "Sqrt", "Sin", "Ln", "Power":
 			return "real"
@@ -4191,6 +4279,9 @@ func inferType(e Expr) string {
 		}
 		if v.Type == "float" {
 			return "real"
+		}
+		if v.Type == "bigrat" {
+			return "BigRat"
 		}
 		if strings.HasPrefix(v.Type, "array of ") {
 			return v.Type
