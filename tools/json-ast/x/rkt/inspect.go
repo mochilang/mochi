@@ -12,9 +12,11 @@ type Program struct {
 
 // Inspect parses Racket source code using tree-sitter and returns a Program
 // describing its syntax tree.
-func Inspect(src string) (*Program, error) {
+// Inspect parses Racket source code using tree-sitter.  If withPos is true the
+// resulting AST nodes include line and column information.
+func Inspect(src string, withPos bool) (*Program, error) {
 	p := sitter.NewParser()
 	p.SetLanguage(sitter.NewLanguage(racket.Language()))
 	tree := p.Parse(nil, []byte(src))
-	return convertProgram(tree.RootNode(), []byte(src)), nil
+	return convertProgram(tree.RootNode(), []byte(src), withPos), nil
 }
