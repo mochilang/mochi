@@ -7,10 +7,14 @@ import (
 	"strconv"
 )
 
-// WithPos controls whether source position information is populated when
-// converting nodes. It is disabled by default to keep the resulting JSON
-// compact.
-var WithPos bool
+// Option controls how the AST is generated when converting parsed terms into
+// Node structures. Position information is omitted unless Positions is true so
+// the resulting JSON stays compact by default.
+type Option struct {
+	// Positions controls whether line and column information is populated.
+	// It is disabled by default so the resulting JSON remains compact.
+	Positions bool
+}
 
 // Term represents a Prolog term.
 type Term struct {
@@ -144,14 +148,14 @@ func pos(src []byte, off int) (int, int) {
 }
 
 // convert transforms a tree-sitter node into our Node structure.
-func convert(n *sitter.Node, src []byte) *Node {
+func convert(n *sitter.Node, src []byte, opt Option) *Node {
 	if n == nil {
 		return nil
 	}
 	sp := n.StartPoint()
 	ep := n.EndPoint()
 	node := &Node{Kind: n.Type()}
-	if WithPos {
+	if opt.Positions {
 		node.Start = int(sp.Row) + 1
 		node.StartCol = int(sp.Column)
 		node.End = int(ep.Row) + 1
@@ -170,7 +174,7 @@ func convert(n *sitter.Node, src []byte) *Node {
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
 		child := n.NamedChild(i)
-		c := convert(child, src)
+		c := convert(child, src, opt)
 		if c == nil {
 			continue
 		}
@@ -183,11 +187,11 @@ func convert(n *sitter.Node, src []byte) *Node {
 }
 
 // programToNode converts a Program parsed by SWI-Prolog into a Node tree.
-func programToNode(p *rawProgram, src []byte) *Program {
+func programToNode(p *rawProgram, src []byte, opt Option) *Program {
 	root := &Node{Kind: "program"}
 	for _, c := range p.Clauses {
 		clause := &Node{Kind: "clause"}
-		if WithPos {
+		if opt.Positions {
 			line, col := pos(src, c.Start)
 			endLine, endCol := pos(src, c.End)
 			clause.Start = line

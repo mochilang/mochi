@@ -13,7 +13,15 @@ import (
 //go:embed pl_ast.pl
 var plScript string
 
+// Inspect parses Prolog source code using SWI-Prolog. It returns a Program
+// describing the file's clauses. Options may be nil to accept the defaults.
 func Inspect(src string) (*Program, error) {
+	return InspectWithOption(src, Option{})
+}
+
+// InspectWithOption behaves like Inspect but allows the caller to specify
+// whether position information should be included in the resulting AST.
+func InspectWithOption(src string, opt Option) (*Program, error) {
 	exe := os.Getenv("SWIPL")
 	if exe == "" {
 		exe = "swipl"
@@ -50,5 +58,5 @@ func Inspect(src string) (*Program, error) {
 	if err := json.Unmarshal(out.Bytes(), &prog); err != nil {
 		return nil, err
 	}
-	return programToNode(&prog, []byte(src)), nil
+	return programToNode(&prog, []byte(src), opt), nil
 }
