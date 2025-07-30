@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (230/493)
-_Last updated: 2025-07-28 12:00 +0700_
+## Golden Test Checklist (269/493)
+_Last updated: 2025-07-30 21:43 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -21,9 +21,9 @@ _Last updated: 2025-07-28 12:00 +0700_
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 2.573ms | 8.7 MB |
 | 13 | 99-bottles-of-beer-2 | ✓ | 54µs | 8.7 MB |
 | 14 | 99-bottles-of-beer | ✓ | 14µs | 8.7 MB |
-| 15 | DNS-query | ✓ | 369µs | 8.7 MB |
-| 16 | Duffinian-numbers |   |  |  |
-| 17 | Find-if-a-point-is-within-a-triangle |   |  |  |
+| 15 | dns-query |   |  |  |
+| 16 | duffinian-numbers |   |  |  |
+| 17 | find-if-a-point-is-within-a-triangle | error |  |  |
 | 18 | a+b | ✓ | 6µs | 8.7 MB |
 | 19 | abbreviations-automatic | ✓ | 34µs | 8.7 MB |
 | 20 | abbreviations-easy | ✓ | 14µs | 8.7 MB |
@@ -406,56 +406,56 @@ _Last updated: 2025-07-28 12:00 +0700_
 | 397 | fairshare-between-two-and-more |   |  |  |
 | 398 | farey-sequence |   |  |  |
 | 399 | fast-fourier-transform |   |  |  |
-| 400 | fasta-format |   |  |  |
-| 401 | faulhabers-formula |   |  |  |
-| 402 | faulhabers-triangle |   |  |  |
-| 403 | feigenbaum-constant-calculation |   |  |  |
-| 404 | fermat-numbers |   |  |  |
-| 405 | fibonacci-n-step-number-sequences |   |  |  |
-| 406 | fibonacci-sequence-1 |   |  |  |
-| 407 | fibonacci-sequence-2 |   |  |  |
-| 408 | fibonacci-sequence-3 |   |  |  |
-| 409 | fibonacci-sequence-4 |   |  |  |
-| 410 | fibonacci-sequence-5 |   |  |  |
-| 411 | fibonacci-word-fractal |   |  |  |
-| 412 | fibonacci-word |   |  |  |
-| 413 | file-extension-is-in-extensions-list |   |  |  |
-| 414 | file-input-output-1 |   |  |  |
-| 415 | file-input-output-2 |   |  |  |
-| 416 | file-input-output-3 |   |  |  |
-| 417 | file-modification-time |   |  |  |
-| 418 | file-size-distribution |   |  |  |
-| 419 | file-size |   |  |  |
-| 420 | filter |   |  |  |
-| 421 | find-chess960-starting-position-identifier-2 |   |  |  |
-| 422 | find-chess960-starting-position-identifier |   |  |  |
-| 423 | find-common-directory-path |   |  |  |
-| 424 | find-duplicate-files |   |  |  |
-| 425 | find-if-a-point-is-within-a-triangle |   |  |  |
-| 426 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
-| 427 | find-limit-of-recursion |   |  |  |
-| 428 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
-| 429 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
-| 430 | find-the-intersection-of-two-lines |   |  |  |
-| 431 | find-the-last-sunday-of-each-month |   |  |  |
-| 432 | find-the-missing-permutation |   |  |  |
-| 433 | first-class-environments |   |  |  |
-| 434 | first-class-functions-use-numbers-analogously |   |  |  |
-| 435 | first-power-of-2-that-has-leading-decimal-digits-of-12 |   |  |  |
-| 436 | five-weekends |   |  |  |
-| 437 | fivenum-1 |   |  |  |
-| 438 | fivenum-2 |   |  |  |
-| 439 | fivenum-3 |   |  |  |
-| 440 | fixed-length-records-1 |   |  |  |
-| 441 | fixed-length-records-2 |   |  |  |
-| 442 | fizzbuzz-1 |   |  |  |
-| 443 | fizzbuzz-2 |   |  |  |
-| 444 | fizzbuzz |   |  |  |
-| 445 | flatten-a-list-1 |   |  |  |
-| 446 | flatten-a-list-2 |   |  |  |
-| 447 | flipping-bits-game |   |  |  |
-| 448 | flow-control-structures-1 |   |  |  |
-| 449 | flow-control-structures-2 |   |  |  |
+| 400 | fasta-format | ✓ | 7µs | 8.7 MB |
+| 401 | faulhabers-formula | ✓ | 28µs | 8.7 MB |
+| 402 | faulhabers-triangle | ✓ | 39µs | 8.7 MB |
+| 403 | feigenbaum-constant-calculation | ✓ | 280µs | 8.7 MB |
+| 404 | fermat-numbers | ✓ | 33µs | 8.7 MB |
+| 405 | fibonacci-n-step-number-sequences | ✓ | 7µs | 8.7 MB |
+| 406 | fibonacci-sequence-1 | ✓ |  | 8.7 MB |
+| 407 | fibonacci-sequence-2 | ✓ |  | 8.7 MB |
+| 408 | fibonacci-sequence-3 | ✓ |  | 8.7 MB |
+| 409 | fibonacci-sequence-4 | ✓ | 5µs | 8.7 MB |
+| 410 | fibonacci-sequence-5 | ✓ | 8µs | 8.7 MB |
+| 411 | fibonacci-word-fractal | ✓ | 5µs | 8.7 MB |
+| 412 | fibonacci-word | ✓ | 8.398ms | 8.7 MB |
+| 413 | file-extension-is-in-extensions-list | ✓ | 10µs | 8.7 MB |
+| 414 | file-input-output-1 | ✓ | 4µs | 8.7 MB |
+| 415 | file-input-output-2 | ✓ | 4µs | 8.7 MB |
+| 416 | file-input-output-3 | ✓ | 6µs | 8.7 MB |
+| 417 | file-modification-time | ✓ | 5µs | 8.7 MB |
+| 418 | file-size-distribution | ✓ | 8µs | 8.7 MB |
+| 419 | file-size | ✓ | 4µs | 8.7 MB |
+| 420 | filter | ✓ | 14µs | 8.7 MB |
+| 421 | find-chess960-starting-position-identifier-2 | error |  |  |
+| 422 | find-chess960-starting-position-identifier | error |  |  |
+| 423 | find-common-directory-path | ✓ | 11µs | 8.7 MB |
+| 424 | find-duplicate-files | ✓ | 5µs | 8.7 MB |
+| 425 | find-if-a-point-is-within-a-triangle | error |  |  |
+| 426 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 412µs | 8.7 MB |
+| 427 | find-limit-of-recursion | ✓ | 50µs | 8.7 MB |
+| 428 | find-palindromic-numbers-in-both-binary-and-ternary-bases | error |  |  |
+| 429 | find-the-intersection-of-a-line-with-a-plane | ✓ | 6µs | 8.7 MB |
+| 430 | find-the-intersection-of-two-lines | ✓ | 7µs | 8.8 MB |
+| 431 | find-the-last-sunday-of-each-month | error |  |  |
+| 432 | find-the-missing-permutation | ✓ | 8µs | 8.7 MB |
+| 433 | first-class-environments | ✓ | 35µs | 8.7 MB |
+| 434 | first-class-functions-use-numbers-analogously | ✓ | 5µs | 8.7 MB |
+| 435 | first-power-of-2-that-has-leading-decimal-digits-of-12 | ✓ | 33µs | 8.7 MB |
+| 436 | five-weekends | error |  |  |
+| 437 | fivenum-1 | ✓ | 8µs | 8.7 MB |
+| 438 | fivenum-2 | error |  |  |
+| 439 | fivenum-3 | error |  |  |
+| 440 | fixed-length-records-1 | ✓ | 9µs | 8.7 MB |
+| 441 | fixed-length-records-2 | ✓ | 13µs | 8.7 MB |
+| 442 | fizzbuzz-1 | ✓ | 32µs | 8.7 MB |
+| 443 | fizzbuzz-2 | error |  |  |
+| 444 | fizzbuzz | ✓ | 29µs | 8.7 MB |
+| 445 | flatten-a-list-1 | ✓ | 5µs | 8.7 MB |
+| 446 | flatten-a-list-2 | ✓ | 4µs | 8.7 MB |
+| 447 | flipping-bits-game | error |  |  |
+| 448 | flow-control-structures-1 | ✓ | 3µs | 8.7 MB |
+| 449 | flow-control-structures-2 | ✓ | 3µs | 8.7 MB |
 | 450 | flow-control-structures-3 |   |  |  |
 | 451 | flow-control-structures-4 |   |  |  |
 | 452 | floyd-warshall-algorithm |   |  |  |

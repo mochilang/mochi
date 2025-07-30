@@ -308,6 +308,7 @@ type IfExpr struct {
 type FunExpr struct {
 	Params []Param
 	Expr   Expr
+	Body   []Stmt
 }
 
 type MatchCase struct {
@@ -797,6 +798,18 @@ func (f *FunExpr) emit(w io.Writer) {
 	fmt.Fprint(w, ") => ")
 	if f.Expr != nil {
 		f.Expr.emit(w)
+	} else {
+		fmt.Fprint(w, "{")
+		for i, st := range f.Body {
+			if i > 0 {
+				fmt.Fprint(w, " ")
+			}
+			st.emit(w)
+			if _, ok := st.(*ReturnStmt); !ok {
+				fmt.Fprint(w, ";")
+			}
+		}
+		fmt.Fprint(w, " }")
 	}
 	fmt.Fprint(w, ")")
 }
@@ -1092,10 +1105,20 @@ func (c *CastExpr) emit(w io.Writer) {
 		if _, ok := c.Value.(*IntLit); ok || isBigIntExpr(c.Value) {
 			c.Value.emit(w)
 		} else {
-			fmt.Fprint(w, "(")
+			typ := inferType(c.Value)
+			fmt.Fprint(w, "BigInt(")
 			c.Value.emit(w)
-			fmt.Fprint(w, ").asInstanceOf[BigInt]")
+			if typ == "String" {
+				fmt.Fprint(w, ".charAt(0).toInt")
+			} else {
+				fmt.Fprint(w, ".toInt")
+			}
+			fmt.Fprint(w, ")")
 		}
+		return
+	} else if c.Type == "Int" {
+		c.Value.emit(w)
+		fmt.Fprint(w, ".toInt")
 		return
 	}
 	switch c.Value.(type) {
@@ -2023,6 +2046,13 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 					return
 				}
 				if op == "+" {
+					if lt == "String" || rt == "String" {
+						ex = &BinaryExpr{Left: left, Op: "+", Right: right}
+						operands[i] = ex
+						operands = append(operands[:i+1], operands[i+2:]...)
+						operators = append(operators[:i], operators[i+1:]...)
+						return
+					}
 					if !strings.HasPrefix(lt, "ArrayBuffer[") && strings.HasPrefix(rt, "ArrayBuffer[String]") {
 						right = &CallExpr{Fn: &FieldExpr{Receiver: right, Name: "mkString"}, Args: []Expr{}}
 					} else if !strings.HasPrefix(rt, "ArrayBuffer[") && strings.HasPrefix(lt, "ArrayBuffer[String]") {
@@ -2079,7 +2109,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 				lt := inferTypeWithEnv(left, env)
 				rt := inferTypeWithEnv(right, env)
 				if lt != "Double" && lt != "Float" && rt != "Double" && rt != "Float" {
-					if lt == "BigInt" || rt == "BigInt" {
+					if lt == "BigInt" || rt == "BigInt" || isBigIntExpr(left) || isBigIntExpr(right) {
 						ex = &BinaryExpr{Left: left, Op: "%", Right: right}
 					} else {
 						ex = &CallExpr{Fn: &Name{Name: "Math.floorMod"}, Args: []Expr{left, right}}
@@ -2817,13 +2847,17 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			}
 			return &CallExpr{Fn: &Name{Name: "_sha256"}, Args: []Expr{val}}, nil
 		}
-	case "substring":
+	case "substring", "substr":
 		if len(args) == 3 {
 			val := args[0]
 			if inferTypeWithEnv(val, env) == "Any" {
 				val = &CastExpr{Value: val, Type: "String"}
 			}
 			return &SubstringExpr{Value: val, Start: args[1], End: args[2]}, nil
+		}
+	case "slice":
+		if len(args) == 3 {
+			return &SliceExpr{Value: args[0], Start: args[1], End: args[2]}, nil
 		}
 	case "upper":
 		if len(args) == 1 {
@@ -2836,7 +2870,11 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 	case "padStart":
 		if len(args) == 3 {
 			needsPadStart = true
-			return &CallExpr{Fn: &Name{Name: "_padStart"}, Args: args}, nil
+			width := args[1]
+			if inferTypeWithEnv(width, env) == "BigInt" {
+				width = &FieldExpr{Receiver: width, Name: "toInt"}
+			}
+			return &CallExpr{Fn: &Name{Name: "_padStart"}, Args: []Expr{args[0], width, args[2]}}, nil
 		}
 	case "repeat":
 		if len(args) == 2 {
@@ -2993,7 +3031,18 @@ func convertFunExpr(fe *parser.FunExpr, env *types.Env) (Expr, error) {
 		}
 		f.Expr = expr
 	} else {
-		return nil, fmt.Errorf("unsupported fun expr")
+		for _, st := range fe.BlockBody {
+			s, err := convertStmt(st, child)
+			if err != nil {
+				return nil, err
+			}
+			if s != nil {
+				f.Body = append(f.Body, s)
+			}
+		}
+		if len(f.Body) == 0 {
+			return nil, fmt.Errorf("unsupported fun expr")
+		}
 	}
 	return f, nil
 }
@@ -4101,6 +4150,11 @@ func inferType(e Expr) string {
 			}
 		}
 		ret := inferType(ex.Expr)
+		if ret == "" && len(ex.Body) > 0 {
+			if rs, ok := ex.Body[len(ex.Body)-1].(*ReturnStmt); ok && rs.Value != nil {
+				ret = inferType(rs.Value)
+			}
+		}
 		if ret == "" {
 			ret = "Any"
 		}
@@ -4185,6 +4239,9 @@ func inferTypeWithEnv(e Expr, env *types.Env) string {
 				}
 				if n.Name == "_bigrat" {
 					return "BigRat"
+				}
+				if n.Name == "String.valueOf" {
+					return "String"
 				}
 			}
 		}
