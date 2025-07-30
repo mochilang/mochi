@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 27
+    },
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 27,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_13528=[1, 2, 3], _13534=[], (member(1, _13534)-\u003ewriteln(true);writeln(false)), (member(2, _13534)-\u003ewriteln(true);writeln(false)), _13602={a:1}, (get_dict(\"a\", _13602, _13618)-\u003ewriteln(true);writeln(false)), (get_dict(\"b\", _13602, _13652)-\u003ewriteln(true);writeln(false)), _13682=\"hello\", (sub_string(_13682, _13696, _13698, _13700, \"ell\")-\u003ewriteln(true);writeln(false)), (sub_string(_13682, _13734, _13736, _13738, \"foo\")-\u003ewriteln(true);writeln(false))",
+      "start": 52,
+      "end": 501
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 24
+    },
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 24,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "(\"a\"@\u003c\"b\"-\u003ewriteln(true);writeln(false)), (\"a\"@=\u003c\"a\"-\u003ewriteln(true);writeln(false)), (\"b\"@\u003e\"a\"-\u003ewriteln(true);writeln(false)), (\"b\"@\u003e=\"b\"-\u003ewriteln(true);writeln(false))",
+      "start": 52,
+      "end": 271
+    }
+  ]
+}

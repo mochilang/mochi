@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 27
+    },
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 27,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_12404=\"fore\", _12416=\"forest\", _12428 is 4-0, sub_string(_12416, 0, _12428, _12440, _12442), (_12442=_12404-\u003ewriteln(true);writeln(false)), _12478=\"desert\", _12490 is 4-0, sub_string(_12478, 0, _12490, _12502, _12504), (_12504=_12404-\u003ewriteln(true);writeln(false))",
+      "start": 52,
+      "end": 316
+    }
+  ]
+}

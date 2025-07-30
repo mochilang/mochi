@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 24
+    },
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 24,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_11264 is 4-1, sub_string(\"mochi\", 1, _11264, _11282, _11284), writeln(_11284)",
+      "start": 52,
+      "end": 126
+    }
+  ]
+}

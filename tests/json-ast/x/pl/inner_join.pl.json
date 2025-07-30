@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 27
+    },
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 27,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_15702=[{id:1, name:\"Alice\"}, {id:2, name:\"Bob\"}, {id:3, name:\"Charlie\"}], _15870=[{id:100, customerId:1, total:250}, {id:101, customerId:2, total:125}, {id:102, customerId:1, total:300}, {id:103, customerId:4, total:80}], _16016=[{orderId:100, customerName:\"Alice\", total:250}, {orderId:101, customerName:\"Bob\", total:125}, {orderId:102, customerName:\"Alice\", total:300}], writeln(\"--- Orders with customer info ---\"), _16080={orderId:100, customerName:\"Alice\", total:250}, writeln(\"Order 100 by Alice - $ 250\"), _16142={orderId:101, customerName:\"Bob\", total:125}, writeln(\"Order 101 by Bob - $ 125\"), _16204={orderId:102, customerName:\"Alice\", total:300}, writeln(\"Order 102 by Alice - $ 300\")",
+      "start": 52,
+      "end": 849
+    }
+  ]
+}

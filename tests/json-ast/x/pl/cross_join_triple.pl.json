@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 24
+    },
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 24,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_15898=[1, 2], _15930=[\"A\", \"B\"], _15950=[true, false], _16182=[_15964{b:true, l:\"A\", n:1}, _15992{b:false, l:\"A\", n:1}, _16020{b:true, l:\"B\", n:1}, _16048{b:false, l:\"B\", n:1}, _16076{b:true, l:\"A\", n:2}, _16104{b:false, l:\"A\", n:2}, _16132{b:true, l:\"B\", n:2}, _16160{b:false, l:\"B\", n:2}], writeln(\"--- Cross Join of three lists ---\"), _16228=_16212{b:true, l:\"A\", n:1}, writeln(\"1 A true\"), _16268=_16252{b:false, l:\"A\", n:1}, writeln(\"1 A false\"), _16308=_16292{b:true, l:\"B\", n:1}, writeln(\"1 B true\"), _16348=_16332{b:false, l:\"B\", n:1}, writeln(\"1 B false\"), _16388=_16372{b:true, l:\"A\", n:2}, writeln(\"2 A true\"), _16428=_16412{b:false, l:\"A\", n:2}, writeln(\"2 A false\"), _16468=_16452{b:true, l:\"B\", n:2}, writeln(\"2 B true\"), _16508=_16492{b:false, l:\"B\", n:2}, writeln(\"2 B false\")",
+      "start": 52,
+      "end": 897
+    }
+  ]
+}

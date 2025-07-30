@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 24
+    },
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 24,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_13210=[{name:\"Alice\", city:\"Paris\"}, {name:\"Bob\", city:\"Hanoi\"}, {name:\"Charlie\", city:\"Paris\"}, {name:\"Diana\", city:\"Hanoi\"}, {name:\"Eve\", city:\"Paris\"}, {name:\"Frank\", city:\"Hanoi\"}, {name:\"George\", city:\"Paris\"}], _13252=[{city:\"Paris\", num:4}], writeln(\"[\\n {\\n \\\"city\\\": \\\"Paris\\\",\\n \\\"num\\\": 4\\n }\\n]\")",
+      "start": 52,
+      "end": 404
+    }
+  ]
+}

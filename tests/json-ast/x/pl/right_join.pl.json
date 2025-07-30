@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 24
+    },
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 24,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_20322=[map{id:1, name:\"Alice\"}, map{id:2, name:\"Bob\"}, map{id:3, name:\"Charlie\"}, map{id:4, name:\"Diana\"}], _20396=[map{customerId:1, id:100, total:250}, map{customerId:2, id:101, total:125}, map{customerId:1, id:102, total:300}], _20524=[map{customerName:\"Alice\", order:map{customerId:1, id:100, total:250}}, map{customerName:\"Bob\", order:map{customerId:2, id:101, total:125}}, map{customerName:\"Alice\", order:map{customerId:1, id:102, total:300}}], writeln(\"--- Right Join using syntax ---\"), _20582=map{customerName:\"Alice\", order:map{customerId:1, id:100, total:250}}, write(\"Customer\"), write(' '), write(\"Alice\"), write(' '), write(\"has order\"), write(' '), get_dict(id, get_dict(order, _20582, _20638), _20646), write(_20646), write(' '), write(\"- $\"), write(' '), get_dict(total, get_dict(order, _20582, _20638), _20684), writeln(_20684), _20726=map{customerName:\"Bob\", order:map{customerId:2, id:101, total:125}}, write(\"Customer\"), write(' '), write(\"Bob\"), write(' '), write(\"has order\"), write(' '), get_dict(id, get_dict(order, _20726, _20638), _20790), write(_20790), write(' '), write(\"- $\"), write(' '), get_dict(total, get_dict(order, _20726, _20638), _20828), writeln(_20828), _20870=map{customerName:\"Alice\", order:map{customerId:1, id:102, total:300}}, write(\"Customer\"), write(' '), write(\"Alice\"), write(' '), write(\"has order\"), write(' '), get_dict(id, get_dict(order, _20870, _20638), _20934), write(_20934), write(' '), write(\"- $\"), write(' '), get_dict(total, get_dict(order, _20870, _20638), _20972), writeln(_20972)",
+      "start": 52,
+      "end": 1620
+    }
+  ]
+}

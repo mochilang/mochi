@@ -1,0 +1,289 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 90
+    },
+    {
+      "name": "get_item",
+      "params": [
+        "Container",
+        "Key",
+        "Val"
+      ],
+      "body": "is_dict(_31750), !, (string(_31752)-\u003eatom_string(_31766, _31752);_31766=_31752), get_dict(_31766, _31750, _31754)",
+      "start": 90,
+      "end": 227
+    },
+    {
+      "name": "get_item",
+      "params": [
+        "Container",
+        "Index",
+        "Val"
+      ],
+      "body": "string(_32346), !, string_chars(_32346, _32360), nth0(_32348, _32360, _32350)",
+      "start": 227,
+      "end": 345
+    },
+    {
+      "name": "get_item",
+      "params": [
+        "List",
+        "Index",
+        "Val"
+      ],
+      "body": "nth0(_32676, _32674, _32678)",
+      "start": 345,
+      "end": 399
+    },
+    {
+      "name": "to_list",
+      "params": [
+        "Str",
+        "L"
+      ],
+      "body": "string(_32950), !, string_chars(_32950, _32952)",
+      "start": 399,
+      "end": 465
+    },
+    {
+      "name": "to_list",
+      "params": [
+        "L",
+        "L"
+      ],
+      "body": "true",
+      "start": 465,
+      "end": 480
+    },
+    {
+      "name": "count",
+      "params": [
+        "V",
+        "R"
+      ],
+      "body": "is_dict(_33382), !, get_dict('Items', _33382, _33396), length(_33396, _33384)",
+      "start": 480,
+      "end": 562
+    },
+    {
+      "name": "count",
+      "params": [
+        "V",
+        "R"
+      ],
+      "body": "string(_33678), !, string_chars(_33678, _33690), length(_33690, _33680)",
+      "start": 562,
+      "end": 629
+    },
+    {
+      "name": "count",
+      "params": [
+        "V",
+        "R"
+      ],
+      "body": "is_list(_33972), !, length(_33972, _33974)",
+      "start": 629,
+      "end": 677
+    },
+    {
+      "name": "count",
+      "params": [
+        "_",
+        "_"
+      ],
+      "body": "throw(error('count expects list or group'))",
+      "start": 677,
+      "end": 737
+    },
+    {
+      "name": "avg",
+      "params": [
+        "V",
+        "R"
+      ],
+      "body": "is_dict(_34458), !, get_dict('Items', _34458, _34472), avg_list(_34472, _34460)",
+      "start": 737,
+      "end": 819
+    },
+    {
+      "name": "avg",
+      "params": [
+        "V",
+        "R"
+      ],
+      "body": "is_list(_34756), !, avg_list(_34756, _34758)",
+      "start": 819,
+      "end": 867
+    },
+    {
+      "name": "avg",
+      "params": [
+        "_",
+        "_"
+      ],
+      "body": "throw(error('avg expects list or group'))",
+      "start": 867,
+      "end": 923
+    },
+    {
+      "name": "avg_list",
+      "params": [
+        "[]",
+        0
+      ],
+      "body": "true",
+      "start": 923,
+      "end": 940
+    },
+    {
+      "name": "avg_list",
+      "params": [
+        "L",
+        "R"
+      ],
+      "body": "sum_list(_35436, _35444), length(_35436, _35450), _35450\u003e0, _35438 is _35444/_35450",
+      "start": 940,
+      "end": 1007
+    },
+    {
+      "name": "sum",
+      "params": [
+        "V",
+        "R"
+      ],
+      "body": "is_dict(_35758), !, get_dict('Items', _35758, _35772), sum_list(_35772, _35760)",
+      "start": 1007,
+      "end": 1089
+    },
+    {
+      "name": "sum",
+      "params": [
+        "V",
+        "R"
+      ],
+      "body": "is_list(_36056), !, sum_list(_36056, _36058)",
+      "start": 1089,
+      "end": 1137
+    },
+    {
+      "name": "sum",
+      "params": [
+        "_",
+        "_"
+      ],
+      "body": "throw(error('sum expects list or group'))",
+      "start": 1137,
+      "end": 1193
+    },
+    {
+      "name": "group_insert",
+      "params": [
+        "Key",
+        "Item",
+        "[]",
+        "[_36552{'Items':[_36546], key:_36554}]"
+      ],
+      "body": "true",
+      "start": 1193,
+      "end": 1253
+    },
+    {
+      "name": "group_insert",
+      "params": [
+        "Key",
+        "Item",
+        "[_36888|_36890]",
+        "[_36896|_36890]"
+      ],
+      "body": "get_dict(key, _36888, _36902), !, get_dict('Items', _36888, _36924), append(_36924, [_36904], _36940), put_dict('Items', _36888, _36940, _36896)",
+      "start": 1253,
+      "end": 1417
+    },
+    {
+      "name": "group_insert",
+      "params": [
+        "Key",
+        "Item",
+        "[_37432|_37434]",
+        "[_37432|_37442]"
+      ],
+      "body": "group_insert(_37446, _37448, _37434, _37442)",
+      "start": 1417,
+      "end": 1493
+    },
+    {
+      "name": "group_pairs",
+      "params": [
+        "[]",
+        "Acc",
+        "Res"
+      ],
+      "body": "reverse(_37870, _37872)",
+      "start": 1493,
+      "end": 1541
+    },
+    {
+      "name": "group_pairs",
+      "params": [
+        "[_38176-_38178|_38184]",
+        "Acc",
+        "Res"
+      ],
+      "body": "group_insert(_38176, _38178, _38190, _38202), group_pairs(_38184, _38202, _38192)",
+      "start": 1541,
+      "end": 1633
+    },
+    {
+      "name": "group_by",
+      "params": [
+        "List",
+        "Fn",
+        "Groups"
+      ],
+      "body": "findall(_38586-_38588, (member(_38588, _38578), call(_38580, _38588, _38586)), _38616), group_pairs(_38616, [], _38582)",
+      "start": 1633,
+      "end": 1751
+    },
+    {
+      "name": "print_val",
+      "params": [
+        "V"
+      ],
+      "body": "number(_38954), !, format('~g', [_38954])",
+      "start": 1751,
+      "end": 1801
+    },
+    {
+      "name": "print_val",
+      "params": [
+        "V"
+      ],
+      "body": "write(_39192)",
+      "start": 1801,
+      "end": 1827
+    },
+    {
+      "name": ":-",
+      "params": [
+        "initialization(main, main)"
+      ],
+      "body": "true",
+      "start": 1827,
+      "end": 1859
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "dict_create(_39620, map, [n_nationkey-1, n_name-\"BRAZIL\"]), _39636=[_39620], dict_create(_39754, map, [c_custkey-1, c_name-\"Alice\", c_acctbal-100, c_nationkey-1, c_address-\"123 St\", c_phone-\"123-456\", c_comment-\"Loyal\"]), _39770=[_39754], dict_create(_39822, map, [o_orderkey-1000, o_custkey-1, o_orderdate-\"1993-10-15\"]), dict_create(_39876, map, [o_orderkey-2000, o_custkey-1, o_orderdate-\"1994-01-02\"]), _39898=[_39822, _39876], dict_create(_39966, map, [l_orderkey-1000, l_returnflag-\"R\", l_extendedprice-1000, l_discount-0.1]), dict_create(_40030, map, [l_orderkey-2000, l_returnflag-\"N\", l_extendedprice-500, l_discount-0]), _40052=[_39966, _40030], _40066=\"1993-10-01\", _40080=\"1994-01-01\", findall(_40528, (member(_40086, _39770), member(_40092, _39898), get_item(_40092, o_custkey, _40102), get_item(_40086, c_custkey, _40110), _40102==_40110, member(_40120, _40052), get_item(_40120, l_orderkey, _40130), get_item(_40092, o_orderkey, _40138), _40130==_40138, member(_40148, _39636), get_item(_40148, n_nationkey, _40158), get_item(_40086, c_nationkey, _40166), _40158==_40166, get_item(_40092, o_orderdate, _40180), get_item(_40092, o_orderdate, _40188), get_item(_40120, l_returnflag, _40196), (_40180\u003e=_40066-\u003e(_40188\u003c_40080-\u003e_40212=true;_40212=false);_40212=false), (_40212-\u003e(_40196==\"R\"-\u003e_40266=true;_40266=false);_40266=false), _40266, get_item(_40086, c_custkey, _40312), get_item(_40086, c_name, _40320), get_item(_40086, c_acctbal, _40328), get_item(_40086, c_address, _40336), get_item(_40086, c_phone, _40344), get_item(_40086, c_comment, _40352), get_item(_40148, n_name, _40360), dict_create(_40450, map, [c_custkey-_40312, c_name-_40320, c_acctbal-_40328, c_address-_40336, c_phone-_40344, c_comment-_40352, n_name-_40360]), _40458=_40450, dict_create(_40514, map, ['C'-_40086, 'O'-_40092, 'L'-_40120, 'N'-_40148]), _40528=_40458-_40514), _40712), group_pairs(_40712, [], _40720), findall(_41054, (member(_40724, _40720), get_item(_40724, key, _40734), get_item(_40734, c_custkey, _40742), get_item(_40724, key, _40750), get_item(_40750, c_name, _40758), findall(_40812, (member(_40762, _40724), true, get_item(_40762, l, _40772), get_item(_40772, l_extendedprice, _40780), get_item(_40762, l, _40788), get_item(_40788, l_discount, _40796), _40812=_40780*(1-_40796)), _40858), sum(_40858, _40864), get_item(_40724, key, _40872), get_item(_40872, c_acctbal, _40880), get_item(_40724, key, _40888), get_item(_40888, n_name, _40896), get_item(_40724, key, _40904), get_item(_40904, c_address, _40912), get_item(_40724, key, _40920), get_item(_40920, c_phone, _40928), get_item(_40724, key, _40936), get_item(_40936, c_comment, _40944), dict_create(_41046, map, [c_custkey-_40742, c_name-_40758, revenue-_40864, c_acctbal-_40880, n_name-_40896, c_address-_40912, c_phone-_40928, c_comment-_40944]), _41054=_41046), _41172), _41176=_41172, print_val(_41176), nl, true",
+      "start": 1859,
+      "end": 4570
+    }
+  ]
+}

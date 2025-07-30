@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 27
+    },
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 27,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_11288 is 5, (_11288\u003e3-\u003ewriteln(\"big\");writeln(\"small\"))",
+      "start": 52,
+      "end": 131
+    }
+  ]
+}

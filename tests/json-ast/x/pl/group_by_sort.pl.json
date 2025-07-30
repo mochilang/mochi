@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 24
+    },
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 24,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_12350=[{cat:\"a\", val:3}, {cat:\"a\", val:1}, {cat:\"b\", val:5}, {cat:\"b\", val:2}], _12426=[{cat:\"b\", total:7}, {cat:\"a\", total:4}], writeln({cat:\"b\", total:7}), writeln({cat:\"a\", total:4})",
+      "start": 52,
+      "end": 285
+    }
+  ]
+}

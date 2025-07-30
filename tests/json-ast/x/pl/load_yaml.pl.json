@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 24
+    },
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 24,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_13998=[map{age:30, email:\"alice@example.com\", name:\"Alice\"}, map{age:15, email:\"bob@example.com\", name:\"Bob\"}, map{age:20, email:\"charlie@example.com\", name:\"Charlie\"}], _14076=[map{email:\"alice@example.com\", name:\"Alice\"}, map{email:\"charlie@example.com\", name:\"Charlie\"}], _14110=map{email:\"alice@example.com\", name:\"Alice\"}, writeln(\"Alice alice@example.com\"), _14162=map{email:\"charlie@example.com\", name:\"Charlie\"}, writeln(\"Charlie charlie@example.com\")",
+      "start": 52,
+      "end": 563
+    }
+  ]
+}

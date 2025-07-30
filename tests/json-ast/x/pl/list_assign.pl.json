@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 24
+    },
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 24,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_11536=[1, 2], nth0(1, _11536, _11546, _11548), nth0(1, _11554, 3, _11548), nth0(1, _11554, _11566), writeln(_11566)",
+      "start": 52,
+      "end": 170
+    }
+  ]
+}

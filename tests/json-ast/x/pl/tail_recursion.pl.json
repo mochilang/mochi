@@ -1,0 +1,40 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 27
+    },
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 27,
+      "end": 52
+    },
+    {
+      "name": "sum_rec",
+      "params": [
+        "N",
+        "Acc",
+        "R"
+      ],
+      "body": "(_11774=:=0-\u003e_11788=_11776), sum_rec(_11774-1, _11776+_11774, _11816), _11778=_11816",
+      "start": 52,
+      "end": 166
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "sum_rec(10, 0, _12376), writeln(_12376)",
+      "start": 166,
+      "end": 212
+    }
+  ]
+}

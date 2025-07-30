@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 24
+    },
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 24,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_12664=[{cat:\"a\", val:10, flag:true}, {cat:\"a\", val:5, flag:false}, {cat:\"b\", val:20, flag:true}], _12746=[{cat:\"a\", share:0.6666666666666666}, {cat:\"b\", share:1}], writeln({cat:\"a\", share:0.6666666666666666}), writeln({cat:\"b\", share:1})",
+      "start": 52,
+      "end": 337
+    }
+  ]
+}

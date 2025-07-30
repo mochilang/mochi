@@ -1,0 +1,39 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 24
+    },
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 24,
+      "end": 52
+    },
+    {
+      "name": "classify",
+      "params": [
+        "N",
+        "R"
+      ],
+      "body": "(_14672=:=0-\u003e_14690=\"zero\";_14672=:=1-\u003e_14690=\"one\";_14690=\"many\"), _14674=_14690",
+      "start": 52,
+      "end": 173
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_15254 is 2, (2=:=1-\u003e_15272=\"one\";2=:=2-\u003e_15272=\"two\";2=:=3-\u003e_15272=\"three\";_15272=\"unknown\"), writeln(_15272), _15374=\"sun\", (\"sun\"=\"mon\"-\u003e_15404=\"tired\";\"sun\"=\"fri\"-\u003e_15404=\"excited\";\"sun\"=\"sun\"-\u003e_15404=\"relaxed\";_15404=\"normal\"), writeln(_15404), _15526=true, (true=true-\u003e_15546=\"confirmed\";true=false-\u003e_15546=\"denied\";_15546=0), writeln(_15546), classify(0, _15606), writeln(_15606), classify(5, _15616), writeln(_15616)",
+      "start": 173,
+      "end": 695
+    }
+  ]
+}

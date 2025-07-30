@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 24
+    },
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 24,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_11836=_11820{author:_11804{age:42, name:\"Bob\", tag:\"Person\"}, tag:\"Book\", title:\"Go\"}, get_dict(name, get_dict(author, _11836, _11846), _11854), writeln(_11854)",
+      "start": 52,
+      "end": 213
+    }
+  ]
+}

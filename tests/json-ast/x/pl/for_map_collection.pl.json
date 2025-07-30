@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 27
+    },
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 27,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_11400={a:1, b:2}, _11412=\"a\", writeln(\"a\"), _11434=\"b\", writeln(\"b\")",
+      "start": 52,
+      "end": 146
+    }
+  ]
+}

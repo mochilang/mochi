@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 27
+    },
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 27,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "_11766={1:\"a\", 2:\"b\"}, (get_dict(1, _11766, _11776)-\u003ewriteln(true);writeln(false)), (get_dict(3, _11766, _11804)-\u003ewriteln(true);writeln(false))",
+      "start": 52,
+      "end": 205
+    }
+  ]
+}

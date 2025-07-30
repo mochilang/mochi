@@ -1,0 +1,40 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 27
+    },
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 27,
+      "end": 52
+    },
+    {
+      "name": "add",
+      "params": [
+        "A",
+        "B",
+        "R"
+      ],
+      "body": "_11506 is _11492+_11494, _11496=_11506",
+      "start": 52,
+      "end": 108
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "add(5, _12036), add5(3, _12042), writeln(_12042)",
+      "start": 108,
+      "end": 165
+    }
+  ]
+}

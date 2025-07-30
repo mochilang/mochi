@@ -1,0 +1,41 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 27
+    },
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 27,
+      "end": 52
+    },
+    {
+      "name": "sum3",
+      "params": [
+        "A",
+        "B",
+        "C",
+        "R"
+      ],
+      "body": "_11490 is _11468+_11470+_11472, _11474=_11490",
+      "start": 52,
+      "end": 116
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "sum3(1, 2, 3, _12056), writeln(_12056)",
+      "start": 116,
+      "end": 161
+    }
+  ]
+}
