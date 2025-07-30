@@ -1,0 +1,34 @@
+{
+  "vars": null,
+  "prints": null,
+  "stmts": [
+    {
+      "name": "add",
+      "params": [
+        {
+          "name": "a",
+          "type": ""
+        },
+        {
+          "name": "b",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "a + b",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (add 2 3))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

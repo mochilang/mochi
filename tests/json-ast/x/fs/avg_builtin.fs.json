@@ -1,0 +1,7 @@
+{
+  "vars": null,
+  "prints": [
+    "(List.averageBy float [1; 2; 3])"
+  ],
+  "stmts": null
+}

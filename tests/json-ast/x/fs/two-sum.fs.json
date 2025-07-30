@@ -1,0 +1,82 @@
+{
+  "vars": null,
+  "prints": null,
+  "stmts": [
+    {
+      "name": "twoSum",
+      "params": [
+        {
+          "name": "nums",
+          "type": ""
+        },
+        {
+          "name": "target",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "name": "n",
+          "expr": "Seq.length nums",
+          "mutable": false,
+          "type": "int",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "expr": "for i in 0 .. (n - 1) do",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "var": "j",
+      "start": "i + 1",
+      "end": "(n - 1)",
+      "body": [
+        {
+          "cond": "((nums.[i]) + (nums.[j])) = target",
+          "then": [
+            {
+              "expr": "[i; j]",
+              "line": 0,
+              "raw": ""
+            }
+          ],
+          "else": null,
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "expr": "[-1; -1]",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "name": "result",
+          "expr": "twoSum [2; 7; 11; 15] 9",
+          "mutable": false,
+          "type": "",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "expr": "(string (result.[0]))",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "expr": "(string (result.[1]))",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

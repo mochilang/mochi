@@ -1,0 +1,19 @@
+{
+  "vars": null,
+  "prints": null,
+  "stmts": [
+    {
+      "var": "n",
+      "expr": "[1; 2; 3]",
+      "body": [
+        {
+          "expr": "(string n)",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

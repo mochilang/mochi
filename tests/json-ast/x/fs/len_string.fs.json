@@ -1,0 +1,7 @@
+{
+  "vars": null,
+  "prints": [
+    "(String.length \"mochi\")"
+  ],
+  "stmts": null
+}

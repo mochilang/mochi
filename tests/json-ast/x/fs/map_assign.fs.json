@@ -1,0 +1,27 @@
+{
+  "vars": [
+    {
+      "name": "scores",
+      "expr": "Map.ofList [(\"alice\", 1)]",
+      "mutable": true,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "scores",
+      "index": "",
+      "expr": "Map.add \"bob\" 2 scores",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (scores.[\"bob\"]))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "vars": [
+    {
+      "name": "i",
+      "expr": "0",
+      "mutable": true,
+      "type": "int",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "cond": "i \u003c 3",
+      "body": [
+        {
+          "expr": "i",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "name": "i",
+          "index": "",
+          "expr": "i + 1",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

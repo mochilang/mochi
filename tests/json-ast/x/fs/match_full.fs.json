@@ -1,0 +1,88 @@
+{
+  "vars": [
+    {
+      "name": "x",
+      "expr": "2",
+      "mutable": false,
+      "type": "int",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "label",
+      "expr": "match x with",
+      "mutable": false,
+      "type": "string",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "day",
+      "expr": "\"sun\"",
+      "mutable": false,
+      "type": "string",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "mood",
+      "expr": "match day with",
+      "mutable": false,
+      "type": "string",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "ok",
+      "expr": "true",
+      "mutable": false,
+      "type": "bool",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "status",
+      "expr": "match ok with",
+      "mutable": false,
+      "type": "string",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(string label)",
+    "(string mood)",
+    "(string status)"
+  ],
+  "stmts": [
+    {
+      "name": "classify",
+      "params": [
+        {
+          "name": "n",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "match n with",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (classify 0))",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (classify 5))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

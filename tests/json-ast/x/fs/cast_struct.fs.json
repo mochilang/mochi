@@ -1,0 +1,16 @@
+{
+  "vars": [
+    {
+      "name": "todo",
+      "expr": "{ title = \"hi\" }",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(string (todo.title))"
+  ],
+  "stmts": null
+}

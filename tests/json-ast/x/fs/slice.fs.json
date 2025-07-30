@@ -1,0 +1,9 @@
+{
+  "vars": null,
+  "prints": [
+    "((\"[\" + (String.concat \", \" (List.map string ([1; 2; 3].[1..(3 - 1)])))) + \"]\")",
+    "((\"[\" + (String.concat \", \" (List.map string ([1; 2; 3].[0..(2 - 1)])))) + \"]\")",
+    "(string (\"hello\".Substring(1, 4 - 1)))"
+  ],
+  "stmts": null
+}

@@ -1,0 +1,33 @@
+{
+  "vars": [
+    {
+      "name": "prefix",
+      "expr": "\"fore\"",
+      "mutable": false,
+      "type": "string",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "s1",
+      "expr": "\"forest\"",
+      "mutable": false,
+      "type": "string",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "s2",
+      "expr": "\"desert\"",
+      "mutable": false,
+      "type": "string",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "((s1.Substring(0, (String.length prefix) - 0)) = prefix)",
+    "((s2.Substring(0, (String.length prefix) - 0)) = prefix)"
+  ],
+  "stmts": null
+}

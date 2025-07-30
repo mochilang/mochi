@@ -1,0 +1,64 @@
+{
+  "vars": [
+    {
+      "name": "people",
+      "expr": "[{ name = \"Alice\"; age = 30; city = \"Paris\" }; { name = \"Bob\"; age = 15; city = \"Hanoi\" }; { name = \"Charlie\"; age = 65; city = \"Paris\" }; { name = \"Diana\"; age = 45; city = \"Hanoi\" }; { name = \"Eve\"; age = 70; city = \"Paris\" }; { name = \"Frank\"; age = 22; city = \"Hanoi\" }]",
+      "mutable": false,
+      "type": "Anon2 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "stats",
+      "expr": "[ for (key, items) in List.groupBy (fun person -\u003e person.city) people do",
+      "mutable": false,
+      "type": "Anon6 list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "g",
+      "params": [
+        {
+          "name": ":",
+          "type": ""
+        },
+        {
+          "name": "Anon5",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "{ key = key; items = items }",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "\"--- People grouped by city ---\"",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "var": "s",
+      "expr": "stats",
+      "body": [
+        {
+          "expr": "(String.concat \" \" [string (s.city); string \": count =\"; string (s.count); string \", avg_age =\"; string (s.avg_age)])",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

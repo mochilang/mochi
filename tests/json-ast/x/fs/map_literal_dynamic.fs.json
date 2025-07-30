@@ -1,0 +1,32 @@
+{
+  "vars": [
+    {
+      "name": "x",
+      "expr": "3",
+      "mutable": true,
+      "type": "int",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "y",
+      "expr": "4",
+      "mutable": true,
+      "type": "int",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "m",
+      "expr": "Map.ofList [(\"a\", x); (\"b\", y)]",
+      "mutable": true,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(String.concat \" \" [string (m.[\"a\"]); string (m.[\"b\"])])"
+  ],
+  "stmts": null
+}

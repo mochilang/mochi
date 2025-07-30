@@ -1,0 +1,39 @@
+{
+  "vars": [
+    {
+      "name": "k",
+      "expr": "2",
+      "mutable": false,
+      "type": "int",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "inc",
+      "params": [
+        {
+          "name": "x",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "x + k",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (inc 3))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "vars": [
+    {
+      "name": "m",
+      "expr": "Map.ofList [(\"a\", 1); (\"b\", 2)]",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(if Map.containsKey \"a\" m then 1 else 0)",
+    "(if Map.containsKey \"c\" m then 1 else 0)"
+  ],
+  "stmts": null
+}

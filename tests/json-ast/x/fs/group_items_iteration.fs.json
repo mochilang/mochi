@@ -1,0 +1,105 @@
+{
+  "vars": [
+    {
+      "name": "data",
+      "expr": "[{ tag = \"a\"; val = 1 }; { tag = \"a\"; val = 2 }; { tag = \"b\"; val = 3 }]",
+      "mutable": false,
+      "type": "Anon2 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "groups",
+      "expr": "[ for (key, items) in List.groupBy (fun d -\u003e d.tag) data do",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "tmp",
+      "expr": "[]",
+      "mutable": true,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "g",
+      "params": [
+        {
+          "name": ":",
+          "type": ""
+        },
+        {
+          "name": "Anon4",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "{ key = key; items = items }",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "var": "g",
+      "expr": "groups",
+      "body": [
+        {
+          "name": "total",
+          "expr": "0",
+          "mutable": true,
+          "type": "int",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "var": "x",
+      "expr": "g.items",
+      "body": [
+        {
+          "name": "total",
+          "index": "",
+          "expr": "total + (x.val)",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "name": "tmp",
+          "index": "",
+          "expr": "tmp @ [{ tag = g.key; total = total }]",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "name": "result",
+          "expr": "[ for r in List.sortBy (fun r -\u003e (r.tag)) tmp do yield r ]",
+          "mutable": false,
+          "type": "",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "expr": "((\"[\" + (String.concat \", \" (List.map string result))) + \"]\")",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

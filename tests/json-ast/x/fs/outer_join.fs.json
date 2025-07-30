@@ -1,0 +1,79 @@
+{
+  "vars": [
+    {
+      "name": "customers",
+      "expr": "[{ id = 1; name = \"Alice\" }; { id = 2; name = \"Bob\" }; { id = 3; name = \"Charlie\" }; { id = 4; name = \"Diana\" }]",
+      "mutable": false,
+      "type": "Anon2 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "orders",
+      "expr": "[{ id = 100; customerId = 1; total = 250 }; { id = 101; customerId = 2; total = 125 }; { id = 102; customerId = 1; total = 300 }; { id = 103; customerId = 5; total = 80 }]",
+      "mutable": false,
+      "type": "Anon4 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "result",
+      "expr": "[ for o in orders do for c in customers do if (o.customerId) = (c.id) then yield { order = o; customer = c } ]",
+      "mutable": false,
+      "type": "Anon6 list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(string \"--- Outer Join using syntax ---\")"
+  ],
+  "stmts": [
+    {
+      "var": "row",
+      "expr": "result",
+      "body": [
+        {
+          "cond": "row.order",
+          "then": [
+            {
+              "expr": "if row.customer then",
+              "line": 0,
+              "raw": ""
+            }
+          ],
+          "else": null,
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "expr": "(String.concat \" \" [string \"Order\"; string (row.order.id); string \"by\"; string (row.customer.name); string \"- $\"; string (row.order.total)])",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "expr": "else",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "expr": "(String.concat \" \" [string \"Order\"; string (row.order.id); string \"by\"; string \"Unknown\"; string \"- $\"; string (row.order.total)])",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "expr": "else",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "expr": "(String.concat \" \" [string \"Customer\"; string (row.customer.name); string \"has no orders\"])",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

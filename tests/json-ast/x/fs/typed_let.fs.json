@@ -1,0 +1,16 @@
+{
+  "vars": [
+    {
+      "name": "y",
+      "expr": "0",
+      "mutable": false,
+      "type": "int",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "y"
+  ],
+  "stmts": null
+}

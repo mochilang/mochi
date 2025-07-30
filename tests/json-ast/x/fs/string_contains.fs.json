@@ -1,0 +1,17 @@
+{
+  "vars": [
+    {
+      "name": "s",
+      "expr": "\"catch\"",
+      "mutable": false,
+      "type": "string",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(s.Contains(\"cat\"))",
+    "(s.Contains(\"dog\"))"
+  ],
+  "stmts": null
+}

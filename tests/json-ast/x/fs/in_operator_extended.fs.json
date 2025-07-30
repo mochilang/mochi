@@ -1,0 +1,45 @@
+{
+  "vars": [
+    {
+      "name": "xs",
+      "expr": "[1; 2; 3]",
+      "mutable": false,
+      "type": "int list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "ys",
+      "expr": "[ for x in xs do if (x % 2) = 1 then yield x ]",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "m",
+      "expr": "{ a = 1 }",
+      "mutable": false,
+      "type": "Anon1",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "s",
+      "expr": "\"hello\"",
+      "mutable": false,
+      "type": "string",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(List.contains 1 ys)",
+    "(List.contains 2 ys)",
+    "(Seq.contains \"a\" m)",
+    "(Seq.contains \"b\" m)",
+    "(s.Contains(\"ell\"))",
+    "(s.Contains(\"foo\"))"
+  ],
+  "stmts": null
+}
