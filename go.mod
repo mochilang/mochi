@@ -43,6 +43,8 @@ require github.com/tree-sitter/tree-sitter-scala v0.24.0
 
 require github.com/tree-sitter-grammars/tree-sitter-lua v0.3.0
 
+require github.com/tree-sitter/tree-sitter-elixir v0.3.4 // indirect
+
 require (
 	github.com/alexflint/go-scalar v1.2.0 // indirect
 	github.com/apache/arrow-go/v18 v18.4.0 // indirect
@@ -104,3 +106,5 @@ require (
 	golang.org/x/text v0.27.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da // indirect
 )
+
+replace github.com/tree-sitter/tree-sitter-elixir => github.com/elixir-lang/tree-sitter-elixir v0.3.4
