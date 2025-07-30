@@ -2,9 +2,9 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-07-30 14:38 UTC
+Last updated: 2025-07-30 16:46 UTC
 
-## Checklist (469/491)
+## Checklist (475/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 110µs | 36.2 KB |
@@ -456,7 +456,7 @@ Last updated: 2025-07-30 14:38 UTC
 | 447 | flow-control-structures-2 | ✓ | 42µs | 8.8 KB |
 | 448 | flow-control-structures-3 | ✓ | 36µs | 9.0 KB |
 | 449 | flow-control-structures-4 | ✓ | 24µs | 8.8 KB |
-| 450 | floyd-warshall-algorithm | ✓ | 17µs | 8.8 KB |
+| 450 | floyd-warshall-algorithm | ✓ | 177µs | 26.8 KB |
 | 451 | floyd-warshall-algorithm2 | ✓ |  |  |
 | 452 | floyds-triangle | ✓ | 124µs | 32.2 KB |
 | 453 | forest-fire | ✓ | 120µs | 14.5 KB |
@@ -468,14 +468,14 @@ Last updated: 2025-07-30 14:38 UTC
 | 459 | four-bit-adder-1 | ✓ | 99µs | 15.4 KB |
 | 460 | four-is-magic | ✓ | 145µs | 53.8 KB |
 | 461 | four-is-the-number-of-letters-in-the-... |   |  |  |
-| 462 | fractal-tree |   |  |  |
-| 463 | fractran |   |  |  |
-| 464 | french-republican-calendar |   |  |  |
+| 462 | fractal-tree | ✓ |  |  |
+| 463 | fractran | ✓ |  |  |
+| 464 | french-republican-calendar | ✓ |  |  |
 | 465 | ftp | ✓ | 80µs | 14.3 KB |
-| 466 | function-frequency |   |  |  |
-| 467 | function-prototype |   |  |  |
-| 468 | functional-coverage-tree |   |  |  |
-| 469 | fusc-sequence |   |  |  |
+| 466 | function-frequency | ✓ |  |  |
+| 467 | function-prototype | ✓ |  |  |
+| 468 | functional-coverage-tree | ✓ |  |  |
+| 469 | fusc-sequence | ✓ |  |  |
 | 470 | gamma-function | ✓ | 253µs | 12.2 KB |
 | 471 | general-fizzbuzz | ✓ | 45µs | 11.6 KB |
 | 472 | generic-swap | ✓ | 41µs | 9.5 KB |
@@ -489,7 +489,7 @@ Last updated: 2025-07-30 14:38 UTC
 | 480 | gui-component-interaction | ✓ | 90µs | 21.4 KB |
 | 481 | gui-enabling-disabling-of-controls | ✓ | 192µs | 33.2 KB |
 | 482 | gui-maximum-window-dimensions | ✓ | 75µs | 13.0 KB |
-| 483 | http | ✓ | 177.722ms | 410.5 KB |
+| 483 | http |   | 177.722ms | 410.5 KB |
 | 484 | image-noise | ✓ | 115.461ms | 2.2 MB |
 | 485 | loops-increment-loop-index-within-loop-body | ✓ | 2.094468s | 82.1 KB |
 | 486 | md5 | ✓ | 3.818ms | 73.3 KB |
