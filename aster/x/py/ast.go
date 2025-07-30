@@ -60,9 +60,9 @@ func toNode(n *sitter.Node, src []byte, withPos bool) *Node {
 		return nil
 	}
 
-	start := n.StartPoint()
-	end := n.EndPoint()
-	node := &Node{Kind: n.Type()}
+	start := n.StartPosition()
+	end := n.EndPosition()
+	node := &Node{Kind: n.Kind()}
 	if withPos {
 		node.Start = int(n.StartByte())
 		node.StartCol = int(start.Column)
@@ -72,13 +72,13 @@ func toNode(n *sitter.Node, src []byte, withPos bool) *Node {
 
 	if n.NamedChildCount() == 0 {
 		if isValueNode(node.Kind) {
-			node.Text = n.Content(src)
+			node.Text = n.Utf8Text(src)
 		} else {
 			return nil
 		}
 	}
 
-	for i := 0; i < int(n.NamedChildCount()); i++ {
+	for i := uint(0); i < n.NamedChildCount(); i++ {
 		child := n.NamedChild(i)
 		if child == nil {
 			continue

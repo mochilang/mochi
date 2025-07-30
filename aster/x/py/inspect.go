@@ -5,8 +5,8 @@ package py
 import (
 	"encoding/json"
 
-	tspython "github.com/smacker/go-tree-sitter/python"
 	sitter "github.com/tree-sitter/go-tree-sitter"
+	tspython "github.com/tree-sitter/tree-sitter-python/bindings/go"
 )
 
 // Program represents a parsed Python source file.
@@ -19,9 +19,9 @@ type Program struct {
 // includes positional information.
 func Inspect(src string, withPos bool) (*Program, error) {
 	p := sitter.NewParser()
-	p.SetLanguage(tspython.GetLanguage())
+	p.SetLanguage(sitter.NewLanguage(tspython.Language()))
 	data := []byte(src)
-	tree := p.Parse(nil, data)
+	tree := p.Parse(data, nil)
 	return &Program{File: (*Module)(toNode(tree.RootNode(), data, withPos))}, nil
 }
 
