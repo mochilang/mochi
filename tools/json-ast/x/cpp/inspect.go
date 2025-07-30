@@ -12,7 +12,7 @@ import (
 // Program represents the root of a parsed translation unit. It mirrors the
 // tree-sitter structure using the minimal Node defined in ast.go.
 type Program struct {
-	Root Node `json:"root"`
+	Root *Node `json:"root"`
 }
 
 // Inspect parses the given C++ source code using tree-sitter and
