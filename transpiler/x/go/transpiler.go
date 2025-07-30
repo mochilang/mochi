@@ -1858,9 +1858,14 @@ func (a *AssertExpr) emit(w io.Writer) {
 		}
 	}
 	if a.Type == "int" {
-		io.WriteString(w, "int(")
-		a.Expr.emit(w)
-		io.WriteString(w, ")")
+		if _, ok := a.Expr.(*IndexExpr); ok {
+			a.Expr.emit(w)
+			io.WriteString(w, ".(int)")
+		} else {
+			io.WriteString(w, "int(")
+			a.Expr.emit(w)
+			io.WriteString(w, ")")
+		}
 		return
 	}
 	if strings.HasPrefix(a.Type, "[]") {
