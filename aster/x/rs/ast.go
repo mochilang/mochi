@@ -1,7 +1,7 @@
 package rs
 
 import (
-	sitter "github.com/smacker/go-tree-sitter"
+	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
 // Node represents a simplified Rust AST node converted from tree-sitter.
@@ -68,10 +68,10 @@ func convert(n *sitter.Node, src []byte, includePos bool) *Node {
 		return nil
 	}
 
-	node := &Node{Kind: n.Type()}
+	node := &Node{Kind: n.Kind()}
 	if includePos {
-		sp := n.StartPoint()
-		ep := n.EndPoint()
+		sp := n.StartPosition()
+		ep := n.EndPosition()
 		node.Start = int(sp.Row) + 1
 		node.End = int(ep.Row) + 1
 		node.StartCol = int(sp.Column)
@@ -79,15 +79,15 @@ func convert(n *sitter.Node, src []byte, includePos bool) *Node {
 	}
 
 	if n.NamedChildCount() == 0 {
-		if isValueNode(n.Type()) {
-			node.Text = n.Content(src)
+		if isValueNode(n.Kind()) {
+			node.Text = n.Utf8Text(src)
 		} else {
 			return nil
 		}
 	}
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
-		child := convert(n.NamedChild(i), src, includePos)
+		child := convert(n.NamedChild(uint(i)), src, includePos)
 		if child != nil {
 			node.Children = append(node.Children, child)
 		}
