@@ -1,11 +1,8 @@
 package ts
 
 import (
-	"encoding/json"
-	"fmt"
-	"os"
-	"os/exec"
-	"path/filepath"
+	sitter "github.com/smacker/go-tree-sitter"
+	tstypescript "github.com/smacker/go-tree-sitter/typescript/typescript"
 )
 
 // Node represents a node in the TypeScript AST.
@@ -25,62 +22,43 @@ type Program struct {
 	Root Node `json:"root"`
 }
 
-// Inspect parses the given TypeScript source code using the official parser
-// and returns its Program structure.
+// Inspect parses the given TypeScript source code using tree-sitter and
+// returns its Program structure.
 func Inspect(src string) (*Program, error) {
-	tscBin, err := exec.LookPath("tsc")
-	if err != nil {
-		return nil, fmt.Errorf("tsc not installed")
-	}
-	tsLib := filepath.Join(filepath.Dir(tscBin), "..", "lib", "node_modules", "typescript", "lib", "typescript.js")
-	tsLib, _ = filepath.Abs(tsLib)
-
-	tmp, err := os.CreateTemp("", "ts-src-*.ts")
-	if err != nil {
-		return nil, err
-	}
-	if _, err := tmp.WriteString(src); err != nil {
-		tmp.Close()
-		os.Remove(tmp.Name())
-		return nil, err
-	}
-	tmp.Close()
-	defer os.Remove(tmp.Name())
-
-	root, err := repoRoot()
-	if err != nil {
-		return nil, err
-	}
-	script := filepath.Join(root, "tools", "json-ast", "x", "ts", "parse.js")
-
-	cmd := exec.Command("node", script, tmp.Name())
-	cmd.Env = append(os.Environ(), "TS_LIB="+tsLib)
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		return nil, fmt.Errorf("node error: %w\n%s", err, out)
-	}
-
-	var n Node
-	if err := json.Unmarshal(out, &n); err != nil {
-		return nil, err
-	}
-	return &Program{Root: n}, nil
+	p := sitter.NewParser()
+	p.SetLanguage(tstypescript.GetLanguage())
+	tree := p.Parse(nil, []byte(src))
+	root := convertNode(tree.RootNode(), []byte(src))
+	return &Program{Root: root}, nil
 }
 
-func repoRoot() (string, error) {
-	dir, err := os.Getwd()
-	if err != nil {
-		return "", err
+func convertNode(n *sitter.Node, src []byte) Node {
+	start := n.StartPoint()
+	end := n.EndPoint()
+	node := Node{
+		Kind:     n.Type(),
+		Start:    int(start.Row) + 1,
+		StartCol: int(start.Column),
+		End:      int(end.Row) + 1,
+		EndCol:   int(end.Column),
 	}
-	for i := 0; i < 10; i++ {
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-			return dir, nil
-		}
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			break
-		}
-		dir = parent
+
+	switch n.Type() {
+	case "identifier":
+		node.Name = n.Content(src)
+	case "string", "string_fragment", "string_literal", "template_string", "interpreted_string_literal", "raw_string_literal":
+		node.Value = n.Content(src)
+	case "number", "decimal_integer_literal", "hex_integer_literal", "octal_integer_literal", "binary_integer_literal", "float":
+		node.Value = n.Content(src)
+	case "true":
+		node.Value = true
+	case "false":
+		node.Value = false
 	}
-	return "", os.ErrNotExist
+
+	for i := 0; i < int(n.NamedChildCount()); i++ {
+		child := n.NamedChild(i)
+		node.Children = append(node.Children, convertNode(child, src))
+	}
+	return node
 }
