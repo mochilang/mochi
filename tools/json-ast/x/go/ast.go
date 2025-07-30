@@ -8,7 +8,7 @@ import (
 type Node struct {
 	Kind     string `json:"kind"`
 	Name     string `json:"name,omitempty"`
-	Value    string `json:"value,omitempty"`
+	Text     string `json:"text,omitempty"`
 	Start    int    `json:"start"`
 	StartCol int    `json:"startCol"`
 	End      int    `json:"end"`
@@ -33,12 +33,8 @@ func convertNode(n *sitter.Node, src []byte) Node {
 		switch n.Type() {
 		case "identifier":
 			node.Name = text
-		case "true":
-			node.Value = "true"
-		case "false":
-			node.Value = "false"
 		default:
-			node.Value = text
+			node.Text = text
 		}
 	}
 
