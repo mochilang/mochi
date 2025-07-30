@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"flag"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -36,14 +35,7 @@ func repoRoot(t *testing.T) string {
 	return ""
 }
 
-func ensurePython(t *testing.T) {
-	if _, err := exec.LookPath("python3"); err != nil {
-		t.Skip("python3 not installed")
-	}
-}
-
 func TestInspect_Golden(t *testing.T) {
-	ensurePython(t)
 	root := repoRoot(t)
 	srcDir := filepath.Join(root, "tests", "transpiler", "x", "python")
 	outDir := filepath.Join(root, "tests", "json-ast", "x", "python")
