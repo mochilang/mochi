@@ -1,4 +1,4 @@
-// Generated 2025-07-28 10:03 +0700
+// Generated 2025-07-31 00:10 +0700
 
 exception Return
 
@@ -122,7 +122,7 @@ and main () =
         let mutable i: int = 0
         while i < (Seq.length predsArray) do
             let preds: float array = predsArray.[i]
-            let res: float array = diversityTheorem truth preds
+            let mutable res: float array = diversityTheorem truth preds
             printfn "%s" ("Average-error : " + (unbox<string> (padLeft (formatFloat (res.[0]) 3) 6)))
             printfn "%s" ("Crowd-error   : " + (unbox<string> (padLeft (formatFloat (res.[1]) 3) 6)))
             printfn "%s" ("Diversity     : " + (unbox<string> (padLeft (formatFloat (res.[2]) 3) 6)))

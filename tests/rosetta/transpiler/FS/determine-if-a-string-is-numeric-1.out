@@ -1,0 +1,7 @@
+Are these strings numeric?
+  1 -> True
+  3.14 -> True
+  -100 -> True
+  1e2 -> True
+  NaN -> True
+  rose -> False

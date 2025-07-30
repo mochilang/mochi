@@ -1,4 +1,4 @@
-// Generated 2025-07-30 21:41 +0700
+// Generated 2025-07-31 00:10 +0700
 
 exception Break
 exception Continue
@@ -271,10 +271,10 @@ and main () =
         let month: int = months.[(parts.[0])] |> unbox<int>
         let day: int = parseIntStr (parts.[1])
         let year: int = parseIntStr (parts.[2])
-        let tm: int array = parseTime (unbox<string> (parts.[3]))
+        let tm: int array = parseTime (parts.[3])
         let hour: int = tm.[0]
         let minute: int = tm.[1]
-        let tz: obj = box (parts.[4])
+        let tz: string = parts.[4]
         let zoneOffsets: Map<string, int> = Map.ofList [("EST", -18000); ("EDT", -14400); ("MST", -25200)]
         let local: int = epochSeconds year month day hour minute
         let utc = local - (int (zoneOffsets.[tz] |> unbox<int>))

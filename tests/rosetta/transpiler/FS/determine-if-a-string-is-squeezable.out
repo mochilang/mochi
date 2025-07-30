@@ -1,0 +1,43 @@
+specified character = ' '
+original : length =  0, string = «««»»»
+squeezed : length =  0, string = «««»»»
+
+specified character = '-'
+original : length = 72, string = «««"If I were two-faced, would I be wearing this one?" --- Abraham Lincoln »»»
+squeezed : length = 70, string = «««"If I were two-faced, would I be wearing this one?" - Abraham Lincoln »»»
+
+specified character = '7'
+original : length = 72, string = «««..1111111111111111111111111111111111111111111111111111111111111117777888»»»
+squeezed : length = 69, string = «««..1111111111111111111111111111111111111111111111111111111111111117888»»»
+
+specified character = '.'
+original : length = 72, string = «««I never give 'em hell, I just tell the truth, and they think it's hell. »»»
+squeezed : length = 72, string = «««I never give 'em hell, I just tell the truth, and they think it's hell. »»»
+
+specified character = ' '
+original : length = 72, string = «««                                                   ---  Harry S Truman  »»»
+squeezed : length = 20, string = ««« --- Harry S Truman »»»
+
+specified character = '-'
+original : length = 72, string = «««                                                   ---  Harry S Truman  »»»
+squeezed : length = 70, string = «««                                                   -  Harry S Truman  »»»
+
+specified character = 'r'
+original : length = 72, string = «««                                                   ---  Harry S Truman  »»»
+squeezed : length = 71, string = «««                                                   ---  Hary S Truman  »»»
+
+specified character = 'e'
+original : length = 80, string = «««The better the 4-wheel drive, the further you'll be from help when ya get stuck!»»»
+squeezed : length = 79, string = «««The better the 4-whel drive, the further you'll be from help when ya get stuck!»»»
+
+specified character = 's'
+original : length = 16, string = «««headmistressship»»»
+squeezed : length = 14, string = «««headmistreship»»»
+
+specified character = 'a'
+original : length =  8, string = «««aardvark»»»
+squeezed : length =  7, string = «««ardvark»»»
+
+specified character = '😍'
+original : length = 16, string = «««😍😀🙌💃😍😍😍🙌»»»
+squeezed : length = 16, string = «««😍😀🙌💃😍😍😍🙌»»»

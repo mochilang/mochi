@@ -1,4 +1,4 @@
-// Generated 2025-07-28 10:03 +0700
+// Generated 2025-07-31 00:10 +0700
 
 exception Return
 
@@ -77,10 +77,10 @@ and main () =
         let ``base``: int = 10
         let size: int = 5
         printfn "%s" (((((unbox<string> (pad "Number" 20)) + " ") + (unbox<string> (pad "MDR" 3))) + " ") + (unbox<string> (pad "MP" 3)))
-        let nums: bigint array = [|bigint 123321; bigint 7739; bigint 893; bigint 899998; bigint -516078297; bigint 277773493921603|]
+        let nums: bigint array = [|bigint 123321; bigint 7739; bigint 893; bigint 899998; bigint (int 3778888999L); bigint 277777788888899L|]
         let mutable i: int = 0
         while i < (Seq.length nums) do
-            let n: bigint = nums.[i]
+            let mutable n: bigint = nums.[i]
             let r: MDRResult = multDigitalRoot n ``base``
             printfn "%s" (((((unbox<string> (pad (string n) 20)) + " ") + (unbox<string> (pad (string (r.mdr)) 3))) + " ") + (unbox<string> (pad (string (r.mp)) 3)))
             i <- i + 1

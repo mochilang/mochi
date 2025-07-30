@@ -1,0 +1,20 @@
+The length of the de Bruijn sequence is 10003
+
+The first 130 digits of the de Bruijn sequence are:
+0000100020003000400050006000700080009001100120013001400150016001700180019002100220023002400250026002700280029003100320033003400350
+
+The last 130 digits of the de Bruijn sequence are:
+6898689969697769786979698769886989699769986999777787779778877897798779978787978887889789878997979887989799879998888988998989999000
+
+Validating the de Bruijn sequence:
+  No errors found
+
+Validating the reversed de Bruijn sequence:
+  No errors found
+
+Validating the overlaid de Bruijn sequence:
+  4 errors found:
+    PIN number 1459 missing
+    PIN number 4591 missing
+    PIN number 5814 missing
+    PIN number 8145 missing
