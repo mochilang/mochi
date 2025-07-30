@@ -3,89 +3,54 @@
 package zig
 
 import (
-	"bytes"
 	"context"
-	_ "embed"
-	"encoding/json"
 	"fmt"
-	"os"
-	"os/exec"
-	"path/filepath"
-	"strings"
-	"time"
 
-	zigcode "mochi/compiler/x/zig"
+	tszig "github.com/slimsag/tree-sitter-zig/bindings/go"
+	sitter "github.com/smacker/go-tree-sitter"
 )
 
-//go:embed parse.zig
-var zigParser string
-
-// Token represents a Zig token.
-type Token struct {
-	Value string `json:"value"`
-}
-
-// Param represents a function parameter.
-type Param struct {
-	NameToken *Token `json:"name_token"`
-	TypeExpr  Node   `json:"type_expr"`
-}
-
-// Node represents an AST node emitted by parse.zig.
+// Node represents a tree-sitter node in Zig's syntax tree.
 type Node struct {
-	Tag        string  `json:"tag"`
-	NameToken  *Token  `json:"name_token,omitempty"`
-	Params     []Param `json:"params,omitempty"`
-	VisibToken *Token  `json:"visib_token,omitempty"`
-	TypeNode   *Node   `json:"type_node,omitempty"`
-	InitNode   *Node   `json:"init_node,omitempty"`
-	MainToken  *Token  `json:"main_token,omitempty"`
-	Members    []Node  `json:"members,omitempty"`
-	TypeExpr   *Node   `json:"type_expr,omitempty"`
-	ValueExpr  *Node   `json:"value_expr,omitempty"`
+	Type     string `json:"type"`
+	Start    int    `json:"start"`
+	End      int    `json:"end"`
+	Text     string `json:"text,omitempty"`
+	Children []Node `json:"children,omitempty"`
 }
 
-// Program holds the parsed nodes of a Zig source file.
+// Program describes a parsed Zig source file.
 type Program struct {
-	Nodes []Node `json:"nodes"`
+	Root Node `json:"root"`
 }
 
-// Inspect parses Zig source code using the bundled parser.
+// Inspect parses Zig source code using tree-sitter.
 func Inspect(src string) (*Program, error) {
-	zigc, err := zigcode.EnsureZig()
+	parser := sitter.NewParser()
+	parser.SetLanguage(tszig.GetLanguage())
+	tree, err := parser.ParseCtx(context.Background(), nil, []byte(src))
 	if err != nil {
-		return nil, fmt.Errorf("zig not installed: %w", err)
+		return nil, fmt.Errorf("parse: %w", err)
 	}
+	root := convertNode(tree.RootNode(), []byte(src))
+	return &Program{Root: root}, nil
+}
 
-	dir, err := os.MkdirTemp("", "zig-ast-")
-	if err != nil {
-		return nil, err
+func convertNode(n *sitter.Node, src []byte) Node {
+	node := Node{
+		Type:  n.Type(),
+		Start: int(n.StartByte()),
+		End:   int(n.EndByte()),
 	}
-	defer os.RemoveAll(dir)
-
-	parserPath := filepath.Join(dir, "parse.zig")
-	if err := os.WriteFile(parserPath, []byte(zigParser), 0644); err != nil {
-		return nil, err
+	if n.ChildCount() == 0 {
+		node.Text = n.Content(src)
 	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	cmd := exec.CommandContext(ctx, zigc, "run", parserPath)
-	cmd.Stdin = strings.NewReader(src)
-	var out, errBuf bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &errBuf
-	if err := cmd.Run(); err != nil {
-		msg := strings.TrimSpace(errBuf.String())
-		if msg != "" {
-			return nil, fmt.Errorf("%v: %s", err, msg)
+	for i := 0; i < int(n.ChildCount()); i++ {
+		child := n.Child(i)
+		if child == nil {
+			continue
 		}
-		return nil, err
+		node.Children = append(node.Children, convertNode(child, src))
 	}
-
-	var nodes []Node
-	if err := json.Unmarshal(out.Bytes(), &nodes); err != nil {
-		return nil, err
-	}
-	return &Program{Nodes: nodes}, nil
+	return node
 }
