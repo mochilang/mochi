@@ -30,6 +30,34 @@ type Node struct {
 	Children []Node `json:"children,omitempty"`
 }
 
+// A small set of concrete node types used in the golden example. They simply
+// embed Node so the JSON representation keeps the same shape while giving the
+// Go compiler a richer type hierarchy.
+type (
+	ProgramNode             struct{ Node }
+	Comment                 struct{ Node }
+	Assignment              struct{ Node }
+	Call                    struct{ Node }
+	ArgumentList            struct{ Node }
+	Array                   struct{ Node }
+	Pair                    struct{ Node }
+	Identifier              struct{ Node }
+	Constant                struct{ Node }
+	Integer                 struct{ Node }
+	String                  struct{ Node }
+	StringContent           struct{ Node }
+	SimpleSymbol            struct{ Node }
+	HashKeySymbol           struct{ Node }
+	True                    struct{ Node }
+	Binary                  struct{ Node }
+	Begin                   struct{ Node }
+	DoBlock                 struct{ Node }
+	BlockParameters         struct{ Node }
+	BodyStatement           struct{ Node }
+	ElementReference        struct{ Node }
+	ParenthesizedStatements struct{ Node }
+)
+
 // Parse converts Ruby source code into a Node tree using tree-sitter.
 // Parse converts Ruby source code into a Node tree using tree-sitter.
 func Parse(src string) (*Node, error) {
