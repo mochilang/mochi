@@ -6,12 +6,12 @@ import (
 	"context"
 
 	sitter "github.com/tree-sitter/go-tree-sitter"
-	"mochi/aster/x/zig/tree_sitter_zig"
+	tsz "github.com/tree-sitter/tree-sitter-zig/bindings/go"
 )
 
 // Program describes a parsed Zig source file.
 type Program struct {
-	Root SourceFile `json:"root"`
+	Root *SourceFile `json:"root"`
 }
 
 // Inspect parses Zig source code using tree-sitter.
@@ -23,11 +23,12 @@ func Inspect(src string, opts ...Options) (*Program, error) {
 		opt = opts[0]
 	}
 	parser := sitter.NewParser()
-	parser.SetLanguage(tree_sitter_zig.GetLanguage())
+	parser.SetLanguage(tsz.GetLanguage())
 	tree := parser.ParseCtx(context.Background(), []byte(src), nil)
 	node, ok := convertNode(tree.RootNode(), []byte(src), opt.Positions)
 	if !ok {
-		return &Program{Root: SourceFile{}}, nil
+		return &Program{Root: nil}, nil
 	}
-	return &Program{Root: SourceFile{Node: node}}, nil
+	root := SourceFile{Node: node}
+	return &Program{Root: &root}, nil
 }
