@@ -88,6 +88,16 @@ func convertNode(n *sitter.Node, src []byte, withPos bool) (Node, bool) {
 	return node, true
 }
 
+// convertProgram converts the tree-sitter root node into a Program structure.
+func convertProgram(root *sitter.Node, src []byte, withPos bool) *Program {
+	n, ok := convertNode(root, src, withPos)
+	if !ok {
+		return &Program{}
+	}
+	pn := ProgramNode(n)
+	return &Program{Root: &pn}
+}
+
 // isValueNode reports whether the given node kind should be kept when it is a
 // leaf node. Keywords and punctuation are discarded to keep the JSON minimal.
 func isValueNode(kind string) bool {
