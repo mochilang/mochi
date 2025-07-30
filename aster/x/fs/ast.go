@@ -1,7 +1,7 @@
 package fs
 
 import (
-	sitter "github.com/smacker/go-tree-sitter"
+	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
 // Node represents a F# AST node converted from tree-sitter.
@@ -72,10 +72,10 @@ func convert(n *sitter.Node, src []byte, withPos bool) *Node {
 	if n == nil {
 		return nil
 	}
-	start := n.StartPoint()
-	end := n.EndPoint()
+	start := n.StartPosition()
+	end := n.EndPosition()
 
-	node := &Node{Kind: n.Type()}
+	node := &Node{Kind: n.Kind()}
 	if withPos {
 		node.Start = int(start.Row) + 1
 		node.StartCol = int(start.Column)
@@ -84,9 +84,9 @@ func convert(n *sitter.Node, src []byte, withPos bool) *Node {
 	}
 
 	if n.NamedChildCount() == 0 {
-		if isValueNode(n.Type()) {
-			text := n.Content(src)
-			if n.Type() == "identifier" {
+		if isValueNode(n.Kind()) {
+			text := n.Utf8Text(src)
+			if n.Kind() == "identifier" {
 				node.Name = text
 			} else {
 				node.Text = text
@@ -97,7 +97,7 @@ func convert(n *sitter.Node, src []byte, withPos bool) *Node {
 		return nil
 	}
 
-	for i := 0; i < int(n.NamedChildCount()); i++ {
+	for i := uint(0); i < n.NamedChildCount(); i++ {
 		child := convert(n.NamedChild(i), src, withPos)
 		if child != nil {
 			node.Children = append(node.Children, *child)

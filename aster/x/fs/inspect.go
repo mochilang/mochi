@@ -1,7 +1,7 @@
 package fs
 
 import (
-	sitter "github.com/smacker/go-tree-sitter"
+	sitter "github.com/tree-sitter/go-tree-sitter"
 	fsharp "github.com/tree-sitter/tree-sitter-fsharp/bindings/go"
 )
 
@@ -17,7 +17,7 @@ type Program struct {
 func Inspect(src string, withPos bool) (*Program, error) {
 	parser := sitter.NewParser()
 	parser.SetLanguage(sitter.NewLanguage(fsharp.LanguageFSharp()))
-	tree := parser.Parse(nil, []byte(src))
+	tree := parser.Parse([]byte(src), nil)
 	root := convert(tree.RootNode(), []byte(src), withPos)
 	if root == nil {
 		return &Program{}, nil
