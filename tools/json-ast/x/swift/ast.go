@@ -4,22 +4,50 @@ import (
 	sitter "github.com/smacker/go-tree-sitter"
 )
 
-// Node represents a node in the Swift syntax tree.
-// Each node carries its kind and byte offsets as reported by tree-sitter.
-// Children only include named nodes to keep the structure compact.
-// Node represents a minimal AST node that mirrors the Swift grammar. Only
-// nodes carrying a value store their text in the Text field. The Start and End
-// fields contain the 1-indexed line numbers while StartCol and EndCol record
-// the column offsets.
+// IncludePositions controls whether converted AST nodes include position
+// information. When false the positional fields are left zero and omitted from
+// the resulting JSON thanks to `omitempty`.
+var IncludePositions bool
+
+// Node represents a minimal Swift AST node. Only nodes carrying a textual value
+// keep their Text field. Source positions are optional and controlled by the
+// IncludePositions flag.
 type Node struct {
 	Kind     string  `json:"kind"`
 	Text     string  `json:"text,omitempty"`
-	Start    int     `json:"start"`
-	StartCol int     `json:"startCol"`
-	End      int     `json:"end"`
-	EndCol   int     `json:"endCol"`
+	Start    int     `json:"start,omitempty"`
+	StartCol int     `json:"startCol,omitempty"`
+	End      int     `json:"end,omitempty"`
+	EndCol   int     `json:"endCol,omitempty"`
 	Children []*Node `json:"children,omitempty"`
 }
+
+// Comment represents a Swift comment node.
+type Comment struct{ Node }
+
+// PropertyDeclaration models a Swift property declaration.
+type PropertyDeclaration struct{ Node }
+
+// Pattern represents a binding pattern.
+type Pattern struct{ Node }
+
+// SimpleIdentifier represents an identifier leaf node.
+type SimpleIdentifier struct{ Node }
+
+// ArrayLiteral represents an array literal expression.
+type ArrayLiteral struct{ Node }
+
+// DictionaryLiteral represents a dictionary literal expression.
+type DictionaryLiteral struct{ Node }
+
+// LineStringLiteral represents a string literal.
+type LineStringLiteral struct{ Node }
+
+// LineStrText represents the textual part of a string literal.
+type LineStrText struct{ Node }
+
+// IntegerLiteral represents an integer literal.
+type IntegerLiteral struct{ Node }
 
 // SourceFile is the root of a Swift AST.
 type SourceFile struct{ Node }
@@ -30,14 +58,14 @@ func convertNode(n *sitter.Node, src []byte) *Node {
 	if n == nil {
 		return nil
 	}
-	start := n.StartPoint()
-	end := n.EndPoint()
-	out := &Node{
-		Kind:     n.Type(),
-		Start:    int(start.Row) + 1,
-		StartCol: int(start.Column),
-		End:      int(end.Row) + 1,
-		EndCol:   int(end.Column),
+	out := &Node{Kind: n.Type()}
+	if IncludePositions {
+		start := n.StartPoint()
+		end := n.EndPoint()
+		out.Start = int(start.Row) + 1
+		out.StartCol = int(start.Column)
+		out.End = int(end.Row) + 1
+		out.EndCol = int(end.Column)
 	}
 
 	if n.NamedChildCount() == 0 {
