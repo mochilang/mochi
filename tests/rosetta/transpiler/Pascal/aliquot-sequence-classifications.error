@@ -1,0 +1,11 @@
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/rosetta/transpiler/Pascal/aliquot-sequence-classifications.pas
+aliquot-sequence-classifications.pas(56,30) Error: Identifier not found "classifySequence_seq"
+aliquot-sequence-classifications.pas(57,34) Error: Identifier not found "classifySequence_aliquot"
+aliquot-sequence-classifications.pas(236,15) Warning: range check error while evaluating constants (15355717786080 must be between -2147483648 and 2147483647)
+aliquot-sequence-classifications.pas(244,16) Warning: range check error while evaluating constants (140737488355328 must be between -2147483648 and 2147483647)
+aliquot-sequence-classifications.pas(255) Fatal: There were 2 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

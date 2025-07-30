@@ -1,0 +1,6 @@
+An unhandled exception occurred at $000000000045792E:
+EAccessViolation: Access violation
+  $000000000045792E
+  $00000000004032C9
+  $000000000040386B
+

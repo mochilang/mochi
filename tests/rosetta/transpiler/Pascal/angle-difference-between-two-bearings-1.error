@@ -1,0 +1,10 @@
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/rosetta/transpiler/Pascal/angle-difference-between-two-bearings-1.pas
+angle-difference-between-two-bearings-1.pas(62,24) Error: Illegal qualifier
+angle-difference-between-two-bearings-1.pas(62,31) Error: Illegal qualifier
+angle-difference-between-two-bearings-1.pas(61,7) Error: Incompatible types: got "{Dynamic} Array Of Real" expected "LongInt"
+angle-difference-between-two-bearings-1.pas(73) Fatal: There were 3 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

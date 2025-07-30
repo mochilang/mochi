@@ -37,14 +37,34 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  myVar: real;
+function fib(n: integer): integer; forward;
+procedure main(); forward;
+function fib(n: integer): integer;
+begin
+  if n < 2 then begin
+  exit(n);
+end;
+  exit(fib(n - 1) + fib(n - 2));
+end;
+procedure main();
+var
+  main_i: integer;
+begin
+  main_i := -1;
+  while main_i <= 10 do begin
+  if main_i < 0 then begin
+  writeln(('fib(' + IntToStr(main_i)) + ') returned error: negative n is forbidden');
+end else begin
+  writeln((('fib(' + IntToStr(main_i)) + ') = ') + IntToStr(fib(main_i)));
+end;
+  main_i := main_i + 1;
+end;
+end;
 begin
   init_now();
   bench_mem_0 := _mem();
   bench_start_0 := _bench_now();
-  myVar := 3.14;
-  writeln('value as float:', ' ', myVar);
-  writeln('address: <not available>');
+  main();
   Sleep(1);
   bench_memdiff_0 := _mem() - bench_mem_0;
   bench_dur_0 := (_bench_now() - bench_start_0) div 1000;

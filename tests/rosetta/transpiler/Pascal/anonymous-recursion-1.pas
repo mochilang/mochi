@@ -37,14 +37,46 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  myVar: real;
+function fib(n: integer): integer; forward;
+procedure main(); forward;
+function fib(n: integer): integer;
+var
+  fib_a: integer;
+  fib_b: integer;
+  fib_i: integer;
+  fib_t: integer;
+begin
+  if n < 2 then begin
+  exit(n);
+end;
+  fib_a := 0;
+  fib_b := 1;
+  fib_i := 1;
+  while fib_i < n do begin
+  fib_t := fib_a + fib_b;
+  fib_a := fib_b;
+  fib_b := fib_t;
+  fib_i := fib_i + 1;
+end;
+  exit(fib_b);
+end;
+procedure main();
+var
+  main_n: integer;
+begin
+  for main_n in [0, 1, 2, 3, 4, 5, 10, 40, -1] do begin
+  if main_n < 0 then begin
+  writeln('fib undefined for negative numbers');
+end else begin
+  writeln((('fib ' + IntToStr(main_n)) + ' = ') + IntToStr(fib(main_n)));
+end;
+end;
+end;
 begin
   init_now();
   bench_mem_0 := _mem();
   bench_start_0 := _bench_now();
-  myVar := 3.14;
-  writeln('value as float:', ' ', myVar);
-  writeln('address: <not available>');
+  main();
   Sleep(1);
   bench_memdiff_0 := _mem() - bench_mem_0;
   bench_dur_0 := (_bench_now() - bench_start_0) div 1000;

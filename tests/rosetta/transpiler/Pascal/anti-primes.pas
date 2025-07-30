@@ -37,14 +37,56 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  myVar: real;
+function countDivisors(n: integer): integer; forward;
+procedure main(); forward;
+function countDivisors(n: integer): integer;
+var
+  countDivisors_count: integer;
+  countDivisors_i: integer;
+begin
+  if n < 2 then begin
+  exit(1);
+end;
+  countDivisors_count := 2;
+  countDivisors_i := 2;
+  while countDivisors_i <= (n div 2) do begin
+  if (n mod countDivisors_i) = 0 then begin
+  countDivisors_count := countDivisors_count + 1;
+end;
+  countDivisors_i := countDivisors_i + 1;
+end;
+  exit(countDivisors_count);
+end;
+procedure main();
+var
+  main_maxDiv: integer;
+  main_count: integer;
+  main_n: integer;
+  main_line: string;
+  main_d: integer;
+begin
+  writeln('The first 20 anti-primes are:');
+  main_maxDiv := 0;
+  main_count := 0;
+  main_n := 1;
+  main_line := '';
+  while main_count < 20 do begin
+  main_d := countDivisors(main_n);
+  if main_d > main_maxDiv then begin
+  main_line := (main_line + IntToStr(main_n)) + ' ';
+  main_maxDiv := main_d;
+  main_count := main_count + 1;
+end;
+  main_n := main_n + 1;
+end;
+  main_line := copy(main_line, 0+1, (Length(main_line) - 1 - (0)));
+  writeln(main_line);
+end;
 begin
   init_now();
   bench_mem_0 := _mem();
   bench_start_0 := _bench_now();
-  myVar := 3.14;
-  writeln('value as float:', ' ', myVar);
-  writeln('address: <not available>');
+  main();
   Sleep(1);
   bench_memdiff_0 := _mem() - bench_mem_0;
   bench_dur_0 := (_bench_now() - bench_start_0) div 1000;

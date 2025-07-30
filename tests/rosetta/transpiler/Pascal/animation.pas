@@ -37,14 +37,39 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  myVar: real;
+  msg: string;
+  shift: integer;
+  inc: integer;
+  clicks: integer;
+  frames: integer;
+  line: string;
+  i: integer;
+  idx: integer;
 begin
   init_now();
   bench_mem_0 := _mem();
   bench_start_0 := _bench_now();
-  myVar := 3.14;
-  writeln('value as float:', ' ', myVar);
-  writeln('address: <not available>');
+  msg := 'Hello World! ';
+  shift := 0;
+  inc := 1;
+  clicks := 0;
+  frames := 0;
+  while clicks < 5 do begin
+  line := '';
+  i := 0;
+  while i < Length(msg) do begin
+  idx := (shift + i) mod Length(msg);
+  line := line + copy(msg, idx+1, (idx + 1 - (idx)));
+  i := i + 1;
+end;
+  writeln(line);
+  shift := (shift + inc) mod Length(msg);
+  frames := frames + 1;
+  if (frames mod Length(msg)) = 0 then begin
+  inc := Length(msg) - inc;
+  clicks := clicks + 1;
+end;
+end;
   Sleep(1);
   bench_memdiff_0 := _mem() - bench_mem_0;
   bench_dur_0 := (_bench_now() - bench_start_0) div 1000;
