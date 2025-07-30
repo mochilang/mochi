@@ -13,27 +13,27 @@ import sitter "github.com/smacker/go-tree-sitter"
 type Node struct {
 	Kind     string `json:"kind"`
 	Text     string `json:"text,omitempty"`
-	Start    int    `json:"start"`
-	StartCol int    `json:"startCol"`
-	End      int    `json:"end"`
-	EndCol   int    `json:"endCol"`
+	Start    int    `json:"start,omitempty"`
+	StartCol int    `json:"startCol,omitempty"`
+	End      int    `json:"end,omitempty"`
+	EndCol   int    `json:"endCol,omitempty"`
 	Children []Node `json:"children,omitempty"`
 }
 
 // convert transforms a tree-sitter node into the Node structure defined above.
 // Only named children are traversed to keep the result compact.
-func convert(n *sitter.Node, src []byte) *Node {
+func convert(n *sitter.Node, src []byte, pos bool) *Node {
 	if n == nil {
 		return nil
 	}
-	start := n.StartPoint()
-	end := n.EndPoint()
-	node := &Node{
-		Kind:     n.Type(),
-		Start:    int(start.Row) + 1,
-		StartCol: int(start.Column),
-		End:      int(end.Row) + 1,
-		EndCol:   int(end.Column),
+	node := &Node{Kind: n.Type()}
+	if pos {
+		start := n.StartPoint()
+		end := n.EndPoint()
+		node.Start = int(start.Row) + 1
+		node.StartCol = int(start.Column)
+		node.End = int(end.Row) + 1
+		node.EndCol = int(end.Column)
 	}
 
 	if n.NamedChildCount() == 0 {
@@ -46,7 +46,7 @@ func convert(n *sitter.Node, src []byte) *Node {
 	}
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
-		child := convert(n.NamedChild(i), src)
+		child := convert(n.NamedChild(i), src, pos)
 		if child != nil {
 			node.Children = append(node.Children, *child)
 		}
