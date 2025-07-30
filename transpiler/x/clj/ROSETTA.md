@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
-Completed: 97/493
-Last updated: 2025-07-28 11:42 +0700
+Completed: 98/493
+Last updated: 2025-07-30 14:21 +0000
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -397,14 +397,14 @@ Last updated: 2025-07-28 11:42 +0700
 | 390 | faces-from-a-mesh |   |  |  |
 | 391 | factorial-base-numbers-indexing-permutations-of-a-collection |   |  |  |
 | 392 | factorial-primes |   |  |  |
-| 393 | factorial |   |  |  |
+| 393 | factorial | ✓ |  |  |
 | 394 | factorions |   |  |  |
 | 395 | factors-of-a-mersenne-number |   |  |  |
 | 396 | factors-of-an-integer |   |  |  |
 | 397 | fairshare-between-two-and-more |   |  |  |
 | 398 | farey-sequence |   |  |  |
 | 399 | fast-fourier-transform |   |  |  |
-| 400 | fasta-format |   |  |  |
+| 400 | fasta-format | ✓ |  |  |
 | 401 | faulhabers-formula |   |  |  |
 | 402 | faulhabers-triangle |   |  |  |
 | 403 | feigenbaum-constant-calculation |   |  |  |
