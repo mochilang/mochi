@@ -1,321 +1,95 @@
 {
-  "types": [
-    {
-      "name": "Nation",
-      "kind": "struct",
-      "access": "",
-      "startline": 6,
-      "endline": 10,
-      "fields": [
-        {
-          "name": "id",
-          "type": "int",
-          "access": "public",
-          "line": 7,
-          "value": "",
-          "static": false,
-          "doc": ""
-        },
-        {
-          "name": "name",
-          "type": "string",
-          "access": "public",
-          "line": 8,
-          "value": "",
-          "static": false,
-          "doc": ""
-        }
-      ],
-      "methods": [
-        {
-          "name": "ToString",
-          "params": [],
-          "ret": "string",
-          "access": "public",
-          "static": false,
-          "ast": {
-            "kind": "block"
-          },
-          "startline": 9,
-          "endline": 9,
-          "doc": ""
-        }
-      ],
-      "doc": ""
-    },
-    {
-      "name": "Supplier",
-      "kind": "struct",
-      "access": "",
-      "startline": 11,
-      "endline": 15,
-      "fields": [
-        {
-          "name": "id",
-          "type": "int",
-          "access": "public",
-          "line": 12,
-          "value": "",
-          "static": false,
-          "doc": ""
-        },
-        {
-          "name": "nation",
-          "type": "int",
-          "access": "public",
-          "line": 13,
-          "value": "",
-          "static": false,
-          "doc": ""
-        }
-      ],
-      "methods": [
-        {
-          "name": "ToString",
-          "params": [],
-          "ret": "string",
-          "access": "public",
-          "static": false,
-          "ast": {
-            "kind": "block"
-          },
-          "startline": 14,
-          "endline": 14,
-          "doc": ""
-        }
-      ],
-      "doc": ""
-    },
-    {
-      "name": "Partsupp",
-      "kind": "struct",
-      "access": "",
-      "startline": 16,
-      "endline": 22,
-      "fields": [
-        {
-          "name": "part",
-          "type": "int",
-          "access": "public",
-          "line": 17,
-          "value": "",
-          "static": false,
-          "doc": ""
-        },
-        {
-          "name": "supplier",
-          "type": "int",
-          "access": "public",
-          "line": 18,
-          "value": "",
-          "static": false,
-          "doc": ""
-        },
-        {
-          "name": "cost",
-          "type": "double",
-          "access": "public",
-          "line": 19,
-          "value": "",
-          "static": false,
-          "doc": ""
-        },
-        {
-          "name": "qty",
-          "type": "int",
-          "access": "public",
-          "line": 20,
-          "value": "",
-          "static": false,
-          "doc": ""
-        }
-      ],
-      "methods": [
-        {
-          "name": "ToString",
-          "params": [],
-          "ret": "string",
-          "access": "public",
-          "static": false,
-          "ast": {
-            "kind": "block"
-          },
-          "startline": 21,
-          "endline": 21,
-          "doc": ""
-        }
-      ],
-      "doc": ""
-    },
-    {
-      "name": "PsResult",
-      "kind": "struct",
-      "access": "",
-      "startline": 23,
-      "endline": 27,
-      "fields": [
-        {
-          "name": "part",
-          "type": "int",
-          "access": "public",
-          "line": 24,
-          "value": "",
-          "static": false,
-          "doc": ""
-        },
-        {
-          "name": "value",
-          "type": "double",
-          "access": "public",
-          "line": 25,
-          "value": "",
-          "static": false,
-          "doc": ""
-        }
-      ],
-      "methods": [
-        {
-          "name": "ToString",
-          "params": [],
-          "ret": "string",
-          "access": "public",
-          "static": false,
-          "ast": {
-            "kind": "block"
-          },
-          "startline": 26,
-          "endline": 26,
-          "doc": ""
-        }
-      ],
-      "doc": ""
-    },
-    {
-      "name": "GGroup",
-      "kind": "struct",
-      "access": "",
-      "startline": 28,
-      "endline": 32,
-      "fields": [
-        {
-          "name": "key",
-          "type": "int",
-          "access": "public",
-          "line": 29,
-          "value": "",
-          "static": false,
-          "doc": ""
-        },
-        {
-          "name": "items",
-          "type": "PsResult[]",
-          "access": "public",
-          "line": 30,
-          "value": "",
-          "static": false,
-          "doc": ""
-        }
-      ],
-      "methods": [
-        {
-          "name": "ToString",
-          "params": [],
-          "ret": "string",
-          "access": "public",
-          "static": false,
-          "ast": {
-            "kind": "block"
-          },
-          "startline": 31,
-          "endline": 31,
-          "doc": ""
-        }
-      ],
-      "doc": ""
-    },
-    {
-      "name": "GResult",
-      "kind": "struct",
-      "access": "",
-      "startline": 33,
-      "endline": 37,
-      "fields": [
-        {
-          "name": "part",
-          "type": "int",
-          "access": "public",
-          "line": 34,
-          "value": "",
-          "static": false,
-          "doc": ""
-        },
-        {
-          "name": "total",
-          "type": "double",
-          "access": "public",
-          "line": 35,
-          "value": "",
-          "static": false,
-          "doc": ""
-        }
-      ],
-      "methods": [
-        {
-          "name": "ToString",
-          "params": [],
-          "ret": "string",
-          "access": "public",
-          "static": false,
-          "ast": {
-            "kind": "block"
-          },
-          "startline": 36,
-          "endline": 36,
-          "doc": ""
-        }
-      ],
-      "doc": ""
-    },
-    {
-      "name": "Program",
-      "kind": "class",
-      "access": "",
-      "startline": 38,
-      "endline": 47,
-      "fields": [
-        {
-          "name": "nations",
-          "type": "Nation[]",
-          "access": "",
-          "line": 39,
-          "value": "new Nation[]{new Nation{id = 1, name = \"A\"}, new Nation{id = 2, name = \"B\"}}",
-          "ast": {
-            "kind": "array",
+  "file": {
+    "kind": "compilation_unit",
+    "children": [
+      {
+        "kind": "comment",
+        "text": "// Generated by Mochi 0.10.33 on 2025-07-21 18:06 +0700"
+      },
+      {
+        "kind": "using_directive",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "System"
+          }
+        ]
+      },
+      {
+        "kind": "using_directive",
+        "children": [
+          {
+            "kind": "qualified_name",
             "children": [
               {
-                "kind": "new",
-                "value": "Nation",
+                "kind": "qualified_name",
                 "children": [
                   {
-                    "kind": "init",
+                    "kind": "identifier",
+                    "text": "System"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "Collections"
+                  }
+                ]
+              },
+              {
+                "kind": "identifier",
+                "text": "Generic"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "using_directive",
+        "children": [
+          {
+            "kind": "qualified_name",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "System"
+              },
+              {
+                "kind": "identifier",
+                "text": "Linq"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "struct_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "Nation"
+          },
+          {
+            "kind": "declaration_list",
+            "children": [
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "variable_declaration",
                     "children": [
                       {
-                        "kind": "field",
-                        "value": "id",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "1"
-                          }
-                        ]
+                        "kind": "predefined_type",
+                        "text": "int"
                       },
                       {
-                        "kind": "field",
-                        "value": "name",
+                        "kind": "variable_declarator",
                         "children": [
                           {
-                            "kind": "literal",
-                            "value": "A"
+                            "kind": "identifier",
+                            "text": "id"
                           }
                         ]
                       }
@@ -324,74 +98,25 @@
                 ]
               },
               {
-                "kind": "new",
-                "value": "Nation",
+                "kind": "field_declaration",
                 "children": [
                   {
-                    "kind": "init",
-                    "children": [
-                      {
-                        "kind": "field",
-                        "value": "id",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "2"
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "field",
-                        "value": "name",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "B"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          "static": true,
-          "doc": ""
-        },
-        {
-          "name": "suppliers",
-          "type": "Supplier[]",
-          "access": "",
-          "line": 40,
-          "value": "new Supplier[]{new Supplier{id = 1, nation = 1}, new Supplier{id = 2, nation = 2}}",
-          "ast": {
-            "kind": "array",
-            "children": [
-              {
-                "kind": "new",
-                "value": "Supplier",
-                "children": [
+                    "kind": "modifier",
+                    "text": "public"
+                  },
                   {
-                    "kind": "init",
+                    "kind": "variable_declaration",
                     "children": [
                       {
-                        "kind": "field",
-                        "value": "id",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "1"
-                          }
-                        ]
+                        "kind": "predefined_type",
+                        "text": "string"
                       },
                       {
-                        "kind": "field",
-                        "value": "nation",
+                        "kind": "variable_declarator",
                         "children": [
                           {
-                            "kind": "literal",
-                            "value": "1"
+                            "kind": "identifier",
+                            "text": "name"
                           }
                         ]
                       }
@@ -400,278 +125,75 @@
                 ]
               },
               {
-                "kind": "new",
-                "value": "Supplier",
+                "kind": "method_declaration",
                 "children": [
                   {
-                    "kind": "init",
-                    "children": [
-                      {
-                        "kind": "field",
-                        "value": "id",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "2"
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "field",
-                        "value": "nation",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "2"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          "static": true,
-          "doc": ""
-        },
-        {
-          "name": "partsupp",
-          "type": "Partsupp[]",
-          "access": "",
-          "line": 41,
-          "value": "new Partsupp[]{new Partsupp{part = 100, supplier = 1, cost = 10, qty = 2}, new Partsupp{part = 100, supplier = 2, cost = 20, qty = 1}, new Partsupp{part = 200, supplier = 1, cost = 5, qty = 3}}",
-          "ast": {
-            "kind": "array",
-            "children": [
-              {
-                "kind": "new",
-                "value": "Partsupp",
-                "children": [
+                    "kind": "modifier",
+                    "text": "public"
+                  },
                   {
-                    "kind": "init",
-                    "children": [
-                      {
-                        "kind": "field",
-                        "value": "part",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "100"
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "field",
-                        "value": "supplier",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "1"
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "field",
-                        "value": "cost",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "10"
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "field",
-                        "value": "qty",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "2"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "kind": "new",
-                "value": "Partsupp",
-                "children": [
+                    "kind": "modifier",
+                    "text": "override"
+                  },
                   {
-                    "kind": "init",
-                    "children": [
-                      {
-                        "kind": "field",
-                        "value": "part",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "100"
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "field",
-                        "value": "supplier",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "2"
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "field",
-                        "value": "cost",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "20"
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "field",
-                        "value": "qty",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "1"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "kind": "new",
-                "value": "Partsupp",
-                "children": [
+                    "kind": "predefined_type",
+                    "text": "string"
+                  },
                   {
-                    "kind": "init",
-                    "children": [
-                      {
-                        "kind": "field",
-                        "value": "part",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "200"
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "field",
-                        "value": "supplier",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "1"
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "field",
-                        "value": "cost",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "5"
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "field",
-                        "value": "qty",
-                        "children": [
-                          {
-                            "kind": "literal",
-                            "value": "3"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          "static": true,
-          "doc": ""
-        },
-        {
-          "name": "filtered",
-          "type": "PsResult[]",
-          "access": "",
-          "line": 42,
-          "value": "(from ps in partsupp join s in suppliers on ps.supplier equals s.id join n in nations on s.nation equals n.id where (n.name == \"A\") select new PsResult{part = ps.part, value = (ps.cost * ps.qty)}).ToArray()",
-          "ast": {
-            "kind": "call",
-            "value": "ToArray",
-            "children": [
-              {
-                "kind": "unknown"
-              }
-            ]
-          },
-          "static": true,
-          "doc": ""
-        },
-        {
-          "name": "grouped",
-          "type": "GResult[]",
-          "access": "",
-          "line": 43,
-          "value": "(from x in filtered group x by x.part into gTmp let g = new GGroup{ key = gTmp.Key, items = gTmp.ToArray() } select new GResult{part = g.key, total = ((from r in g.items select r.value).ToArray().Sum())}).ToArray()",
-          "ast": {
-            "kind": "call",
-            "value": "ToArray",
-            "children": [
-              {
-                "kind": "unknown"
-              }
-            ]
-          },
-          "static": true,
-          "doc": ""
-        }
-      ],
-      "methods": [
-        {
-          "name": "Main",
-          "params": [],
-          "ret": "void",
-          "access": "",
-          "static": true,
-          "ast": {
-            "kind": "block",
-            "children": [
-              {
-                "kind": "call",
-                "value": "print",
-                "children": [
+                    "kind": "identifier",
+                    "text": "ToString"
+                  },
                   {
-                    "kind": "call",
-                    "value": "TrimEnd",
+                    "kind": "arrow_expression_clause",
                     "children": [
                       {
-                        "kind": "call",
-                        "value": "Join",
+                        "kind": "interpolated_string_expression",
                         "children": [
                           {
-                            "kind": "ident",
-                            "value": "string"
+                            "kind": "string_content",
+                            "text": "{{"
                           },
                           {
-                            "kind": "literal",
-                            "value": " "
+                            "kind": "string_content",
+                            "text": "id"
                           },
                           {
-                            "kind": "ident",
-                            "value": "grouped"
+                            "kind": "string_content",
+                            "text": ": "
+                          },
+                          {
+                            "kind": "interpolation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "id"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": ", "
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": "name"
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": ": "
+                          },
+                          {
+                            "kind": "interpolation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "name"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": "}}"
                           }
                         ]
                       }
@@ -680,13 +202,2014 @@
                 ]
               }
             ]
+          }
+        ]
+      },
+      {
+        "kind": "struct_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "Supplier"
           },
-          "startline": 44,
-          "endline": 46,
-          "doc": ""
-        }
-      ],
-      "doc": ""
-    }
-  ]
+          {
+            "kind": "declaration_list",
+            "children": [
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "predefined_type",
+                        "text": "int"
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "id"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "predefined_type",
+                        "text": "int"
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "nation"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "method_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "modifier",
+                    "text": "override"
+                  },
+                  {
+                    "kind": "predefined_type",
+                    "text": "string"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "ToString"
+                  },
+                  {
+                    "kind": "arrow_expression_clause",
+                    "children": [
+                      {
+                        "kind": "interpolated_string_expression",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "{{"
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": "id"
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": ": "
+                          },
+                          {
+                            "kind": "interpolation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "id"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": ", "
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": "nation"
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": ": "
+                          },
+                          {
+                            "kind": "interpolation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "nation"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": "}}"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "struct_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "Partsupp"
+          },
+          {
+            "kind": "declaration_list",
+            "children": [
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "predefined_type",
+                        "text": "int"
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "part"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "predefined_type",
+                        "text": "int"
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "supplier"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "predefined_type",
+                        "text": "double"
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "cost"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "predefined_type",
+                        "text": "int"
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "qty"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "method_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "modifier",
+                    "text": "override"
+                  },
+                  {
+                    "kind": "predefined_type",
+                    "text": "string"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "ToString"
+                  },
+                  {
+                    "kind": "arrow_expression_clause",
+                    "children": [
+                      {
+                        "kind": "interpolated_string_expression",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "{{"
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": "part"
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": ": "
+                          },
+                          {
+                            "kind": "interpolation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "part"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": ", "
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": "supplier"
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": ": "
+                          },
+                          {
+                            "kind": "interpolation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "supplier"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": ", "
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": "cost"
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": ": "
+                          },
+                          {
+                            "kind": "interpolation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "cost"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": ", "
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": "qty"
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": ": "
+                          },
+                          {
+                            "kind": "interpolation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "qty"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": "}}"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "struct_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "PsResult"
+          },
+          {
+            "kind": "declaration_list",
+            "children": [
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "predefined_type",
+                        "text": "int"
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "part"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "predefined_type",
+                        "text": "double"
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "value"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "method_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "modifier",
+                    "text": "override"
+                  },
+                  {
+                    "kind": "predefined_type",
+                    "text": "string"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "ToString"
+                  },
+                  {
+                    "kind": "arrow_expression_clause",
+                    "children": [
+                      {
+                        "kind": "interpolated_string_expression",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "{{"
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": "part"
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": ": "
+                          },
+                          {
+                            "kind": "interpolation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "part"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": ", "
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": "value"
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": ": "
+                          },
+                          {
+                            "kind": "interpolation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "value"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": "}}"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "struct_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "GGroup"
+          },
+          {
+            "kind": "declaration_list",
+            "children": [
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "predefined_type",
+                        "text": "int"
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "key"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "array_type",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "PsResult"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "items"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "method_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "modifier",
+                    "text": "override"
+                  },
+                  {
+                    "kind": "predefined_type",
+                    "text": "string"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "ToString"
+                  },
+                  {
+                    "kind": "arrow_expression_clause",
+                    "children": [
+                      {
+                        "kind": "interpolated_string_expression",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "{{"
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": "key"
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": ": "
+                          },
+                          {
+                            "kind": "interpolation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "key"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": ", "
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": "items"
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": ": "
+                          },
+                          {
+                            "kind": "interpolation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "items"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": "}}"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "struct_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "GResult"
+          },
+          {
+            "kind": "declaration_list",
+            "children": [
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "predefined_type",
+                        "text": "int"
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "part"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "predefined_type",
+                        "text": "double"
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "total"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "method_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "public"
+                  },
+                  {
+                    "kind": "modifier",
+                    "text": "override"
+                  },
+                  {
+                    "kind": "predefined_type",
+                    "text": "string"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "ToString"
+                  },
+                  {
+                    "kind": "arrow_expression_clause",
+                    "children": [
+                      {
+                        "kind": "interpolated_string_expression",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "{{"
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": "part"
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": ": "
+                          },
+                          {
+                            "kind": "interpolation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "part"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": ", "
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": "total"
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": ": "
+                          },
+                          {
+                            "kind": "interpolation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "total"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_content",
+                            "text": "}}"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "class_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "Program"
+          },
+          {
+            "kind": "declaration_list",
+            "children": [
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "static"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "array_type",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "Nation"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "nations"
+                          },
+                          {
+                            "kind": "array_creation_expression",
+                            "children": [
+                              {
+                                "kind": "array_type",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "Nation"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "initializer_expression",
+                                "children": [
+                                  {
+                                    "kind": "object_creation_expression",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "Nation"
+                                      },
+                                      {
+                                        "kind": "initializer_expression",
+                                        "children": [
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "id"
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "text": "1"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "name"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "object_creation_expression",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "Nation"
+                                      },
+                                      {
+                                        "kind": "initializer_expression",
+                                        "children": [
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "id"
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "text": "2"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "name"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "static"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "array_type",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "Supplier"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "suppliers"
+                          },
+                          {
+                            "kind": "array_creation_expression",
+                            "children": [
+                              {
+                                "kind": "array_type",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "Supplier"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "initializer_expression",
+                                "children": [
+                                  {
+                                    "kind": "object_creation_expression",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "Supplier"
+                                      },
+                                      {
+                                        "kind": "initializer_expression",
+                                        "children": [
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "id"
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "text": "1"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "nation"
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "text": "1"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "object_creation_expression",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "Supplier"
+                                      },
+                                      {
+                                        "kind": "initializer_expression",
+                                        "children": [
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "id"
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "text": "2"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "nation"
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "text": "2"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "static"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "array_type",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "Partsupp"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "partsupp"
+                          },
+                          {
+                            "kind": "array_creation_expression",
+                            "children": [
+                              {
+                                "kind": "array_type",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "Partsupp"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "initializer_expression",
+                                "children": [
+                                  {
+                                    "kind": "object_creation_expression",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "Partsupp"
+                                      },
+                                      {
+                                        "kind": "initializer_expression",
+                                        "children": [
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "part"
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "text": "100"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "supplier"
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "text": "1"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "cost"
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "text": "10"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "qty"
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "text": "2"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "object_creation_expression",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "Partsupp"
+                                      },
+                                      {
+                                        "kind": "initializer_expression",
+                                        "children": [
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "part"
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "text": "100"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "supplier"
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "text": "2"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "cost"
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "text": "20"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "qty"
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "text": "1"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "object_creation_expression",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "Partsupp"
+                                      },
+                                      {
+                                        "kind": "initializer_expression",
+                                        "children": [
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "part"
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "text": "200"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "supplier"
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "text": "1"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "cost"
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "text": "5"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "assignment_expression",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "qty"
+                                              },
+                                              {
+                                                "kind": "integer_literal",
+                                                "text": "3"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "static"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "array_type",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "PsResult"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "filtered"
+                          },
+                          {
+                            "kind": "invocation_expression",
+                            "children": [
+                              {
+                                "kind": "member_access_expression",
+                                "children": [
+                                  {
+                                    "kind": "parenthesized_expression",
+                                    "children": [
+                                      {
+                                        "kind": "query_expression",
+                                        "children": [
+                                          {
+                                            "kind": "from_clause",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "ps"
+                                              },
+                                              {
+                                                "kind": "identifier",
+                                                "text": "partsupp"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "join_clause",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "s"
+                                              },
+                                              {
+                                                "kind": "identifier",
+                                                "text": "suppliers"
+                                              },
+                                              {
+                                                "kind": "member_access_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "ps"
+                                                  },
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "supplier"
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "member_access_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "s"
+                                                  },
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "id"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "join_clause",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "n"
+                                              },
+                                              {
+                                                "kind": "identifier",
+                                                "text": "nations"
+                                              },
+                                              {
+                                                "kind": "member_access_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "s"
+                                                  },
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "nation"
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "member_access_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "n"
+                                                  },
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "id"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "where_clause",
+                                            "children": [
+                                              {
+                                                "kind": "parenthesized_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "binary_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "member_access_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "n"
+                                                          },
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "name"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "select_clause",
+                                            "children": [
+                                              {
+                                                "kind": "object_creation_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "PsResult"
+                                                  },
+                                                  {
+                                                    "kind": "initializer_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "assignment_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "part"
+                                                          },
+                                                          {
+                                                            "kind": "member_access_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "ps"
+                                                              },
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "part"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "assignment_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "value"
+                                                          },
+                                                          {
+                                                            "kind": "parenthesized_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "binary_expression",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "member_access_expression",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "ps"
+                                                                      },
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "cost"
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "kind": "member_access_expression",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "ps"
+                                                                      },
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "qty"
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "ToArray"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "static"
+                  },
+                  {
+                    "kind": "variable_declaration",
+                    "children": [
+                      {
+                        "kind": "array_type",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "GResult"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "variable_declarator",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "grouped"
+                          },
+                          {
+                            "kind": "invocation_expression",
+                            "children": [
+                              {
+                                "kind": "member_access_expression",
+                                "children": [
+                                  {
+                                    "kind": "parenthesized_expression",
+                                    "children": [
+                                      {
+                                        "kind": "query_expression",
+                                        "children": [
+                                          {
+                                            "kind": "from_clause",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "x"
+                                              },
+                                              {
+                                                "kind": "identifier",
+                                                "text": "filtered"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "group_clause",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "x"
+                                              },
+                                              {
+                                                "kind": "member_access_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "x"
+                                                  },
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "part"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "gTmp"
+                                          },
+                                          {
+                                            "kind": "let_clause",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "g"
+                                              },
+                                              {
+                                                "kind": "object_creation_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "GGroup"
+                                                  },
+                                                  {
+                                                    "kind": "initializer_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "assignment_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "key"
+                                                          },
+                                                          {
+                                                            "kind": "member_access_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "gTmp"
+                                                              },
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "Key"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "assignment_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "items"
+                                                          },
+                                                          {
+                                                            "kind": "invocation_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "member_access_expression",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "text": "gTmp"
+                                                                  },
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "text": "ToArray"
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "select_clause",
+                                            "children": [
+                                              {
+                                                "kind": "object_creation_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "GResult"
+                                                  },
+                                                  {
+                                                    "kind": "initializer_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "assignment_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "part"
+                                                          },
+                                                          {
+                                                            "kind": "member_access_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "g"
+                                                              },
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "key"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "assignment_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "total"
+                                                          },
+                                                          {
+                                                            "kind": "parenthesized_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "invocation_expression",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "member_access_expression",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "invocation_expression",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "member_access_expression",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "parenthesized_expression",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "query_expression",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "from_clause",
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "identifier",
+                                                                                            "text": "r"
+                                                                                          },
+                                                                                          {
+                                                                                            "kind": "member_access_expression",
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "kind": "identifier",
+                                                                                                "text": "g"
+                                                                                              },
+                                                                                              {
+                                                                                                "kind": "identifier",
+                                                                                                "text": "items"
+                                                                                              }
+                                                                                            ]
+                                                                                          }
+                                                                                        ]
+                                                                                      },
+                                                                                      {
+                                                                                        "kind": "select_clause",
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "member_access_expression",
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "kind": "identifier",
+                                                                                                "text": "r"
+                                                                                              },
+                                                                                              {
+                                                                                                "kind": "identifier",
+                                                                                                "text": "value"
+                                                                                              }
+                                                                                            ]
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "identifier",
+                                                                                "text": "ToArray"
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "Sum"
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "ToArray"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "method_declaration",
+                "children": [
+                  {
+                    "kind": "modifier",
+                    "text": "static"
+                  },
+                  {
+                    "kind": "predefined_type",
+                    "text": "void"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "Main"
+                  },
+                  {
+                    "kind": "block",
+                    "children": [
+                      {
+                        "kind": "expression_statement",
+                        "children": [
+                          {
+                            "kind": "invocation_expression",
+                            "children": [
+                              {
+                                "kind": "member_access_expression",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "Console"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "WriteLine"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "argument_list",
+                                "children": [
+                                  {
+                                    "kind": "argument",
+                                    "children": [
+                                      {
+                                        "kind": "invocation_expression",
+                                        "children": [
+                                          {
+                                            "kind": "member_access_expression",
+                                            "children": [
+                                              {
+                                                "kind": "invocation_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "member_access_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "predefined_type",
+                                                        "text": "string"
+                                                      },
+                                                      {
+                                                        "kind": "identifier",
+                                                        "text": "Join"
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "argument_list",
+                                                    "children": [
+                                                      {
+                                                        "kind": "argument",
+                                                        "children": [
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "grouped"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "identifier",
+                                                "text": "TrimEnd"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

@@ -6,15 +6,10 @@ import sitter "github.com/smacker/go-tree-sitter"
 // Only leaves carrying a textual value populate the Text field. Position
 // information is stored using 1-indexed line numbers and zero-indexed
 // columns similar to tree-sitter's Point type.
-// IncludePositions controls whether the Start/End position fields of Node are
-// populated when building the AST.  It is disabled by default so that JSON
-// output remains compact.  When false the position fields will be omitted from
-// the marshalled JSON via "omitempty" tags.
-var IncludePositions bool
 
 // Node models a portion of the C# syntax tree as returned by tree-sitter.
 // Only leaves carrying a textual value populate the Text field. Position
-// information can optionally be included when IncludePositions is true.
+// information can optionally be included when requested by the caller.
 type Node struct {
 	Kind     string  `json:"kind"`
 	Text     string  `json:"text,omitempty"`
@@ -25,21 +20,44 @@ type Node struct {
 	Children []*Node `json:"children,omitempty"`
 }
 
+// Aliases for the node kinds that appear in the JSON output.  These aliases
+// allow Program to expose a slightly more structured AST while still using the
+// generic Node type under the hood.
+type (
+	CompilationUnit  Node
+	Identifier       Node
+	IntegerLiteral   Node
+	RealLiteral      Node
+	StringLiteral    Node
+	CharacterLiteral Node
+	BooleanLiteral   Node
+	StringContent    Node
+	ImplicitType     Node
+	PredefinedType   Node
+	Modifier         Node
+	Comment          Node
+)
+
 // Program represents a parsed C# file.
+// Program represents a parsed C# file.  The root node is a CompilationUnit.
 type Program struct {
-	File *Node `json:"file"`
+	File *CompilationUnit `json:"file"`
 }
 
 // convert builds a Node tree starting from the given tree-sitter node.
 // convert builds a Node tree starting from the given tree-sitter node. Pure
 // syntax leaf nodes without textual value are omitted from the resulting tree
 // so the JSON output remains compact.
-func convert(n *sitter.Node, src []byte) *Node {
+// toNode converts a tree-sitter node into our Node structure. When withPos is
+// true the resulting Node includes line and column information. Pure syntax
+// leaves without textual value are skipped so that the resulting JSON remains
+// compact.
+func toNode(n *sitter.Node, src []byte, withPos bool) *Node {
 	if n == nil {
 		return nil
 	}
 	node := &Node{Kind: n.Type()}
-	if IncludePositions {
+	if withPos {
 		sp := n.StartPoint()
 		ep := n.EndPoint()
 		node.Start = int(sp.Row) + 1
@@ -58,7 +76,7 @@ func convert(n *sitter.Node, src []byte) *Node {
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
 		c := n.NamedChild(i)
-		if child := convert(c, src); child != nil {
+		if child := toNode(c, src, withPos); child != nil {
 			node.Children = append(node.Children, child)
 		}
 	}
