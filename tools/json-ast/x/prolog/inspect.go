@@ -13,7 +13,7 @@ import (
 //go:embed pl_ast.pl
 var plScript string
 
-func Inspect(src string) (*Program, error) {
+func Inspect(src string) (*Node, error) {
 	exe := os.Getenv("SWIPL")
 	if exe == "" {
 		exe = "swipl"
@@ -50,5 +50,6 @@ func Inspect(src string) (*Program, error) {
 	if err := json.Unmarshal(out.Bytes(), &prog); err != nil {
 		return nil, err
 	}
-	return &prog, nil
+	node := programToNode(&prog)
+	return &node, nil
 }
