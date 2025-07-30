@@ -14,9 +14,8 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/marcboeker/go-duckdb v1.8.5
 	github.com/mark3labs/mcp-go v0.36.0
-	github.com/mattn/go-sqlite3 v1.14.28
-	github.com/smacker/go-tree-sitter v0.0.0-20240827094217-dd81d9e9be82
-	github.com/spf13/cobra v1.9.1
+       github.com/mattn/go-sqlite3 v1.14.28
+       github.com/spf13/cobra v1.9.1
 	github.com/stretchr/testify v1.10.0
 	github.com/tliron/commonlog v0.2.20
 	github.com/tliron/glsp v0.2.2
@@ -120,3 +119,6 @@ replace github.com/tree-sitter/tree-sitter-fsharp => github.com/ionide/tree-sitt
 replace github.com/tree-sitter/tree-sitter-elixir => github.com/elixir-lang/tree-sitter-elixir v0.3.4
 
 replace github.com/tree-sitter/tree-sitter-swift => github.com/alex-pinkus/tree-sitter-swift v0.0.0-20250623040733-277b583bbb02
+
+// Use the official tree-sitter Go bindings in place of the deprecated smacker fork
+replace github.com/smacker/go-tree-sitter => github.com/tree-sitter/go-tree-sitter v0.25.0
