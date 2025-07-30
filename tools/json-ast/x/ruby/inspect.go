@@ -1,8 +1,9 @@
 package ruby
 
 // Program represents a parsed Ruby source file.
+// Program is the JSON representation returned by Inspect.
 type Program struct {
-	AST *Node `json:"ast"`
+	Root Node `json:"root"`
 }
 
 // Inspect parses the given Ruby source code and returns a Program describing
@@ -12,6 +13,5 @@ func Inspect(src string) (*Program, error) {
 	if err != nil {
 		return nil, err
 	}
-	node.Source = ""
-	return &Program{AST: node}, nil
+	return &Program{Root: *node}, nil
 }
