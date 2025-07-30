@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (292/491)
+## Rosetta Golden Test Checklist (299/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -251,31 +251,31 @@ This file is auto-generated from rosetta tests.
 | 244 | count-in-octal-4 |   |  |  |
 | 245 | count-occurrences-of-a-substring |   |  |  |
 | 246 | count-the-coins-1 |   |  |  |
-| 247 | count-the-coins-2 | ✓ |  |  |
-| 248 | cramers-rule | ✓ |  |  |
-| 249 | crc-32-1 | ✓ |  |  |
-| 250 | crc-32-2 | ✓ |  |  |
-| 251 | create-a-file-on-magnetic-tape | ✓ |  |  |
-| 252 | create-a-file | ✓ |  |  |
-| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ |  |  |
-| 254 | create-an-html-table | ✓ |  |  |
-| 255 | create-an-object-at-a-given-address | ✓ |  |  |
-| 256 | csv-data-manipulation | ✓ |  |  |
-| 257 | csv-to-html-translation-1 | ✓ |  |  |
-| 258 | csv-to-html-translation-2 | ✓ |  |  |
-| 259 | csv-to-html-translation-3 | ✓ |  |  |
-| 260 | csv-to-html-translation-4 | ✓ |  |  |
-| 261 | csv-to-html-translation-5 | ✓ |  |  |
-| 262 | cuban-primes |   |  |  |
-| 263 | cullen-and-woodall-numbers | ✓ |  |  |
-| 264 | cumulative-standard-deviation | ✓ |  |  |
-| 265 | currency |   |  |  |
-| 266 | currying |   |  |  |
-| 267 | curzon-numbers |   |  |  |
-| 268 | cusip |   |  |  |
+| 247 | count-the-coins-2 | ✓ | 292µs | 41.4 KB |
+| 248 | cramers-rule | ✓ | 277µs | 58.2 KB |
+| 249 | crc-32-1 | ✓ | 277µs | 65.8 KB |
+| 250 | crc-32-2 | ✓ | 275µs | 86.7 KB |
+| 251 | create-a-file-on-magnetic-tape | ✓ | 195µs | 23.8 KB |
+| 252 | create-a-file | ✓ | 324µs | 53.3 KB |
+| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 232µs | 45.3 KB |
+| 254 | create-an-html-table | ✓ | 236µs | 43.3 KB |
+| 255 | create-an-object-at-a-given-address | ✓ | 267µs | 51.3 KB |
+| 256 | csv-data-manipulation | ✓ | 341µs | 56.1 KB |
+| 257 | csv-to-html-translation-1 | ✓ | 242µs | 45.5 KB |
+| 258 | csv-to-html-translation-2 | ✓ | 249µs | 45.9 KB |
+| 259 | csv-to-html-translation-3 | ✓ | 220µs | 45.8 KB |
+| 260 | csv-to-html-translation-4 | ✓ | 228µs | 41.8 KB |
+| 261 | csv-to-html-translation-5 | ✓ | 252µs | 49.9 KB |
+| 262 | cuban-primes | ✓ |  |  |
+| 263 | cullen-and-woodall-numbers | ✓ | 272µs | 42.2 KB |
+| 264 | cumulative-standard-deviation | ✓ | 272µs | 46.6 KB |
+| 265 | currency | ✓ | 343µs | 60.7 KB |
+| 266 | currying | ✓ | 261µs | 51.7 KB |
+| 267 | curzon-numbers | ✓ |  |  |
+| 268 | cusip | ✓ | 344µs | 79.4 KB |
 | 269 | cyclops-numbers |   |  |  |
-| 270 | damm-algorithm |   |  |  |
-| 271 | date-format |   |  |  |
+| 270 | damm-algorithm | ✓ | 338µs | 57.3 KB |
+| 271 | date-format | ✓ | 225µs | 45.0 KB |
 | 272 | date-manipulation |   |  |  |
 | 273 | day-of-the-week |   |  |  |
 | 274 | de-bruijn-sequences |   |  |  |
@@ -497,4 +497,4 @@ This file is auto-generated from rosetta tests.
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
 
-Last updated: 2025-07-30 21:05 +0700
+Last updated: 2025-07-30 21:41 +0700

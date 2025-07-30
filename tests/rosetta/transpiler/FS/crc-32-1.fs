@@ -1,7 +1,25 @@
-// Generated 2025-07-28 11:14 +0700
+// Generated 2025-07-30 21:41 +0700
 
 exception Return
 
+let mutable _nowSeed:int64 = 0L
+let mutable _nowSeeded = false
+let _initNow () =
+    let s = System.Environment.GetEnvironmentVariable("MOCHI_NOW_SEED")
+    if System.String.IsNullOrEmpty(s) |> not then
+        match System.Int32.TryParse(s) with
+        | true, v ->
+            _nowSeed <- int64 v
+            _nowSeeded <- true
+        | _ -> ()
+let _now () =
+    if _nowSeeded then
+        _nowSeed <- (_nowSeed * 1664525L + 1013904223L) % 2147483647L
+        int _nowSeed
+    else
+        int (System.DateTime.UtcNow.Ticks % 2147483647L)
+
+_initNow()
 let rec xor (a: int) (b: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable a = a
@@ -90,7 +108,7 @@ and crc32Table () =
             let mutable j: int = 0
             while j < 8 do
                 if (((word % 2 + 2) % 2)) = 1 then
-                    word <- xor (rshift word 1) -306674912
+                    word <- xor (rshift word 1) (int 3988292384L)
                 else
                     word <- rshift word 1
                 j <- j + 1
@@ -106,14 +124,14 @@ let rec crc32 (s: string) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable s = s
     try
-        let mutable crc: int = -1
+        let mutable crc: int = (int 4294967295L)
         let mutable i: int = 0
         while i < (String.length s) do
             let c: int = ord (s.Substring(i, (i + 1) - i))
             let idx: int = xor (((crc % 256 + 256) % 256)) c
             crc <- xor (table.[idx]) (rshift crc 8)
             i <- i + 1
-        __ret <- -1 - crc
+        __ret <- (int 4294967295L) - crc
         raise Return
         __ret
     with
@@ -121,10 +139,16 @@ let rec crc32 (s: string) =
 and main () =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     try
+        let __bench_start = _now()
+        let __mem_start = System.GC.GetTotalMemory(true)
         let s: string = "The quick brown fox jumps over the lazy dog"
         let result: int = crc32 s
         let hex: string = toHex result
         printfn "%s" hex
+        let __bench_end = _now()
+        let __mem_end = System.GC.GetTotalMemory(true)
+        printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
+
         __ret
     with
         | Return -> __ret

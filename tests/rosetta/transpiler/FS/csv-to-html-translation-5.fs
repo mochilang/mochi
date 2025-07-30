@@ -1,7 +1,25 @@
-// Generated 2025-07-28 11:14 +0700
+// Generated 2025-07-30 21:41 +0700
 
 exception Return
 
+let mutable _nowSeed:int64 = 0L
+let mutable _nowSeeded = false
+let _initNow () =
+    let s = System.Environment.GetEnvironmentVariable("MOCHI_NOW_SEED")
+    if System.String.IsNullOrEmpty(s) |> not then
+        match System.Int32.TryParse(s) with
+        | true, v ->
+            _nowSeed <- int64 v
+            _nowSeeded <- true
+        | _ -> ()
+let _now () =
+    if _nowSeeded then
+        _nowSeed <- (_nowSeed * 1664525L + 1013904223L) % 2147483647L
+        int _nowSeed
+    else
+        int (System.DateTime.UtcNow.Ticks % 2147483647L)
+
+_initNow()
 let _substring (s:string) (start:int) (finish:int) =
     let len = String.length s
     let mutable st = if start < 0 then len + start else start
@@ -12,6 +30,8 @@ let _substring (s:string) (start:int) (finish:int) =
     if st > en then st <- en
     s.Substring(st, en - st)
 
+let __bench_start = _now()
+let __mem_start = System.GC.GetTotalMemory(true)
 let rec split (s: string) (sep: string) =
     let mutable __ret : string array = Unchecked.defaultof<string array>
     let mutable s = s
@@ -34,7 +54,7 @@ let rec split (s: string) (sep: string) =
         __ret
     with
         | Return -> __ret
-and htmlEscape (s: string) =
+let rec htmlEscape (s: string) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable s = s
     try
@@ -69,3 +89,6 @@ for row in rows do
         cells <- ((cells + "<td>") + (unbox<string> (htmlEscape cell))) + "</td>"
     printfn "%s" (("    <tr>" + cells) + "</tr>")
 printfn "%s" "</table>"
+let __bench_end = _now()
+let __mem_end = System.GC.GetTotalMemory(true)
+printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

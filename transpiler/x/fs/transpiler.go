@@ -39,36 +39,41 @@ type UnionDef struct {
 }
 
 type Program struct {
-	Structs      []StructDef
-	Unions       []UnionDef
-	Stmts        []Stmt
-	UseNow       bool
-	UseBreak     bool
-	UseReturn    bool
-	UseSubstring bool
-	UsePadStart  bool
-	UseSHA256    bool
+	Structs        []StructDef
+	Unions         []UnionDef
+	Stmts          []Stmt
+	UseNow         bool
+	UseBreak       bool
+	UseReturn      bool
+	UseSubstring   bool
+	UsePadStart    bool
+	UseSHA256      bool
+	UseParseIntStr bool
 }
 
 // varTypes holds the inferred type for each variable defined during
 // transpilation. It is reset for every call to Transpile.
 var (
-	varTypes      map[string]string
-	structDefs    []StructDef
-	unionDefs     []UnionDef
-	structCount   int
-	transpileEnv  *types.Env
-	neededOpens   map[string]bool
-	indentLevel   int
-	usesNow       bool
-	usesBreak     bool
-	usesReturn    bool
-	usesSubstring bool
-	usesPadStart  bool
-	usesSHA256    bool
-	benchMain     bool
-	currentReturn string
-	methodDefs    []Stmt
+	varTypes       map[string]string
+	structDefs     []StructDef
+	unionDefs      []UnionDef
+	structCount    int
+	transpileEnv   *types.Env
+	neededOpens    map[string]bool
+	indentLevel    int
+	usesNow        bool
+	usesBreak      bool
+	usesReturn     bool
+	usesSubstring  bool
+	usesPadStart   bool
+	usesSHA256     bool
+	benchMain      bool
+	currentReturn  string
+	methodDefs     []Stmt
+	definedFuncs   map[string]bool
+	useParseIntStr bool
+	mutatedVars    map[string]bool
+	letPtrs        map[string][]*LetStmt
 )
 
 // SetBenchMain configures whether the generated main function is wrapped in a
@@ -124,6 +129,10 @@ const helperSHA256 = `let _sha256 (bs:int array) : int array =
     use sha = System.Security.Cryptography.SHA256.Create()
     let bytes = Array.map byte bs
     sha.ComputeHash(bytes) |> Array.map int
+`
+
+const helperParseIntStr = `let parseIntStr (s:string) (b:int) : int =
+    System.Convert.ToInt32(s, b)
 `
 
 func writeIndent(w io.Writer) {
@@ -1628,7 +1637,11 @@ type IntLit struct{ Value int64 }
 
 func (i *IntLit) emit(w io.Writer) {
 	if i.Value > math.MaxInt32 || i.Value < math.MinInt32 {
-		fmt.Fprintf(w, "%dL", i.Value)
+		if i.Value >= 0 && i.Value <= math.MaxUint32 {
+			fmt.Fprintf(w, "(int %dL)", i.Value)
+		} else {
+			fmt.Fprintf(w, "%dL", i.Value)
+		}
 	} else {
 		fmt.Fprintf(w, "%d", i.Value)
 	}
@@ -2567,6 +2580,10 @@ func Emit(prog *Program) []byte {
 		buf.WriteString(helperSHA256)
 		buf.WriteString("\n")
 	}
+	if prog.UseParseIntStr && !definedFuncs["parseIntStr"] {
+		buf.WriteString(helperParseIntStr)
+		buf.WriteString("\n")
+	}
 	for _, st := range prog.Structs {
 		if len(st.Fields) == 0 {
 			fmt.Fprintf(&buf, "type %s() = class end\n", fsIdent(st.Name))
@@ -2649,6 +2666,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	unionDefs = nil
 	structCount = 0
 	neededOpens = map[string]bool{}
+	definedFuncs = map[string]bool{}
+	mutatedVars = map[string]bool{}
+	letPtrs = map[string][]*LetStmt{}
+	useParseIntStr = false
 	usesNow = false
 	usesBreak = false
 	usesReturn = false
@@ -2679,6 +2700,13 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}
 		p.Stmts = append(opens, p.Stmts...)
 	}
+	for name, lsts := range letPtrs {
+		if mutatedVars[name] {
+			for _, ls := range lsts {
+				ls.Mutable = true
+			}
+		}
+	}
 	if benchMain {
 		hasMain := false
 		for _, st := range p.Stmts {
@@ -2699,6 +2727,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	p.UseSubstring = usesSubstring
 	p.UsePadStart = usesPadStart
 	p.UseSHA256 = usesSHA256
+	p.UseParseIntStr = useParseIntStr
 	return p, nil
 }
 
@@ -2875,10 +2904,13 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		varTypes[st.Let.Name] = declared
 		typ := fsDecl
+		mut := mutatedVars[st.Let.Name]
 		if typ == "array" || typ == "map" {
 			typ = ""
 		}
-		return &LetStmt{Name: st.Let.Name, Expr: e, Type: typ}, nil
+		ls := &LetStmt{Name: st.Let.Name, Expr: e, Type: typ, Mutable: mut}
+		letPtrs[st.Let.Name] = append(letPtrs[st.Let.Name], ls)
+		return ls, nil
 	case st.Var != nil:
 		var e Expr
 		var err error
@@ -2983,6 +3015,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		mutatedVars[st.Assign.Name] = true
 		t := inferType(e)
 		if t != "" {
 			cur := varTypes[st.Assign.Name]
@@ -3132,6 +3165,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			usesNow = true
 			body = []Stmt{&BenchStmt{Name: "main", Body: body}}
 		}
+		definedFuncs[st.Fun.Name] = true
 		return &FunDef{Name: st.Fun.Name, Params: params, Types: paramTypes, Body: body, Return: retType}, nil
 	case st.While != nil:
 		cond, err := convertExpr(st.While.Cond)
@@ -3411,6 +3445,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			list := &ListLit{Elems: elems}
 			concat := &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: " "}, list}}
 			return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{concat}}, nil
+		case "parseIntStr":
+			useParseIntStr = true
+			if len(args) == 1 && !definedFuncs["parseIntStr"] {
+				args = append(args, &IntLit{Value: 10})
+			}
+			return &CallExpr{Func: "parseIntStr", Args: args}, nil
 		case "count", "len":
 			fn := "Seq.length"
 			if len(args) == 1 {
@@ -3599,6 +3639,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 							at := inferType(args[i])
 							if (at == "obj" || at == "") && pt != "" && pt != "obj" {
 								args[i] = &CastExpr{Expr: args[i], Type: pt}
+							} else if at == "int64" && pt == "int" {
+								args[i] = &CastExpr{Expr: args[i], Type: "int"}
 							}
 						}
 					}

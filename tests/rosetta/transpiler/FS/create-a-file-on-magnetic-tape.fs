@@ -1,4 +1,4 @@
-// Generated 2025-07-28 11:14 +0700
+// Generated 2025-07-30 21:41 +0700
 
 exception Return
 
@@ -61,6 +61,8 @@ and tarWrite (w: obj) (data: string) =
 and main () =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     try
+        let __bench_start = _now()
+        let __mem_start = System.GC.GetTotalMemory(true)
         let filename: string = "TAPE.FILE"
         let data: string = ""
         let outfile: string = ""
@@ -74,6 +76,10 @@ and main () =
         let mutable hdr: Map<string, obj> = Map.ofList [("Name", box filename); ("Mode", box 432); ("Size", box (String.length data)); ("ModTime", box (_now())); ("Typeflag", box 0); ("Uname", box "guest"); ("Gname", box "guest")]
         tarWriteHeader w hdr
         tarWrite w data
+        let __bench_end = _now()
+        let __mem_end = System.GC.GetTotalMemory(true)
+        printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
+
         __ret
     with
         | Return -> __ret
