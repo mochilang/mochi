@@ -42,14 +42,14 @@ func shouldUpdate() bool {
 	return f != nil && f.Value.String() == "true"
 }
 
-func ensureRustAnalyzer(t *testing.T) {
-	if _, err := exec.LookPath("rust-analyzer"); err != nil {
-		t.Skip("rust-analyzer not installed")
+func ensureTreeSitter(t *testing.T) {
+	if _, err := exec.LookPath("tree-sitter"); err != nil {
+		t.Skip("tree-sitter not installed")
 	}
 }
 
 func TestInspect_Golden(t *testing.T) {
-	ensureRustAnalyzer(t)
+	ensureTreeSitter(t)
 	root := repoRoot(t)
 	srcDir := filepath.Join(root, "tests", "transpiler", "x", "rs")
 	outDir := filepath.Join(root, "tests", "json-ast", "x", "rs")

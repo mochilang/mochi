@@ -1,0 +1,3340 @@
+{
+  "file": {
+    "kind": "source_file",
+    "start": 0,
+    "end": 2561,
+    "children": [
+      {
+        "kind": "line_comment",
+        "start": 0,
+        "end": 67
+      },
+      {
+        "kind": "attribute_item",
+        "start": 68,
+        "end": 91,
+        "children": [
+          {
+            "kind": "attribute",
+            "start": 70,
+            "end": 90,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 70,
+                "end": 76
+              },
+              {
+                "kind": "token_tree",
+                "start": 76,
+                "end": 90,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "start": 77,
+                    "end": 82
+                  },
+                  {
+                    "kind": "identifier",
+                    "start": 84,
+                    "end": 89
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "struct_item",
+        "start": 92,
+        "end": 147,
+        "children": [
+          {
+            "kind": "type_identifier",
+            "start": 99,
+            "end": 112
+          },
+          {
+            "kind": "field_declaration_list",
+            "start": 113,
+            "end": 147,
+            "children": [
+              {
+                "kind": "field_declaration",
+                "start": 119,
+                "end": 126,
+                "children": [
+                  {
+                    "kind": "field_identifier",
+                    "start": 119,
+                    "end": 121
+                  },
+                  {
+                    "kind": "primitive_type",
+                    "start": 123,
+                    "end": 126
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "start": 132,
+                "end": 144,
+                "children": [
+                  {
+                    "kind": "field_identifier",
+                    "start": 132,
+                    "end": 136
+                  },
+                  {
+                    "kind": "type_identifier",
+                    "start": 138,
+                    "end": 144
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "impl_item",
+        "start": 148,
+        "end": 441,
+        "children": [
+          {
+            "kind": "scoped_type_identifier",
+            "start": 153,
+            "end": 170,
+            "children": [
+              {
+                "kind": "scoped_identifier",
+                "start": 153,
+                "end": 161,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "start": 153,
+                    "end": 156
+                  },
+                  {
+                    "kind": "identifier",
+                    "start": 158,
+                    "end": 161
+                  }
+                ]
+              },
+              {
+                "kind": "type_identifier",
+                "start": 163,
+                "end": 170
+              }
+            ]
+          },
+          {
+            "kind": "type_identifier",
+            "start": 175,
+            "end": 188
+          },
+          {
+            "kind": "declaration_list",
+            "start": 189,
+            "end": 441,
+            "children": [
+              {
+                "kind": "function_item",
+                "start": 195,
+                "end": 439,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "start": 198,
+                    "end": 201
+                  },
+                  {
+                    "kind": "parameters",
+                    "start": 201,
+                    "end": 241,
+                    "children": [
+                      {
+                        "kind": "self_parameter",
+                        "start": 202,
+                        "end": 207,
+                        "children": [
+                          {
+                            "kind": "self",
+                            "start": 203,
+                            "end": 207
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "parameter",
+                        "start": 209,
+                        "end": 240,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 209,
+                            "end": 210
+                          },
+                          {
+                            "kind": "reference_type",
+                            "start": 212,
+                            "end": 240,
+                            "children": [
+                              {
+                                "kind": "mutable_specifier",
+                                "start": 213,
+                                "end": 216
+                              },
+                              {
+                                "kind": "generic_type",
+                                "start": 217,
+                                "end": 240,
+                                "children": [
+                                  {
+                                    "kind": "scoped_type_identifier",
+                                    "start": 217,
+                                    "end": 236,
+                                    "children": [
+                                      {
+                                        "kind": "scoped_identifier",
+                                        "start": 217,
+                                        "end": 225,
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "start": 217,
+                                            "end": 220
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "start": 222,
+                                            "end": 225
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "type_identifier",
+                                        "start": 227,
+                                        "end": 236
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "type_arguments",
+                                    "start": 236,
+                                    "end": 240,
+                                    "children": [
+                                      {
+                                        "kind": "lifetime",
+                                        "start": 237,
+                                        "end": 239,
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "start": 238,
+                                            "end": 239
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "scoped_type_identifier",
+                    "start": 245,
+                    "end": 261,
+                    "children": [
+                      {
+                        "kind": "scoped_identifier",
+                        "start": 245,
+                        "end": 253,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 245,
+                            "end": 248
+                          },
+                          {
+                            "kind": "identifier",
+                            "start": 250,
+                            "end": 253
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "type_identifier",
+                        "start": 255,
+                        "end": 261
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "block",
+                    "start": 262,
+                    "end": 439,
+                    "children": [
+                      {
+                        "kind": "expression_statement",
+                        "start": 272,
+                        "end": 289,
+                        "children": [
+                          {
+                            "kind": "try_expression",
+                            "start": 272,
+                            "end": 288,
+                            "children": [
+                              {
+                                "kind": "macro_invocation",
+                                "start": 272,
+                                "end": 287,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 272,
+                                    "end": 277
+                                  },
+                                  {
+                                    "kind": "token_tree",
+                                    "start": 278,
+                                    "end": 287,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 279,
+                                        "end": 280
+                                      },
+                                      {
+                                        "kind": "string_literal",
+                                        "start": 282,
+                                        "end": 286,
+                                        "children": [
+                                          {
+                                            "kind": "string_content",
+                                            "start": 283,
+                                            "end": 285
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "expression_statement",
+                        "start": 298,
+                        "end": 332,
+                        "children": [
+                          {
+                            "kind": "try_expression",
+                            "start": 298,
+                            "end": 331,
+                            "children": [
+                              {
+                                "kind": "macro_invocation",
+                                "start": 298,
+                                "end": 330,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 298,
+                                    "end": 303
+                                  },
+                                  {
+                                    "kind": "token_tree",
+                                    "start": 304,
+                                    "end": 330,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 305,
+                                        "end": 306
+                                      },
+                                      {
+                                        "kind": "string_literal",
+                                        "start": 308,
+                                        "end": 320,
+                                        "children": [
+                                          {
+                                            "kind": "escape_sequence",
+                                            "start": 309,
+                                            "end": 311
+                                          },
+                                          {
+                                            "kind": "string_content",
+                                            "start": 311,
+                                            "end": 313
+                                          },
+                                          {
+                                            "kind": "escape_sequence",
+                                            "start": 313,
+                                            "end": 315
+                                          },
+                                          {
+                                            "kind": "string_content",
+                                            "start": 315,
+                                            "end": 319
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "self",
+                                        "start": 322,
+                                        "end": 326
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "start": 327,
+                                        "end": 329
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "expression_statement",
+                        "start": 341,
+                        "end": 358,
+                        "children": [
+                          {
+                            "kind": "try_expression",
+                            "start": 341,
+                            "end": 357,
+                            "children": [
+                              {
+                                "kind": "macro_invocation",
+                                "start": 341,
+                                "end": 356,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 341,
+                                    "end": 346
+                                  },
+                                  {
+                                    "kind": "token_tree",
+                                    "start": 347,
+                                    "end": 356,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 348,
+                                        "end": 349
+                                      },
+                                      {
+                                        "kind": "string_literal",
+                                        "start": 351,
+                                        "end": 355,
+                                        "children": [
+                                          {
+                                            "kind": "string_content",
+                                            "start": 352,
+                                            "end": 354
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "expression_statement",
+                        "start": 367,
+                        "end": 409,
+                        "children": [
+                          {
+                            "kind": "try_expression",
+                            "start": 367,
+                            "end": 408,
+                            "children": [
+                              {
+                                "kind": "macro_invocation",
+                                "start": 367,
+                                "end": 407,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 367,
+                                    "end": 372
+                                  },
+                                  {
+                                    "kind": "token_tree",
+                                    "start": 373,
+                                    "end": 407,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 374,
+                                        "end": 375
+                                      },
+                                      {
+                                        "kind": "string_literal",
+                                        "start": 377,
+                                        "end": 395,
+                                        "children": [
+                                          {
+                                            "kind": "escape_sequence",
+                                            "start": 378,
+                                            "end": 380
+                                          },
+                                          {
+                                            "kind": "string_content",
+                                            "start": 380,
+                                            "end": 384
+                                          },
+                                          {
+                                            "kind": "escape_sequence",
+                                            "start": 384,
+                                            "end": 386
+                                          },
+                                          {
+                                            "kind": "string_content",
+                                            "start": 386,
+                                            "end": 388
+                                          },
+                                          {
+                                            "kind": "escape_sequence",
+                                            "start": 388,
+                                            "end": 390
+                                          },
+                                          {
+                                            "kind": "string_content",
+                                            "start": 390,
+                                            "end": 392
+                                          },
+                                          {
+                                            "kind": "escape_sequence",
+                                            "start": 392,
+                                            "end": 394
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "self",
+                                        "start": 397,
+                                        "end": 401
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "start": 402,
+                                        "end": 406
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "macro_invocation",
+                        "start": 418,
+                        "end": 433,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 418,
+                            "end": 423
+                          },
+                          {
+                            "kind": "token_tree",
+                            "start": 424,
+                            "end": 433,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 425,
+                                "end": 426
+                              },
+                              {
+                                "kind": "string_literal",
+                                "start": 428,
+                                "end": 432,
+                                "children": [
+                                  {
+                                    "kind": "string_content",
+                                    "start": 429,
+                                    "end": 431
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "attribute_item",
+        "start": 443,
+        "end": 466,
+        "children": [
+          {
+            "kind": "attribute",
+            "start": 445,
+            "end": 465,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 445,
+                "end": 451
+              },
+              {
+                "kind": "token_tree",
+                "start": 451,
+                "end": 465,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "start": 452,
+                    "end": 457
+                  },
+                  {
+                    "kind": "identifier",
+                    "start": 459,
+                    "end": 464
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "struct_item",
+        "start": 467,
+        "end": 538,
+        "children": [
+          {
+            "kind": "type_identifier",
+            "start": 474,
+            "end": 484
+          },
+          {
+            "kind": "field_declaration_list",
+            "start": 485,
+            "end": 538,
+            "children": [
+              {
+                "kind": "field_declaration",
+                "start": 491,
+                "end": 498,
+                "children": [
+                  {
+                    "kind": "field_identifier",
+                    "start": 491,
+                    "end": 493
+                  },
+                  {
+                    "kind": "primitive_type",
+                    "start": 495,
+                    "end": 498
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "start": 504,
+                "end": 519,
+                "children": [
+                  {
+                    "kind": "field_identifier",
+                    "start": 504,
+                    "end": 514
+                  },
+                  {
+                    "kind": "primitive_type",
+                    "start": 516,
+                    "end": 519
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "start": 525,
+                "end": 535,
+                "children": [
+                  {
+                    "kind": "field_identifier",
+                    "start": 525,
+                    "end": 530
+                  },
+                  {
+                    "kind": "primitive_type",
+                    "start": 532,
+                    "end": 535
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "impl_item",
+        "start": 539,
+        "end": 912,
+        "children": [
+          {
+            "kind": "scoped_type_identifier",
+            "start": 544,
+            "end": 561,
+            "children": [
+              {
+                "kind": "scoped_identifier",
+                "start": 544,
+                "end": 552,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "start": 544,
+                    "end": 547
+                  },
+                  {
+                    "kind": "identifier",
+                    "start": 549,
+                    "end": 552
+                  }
+                ]
+              },
+              {
+                "kind": "type_identifier",
+                "start": 554,
+                "end": 561
+              }
+            ]
+          },
+          {
+            "kind": "type_identifier",
+            "start": 566,
+            "end": 576
+          },
+          {
+            "kind": "declaration_list",
+            "start": 577,
+            "end": 912,
+            "children": [
+              {
+                "kind": "function_item",
+                "start": 583,
+                "end": 910,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "start": 586,
+                    "end": 589
+                  },
+                  {
+                    "kind": "parameters",
+                    "start": 589,
+                    "end": 629,
+                    "children": [
+                      {
+                        "kind": "self_parameter",
+                        "start": 590,
+                        "end": 595,
+                        "children": [
+                          {
+                            "kind": "self",
+                            "start": 591,
+                            "end": 595
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "parameter",
+                        "start": 597,
+                        "end": 628,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 597,
+                            "end": 598
+                          },
+                          {
+                            "kind": "reference_type",
+                            "start": 600,
+                            "end": 628,
+                            "children": [
+                              {
+                                "kind": "mutable_specifier",
+                                "start": 601,
+                                "end": 604
+                              },
+                              {
+                                "kind": "generic_type",
+                                "start": 605,
+                                "end": 628,
+                                "children": [
+                                  {
+                                    "kind": "scoped_type_identifier",
+                                    "start": 605,
+                                    "end": 624,
+                                    "children": [
+                                      {
+                                        "kind": "scoped_identifier",
+                                        "start": 605,
+                                        "end": 613,
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "start": 605,
+                                            "end": 608
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "start": 610,
+                                            "end": 613
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "type_identifier",
+                                        "start": 615,
+                                        "end": 624
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "type_arguments",
+                                    "start": 624,
+                                    "end": 628,
+                                    "children": [
+                                      {
+                                        "kind": "lifetime",
+                                        "start": 625,
+                                        "end": 627,
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "start": 626,
+                                            "end": 627
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "scoped_type_identifier",
+                    "start": 633,
+                    "end": 649,
+                    "children": [
+                      {
+                        "kind": "scoped_identifier",
+                        "start": 633,
+                        "end": 641,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 633,
+                            "end": 636
+                          },
+                          {
+                            "kind": "identifier",
+                            "start": 638,
+                            "end": 641
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "type_identifier",
+                        "start": 643,
+                        "end": 649
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "block",
+                    "start": 650,
+                    "end": 910,
+                    "children": [
+                      {
+                        "kind": "expression_statement",
+                        "start": 660,
+                        "end": 677,
+                        "children": [
+                          {
+                            "kind": "try_expression",
+                            "start": 660,
+                            "end": 676,
+                            "children": [
+                              {
+                                "kind": "macro_invocation",
+                                "start": 660,
+                                "end": 675,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 660,
+                                    "end": 665
+                                  },
+                                  {
+                                    "kind": "token_tree",
+                                    "start": 666,
+                                    "end": 675,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 667,
+                                        "end": 668
+                                      },
+                                      {
+                                        "kind": "string_literal",
+                                        "start": 670,
+                                        "end": 674,
+                                        "children": [
+                                          {
+                                            "kind": "string_content",
+                                            "start": 671,
+                                            "end": 673
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "expression_statement",
+                        "start": 686,
+                        "end": 720,
+                        "children": [
+                          {
+                            "kind": "try_expression",
+                            "start": 686,
+                            "end": 719,
+                            "children": [
+                              {
+                                "kind": "macro_invocation",
+                                "start": 686,
+                                "end": 718,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 686,
+                                    "end": 691
+                                  },
+                                  {
+                                    "kind": "token_tree",
+                                    "start": 692,
+                                    "end": 718,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 693,
+                                        "end": 694
+                                      },
+                                      {
+                                        "kind": "string_literal",
+                                        "start": 696,
+                                        "end": 708,
+                                        "children": [
+                                          {
+                                            "kind": "escape_sequence",
+                                            "start": 697,
+                                            "end": 699
+                                          },
+                                          {
+                                            "kind": "string_content",
+                                            "start": 699,
+                                            "end": 701
+                                          },
+                                          {
+                                            "kind": "escape_sequence",
+                                            "start": 701,
+                                            "end": 703
+                                          },
+                                          {
+                                            "kind": "string_content",
+                                            "start": 703,
+                                            "end": 707
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "self",
+                                        "start": 710,
+                                        "end": 714
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "start": 715,
+                                        "end": 717
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "expression_statement",
+                        "start": 729,
+                        "end": 746,
+                        "children": [
+                          {
+                            "kind": "try_expression",
+                            "start": 729,
+                            "end": 745,
+                            "children": [
+                              {
+                                "kind": "macro_invocation",
+                                "start": 729,
+                                "end": 744,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 729,
+                                    "end": 734
+                                  },
+                                  {
+                                    "kind": "token_tree",
+                                    "start": 735,
+                                    "end": 744,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 736,
+                                        "end": 737
+                                      },
+                                      {
+                                        "kind": "string_literal",
+                                        "start": 739,
+                                        "end": 743,
+                                        "children": [
+                                          {
+                                            "kind": "string_content",
+                                            "start": 740,
+                                            "end": 742
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "expression_statement",
+                        "start": 755,
+                        "end": 805,
+                        "children": [
+                          {
+                            "kind": "try_expression",
+                            "start": 755,
+                            "end": 804,
+                            "children": [
+                              {
+                                "kind": "macro_invocation",
+                                "start": 755,
+                                "end": 803,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 755,
+                                    "end": 760
+                                  },
+                                  {
+                                    "kind": "token_tree",
+                                    "start": 761,
+                                    "end": 803,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 762,
+                                        "end": 763
+                                      },
+                                      {
+                                        "kind": "string_literal",
+                                        "start": 765,
+                                        "end": 785,
+                                        "children": [
+                                          {
+                                            "kind": "escape_sequence",
+                                            "start": 766,
+                                            "end": 768
+                                          },
+                                          {
+                                            "kind": "string_content",
+                                            "start": 768,
+                                            "end": 778
+                                          },
+                                          {
+                                            "kind": "escape_sequence",
+                                            "start": 778,
+                                            "end": 780
+                                          },
+                                          {
+                                            "kind": "string_content",
+                                            "start": 780,
+                                            "end": 784
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "self",
+                                        "start": 787,
+                                        "end": 791
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "start": 792,
+                                        "end": 802
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "expression_statement",
+                        "start": 814,
+                        "end": 831,
+                        "children": [
+                          {
+                            "kind": "try_expression",
+                            "start": 814,
+                            "end": 830,
+                            "children": [
+                              {
+                                "kind": "macro_invocation",
+                                "start": 814,
+                                "end": 829,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 814,
+                                    "end": 819
+                                  },
+                                  {
+                                    "kind": "token_tree",
+                                    "start": 820,
+                                    "end": 829,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 821,
+                                        "end": 822
+                                      },
+                                      {
+                                        "kind": "string_literal",
+                                        "start": 824,
+                                        "end": 828,
+                                        "children": [
+                                          {
+                                            "kind": "string_content",
+                                            "start": 825,
+                                            "end": 827
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "expression_statement",
+                        "start": 840,
+                        "end": 880,
+                        "children": [
+                          {
+                            "kind": "try_expression",
+                            "start": 840,
+                            "end": 879,
+                            "children": [
+                              {
+                                "kind": "macro_invocation",
+                                "start": 840,
+                                "end": 878,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 840,
+                                    "end": 845
+                                  },
+                                  {
+                                    "kind": "token_tree",
+                                    "start": 846,
+                                    "end": 878,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 847,
+                                        "end": 848
+                                      },
+                                      {
+                                        "kind": "string_literal",
+                                        "start": 850,
+                                        "end": 865,
+                                        "children": [
+                                          {
+                                            "kind": "escape_sequence",
+                                            "start": 851,
+                                            "end": 853
+                                          },
+                                          {
+                                            "kind": "string_content",
+                                            "start": 853,
+                                            "end": 858
+                                          },
+                                          {
+                                            "kind": "escape_sequence",
+                                            "start": 858,
+                                            "end": 860
+                                          },
+                                          {
+                                            "kind": "string_content",
+                                            "start": 860,
+                                            "end": 864
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "self",
+                                        "start": 867,
+                                        "end": 871
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "start": 872,
+                                        "end": 877
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "macro_invocation",
+                        "start": 889,
+                        "end": 904,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 889,
+                            "end": 894
+                          },
+                          {
+                            "kind": "token_tree",
+                            "start": 895,
+                            "end": 904,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 896,
+                                "end": 897
+                              },
+                              {
+                                "kind": "string_literal",
+                                "start": 899,
+                                "end": 903,
+                                "children": [
+                                  {
+                                    "kind": "string_content",
+                                    "start": 900,
+                                    "end": 902
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "attribute_item",
+        "start": 914,
+        "end": 937,
+        "children": [
+          {
+            "kind": "attribute",
+            "start": 916,
+            "end": 936,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 916,
+                "end": 922
+              },
+              {
+                "kind": "token_tree",
+                "start": 922,
+                "end": 936,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "start": 923,
+                    "end": 928
+                  },
+                  {
+                    "kind": "identifier",
+                    "start": 930,
+                    "end": 935
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "struct_item",
+        "start": 938,
+        "end": 1055,
+        "children": [
+          {
+            "kind": "type_identifier",
+            "start": 945,
+            "end": 954
+          },
+          {
+            "kind": "field_declaration_list",
+            "start": 955,
+            "end": 1055,
+            "children": [
+              {
+                "kind": "field_declaration",
+                "start": 961,
+                "end": 973,
+                "children": [
+                  {
+                    "kind": "field_identifier",
+                    "start": 961,
+                    "end": 968
+                  },
+                  {
+                    "kind": "primitive_type",
+                    "start": 970,
+                    "end": 973
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "start": 979,
+                "end": 999,
+                "children": [
+                  {
+                    "kind": "field_identifier",
+                    "start": 979,
+                    "end": 994
+                  },
+                  {
+                    "kind": "primitive_type",
+                    "start": 996,
+                    "end": 999
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "start": 1005,
+                "end": 1031,
+                "children": [
+                  {
+                    "kind": "field_identifier",
+                    "start": 1005,
+                    "end": 1023
+                  },
+                  {
+                    "kind": "type_identifier",
+                    "start": 1025,
+                    "end": 1031
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "start": 1037,
+                "end": 1052,
+                "children": [
+                  {
+                    "kind": "field_identifier",
+                    "start": 1037,
+                    "end": 1047
+                  },
+                  {
+                    "kind": "primitive_type",
+                    "start": 1049,
+                    "end": 1052
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "impl_item",
+        "start": 1056,
+        "end": 1563,
+        "children": [
+          {
+            "kind": "scoped_type_identifier",
+            "start": 1061,
+            "end": 1078,
+            "children": [
+              {
+                "kind": "scoped_identifier",
+                "start": 1061,
+                "end": 1069,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "start": 1061,
+                    "end": 1064
+                  },
+                  {
+                    "kind": "identifier",
+                    "start": 1066,
+                    "end": 1069
+                  }
+                ]
+              },
+              {
+                "kind": "type_identifier",
+                "start": 1071,
+                "end": 1078
+              }
+            ]
+          },
+          {
+            "kind": "type_identifier",
+            "start": 1083,
+            "end": 1092
+          },
+          {
+            "kind": "declaration_list",
+            "start": 1093,
+            "end": 1563,
+            "children": [
+              {
+                "kind": "function_item",
+                "start": 1099,
+                "end": 1561,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "start": 1102,
+                    "end": 1105
+                  },
+                  {
+                    "kind": "parameters",
+                    "start": 1105,
+                    "end": 1145,
+                    "children": [
+                      {
+                        "kind": "self_parameter",
+                        "start": 1106,
+                        "end": 1111,
+                        "children": [
+                          {
+                            "kind": "self",
+                            "start": 1107,
+                            "end": 1111
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "parameter",
+                        "start": 1113,
+                        "end": 1144,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 1113,
+                            "end": 1114
+                          },
+                          {
+                            "kind": "reference_type",
+                            "start": 1116,
+                            "end": 1144,
+                            "children": [
+                              {
+                                "kind": "mutable_specifier",
+                                "start": 1117,
+                                "end": 1120
+                              },
+                              {
+                                "kind": "generic_type",
+                                "start": 1121,
+                                "end": 1144,
+                                "children": [
+                                  {
+                                    "kind": "scoped_type_identifier",
+                                    "start": 1121,
+                                    "end": 1140,
+                                    "children": [
+                                      {
+                                        "kind": "scoped_identifier",
+                                        "start": 1121,
+                                        "end": 1129,
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "start": 1121,
+                                            "end": 1124
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "start": 1126,
+                                            "end": 1129
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "type_identifier",
+                                        "start": 1131,
+                                        "end": 1140
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "type_arguments",
+                                    "start": 1140,
+                                    "end": 1144,
+                                    "children": [
+                                      {
+                                        "kind": "lifetime",
+                                        "start": 1141,
+                                        "end": 1143,
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "start": 1142,
+                                            "end": 1143
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "scoped_type_identifier",
+                    "start": 1149,
+                    "end": 1165,
+                    "children": [
+                      {
+                        "kind": "scoped_identifier",
+                        "start": 1149,
+                        "end": 1157,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 1149,
+                            "end": 1152
+                          },
+                          {
+                            "kind": "identifier",
+                            "start": 1154,
+                            "end": 1157
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "type_identifier",
+                        "start": 1159,
+                        "end": 1165
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "block",
+                    "start": 1166,
+                    "end": 1561,
+                    "children": [
+                      {
+                        "kind": "expression_statement",
+                        "start": 1176,
+                        "end": 1193,
+                        "children": [
+                          {
+                            "kind": "try_expression",
+                            "start": 1176,
+                            "end": 1192,
+                            "children": [
+                              {
+                                "kind": "macro_invocation",
+                                "start": 1176,
+                                "end": 1191,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 1176,
+                                    "end": 1181
+                                  },
+                                  {
+                                    "kind": "token_tree",
+                                    "start": 1182,
+                                    "end": 1191,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 1183,
+                                        "end": 1184
+                                      },
+                                      {
+                                        "kind": "string_literal",
+                                        "start": 1186,
+                                        "end": 1190,
+                                        "children": [
+                                          {
+                                            "kind": "string_content",
+                                            "start": 1187,
+                                            "end": 1189
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "expression_statement",
+                        "start": 1202,
+                        "end": 1246,
+                        "children": [
+                          {
+                            "kind": "try_expression",
+                            "start": 1202,
+                            "end": 1245,
+                            "children": [
+                              {
+                                "kind": "macro_invocation",
+                                "start": 1202,
+                                "end": 1244,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 1202,
+                                    "end": 1207
+                                  },
+                                  {
+                                    "kind": "token_tree",
+                                    "start": 1208,
+                                    "end": 1244,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 1209,
+                                        "end": 1210
+                                      },
+                                      {
+                                        "kind": "string_literal",
+                                        "start": 1212,
+                                        "end": 1229,
+                                        "children": [
+                                          {
+                                            "kind": "escape_sequence",
+                                            "start": 1213,
+                                            "end": 1215
+                                          },
+                                          {
+                                            "kind": "string_content",
+                                            "start": 1215,
+                                            "end": 1222
+                                          },
+                                          {
+                                            "kind": "escape_sequence",
+                                            "start": 1222,
+                                            "end": 1224
+                                          },
+                                          {
+                                            "kind": "string_content",
+                                            "start": 1224,
+                                            "end": 1228
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "self",
+                                        "start": 1231,
+                                        "end": 1235
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "start": 1236,
+                                        "end": 1243
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "expression_statement",
+                        "start": 1255,
+                        "end": 1272,
+                        "children": [
+                          {
+                            "kind": "try_expression",
+                            "start": 1255,
+                            "end": 1271,
+                            "children": [
+                              {
+                                "kind": "macro_invocation",
+                                "start": 1255,
+                                "end": 1270,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 1255,
+                                    "end": 1260
+                                  },
+                                  {
+                                    "kind": "token_tree",
+                                    "start": 1261,
+                                    "end": 1270,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 1262,
+                                        "end": 1263
+                                      },
+                                      {
+                                        "kind": "string_literal",
+                                        "start": 1265,
+                                        "end": 1269,
+                                        "children": [
+                                          {
+                                            "kind": "string_content",
+                                            "start": 1266,
+                                            "end": 1268
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "expression_statement",
+                        "start": 1281,
+                        "end": 1341,
+                        "children": [
+                          {
+                            "kind": "try_expression",
+                            "start": 1281,
+                            "end": 1340,
+                            "children": [
+                              {
+                                "kind": "macro_invocation",
+                                "start": 1281,
+                                "end": 1339,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 1281,
+                                    "end": 1286
+                                  },
+                                  {
+                                    "kind": "token_tree",
+                                    "start": 1287,
+                                    "end": 1339,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 1288,
+                                        "end": 1289
+                                      },
+                                      {
+                                        "kind": "string_literal",
+                                        "start": 1291,
+                                        "end": 1316,
+                                        "children": [
+                                          {
+                                            "kind": "escape_sequence",
+                                            "start": 1292,
+                                            "end": 1294
+                                          },
+                                          {
+                                            "kind": "string_content",
+                                            "start": 1294,
+                                            "end": 1309
+                                          },
+                                          {
+                                            "kind": "escape_sequence",
+                                            "start": 1309,
+                                            "end": 1311
+                                          },
+                                          {
+                                            "kind": "string_content",
+                                            "start": 1311,
+                                            "end": 1315
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "self",
+                                        "start": 1318,
+                                        "end": 1322
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "start": 1323,
+                                        "end": 1338
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "expression_statement",
+                        "start": 1350,
+                        "end": 1367,
+                        "children": [
+                          {
+                            "kind": "try_expression",
+                            "start": 1350,
+                            "end": 1366,
+                            "children": [
+                              {
+                                "kind": "macro_invocation",
+                                "start": 1350,
+                                "end": 1365,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 1350,
+                                    "end": 1355
+                                  },
+                                  {
+                                    "kind": "token_tree",
+                                    "start": 1356,
+                                    "end": 1365,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 1357,
+                                        "end": 1358
+                                      },
+                                      {
+                                        "kind": "string_literal",
+                                        "start": 1360,
+                                        "end": 1364,
+                                        "children": [
+                                          {
+                                            "kind": "string_content",
+                                            "start": 1361,
+                                            "end": 1363
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "expression_statement",
+                        "start": 1376,
+                        "end": 1446,
+                        "children": [
+                          {
+                            "kind": "try_expression",
+                            "start": 1376,
+                            "end": 1445,
+                            "children": [
+                              {
+                                "kind": "macro_invocation",
+                                "start": 1376,
+                                "end": 1444,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 1376,
+                                    "end": 1381
+                                  },
+                                  {
+                                    "kind": "token_tree",
+                                    "start": 1382,
+                                    "end": 1444,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 1383,
+                                        "end": 1384
+                                      },
+                                      {
+                                        "kind": "string_literal",
+                                        "start": 1386,
+                                        "end": 1418,
+                                        "children": [
+                                          {
+                                            "kind": "escape_sequence",
+                                            "start": 1387,
+                                            "end": 1389
+                                          },
+                                          {
+                                            "kind": "string_content",
+                                            "start": 1389,
+                                            "end": 1407
+                                          },
+                                          {
+                                            "kind": "escape_sequence",
+                                            "start": 1407,
+                                            "end": 1409
+                                          },
+                                          {
+                                            "kind": "string_content",
+                                            "start": 1409,
+                                            "end": 1411
+                                          },
+                                          {
+                                            "kind": "escape_sequence",
+                                            "start": 1411,
+                                            "end": 1413
+                                          },
+                                          {
+                                            "kind": "string_content",
+                                            "start": 1413,
+                                            "end": 1415
+                                          },
+                                          {
+                                            "kind": "escape_sequence",
+                                            "start": 1415,
+                                            "end": 1417
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "self",
+                                        "start": 1420,
+                                        "end": 1424
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "start": 1425,
+                                        "end": 1443
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "expression_statement",
+                        "start": 1455,
+                        "end": 1472,
+                        "children": [
+                          {
+                            "kind": "try_expression",
+                            "start": 1455,
+                            "end": 1471,
+                            "children": [
+                              {
+                                "kind": "macro_invocation",
+                                "start": 1455,
+                                "end": 1470,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 1455,
+                                    "end": 1460
+                                  },
+                                  {
+                                    "kind": "token_tree",
+                                    "start": 1461,
+                                    "end": 1470,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 1462,
+                                        "end": 1463
+                                      },
+                                      {
+                                        "kind": "string_literal",
+                                        "start": 1465,
+                                        "end": 1469,
+                                        "children": [
+                                          {
+                                            "kind": "string_content",
+                                            "start": 1466,
+                                            "end": 1468
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "expression_statement",
+                        "start": 1481,
+                        "end": 1531,
+                        "children": [
+                          {
+                            "kind": "try_expression",
+                            "start": 1481,
+                            "end": 1530,
+                            "children": [
+                              {
+                                "kind": "macro_invocation",
+                                "start": 1481,
+                                "end": 1529,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 1481,
+                                    "end": 1486
+                                  },
+                                  {
+                                    "kind": "token_tree",
+                                    "start": 1487,
+                                    "end": 1529,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 1488,
+                                        "end": 1489
+                                      },
+                                      {
+                                        "kind": "string_literal",
+                                        "start": 1491,
+                                        "end": 1511,
+                                        "children": [
+                                          {
+                                            "kind": "escape_sequence",
+                                            "start": 1492,
+                                            "end": 1494
+                                          },
+                                          {
+                                            "kind": "string_content",
+                                            "start": 1494,
+                                            "end": 1504
+                                          },
+                                          {
+                                            "kind": "escape_sequence",
+                                            "start": 1504,
+                                            "end": 1506
+                                          },
+                                          {
+                                            "kind": "string_content",
+                                            "start": 1506,
+                                            "end": 1510
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "self",
+                                        "start": 1513,
+                                        "end": 1517
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "start": 1518,
+                                        "end": 1528
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "macro_invocation",
+                        "start": 1540,
+                        "end": 1555,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 1540,
+                            "end": 1545
+                          },
+                          {
+                            "kind": "token_tree",
+                            "start": 1546,
+                            "end": 1555,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 1547,
+                                "end": 1548
+                              },
+                              {
+                                "kind": "string_literal",
+                                "start": 1550,
+                                "end": 1554,
+                                "children": [
+                                  {
+                                    "kind": "string_content",
+                                    "start": 1551,
+                                    "end": 1553
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_item",
+        "start": 1565,
+        "end": 2560,
+        "children": [
+          {
+            "kind": "identifier",
+            "start": 1568,
+            "end": 1572
+          },
+          {
+            "kind": "parameters",
+            "start": 1572,
+            "end": 1574
+          },
+          {
+            "kind": "block",
+            "start": 1575,
+            "end": 2560,
+            "children": [
+              {
+                "kind": "let_declaration",
+                "start": 1581,
+                "end": 1778,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "start": 1585,
+                    "end": 1594
+                  },
+                  {
+                    "kind": "generic_type",
+                    "start": 1596,
+                    "end": 1614,
+                    "children": [
+                      {
+                        "kind": "type_identifier",
+                        "start": 1596,
+                        "end": 1599
+                      },
+                      {
+                        "kind": "type_arguments",
+                        "start": 1599,
+                        "end": 1614,
+                        "children": [
+                          {
+                            "kind": "type_identifier",
+                            "start": 1600,
+                            "end": 1613
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "macro_invocation",
+                    "start": 1617,
+                    "end": 1777,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 1617,
+                        "end": 1620
+                      },
+                      {
+                        "kind": "token_tree",
+                        "start": 1621,
+                        "end": 1777,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 1622,
+                            "end": 1635
+                          },
+                          {
+                            "kind": "token_tree",
+                            "start": 1636,
+                            "end": 1672,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 1637,
+                                "end": 1639
+                              },
+                              {
+                                "kind": "integer_literal",
+                                "start": 1641,
+                                "end": 1642
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 1644,
+                                "end": 1648
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 1650,
+                                "end": 1656
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 1658,
+                                "end": 1662
+                              },
+                              {
+                                "kind": "token_tree",
+                                "start": 1662,
+                                "end": 1671,
+                                "children": [
+                                  {
+                                    "kind": "string_literal",
+                                    "start": 1663,
+                                    "end": 1670,
+                                    "children": [
+                                      {
+                                        "kind": "string_content",
+                                        "start": 1664,
+                                        "end": 1669
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "identifier",
+                            "start": 1674,
+                            "end": 1687
+                          },
+                          {
+                            "kind": "token_tree",
+                            "start": 1688,
+                            "end": 1722,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 1689,
+                                "end": 1691
+                              },
+                              {
+                                "kind": "integer_literal",
+                                "start": 1693,
+                                "end": 1694
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 1696,
+                                "end": 1700
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 1702,
+                                "end": 1708
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 1710,
+                                "end": 1714
+                              },
+                              {
+                                "kind": "token_tree",
+                                "start": 1714,
+                                "end": 1721,
+                                "children": [
+                                  {
+                                    "kind": "string_literal",
+                                    "start": 1715,
+                                    "end": 1720,
+                                    "children": [
+                                      {
+                                        "kind": "string_content",
+                                        "start": 1716,
+                                        "end": 1719
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "identifier",
+                            "start": 1724,
+                            "end": 1737
+                          },
+                          {
+                            "kind": "token_tree",
+                            "start": 1738,
+                            "end": 1776,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 1739,
+                                "end": 1741
+                              },
+                              {
+                                "kind": "integer_literal",
+                                "start": 1743,
+                                "end": 1744
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 1746,
+                                "end": 1750
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 1752,
+                                "end": 1758
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 1760,
+                                "end": 1764
+                              },
+                              {
+                                "kind": "token_tree",
+                                "start": 1764,
+                                "end": 1775,
+                                "children": [
+                                  {
+                                    "kind": "string_literal",
+                                    "start": 1765,
+                                    "end": 1774,
+                                    "children": [
+                                      {
+                                        "kind": "string_content",
+                                        "start": 1766,
+                                        "end": 1773
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "let_declaration",
+                "start": 1783,
+                "end": 1965,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "start": 1787,
+                    "end": 1793
+                  },
+                  {
+                    "kind": "generic_type",
+                    "start": 1795,
+                    "end": 1810,
+                    "children": [
+                      {
+                        "kind": "type_identifier",
+                        "start": 1795,
+                        "end": 1798
+                      },
+                      {
+                        "kind": "type_arguments",
+                        "start": 1798,
+                        "end": 1810,
+                        "children": [
+                          {
+                            "kind": "type_identifier",
+                            "start": 1799,
+                            "end": 1809
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "macro_invocation",
+                    "start": 1813,
+                    "end": 1964,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 1813,
+                        "end": 1816
+                      },
+                      {
+                        "kind": "token_tree",
+                        "start": 1817,
+                        "end": 1964,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 1818,
+                            "end": 1828
+                          },
+                          {
+                            "kind": "token_tree",
+                            "start": 1829,
+                            "end": 1865,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 1830,
+                                "end": 1832
+                              },
+                              {
+                                "kind": "integer_literal",
+                                "start": 1834,
+                                "end": 1837
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 1839,
+                                "end": 1849
+                              },
+                              {
+                                "kind": "integer_literal",
+                                "start": 1851,
+                                "end": 1852
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 1854,
+                                "end": 1859
+                              },
+                              {
+                                "kind": "integer_literal",
+                                "start": 1861,
+                                "end": 1864
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "identifier",
+                            "start": 1867,
+                            "end": 1877
+                          },
+                          {
+                            "kind": "token_tree",
+                            "start": 1878,
+                            "end": 1914,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 1879,
+                                "end": 1881
+                              },
+                              {
+                                "kind": "integer_literal",
+                                "start": 1883,
+                                "end": 1886
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 1888,
+                                "end": 1898
+                              },
+                              {
+                                "kind": "integer_literal",
+                                "start": 1900,
+                                "end": 1901
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 1903,
+                                "end": 1908
+                              },
+                              {
+                                "kind": "integer_literal",
+                                "start": 1910,
+                                "end": 1913
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "identifier",
+                            "start": 1916,
+                            "end": 1926
+                          },
+                          {
+                            "kind": "token_tree",
+                            "start": 1927,
+                            "end": 1963,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 1928,
+                                "end": 1930
+                              },
+                              {
+                                "kind": "integer_literal",
+                                "start": 1932,
+                                "end": 1935
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 1937,
+                                "end": 1947
+                              },
+                              {
+                                "kind": "integer_literal",
+                                "start": 1949,
+                                "end": 1950
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 1952,
+                                "end": 1957
+                              },
+                              {
+                                "kind": "integer_literal",
+                                "start": 1959,
+                                "end": 1962
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "let_declaration",
+                "start": 1970,
+                "end": 2248,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "start": 1974,
+                    "end": 1980
+                  },
+                  {
+                    "kind": "generic_type",
+                    "start": 1982,
+                    "end": 1996,
+                    "children": [
+                      {
+                        "kind": "type_identifier",
+                        "start": 1982,
+                        "end": 1985
+                      },
+                      {
+                        "kind": "type_arguments",
+                        "start": 1985,
+                        "end": 1996,
+                        "children": [
+                          {
+                            "kind": "type_identifier",
+                            "start": 1986,
+                            "end": 1995
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "block",
+                    "start": 1999,
+                    "end": 2247,
+                    "children": [
+                      {
+                        "kind": "let_declaration",
+                        "start": 2001,
+                        "end": 2041,
+                        "children": [
+                          {
+                            "kind": "mutable_specifier",
+                            "start": 2005,
+                            "end": 2008
+                          },
+                          {
+                            "kind": "identifier",
+                            "start": 2009,
+                            "end": 2011
+                          },
+                          {
+                            "kind": "generic_type",
+                            "start": 2013,
+                            "end": 2027,
+                            "children": [
+                              {
+                                "kind": "type_identifier",
+                                "start": 2013,
+                                "end": 2016
+                              },
+                              {
+                                "kind": "type_arguments",
+                                "start": 2016,
+                                "end": 2027,
+                                "children": [
+                                  {
+                                    "kind": "type_identifier",
+                                    "start": 2017,
+                                    "end": 2026
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "call_expression",
+                            "start": 2030,
+                            "end": 2040,
+                            "children": [
+                              {
+                                "kind": "scoped_identifier",
+                                "start": 2030,
+                                "end": 2038,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 2030,
+                                    "end": 2033
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "start": 2035,
+                                    "end": 2038
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "arguments",
+                                "start": 2038,
+                                "end": 2040
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "expression_statement",
+                        "start": 2042,
+                        "end": 2242,
+                        "children": [
+                          {
+                            "kind": "for_expression",
+                            "start": 2042,
+                            "end": 2242,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 2046,
+                                "end": 2047
+                              },
+                              {
+                                "kind": "reference_expression",
+                                "start": 2051,
+                                "end": 2058,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 2052,
+                                    "end": 2058
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "block",
+                                "start": 2059,
+                                "end": 2242,
+                                "children": [
+                                  {
+                                    "kind": "expression_statement",
+                                    "start": 2061,
+                                    "end": 2240,
+                                    "children": [
+                                      {
+                                        "kind": "for_expression",
+                                        "start": 2061,
+                                        "end": 2240,
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "start": 2065,
+                                            "end": 2066
+                                          },
+                                          {
+                                            "kind": "reference_expression",
+                                            "start": 2070,
+                                            "end": 2080,
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "start": 2071,
+                                                "end": 2080
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "block",
+                                            "start": 2081,
+                                            "end": 2240,
+                                            "children": [
+                                              {
+                                                "kind": "expression_statement",
+                                                "start": 2083,
+                                                "end": 2238,
+                                                "children": [
+                                                  {
+                                                    "kind": "call_expression",
+                                                    "start": 2083,
+                                                    "end": 2237,
+                                                    "children": [
+                                                      {
+                                                        "kind": "field_expression",
+                                                        "start": 2083,
+                                                        "end": 2090,
+                                                        "children": [
+                                                          {
+                                                            "kind": "identifier",
+                                                            "start": 2083,
+                                                            "end": 2085
+                                                          },
+                                                          {
+                                                            "kind": "field_identifier",
+                                                            "start": 2086,
+                                                            "end": 2090
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "arguments",
+                                                        "start": 2090,
+                                                        "end": 2237,
+                                                        "children": [
+                                                          {
+                                                            "kind": "struct_expression",
+                                                            "start": 2091,
+                                                            "end": 2236,
+                                                            "children": [
+                                                              {
+                                                                "kind": "type_identifier",
+                                                                "start": 2091,
+                                                                "end": 2100
+                                                              },
+                                                              {
+                                                                "kind": "field_initializer_list",
+                                                                "start": 2101,
+                                                                "end": 2236,
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "field_initializer",
+                                                                    "start": 2102,
+                                                                    "end": 2123,
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "field_identifier",
+                                                                        "start": 2102,
+                                                                        "end": 2109
+                                                                      },
+                                                                      {
+                                                                        "kind": "field_expression",
+                                                                        "start": 2111,
+                                                                        "end": 2123,
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "call_expression",
+                                                                            "start": 2111,
+                                                                            "end": 2120,
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "field_expression",
+                                                                                "start": 2111,
+                                                                                "end": 2118,
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "identifier",
+                                                                                    "start": 2111,
+                                                                                    "end": 2112
+                                                                                  },
+                                                                                  {
+                                                                                    "kind": "field_identifier",
+                                                                                    "start": 2113,
+                                                                                    "end": 2118
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "arguments",
+                                                                                "start": 2118,
+                                                                                "end": 2120
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "kind": "field_identifier",
+                                                                            "start": 2121,
+                                                                            "end": 2123
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "kind": "field_initializer",
+                                                                    "start": 2125,
+                                                                    "end": 2162,
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "field_identifier",
+                                                                        "start": 2125,
+                                                                        "end": 2140
+                                                                      },
+                                                                      {
+                                                                        "kind": "field_expression",
+                                                                        "start": 2142,
+                                                                        "end": 2162,
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "call_expression",
+                                                                            "start": 2142,
+                                                                            "end": 2151,
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "field_expression",
+                                                                                "start": 2142,
+                                                                                "end": 2149,
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "identifier",
+                                                                                    "start": 2142,
+                                                                                    "end": 2143
+                                                                                  },
+                                                                                  {
+                                                                                    "kind": "field_identifier",
+                                                                                    "start": 2144,
+                                                                                    "end": 2149
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "arguments",
+                                                                                "start": 2149,
+                                                                                "end": 2151
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "kind": "field_identifier",
+                                                                            "start": 2152,
+                                                                            "end": 2162
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "kind": "field_initializer",
+                                                                    "start": 2164,
+                                                                    "end": 2206,
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "field_identifier",
+                                                                        "start": 2164,
+                                                                        "end": 2182
+                                                                      },
+                                                                      {
+                                                                        "kind": "call_expression",
+                                                                        "start": 2184,
+                                                                        "end": 2206,
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "field_expression",
+                                                                            "start": 2184,
+                                                                            "end": 2204,
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "field_expression",
+                                                                                "start": 2184,
+                                                                                "end": 2198,
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "call_expression",
+                                                                                    "start": 2184,
+                                                                                    "end": 2193,
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "field_expression",
+                                                                                        "start": 2184,
+                                                                                        "end": 2191,
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "identifier",
+                                                                                            "start": 2184,
+                                                                                            "end": 2185
+                                                                                          },
+                                                                                          {
+                                                                                            "kind": "field_identifier",
+                                                                                            "start": 2186,
+                                                                                            "end": 2191
+                                                                                          }
+                                                                                        ]
+                                                                                      },
+                                                                                      {
+                                                                                        "kind": "arguments",
+                                                                                        "start": 2191,
+                                                                                        "end": 2193
+                                                                                      }
+                                                                                    ]
+                                                                                  },
+                                                                                  {
+                                                                                    "kind": "field_identifier",
+                                                                                    "start": 2194,
+                                                                                    "end": 2198
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "field_identifier",
+                                                                                "start": 2199,
+                                                                                "end": 2204
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "kind": "arguments",
+                                                                            "start": 2204,
+                                                                            "end": 2206
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "kind": "field_initializer",
+                                                                    "start": 2208,
+                                                                    "end": 2235,
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "field_identifier",
+                                                                        "start": 2208,
+                                                                        "end": 2218
+                                                                      },
+                                                                      {
+                                                                        "kind": "field_expression",
+                                                                        "start": 2220,
+                                                                        "end": 2235,
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "call_expression",
+                                                                            "start": 2220,
+                                                                            "end": 2229,
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "field_expression",
+                                                                                "start": 2220,
+                                                                                "end": 2227,
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "identifier",
+                                                                                    "start": 2220,
+                                                                                    "end": 2221
+                                                                                  },
+                                                                                  {
+                                                                                    "kind": "field_identifier",
+                                                                                    "start": 2222,
+                                                                                    "end": 2227
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "arguments",
+                                                                                "start": 2227,
+                                                                                "end": 2229
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "kind": "field_identifier",
+                                                                            "start": 2230,
+                                                                            "end": 2235
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "identifier",
+                        "start": 2243,
+                        "end": 2245
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "expression_statement",
+                "start": 2253,
+                "end": 2316,
+                "children": [
+                  {
+                    "kind": "macro_invocation",
+                    "start": 2253,
+                    "end": 2315,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 2253,
+                        "end": 2260
+                      },
+                      {
+                        "kind": "token_tree",
+                        "start": 2261,
+                        "end": 2315,
+                        "children": [
+                          {
+                            "kind": "string_literal",
+                            "start": 2262,
+                            "end": 2266,
+                            "children": [
+                              {
+                                "kind": "string_content",
+                                "start": 2263,
+                                "end": 2265
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string_literal",
+                            "start": 2268,
+                            "end": 2314,
+                            "children": [
+                              {
+                                "kind": "string_content",
+                                "start": 2269,
+                                "end": 2313
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "expression_statement",
+                "start": 2321,
+                "end": 2558,
+                "children": [
+                  {
+                    "kind": "for_expression",
+                    "start": 2321,
+                    "end": 2558,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 2325,
+                        "end": 2330
+                      },
+                      {
+                        "kind": "reference_expression",
+                        "start": 2334,
+                        "end": 2341,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 2335,
+                            "end": 2341
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "block",
+                        "start": 2342,
+                        "end": 2558,
+                        "children": [
+                          {
+                            "kind": "expression_statement",
+                            "start": 2352,
+                            "end": 2552,
+                            "children": [
+                              {
+                                "kind": "macro_invocation",
+                                "start": 2352,
+                                "end": 2551,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 2352,
+                                    "end": 2359
+                                  },
+                                  {
+                                    "kind": "token_tree",
+                                    "start": 2360,
+                                    "end": 2551,
+                                    "children": [
+                                      {
+                                        "kind": "string_literal",
+                                        "start": 2361,
+                                        "end": 2365,
+                                        "children": [
+                                          {
+                                            "kind": "string_content",
+                                            "start": 2362,
+                                            "end": 2364
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "start": 2367,
+                                        "end": 2373
+                                      },
+                                      {
+                                        "kind": "token_tree",
+                                        "start": 2374,
+                                        "end": 2539,
+                                        "children": [
+                                          {
+                                            "kind": "string_literal",
+                                            "start": 2375,
+                                            "end": 2400,
+                                            "children": [
+                                              {
+                                                "kind": "string_content",
+                                                "start": 2376,
+                                                "end": 2399
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "string_literal",
+                                            "start": 2402,
+                                            "end": 2409,
+                                            "children": [
+                                              {
+                                                "kind": "string_content",
+                                                "start": 2403,
+                                                "end": 2408
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "start": 2411,
+                                            "end": 2416
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "start": 2417,
+                                            "end": 2424
+                                          },
+                                          {
+                                            "kind": "string_literal",
+                                            "start": 2426,
+                                            "end": 2440,
+                                            "children": [
+                                              {
+                                                "kind": "string_content",
+                                                "start": 2427,
+                                                "end": 2439
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "start": 2442,
+                                            "end": 2447
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "start": 2448,
+                                            "end": 2463
+                                          },
+                                          {
+                                            "kind": "string_literal",
+                                            "start": 2465,
+                                            "end": 2477,
+                                            "children": [
+                                              {
+                                                "kind": "string_content",
+                                                "start": 2466,
+                                                "end": 2476
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "start": 2479,
+                                            "end": 2484
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "start": 2485,
+                                            "end": 2495
+                                          },
+                                          {
+                                            "kind": "string_literal",
+                                            "start": 2497,
+                                            "end": 2512,
+                                            "children": [
+                                              {
+                                                "kind": "string_content",
+                                                "start": 2498,
+                                                "end": 2511
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "start": 2514,
+                                            "end": 2519
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "start": 2520,
+                                            "end": 2538
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "start": 2540,
+                                        "end": 2548
+                                      },
+                                      {
+                                        "kind": "token_tree",
+                                        "start": 2548,
+                                        "end": 2550
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
