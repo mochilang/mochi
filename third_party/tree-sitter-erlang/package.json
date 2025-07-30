@@ -1,0 +1,61 @@
+{
+  "name": "tree-sitter-erlang",
+  "version": "0.0.0",
+  "description": "Tree Sitter grammar for Erlang",
+  "scripts": {
+    "install": "node-gyp-build",
+    "prestart": "tree-sitter build --wasm",
+    "start": "tree-sitter playground",
+    "parse": "npx tree-sitter-cli parse",
+    "test": "node --test bindings/node/*_test.js"
+  },
+  "authors": [
+    "Leandro Ostera <leandro@ostera.io>",
+    "Alan Zimmerman <alanzimm@fb.com>"
+  ],
+  "license": "Apache-2.0",
+  "dependencies": {
+    "tree-sitter-cli": "^0.23.0",
+    "prettier": "^2.2.1",
+    "node-addon-api": "^7.1.0",
+    "node-gyp-build": "^4.8.0"
+  },
+  "peerDependencies": {
+    "tree-sitter": "^0.22.4"
+  },
+  "peerDependenciesMeta": {
+    "tree_sitter": {
+      "optional": true
+    }
+  },
+  "main": "bindings/node",
+  "types": "bindings/node",
+  "tree-sitter": [
+    {
+      "scope": "source.erlang",
+      "file-types": [
+        "erl",
+        "hrl",
+        "app.src",
+        "app",
+        "escript",
+        "rebar.config"
+      ],
+      "highlights": [
+        "queries/highlights.scm"
+      ]
+    }
+  ],
+  "devDependencies": {
+    "prebuildify": "^6.0.1",
+    "tar-fs": ">=2.1.3"
+  },
+  "files": [
+    "grammar.js",
+    "binding.gyp",
+    "prebuilds/**",
+    "bindings/node/*",
+    "queries/*",
+    "src/**"
+  ]
+}

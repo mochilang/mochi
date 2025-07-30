@@ -15,11 +15,13 @@ require (
 	github.com/marcboeker/go-duckdb v1.8.5
 	github.com/mark3labs/mcp-go v0.36.0
 	github.com/mattn/go-sqlite3 v1.14.28
+	github.com/slimsag/tree-sitter-zig/bindings/go v0.0.0-20220513090138-e3dbdff9d013
 	github.com/smacker/go-tree-sitter v0.0.0-20240827094217-dd81d9e9be82
 	github.com/spf13/cobra v1.9.1
 	github.com/stretchr/testify v1.10.0
 	github.com/tliron/commonlog v0.2.20
 	github.com/tliron/glsp v0.2.2
+	github.com/tree-sitter/tree-sitter-erlang v0.1.0
 	github.com/tree-sitter/tree-sitter-racket v0.24.7
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	github.com/yuin/gopher-lua v1.1.1
@@ -72,7 +74,6 @@ require (
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/sasha-s/go-deadlock v0.3.5 // indirect
 	github.com/segmentio/ksuid v1.0.4 // indirect
-	github.com/slimsag/tree-sitter-zig/bindings/go v0.0.0-20220513090138-e3dbdff9d013 // indirect
 	github.com/sourcegraph/jsonrpc2 v0.2.1 // indirect
 	github.com/spf13/cast v1.9.2 // indirect
 	github.com/spf13/pflag v1.0.7 // indirect
@@ -94,3 +95,5 @@ require (
 replace mochi/tools/any2mochi => ./archived/tools/any2mochi
 
 replace github.com/tree-sitter/tree-sitter-racket => ./third_party/tree-sitter-racket
+
+replace github.com/tree-sitter/tree-sitter-erlang => ./third_party/tree-sitter-erlang
