@@ -2,9 +2,9 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-07-30 17:33 UTC
+Last updated: 2025-07-30 17:51 UTC
 
-## Checklist (478/491)
+## Checklist (480/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 110µs | 36.2 KB |
@@ -317,7 +317,7 @@ Last updated: 2025-07-30 17:33 UTC
 | 308 | distance-and-bearing | ✓ | 776µs | 40.4 KB |
 | 309 | distributed-programming | ✓ | 34µs | 9.3 KB |
 | 310 | diversity-prediction-theorem | ✓ | 79µs | 13.5 KB |
-| 311 | dns-query |   |  |  |
+| 311 | dns-query | ✓ | 481.642ms | 75.3 KB |
 | 312 | documentation | ✓ | 2µs | 472 B |
 | 313 | doomsday-rule | ✓ | 77µs | 28.6 KB |
 | 314 | dot-product | ✓ | 52µs | 10.5 KB |
@@ -331,7 +331,7 @@ Last updated: 2025-07-30 17:33 UTC
 | 322 | draw-a-pixel-1 | ✓ | 54.278ms | 5.8 MB |
 | 323 | draw-a-rotating-cube | ✓ | 4.97ms | 219.2 KB |
 | 324 | draw-a-sphere | ✓ | 32.908ms | 61.7 KB |
-| 325 | duffinian-numbers |   |  |  |
+| 325 | duffinian-numbers | ✓ | 129.18ms | 713.8 KB |
 | 326 | dutch-national-flag-problem | ✓ | 62µs | 15.6 KB |
 | 327 | dynamic-variable-names | ✓ | 45µs | 21.0 KB |
 | 328 | earliest-difference-between-prime-gaps |   |  |  |
