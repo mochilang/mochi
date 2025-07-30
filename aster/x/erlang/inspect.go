@@ -2,10 +2,9 @@ package erlang
 
 import (
 	"context"
-	"fmt"
 
-	sitter "github.com/smacker/go-tree-sitter"
-	tserlang "mochi/third_party/tree-sitter-erlang/bindings/go"
+	sitter "github.com/tree-sitter/go-tree-sitter"
+	tserlang "github.com/tree-sitter/tree-sitter-erlang/bindings/go"
 )
 
 // Program represents a parsed Erlang file composed of Node structs.
@@ -18,10 +17,7 @@ type Program struct {
 func InspectWithOption(src string, opt Option) (*Program, error) {
 	parser := sitter.NewParser()
 	parser.SetLanguage(tserlang.GetLanguage())
-	tree, err := parser.ParseCtx(context.Background(), nil, []byte(src))
-	if err != nil {
-		return nil, fmt.Errorf("parse: %w", err)
-	}
+	tree := parser.ParseCtx(context.Background(), []byte(src), nil)
 	root := convert(tree.RootNode(), []byte(src), opt)
 	if root == nil {
 		return &Program{}, nil
