@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"flag"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -42,14 +41,7 @@ func shouldUpdate() bool {
 	return f != nil && f.Value.String() == "true"
 }
 
-func ensureTreeSitter(t *testing.T) {
-	if _, err := exec.LookPath("tree-sitter"); err != nil {
-		t.Skip("tree-sitter not installed")
-	}
-}
-
 func TestInspect_Golden(t *testing.T) {
-	ensureTreeSitter(t)
 	root := repoRoot(t)
 	srcDir := filepath.Join(root, "tests", "transpiler", "x", "rs")
 	outDir := filepath.Join(root, "tests", "json-ast", "x", "rs")
