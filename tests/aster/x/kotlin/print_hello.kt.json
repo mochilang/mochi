@@ -1,0 +1,54 @@
+{
+  "root": {
+    "kind": "source_file",
+    "children": [
+      {
+        "kind": "function_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "main"
+          },
+          {
+            "kind": "function_body",
+            "children": [
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "call_expression",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "println"
+                      },
+                      {
+                        "kind": "value_arguments",
+                        "children": [
+                          {
+                            "kind": "value_argument",
+                            "children": [
+                              {
+                                "kind": "string_literal",
+                                "children": [
+                                  {
+                                    "kind": "string_content",
+                                    "text": "hello"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
