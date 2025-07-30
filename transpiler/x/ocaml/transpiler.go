@@ -754,9 +754,9 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 		for _, st := range fe.Body {
 			st.emit(w)
 		}
-		io.WriteString(w, "    with Continue -> ()) ")
+		io.WriteString(w, "    with Continue -> ()) (")
 		fe.Iterable.emit(w)
-		io.WriteString(w, " with Break -> ());\n")
+		io.WriteString(w, ") with Break -> ());\n")
 		return
 	}
 	io.WriteString(w, "  (try List.iter (fun ")
@@ -765,9 +765,9 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 	for _, st := range fe.Body {
 		st.emit(w)
 	}
-	io.WriteString(w, "    with Continue -> ()) ")
+	io.WriteString(w, "    with Continue -> ()) (")
 	fe.Iterable.emit(w)
-	io.WriteString(w, " with Break -> ());\n")
+	io.WriteString(w, ") with Break -> ());\n")
 }
 
 // UpdateStmt updates fields of items in a list of structs.
@@ -2182,6 +2182,11 @@ func (c *CastExpr) emit(w io.Writer) {
 		io.WriteString(w, "(Q.of_int (")
 		c.Expr.emit(w)
 		io.WriteString(w, "))")
+	case "big_to_rat":
+		usesBigRat = true
+		io.WriteString(w, "(Q.of_bigint ")
+		c.Expr.emit(w)
+		io.WriteString(w, ")")
 	case "big_to_int":
 		usesBigInt = true
 		io.WriteString(w, "Z.to_int ")
@@ -2247,6 +2252,11 @@ func (c *CastExpr) emitPrint(w io.Writer) {
 		io.WriteString(w, "Q.to_string (Q.of_int (")
 		c.Expr.emit(w)
 		io.WriteString(w, "))")
+	case "big_to_rat":
+		usesBigRat = true
+		io.WriteString(w, "Q.to_string (Q.of_bigint ")
+		c.Expr.emit(w)
+		io.WriteString(w, ")")
 	case "big_to_int":
 		usesBigInt = true
 		io.WriteString(w, "string_of_int (Z.to_int ")
@@ -2473,47 +2483,47 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		usesBigInt = true
 		switch b.Op {
 		case "+":
-			io.WriteString(w, "(Z.add ")
+			io.WriteString(w, "(Z.add (")
 			b.Left.emit(w)
-			io.WriteString(w, " ")
-			b.Right.emit(w)
-			io.WriteString(w, ")")
-		case "-":
-			io.WriteString(w, "(Z.sub ")
-			b.Left.emit(w)
-			io.WriteString(w, " ")
-			b.Right.emit(w)
-			io.WriteString(w, ")")
-		case "*":
-			io.WriteString(w, "(Z.mul ")
-			b.Left.emit(w)
-			io.WriteString(w, " ")
-			b.Right.emit(w)
-			io.WriteString(w, ")")
-		case "/":
-			io.WriteString(w, "(Z.div ")
-			b.Left.emit(w)
-			io.WriteString(w, " ")
-			b.Right.emit(w)
-			io.WriteString(w, ")")
-		case "%":
-			io.WriteString(w, "(Z.rem ")
-			b.Left.emit(w)
-			io.WriteString(w, " ")
-			b.Right.emit(w)
-			io.WriteString(w, ")")
-		case "==":
-			io.WriteString(w, "(Z.equal ")
-			b.Left.emit(w)
-			io.WriteString(w, " ")
-			b.Right.emit(w)
-			io.WriteString(w, ")")
-		case "!=":
-			io.WriteString(w, "(not (Z.equal ")
-			b.Left.emit(w)
-			io.WriteString(w, " ")
+			io.WriteString(w, ") (")
 			b.Right.emit(w)
 			io.WriteString(w, "))")
+		case "-":
+			io.WriteString(w, "(Z.sub (")
+			b.Left.emit(w)
+			io.WriteString(w, ") (")
+			b.Right.emit(w)
+			io.WriteString(w, "))")
+		case "*":
+			io.WriteString(w, "(Z.mul (")
+			b.Left.emit(w)
+			io.WriteString(w, ") (")
+			b.Right.emit(w)
+			io.WriteString(w, "))")
+		case "/":
+			io.WriteString(w, "(Z.div (")
+			b.Left.emit(w)
+			io.WriteString(w, ") (")
+			b.Right.emit(w)
+			io.WriteString(w, "))")
+		case "%":
+			io.WriteString(w, "(Z.rem (")
+			b.Left.emit(w)
+			io.WriteString(w, ") (")
+			b.Right.emit(w)
+			io.WriteString(w, "))")
+		case "==":
+			io.WriteString(w, "(Z.equal (")
+			b.Left.emit(w)
+			io.WriteString(w, ") (")
+			b.Right.emit(w)
+			io.WriteString(w, "))")
+		case "!=":
+			io.WriteString(w, "(not (Z.equal (")
+			b.Left.emit(w)
+			io.WriteString(w, ") (")
+			b.Right.emit(w)
+			io.WriteString(w, ")))")
 		case "<":
 			io.WriteString(w, "((Z.compare ")
 			b.Left.emit(w)
@@ -2550,41 +2560,41 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		usesBigRat = true
 		switch b.Op {
 		case "+":
-			io.WriteString(w, "(Q.add ")
+			io.WriteString(w, "(Q.add (")
 			b.Left.emit(w)
-			io.WriteString(w, " ")
-			b.Right.emit(w)
-			io.WriteString(w, ")")
-		case "-":
-			io.WriteString(w, "(Q.sub ")
-			b.Left.emit(w)
-			io.WriteString(w, " ")
-			b.Right.emit(w)
-			io.WriteString(w, ")")
-		case "*":
-			io.WriteString(w, "(Q.mul ")
-			b.Left.emit(w)
-			io.WriteString(w, " ")
-			b.Right.emit(w)
-			io.WriteString(w, ")")
-		case "/":
-			io.WriteString(w, "(Q.div ")
-			b.Left.emit(w)
-			io.WriteString(w, " ")
-			b.Right.emit(w)
-			io.WriteString(w, ")")
-		case "==":
-			io.WriteString(w, "(Q.equal ")
-			b.Left.emit(w)
-			io.WriteString(w, " ")
-			b.Right.emit(w)
-			io.WriteString(w, ")")
-		case "!=":
-			io.WriteString(w, "(not (Q.equal ")
-			b.Left.emit(w)
-			io.WriteString(w, " ")
+			io.WriteString(w, ") (")
 			b.Right.emit(w)
 			io.WriteString(w, "))")
+		case "-":
+			io.WriteString(w, "(Q.sub (")
+			b.Left.emit(w)
+			io.WriteString(w, ") (")
+			b.Right.emit(w)
+			io.WriteString(w, "))")
+		case "*":
+			io.WriteString(w, "(Q.mul (")
+			b.Left.emit(w)
+			io.WriteString(w, ") (")
+			b.Right.emit(w)
+			io.WriteString(w, "))")
+		case "/":
+			io.WriteString(w, "(Q.div (")
+			b.Left.emit(w)
+			io.WriteString(w, ") (")
+			b.Right.emit(w)
+			io.WriteString(w, "))")
+		case "==":
+			io.WriteString(w, "(Q.equal (")
+			b.Left.emit(w)
+			io.WriteString(w, ") (")
+			b.Right.emit(w)
+			io.WriteString(w, "))")
+		case "!=":
+			io.WriteString(w, "(not (Q.equal (")
+			b.Left.emit(w)
+			io.WriteString(w, ") (")
+			b.Right.emit(w)
+			io.WriteString(w, ")))")
 		case "<":
 			io.WriteString(w, "((Q.compare ")
 			b.Left.emit(w)
@@ -3026,6 +3036,8 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 				expr = &CastExpr{Expr: expr, Type: "big_to_int"}
 			} else if typ == "bigrat" && valTyp == "int" {
 				expr = &CastExpr{Expr: expr, Type: "int_to_rat"}
+			} else if typ == "bigrat" && valTyp == "bigint" {
+				expr = &CastExpr{Expr: expr, Type: "big_to_rat"}
 			}
 		} else if typ == "" {
 			return nil, fmt.Errorf("let without value not supported")
@@ -3090,6 +3102,8 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 				expr = &CastExpr{Expr: expr, Type: "big_to_int"}
 			} else if typ == "bigrat" && valTyp == "int" {
 				expr = &CastExpr{Expr: expr, Type: "int_to_rat"}
+			} else if typ == "bigrat" && valTyp == "bigint" {
+				expr = &CastExpr{Expr: expr, Type: "big_to_rat"}
 			}
 		}
 
@@ -3120,6 +3134,8 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			valExpr = &CastExpr{Expr: valExpr, Type: "obj_to_float"}
 		} else if info.typ == "string" && valTyp != "string" {
 			valExpr = &CastExpr{Expr: valExpr, Type: "obj_to_string"}
+		} else if info.typ == "bigrat" && valTyp == "bigint" {
+			valExpr = &CastExpr{Expr: valExpr, Type: "big_to_rat"}
 		}
 		if len(st.Assign.Field) > 0 && len(st.Assign.Index) == 0 {
 			key := &StringLit{Value: st.Assign.Field[0].Name}
