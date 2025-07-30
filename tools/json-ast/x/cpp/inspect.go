@@ -17,13 +17,20 @@ type Program struct {
 
 // Inspect parses the given C++ source code using tree-sitter and
 // returns its Program structure.
-func Inspect(src string) (*Program, error) {
+// Inspect parses the given C++ source code using tree-sitter and
+// returns its Program structure. Position information is omitted unless
+// opts.WithPositions is set to true.
+func Inspect(src string, opts ...Options) (*Program, error) {
 	parser := sitter.NewParser()
 	parser.SetLanguage(ts.GetLanguage())
 	tree, err := parser.ParseCtx(context.Background(), nil, []byte(src))
 	if err != nil {
 		return nil, fmt.Errorf("parse: %w", err)
 	}
-	root := convert(tree.RootNode(), []byte(src))
+	var o Options
+	if len(opts) > 0 {
+		o = opts[0]
+	}
+	root := convert(tree.RootNode(), []byte(src), o)
 	return &Program{Root: root}, nil
 }
