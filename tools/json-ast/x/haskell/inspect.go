@@ -14,7 +14,7 @@ import (
 var parseScript string
 
 type Program struct {
-	AST json.RawMessage `json:"ast"`
+	AST Node `json:"ast"`
 }
 
 // Inspect parses the given Haskell source code using runghc and
@@ -59,9 +59,9 @@ func Inspect(src string) (*Program, error) {
 		}
 		return nil, err
 	}
-	var raw json.RawMessage
-	if err := json.Unmarshal(out.Bytes(), &raw); err != nil {
+	var node Node
+	if err := json.Unmarshal(out.Bytes(), &node); err != nil {
 		return nil, err
 	}
-	return &Program{AST: raw}, nil
+	return &Program{AST: node}, nil
 }
