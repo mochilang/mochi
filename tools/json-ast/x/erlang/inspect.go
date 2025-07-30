@@ -13,14 +13,19 @@ type Program struct {
 	Root *Node `json:"root"`
 }
 
-// Inspect parses Erlang source code using tree-sitter and returns a Program.
-func Inspect(src string) (*Program, error) {
+// InspectWithOption parses Erlang source code using tree-sitter and returns a Program.
+func InspectWithOption(src string, opt Option) (*Program, error) {
 	parser := sitter.NewParser()
 	parser.SetLanguage(tserlang.GetLanguage())
 	tree, err := parser.ParseCtx(context.Background(), nil, []byte(src))
 	if err != nil {
 		return nil, fmt.Errorf("parse: %w", err)
 	}
-	root := convert(tree.RootNode(), []byte(src))
+	root := convert(tree.RootNode(), []byte(src), opt)
 	return &Program{Root: root}, nil
+}
+
+// Inspect parses Erlang source code using tree-sitter and returns a Program.
+func Inspect(src string) (*Program, error) {
+	return InspectWithOption(src, Option{})
 }
