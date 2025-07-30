@@ -1,0 +1,19 @@
+Number MDR  MP
+              123321   8   3
+                7739   8   3
+                 893   2   3
+              899998   0   2
+          -516078297 -516078297   0
+     277777788888899   0  11
+
+MDR: First
+  0: System.Int32[]
+  1: System.Int32[]
+  2: System.Int32[]
+  3: System.Int32[]
+  4: System.Int32[]
+  5: System.Int32[]
+  6: System.Int32[]
+  7: System.Int32[]
+  8: System.Int32[]
+  9: System.Int32[]

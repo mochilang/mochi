@@ -2242,6 +2242,21 @@ func (i *InvokeExpr) emit(w io.Writer) {
 
 func (m *MethodCallExpr) emit(w io.Writer) {
 	// Special handling for common container methods.
+	if id, ok := m.Target.(*IdentExpr); ok && id.Name == "stdout" && m.Name == "write" {
+		io.WriteString(w, "printf \"%s\" ")
+		arg := Expr(&CallExpr{Func: "string", Args: []Expr{m.Args[0]}})
+		if inferType(m.Args[0]) == "string" {
+			arg = m.Args[0]
+		}
+		if needsParen(arg) {
+			io.WriteString(w, "(")
+			arg.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			arg.emit(w)
+		}
+		return
+	}
 	switch m.Name {
 	case "keys":
 		if len(m.Args) == 0 {
@@ -3017,6 +3032,13 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		mutatedVars[st.Assign.Name] = true
 		t := inferType(e)
+		if t == "array" {
+			if app, ok := e.(*AppendExpr); ok {
+				if et := inferType(app.Elem); et != "" && et != "obj" {
+					t = et + " array"
+				}
+			}
+		}
 		if t != "" {
 			cur := varTypes[st.Assign.Name]
 			if cur == "" || cur == "array" || cur == "map" {
@@ -3445,6 +3467,46 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			list := &ListLit{Elems: elems}
 			concat := &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: " "}, list}}
 			return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{concat}}, nil
+		case "stdout.write":
+			if len(args) == 1 {
+				switch inferType(args[0]) {
+				case "bool":
+					b := &IfExpr{Cond: args[0], Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
+					return &CallExpr{Func: "printf \"%d\"", Args: []Expr{b}}, nil
+				case "int":
+					return &CallExpr{Func: "printf \"%d\"", Args: []Expr{args[0]}}, nil
+				case "float":
+					return &CallExpr{Func: "printf \"%.1f\"", Args: []Expr{args[0]}}, nil
+				case "array":
+					mapped := &CallExpr{Func: "Array.map string", Args: []Expr{args[0]}}
+					concat := &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: " "}, &CallExpr{Func: "Array.toList", Args: []Expr{mapped}}}}
+					wrapped := &BinaryExpr{Left: &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: concat}, Op: "+", Right: &StringLit{Value: "]"}}
+					return &CallExpr{Func: "printf \"%s\"", Args: []Expr{wrapped}}, nil
+				case "string":
+					return &CallExpr{Func: "printf \"%s\"", Args: []Expr{args[0]}}, nil
+				default:
+					return &CallExpr{Func: "printf \"%A\"", Args: []Expr{args[0]}}, nil
+				}
+			}
+			elems := make([]Expr, len(args))
+			for i, a := range args {
+				switch inferType(a) {
+				case "bool":
+					elems[i] = &CallExpr{Func: "sprintf \"%b\"", Args: []Expr{a}}
+				case "int":
+					elems[i] = &CallExpr{Func: "sprintf \"%d\"", Args: []Expr{a}}
+				case "float":
+					elems[i] = &CallExpr{Func: "sprintf \"%.1f\"", Args: []Expr{a}}
+				case "array":
+					mapped := &CallExpr{Func: "Array.map string", Args: []Expr{a}}
+					elems[i] = &BinaryExpr{Left: &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: " "}, &CallExpr{Func: "Array.toList", Args: []Expr{mapped}}}}}, Op: "+", Right: &StringLit{Value: "]"}}
+				default:
+					elems[i] = &CallExpr{Func: "sprintf \"%A\"", Args: []Expr{a}}
+				}
+			}
+			list := &ListLit{Elems: elems}
+			concat := &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: " "}, list}}
+			return &CallExpr{Func: "printf \"%s\"", Args: []Expr{concat}}, nil
 		case "parseIntStr":
 			useParseIntStr = true
 			if len(args) == 1 && !definedFuncs["parseIntStr"] {

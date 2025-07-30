@@ -1,4 +1,4 @@
-// Generated 2025-07-28 10:03 +0700
+// Generated 2025-07-31 00:10 +0700
 
 exception Return
 
@@ -86,7 +86,7 @@ and makeIndent (outline: string) (tab: int) =
     let mutable outline = outline
     let mutable tab = tab
     try
-        let lines: string array = Array.toList (outline.Split([|"\n"|], System.StringSplitOptions.None))
+        let mutable lines: string array = outline.Split([|"\n"|], System.StringSplitOptions.None)
         let mutable nodes: Map<string, obj> array = [||]
         for line in lines do
             let line2: string = trimLeftSpaces line
@@ -172,13 +172,13 @@ and toMarkup (n: Map<string, obj>) (cols: string array) (depth: int) =
         lines <- Array.append lines [|"{| class=\"wikitable\" style=\"text-align: center;\""|]
         let l1: string = "|-"
         lines <- Array.append lines [|l1|]
-        let span: int = countLeaves n
+        let mutable span: int = countLeaves n
         lines <- Array.append lines [|(((("| style=\"background: " + (cols.[0])) + " \" colSpan=") + (string span)) + " | ") + (unbox<string> (n.["name"]))|]
         lines <- Array.append lines [|l1|]
         let lvls: Map<string, obj> array array = nodesByDepth n depth
         let mutable lvl: int = 1
         while lvl < depth do
-            let nodes: Map<string, obj> array = lvls.[lvl]
+            let mutable nodes: Map<string, obj> array = lvls.[lvl]
             if (Seq.length nodes) = 0 then
                 lines <- Array.append lines [|"|  |"|]
             else
@@ -215,7 +215,7 @@ and main () =
         let blue: string = "#e6ffff;"
         let pink: string = "#ffeeff;"
         let cols: string array = [|yellow; orange; green; blue; pink|]
-        let nodes: Map<string, obj> array = makeIndent outline 4
+        let mutable nodes: Map<string, obj> array = makeIndent outline 4
         let mutable n = Map.ofList [("name", box ""); ("children", box [||])]
         toNest nodes 0 0 n
         printfn "%s" (toMarkup n cols 4)

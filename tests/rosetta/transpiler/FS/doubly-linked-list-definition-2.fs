@@ -1,4 +1,4 @@
-// Generated 2025-07-28 10:03 +0700
+// Generated 2025-07-31 00:10 +0700
 
 exception Return
 
@@ -33,7 +33,7 @@ and newNode (l: Map<string, obj>) (v: obj) =
     let mutable l = l
     let mutable v = v
     try
-        let id: int = int (l.["nextID"])
+        let mutable id: int = int (l.["nextID"])
         l <- Map.add "nextID" (box (id + 1)) l
         let mutable nodes: Map<int, Map<string, obj>> = unbox<Map<int, Map<string, obj>>> (l.["nodes"])
         let n = Map.ofList [("id", box id); ("value", box v); ("next", box 0); ("prev", box 0)]

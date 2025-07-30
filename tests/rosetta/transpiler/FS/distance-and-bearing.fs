@@ -1,4 +1,4 @@
-// Generated 2025-07-28 10:03 +0700
+// Generated 2025-07-31 00:10 +0700
 
 exception Return
 
@@ -167,7 +167,7 @@ and bearing (lat1: float) (lon1: float) (lat2: float) (lon2: float) =
         let dl: float = rad (lon2 - lon1)
         let y: float = (sinApprox dl) * (cosApprox phi2)
         let x: float = ((cosApprox phi1) * (sinApprox phi2)) - (((sinApprox phi1) * (cosApprox phi2)) * (cosApprox dl))
-        let br: float = deg (atan2Approx y x)
+        let mutable br: float = deg (atan2Approx y x)
         if br < (float 0) then
             br <- br + (float 360)
         __ret <- br

@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (299/491)
+## Rosetta Golden Test Checklist (319/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -276,57 +276,57 @@ This file is auto-generated from rosetta tests.
 | 269 | cyclops-numbers |   |  |  |
 | 270 | damm-algorithm | ✓ | 338µs | 57.3 KB |
 | 271 | date-format | ✓ | 225µs | 45.0 KB |
-| 272 | date-manipulation |   |  |  |
-| 273 | day-of-the-week |   |  |  |
-| 274 | de-bruijn-sequences |   |  |  |
-| 275 | deal-cards-for-freecell |   |  |  |
+| 272 | date-manipulation | ✓ | 213µs | 67.1 KB |
+| 273 | day-of-the-week | ✓ | 234µs | 47.8 KB |
+| 274 | de-bruijn-sequences | ✓ | 26.917ms | 114.7 KB |
+| 275 | deal-cards-for-freecell | ✓ | 244µs | 45.6 KB |
 | 276 | death-star |   |  |  |
-| 277 | deceptive-numbers |   |  |  |
-| 278 | deconvolution-1d-2 |   |  |  |
-| 279 | deconvolution-1d-3 |   |  |  |
-| 280 | deconvolution-1d |   |  |  |
+| 277 | deceptive-numbers | ✓ | 925µs | 58.1 KB |
+| 278 | deconvolution-1d-2 | ✓ | 301µs | 70.1 KB |
+| 279 | deconvolution-1d-3 | ✓ | 302µs | 73.6 KB |
+| 280 | deconvolution-1d | ✓ | 248µs | 49.6 KB |
 | 281 | deepcopy-1 |   |  |  |
 | 282 | define-a-primitive-data-type |   |  |  |
 | 283 | delegates |   |  |  |
-| 284 | demings-funnel |   |  |  |
-| 285 | department-numbers |   |  |  |
+| 284 | demings-funnel | ✓ | 297µs | 43.4 KB |
+| 285 | department-numbers | ✓ | 227µs | 45.0 KB |
 | 286 | descending-primes |   |  |  |
-| 287 | detect-division-by-zero |   |  |  |
-| 288 | determine-if-a-string-has-all-the-same-characters |   |  |  |
-| 289 | determine-if-a-string-has-all-unique-characters |   |  |  |
+| 287 | detect-division-by-zero | ✓ | 243µs | 52.5 KB |
+| 288 | determine-if-a-string-has-all-the-same-characters | ✓ | 252µs | 66.2 KB |
+| 289 | determine-if-a-string-has-all-unique-characters | ✓ | 254µs | 42.8 KB |
 | 290 | determine-if-a-string-is-collapsible |   |  |  |
-| 291 | determine-if-a-string-is-numeric-1 |   |  |  |
+| 291 | determine-if-a-string-is-numeric-1 | ✓ | 353µs | 56.3 KB |
 | 292 | determine-if-a-string-is-numeric-2 |   |  |  |
-| 293 | determine-if-a-string-is-squeezable |   |  |  |
-| 294 | determine-if-only-one-instance-is-running |   |  |  |
-| 295 | determine-if-two-triangles-overlap |   |  |  |
-| 296 | determine-sentence-type |   |  |  |
-| 297 | dice-game-probabilities-1 | ✓ | 8.525ms | 42.9 KB |
-| 298 | dice-game-probabilities-2 | ✓ | 507µs | 47.3 KB |
-| 299 | digital-root-multiplicative-digital-root |   |  |  |
+| 293 | determine-if-a-string-is-squeezable | ✓ | 241µs | 41.9 KB |
+| 294 | determine-if-only-one-instance-is-running | ✓ | 290µs | 49.8 KB |
+| 295 | determine-if-two-triangles-overlap | ✓ | 284µs | 66.9 KB |
+| 296 | determine-sentence-type | ✓ | 276µs | 72.9 KB |
+| 297 | dice-game-probabilities-1 | ✓ | 6.176ms | 48.0 KB |
+| 298 | dice-game-probabilities-2 | ✓ | 347µs | 52.6 KB |
+| 299 | digital-root-multiplicative-digital-root | ✓ | 1.035ms | 58.3 KB |
 | 300 | dijkstras-algorithm |   |  |  |
 | 301 | dinesmans-multiple-dwelling-problem | ✓ |  |  |
-| 302 | dining-philosophers-1 | ✓ | 332µs | 41.8 KB |
-| 303 | dining-philosophers-2 | ✓ | 338µs | 45.8 KB |
-| 304 | disarium-numbers | ✓ |  | 41.6 KB |
-| 305 | discordian-date | ✓ | 340µs | 50.5 KB |
-| 306 | display-a-linear-combination | ✓ | 349µs | 42.1 KB |
+| 302 | dining-philosophers-1 | ✓ | 228µs | 41.8 KB |
+| 303 | dining-philosophers-2 | ✓ | 224µs | 45.5 KB |
+| 304 | disarium-numbers | ✓ | 248.792ms | 41.6 KB |
+| 305 | discordian-date | ✓ | 237µs | 42.7 KB |
+| 306 | display-a-linear-combination | ✓ | 237µs | 42.1 KB |
 | 307 | display-an-outline-as-a-nested-table |   |  |  |
 | 308 | distance-and-bearing |   |  |  |
 | 309 | distributed-programming |   |  |  |
-| 310 | diversity-prediction-theorem | ✓ | 357µs | 61.9 KB |
-| 311 | dns-query |   |  |  |
-| 312 | documentation | ✓ | 20µs | 7.6 KB |
-| 313 | doomsday-rule | ✓ | 481µs | 53.0 KB |
-| 314 | dot-product | ✓ | 338µs | 59.7 KB |
+| 310 | diversity-prediction-theorem | ✓ | 246µs | 43.8 KB |
+| 311 | dns-query | ✓ | 5.762ms | 330.6 KB |
+| 312 | documentation | ✓ | 15µs |  |
+| 313 | doomsday-rule | ✓ | 332µs | 55.6 KB |
+| 314 | dot-product | ✓ | 229µs | 41.5 KB |
 | 315 | doubly-linked-list-definition-1 |   |  |  |
 | 316 | doubly-linked-list-definition-2 |   |  |  |
 | 317 | doubly-linked-list-element-definition |   |  |  |
 | 318 | doubly-linked-list-traversal |   |  |  |
-| 319 | dragon-curve | ✓ | 397µs | 53.8 KB |
-| 320 | draw-a-clock | ✓ | 344µs | 42.0 KB |
-| 321 | draw-a-cuboid | ✓ | 359µs | 69.7 KB |
-| 322 | draw-a-pixel-1 | ✓ | 863µs | 672.1 KB |
+| 319 | dragon-curve | ✓ | 299µs | 50.9 KB |
+| 320 | draw-a-clock | ✓ | 240µs | 53.1 KB |
+| 321 | draw-a-cuboid | ✓ | 253µs | 41.9 KB |
+| 322 | draw-a-pixel-1 | ✓ | 559µs | 677.4 KB |
 | 323 | draw-a-rotating-cube | ✓ | 515µs | 53.9 KB |
 | 324 | draw-a-sphere | ✓ | 789µs | 50.1 KB |
 | 325 | duffinian-numbers |   |  |  |
@@ -497,4 +497,4 @@ This file is auto-generated from rosetta tests.
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
 
-Last updated: 2025-07-30 21:41 +0700
+Last updated: 2025-07-31 00:10 +0700
