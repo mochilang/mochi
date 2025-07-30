@@ -5,19 +5,21 @@ import (
 	tscala "github.com/tree-sitter/tree-sitter-scala/bindings/go"
 )
 
-// Inspect parses Scala source code using tree-sitter and returns its AST.
-func Inspect(src string, opts ...bool) (*Program, error) {
-	includePos := false
+// Inspect parses Scala source code using tree-sitter and returns its AST.  By
+// default positional information is omitted from the resulting Program. Pass an
+// Option with WithPositions set to true to include it.
+func Inspect(src string, opts ...Option) (*Program, error) {
+	var withPos bool
 	if len(opts) > 0 {
-		includePos = opts[0]
+		withPos = opts[0].WithPositions
 	}
 	parser := sitter.NewParser()
 	parser.SetLanguage(sitter.NewLanguage(tscala.Language()))
-	tree := parser.Parse([]byte(src), nil)
-	n := convert(tree.RootNode(), []byte(src), includePos)
+	data := []byte(src)
+	tree := parser.Parse(data, nil)
+	n := convert(tree.RootNode(), data, withPos)
 	if n == nil {
 		return &Program{}, nil
 	}
-	cu := &CompilationUnit{*n}
-	return &Program{Root: cu}, nil
+	return &Program{Root: CompilationUnit{Node: *n}}, nil
 }

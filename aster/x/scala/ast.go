@@ -4,11 +4,9 @@ import (
 	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
-// Node represents a simplified Scala AST node converted from tree-sitter.
-//
-// Leaf nodes store their raw text in the Text field.  The positional fields
-// record line and column numbers using 1-based lines and 0-based columns
-// similar to tree-sitter's points.
+// Node represents a simplified Scala AST node converted from tree-sitter.  Only
+// leaf nodes that carry a textual value populate the Text field. Position
+// fields are omitted from the marshalled JSON when zero.
 type Node struct {
 	Kind     string  `json:"kind"`
 	Text     string  `json:"text,omitempty"`
@@ -19,25 +17,52 @@ type Node struct {
 	Children []*Node `json:"children,omitempty"`
 }
 
-// CompilationUnit mirrors the root of a Scala source file.
-type CompilationUnit struct{ Node }
+// Typed node aliases mirroring a subset of the Scala grammar.  Only node kinds
+// that appear in the golden tests are declared here so the resulting Program
+// exposes a more structured API without embedding the full grammar.
+type (
+	CompilationUnit    struct{ Node }
+	Comment            struct{ Node }
+	ImportDeclaration  struct{ Node }
+	NamespaceSelectors struct{ Node }
+	ObjectDefinition   struct{ Node }
+	TemplateBody       struct{ Node }
+	FunctionDefinition struct{ Node }
+	Parameters         struct{ Node }
+	Parameter          struct{ Node }
+	GenericType        struct{ Node }
+	TypeArguments      struct{ Node }
+	TypeIdentifier     struct{ Node }
+	Identifier         struct{ Node }
+	CallExpression     struct{ Node }
+	Arguments          struct{ Node }
+	Block              struct{ Node }
+	String             struct{ Node }
+	IntegerLiteral     struct{ Node }
+)
+
+// Option controls how the AST is generated.
+type Option struct {
+	// WithPositions requests inclusion of positional information when true.
+	WithPositions bool
+}
 
 // Program wraps a parsed Scala file for JSON serialization.
 type Program struct {
-	Root *CompilationUnit `json:"root"`
+	Root CompilationUnit `json:"root"`
 }
 
 // convert transforms a tree-sitter node into our Node representation.  Non-value
 // leaf nodes are skipped entirely so that the resulting JSON focuses on
 // meaningful tokens.
-func convert(n *sitter.Node, src []byte, pos bool) *Node {
+func convert(n *sitter.Node, src []byte, withPos bool) *Node {
 	if n == nil {
 		return nil
 	}
 	start := n.StartPosition()
 	end := n.EndPosition()
 	node := &Node{Kind: n.Kind()}
-	if pos {
+	if withPos {
 		node.Start = int(start.Row) + 1
 		node.StartCol = int(start.Column)
 		node.End = int(end.Row) + 1
@@ -53,7 +78,7 @@ func convert(n *sitter.Node, src []byte, pos bool) *Node {
 	}
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
-		child := convert(n.NamedChild(uint(i)), src, pos)
+		child := convert(n.NamedChild(uint(i)), src, withPos)
 		if child != nil {
 			node.Children = append(node.Children, child)
 		}

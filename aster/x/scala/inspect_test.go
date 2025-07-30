@@ -38,7 +38,7 @@ func repoRoot(t *testing.T) string {
 func TestInspect_Golden(t *testing.T) {
 	root := repoRoot(t)
 	srcDir := filepath.Join(root, "tests", "transpiler", "x", "scala")
-	outDir := filepath.Join(root, "tests", "json-ast", "x", "scala")
+	outDir := filepath.Join(root, "tests", "aster", "x", "scala")
 	os.MkdirAll(outDir, 0o755)
 
 	files, err := filepath.Glob(filepath.Join(srcDir, "*.scala"))
@@ -63,7 +63,7 @@ func TestInspect_Golden(t *testing.T) {
 				t.Fatalf("marshal: %v", err)
 			}
 			out = append(out, '\n')
-			goldenPath := filepath.Join(outDir, name+".scala.json")
+			goldenPath := filepath.Join(outDir, name+".LANGUAGE.json")
 			if *update {
 				if err := os.WriteFile(goldenPath, out, 0644); err != nil {
 					t.Fatalf("write golden: %v", err)
