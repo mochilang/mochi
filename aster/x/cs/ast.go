@@ -1,6 +1,6 @@
 package cs
 
-import sitter "github.com/smacker/go-tree-sitter"
+import sitter "github.com/tree-sitter/go-tree-sitter"
 
 // Node models a portion of the C# syntax tree as returned by tree-sitter.
 // Only leaves carrying a textual value populate the Text field. Position
@@ -56,10 +56,10 @@ func toNode(n *sitter.Node, src []byte, withPos bool) *Node {
 	if n == nil {
 		return nil
 	}
-	node := &Node{Kind: n.Type()}
+	node := &Node{Kind: n.Kind()}
 	if withPos {
-		sp := n.StartPoint()
-		ep := n.EndPoint()
+		sp := n.StartPosition()
+		ep := n.EndPosition()
 		node.Start = int(sp.Row) + 1
 		node.StartCol = int(sp.Column)
 		node.End = int(ep.Row) + 1
@@ -68,13 +68,13 @@ func toNode(n *sitter.Node, src []byte, withPos bool) *Node {
 
 	if n.NamedChildCount() == 0 {
 		if isValueNode(node.Kind) {
-			node.Text = n.Content(src)
+			node.Text = n.Utf8Text(src)
 		} else {
 			return nil
 		}
 	}
 
-	for i := 0; i < int(n.NamedChildCount()); i++ {
+	for i := uint(0); i < n.NamedChildCount(); i++ {
 		c := n.NamedChild(i)
 		if child := toNode(c, src, withPos); child != nil {
 			node.Children = append(node.Children, child)
