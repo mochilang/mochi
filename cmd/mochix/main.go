@@ -63,6 +63,34 @@ import (
 	tstranspiler "mochi/transpiler/x/ts"
 	zigt "mochi/transpiler/x/zig"
 
+	cast "mochi/aster/x/c"
+	cljast "mochi/aster/x/clj"
+	cppast "mochi/aster/x/cpp"
+	csast "mochi/aster/x/cs"
+	dartast "mochi/aster/x/dart"
+	elixirast "mochi/aster/x/elixir"
+	fsast "mochi/aster/x/fs"
+	goast "mochi/aster/x/go"
+	haskellast "mochi/aster/x/haskell"
+	hsast "mochi/aster/x/hs"
+	javaast "mochi/aster/x/java"
+	kotlinast "mochi/aster/x/kotlin"
+	luaast "mochi/aster/x/lua"
+	mochiins "mochi/aster/x/mochi"
+	ocamlast "mochi/aster/x/ocaml"
+	pasast "mochi/aster/x/pas"
+	phpast "mochi/aster/x/php"
+	plast "mochi/aster/x/pl"
+	prologast "mochi/aster/x/prolog"
+	pyast "mochi/aster/x/py"
+	rbast "mochi/aster/x/rb"
+	rktast "mochi/aster/x/rkt"
+	rsast "mochi/aster/x/rs"
+	scalaast "mochi/aster/x/scala"
+	schemeast "mochi/aster/x/scheme"
+	swiftast "mochi/aster/x/swift"
+	tsast "mochi/aster/x/ts"
+
 	"mochi/ast"
 	"mochi/interpreter"
 	"mochi/mcp"
@@ -143,6 +171,10 @@ type InferCmd struct {
 	Language string `arg:"positional,required" help:"Language (python|go)"`
 	Package  string `arg:"positional,required" help:"Package or module path"`
 	Format   string `arg:"-f,--format" default:"mochi" help:"Output format (json|mochi)"`
+}
+type InspectCmd struct {
+	Language string `arg:"positional,required" help:"Programming language"`
+	File     string `arg:"positional,required" help:"Source file ('-' for stdin)"`
 }
 type ServeCmd struct{}
 type CheatsheetCmd struct{}
@@ -468,6 +500,89 @@ func runInfer(cmd *InferCmd) error {
 	default:
 		return fmt.Errorf("unknown format: %s", cmd.Format)
 	}
+	return nil
+}
+
+func runInspect(cmd *InspectCmd) error {
+	var data []byte
+	var err error
+	if cmd.File == "-" {
+		data, err = io.ReadAll(os.Stdin)
+	} else {
+		data, err = os.ReadFile(cmd.File)
+	}
+	if err != nil {
+		return err
+	}
+	src := string(data)
+	lang := strings.ToLower(cmd.Language)
+	var prog any
+	switch lang {
+	case "c":
+		prog, err = cast.Inspect(src)
+	case "clj", "clojure":
+		prog, err = cljast.Inspect(src)
+	case "cpp", "c++":
+		prog, err = cppast.Inspect(src)
+	case "cs", "csharp":
+		prog, err = csast.Inspect(src, false)
+	case "dart":
+		prog, err = dartast.Inspect(src)
+	case "elixir", "ex":
+		prog, err = elixirast.Inspect(src, false)
+	case "fs", "fsharp":
+		prog, err = fsast.Inspect(src, false)
+	case "go":
+		prog, err = goast.Inspect(src)
+	case "haskell":
+		prog, err = haskellast.Inspect(src)
+	case "hs":
+		prog, err = hsast.Inspect(src)
+	case "java":
+		prog, err = javaast.Inspect(src)
+	case "kotlin", "kt":
+		prog, err = kotlinast.Inspect(src)
+	case "lua":
+		prog, err = luaast.Inspect(src)
+	case "mochi":
+		prog, err = mochiins.Inspect(src)
+	case "ocaml":
+		prog, err = ocamlast.Inspect(src)
+	case "pas", "pascal":
+		prog, err = pasast.Inspect(src)
+	case "php":
+		prog, err = phpast.Inspect(src, nil)
+	case "pl":
+		prog, err = plast.Inspect(src)
+	case "prolog":
+		prog, err = prologast.Inspect(src)
+	case "py", "python":
+		prog, err = pyast.Inspect(src, false)
+	case "rb", "ruby":
+		prog, err = rbast.Inspect(src)
+	case "rkt", "racket":
+		prog, err = rktast.Inspect(src, false)
+	case "rs", "rust":
+		prog, err = rsast.Inspect(src, false)
+	case "scala":
+		prog, err = scalaast.Inspect(src)
+	case "scheme":
+		prog, err = schemeast.Inspect(src)
+	case "swift":
+		prog, err = swiftast.Inspect(src)
+	case "ts", "typescript":
+		prog, err = tsast.Inspect(src)
+	default:
+		return fmt.Errorf("unknown language: %s", cmd.Language)
+	}
+	if err != nil {
+		return err
+	}
+	out, err := json.MarshalIndent(prog, "", "  ")
+	if err != nil {
+		return err
+	}
+	fmt.Println(string(out))
 	return nil
 }
 
@@ -919,6 +1034,7 @@ func newRootCmd() *cobra.Command {
 		newReplCmd(),
 		newLLMCmd(),
 		newInferCmd(),
+		newInspectCmd(),
 		newServeCmd(),
 		newCheatsheetCmd(),
 	)
@@ -1076,6 +1192,21 @@ func newInferCmd() *cobra.Command {
 		},
 	}
 	c.Flags().StringVarP(&ic.Format, "format", "f", "mochi", "Output format (json|mochi)")
+	return c
+}
+
+func newInspectCmd() *cobra.Command {
+	var ic InspectCmd
+	c := &cobra.Command{
+		Use:   "inspect <language> <file>",
+		Short: "Inspect a source file and print its AST as JSON",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ic.Language = args[0]
+			ic.File = args[1]
+			return runInspect(&ic)
+		},
+	}
 	return c
 }
 
