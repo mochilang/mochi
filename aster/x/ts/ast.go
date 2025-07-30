@@ -1,7 +1,7 @@
 package ts
 
 import (
-	sitter "github.com/smacker/go-tree-sitter"
+	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
 // IncludePositions controls whether Start/End position fields are populated.
@@ -33,10 +33,10 @@ func convertNode(n *sitter.Node, src []byte) *Node {
 	if n == nil {
 		return nil
 	}
-	start := n.StartPoint()
-	end := n.EndPoint()
+	start := n.StartPosition()
+	end := n.EndPosition()
 	node := Node{
-		Kind: n.Type(),
+		Kind: n.Kind(),
 	}
 	if IncludePositions {
 		node.Start = int(start.Row) + 1
@@ -47,13 +47,13 @@ func convertNode(n *sitter.Node, src []byte) *Node {
 
 	if n.NamedChildCount() == 0 {
 		if isValueNode(node.Kind) {
-			node.Text = n.Content(src)
+			node.Text = n.Utf8Text(src)
 		} else {
 			return nil
 		}
 	}
 
-	for i := 0; i < int(n.NamedChildCount()); i++ {
+	for i := uint(0); i < n.NamedChildCount(); i++ {
 		child := n.NamedChild(i)
 		if c := convertNode(child, src); c != nil {
 			node.Children = append(node.Children, *c)

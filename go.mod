@@ -26,6 +26,7 @@ require (
 	github.com/tree-sitter/tree-sitter-haskell v0.23.1
 	github.com/tree-sitter/tree-sitter-racket v0.24.7
 	github.com/tree-sitter/tree-sitter-scheme v0.24.7
+	github.com/tree-sitter/tree-sitter-typescript v0.23.2
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	github.com/yuin/gopher-lua v1.1.1
 	github.com/z7zmey/php-parser v0.7.2
