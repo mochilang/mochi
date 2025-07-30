@@ -1,0 +1,22 @@
+{
+  "root": {
+    "kind": "program",
+    "text": "main",
+    "children": [
+      {
+        "kind": "block",
+        "children": [
+          {
+            "kind": "writeln",
+            "children": [
+              {
+                "kind": "string",
+                "text": "hello"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
