@@ -1,0 +1,191 @@
+error: missing parameters for function definition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/first-class-functions-use-numbers-analogously.rs:53:24
+   |
+53 |     let mut mfs: Vec<fn> = vec![];
+   |                        ^
+   |
+help: add a parameter list
+   |
+53 |     let mut mfs: Vec<fn()> = vec![];
+   |                        ++
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/first-class-functions-use-numbers-analogously.rs:43:2
+   |
+43 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/first-class-functions-use-numbers-analogously.rs:62:2
+   |
+62 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/first-class-functions-use-numbers-analogously.rs:41:25
+   |
+41 |     let mut n1n2: f64 = (n1 * n2);
+   |                         ^       ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+41 -     let mut n1n2: f64 = (n1 * n2);
+41 +     let mut n1n2: f64 = n1 * n2;
+   |
+
+warning: unnecessary parentheses around block return value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/first-class-functions-use-numbers-analogously.rs:42:35
+   |
+42 |     return move |m: f64| -> f64 { (n1n2 * (m as f64)) }
+   |                                   ^                 ^
+   |
+help: remove these parentheses
+   |
+42 -     return move |m: f64| -> f64 { (n1n2 * (m as f64)) }
+42 +     return move |m: f64| -> f64 { n1n2 * (m as f64) }
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/first-class-functions-use-numbers-analogously.rs:49:22
+   |
+49 |     let mut z: f64 = (x + y);
+   |                      ^     ^
+   |
+help: remove these parentheses
+   |
+49 -     let mut z: f64 = (x + y);
+49 +     let mut z: f64 = x + y;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/first-class-functions-use-numbers-analogously.rs:50:23
+   |
+50 |     let mut zi: f64 = (1.0 / (x + y));
+   |                       ^             ^
+   |
+help: remove these parentheses
+   |
+50 -     let mut zi: f64 = (1.0 / (x + y));
+50 +     let mut zi: f64 = 1.0 / (x + y);
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/first-class-functions-use-numbers-analogously.rs:55:11
+   |
+55 |     while (i < (numbers.len() as i64)) {
+   |           ^                          ^
+   |
+help: remove these parentheses
+   |
+55 -     while (i < (numbers.len() as i64)) {
+55 +     while i < (numbers.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/first-class-functions-use-numbers-analogously.rs:57:13
+   |
+57 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+57 -         i = (i + 1);
+57 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/first-class-functions-use-numbers-analogously.rs:66:28
+   |
+66 |     let duration_us: i64 = ((_end - _start) / 1000);
+   |                            ^                      ^
+   |
+help: remove these parentheses
+   |
+66 -     let duration_us: i64 = ((_end - _start) / 1000);
+66 +     let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/first-class-functions-use-numbers-analogously.rs:67:29
+   |
+67 |     let memory_bytes: i64 = (_end_mem - _start_mem);
+   |                             ^                     ^
+   |
+help: remove these parentheses
+   |
+67 -     let memory_bytes: i64 = (_end_mem - _start_mem);
+67 +     let memory_bytes: i64 = _end_mem - _start_mem;
+   |
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/first-class-functions-use-numbers-analogously.rs:40:19
+   |
+40 |     fn multiplier(mut n1: f64, mut n2: f64) -> impl FnMut(f64) -> f64 {
+   |                   ----^^
+   |                   |
+   |                   help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/first-class-functions-use-numbers-analogously.rs:40:32
+   |
+40 |     fn multiplier(mut n1: f64, mut n2: f64) -> impl FnMut(f64) -> f64 {
+   |                                ----^^
+   |                                |
+   |                                help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/first-class-functions-use-numbers-analogously.rs:41:9
+   |
+41 |     let mut n1n2: f64 = (n1 * n2);
+   |         ----^^^^
+   |         |
+   |         help: remove this `mut`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/first-class-functions-use-numbers-analogously.rs:56:51
+   |
+40 |     fn multiplier(mut n1: f64, mut n2: f64) -> impl FnMut(f64) -> f64 {
+   |                                                ---------------------- the found opaque type
+...
+56 |         mfs = { let mut _v = mfs.clone(); _v.push(multiplier(numbers[i as usize], inverses[i as usize])); _v };
+   |                                              ---- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected fn pointer, found opaque type
+   |                                              |
+   |                                              arguments to this method are incorrect
+   |
+   = note: expected fn pointer `fn()`
+             found opaque type `impl FnMut(f64) -> f64`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
+
+error[E0061]: this function takes 0 arguments but 1 argument was supplied
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/first-class-functions-use-numbers-analogously.rs:60:24
+   |
+60 |         println!("{}", mf(1.0).to_string());
+   |                        ^^ --- unexpected argument of type `{float}`
+   |
+help: remove the extra argument
+   |
+60 -         println!("{}", mf(1.0).to_string());
+60 +         println!("{}", mf().to_string());
+   |
+
+error[E0599]: `()` doesn't implement `std::fmt::Display`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/first-class-functions-use-numbers-analogously.rs:60:32
+   |
+60 |         println!("{}", mf(1.0).to_string());
+   |                                ^^^^^^^^^ `()` cannot be formatted with the default formatter
+   |
+   = note: the following trait bounds were not satisfied:
+           `(): std::fmt::Display`
+           which is required by `(): ToString`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+
+error: aborting due to 4 previous errors; 13 warnings emitted
+
+Some errors have detailed explanations: E0061, E0308, E0599.
+For more information about an error, try `rustc --explain E0061`.

@@ -1,0 +1,412 @@
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:133:2
+    |
+133 | };
+    |  ^ help: remove this semicolon
+    |
+    = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:46:11
+   |
+46 |     while (i < n) {
+   |           ^     ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+46 -     while (i < n) {
+46 +     while i < n {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:50:15
+   |
+50 |         while (j < n) {
+   |               ^     ^
+   |
+help: remove these parentheses
+   |
+50 -         while (j < n) {
+50 +         while j < n {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:51:16
+   |
+51 |             if (i == j) {
+   |                ^      ^
+   |
+help: remove these parentheses
+   |
+51 -             if (i == j) {
+51 +             if i == j {
+   |
+
+warning: unnecessary parentheses around method argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:56:57
+   |
+56 |             nrow = { let mut _v = nrow.clone(); _v.push((0 - 1)); _v };
+   |                                                         ^     ^
+   |
+help: remove these parentheses
+   |
+56 -             nrow = { let mut _v = nrow.clone(); _v.push((0 - 1)); _v };
+56 +             nrow = { let mut _v = nrow.clone(); _v.push(0 - 1); _v };
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:57:17
+   |
+57 |             j = (j + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+57 -             j = (j + 1);
+57 +             j = j + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:61:13
+   |
+61 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+61 -         i = (i + 1);
+61 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:74:11
+   |
+74 |     while (k < n) {
+   |           ^     ^
+   |
+help: remove these parentheses
+   |
+74 -     while (k < n) {
+74 +     while k < n {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:76:15
+   |
+76 |         while (i < n) {
+   |               ^     ^
+   |
+help: remove these parentheses
+   |
+76 -         while (i < n) {
+76 +         while i < n {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:78:19
+   |
+78 |             while (j < n) {
+   |                   ^     ^
+   |
+help: remove these parentheses
+   |
+78 -             while (j < n) {
+78 +             while j < n {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:79:20
+   |
+79 |                 if ((dist[i as usize].clone()[k as usize] < INF) && (dist[k as usize].clone()[j as usize] < INF)) {
+   |                    ^                                                                                            ^
+   |
+help: remove these parentheses
+   |
+79 -                 if ((dist[i as usize].clone()[k as usize] < INF) && (dist[k as usize].clone()[j as usize] < INF)) {
+79 +                 if (dist[i as usize].clone()[k as usize] < INF) && (dist[k as usize].clone()[j as usize] < INF) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:80:40
+   |
+80 |                     let mut alt: i64 = (dist[i as usize].clone()[k as usize] + dist[k as usize].clone()[j as usize]);
+   |                                        ^                                                                           ^
+   |
+help: remove these parentheses
+   |
+80 -                     let mut alt: i64 = (dist[i as usize].clone()[k as usize] + dist[k as usize].clone()[j as usize]);
+80 +                     let mut alt: i64 = dist[i as usize].clone()[k as usize] + dist[k as usize].clone()[j as usize];
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:81:24
+   |
+81 |                     if (alt < dist[i as usize].clone()[j as usize]) {
+   |                        ^                                          ^
+   |
+help: remove these parentheses
+   |
+81 -                     if (alt < dist[i as usize].clone()[j as usize]) {
+81 +                     if alt < dist[i as usize].clone()[j as usize] {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:86:21
+   |
+86 |                 j = (j + 1);
+   |                     ^     ^
+   |
+help: remove these parentheses
+   |
+86 -                 j = (j + 1);
+86 +                 j = j + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:88:17
+   |
+88 |             i = (i + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+88 -             i = (i + 1);
+88 +             i = i + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:90:13
+   |
+90 |         k = (k + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+90 -         k = (k + 1);
+90 +         k = k + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:93:23
+   |
+93 |     let mut ui: i64 = (u - 1);
+   |                       ^     ^
+   |
+help: remove these parentheses
+   |
+93 -     let mut ui: i64 = (u - 1);
+93 +     let mut ui: i64 = u - 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:94:23
+   |
+94 |     let mut vi: i64 = (v - 1);
+   |                       ^     ^
+   |
+help: remove these parentheses
+   |
+94 -     let mut vi: i64 = (v - 1);
+94 +     let mut vi: i64 = v - 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:95:8
+   |
+95 |     if (next[ui as usize].clone()[vi as usize] == (0 - 1)) {
+   |        ^                                                 ^
+   |
+help: remove these parentheses
+   |
+95 -     if (next[ui as usize].clone()[vi as usize] == (0 - 1)) {
+95 +     if next[ui as usize].clone()[vi as usize] == (0 - 1) {
+   |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:100:11
+    |
+100 |     while (cur != vi) {
+    |           ^         ^
+    |
+help: remove these parentheses
+    |
+100 -     while (cur != vi) {
+100 +     while cur != vi {
+    |
+
+warning: unnecessary parentheses around method argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:102:47
+    |
+102 |         p = { let mut _v = p.clone(); _v.push((cur + 1)); _v };
+    |                                               ^       ^
+    |
+help: remove these parentheses
+    |
+102 -         p = { let mut _v = p.clone(); _v.push((cur + 1)); _v };
+102 +         p = { let mut _v = p.clone(); _v.push(cur + 1); _v };
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:110:11
+    |
+110 |     while (idx < (p.len() as i64)) {
+    |           ^                      ^
+    |
+help: remove these parentheses
+    |
+110 -     while (idx < (p.len() as i64)) {
+110 +     while idx < (p.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:117:15
+    |
+117 |         idx = (idx + 1);
+    |               ^       ^
+    |
+help: remove these parentheses
+    |
+117 -         idx = (idx + 1);
+117 +         idx = idx + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:123:11
+    |
+123 |     while (a < n) {
+    |           ^     ^
+    |
+help: remove these parentheses
+    |
+123 -     while (a < n) {
+123 +     while a < n {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:125:15
+    |
+125 |         while (b < n) {
+    |               ^     ^
+    |
+help: remove these parentheses
+    |
+125 -         while (b < n) {
+125 +         while b < n {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:126:16
+    |
+126 |             if (a != b) {
+    |                ^      ^
+    |
+help: remove these parentheses
+    |
+126 -             if (a != b) {
+126 +             if a != b {
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:127:258
+    |
+127 | ...s usize].clone()[b as usize].to_string()), "\t"), pathStr(path((a + 1), (b + 1)))));
+    |                                                                   ^     ^
+    |
+help: remove these parentheses
+    |
+127 -                 println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", (a + 1).to_string(), " -> "), (b + 1).to_string()), "\t"), dist[a as usize].clone()[b as usize].to_string()), "\t"), pathStr(path((a + 1), (b + 1)))));
+127 +                 println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", (a + 1).to_string(), " -> "), (b + 1).to_string()), "\t"), dist[a as usize].clone()[b as usize].to_string()), "\t"), pathStr(path(a + 1, (b + 1)))));
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:127:267
+    |
+127 | ...clone()[b as usize].to_string()), "\t"), pathStr(path((a + 1), (b + 1)))));
+    |                                                                   ^     ^
+    |
+help: remove these parentheses
+    |
+127 -                 println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", (a + 1).to_string(), " -> "), (b + 1).to_string()), "\t"), dist[a as usize].clone()[b as usize].to_string()), "\t"), pathStr(path((a + 1), (b + 1)))));
+127 +                 println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", (a + 1).to_string(), " -> "), (b + 1).to_string()), "\t"), dist[a as usize].clone()[b as usize].to_string()), "\t"), pathStr(path((a + 1), b + 1))));
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:129:17
+    |
+129 |             b = (b + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+129 -             b = (b + 1);
+129 +             b = b + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:131:13
+    |
+131 |         a = (a + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+131 -         a = (a + 1);
+131 +         a = a + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:137:28
+    |
+137 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+137 -     let duration_us: i64 = ((_end - _start) / 1000);
+137 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:138:29
+    |
+138 |     let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                             ^                     ^
+    |
+help: remove these parentheses
+    |
+138 -     let memory_bytes: i64 = (_end_mem - _start_mem);
+138 +     let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:113:17
+    |
+113 |             s = format!("{}{}", s, " -> ");
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+    |
+    = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:115:13
+    |
+115 |         s = format!("{}{}", s, x.to_string());
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+    |
+    = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm.rs:119:12
+    |
+106 |     let pathStr = move |p: Vec<i64>| -> String {
+    |                                         ------ expected `String` because of return type
+...
+119 |     return s.clone()
+    |            ^^-----^^
+    |            | |
+    |            | help: try using a conversion method: `to_string`
+    |            expected `String`, found `&str`
+
+error: aborting due to 3 previous errors; 32 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.

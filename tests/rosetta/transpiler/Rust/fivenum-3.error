@@ -1,0 +1,324 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:65:2
+   |
+65 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:72:2
+   |
+72 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:90:2
+   |
+90 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:91:48
+   |
+91 |         static mut g_x1: Vec<f64> = Vec::new();;
+   |                                                ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:92:48
+   |
+92 |         static mut g_x2: Vec<f64> = Vec::new();;
+   |                                                ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:93:48
+   |
+93 |         static mut g_x3: Vec<f64> = Vec::new();;
+   |                                                ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:50:17
+   |
+50 |     let mut n = (arr.len() as i64);
+   |                 ^                ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+50 -     let mut n = (arr.len() as i64);
+50 +     let mut n = arr.len() as i64;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:52:11
+   |
+52 |     while (i < n) {
+   |           ^     ^
+   |
+help: remove these parentheses
+   |
+52 -     while (i < n) {
+52 +     while i < n {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:54:15
+   |
+54 |         while (j < (n - 1)) {
+   |               ^           ^
+   |
+help: remove these parentheses
+   |
+54 -         while (j < (n - 1)) {
+54 +         while j < (n - 1) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:55:16
+   |
+55 |             if (arr[j as usize] > arr[(j + 1) as usize]) {
+   |                ^                                       ^
+   |
+help: remove these parentheses
+   |
+55 -             if (arr[j as usize] > arr[(j + 1) as usize]) {
+55 +             if arr[j as usize] > arr[(j + 1) as usize] {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:60:17
+   |
+60 |             j = (j + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+60 -             j = (j + 1);
+60 +             j = j + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:62:13
+   |
+62 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+62 -         i = (i + 1);
+62 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:68:8
+   |
+68 |     if (x > (i as f64)) {
+   |        ^              ^
+   |
+help: remove these parentheses
+   |
+68 -     if (x > (i as f64)) {
+68 +     if x > (i as f64) {
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:69:16
+   |
+69 |         return (i + 1)
+   |                ^     ^
+   |
+help: remove these parentheses
+   |
+69 -         return (i + 1)
+69 +         return i + 1
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:75:17
+   |
+75 |     let mut n = (arr.len() as i64);
+   |                 ^                ^
+   |
+help: remove these parentheses
+   |
+75 -     let mut n = (arr.len() as i64);
+75 +     let mut n = arr.len() as i64;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:76:25
+   |
+76 |     let mut half: i64 = ((n + 3) - ((n + 3) % 2));
+   |                         ^                       ^
+   |
+help: remove these parentheses
+   |
+76 -     let mut half: i64 = ((n + 3) - ((n + 3) % 2));
+76 +     let mut half: i64 = (n + 3) - ((n + 3) % 2);
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:77:23
+   |
+77 |     let mut n4: f64 = (((half / 2) as f64) / 2.0);
+   |                       ^                         ^
+   |
+help: remove these parentheses
+   |
+77 -     let mut n4: f64 = (((half / 2) as f64) / 2.0);
+77 +     let mut n4: f64 = ((half / 2) as f64) / 2.0;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:78:23
+   |
+78 |     let mut nf: f64 = (n as f64);
+   |                       ^        ^
+   |
+help: remove these parentheses
+   |
+78 -     let mut nf: f64 = (n as f64);
+78 +     let mut nf: f64 = n as f64;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:82:11
+   |
+82 |     while (idx < (d.len() as i64)) {
+   |           ^                      ^
+   |
+help: remove these parentheses
+   |
+82 -     while (idx < (d.len() as i64)) {
+82 +     while idx < (d.len() as i64) {
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:84:31
+   |
+84 |         let mut fl: i64 = int((de - 1.0));
+   |                               ^        ^
+   |
+help: remove these parentheses
+   |
+84 -         let mut fl: i64 = int((de - 1.0));
+84 +         let mut fl: i64 = int(de - 1.0);
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:85:33
+   |
+85 |         let mut cl: i64 = ceilf((de - 1.0));
+   |                                 ^        ^
+   |
+help: remove these parentheses
+   |
+85 -         let mut cl: i64 = ceilf((de - 1.0));
+85 +         let mut cl: i64 = ceilf(de - 1.0);
+   |
+
+warning: unnecessary parentheses around method argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:86:57
+   |
+86 |         result = { let mut _v = result.clone(); _v.push((0.5 * (arr[fl as usize] + arr[cl as usize]))); _v };
+   |                                                         ^                                           ^
+   |
+help: remove these parentheses
+   |
+86 -         result = { let mut _v = result.clone(); _v.push((0.5 * (arr[fl as usize] + arr[cl as usize]))); _v };
+86 +         result = { let mut _v = result.clone(); _v.push(0.5 * (arr[fl as usize] + arr[cl as usize])); _v };
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:87:15
+   |
+87 |         idx = (idx + 1);
+   |               ^       ^
+   |
+help: remove these parentheses
+   |
+87 -         idx = (idx + 1);
+87 +         idx = idx + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:99:32
+   |
+99 |         let duration_us: i64 = ((_end - _start) / 1000);
+   |                                ^                      ^
+   |
+help: remove these parentheses
+   |
+99 -         let duration_us: i64 = ((_end - _start) / 1000);
+99 +         let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:100:33
+    |
+100 |         let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                                 ^                     ^
+    |
+help: remove these parentheses
+    |
+100 -         let memory_bytes: i64 = (_end_mem - _start_mem);
+100 +         let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:67:26
+   |
+67 |     let mut i: i64 = int(x);
+   |                      --- ^ expected `i64`, found `f64`
+   |                      |
+   |                      arguments to this function are incorrect
+   |
+note: function defined here
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:37:4
+   |
+37 | fn int(x: i64) -> i64 { x }
+   |    ^^^ ------
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:84:31
+   |
+84 |         let mut fl: i64 = int((de - 1.0));
+   |                           --- ^^^^^^^^^^ expected `i64`, found `f64`
+   |                           |
+   |                           arguments to this function are incorrect
+   |
+note: function defined here
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:37:4
+   |
+37 | fn int(x: i64) -> i64 { x }
+   |    ^^^ ------
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:48:29
+   |
+48 |         unsafe fn sortFloat(mut xs: Vec<f64>) -> Vec<f64> {
+   |                             ----^^
+   |                             |
+   |                             help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:50:9
+   |
+50 |     let mut n = (arr.len() as i64);
+   |         ----^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fivenum-3.rs:56:21
+   |
+56 |                 let mut t: f64 = arr[j as usize];
+   |                     ----^
+   |                     |
+   |                     help: remove this `mut`
+
+error: aborting due to 2 previous errors; 28 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.

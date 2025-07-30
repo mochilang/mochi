@@ -1,0 +1,903 @@
+error[E0106]: missing lifetime specifier
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:140:78
+    |
+140 |     fn solve(mut board: Vec<Vec<i64>>, mut target: Vec<Vec<i64>>) -> HashMap<&str, Vec<i64>> {
+    |                                                                              ^ expected named lifetime parameter
+    |
+    = help: this function's return type contains a borrowed value, but there is no value for it to be borrowed from
+help: consider using the `'static` lifetime, but this is uncommon unless you're returning a borrowed value from a `const` or a `static`
+    |
+140 |     fn solve(mut board: Vec<Vec<i64>>, mut target: Vec<Vec<i64>>) -> HashMap<&'static str, Vec<i64>> {
+    |                                                                               +++++++
+help: instead, you are more likely to want to change one of the arguments to be borrowed...
+    |
+140 |     fn solve(mut board: &Vec<Vec<i64>>, mut target: &Vec<Vec<i64>>) -> HashMap<&str, Vec<i64>> {
+    |                         +                           +
+help: ...or alternatively, you might want to return an owned value
+    |
+140 -     fn solve(mut board: Vec<Vec<i64>>, mut target: Vec<Vec<i64>>) -> HashMap<&str, Vec<i64>> {
+140 +     fn solve(mut board: Vec<Vec<i64>>, mut target: Vec<Vec<i64>>) -> HashMap<String, Vec<i64>> {
+    |
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:59:2
+   |
+59 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:77:2
+   |
+77 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:92:2
+   |
+92 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:100:2
+    |
+100 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:108:2
+    |
+108 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:122:2
+    |
+122 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:139:2
+    |
+139 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:158:2
+    |
+158 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:179:2
+    |
+179 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:195:2
+    |
+195 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:222:2
+    |
+222 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:57:25
+   |
+57 |     let mut next: i64 = (((seed * 1664525) + 1013904223) % 2147483647);
+   |                         ^                                            ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+57 -     let mut next: i64 = (((seed * 1664525) + 1013904223) % 2147483647);
+57 +     let mut next: i64 = ((seed * 1664525) + 1013904223) % 2147483647;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:64:11
+   |
+64 |     while (i < n) {
+   |           ^     ^
+   |
+help: remove these parentheses
+   |
+64 -     while (i < n) {
+64 +     while i < n {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:67:15
+   |
+67 |         while (j < n) {
+   |               ^     ^
+   |
+help: remove these parentheses
+   |
+67 -         while (j < n) {
+67 +         while j < n {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:71:17
+   |
+71 |             j = (j + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+71 -             j = (j + 1);
+71 +             j = j + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:74:13
+   |
+74 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+74 -         i = (i + 1);
+74 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:81:11
+   |
+81 |     while (i < (b.len() as i64)) {
+   |           ^                    ^
+   |
+help: remove these parentheses
+   |
+81 -     while (i < (b.len() as i64)) {
+81 +     while i < (b.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:84:15
+   |
+84 |         while (j < (b[i as usize].clone().len() as i64)) {
+   |               ^                                        ^
+   |
+help: remove these parentheses
+   |
+84 -         while (j < (b[i as usize].clone().len() as i64)) {
+84 +         while j < (b[i as usize].clone().len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:86:17
+   |
+86 |             j = (j + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+86 -             j = (j + 1);
+86 +             j = j + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:89:13
+   |
+89 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+89 -         i = (i + 1);
+89 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:95:11
+   |
+95 |     while (j < (b[r as usize].clone().len() as i64)) {
+   |           ^                                        ^
+   |
+help: remove these parentheses
+   |
+95 -     while (j < (b[r as usize].clone().len() as i64)) {
+95 +     while j < (b[r as usize].clone().len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:96:37
+   |
+96 |         b[r as usize][j as usize] = (1 - b[r as usize].clone()[j as usize]);
+   |                                     ^                                     ^
+   |
+help: remove these parentheses
+   |
+96 -         b[r as usize][j as usize] = (1 - b[r as usize].clone()[j as usize]);
+96 +         b[r as usize][j as usize] = 1 - b[r as usize].clone()[j as usize];
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:97:13
+   |
+97 |         j = (j + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+97 -         j = (j + 1);
+97 +         j = j + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:103:11
+    |
+103 |     while (i < (b.len() as i64)) {
+    |           ^                    ^
+    |
+help: remove these parentheses
+    |
+103 -     while (i < (b.len() as i64)) {
+103 +     while i < (b.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:104:37
+    |
+104 |         b[i as usize][c as usize] = (1 - b[i as usize].clone()[c as usize]);
+    |                                     ^                                     ^
+    |
+help: remove these parentheses
+    |
+104 -         b[i as usize][c as usize] = (1 - b[i as usize].clone()[c as usize]);
+104 +         b[i as usize][c as usize] = 1 - b[i as usize].clone()[c as usize];
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:105:13
+    |
+105 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+105 -         i = (i + 1);
+105 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:111:11
+    |
+111 |     while (i < (a.len() as i64)) {
+    |           ^                    ^
+    |
+help: remove these parentheses
+    |
+111 -     while (i < (a.len() as i64)) {
+111 +     while i < (a.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:113:15
+    |
+113 |         while (j < (a[i as usize].clone().len() as i64)) {
+    |               ^                                        ^
+    |
+help: remove these parentheses
+    |
+113 -         while (j < (a[i as usize].clone().len() as i64)) {
+113 +         while j < (a[i as usize].clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:114:16
+    |
+114 |             if (a[i as usize].clone()[j as usize] != b[i as usize].clone()[j as usize]) {
+    |                ^                                                                      ^
+    |
+help: remove these parentheses
+    |
+114 -             if (a[i as usize].clone()[j as usize] != b[i as usize].clone()[j as usize]) {
+114 +             if a[i as usize].clone()[j as usize] != b[i as usize].clone()[j as usize] {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:117:17
+    |
+117 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+117 -             j = (j + 1);
+117 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:119:13
+    |
+119 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+119 -         i = (i + 1);
+119 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:125:17
+    |
+125 |     let mut n = (b.len() as i64);
+    |                 ^              ^
+    |
+help: remove these parentheses
+    |
+125 -     let mut n = (b.len() as i64);
+125 +     let mut n = b.len() as i64;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:127:11
+    |
+127 |     while (k < (2 * n)) {
+    |           ^           ^
+    |
+help: remove these parentheses
+    |
+127 -     while (k < (2 * n)) {
+127 +     while k < (2 * n) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:131:12
+    |
+131 |         if ((k % 2) == 0) {
+    |            ^            ^
+    |
+help: remove these parentheses
+    |
+131 -         if ((k % 2) == 0) {
+131 +         if (k % 2) == 0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:136:13
+    |
+136 |         k = (k + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+136 -         k = (k + 1);
+136 +         k = k + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:141:17
+    |
+141 |     let mut n = (board.len() as i64);
+    |                 ^                  ^
+    |
+help: remove these parentheses
+    |
+141 -     let mut n = (board.len() as i64);
+141 +     let mut n = board.len() as i64;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:145:11
+    |
+145 |     while (i < n) {
+    |           ^     ^
+    |
+help: remove these parentheses
+    |
+145 -     while (i < n) {
+145 +     while i < n {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:146:32
+    |
+146 |         let mut diff: i64 = if (board[i as usize].clone()[0 as usize] != target[i as usize].clone()[0 as usize]) { 1 } else { 0 };
+    |                                ^                                                                               ^
+    |
+help: remove these parentheses
+    |
+146 -         let mut diff: i64 = if (board[i as usize].clone()[0 as usize] != target[i as usize].clone()[0 as usize]) { 1 } else { 0 };
+146 +         let mut diff: i64 = if board[i as usize].clone()[0 as usize] != target[i as usize].clone()[0 as usize] { 1 } else { 0 };
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:148:13
+    |
+148 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+148 -         i = (i + 1);
+148 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:151:11
+    |
+151 |     while (j < n) {
+    |           ^     ^
+    |
+help: remove these parentheses
+    |
+151 -     while (j < n) {
+151 +     while j < n {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:152:32
+    |
+152 |         let mut diff: i64 = if (board[0 as usize].clone()[j as usize] != target[0 as usize].clone()[j as usize]) { 1 } else { 0 };
+    |                                ^                                                                               ^
+    |
+help: remove these parentheses
+    |
+152 -         let mut diff: i64 = if (board[0 as usize].clone()[j as usize] != target[0 as usize].clone()[j as usize]) { 1 } else { 0 };
+152 +         let mut diff: i64 = if board[0 as usize].clone()[j as usize] != target[0 as usize].clone()[j as usize] { 1 } else { 0 };
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:153:28
+    |
+153 |         let mut val: i64 = ((diff + row[0 as usize]) % 2);
+    |                            ^                            ^
+    |
+help: remove these parentheses
+    |
+153 -         let mut val: i64 = ((diff + row[0 as usize]) % 2);
+153 +         let mut val: i64 = (diff + row[0 as usize]) % 2;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:155:13
+    |
+155 |         j = (j + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+155 -         j = (j + 1);
+155 +         j = j + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:163:11
+    |
+163 |     while (i < (sol["row".as_str()].clone().len() as i64)) {
+    |           ^                                              ^
+    |
+help: remove these parentheses
+    |
+163 -     while (i < (sol["row".as_str()].clone().len() as i64)) {
+163 +     while i < (sol["row".as_str()].clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:164:12
+    |
+164 |         if (sol["row".as_str()].clone()[i as usize] == 1) {
+    |            ^                                            ^
+    |
+help: remove these parentheses
+    |
+164 -         if (sol["row".as_str()].clone()[i as usize] == 1) {
+164 +         if sol["row".as_str()].clone()[i as usize] == 1 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:166:21
+    |
+166 |             moves = (moves + 1);
+    |                     ^         ^
+    |
+help: remove these parentheses
+    |
+166 -             moves = (moves + 1);
+166 +             moves = moves + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:168:13
+    |
+168 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+168 -         i = (i + 1);
+168 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:171:11
+    |
+171 |     while (j < (sol["col".as_str()].clone().len() as i64)) {
+    |           ^                                              ^
+    |
+help: remove these parentheses
+    |
+171 -     while (j < (sol["col".as_str()].clone().len() as i64)) {
+171 +     while j < (sol["col".as_str()].clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:172:12
+    |
+172 |         if (sol["col".as_str()].clone()[j as usize] == 1) {
+    |            ^                                            ^
+    |
+help: remove these parentheses
+    |
+172 -         if (sol["col".as_str()].clone()[j as usize] == 1) {
+172 +         if sol["col".as_str()].clone()[j as usize] == 1 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:174:21
+    |
+174 |             moves = (moves + 1);
+    |                     ^         ^
+    |
+help: remove these parentheses
+    |
+174 -             moves = (moves + 1);
+174 +             moves = moves + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:176:13
+    |
+176 |         j = (j + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+176 -         j = (j + 1);
+176 +         j = j + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:182:11
+    |
+182 |     while (i < (b.len() as i64)) {
+    |           ^                    ^
+    |
+help: remove these parentheses
+    |
+182 -     while (i < (b.len() as i64)) {
+182 +     while i < (b.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:185:15
+    |
+185 |         while (j < (b[i as usize].clone().len() as i64)) {
+    |               ^                                        ^
+    |
+help: remove these parentheses
+    |
+185 -         while (j < (b[i as usize].clone().len() as i64)) {
+185 +         while j < (b[i as usize].clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:187:16
+    |
+187 |             if (j < ((b[i as usize].clone().len() as i64) - 1)) {
+    |                ^                                              ^
+    |
+help: remove these parentheses
+    |
+187 -             if (j < ((b[i as usize].clone().len() as i64) - 1)) {
+187 +             if j < ((b[i as usize].clone().len() as i64) - 1) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:190:17
+    |
+190 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+190 -             j = (j + 1);
+190 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:193:13
+    |
+193 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+193 -         i = (i + 1);
+193 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:226:28
+    |
+226 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+226 -     let duration_us: i64 = ((_end - _start) / 1000);
+226 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:227:29
+    |
+227 |     let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                             ^                     ^
+    |
+help: remove these parentheses
+    |
+227 -     let memory_bytes: i64 = (_end_mem - _start_mem);
+227 +     let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:163:27
+    |
+163 |     while (i < (sol["row".as_str()].clone().len() as i64)) {
+    |                           ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:164:23
+    |
+164 |         if (sol["row".as_str()].clone()[i as usize] == 1) {
+    |                       ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:171:27
+    |
+171 |     while (j < (sol["col".as_str()].clone().len() as i64)) {
+    |                           ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:172:23
+    |
+172 |         if (sol["col".as_str()].clone()[j as usize] == 1) {
+    |                       ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:200:27
+    |
+200 |     let mut target: i64 = res.f0.clone();
+    |                     ---   ^^^^^^^^^^^^^^ expected `i64`, found `Vec<Vec<i64>>`
+    |                     |
+    |                     expected due to this
+    |
+    = note: expected type `i64`
+             found struct `Vec<Vec<i64>>`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:202:46
+    |
+202 |     let mut board: Vec<Vec<i64>> = copyBoard(target.clone());
+    |                                    --------- ^^^^^^^^^^^^^^ expected `Vec<Vec<i64>>`, found `i64`
+    |                                    |
+    |                                    arguments to this function are incorrect
+    |
+    = note: expected struct `Vec<Vec<i64>>`
+                 found type `i64`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:78:8
+    |
+78  |     fn copyBoard(mut b: Vec<Vec<i64>>) -> Vec<Vec<i64>> {
+    |        ^^^^^^^^^ --------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:207:40
+    |
+207 |         if !boardsEqual(board.clone(), target.clone()) {
+    |             -----------                ^^^^^^^^^^^^^^ expected `Vec<Vec<i64>>`, found `i64`
+    |             |
+    |             arguments to this function are incorrect
+    |
+    = note: expected struct `Vec<Vec<i64>>`
+                 found type `i64`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:109:8
+    |
+109 |     fn boardsEqual(mut a: Vec<Vec<i64>>, mut b: Vec<Vec<i64>>) -> bool {
+    |        ^^^^^^^^^^^                       --------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:212:16
+    |
+212 |     printBoard(target.clone());
+    |     ---------- ^^^^^^^^^^^^^^ expected `Vec<Vec<i64>>`, found `i64`
+    |     |
+    |     arguments to this function are incorrect
+    |
+    = note: expected struct `Vec<Vec<i64>>`
+                 found type `i64`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:180:8
+    |
+180 |     fn printBoard(mut b: Vec<Vec<i64>>) {
+    |        ^^^^^^^^^^ --------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:215:65
+    |
+215 |     let mut sol: HashMap<&str, Vec<i64>> = solve(board.clone(), target.clone());
+    |                                            -----                ^^^^^^^^^^^^^^ expected `Vec<Vec<i64>>`, found `i64`
+    |                                            |
+    |                                            arguments to this function are incorrect
+    |
+    = note: expected struct `Vec<Vec<i64>>`
+                 found type `i64`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:140:8
+    |
+140 |     fn solve(mut board: Vec<Vec<i64>>, mut target: Vec<Vec<i64>>) -> HashMap<&str, Vec<i64>> {
+    |        ^^^^^                           -------------------------
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:56:16
+   |
+56 |     fn randInt(mut seed: i64, mut n: i64) -> Vec<i64> {
+   |                ----^^^^
+   |                |
+   |                help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:56:31
+   |
+56 |     fn randInt(mut seed: i64, mut n: i64) -> Vec<i64> {
+   |                               ----^
+   |                               |
+   |                               help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:57:9
+   |
+57 |     let mut next: i64 = (((seed * 1664525) + 1013904223) % 2147483647);
+   |         ----^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:60:17
+   |
+60 |     fn newBoard(mut n: i64, mut seed: i64) -> Ret {
+   |                 ----^
+   |                 |
+   |                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:60:29
+   |
+60 |     fn newBoard(mut n: i64, mut seed: i64) -> Ret {
+   |                             ----^^^^
+   |                             |
+   |                             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:68:17
+   |
+68 |             let mut r: Vec<i64> = randInt(s, 2);
+   |                 ----^
+   |                 |
+   |                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:78:18
+   |
+78 |     fn copyBoard(mut b: Vec<Vec<i64>>) -> Vec<Vec<i64>> {
+   |                  ----^
+   |                  |
+   |                  help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:93:38
+   |
+93 |     fn flipRow(mut b: Vec<Vec<i64>>, mut r: i64) -> Vec<Vec<i64>> {
+   |                                      ----^
+   |                                      |
+   |                                      help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:101:38
+    |
+101 |     fn flipCol(mut b: Vec<Vec<i64>>, mut c: i64) -> Vec<Vec<i64>> {
+    |                                      ----^
+    |                                      |
+    |                                      help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:109:20
+    |
+109 |     fn boardsEqual(mut a: Vec<Vec<i64>>, mut b: Vec<Vec<i64>>) -> bool {
+    |                    ----^
+    |                    |
+    |                    help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:109:42
+    |
+109 |     fn boardsEqual(mut a: Vec<Vec<i64>>, mut b: Vec<Vec<i64>>) -> bool {
+    |                                          ----^
+    |                                          |
+    |                                          help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:123:43
+    |
+123 |     fn shuffleBoard(mut b: Vec<Vec<i64>>, mut seed: i64) -> Ret {
+    |                                           ----^^^^
+    |                                           |
+    |                                           help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:125:9
+    |
+125 |     let mut n = (b.len() as i64);
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:128:13
+    |
+128 |         let mut r: Vec<i64> = randInt(s, n);
+    |             ----^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:130:13
+    |
+130 |         let mut idx: i64 = r[1 as usize];
+    |             ----^^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:159:22
+    |
+159 |     fn applySolution(mut b: Vec<Vec<i64>>, sol: &HashMap<String, Vec<i64>>) -> Ret {
+    |                      ----^
+    |                      |
+    |                      help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/flipping-bits-game.rs:180:19
+    |
+180 |     fn printBoard(mut b: Vec<Vec<i64>>) {
+    |                   ----^
+    |                   |
+    |                   help: remove this `mut`
+
+error: aborting due to 10 previous errors; 75 warnings emitted
+
+Some errors have detailed explanations: E0106, E0308, E0658.
+For more information about an error, try `rustc --explain E0106`.

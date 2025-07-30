@@ -1,0 +1,75 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flatten-a-list-1.rs:43:52
+   |
+43 |         static mut g_s: Vec<Vec<i64>> = Vec::new();;
+   |                                                    ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flatten-a-list-1.rs:48:32
+   |
+48 |         let duration_us: i64 = ((_end - _start) / 1000);
+   |                                ^                      ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+48 -         let duration_us: i64 = ((_end - _start) / 1000);
+48 +         let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flatten-a-list-1.rs:49:33
+   |
+49 |         let memory_bytes: i64 = (_end_mem - _start_mem);
+   |                                 ^                     ^
+   |
+help: remove these parentheses
+   |
+49 -         let memory_bytes: i64 = (_end_mem - _start_mem);
+49 +         let memory_bytes: i64 = _end_mem - _start_mem;
+   |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flatten-a-list-1.rs:40:29
+   |
+40 |         g_s = vec![vec![1], 2, vec![vec![3, 4], 5], vec![vec![vec![]]], vec![vec![vec![6]]], 7, 8, vec![]];
+   |                             ^ expected `Vec<i64>`, found integer
+   |
+   = note: expected struct `Vec<i64>`
+                found type `{integer}`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flatten-a-list-1.rs:40:37
+   |
+40 |         g_s = vec![vec![1], 2, vec![vec![3, 4], 5], vec![vec![vec![]]], vec![vec![vec![6]]], 7, 8, vec![]];
+   |                                     ^^^^^^^^^^ expected `i64`, found `Vec<{integer}>`
+   |
+   = note: expected type `i64`
+            found struct `Vec<{integer}>`
+   = note: this error originates in the macro `vec` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flatten-a-list-1.rs:40:58
+   |
+40 |         g_s = vec![vec![1], 2, vec![vec![3, 4], 5], vec![vec![vec![]]], vec![vec![vec![6]]], 7, 8, vec![]];
+   |                                                          ^^^^^^^^^^^^ expected `i64`, found `Vec<Vec<_>>`
+   |
+   = note: expected type `i64`
+            found struct `Vec<Vec<_>>`
+   = note: this error originates in the macro `vec` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/flatten-a-list-1.rs:40:78
+   |
+40 |         g_s = vec![vec![1], 2, vec![vec![3, 4], 5], vec![vec![vec![]]], vec![vec![vec![6]]], 7, 8, vec![]];
+   |                                                                              ^^^^^^^^^^^^^ expected `i64`, found `Vec<Vec<{integer}>>`
+   |
+   = note: expected type `i64`
+            found struct `Vec<Vec<{integer}>>`
+   = note: this error originates in the macro `vec` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: aborting due to 4 previous errors; 3 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.
