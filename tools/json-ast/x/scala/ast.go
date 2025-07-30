@@ -12,28 +12,36 @@ import (
 type Node struct {
 	Kind     string  `json:"kind"`
 	Text     string  `json:"text,omitempty"`
-	Start    int     `json:"start"`
-	StartCol int     `json:"startCol"`
-	End      int     `json:"end"`
-	EndCol   int     `json:"endCol"`
+	Start    int     `json:"start,omitempty"`
+	StartCol int     `json:"startCol,omitempty"`
+	End      int     `json:"end,omitempty"`
+	EndCol   int     `json:"endCol,omitempty"`
 	Children []*Node `json:"children,omitempty"`
+}
+
+// CompilationUnit mirrors the root of a Scala source file.
+type CompilationUnit struct{ Node }
+
+// Program wraps a parsed Scala file for JSON serialization.
+type Program struct {
+	Root *CompilationUnit `json:"root"`
 }
 
 // convert transforms a tree-sitter node into our Node representation.  Non-value
 // leaf nodes are skipped entirely so that the resulting JSON focuses on
 // meaningful tokens.
-func convert(n *sitter.Node, src []byte) *Node {
+func convert(n *sitter.Node, src []byte, pos bool) *Node {
 	if n == nil {
 		return nil
 	}
 	start := n.StartPoint()
 	end := n.EndPoint()
-	node := &Node{
-		Kind:     n.Type(),
-		Start:    int(start.Row) + 1,
-		StartCol: int(start.Column),
-		End:      int(end.Row) + 1,
-		EndCol:   int(end.Column),
+	node := &Node{Kind: n.Type()}
+	if pos {
+		node.Start = int(start.Row) + 1
+		node.StartCol = int(start.Column)
+		node.End = int(end.Row) + 1
+		node.EndCol = int(end.Column)
 	}
 
 	if n.NamedChildCount() == 0 {
@@ -45,7 +53,7 @@ func convert(n *sitter.Node, src []byte) *Node {
 	}
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
-		child := convert(n.NamedChild(i), src)
+		child := convert(n.NamedChild(i), src, pos)
 		if child != nil {
 			node.Children = append(node.Children, child)
 		}

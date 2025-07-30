@@ -8,19 +8,22 @@ import (
 	tscala "github.com/smacker/go-tree-sitter/scala"
 )
 
-// Program represents a parsed Scala source file.
-type Program struct {
-	Root *Node `json:"root"`
-}
-
 // Inspect parses Scala source code using tree-sitter and returns its AST.
-func Inspect(src string) (*Program, error) {
+func Inspect(src string, opts ...bool) (*Program, error) {
+	includePos := false
+	if len(opts) > 0 {
+		includePos = opts[0]
+	}
 	parser := sitter.NewParser()
 	parser.SetLanguage(tscala.GetLanguage())
 	tree, err := parser.ParseCtx(context.Background(), nil, []byte(src))
 	if err != nil {
 		return nil, fmt.Errorf("parse: %w", err)
 	}
-	root := convert(tree.RootNode(), []byte(src))
-	return &Program{Root: root}, nil
+	n := convert(tree.RootNode(), []byte(src), includePos)
+	if n == nil {
+		return &Program{}, nil
+	}
+	cu := &CompilationUnit{*n}
+	return &Program{Root: cu}, nil
 }
