@@ -7,7 +7,7 @@ type Node struct {
 	Kind     string  `json:"kind"`
 	Start    int     `json:"start"`
 	End      int     `json:"end"`
-	Value    string  `json:"value,omitempty"`
+	Text     string  `json:"text,omitempty"`
 	Children []*Node `json:"children,omitempty"`
 }
 
@@ -20,7 +20,9 @@ func toNode(n *sitter.Node, src []byte) *Node {
 		Kind:  n.Type(),
 		Start: int(n.StartByte()),
 		End:   int(n.EndByte()),
-		Value: n.Content(src),
+	}
+	if n.ChildCount() == 0 {
+		out.Text = n.Content(src)
 	}
 	for i := 0; i < int(n.NamedChildCount()); i++ {
 		child := n.NamedChild(i)
