@@ -4,30 +4,21 @@ import (
 	sitter "github.com/smacker/go-tree-sitter"
 )
 
-// Node represents a tree-sitter node in the Lua syntax tree.
+// Node is a minimal representation of a tree-sitter node. Only leaf nodes store
+// their source text in the Text field. Internal nodes simply record their kind
+// and children. This keeps the generated JSON small while still containing all
+// information required to fully reconstruct the syntax tree.
 type Node struct {
-	Type     string `json:"type"`
-	Value    string `json:"value,omitempty"`
-	Line     int    `json:"line"`
-	Col      int    `json:"col"`
-	EndLine  int    `json:"endLine"`
-	EndCol   int    `json:"endCol"`
+	Kind     string `json:"kind"`
+	Text     string `json:"text,omitempty"`
 	Children []Node `json:"children,omitempty"`
 }
 
 // convertNode converts a tree-sitter node to our Node representation.
 func convertNode(n *sitter.Node, src []byte) Node {
-	start := n.StartPoint()
-	end := n.EndPoint()
-	node := Node{
-		Type:    n.Type(),
-		Line:    int(start.Row) + 1,
-		Col:     int(start.Column),
-		EndLine: int(end.Row) + 1,
-		EndCol:  int(end.Column),
-	}
+	node := Node{Kind: n.Type()}
 	if n.ChildCount() == 0 {
-		node.Value = n.Content(src)
+		node.Text = n.Content(src)
 	}
 	for i := 0; i < int(n.NamedChildCount()); i++ {
 		child := n.NamedChild(i)
