@@ -1,7 +1,7 @@
 package kotlin
 
 import (
-	sitter "github.com/smacker/go-tree-sitter"
+    sitter "github.com/tree-sitter/go-tree-sitter"
 	"strings"
 )
 
@@ -61,15 +61,15 @@ func isValueLeaf(n *sitter.Node) bool {
 	if n.NamedChildCount() != 0 {
 		return false
 	}
-	switch n.Type() {
+    switch n.Kind() {
 	case "simple_identifier", "type_identifier", "integer_literal",
 		"string_literal", "string_content":
 		return true
 	}
-	if strings.HasSuffix(n.Type(), "_identifier") {
+    if strings.HasSuffix(n.Kind(), "_identifier") {
 		return true
 	}
-	if strings.HasSuffix(n.Type(), "_literal") {
+    if strings.HasSuffix(n.Kind(), "_literal") {
 		return true
 	}
 	return false
@@ -82,10 +82,10 @@ func convert(n *sitter.Node, src []byte, withPos bool) *Node {
 	if n == nil {
 		return nil
 	}
-	node := &Node{Kind: n.Type()}
-	if withPos {
-		start := n.StartPoint()
-		end := n.EndPoint()
+    node := &Node{Kind: n.Kind()}
+    if withPos {
+        start := n.StartPosition()
+        end := n.EndPosition()
 		node.Start = int(start.Row) + 1
 		node.StartCol = int(start.Column)
 		node.End = int(end.Row) + 1
@@ -93,8 +93,8 @@ func convert(n *sitter.Node, src []byte, withPos bool) *Node {
 	}
 
 	if n.NamedChildCount() == 0 {
-		if isValueLeaf(n) {
-			node.Text = n.Content(src)
+                if isValueLeaf(n) {
+                        node.Text = n.Utf8Text(src)
 		} else {
 			return nil
 		}

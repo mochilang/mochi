@@ -3,7 +3,7 @@ package lua
 import (
 	"strings"
 
-	sitter "github.com/smacker/go-tree-sitter"
+    sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
 // Node is a minimal representation of a tree-sitter node. Only leaf nodes store
@@ -50,9 +50,9 @@ type (
 // syntax leaves (keywords, punctuation) are dropped to keep the resulting JSON
 // compact.
 func convertNode(n *sitter.Node, src []byte, withPos bool) (Node, bool) {
-	start := n.StartPoint()
-	end := n.EndPoint()
-	node := Node{Kind: n.Type()}
+    start := n.StartPosition()
+    end := n.EndPosition()
+    node := Node{Kind: n.Kind()}
 	if withPos {
 		node.Start = int(start.Row) + 1
 		node.StartCol = int(start.Column)
@@ -60,11 +60,11 @@ func convertNode(n *sitter.Node, src []byte, withPos bool) (Node, bool) {
 		node.EndCol = int(end.Column)
 	}
 
-	if n.NamedChildCount() == 0 {
-		if !isValueNode(n.Type()) {
+        if n.NamedChildCount() == 0 {
+                if !isValueNode(n.Kind()) {
 			return Node{}, false
 		}
-		text := n.Content(src)
+                text := n.Utf8Text(src)
 		if strings.TrimSpace(text) == "" {
 			return Node{}, false
 		}

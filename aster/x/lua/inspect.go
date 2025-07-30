@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	sitter "github.com/smacker/go-tree-sitter"
-	tslua "github.com/smacker/go-tree-sitter/lua"
+    sitter "github.com/tree-sitter/go-tree-sitter"
+    tslua "github.com/tree-sitter/tree-sitter-lua/bindings/go"
 )
 
 // Program describes a parsed Lua source file.
