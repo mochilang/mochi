@@ -4,14 +4,26 @@ import sitter "github.com/smacker/go-tree-sitter"
 
 // Node represents a simplified AST node for Zig. Only nodes that carry some
 // semantic value are kept so that the resulting JSON is compact.
+// Node represents a simplified AST node for Zig. Only nodes that carry some
+// semantic value are kept so that the resulting JSON is compact. Position
+// fields are optional and omitted from the JSON when zero.
 type Node struct {
 	Kind     string `json:"kind"`
-	Start    int    `json:"start"`
-	End      int    `json:"end"`
-	StartCol int    `json:"startCol"`
-	EndCol   int    `json:"endCol"`
 	Text     string `json:"text,omitempty"`
+	Start    int    `json:"start,omitempty"`
+	End      int    `json:"end,omitempty"`
+	StartCol int    `json:"startCol,omitempty"`
+	EndCol   int    `json:"endCol,omitempty"`
 	Children []Node `json:"children,omitempty"`
+}
+
+// SourceFile is the root of a Zig program.
+type SourceFile struct{ Node }
+
+// Options control how the AST is produced.
+type Options struct {
+	// Positions includes line/column information when true.
+	Positions bool
 }
 
 // valueKinds lists tree-sitter node types that contain a textual value we want
@@ -29,15 +41,15 @@ var valueKinds = map[string]struct{}{
 
 // convertNode converts a tree-sitter node into a Node. It returns ok=false if
 // the node does not contain any semantic information and should be omitted.
-func convertNode(n *sitter.Node, src []byte) (node Node, ok bool) {
-	start := n.StartPoint()
-	end := n.EndPoint()
-	node = Node{
-		Kind:     n.Type(),
-		Start:    int(start.Row) + 1,
-		StartCol: int(start.Column),
-		End:      int(end.Row) + 1,
-		EndCol:   int(end.Column),
+func convertNode(n *sitter.Node, src []byte, withPos bool) (node Node, ok bool) {
+	node = Node{Kind: n.Type()}
+	if withPos {
+		start := n.StartPoint()
+		end := n.EndPoint()
+		node.Start = int(start.Row) + 1
+		node.StartCol = int(start.Column)
+		node.End = int(end.Row) + 1
+		node.EndCol = int(end.Column)
 	}
 
 	if n.NamedChildCount() == 0 {
@@ -54,7 +66,7 @@ func convertNode(n *sitter.Node, src []byte) (node Node, ok bool) {
 		if child == nil {
 			continue
 		}
-		if c, ok := convertNode(child, src); ok {
+		if c, ok := convertNode(child, src, withPos); ok {
 			node.Children = append(node.Children, c)
 		}
 	}
