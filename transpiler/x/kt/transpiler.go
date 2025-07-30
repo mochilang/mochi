@@ -747,11 +747,19 @@ func (c *CastExpr) emit(w io.Writer) {
 	}
 	switch c.Type {
 	case "int", "Int":
-		io.WriteString(w, ".toInt()")
+		if t := guessType(c.Value); t == "Any" || t == "Any?" {
+			io.WriteString(w, " as Int")
+		} else {
+			io.WriteString(w, ".toInt()")
+		}
 	case "float", "Double", "Double?":
 		io.WriteString(w, ".toDouble()")
 	case "Int?":
-		io.WriteString(w, ".toInt()")
+		if t := guessType(c.Value); t == "Any" || t == "Any?" {
+			io.WriteString(w, " as Int?")
+		} else {
+			io.WriteString(w, ".toInt()")
+		}
 	case "string":
 		io.WriteString(w, ".toString()")
 	case "BigInteger":
@@ -1600,7 +1608,12 @@ func (l *LenExpr) emit(w io.Writer) {
 	if l.IsString {
 		io.WriteString(w, ".length")
 	} else {
-		io.WriteString(w, ".size")
+		typ := guessType(l.Value)
+		if typ == "Any" || typ == "Any?" {
+			io.WriteString(w, ".toString().length")
+		} else {
+			io.WriteString(w, ".size")
+		}
 	}
 }
 
@@ -1733,8 +1746,14 @@ type SubstringExpr struct {
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
-	s.Value.emit(w)
-	io.WriteString(w, ".substring(")
+	if t := guessType(s.Value); t == "Any" || t == "Any?" {
+		io.WriteString(w, "(")
+		s.Value.emit(w)
+		io.WriteString(w, ").toString().substring(")
+	} else {
+		s.Value.emit(w)
+		io.WriteString(w, ".substring(")
+	}
 	if guessType(s.Start) == "BigInteger" {
 		io.WriteString(w, "(")
 		s.Start.emit(w)
