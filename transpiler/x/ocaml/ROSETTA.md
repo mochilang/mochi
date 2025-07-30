@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 160/493
+Completed programs: 193/493
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -20,9 +20,9 @@ Completed programs: 160/493
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 53.04s | 14.99GB |
 | 13 | 99-bottles-of-beer-2 | ✓ | 26.0ms | 4.91MB |
 | 14 | 99-bottles-of-beer | ✓ | 526.0µs | 22.48KB |
-| 15 | DNS-query | ✓ | 96.0µs | 256B |
-| 16 | Duffinian-numbers |   |  |  |
-| 17 | Find-if-a-point-is-within-a-triangle |   |  |  |
+| 15 | dns-query |   |  |  |
+| 16 | duffinian-numbers |   |  |  |
+| 17 | find-if-a-point-is-within-a-triangle | error |  |  |
 | 18 | a+b | ✓ | 105.0µs | 400B |
 | 19 | abbreviations-automatic | ✓ | 8.0ms | 999.22KB |
 | 20 | abbreviations-easy | ✓ | 3.0ms | 250.42KB |
@@ -405,56 +405,56 @@ Completed programs: 160/493
 | 397 | fairshare-between-two-and-more |   |  |  |
 | 398 | farey-sequence |   |  |  |
 | 399 | fast-fourier-transform |   |  |  |
-| 400 | fasta-format |   |  |  |
-| 401 | faulhabers-formula |   |  |  |
-| 402 | faulhabers-triangle |   |  |  |
-| 403 | feigenbaum-constant-calculation |   |  |  |
-| 404 | fermat-numbers |   |  |  |
-| 405 | fibonacci-n-step-number-sequences |   |  |  |
-| 406 | fibonacci-sequence-1 |   |  |  |
-| 407 | fibonacci-sequence-2 |   |  |  |
-| 408 | fibonacci-sequence-3 |   |  |  |
-| 409 | fibonacci-sequence-4 |   |  |  |
-| 410 | fibonacci-sequence-5 |   |  |  |
-| 411 | fibonacci-word-fractal |   |  |  |
-| 412 | fibonacci-word |   |  |  |
-| 413 | file-extension-is-in-extensions-list |   |  |  |
-| 414 | file-input-output-1 |   |  |  |
-| 415 | file-input-output-2 |   |  |  |
-| 416 | file-input-output-3 |   |  |  |
-| 417 | file-modification-time |   |  |  |
-| 418 | file-size-distribution |   |  |  |
-| 419 | file-size |   |  |  |
-| 420 | filter |   |  |  |
-| 421 | find-chess960-starting-position-identifier-2 |   |  |  |
-| 422 | find-chess960-starting-position-identifier |   |  |  |
-| 423 | find-common-directory-path |   |  |  |
-| 424 | find-duplicate-files |   |  |  |
-| 425 | find-if-a-point-is-within-a-triangle |   |  |  |
-| 426 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
-| 427 | find-limit-of-recursion |   |  |  |
-| 428 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
-| 429 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
-| 430 | find-the-intersection-of-two-lines |   |  |  |
-| 431 | find-the-last-sunday-of-each-month |   |  |  |
-| 432 | find-the-missing-permutation |   |  |  |
-| 433 | first-class-environments |   |  |  |
-| 434 | first-class-functions-use-numbers-analogously |   |  |  |
-| 435 | first-power-of-2-that-has-leading-decimal-digits-of-12 |   |  |  |
-| 436 | five-weekends |   |  |  |
-| 437 | fivenum-1 |   |  |  |
-| 438 | fivenum-2 |   |  |  |
-| 439 | fivenum-3 |   |  |  |
-| 440 | fixed-length-records-1 |   |  |  |
-| 441 | fixed-length-records-2 |   |  |  |
-| 442 | fizzbuzz-1 |   |  |  |
-| 443 | fizzbuzz-2 |   |  |  |
-| 444 | fizzbuzz |   |  |  |
-| 445 | flatten-a-list-1 |   |  |  |
-| 446 | flatten-a-list-2 |   |  |  |
-| 447 | flipping-bits-game |   |  |  |
-| 448 | flow-control-structures-1 |   |  |  |
-| 449 | flow-control-structures-2 |   |  |  |
+| 400 | fasta-format | ✓ | 45.0µs | 3.98KB |
+| 401 | faulhabers-formula | error |  |  |
+| 402 | faulhabers-triangle | error |  |  |
+| 403 | feigenbaum-constant-calculation | error |  |  |
+| 404 | fermat-numbers | error |  |  |
+| 405 | fibonacci-n-step-number-sequences | error |  |  |
+| 406 | fibonacci-sequence-1 | ✓ | 1.0µs | 208B |
+| 407 | fibonacci-sequence-2 | ✓ | 1.0µs | 208B |
+| 408 | fibonacci-sequence-3 | error |  |  |
+| 409 | fibonacci-sequence-4 | ✓ | 80.0µs | 1.68KB |
+| 410 | fibonacci-sequence-5 | error |  |  |
+| 411 | fibonacci-word-fractal | ✓ | 370.0µs | 119.05KB |
+| 412 | fibonacci-word | error |  |  |
+| 413 | file-extension-is-in-extensions-list | ✓ | 181.0µs | 10.09KB |
+| 414 | file-input-output-1 | ✓ | 11.0µs | 312B |
+| 415 | file-input-output-2 | ✓ | 16.0µs | 312B |
+| 416 | file-input-output-3 | error |  |  |
+| 417 | file-modification-time | ✓ | 66.0µs | 408B |
+| 418 | file-size-distribution | ✓ | 108.0µs | 8.52KB |
+| 419 | file-size | ✓ | 109.0µs | 328B |
+| 420 | filter | ✓ | 286.0µs | 41.29KB |
+| 421 | find-chess960-starting-position-identifier-2 | error |  |  |
+| 422 | find-chess960-starting-position-identifier | error |  |  |
+| 423 | find-common-directory-path | ✓ | 142.0µs | 22.24KB |
+| 424 | find-duplicate-files | ✓ | 24.0µs | 920B |
+| 425 | find-if-a-point-is-within-a-triangle | error |  |  |
+| 426 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 21.0ms | 1.25KB |
+| 427 | find-limit-of-recursion | ✓ | 1.0ms | 8.22KB |
+| 428 | find-palindromic-numbers-in-both-binary-and-ternary-bases | error |  |  |
+| 429 | find-the-intersection-of-a-line-with-a-plane | ✓ | 137.0µs | 2.72KB |
+| 430 | find-the-intersection-of-two-lines | ✓ | 115.0µs | 1.77KB |
+| 431 | find-the-last-sunday-of-each-month | ✓ | 79.0µs | 1.62KB |
+| 432 | find-the-missing-permutation | ✓ | 82.0µs | 16.90KB |
+| 433 | first-class-environments | ✓ | 1.0ms | 229.70KB |
+| 434 | first-class-functions-use-numbers-analogously | error |  |  |
+| 435 | first-power-of-2-that-has-leading-decimal-digits-of-12 | ✓ | 410.0µs | 5.78KB |
+| 436 | five-weekends | ✓ | 531.0µs | 56.04KB |
+| 437 | fivenum-1 | ✓ | 883.0µs | 147.70KB |
+| 438 | fivenum-2 | ✓ | 669.0µs | 110.88KB |
+| 439 | fivenum-3 | ✓ | 864.0µs | 150.85KB |
+| 440 | fixed-length-records-1 | ✓ | 82.0µs | 16.41KB |
+| 441 | fixed-length-records-2 | ✓ | 18.0µs | 344B |
+| 442 | fizzbuzz-1 | ✓ | 125.0µs | 1.03KB |
+| 443 | fizzbuzz-2 | error |  |  |
+| 444 | fizzbuzz | ✓ | 134.0µs | 1.03KB |
+| 445 | flatten-a-list-1 | ✓ | 100.0µs | 1.87KB |
+| 446 | flatten-a-list-2 | ✓ | 8.0µs | 208B |
+| 447 | flipping-bits-game | error |  |  |
+| 448 | flow-control-structures-1 | ✓ | 16.0µs | 208B |
+| 449 | flow-control-structures-2 | ✓ | 16.0µs | 208B |
 | 450 | flow-control-structures-3 |   |  |  |
 | 451 | flow-control-structures-4 |   |  |  |
 | 452 | floyd-warshall-algorithm |   |  |  |
@@ -499,4 +499,4 @@ Completed programs: 160/493
 | 491 | sorting-algorithms-bubble-sort |   |  |  |
 | 492 | window-management |   |  |  |
 | 493 | zumkeller-numbers |   |  |  |
-Last updated 2025-07-28 11:42 +0700
+Last updated 2025-07-30 14:16 UTC
