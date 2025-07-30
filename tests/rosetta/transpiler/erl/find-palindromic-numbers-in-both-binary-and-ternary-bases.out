@@ -1,0 +1,35 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/find-palindromic-numbers-in-both-binary-and-ternary-bases.erl:83:15: Warning: variable 'Neg_3' exported from 'case' (line 65, column 9)
+%   83| {B, I_4, N_3, Neg_3, ParseIntStr, S_2, Str, X_2} = Fun_2(B, I_3, N_2, Neg_3, ParseIntStr, S_2, Str, X_2),
+%     |               ^
+
+The first 6 numbers which are palindromic in both binary and ternary are :
+
+Decimal : 0
+Binary  : 0
+Ternary : 0
+
+Decimal : 1
+Binary  : 1
+Ternary : 1
+
+Decimal : 3
+Binary  : 11
+Ternary : 10
+
+Decimal : 9
+Binary  : 1001
+Ternary : 100
+
+Decimal : 27
+Binary  : 11011
+Ternary : 1000
+
+Decimal : 81
+Binary  : 1010001
+Ternary : 10000
+
+{
+  "duration_us": 24840,
+  "memory_bytes": 253936,
+  "name": "main"
+}

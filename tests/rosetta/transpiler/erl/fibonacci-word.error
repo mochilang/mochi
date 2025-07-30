@@ -1,0 +1,18 @@
+exit status 127
+/workspace/mochi/tests/rosetta/transpiler/erl/fibonacci-word.erl:78:36: Warning: evaluation of operator '/'/2 will fail with a 'badarith' exception
+%   78|             Hm_2 = (Hm + (C * (nil / nil))),
+%     |                                    ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/fibonacci-word.erl:84:15: Warning: evaluation of operator '/'/2 will fail with a 'badarith' exception
+%   84|         ((nil / nil) - (Hm_2 / L))
+%     |               ^
+
+  N   Length  Entropy      Word
+escript: exception error: an error occurred when evaluating an arithmetic expression
+  in operator  +/2
+     called as "1" + 1
+  in call from main:'-entropy/1-Fun_2_loop/5-1-'/5 (/workspace/mochi/tests/rosetta/transpiler/erl/fibonacci-word.erl, line 77)
+  in call from main:entropy/1 (/workspace/mochi/tests/rosetta/transpiler/erl/fibonacci-word.erl, line 82)
+  in call from main:'-main/0-Fun_4_loop/1-0-'/1 (/workspace/mochi/tests/rosetta/transpiler/erl/fibonacci-word.erl, line 115)
+  in call from main:main/0 (/workspace/mochi/tests/rosetta/transpiler/erl/fibonacci-word.erl, line 121)
+  in call from main:main/1 (/workspace/mochi/tests/rosetta/transpiler/erl/fibonacci-word.erl, line 207)

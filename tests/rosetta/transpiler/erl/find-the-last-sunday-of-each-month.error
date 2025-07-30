@@ -1,0 +1,12 @@
+exit status 127
+Last Sundays of each month of 2021
+==================================
+escript: exception error: an error occurred when evaluating an arithmetic expression
+  in operator  rem/2
+     called as 8.449999999999989 rem 7
+  in call from main:zeller/3 (/workspace/mochi/tests/rosetta/transpiler/erl/find-the-last-sunday-of-each-month.erl, line 68)
+  in call from main:'-lastsunday/2-Fun_loop/3-0-'/3 (/workspace/mochi/tests/rosetta/transpiler/erl/find-the-last-sunday-of-each-month.erl, line 75)
+  in call from main:lastsunday/2 (/workspace/mochi/tests/rosetta/transpiler/erl/find-the-last-sunday-of-each-month.erl, line 82)
+  in call from main:'-main/0-Fun_2_loop/2-0-'/2 (/workspace/mochi/tests/rosetta/transpiler/erl/find-the-last-sunday-of-each-month.erl, line 101)
+  in call from main:main/0 (/workspace/mochi/tests/rosetta/transpiler/erl/find-the-last-sunday-of-each-month.erl, line 108)
+  in call from main:main/1 (/workspace/mochi/tests/rosetta/transpiler/erl/find-the-last-sunday-of-each-month.erl, line 115)

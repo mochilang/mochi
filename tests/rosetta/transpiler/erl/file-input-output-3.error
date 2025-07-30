@@ -1,0 +1,11 @@
+exit status 127
+escript: exception error: bad argument
+  in operator  ++/2
+     called as 101 ++ 120
+  in call from main:'-copyfile/2-Fun_loop/4-0-'/4 (/workspace/mochi/tests/rosetta/transpiler/erl/file-input-output-3.erl, line 35)
+  in call from main:copyfile/2 (/workspace/mochi/tests/rosetta/transpiler/erl/file-input-output-3.erl, line 39)
+  in call from main:main/0 (/workspace/mochi/tests/rosetta/transpiler/erl/file-input-output-3.erl, line 48)
+  in call from main:main/1 (/workspace/mochi/tests/rosetta/transpiler/erl/file-input-output-3.erl, line 57)
+  in call from escript:run/2 (escript.erl, line 904)
+  in call from escript:start/1 (escript.erl, line 418)
+  in call from init:start_it/1 

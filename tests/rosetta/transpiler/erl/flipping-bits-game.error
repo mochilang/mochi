@@ -1,0 +1,12 @@
+exit status 127
+escript: exception error: bad argument
+  in function  length/1
+     called as length({[[0,1,1],[1,1,1],[0,0,0]],[[0,1,1],[1,1,1],[0,0,0]]})
+     *** argument 1: not a list
+  in call from main:'-flipcol/2-Fun_6_loop/3-0-'/3 (/workspace/mochi/tests/rosetta/transpiler/erl/flipping-bits-game.erl, line 136)
+  in call from main:flipcol/2 (/workspace/mochi/tests/rosetta/transpiler/erl/flipping-bits-game.erl, line 146)
+  in call from main:'-shuffleboard/2-Fun_9_loop/5-0-'/5 (/workspace/mochi/tests/rosetta/transpiler/erl/flipping-bits-game.erl, line 193)
+  in call from main:shuffleboard/2 (/workspace/mochi/tests/rosetta/transpiler/erl/flipping-bits-game.erl, line 201)
+  in call from main:'-main/0-Fun_16_loop/5-0-'/5 (/workspace/mochi/tests/rosetta/transpiler/erl/flipping-bits-game.erl, line 332)
+  in call from main:main/0 (/workspace/mochi/tests/rosetta/transpiler/erl/flipping-bits-game.erl, line 347)
+  in call from main:main/1 (/workspace/mochi/tests/rosetta/transpiler/erl/flipping-bits-game.erl, line 365)
