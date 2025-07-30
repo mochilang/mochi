@@ -15,6 +15,7 @@ require (
 	github.com/marcboeker/go-duckdb v1.8.5
 	github.com/mark3labs/mcp-go v0.36.0
 	github.com/mattn/go-sqlite3 v1.14.28
+	github.com/slimsag/tree-sitter-zig/bindings/go v0.0.0-20220513090138-e3dbdff9d013
 	github.com/smacker/go-tree-sitter v0.0.0-20240827094217-dd81d9e9be82
 	github.com/spf13/cobra v1.9.1
 	github.com/stretchr/testify v1.10.0
@@ -57,7 +58,6 @@ require (
 	github.com/mailru/easyjson v0.9.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/mattn/go-pointer v0.0.1 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
 	github.com/muesli/mango v0.2.0 // indirect
@@ -72,11 +72,11 @@ require (
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/sasha-s/go-deadlock v0.3.5 // indirect
 	github.com/segmentio/ksuid v1.0.4 // indirect
-	github.com/slimsag/tree-sitter-zig/bindings/go v0.0.0-20220513090138-e3dbdff9d013 // indirect
 	github.com/sourcegraph/jsonrpc2 v0.2.1 // indirect
 	github.com/spf13/cast v1.9.2 // indirect
 	github.com/spf13/pflag v1.0.7 // indirect
 	github.com/tliron/kutil v0.3.27 // indirect
+	github.com/tree-sitter/tree-sitter-fsharp v0.1.0 // indirect
 	github.com/wk8/go-ordered-map/v2 v2.1.8 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
@@ -94,3 +94,5 @@ require (
 replace mochi/tools/any2mochi => ./archived/tools/any2mochi
 
 replace github.com/tree-sitter/tree-sitter-racket => ./third_party/tree-sitter-racket
+
+replace github.com/tree-sitter/tree-sitter-fsharp => github.com/ionide/tree-sitter-fsharp v0.1.0
