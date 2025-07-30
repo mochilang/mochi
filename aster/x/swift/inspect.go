@@ -3,10 +3,10 @@
 package swift
 
 import (
-	"encoding/json"
+    "encoding/json"
 
-	sitter "github.com/tree-sitter/go-tree-sitter"
-	tsswift "github.com/tree-sitter/tree-sitter-swift/bindings/go"
+    sitter "github.com/tree-sitter/go-tree-sitter"
+    tsswift "github.com/smacker/go-tree-sitter/swift"
 )
 
 // Program represents a parsed Swift source file.
