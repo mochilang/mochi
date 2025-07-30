@@ -16,6 +16,7 @@ import (
 var (
 	extraDecls     []*DataClass
 	extraUnions    []*SumType
+	extraAliases   []*TypeAlias
 	helperSnippets map[string]string
 	extraHelpers   []string
 	helpersUsed    map[string]bool
@@ -217,6 +218,7 @@ func HasFuncRet(name string) bool {
 type Program struct {
 	Structs []*DataClass
 	Unions  []*SumType
+	Aliases []*TypeAlias
 	Funcs   []*FuncDef
 	Globals []Stmt
 	Stmts   []Stmt
@@ -312,6 +314,12 @@ type SumType struct {
 	Variants []*DataClass
 }
 
+// TypeAlias represents `typealias Name = ...` declarations.
+type TypeAlias struct {
+	Name string
+	Type string
+}
+
 func (u *SumType) emit(w io.Writer, indentLevel int) {
 	indent(w, indentLevel)
 	io.WriteString(w, "sealed class "+u.Name+"\n")
@@ -374,6 +382,11 @@ func (d *DataClass) emit(w io.Writer, indentLevel int) {
 	if d.Extends != "" {
 		io.WriteString(w, " : "+d.Extends+"()")
 	}
+}
+
+func (t *TypeAlias) emit(w io.Writer, indentLevel int) {
+	indent(w, indentLevel)
+	io.WriteString(w, "typealias "+t.Name+" = "+t.Type)
 }
 
 func (f *FuncDef) emit(w io.Writer, indentLevel int) {
@@ -2651,6 +2664,7 @@ func handleImport(env *types.Env, im *parser.ImportStmt) bool {
 func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	extraDecls = nil
 	extraUnions = nil
+	extraAliases = nil
 	extraHelpers = nil
 	helpersUsed = map[string]bool{}
 	localFuncs = map[string]bool{}
@@ -2939,7 +2953,18 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 		case st.Continue != nil:
 			p.Stmts = append(p.Stmts, &ContinueStmt{})
 		case st.Type != nil:
-			if len(st.Type.Variants) > 0 {
+			if st.Type.Alias != nil {
+				typ := kotlinTypeFromType(types.ResolveTypeRef(st.Type.Alias, env))
+				extraAliases = append(extraAliases, &TypeAlias{Name: st.Type.Name, Type: typ})
+			} else if len(st.Type.Variants) == 1 && len(st.Type.Variants[0].Fields) == 0 {
+				vname := st.Type.Variants[0].Name
+				tref := &parser.TypeRef{Simple: &vname}
+				typ := kotlinTypeFromType(types.ResolveTypeRef(tref, env))
+				if typ == "" {
+					typ = vname
+				}
+				extraAliases = append(extraAliases, &TypeAlias{Name: st.Type.Name, Type: typ})
+			} else if len(st.Type.Variants) > 0 {
 				var variants []*DataClass
 				for _, v := range st.Type.Variants {
 					stv, _ := env.GetStruct(v.Name)
@@ -2979,6 +3004,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	}
 	p.Structs = extraDecls
 	p.Unions = extraUnions
+	p.Aliases = extraAliases
 	p.Helpers = extraHelpers
 	return p, nil
 }
@@ -3438,7 +3464,18 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 		case s.Continue != nil:
 			out = append(out, &ContinueStmt{})
 		case s.Type != nil:
-			if len(s.Type.Variants) > 0 {
+			if s.Type.Alias != nil {
+				typ := kotlinTypeFromType(types.ResolveTypeRef(s.Type.Alias, env))
+				extraAliases = append(extraAliases, &TypeAlias{Name: s.Type.Name, Type: typ})
+			} else if len(s.Type.Variants) == 1 && len(s.Type.Variants[0].Fields) == 0 {
+				vname := s.Type.Variants[0].Name
+				tref := &parser.TypeRef{Simple: &vname}
+				typ := kotlinTypeFromType(types.ResolveTypeRef(tref, env))
+				if typ == "" {
+					typ = vname
+				}
+				extraAliases = append(extraAliases, &TypeAlias{Name: s.Type.Name, Type: typ})
+			} else if len(s.Type.Variants) > 0 {
 				var variants []*DataClass
 				for _, v := range s.Type.Variants {
 					st, _ := env.GetStruct(v.Name)
@@ -5095,6 +5132,10 @@ func Emit(prog *Program) []byte {
 	}
 	for _, u := range prog.Unions {
 		u.emit(&buf, 0)
+	}
+	for _, a := range prog.Aliases {
+		a.emit(&buf, 0)
+		buf.WriteString("\n")
 	}
 	for _, d := range prog.Structs {
 		d.emit(&buf, 0)
