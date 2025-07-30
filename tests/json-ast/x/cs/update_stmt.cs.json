@@ -1,108 +1,107 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "Person",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 4,
-      "EndLine": 9,
-      "Fields": [
+      "name": "Person",
+      "kind": "struct",
+      "access": "",
+      "startline": 4,
+      "endline": 9,
+      "fields": [
         {
-          "Name": "name",
-          "Type": "string",
-          "Access": "public",
-          "Line": 5,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "name",
+          "type": "string",
+          "access": "public",
+          "line": 5,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "age",
-          "Type": "int",
-          "Access": "public",
-          "Line": 6,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "age",
+          "type": "int",
+          "access": "public",
+          "line": 6,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "status",
-          "Type": "string",
-          "Access": "public",
-          "Line": 7,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "status",
+          "type": "string",
+          "access": "public",
+          "line": 7,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 8,
-          "EndLine": 8,
-          "Doc": ""
+          "startline": 8,
+          "endline": 8,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 10,
-      "EndLine": 24,
-      "Fields": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 10,
+      "endline": 24,
+      "fields": [
         {
-          "Name": "people",
-          "Type": "Person[]",
-          "Access": "",
-          "Line": 11,
-          "Value": "new Person[]{new Person{name = \"Alice\", age = 17, status = \"minor\"}, new Person{name = \"Bob\", age = 25, status = \"unknown\"}, new Person{name = \"Charlie\", age = 18, status = \"unknown\"}, new Person{name = \"Diana\", age = 16, status = \"minor\"}}",
-          "Ast": {
-            "Kind": "array",
-            "Children": [
+          "name": "people",
+          "type": "Person[]",
+          "access": "",
+          "line": 11,
+          "value": "new Person[]{new Person{name = \"Alice\", age = 17, status = \"minor\"}, new Person{name = \"Bob\", age = 25, status = \"unknown\"}, new Person{name = \"Charlie\", age = 18, status = \"unknown\"}, new Person{name = \"Diana\", age = 16, status = \"minor\"}}",
+          "ast": {
+            "kind": "array",
+            "children": [
               {
-                "Kind": "new",
-                "Value": "Person",
-                "Children": [
+                "kind": "new",
+                "value": "Person",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Alice"
+                            "kind": "literal",
+                            "value": "Alice"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "age",
-                        "Children": [
+                        "kind": "field",
+                        "value": "age",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "17"
+                            "kind": "literal",
+                            "value": "17"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "status",
-                        "Children": [
+                        "kind": "field",
+                        "value": "status",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "minor"
+                            "kind": "literal",
+                            "value": "minor"
                           }
                         ]
                       }
@@ -111,39 +110,39 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "Person",
-                "Children": [
+                "kind": "new",
+                "value": "Person",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Bob"
+                            "kind": "literal",
+                            "value": "Bob"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "age",
-                        "Children": [
+                        "kind": "field",
+                        "value": "age",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "25"
+                            "kind": "literal",
+                            "value": "25"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "status",
-                        "Children": [
+                        "kind": "field",
+                        "value": "status",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "unknown"
+                            "kind": "literal",
+                            "value": "unknown"
                           }
                         ]
                       }
@@ -152,39 +151,39 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "Person",
-                "Children": [
+                "kind": "new",
+                "value": "Person",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Charlie"
+                            "kind": "literal",
+                            "value": "Charlie"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "age",
-                        "Children": [
+                        "kind": "field",
+                        "value": "age",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "18"
+                            "kind": "literal",
+                            "value": "18"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "status",
-                        "Children": [
+                        "kind": "field",
+                        "value": "status",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "unknown"
+                            "kind": "literal",
+                            "value": "unknown"
                           }
                         ]
                       }
@@ -193,39 +192,39 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "Person",
-                "Children": [
+                "kind": "new",
+                "value": "Person",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Diana"
+                            "kind": "literal",
+                            "value": "Diana"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "age",
-                        "Children": [
+                        "kind": "field",
+                        "value": "age",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "16"
+                            "kind": "literal",
+                            "value": "16"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "status",
-                        "Children": [
+                        "kind": "field",
+                        "value": "status",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "minor"
+                            "kind": "literal",
+                            "value": "minor"
                           }
                         ]
                       }
@@ -235,140 +234,128 @@
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        for (int i = 0; i \u003c people.Length; i++) {",
-            "    var item = people[i];",
-            "    if ((age \u003e= 18)) {",
-            "        item.status = \"adult\";",
-            "        item.age = (age + 1);",
-            "    }",
-            "    people[i] = item;",
-            "}",
-            ";",
-            "        Console.WriteLine(\"ok\");"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "for",
-                "Value": "i",
-                "Children": [
+                "kind": "for",
+                "value": "i",
+                "children": [
                   {
-                    "Kind": "range",
-                    "Children": [
+                    "kind": "range",
+                    "children": [
                       {
-                        "Kind": "literal",
-                        "Value": "0"
+                        "kind": "literal",
+                        "value": "0"
                       },
                       {
-                        "Kind": "member",
-                        "Value": "Length",
-                        "Children": [
+                        "kind": "member",
+                        "value": "Length",
+                        "children": [
                           {
-                            "Kind": "ident",
-                            "Value": "people"
+                            "kind": "ident",
+                            "value": "people"
                           }
                         ]
                       }
                     ]
                   },
                   {
-                    "Kind": "block",
-                    "Children": [
+                    "kind": "block",
+                    "children": [
                       {
-                        "Kind": "var",
-                        "Value": "item",
-                        "Children": [
+                        "kind": "var",
+                        "value": "item",
+                        "children": [
                           {
-                            "Kind": "index",
-                            "Children": [
+                            "kind": "index",
+                            "children": [
                               {
-                                "Kind": "ident",
-                                "Value": "people"
+                                "kind": "ident",
+                                "value": "people"
                               },
                               {
-                                "Kind": "ident",
-                                "Value": "i"
+                                "kind": "ident",
+                                "value": "i"
                               }
                             ]
                           }
                         ]
                       },
                       {
-                        "Kind": "if",
-                        "Children": [
+                        "kind": "if",
+                        "children": [
                           {
-                            "Kind": "binary",
-                            "Value": "\u003e=",
-                            "Children": [
+                            "kind": "binary",
+                            "value": "\u003e=",
+                            "children": [
                               {
-                                "Kind": "ident",
-                                "Value": "age"
+                                "kind": "ident",
+                                "value": "age"
                               },
                               {
-                                "Kind": "literal",
-                                "Value": "18"
+                                "kind": "literal",
+                                "value": "18"
                               }
                             ]
                           },
                           {
-                            "Kind": "block",
-                            "Children": [
+                            "kind": "block",
+                            "children": [
                               {
-                                "Kind": "assign",
-                                "Children": [
+                                "kind": "assign",
+                                "children": [
                                   {
-                                    "Kind": "member",
-                                    "Value": "status",
-                                    "Children": [
+                                    "kind": "member",
+                                    "value": "status",
+                                    "children": [
                                       {
-                                        "Kind": "ident",
-                                        "Value": "item"
+                                        "kind": "ident",
+                                        "value": "item"
                                       }
                                     ]
                                   },
                                   {
-                                    "Kind": "literal",
-                                    "Value": "adult"
+                                    "kind": "literal",
+                                    "value": "adult"
                                   }
                                 ]
                               },
                               {
-                                "Kind": "assign",
-                                "Children": [
+                                "kind": "assign",
+                                "children": [
                                   {
-                                    "Kind": "member",
-                                    "Value": "age",
-                                    "Children": [
+                                    "kind": "member",
+                                    "value": "age",
+                                    "children": [
                                       {
-                                        "Kind": "ident",
-                                        "Value": "item"
+                                        "kind": "ident",
+                                        "value": "item"
                                       }
                                     ]
                                   },
                                   {
-                                    "Kind": "binary",
-                                    "Value": "+",
-                                    "Children": [
+                                    "kind": "binary",
+                                    "value": "+",
+                                    "children": [
                                       {
-                                        "Kind": "ident",
-                                        "Value": "age"
+                                        "kind": "ident",
+                                        "value": "age"
                                       },
                                       {
-                                        "Kind": "literal",
-                                        "Value": "1"
+                                        "kind": "literal",
+                                        "value": "1"
                                       }
                                     ]
                                   }
@@ -379,24 +366,24 @@
                         ]
                       },
                       {
-                        "Kind": "assign",
-                        "Children": [
+                        "kind": "assign",
+                        "children": [
                           {
-                            "Kind": "index",
-                            "Children": [
+                            "kind": "index",
+                            "children": [
                               {
-                                "Kind": "ident",
-                                "Value": "people"
+                                "kind": "ident",
+                                "value": "people"
                               },
                               {
-                                "Kind": "ident",
-                                "Value": "i"
+                                "kind": "ident",
+                                "value": "i"
                               }
                             ]
                           },
                           {
-                            "Kind": "ident",
-                            "Value": "item"
+                            "kind": "ident",
+                            "value": "item"
                           }
                         ]
                       }
@@ -405,27 +392,26 @@
                 ]
               },
               {
-                "Kind": "empty"
+                "kind": "empty"
               },
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "literal",
-                    "Value": "ok"
+                    "kind": "literal",
+                    "value": "ok"
                   }
                 ]
               }
             ]
           },
-          "StartLine": 12,
-          "EndLine": 23,
-          "Doc": ""
+          "startline": 12,
+          "endline": 23,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.34 on 2025-07-22 09:58 +0700\nusing System;\n\nstruct Person {\n    public string name;\n    public int age;\n    public string status;\n    public override string ToString() =\u003e $\"Person {{name = \\\"{name}\\\", age = {age}, status = \\\"{status}\\\"}}\";\n}\nclass Program {\n    static Person[] people = new Person[]{new Person{name = \"Alice\", age = 17, status = \"minor\"}, new Person{name = \"Bob\", age = 25, status = \"unknown\"}, new Person{name = \"Charlie\", age = 18, status = \"unknown\"}, new Person{name = \"Diana\", age = 16, status = \"minor\"}};\n    static void Main() {\n        for (int i = 0; i \u003c people.Length; i++) {\n    var item = people[i];\n    if ((age \u003e= 18)) {\n        item.status = \"adult\";\n        item.age = (age + 1);\n    }\n    people[i] = item;\n}\n;\n        Console.WriteLine(\"ok\");\n    }\n}\n"
+  ]
 }

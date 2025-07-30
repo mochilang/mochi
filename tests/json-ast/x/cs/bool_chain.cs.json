@@ -1,279 +1,270 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 4,
-      "EndLine": 15,
-      "Fields": [],
-      "Methods": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 4,
+      "endline": 15,
+      "fields": [],
+      "methods": [
         {
-          "Name": "boom",
-          "Params": [],
-          "Ret": "bool",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "    Console.WriteLine(\"boom\");",
-            "    return true;"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "boom",
+          "params": [],
+          "ret": "bool",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "literal",
-                    "Value": "boom"
+                    "kind": "literal",
+                    "value": "boom"
                   }
                 ]
               },
               {
-                "Kind": "return",
-                "Children": [
+                "kind": "return",
+                "children": [
                   {
-                    "Kind": "literal",
-                    "Value": "true"
+                    "kind": "literal",
+                    "value": "true"
                   }
                 ]
               }
             ]
           },
-          "StartLine": 5,
-          "EndLine": 8,
-          "Doc": ""
+          "startline": 5,
+          "endline": 8,
+          "doc": ""
         },
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        Console.WriteLine(((((1 \u003c 2) \u0026\u0026 (2 \u003c 3)) \u0026\u0026 (3 \u003c 4)) ? \"true\" : \"false\"));",
-            "        Console.WriteLine(((((1 \u003c 2) \u0026\u0026 (2 \u003e 3)) \u0026\u0026 boom()) ? \"true\" : \"false\"));",
-            "        Console.WriteLine((((((1 \u003c 2) \u0026\u0026 (2 \u003c 3)) \u0026\u0026 (3 \u003e 4)) \u0026\u0026 boom()) ? \"true\" : \"false\"));"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "cond",
-                    "Children": [
+                    "kind": "cond",
+                    "children": [
                       {
-                        "Kind": "binary",
-                        "Value": "\u0026\u0026",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "\u0026\u0026",
+                        "children": [
                           {
-                            "Kind": "binary",
-                            "Value": "\u0026\u0026",
-                            "Children": [
+                            "kind": "binary",
+                            "value": "\u0026\u0026",
+                            "children": [
                               {
-                                "Kind": "binary",
-                                "Value": "\u003c",
-                                "Children": [
+                                "kind": "binary",
+                                "value": "\u003c",
+                                "children": [
                                   {
-                                    "Kind": "literal",
-                                    "Value": "1"
+                                    "kind": "literal",
+                                    "value": "1"
                                   },
                                   {
-                                    "Kind": "literal",
-                                    "Value": "2"
+                                    "kind": "literal",
+                                    "value": "2"
                                   }
                                 ]
                               },
                               {
-                                "Kind": "binary",
-                                "Value": "\u003c",
-                                "Children": [
+                                "kind": "binary",
+                                "value": "\u003c",
+                                "children": [
                                   {
-                                    "Kind": "literal",
-                                    "Value": "2"
+                                    "kind": "literal",
+                                    "value": "2"
                                   },
                                   {
-                                    "Kind": "literal",
-                                    "Value": "3"
+                                    "kind": "literal",
+                                    "value": "3"
                                   }
                                 ]
                               }
                             ]
                           },
                           {
-                            "Kind": "binary",
-                            "Value": "\u003c",
-                            "Children": [
+                            "kind": "binary",
+                            "value": "\u003c",
+                            "children": [
                               {
-                                "Kind": "literal",
-                                "Value": "3"
+                                "kind": "literal",
+                                "value": "3"
                               },
                               {
-                                "Kind": "literal",
-                                "Value": "4"
+                                "kind": "literal",
+                                "value": "4"
                               }
                             ]
                           }
                         ]
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "true"
+                        "kind": "literal",
+                        "value": "true"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "false"
+                        "kind": "literal",
+                        "value": "false"
                       }
                     ]
                   }
                 ]
               },
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "cond",
-                    "Children": [
+                    "kind": "cond",
+                    "children": [
                       {
-                        "Kind": "binary",
-                        "Value": "\u0026\u0026",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "\u0026\u0026",
+                        "children": [
                           {
-                            "Kind": "binary",
-                            "Value": "\u0026\u0026",
-                            "Children": [
+                            "kind": "binary",
+                            "value": "\u0026\u0026",
+                            "children": [
                               {
-                                "Kind": "binary",
-                                "Value": "\u003c",
-                                "Children": [
+                                "kind": "binary",
+                                "value": "\u003c",
+                                "children": [
                                   {
-                                    "Kind": "literal",
-                                    "Value": "1"
+                                    "kind": "literal",
+                                    "value": "1"
                                   },
                                   {
-                                    "Kind": "literal",
-                                    "Value": "2"
+                                    "kind": "literal",
+                                    "value": "2"
                                   }
                                 ]
                               },
                               {
-                                "Kind": "binary",
-                                "Value": "\u003e",
-                                "Children": [
+                                "kind": "binary",
+                                "value": "\u003e",
+                                "children": [
                                   {
-                                    "Kind": "literal",
-                                    "Value": "2"
+                                    "kind": "literal",
+                                    "value": "2"
                                   },
                                   {
-                                    "Kind": "literal",
-                                    "Value": "3"
+                                    "kind": "literal",
+                                    "value": "3"
                                   }
                                 ]
                               }
                             ]
                           },
                           {
-                            "Kind": "call",
-                            "Value": "boom"
+                            "kind": "call",
+                            "value": "boom"
                           }
                         ]
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "true"
+                        "kind": "literal",
+                        "value": "true"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "false"
+                        "kind": "literal",
+                        "value": "false"
                       }
                     ]
                   }
                 ]
               },
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "cond",
-                    "Children": [
+                    "kind": "cond",
+                    "children": [
                       {
-                        "Kind": "binary",
-                        "Value": "\u0026\u0026",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "\u0026\u0026",
+                        "children": [
                           {
-                            "Kind": "binary",
-                            "Value": "\u0026\u0026",
-                            "Children": [
+                            "kind": "binary",
+                            "value": "\u0026\u0026",
+                            "children": [
                               {
-                                "Kind": "binary",
-                                "Value": "\u0026\u0026",
-                                "Children": [
+                                "kind": "binary",
+                                "value": "\u0026\u0026",
+                                "children": [
                                   {
-                                    "Kind": "binary",
-                                    "Value": "\u003c",
-                                    "Children": [
+                                    "kind": "binary",
+                                    "value": "\u003c",
+                                    "children": [
                                       {
-                                        "Kind": "literal",
-                                        "Value": "1"
+                                        "kind": "literal",
+                                        "value": "1"
                                       },
                                       {
-                                        "Kind": "literal",
-                                        "Value": "2"
+                                        "kind": "literal",
+                                        "value": "2"
                                       }
                                     ]
                                   },
                                   {
-                                    "Kind": "binary",
-                                    "Value": "\u003c",
-                                    "Children": [
+                                    "kind": "binary",
+                                    "value": "\u003c",
+                                    "children": [
                                       {
-                                        "Kind": "literal",
-                                        "Value": "2"
+                                        "kind": "literal",
+                                        "value": "2"
                                       },
                                       {
-                                        "Kind": "literal",
-                                        "Value": "3"
+                                        "kind": "literal",
+                                        "value": "3"
                                       }
                                     ]
                                   }
                                 ]
                               },
                               {
-                                "Kind": "binary",
-                                "Value": "\u003e",
-                                "Children": [
+                                "kind": "binary",
+                                "value": "\u003e",
+                                "children": [
                                   {
-                                    "Kind": "literal",
-                                    "Value": "3"
+                                    "kind": "literal",
+                                    "value": "3"
                                   },
                                   {
-                                    "Kind": "literal",
-                                    "Value": "4"
+                                    "kind": "literal",
+                                    "value": "4"
                                   }
                                 ]
                               }
                             ]
                           },
                           {
-                            "Kind": "call",
-                            "Value": "boom"
+                            "kind": "call",
+                            "value": "boom"
                           }
                         ]
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "true"
+                        "kind": "literal",
+                        "value": "true"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "false"
+                        "kind": "literal",
+                        "value": "false"
                       }
                     ]
                   }
@@ -281,13 +272,12 @@
               }
             ]
           },
-          "StartLine": 10,
-          "EndLine": 14,
-          "Doc": ""
+          "startline": 10,
+          "endline": 14,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.33 on 2025-07-21 18:06 +0700\nusing System;\n\nclass Program {\n    static bool boom() {\n    Console.WriteLine(\"boom\");\n    return true;\n}\n\n    static void Main() {\n        Console.WriteLine(((((1 \u003c 2) \u0026\u0026 (2 \u003c 3)) \u0026\u0026 (3 \u003c 4)) ? \"true\" : \"false\"));\n        Console.WriteLine(((((1 \u003c 2) \u0026\u0026 (2 \u003e 3)) \u0026\u0026 boom()) ? \"true\" : \"false\"));\n        Console.WriteLine((((((1 \u003c 2) \u0026\u0026 (2 \u003c 3)) \u0026\u0026 (3 \u003e 4)) \u0026\u0026 boom()) ? \"true\" : \"false\"));\n    }\n}\n"
+  ]
 }

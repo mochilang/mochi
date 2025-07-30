@@ -1,586 +1,578 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "Nation",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 6,
-      "EndLine": 10,
-      "Fields": [
+      "name": "Nation",
+      "kind": "struct",
+      "access": "",
+      "startline": 6,
+      "endline": 10,
+      "fields": [
         {
-          "Name": "n_nationkey",
-          "Type": "int",
-          "Access": "public",
-          "Line": 7,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "n_nationkey",
+          "type": "int",
+          "access": "public",
+          "line": 7,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "n_name",
-          "Type": "string",
-          "Access": "public",
-          "Line": 8,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "n_name",
+          "type": "string",
+          "access": "public",
+          "line": 8,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 9,
-          "EndLine": 9,
-          "Doc": ""
+          "startline": 9,
+          "endline": 9,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "Customer",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 11,
-      "EndLine": 20,
-      "Fields": [
+      "name": "Customer",
+      "kind": "struct",
+      "access": "",
+      "startline": 11,
+      "endline": 20,
+      "fields": [
         {
-          "Name": "c_custkey",
-          "Type": "int",
-          "Access": "public",
-          "Line": 12,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "c_custkey",
+          "type": "int",
+          "access": "public",
+          "line": 12,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "c_name",
-          "Type": "string",
-          "Access": "public",
-          "Line": 13,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "c_name",
+          "type": "string",
+          "access": "public",
+          "line": 13,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "c_acctbal",
-          "Type": "double",
-          "Access": "public",
-          "Line": 14,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "c_acctbal",
+          "type": "double",
+          "access": "public",
+          "line": 14,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "c_nationkey",
-          "Type": "int",
-          "Access": "public",
-          "Line": 15,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "c_nationkey",
+          "type": "int",
+          "access": "public",
+          "line": 15,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "c_address",
-          "Type": "string",
-          "Access": "public",
-          "Line": 16,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "c_address",
+          "type": "string",
+          "access": "public",
+          "line": 16,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "c_phone",
-          "Type": "string",
-          "Access": "public",
-          "Line": 17,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "c_phone",
+          "type": "string",
+          "access": "public",
+          "line": 17,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "c_comment",
-          "Type": "string",
-          "Access": "public",
-          "Line": 18,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "c_comment",
+          "type": "string",
+          "access": "public",
+          "line": 18,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 19,
-          "EndLine": 19,
-          "Doc": ""
+          "startline": 19,
+          "endline": 19,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "Order",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 21,
-      "EndLine": 26,
-      "Fields": [
+      "name": "Order",
+      "kind": "struct",
+      "access": "",
+      "startline": 21,
+      "endline": 26,
+      "fields": [
         {
-          "Name": "o_orderkey",
-          "Type": "int",
-          "Access": "public",
-          "Line": 22,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "o_orderkey",
+          "type": "int",
+          "access": "public",
+          "line": 22,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "o_custkey",
-          "Type": "int",
-          "Access": "public",
-          "Line": 23,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "o_custkey",
+          "type": "int",
+          "access": "public",
+          "line": 23,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "o_orderdate",
-          "Type": "string",
-          "Access": "public",
-          "Line": 24,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "o_orderdate",
+          "type": "string",
+          "access": "public",
+          "line": 24,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 25,
-          "EndLine": 25,
-          "Doc": ""
+          "startline": 25,
+          "endline": 25,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "Lineitem",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 27,
-      "EndLine": 33,
-      "Fields": [
+      "name": "Lineitem",
+      "kind": "struct",
+      "access": "",
+      "startline": 27,
+      "endline": 33,
+      "fields": [
         {
-          "Name": "l_orderkey",
-          "Type": "int",
-          "Access": "public",
-          "Line": 28,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "l_orderkey",
+          "type": "int",
+          "access": "public",
+          "line": 28,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "l_returnflag",
-          "Type": "string",
-          "Access": "public",
-          "Line": 29,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "l_returnflag",
+          "type": "string",
+          "access": "public",
+          "line": 29,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "l_extendedprice",
-          "Type": "double",
-          "Access": "public",
-          "Line": 30,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "l_extendedprice",
+          "type": "double",
+          "access": "public",
+          "line": 30,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "l_discount",
-          "Type": "double",
-          "Access": "public",
-          "Line": 31,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "l_discount",
+          "type": "double",
+          "access": "public",
+          "line": 31,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 32,
-          "EndLine": 32,
-          "Doc": ""
+          "startline": 32,
+          "endline": 32,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "GKey",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 34,
-      "EndLine": 43,
-      "Fields": [
+      "name": "GKey",
+      "kind": "struct",
+      "access": "",
+      "startline": 34,
+      "endline": 43,
+      "fields": [
         {
-          "Name": "c_custkey",
-          "Type": "int",
-          "Access": "public",
-          "Line": 35,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "c_custkey",
+          "type": "int",
+          "access": "public",
+          "line": 35,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "c_name",
-          "Type": "string",
-          "Access": "public",
-          "Line": 36,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "c_name",
+          "type": "string",
+          "access": "public",
+          "line": 36,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "c_acctbal",
-          "Type": "double",
-          "Access": "public",
-          "Line": 37,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "c_acctbal",
+          "type": "double",
+          "access": "public",
+          "line": 37,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "c_address",
-          "Type": "string",
-          "Access": "public",
-          "Line": 38,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "c_address",
+          "type": "string",
+          "access": "public",
+          "line": 38,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "c_phone",
-          "Type": "string",
-          "Access": "public",
-          "Line": 39,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "c_phone",
+          "type": "string",
+          "access": "public",
+          "line": 39,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "c_comment",
-          "Type": "string",
-          "Access": "public",
-          "Line": 40,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "c_comment",
+          "type": "string",
+          "access": "public",
+          "line": 40,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "n_name",
-          "Type": "string",
-          "Access": "public",
-          "Line": 41,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "n_name",
+          "type": "string",
+          "access": "public",
+          "line": 41,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 42,
-          "EndLine": 42,
-          "Doc": ""
+          "startline": 42,
+          "endline": 42,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "GRow",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 44,
-      "EndLine": 50,
-      "Fields": [
+      "name": "GRow",
+      "kind": "struct",
+      "access": "",
+      "startline": 44,
+      "endline": 50,
+      "fields": [
         {
-          "Name": "c",
-          "Type": "Customer",
-          "Access": "public",
-          "Line": 45,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "c",
+          "type": "Customer",
+          "access": "public",
+          "line": 45,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "o",
-          "Type": "Order",
-          "Access": "public",
-          "Line": 46,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "o",
+          "type": "Order",
+          "access": "public",
+          "line": 46,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "l",
-          "Type": "Lineitem",
-          "Access": "public",
-          "Line": 47,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "l",
+          "type": "Lineitem",
+          "access": "public",
+          "line": 47,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "n",
-          "Type": "Nation",
-          "Access": "public",
-          "Line": 48,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "n",
+          "type": "Nation",
+          "access": "public",
+          "line": 48,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 49,
-          "EndLine": 49,
-          "Doc": ""
+          "startline": 49,
+          "endline": 49,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "GGroup",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 51,
-      "EndLine": 55,
-      "Fields": [
+      "name": "GGroup",
+      "kind": "struct",
+      "access": "",
+      "startline": 51,
+      "endline": 55,
+      "fields": [
         {
-          "Name": "key",
-          "Type": "GKey",
-          "Access": "public",
-          "Line": 52,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "key",
+          "type": "GKey",
+          "access": "public",
+          "line": 52,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "items",
-          "Type": "GRow[]",
-          "Access": "public",
-          "Line": 53,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "items",
+          "type": "GRow[]",
+          "access": "public",
+          "line": 53,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 54,
-          "EndLine": 54,
-          "Doc": ""
+          "startline": 54,
+          "endline": 54,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "GResult",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 56,
-      "EndLine": 66,
-      "Fields": [
+      "name": "GResult",
+      "kind": "struct",
+      "access": "",
+      "startline": 56,
+      "endline": 66,
+      "fields": [
         {
-          "Name": "c_custkey",
-          "Type": "int",
-          "Access": "public",
-          "Line": 57,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "c_custkey",
+          "type": "int",
+          "access": "public",
+          "line": 57,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "c_name",
-          "Type": "string",
-          "Access": "public",
-          "Line": 58,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "c_name",
+          "type": "string",
+          "access": "public",
+          "line": 58,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "revenue",
-          "Type": "double",
-          "Access": "public",
-          "Line": 59,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "revenue",
+          "type": "double",
+          "access": "public",
+          "line": 59,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "c_acctbal",
-          "Type": "double",
-          "Access": "public",
-          "Line": 60,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "c_acctbal",
+          "type": "double",
+          "access": "public",
+          "line": 60,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "n_name",
-          "Type": "string",
-          "Access": "public",
-          "Line": 61,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "n_name",
+          "type": "string",
+          "access": "public",
+          "line": 61,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "c_address",
-          "Type": "string",
-          "Access": "public",
-          "Line": 62,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "c_address",
+          "type": "string",
+          "access": "public",
+          "line": 62,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "c_phone",
-          "Type": "string",
-          "Access": "public",
-          "Line": 63,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "c_phone",
+          "type": "string",
+          "access": "public",
+          "line": 63,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "c_comment",
-          "Type": "string",
-          "Access": "public",
-          "Line": 64,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "c_comment",
+          "type": "string",
+          "access": "public",
+          "line": 64,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 65,
-          "EndLine": 65,
-          "Doc": ""
+          "startline": 65,
+          "endline": 65,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 67,
-      "EndLine": 78,
-      "Fields": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 67,
+      "endline": 78,
+      "fields": [
         {
-          "Name": "nation",
-          "Type": "Nation[]",
-          "Access": "",
-          "Line": 68,
-          "Value": "new Nation[]{new Nation{n_nationkey = 1, n_name = \"BRAZIL\"}}",
-          "Ast": {
-            "Kind": "array",
-            "Children": [
+          "name": "nation",
+          "type": "Nation[]",
+          "access": "",
+          "line": 68,
+          "value": "new Nation[]{new Nation{n_nationkey = 1, n_name = \"BRAZIL\"}}",
+          "ast": {
+            "kind": "array",
+            "children": [
               {
-                "Kind": "new",
-                "Value": "Nation",
-                "Children": [
+                "kind": "new",
+                "value": "Nation",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "n_nationkey",
-                        "Children": [
+                        "kind": "field",
+                        "value": "n_nationkey",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "1"
+                            "kind": "literal",
+                            "value": "1"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "n_name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "n_name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "BRAZIL"
+                            "kind": "literal",
+                            "value": "BRAZIL"
                           }
                         ]
                       }
@@ -590,92 +582,92 @@
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "customer",
-          "Type": "Customer[]",
-          "Access": "",
-          "Line": 69,
-          "Value": "new Customer[]{new Customer{c_custkey = 1, c_name = \"Alice\", c_acctbal = 100, c_nationkey = 1, c_address = \"123 St\", c_phone = \"123-456\", c_comment = \"Loyal\"}}",
-          "Ast": {
-            "Kind": "array",
-            "Children": [
+          "name": "customer",
+          "type": "Customer[]",
+          "access": "",
+          "line": 69,
+          "value": "new Customer[]{new Customer{c_custkey = 1, c_name = \"Alice\", c_acctbal = 100, c_nationkey = 1, c_address = \"123 St\", c_phone = \"123-456\", c_comment = \"Loyal\"}}",
+          "ast": {
+            "kind": "array",
+            "children": [
               {
-                "Kind": "new",
-                "Value": "Customer",
-                "Children": [
+                "kind": "new",
+                "value": "Customer",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "c_custkey",
-                        "Children": [
+                        "kind": "field",
+                        "value": "c_custkey",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "1"
+                            "kind": "literal",
+                            "value": "1"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "c_name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "c_name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Alice"
+                            "kind": "literal",
+                            "value": "Alice"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "c_acctbal",
-                        "Children": [
+                        "kind": "field",
+                        "value": "c_acctbal",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "100"
+                            "kind": "literal",
+                            "value": "100"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "c_nationkey",
-                        "Children": [
+                        "kind": "field",
+                        "value": "c_nationkey",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "1"
+                            "kind": "literal",
+                            "value": "1"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "c_address",
-                        "Children": [
+                        "kind": "field",
+                        "value": "c_address",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "123 St"
+                            "kind": "literal",
+                            "value": "123 St"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "c_phone",
-                        "Children": [
+                        "kind": "field",
+                        "value": "c_phone",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "123-456"
+                            "kind": "literal",
+                            "value": "123-456"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "c_comment",
-                        "Children": [
+                        "kind": "field",
+                        "value": "c_comment",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Loyal"
+                            "kind": "literal",
+                            "value": "Loyal"
                           }
                         ]
                       }
@@ -685,52 +677,52 @@
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "orders",
-          "Type": "Order[]",
-          "Access": "",
-          "Line": 70,
-          "Value": "new Order[]{new Order{o_orderkey = 1000, o_custkey = 1, o_orderdate = \"1993-10-15\"}, new Order{o_orderkey = 2000, o_custkey = 1, o_orderdate = \"1994-01-02\"}}",
-          "Ast": {
-            "Kind": "array",
-            "Children": [
+          "name": "orders",
+          "type": "Order[]",
+          "access": "",
+          "line": 70,
+          "value": "new Order[]{new Order{o_orderkey = 1000, o_custkey = 1, o_orderdate = \"1993-10-15\"}, new Order{o_orderkey = 2000, o_custkey = 1, o_orderdate = \"1994-01-02\"}}",
+          "ast": {
+            "kind": "array",
+            "children": [
               {
-                "Kind": "new",
-                "Value": "Order",
-                "Children": [
+                "kind": "new",
+                "value": "Order",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "o_orderkey",
-                        "Children": [
+                        "kind": "field",
+                        "value": "o_orderkey",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "1000"
+                            "kind": "literal",
+                            "value": "1000"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "o_custkey",
-                        "Children": [
+                        "kind": "field",
+                        "value": "o_custkey",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "1"
+                            "kind": "literal",
+                            "value": "1"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "o_orderdate",
-                        "Children": [
+                        "kind": "field",
+                        "value": "o_orderdate",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "1993-10-15"
+                            "kind": "literal",
+                            "value": "1993-10-15"
                           }
                         ]
                       }
@@ -739,39 +731,39 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "Order",
-                "Children": [
+                "kind": "new",
+                "value": "Order",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "o_orderkey",
-                        "Children": [
+                        "kind": "field",
+                        "value": "o_orderkey",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "2000"
+                            "kind": "literal",
+                            "value": "2000"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "o_custkey",
-                        "Children": [
+                        "kind": "field",
+                        "value": "o_custkey",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "1"
+                            "kind": "literal",
+                            "value": "1"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "o_orderdate",
-                        "Children": [
+                        "kind": "field",
+                        "value": "o_orderdate",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "1994-01-02"
+                            "kind": "literal",
+                            "value": "1994-01-02"
                           }
                         ]
                       }
@@ -781,62 +773,62 @@
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "lineitem",
-          "Type": "Lineitem[]",
-          "Access": "",
-          "Line": 71,
-          "Value": "new Lineitem[]{new Lineitem{l_orderkey = 1000, l_returnflag = \"R\", l_extendedprice = 1000, l_discount = 0.1}, new Lineitem{l_orderkey = 2000, l_returnflag = \"N\", l_extendedprice = 500, l_discount = 0}}",
-          "Ast": {
-            "Kind": "array",
-            "Children": [
+          "name": "lineitem",
+          "type": "Lineitem[]",
+          "access": "",
+          "line": 71,
+          "value": "new Lineitem[]{new Lineitem{l_orderkey = 1000, l_returnflag = \"R\", l_extendedprice = 1000, l_discount = 0.1}, new Lineitem{l_orderkey = 2000, l_returnflag = \"N\", l_extendedprice = 500, l_discount = 0}}",
+          "ast": {
+            "kind": "array",
+            "children": [
               {
-                "Kind": "new",
-                "Value": "Lineitem",
-                "Children": [
+                "kind": "new",
+                "value": "Lineitem",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "l_orderkey",
-                        "Children": [
+                        "kind": "field",
+                        "value": "l_orderkey",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "1000"
+                            "kind": "literal",
+                            "value": "1000"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "l_returnflag",
-                        "Children": [
+                        "kind": "field",
+                        "value": "l_returnflag",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "R"
+                            "kind": "literal",
+                            "value": "R"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "l_extendedprice",
-                        "Children": [
+                        "kind": "field",
+                        "value": "l_extendedprice",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "1000"
+                            "kind": "literal",
+                            "value": "1000"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "l_discount",
-                        "Children": [
+                        "kind": "field",
+                        "value": "l_discount",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "0.1"
+                            "kind": "literal",
+                            "value": "0.1"
                           }
                         ]
                       }
@@ -845,49 +837,49 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "Lineitem",
-                "Children": [
+                "kind": "new",
+                "value": "Lineitem",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "l_orderkey",
-                        "Children": [
+                        "kind": "field",
+                        "value": "l_orderkey",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "2000"
+                            "kind": "literal",
+                            "value": "2000"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "l_returnflag",
-                        "Children": [
+                        "kind": "field",
+                        "value": "l_returnflag",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "N"
+                            "kind": "literal",
+                            "value": "N"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "l_extendedprice",
-                        "Children": [
+                        "kind": "field",
+                        "value": "l_extendedprice",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "500"
+                            "kind": "literal",
+                            "value": "500"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "l_discount",
-                        "Children": [
+                        "kind": "field",
+                        "value": "l_discount",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "0"
+                            "kind": "literal",
+                            "value": "0"
                           }
                         ]
                       }
@@ -897,104 +889,101 @@
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "start_date",
-          "Type": "string",
-          "Access": "",
-          "Line": 72,
-          "Value": "\"1993-10-01\"",
-          "Ast": {
-            "Kind": "literal",
-            "Value": "1993-10-01"
+          "name": "start_date",
+          "type": "string",
+          "access": "",
+          "line": 72,
+          "value": "\"1993-10-01\"",
+          "ast": {
+            "kind": "literal",
+            "value": "1993-10-01"
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "end_date",
-          "Type": "string",
-          "Access": "",
-          "Line": 73,
-          "Value": "\"1994-01-01\"",
-          "Ast": {
-            "Kind": "literal",
-            "Value": "1994-01-01"
+          "name": "end_date",
+          "type": "string",
+          "access": "",
+          "line": 73,
+          "value": "\"1994-01-01\"",
+          "ast": {
+            "kind": "literal",
+            "value": "1994-01-01"
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "result",
-          "Type": "GResult[]",
-          "Access": "",
-          "Line": 74,
-          "Value": "(from c in customer join o in orders on c.c_custkey equals o.o_custkey join l in lineitem on o.o_orderkey equals l.l_orderkey join n in nation on c.c_nationkey equals n.n_nationkey where (((string.Compare(o.o_orderdate, start_date) \u003e= 0) \u0026\u0026 (string.Compare(o.o_orderdate, end_date) \u003c 0)) \u0026\u0026 (l.l_returnflag == \"R\")) group new GRow{c = c, o = o, l = l, n = n} by new GKey{c_custkey = c.c_custkey, c_name = c.c_name, c_acctbal = c.c_acctbal, c_address = c.c_address, c_phone = c.c_phone, c_comment = c.c_comment, n_name = n.n_name} into gTmp let g = new GGroup{ key = gTmp.Key, items = gTmp.ToArray() } orderby ((from x in g.items select (x.l.l_extendedprice * (1 - x.l.l_discount))).ToArray().Sum()) descending select new GResult{c_custkey = g.key.c_custkey, c_name = g.key.c_name, revenue = ((from x in g.items select (x.l.l_extendedprice * (1 - x.l.l_discount))).ToArray().Sum()), c_acctbal = g.key.c_acctbal, n_name = g.key.n_name, c_address = g.key.c_address, c_phone = g.key.c_phone, c_comment = g.key.c_comment}).ToArray()",
-          "Ast": {
-            "Kind": "call",
-            "Value": "ToArray",
-            "Children": [
+          "name": "result",
+          "type": "GResult[]",
+          "access": "",
+          "line": 74,
+          "value": "(from c in customer join o in orders on c.c_custkey equals o.o_custkey join l in lineitem on o.o_orderkey equals l.l_orderkey join n in nation on c.c_nationkey equals n.n_nationkey where (((string.Compare(o.o_orderdate, start_date) \u003e= 0) \u0026\u0026 (string.Compare(o.o_orderdate, end_date) \u003c 0)) \u0026\u0026 (l.l_returnflag == \"R\")) group new GRow{c = c, o = o, l = l, n = n} by new GKey{c_custkey = c.c_custkey, c_name = c.c_name, c_acctbal = c.c_acctbal, c_address = c.c_address, c_phone = c.c_phone, c_comment = c.c_comment, n_name = n.n_name} into gTmp let g = new GGroup{ key = gTmp.Key, items = gTmp.ToArray() } orderby ((from x in g.items select (x.l.l_extendedprice * (1 - x.l.l_discount))).ToArray().Sum()) descending select new GResult{c_custkey = g.key.c_custkey, c_name = g.key.c_name, revenue = ((from x in g.items select (x.l.l_extendedprice * (1 - x.l.l_discount))).ToArray().Sum()), c_acctbal = g.key.c_acctbal, n_name = g.key.n_name, c_address = g.key.c_address, c_phone = g.key.c_phone, c_comment = g.key.c_comment}).ToArray()",
+          "ast": {
+            "kind": "call",
+            "value": "ToArray",
+            "children": [
               {
-                "Kind": "unknown"
+                "kind": "unknown"
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        Console.WriteLine((\"[\" + (string.Join(\",\", result) + \"]\")));"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "binary",
-                    "Value": "+",
-                    "Children": [
+                    "kind": "binary",
+                    "value": "+",
+                    "children": [
                       {
-                        "Kind": "literal",
-                        "Value": "["
+                        "kind": "literal",
+                        "value": "["
                       },
                       {
-                        "Kind": "binary",
-                        "Value": "+",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "+",
+                        "children": [
                           {
-                            "Kind": "call",
-                            "Value": "Join",
-                            "Children": [
+                            "kind": "call",
+                            "value": "Join",
+                            "children": [
                               {
-                                "Kind": "ident",
-                                "Value": "string"
+                                "kind": "ident",
+                                "value": "string"
                               },
                               {
-                                "Kind": "literal",
-                                "Value": ","
+                                "kind": "literal",
+                                "value": ","
                               },
                               {
-                                "Kind": "ident",
-                                "Value": "result"
+                                "kind": "ident",
+                                "value": "result"
                               }
                             ]
                           },
                           {
-                            "Kind": "literal",
-                            "Value": "]"
+                            "kind": "literal",
+                            "value": "]"
                           }
                         ]
                       }
@@ -1004,13 +993,12 @@
               }
             ]
           },
-          "StartLine": 75,
-          "EndLine": 77,
-          "Doc": ""
+          "startline": 75,
+          "endline": 77,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.34 on 2025-07-21 21:13 +0700\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\n\nstruct Nation {\n    public int n_nationkey;\n    public string n_name;\n    public override string ToString() =\u003e $\"{{'n_nationkey': {n_nationkey}, 'n_name': '{n_name}'}}\";\n}\nstruct Customer {\n    public int c_custkey;\n    public string c_name;\n    public double c_acctbal;\n    public int c_nationkey;\n    public string c_address;\n    public string c_phone;\n    public string c_comment;\n    public override string ToString() =\u003e $\"{{'c_custkey': {c_custkey}, 'c_name': '{c_name}', 'c_acctbal': {c_acctbal.ToString(\"0.0\")}, 'c_nationkey': {c_nationkey}, 'c_address': '{c_address}', 'c_phone': '{c_phone}', 'c_comment': '{c_comment}'}}\";\n}\nstruct Order {\n    public int o_orderkey;\n    public int o_custkey;\n    public string o_orderdate;\n    public override string ToString() =\u003e $\"{{'o_orderkey': {o_orderkey}, 'o_custkey': {o_custkey}, 'o_orderdate': '{o_orderdate}'}}\";\n}\nstruct Lineitem {\n    public int l_orderkey;\n    public string l_returnflag;\n    public double l_extendedprice;\n    public double l_discount;\n    public override string ToString() =\u003e $\"{{'l_orderkey': {l_orderkey}, 'l_returnflag': '{l_returnflag}', 'l_extendedprice': {l_extendedprice.ToString(\"0.0\")}, 'l_discount': {l_discount.ToString(\"0.0\")}}}\";\n}\nstruct GKey {\n    public int c_custkey;\n    public string c_name;\n    public double c_acctbal;\n    public string c_address;\n    public string c_phone;\n    public string c_comment;\n    public string n_name;\n    public override string ToString() =\u003e $\"{{'c_custkey': {c_custkey}, 'c_name': '{c_name}', 'c_acctbal': {c_acctbal.ToString(\"0.0\")}, 'c_address': '{c_address}', 'c_phone': '{c_phone}', 'c_comment': '{c_comment}', 'n_name': '{n_name}'}}\";\n}\nstruct GRow {\n    public Customer c;\n    public Order o;\n    public Lineitem l;\n    public Nation n;\n    public override string ToString() =\u003e $\"{{'c': {c}, 'o': {o}, 'l': {l}, 'n': {n}}}\";\n}\nstruct GGroup {\n    public GKey key;\n    public GRow[] items;\n    public override string ToString() =\u003e $\"{{'key': {key}, 'items': {items}}}\";\n}\nstruct GResult {\n    public int c_custkey;\n    public string c_name;\n    public double revenue;\n    public double c_acctbal;\n    public string n_name;\n    public string c_address;\n    public string c_phone;\n    public string c_comment;\n    public override string ToString() =\u003e $\"{{'c_custkey': {c_custkey}, 'c_name': '{c_name}', 'revenue': {revenue.ToString(\"0.0\")}, 'c_acctbal': {c_acctbal.ToString(\"0.0\")}, 'n_name': '{n_name}', 'c_address': '{c_address}', 'c_phone': '{c_phone}', 'c_comment': '{c_comment}'}}\";\n}\nclass Program {\n    static Nation[] nation = new Nation[]{new Nation{n_nationkey = 1, n_name = \"BRAZIL\"}};\n    static Customer[] customer = new Customer[]{new Customer{c_custkey = 1, c_name = \"Alice\", c_acctbal = 100, c_nationkey = 1, c_address = \"123 St\", c_phone = \"123-456\", c_comment = \"Loyal\"}};\n    static Order[] orders = new Order[]{new Order{o_orderkey = 1000, o_custkey = 1, o_orderdate = \"1993-10-15\"}, new Order{o_orderkey = 2000, o_custkey = 1, o_orderdate = \"1994-01-02\"}};\n    static Lineitem[] lineitem = new Lineitem[]{new Lineitem{l_orderkey = 1000, l_returnflag = \"R\", l_extendedprice = 1000, l_discount = 0.1}, new Lineitem{l_orderkey = 2000, l_returnflag = \"N\", l_extendedprice = 500, l_discount = 0}};\n    static string start_date = \"1993-10-01\";\n    static string end_date = \"1994-01-01\";\n    static GResult[] result = (from c in customer join o in orders on c.c_custkey equals o.o_custkey join l in lineitem on o.o_orderkey equals l.l_orderkey join n in nation on c.c_nationkey equals n.n_nationkey where (((string.Compare(o.o_orderdate, start_date) \u003e= 0) \u0026\u0026 (string.Compare(o.o_orderdate, end_date) \u003c 0)) \u0026\u0026 (l.l_returnflag == \"R\")) group new GRow{c = c, o = o, l = l, n = n} by new GKey{c_custkey = c.c_custkey, c_name = c.c_name, c_acctbal = c.c_acctbal, c_address = c.c_address, c_phone = c.c_phone, c_comment = c.c_comment, n_name = n.n_name} into gTmp let g = new GGroup{ key = gTmp.Key, items = gTmp.ToArray() } orderby ((from x in g.items select (x.l.l_extendedprice * (1 - x.l.l_discount))).ToArray().Sum()) descending select new GResult{c_custkey = g.key.c_custkey, c_name = g.key.c_name, revenue = ((from x in g.items select (x.l.l_extendedprice * (1 - x.l.l_discount))).ToArray().Sum()), c_acctbal = g.key.c_acctbal, n_name = g.key.n_name, c_address = g.key.c_address, c_phone = g.key.c_phone, c_comment = g.key.c_comment}).ToArray();\n    static void Main() {\n        Console.WriteLine((\"[\" + (string.Join(\",\", result) + \"]\")));\n    }\n}\n"
+  ]
 }

@@ -1,205 +1,198 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "NResult",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 6,
-      "EndLine": 10,
-      "Fields": [
+      "name": "NResult",
+      "kind": "struct",
+      "access": "",
+      "startline": 6,
+      "endline": 10,
+      "fields": [
         {
-          "Name": "n",
-          "Type": "int",
-          "Access": "public",
-          "Line": 7,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "n",
+          "type": "int",
+          "access": "public",
+          "line": 7,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "l",
-          "Type": "string",
-          "Access": "public",
-          "Line": 8,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "l",
+          "type": "string",
+          "access": "public",
+          "line": 8,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 9,
-          "EndLine": 9,
-          "Doc": ""
+          "startline": 9,
+          "endline": 9,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 11,
-      "EndLine": 21,
-      "Fields": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 11,
+      "endline": 21,
+      "fields": [
         {
-          "Name": "nums",
-          "Type": "int[]",
-          "Access": "",
-          "Line": 12,
-          "Value": "new int[]{1, 2, 3}",
-          "Ast": {
-            "Kind": "array",
-            "Children": [
+          "name": "nums",
+          "type": "int[]",
+          "access": "",
+          "line": 12,
+          "value": "new int[]{1, 2, 3}",
+          "ast": {
+            "kind": "array",
+            "children": [
               {
-                "Kind": "literal",
-                "Value": "1"
+                "kind": "literal",
+                "value": "1"
               },
               {
-                "Kind": "literal",
-                "Value": "2"
+                "kind": "literal",
+                "value": "2"
               },
               {
-                "Kind": "literal",
-                "Value": "3"
+                "kind": "literal",
+                "value": "3"
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "letters",
-          "Type": "string[]",
-          "Access": "",
-          "Line": 13,
-          "Value": "new string[]{\"A\", \"B\"}",
-          "Ast": {
-            "Kind": "array",
-            "Children": [
+          "name": "letters",
+          "type": "string[]",
+          "access": "",
+          "line": 13,
+          "value": "new string[]{\"A\", \"B\"}",
+          "ast": {
+            "kind": "array",
+            "children": [
               {
-                "Kind": "literal",
-                "Value": "A"
+                "kind": "literal",
+                "value": "A"
               },
               {
-                "Kind": "literal",
-                "Value": "B"
+                "kind": "literal",
+                "value": "B"
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "pairs",
-          "Type": "NResult[]",
-          "Access": "",
-          "Line": 14,
-          "Value": "(from n in nums from l in letters where ((n % 2) == 0) select new NResult{n = n, l = l}).ToArray()",
-          "Ast": {
-            "Kind": "call",
-            "Value": "ToArray",
-            "Children": [
+          "name": "pairs",
+          "type": "NResult[]",
+          "access": "",
+          "line": 14,
+          "value": "(from n in nums from l in letters where ((n % 2) == 0) select new NResult{n = n, l = l}).ToArray()",
+          "ast": {
+            "kind": "call",
+            "value": "ToArray",
+            "children": [
               {
-                "Kind": "unknown"
+                "kind": "unknown"
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        Console.WriteLine(\"--- Even pairs ---\");",
-            "        foreach (var p in pairs) {",
-            "    Console.WriteLine(string.Join(\" \", new object[]{p.n, p.l}).TrimEnd());",
-            "}"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "literal",
-                    "Value": "--- Even pairs ---"
+                    "kind": "literal",
+                    "value": "--- Even pairs ---"
                   }
                 ]
               },
               {
-                "Kind": "for",
-                "Value": "p",
-                "Children": [
+                "kind": "for",
+                "value": "p",
+                "children": [
                   {
-                    "Kind": "range",
-                    "Children": [
+                    "kind": "range",
+                    "children": [
                       {
-                        "Kind": "ident",
-                        "Value": "pairs"
+                        "kind": "ident",
+                        "value": "pairs"
                       }
                     ]
                   },
                   {
-                    "Kind": "block",
-                    "Children": [
+                    "kind": "block",
+                    "children": [
                       {
-                        "Kind": "call",
-                        "Value": "print",
-                        "Children": [
+                        "kind": "call",
+                        "value": "print",
+                        "children": [
                           {
-                            "Kind": "call",
-                            "Value": "TrimEnd",
-                            "Children": [
+                            "kind": "call",
+                            "value": "TrimEnd",
+                            "children": [
                               {
-                                "Kind": "call",
-                                "Value": "Join",
-                                "Children": [
+                                "kind": "call",
+                                "value": "Join",
+                                "children": [
                                   {
-                                    "Kind": "ident",
-                                    "Value": "string"
+                                    "kind": "ident",
+                                    "value": "string"
                                   },
                                   {
-                                    "Kind": "literal",
-                                    "Value": " "
+                                    "kind": "literal",
+                                    "value": " "
                                   },
                                   {
-                                    "Kind": "array",
-                                    "Children": [
+                                    "kind": "array",
+                                    "children": [
                                       {
-                                        "Kind": "member",
-                                        "Value": "n",
-                                        "Children": [
+                                        "kind": "member",
+                                        "value": "n",
+                                        "children": [
                                           {
-                                            "Kind": "ident",
-                                            "Value": "p"
+                                            "kind": "ident",
+                                            "value": "p"
                                           }
                                         ]
                                       },
                                       {
-                                        "Kind": "member",
-                                        "Value": "l",
-                                        "Children": [
+                                        "kind": "member",
+                                        "value": "l",
+                                        "children": [
                                           {
-                                            "Kind": "ident",
-                                            "Value": "p"
+                                            "kind": "ident",
+                                            "value": "p"
                                           }
                                         ]
                                       }
@@ -217,13 +210,12 @@
               }
             ]
           },
-          "StartLine": 15,
-          "EndLine": 20,
-          "Doc": ""
+          "startline": 15,
+          "endline": 20,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.33 on 2025-07-21 18:06 +0700\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\n\nstruct NResult {\n    public int n;\n    public string l;\n    public override string ToString() =\u003e $\"{{\\\"n\\\": {n}, \\\"l\\\": \\\"{l}\\\"}}\";\n}\nclass Program {\n    static int[] nums = new int[]{1, 2, 3};\n    static string[] letters = new string[]{\"A\", \"B\"};\n    static NResult[] pairs = (from n in nums from l in letters where ((n % 2) == 0) select new NResult{n = n, l = l}).ToArray();\n    static void Main() {\n        Console.WriteLine(\"--- Even pairs ---\");\n        foreach (var p in pairs) {\n    Console.WriteLine(string.Join(\" \", new object[]{p.n, p.l}).TrimEnd());\n}\n    }\n}\n"
+  ]
 }

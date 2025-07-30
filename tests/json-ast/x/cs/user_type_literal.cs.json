@@ -1,151 +1,149 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "Person",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 4,
-      "EndLine": 8,
-      "Fields": [
+      "name": "Person",
+      "kind": "struct",
+      "access": "",
+      "startline": 4,
+      "endline": 8,
+      "fields": [
         {
-          "Name": "name",
-          "Type": "string",
-          "Access": "public",
-          "Line": 5,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "name",
+          "type": "string",
+          "access": "public",
+          "line": 5,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "age",
-          "Type": "int",
-          "Access": "public",
-          "Line": 6,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "age",
+          "type": "int",
+          "access": "public",
+          "line": 6,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 7,
-          "EndLine": 7,
-          "Doc": ""
+          "startline": 7,
+          "endline": 7,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "Book",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 9,
-      "EndLine": 13,
-      "Fields": [
+      "name": "Book",
+      "kind": "struct",
+      "access": "",
+      "startline": 9,
+      "endline": 13,
+      "fields": [
         {
-          "Name": "title",
-          "Type": "string",
-          "Access": "public",
-          "Line": 10,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "title",
+          "type": "string",
+          "access": "public",
+          "line": 10,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "author",
-          "Type": "Person",
-          "Access": "public",
-          "Line": 11,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "author",
+          "type": "Person",
+          "access": "public",
+          "line": 11,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 12,
-          "EndLine": 12,
-          "Doc": ""
+          "startline": 12,
+          "endline": 12,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 14,
-      "EndLine": 19,
-      "Fields": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 14,
+      "endline": 19,
+      "fields": [
         {
-          "Name": "book",
-          "Type": "Book",
-          "Access": "",
-          "Line": 15,
-          "Value": "new Book{title = \"Go\", author = new Person{name = \"Bob\", age = 42}}",
-          "Ast": {
-            "Kind": "new",
-            "Value": "Book",
-            "Children": [
+          "name": "book",
+          "type": "Book",
+          "access": "",
+          "line": 15,
+          "value": "new Book{title = \"Go\", author = new Person{name = \"Bob\", age = 42}}",
+          "ast": {
+            "kind": "new",
+            "value": "Book",
+            "children": [
               {
-                "Kind": "init",
-                "Children": [
+                "kind": "init",
+                "children": [
                   {
-                    "Kind": "field",
-                    "Value": "title",
-                    "Children": [
+                    "kind": "field",
+                    "value": "title",
+                    "children": [
                       {
-                        "Kind": "literal",
-                        "Value": "Go"
+                        "kind": "literal",
+                        "value": "Go"
                       }
                     ]
                   },
                   {
-                    "Kind": "field",
-                    "Value": "author",
-                    "Children": [
+                    "kind": "field",
+                    "value": "author",
+                    "children": [
                       {
-                        "Kind": "new",
-                        "Value": "Person",
-                        "Children": [
+                        "kind": "new",
+                        "value": "Person",
+                        "children": [
                           {
-                            "Kind": "init",
-                            "Children": [
+                            "kind": "init",
+                            "children": [
                               {
-                                "Kind": "field",
-                                "Value": "name",
-                                "Children": [
+                                "kind": "field",
+                                "value": "name",
+                                "children": [
                                   {
-                                    "Kind": "literal",
-                                    "Value": "Bob"
+                                    "kind": "literal",
+                                    "value": "Bob"
                                   }
                                 ]
                               },
                               {
-                                "Kind": "field",
-                                "Value": "age",
-                                "Children": [
+                                "kind": "field",
+                                "value": "age",
+                                "children": [
                                   {
-                                    "Kind": "literal",
-                                    "Value": "42"
+                                    "kind": "literal",
+                                    "value": "42"
                                   }
                                 ]
                               }
@@ -159,38 +157,35 @@
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        Console.WriteLine(book.author.name);"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "member",
-                    "Value": "name",
-                    "Children": [
+                    "kind": "member",
+                    "value": "name",
+                    "children": [
                       {
-                        "Kind": "member",
-                        "Value": "author",
-                        "Children": [
+                        "kind": "member",
+                        "value": "author",
+                        "children": [
                           {
-                            "Kind": "ident",
-                            "Value": "book"
+                            "kind": "ident",
+                            "value": "book"
                           }
                         ]
                       }
@@ -200,13 +195,12 @@
               }
             ]
           },
-          "StartLine": 16,
-          "EndLine": 18,
-          "Doc": ""
+          "startline": 16,
+          "endline": 18,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.34 on 2025-07-22 09:11 +0700\nusing System;\n\nstruct Person {\n    public string name;\n    public int age;\n    public override string ToString() =\u003e $\"{{'name': '{name}', 'age': {age}}}\";\n}\nstruct Book {\n    public string title;\n    public Person author;\n    public override string ToString() =\u003e $\"{{'title': '{title}', 'author': {author}}}\";\n}\nclass Program {\n    static Book book = new Book{title = \"Go\", author = new Person{name = \"Bob\", age = 42}};\n    static void Main() {\n        Console.WriteLine(book.author.name);\n    }\n}\n"
+  ]
 }

@@ -1,63 +1,57 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 4,
-      "EndLine": 15,
-      "Fields": [],
-      "Methods": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 4,
+      "endline": 15,
+      "fields": [],
+      "methods": [
         {
-          "Name": "sum_rec",
-          "Params": [
+          "name": "sum_rec",
+          "params": [
             {
-              "Name": "n",
-              "Type": "int"
+              "name": "n",
+              "type": "int"
             },
             {
-              "Name": "acc",
-              "Type": "int"
+              "name": "acc",
+              "type": "int"
             }
           ],
-          "Ret": "int",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "    if ((n == 0)) {",
-            "    return acc;",
-            "};",
-            "    return sum_rec((n - 1), (acc + n));"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "ret": "int",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "if",
-                "Children": [
+                "kind": "if",
+                "children": [
                   {
-                    "Kind": "binary",
-                    "Value": "==",
-                    "Children": [
+                    "kind": "binary",
+                    "value": "==",
+                    "children": [
                       {
-                        "Kind": "ident",
-                        "Value": "n"
+                        "kind": "ident",
+                        "value": "n"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "0"
+                        "kind": "literal",
+                        "value": "0"
                       }
                     ]
                   },
                   {
-                    "Kind": "block",
-                    "Children": [
+                    "kind": "block",
+                    "children": [
                       {
-                        "Kind": "return",
-                        "Children": [
+                        "kind": "return",
+                        "children": [
                           {
-                            "Kind": "ident",
-                            "Value": "acc"
+                            "kind": "ident",
+                            "value": "acc"
                           }
                         ]
                       }
@@ -66,40 +60,40 @@
                 ]
               },
               {
-                "Kind": "empty"
+                "kind": "empty"
               },
               {
-                "Kind": "return",
-                "Children": [
+                "kind": "return",
+                "children": [
                   {
-                    "Kind": "call",
-                    "Value": "sum_rec",
-                    "Children": [
+                    "kind": "call",
+                    "value": "sum_rec",
+                    "children": [
                       {
-                        "Kind": "binary",
-                        "Value": "-",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "-",
+                        "children": [
                           {
-                            "Kind": "ident",
-                            "Value": "n"
+                            "kind": "ident",
+                            "value": "n"
                           },
                           {
-                            "Kind": "literal",
-                            "Value": "1"
+                            "kind": "literal",
+                            "value": "1"
                           }
                         ]
                       },
                       {
-                        "Kind": "binary",
-                        "Value": "+",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "+",
+                        "children": [
                           {
-                            "Kind": "ident",
-                            "Value": "acc"
+                            "kind": "ident",
+                            "value": "acc"
                           },
                           {
-                            "Kind": "ident",
-                            "Value": "n"
+                            "kind": "ident",
+                            "value": "n"
                           }
                         ]
                       }
@@ -109,37 +103,34 @@
               }
             ]
           },
-          "StartLine": 5,
-          "EndLine": 10,
-          "Doc": ""
+          "startline": 5,
+          "endline": 10,
+          "doc": ""
         },
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        Console.WriteLine(sum_rec(10, 0));"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "call",
-                    "Value": "sum_rec",
-                    "Children": [
+                    "kind": "call",
+                    "value": "sum_rec",
+                    "children": [
                       {
-                        "Kind": "literal",
-                        "Value": "10"
+                        "kind": "literal",
+                        "value": "10"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "0"
+                        "kind": "literal",
+                        "value": "0"
                       }
                     ]
                   }
@@ -147,13 +138,12 @@
               }
             ]
           },
-          "StartLine": 12,
-          "EndLine": 14,
-          "Doc": ""
+          "startline": 12,
+          "endline": 14,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.34 on 2025-07-22 09:11 +0700\nusing System;\n\nclass Program {\n    static int sum_rec(int n, int acc) {\n    if ((n == 0)) {\n    return acc;\n};\n    return sum_rec((n - 1), (acc + n));\n}\n\n    static void Main() {\n        Console.WriteLine(sum_rec(10, 0));\n    }\n}\n"
+  ]
 }

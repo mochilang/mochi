@@ -1,97 +1,97 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 4,
-      "EndLine": 22,
-      "Fields": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 4,
+      "endline": 22,
+      "fields": [
         {
-          "Name": "x",
-          "Type": "int",
-          "Access": "",
-          "Line": 5,
-          "Value": "2",
-          "Ast": {
-            "Kind": "literal",
-            "Value": "2"
+          "name": "x",
+          "type": "int",
+          "access": "",
+          "line": 5,
+          "value": "2",
+          "ast": {
+            "kind": "literal",
+            "value": "2"
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "label",
-          "Type": "string",
-          "Access": "",
-          "Line": 6,
-          "Value": "((x == 1) ? \"one\" : ((x == 2) ? \"two\" : ((x == 3) ? \"three\" : \"unknown\")))",
-          "Ast": {
-            "Kind": "cond",
-            "Children": [
+          "name": "label",
+          "type": "string",
+          "access": "",
+          "line": 6,
+          "value": "((x == 1) ? \"one\" : ((x == 2) ? \"two\" : ((x == 3) ? \"three\" : \"unknown\")))",
+          "ast": {
+            "kind": "cond",
+            "children": [
               {
-                "Kind": "binary",
-                "Value": "==",
-                "Children": [
+                "kind": "binary",
+                "value": "==",
+                "children": [
                   {
-                    "Kind": "ident",
-                    "Value": "x"
+                    "kind": "ident",
+                    "value": "x"
                   },
                   {
-                    "Kind": "literal",
-                    "Value": "1"
+                    "kind": "literal",
+                    "value": "1"
                   }
                 ]
               },
               {
-                "Kind": "literal",
-                "Value": "one"
+                "kind": "literal",
+                "value": "one"
               },
               {
-                "Kind": "cond",
-                "Children": [
+                "kind": "cond",
+                "children": [
                   {
-                    "Kind": "binary",
-                    "Value": "==",
-                    "Children": [
+                    "kind": "binary",
+                    "value": "==",
+                    "children": [
                       {
-                        "Kind": "ident",
-                        "Value": "x"
+                        "kind": "ident",
+                        "value": "x"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "2"
+                        "kind": "literal",
+                        "value": "2"
                       }
                     ]
                   },
                   {
-                    "Kind": "literal",
-                    "Value": "two"
+                    "kind": "literal",
+                    "value": "two"
                   },
                   {
-                    "Kind": "cond",
-                    "Children": [
+                    "kind": "cond",
+                    "children": [
                       {
-                        "Kind": "binary",
-                        "Value": "==",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "==",
+                        "children": [
                           {
-                            "Kind": "ident",
-                            "Value": "x"
+                            "kind": "ident",
+                            "value": "x"
                           },
                           {
-                            "Kind": "literal",
-                            "Value": "3"
+                            "kind": "literal",
+                            "value": "3"
                           }
                         ]
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "three"
+                        "kind": "literal",
+                        "value": "three"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "unknown"
+                        "kind": "literal",
+                        "value": "unknown"
                       }
                     ]
                   }
@@ -99,94 +99,94 @@
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "day",
-          "Type": "string",
-          "Access": "",
-          "Line": 7,
-          "Value": "\"sun\"",
-          "Ast": {
-            "Kind": "literal",
-            "Value": "sun"
+          "name": "day",
+          "type": "string",
+          "access": "",
+          "line": 7,
+          "value": "\"sun\"",
+          "ast": {
+            "kind": "literal",
+            "value": "sun"
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "mood",
-          "Type": "string",
-          "Access": "",
-          "Line": 8,
-          "Value": "((day == \"mon\") ? \"tired\" : ((day == \"fri\") ? \"excited\" : ((day == \"sun\") ? \"relaxed\" : \"normal\")))",
-          "Ast": {
-            "Kind": "cond",
-            "Children": [
+          "name": "mood",
+          "type": "string",
+          "access": "",
+          "line": 8,
+          "value": "((day == \"mon\") ? \"tired\" : ((day == \"fri\") ? \"excited\" : ((day == \"sun\") ? \"relaxed\" : \"normal\")))",
+          "ast": {
+            "kind": "cond",
+            "children": [
               {
-                "Kind": "binary",
-                "Value": "==",
-                "Children": [
+                "kind": "binary",
+                "value": "==",
+                "children": [
                   {
-                    "Kind": "ident",
-                    "Value": "day"
+                    "kind": "ident",
+                    "value": "day"
                   },
                   {
-                    "Kind": "literal",
-                    "Value": "mon"
+                    "kind": "literal",
+                    "value": "mon"
                   }
                 ]
               },
               {
-                "Kind": "literal",
-                "Value": "tired"
+                "kind": "literal",
+                "value": "tired"
               },
               {
-                "Kind": "cond",
-                "Children": [
+                "kind": "cond",
+                "children": [
                   {
-                    "Kind": "binary",
-                    "Value": "==",
-                    "Children": [
+                    "kind": "binary",
+                    "value": "==",
+                    "children": [
                       {
-                        "Kind": "ident",
-                        "Value": "day"
+                        "kind": "ident",
+                        "value": "day"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "fri"
+                        "kind": "literal",
+                        "value": "fri"
                       }
                     ]
                   },
                   {
-                    "Kind": "literal",
-                    "Value": "excited"
+                    "kind": "literal",
+                    "value": "excited"
                   },
                   {
-                    "Kind": "cond",
-                    "Children": [
+                    "kind": "cond",
+                    "children": [
                       {
-                        "Kind": "binary",
-                        "Value": "==",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "==",
+                        "children": [
                           {
-                            "Kind": "ident",
-                            "Value": "day"
+                            "kind": "ident",
+                            "value": "day"
                           },
                           {
-                            "Kind": "literal",
-                            "Value": "sun"
+                            "kind": "literal",
+                            "value": "sun"
                           }
                         ]
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "relaxed"
+                        "kind": "literal",
+                        "value": "relaxed"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "normal"
+                        "kind": "literal",
+                        "value": "normal"
                       }
                     ]
                   }
@@ -194,148 +194,145 @@
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "ok",
-          "Type": "bool",
-          "Access": "",
-          "Line": 9,
-          "Value": "true",
-          "Ast": {
-            "Kind": "literal",
-            "Value": "true"
+          "name": "ok",
+          "type": "bool",
+          "access": "",
+          "line": 9,
+          "value": "true",
+          "ast": {
+            "kind": "literal",
+            "value": "true"
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "status",
-          "Type": "string",
-          "Access": "",
-          "Line": 10,
-          "Value": "((ok == true) ? \"confirmed\" : ((ok == false) ? \"denied\" : \"denied\"))",
-          "Ast": {
-            "Kind": "cond",
-            "Children": [
+          "name": "status",
+          "type": "string",
+          "access": "",
+          "line": 10,
+          "value": "((ok == true) ? \"confirmed\" : ((ok == false) ? \"denied\" : \"denied\"))",
+          "ast": {
+            "kind": "cond",
+            "children": [
               {
-                "Kind": "binary",
-                "Value": "==",
-                "Children": [
+                "kind": "binary",
+                "value": "==",
+                "children": [
                   {
-                    "Kind": "ident",
-                    "Value": "ok"
+                    "kind": "ident",
+                    "value": "ok"
                   },
                   {
-                    "Kind": "literal",
-                    "Value": "true"
+                    "kind": "literal",
+                    "value": "true"
                   }
                 ]
               },
               {
-                "Kind": "literal",
-                "Value": "confirmed"
+                "kind": "literal",
+                "value": "confirmed"
               },
               {
-                "Kind": "cond",
-                "Children": [
+                "kind": "cond",
+                "children": [
                   {
-                    "Kind": "binary",
-                    "Value": "==",
-                    "Children": [
+                    "kind": "binary",
+                    "value": "==",
+                    "children": [
                       {
-                        "Kind": "ident",
-                        "Value": "ok"
+                        "kind": "ident",
+                        "value": "ok"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "false"
+                        "kind": "literal",
+                        "value": "false"
                       }
                     ]
                   },
                   {
-                    "Kind": "literal",
-                    "Value": "denied"
+                    "kind": "literal",
+                    "value": "denied"
                   },
                   {
-                    "Kind": "literal",
-                    "Value": "denied"
+                    "kind": "literal",
+                    "value": "denied"
                   }
                 ]
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "classify",
-          "Params": [
+          "name": "classify",
+          "params": [
             {
-              "Name": "n",
-              "Type": "int"
+              "name": "n",
+              "type": "int"
             }
           ],
-          "Ret": "string",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "    return ((n == 0) ? \"zero\" : ((n == 1) ? \"one\" : \"many\"));"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "ret": "string",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "return",
-                "Children": [
+                "kind": "return",
+                "children": [
                   {
-                    "Kind": "cond",
-                    "Children": [
+                    "kind": "cond",
+                    "children": [
                       {
-                        "Kind": "binary",
-                        "Value": "==",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "==",
+                        "children": [
                           {
-                            "Kind": "ident",
-                            "Value": "n"
+                            "kind": "ident",
+                            "value": "n"
                           },
                           {
-                            "Kind": "literal",
-                            "Value": "0"
+                            "kind": "literal",
+                            "value": "0"
                           }
                         ]
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "zero"
+                        "kind": "literal",
+                        "value": "zero"
                       },
                       {
-                        "Kind": "cond",
-                        "Children": [
+                        "kind": "cond",
+                        "children": [
                           {
-                            "Kind": "binary",
-                            "Value": "==",
-                            "Children": [
+                            "kind": "binary",
+                            "value": "==",
+                            "children": [
                               {
-                                "Kind": "ident",
-                                "Value": "n"
+                                "kind": "ident",
+                                "value": "n"
                               },
                               {
-                                "Kind": "literal",
-                                "Value": "1"
+                                "kind": "literal",
+                                "value": "1"
                               }
                             ]
                           },
                           {
-                            "Kind": "literal",
-                            "Value": "one"
+                            "kind": "literal",
+                            "value": "one"
                           },
                           {
-                            "Kind": "literal",
-                            "Value": "many"
+                            "kind": "literal",
+                            "value": "many"
                           }
                         ]
                       }
@@ -345,83 +342,76 @@
               }
             ]
           },
-          "StartLine": 11,
-          "EndLine": 13,
-          "Doc": ""
+          "startline": 11,
+          "endline": 13,
+          "doc": ""
         },
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        Console.WriteLine(label);",
-            "        Console.WriteLine(mood);",
-            "        Console.WriteLine(status);",
-            "        Console.WriteLine(classify(0));",
-            "        Console.WriteLine(classify(5));"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "ident",
-                    "Value": "label"
+                    "kind": "ident",
+                    "value": "label"
                   }
                 ]
               },
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "ident",
-                    "Value": "mood"
+                    "kind": "ident",
+                    "value": "mood"
                   }
                 ]
               },
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "ident",
-                    "Value": "status"
+                    "kind": "ident",
+                    "value": "status"
                   }
                 ]
               },
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "call",
-                    "Value": "classify",
-                    "Children": [
+                    "kind": "call",
+                    "value": "classify",
+                    "children": [
                       {
-                        "Kind": "literal",
-                        "Value": "0"
+                        "kind": "literal",
+                        "value": "0"
                       }
                     ]
                   }
                 ]
               },
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "call",
-                    "Value": "classify",
-                    "Children": [
+                    "kind": "call",
+                    "value": "classify",
+                    "children": [
                       {
-                        "Kind": "literal",
-                        "Value": "5"
+                        "kind": "literal",
+                        "value": "5"
                       }
                     ]
                   }
@@ -429,13 +419,12 @@
               }
             ]
           },
-          "StartLine": 15,
-          "EndLine": 21,
-          "Doc": ""
+          "startline": 15,
+          "endline": 21,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.34 on 2025-07-21 23:52 +0700\nusing System;\n\nclass Program {\n    static int x = 2;\n    static string label = ((x == 1) ? \"one\" : ((x == 2) ? \"two\" : ((x == 3) ? \"three\" : \"unknown\")));\n    static string day = \"sun\";\n    static string mood = ((day == \"mon\") ? \"tired\" : ((day == \"fri\") ? \"excited\" : ((day == \"sun\") ? \"relaxed\" : \"normal\")));\n    static bool ok = true;\n    static string status = ((ok == true) ? \"confirmed\" : ((ok == false) ? \"denied\" : \"denied\"));\n    static string classify(int n) {\n    return ((n == 0) ? \"zero\" : ((n == 1) ? \"one\" : \"many\"));\n}\n\n    static void Main() {\n        Console.WriteLine(label);\n        Console.WriteLine(mood);\n        Console.WriteLine(status);\n        Console.WriteLine(classify(0));\n        Console.WriteLine(classify(5));\n    }\n}\n"
+  ]
 }

@@ -1,67 +1,66 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "Counter",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 4,
-      "EndLine": 7,
-      "Fields": [
+      "name": "Counter",
+      "kind": "struct",
+      "access": "",
+      "startline": 4,
+      "endline": 7,
+      "fields": [
         {
-          "Name": "n",
-          "Type": "int",
-          "Access": "public",
-          "Line": 5,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "n",
+          "type": "int",
+          "access": "public",
+          "line": 5,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 6,
-          "EndLine": 6,
-          "Doc": ""
+          "startline": 6,
+          "endline": 6,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 8,
-      "EndLine": 18,
-      "Fields": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 8,
+      "endline": 18,
+      "fields": [
         {
-          "Name": "c",
-          "Type": "Counter",
-          "Access": "",
-          "Line": 9,
-          "Value": "new Counter{n = 0}",
-          "Ast": {
-            "Kind": "new",
-            "Value": "Counter",
-            "Children": [
+          "name": "c",
+          "type": "Counter",
+          "access": "",
+          "line": 9,
+          "value": "new Counter{n = 0}",
+          "ast": {
+            "kind": "new",
+            "value": "Counter",
+            "children": [
               {
-                "Kind": "init",
-                "Children": [
+                "kind": "init",
+                "children": [
                   {
-                    "Kind": "field",
-                    "Value": "n",
-                    "Children": [
+                    "kind": "field",
+                    "value": "n",
+                    "children": [
                       {
-                        "Kind": "literal",
-                        "Value": "0"
+                        "kind": "literal",
+                        "value": "0"
                       }
                     ]
                   }
@@ -69,58 +68,55 @@
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "inc",
-          "Params": [
+          "name": "inc",
+          "params": [
             {
-              "Name": "c",
-              "Type": "Counter"
+              "name": "c",
+              "type": "Counter"
             }
           ],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "    c.n = (c.n + 1);"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "assign",
-                "Children": [
+                "kind": "assign",
+                "children": [
                   {
-                    "Kind": "member",
-                    "Value": "n",
-                    "Children": [
+                    "kind": "member",
+                    "value": "n",
+                    "children": [
                       {
-                        "Kind": "ident",
-                        "Value": "c"
+                        "kind": "ident",
+                        "value": "c"
                       }
                     ]
                   },
                   {
-                    "Kind": "binary",
-                    "Value": "+",
-                    "Children": [
+                    "kind": "binary",
+                    "value": "+",
+                    "children": [
                       {
-                        "Kind": "member",
-                        "Value": "n",
-                        "Children": [
+                        "kind": "member",
+                        "value": "n",
+                        "children": [
                           {
-                            "Kind": "ident",
-                            "Value": "c"
+                            "kind": "ident",
+                            "value": "c"
                           }
                         ]
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "1"
+                        "kind": "literal",
+                        "value": "1"
                       }
                     ]
                   }
@@ -128,44 +124,40 @@
               }
             ]
           },
-          "StartLine": 10,
-          "EndLine": 12,
-          "Doc": ""
+          "startline": 10,
+          "endline": 12,
+          "doc": ""
         },
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        inc(c);",
-            "        Console.WriteLine(c.n);"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "inc",
-                "Children": [
+                "kind": "call",
+                "value": "inc",
+                "children": [
                   {
-                    "Kind": "ident",
-                    "Value": "c"
+                    "kind": "ident",
+                    "value": "c"
                   }
                 ]
               },
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "member",
-                    "Value": "n",
-                    "Children": [
+                    "kind": "member",
+                    "value": "n",
+                    "children": [
                       {
-                        "Kind": "ident",
-                        "Value": "c"
+                        "kind": "ident",
+                        "value": "c"
                       }
                     ]
                   }
@@ -173,13 +165,12 @@
               }
             ]
           },
-          "StartLine": 14,
-          "EndLine": 17,
-          "Doc": ""
+          "startline": 14,
+          "endline": 17,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.34 on 2025-07-22 09:31 +0700\nusing System;\n\nstruct Counter {\n    public int n;\n    public override string ToString() =\u003e $\"Counter {{n = {n}}}\";\n}\nclass Program {\n    static Counter c = new Counter{n = 0};\n    static void inc(Counter c) {\n    c.n = (c.n + 1);\n}\n\n    static void Main() {\n        inc(c);\n        Console.WriteLine(c.n);\n    }\n}\n"
+  ]
 }

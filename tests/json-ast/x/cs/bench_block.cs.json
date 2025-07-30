@@ -1,145 +1,131 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 6,
-      "EndLine": 42,
-      "Fields": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 6,
+      "endline": 42,
+      "fields": [
         {
-          "Name": "seededNow",
-          "Type": "bool",
-          "Access": "",
-          "Line": 7,
-          "Value": "false",
-          "Ast": {
-            "Kind": "literal",
-            "Value": "false"
+          "name": "seededNow",
+          "type": "bool",
+          "access": "",
+          "line": 7,
+          "value": "false",
+          "ast": {
+            "kind": "literal",
+            "value": "false"
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "nowSeed",
-          "Type": "long",
-          "Access": "",
-          "Line": 8,
-          "Value": "0",
-          "Ast": {
-            "Kind": "literal",
-            "Value": "0"
+          "name": "nowSeed",
+          "type": "long",
+          "access": "",
+          "line": 8,
+          "value": "0",
+          "ast": {
+            "kind": "literal",
+            "value": "0"
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "_now",
-          "Params": [],
-          "Ret": "int",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        if (!seededNow) {",
-            "            var s = Environment.GetEnvironmentVariable(\"MOCHI_NOW_SEED\");",
-            "            if (long.TryParse(s, out var v)) {",
-            "                nowSeed = v;",
-            "                seededNow = true;",
-            "            }",
-            "        }",
-            "        if (seededNow) {",
-            "            nowSeed = (nowSeed*1664525 + 1013904223) % 2147483647;",
-            "            return (int)nowSeed;",
-            "        }",
-            "        return (int)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() % int.MaxValue);"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "_now",
+          "params": [],
+          "ret": "int",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "if",
-                "Children": [
+                "kind": "if",
+                "children": [
                   {
-                    "Kind": "unary",
-                    "Value": "!",
-                    "Children": [
+                    "kind": "unary",
+                    "value": "!",
+                    "children": [
                       {
-                        "Kind": "ident",
-                        "Value": "seededNow"
+                        "kind": "ident",
+                        "value": "seededNow"
                       }
                     ]
                   },
                   {
-                    "Kind": "block",
-                    "Children": [
+                    "kind": "block",
+                    "children": [
                       {
-                        "Kind": "var",
-                        "Value": "s",
-                        "Children": [
+                        "kind": "var",
+                        "value": "s",
+                        "children": [
                           {
-                            "Kind": "call",
-                            "Value": "GetEnvironmentVariable",
-                            "Children": [
+                            "kind": "call",
+                            "value": "GetEnvironmentVariable",
+                            "children": [
                               {
-                                "Kind": "ident",
-                                "Value": "Environment"
+                                "kind": "ident",
+                                "value": "Environment"
                               },
                               {
-                                "Kind": "literal",
-                                "Value": "MOCHI_NOW_SEED"
+                                "kind": "literal",
+                                "value": "MOCHI_NOW_SEED"
                               }
                             ]
                           }
                         ]
                       },
                       {
-                        "Kind": "if",
-                        "Children": [
+                        "kind": "if",
+                        "children": [
                           {
-                            "Kind": "call",
-                            "Value": "TryParse",
-                            "Children": [
+                            "kind": "call",
+                            "value": "TryParse",
+                            "children": [
                               {
-                                "Kind": "ident",
-                                "Value": "long"
+                                "kind": "ident",
+                                "value": "long"
                               },
                               {
-                                "Kind": "ident",
-                                "Value": "s"
+                                "kind": "ident",
+                                "value": "s"
                               },
                               {
-                                "Kind": "unknown"
+                                "kind": "unknown"
                               }
                             ]
                           },
                           {
-                            "Kind": "block",
-                            "Children": [
+                            "kind": "block",
+                            "children": [
                               {
-                                "Kind": "assign",
-                                "Children": [
+                                "kind": "assign",
+                                "children": [
                                   {
-                                    "Kind": "ident",
-                                    "Value": "nowSeed"
+                                    "kind": "ident",
+                                    "value": "nowSeed"
                                   },
                                   {
-                                    "Kind": "ident",
-                                    "Value": "v"
+                                    "kind": "ident",
+                                    "value": "v"
                                   }
                                 ]
                               },
                               {
-                                "Kind": "assign",
-                                "Children": [
+                                "kind": "assign",
+                                "children": [
                                   {
-                                    "Kind": "ident",
-                                    "Value": "seededNow"
+                                    "kind": "ident",
+                                    "value": "seededNow"
                                   },
                                   {
-                                    "Kind": "literal",
-                                    "Value": "true"
+                                    "kind": "literal",
+                                    "value": "true"
                                   }
                                 ]
                               }
@@ -152,64 +138,64 @@
                 ]
               },
               {
-                "Kind": "if",
-                "Children": [
+                "kind": "if",
+                "children": [
                   {
-                    "Kind": "ident",
-                    "Value": "seededNow"
+                    "kind": "ident",
+                    "value": "seededNow"
                   },
                   {
-                    "Kind": "block",
-                    "Children": [
+                    "kind": "block",
+                    "children": [
                       {
-                        "Kind": "assign",
-                        "Children": [
+                        "kind": "assign",
+                        "children": [
                           {
-                            "Kind": "ident",
-                            "Value": "nowSeed"
+                            "kind": "ident",
+                            "value": "nowSeed"
                           },
                           {
-                            "Kind": "binary",
-                            "Value": "%",
-                            "Children": [
+                            "kind": "binary",
+                            "value": "%",
+                            "children": [
                               {
-                                "Kind": "binary",
-                                "Value": "+",
-                                "Children": [
+                                "kind": "binary",
+                                "value": "+",
+                                "children": [
                                   {
-                                    "Kind": "binary",
-                                    "Value": "*",
-                                    "Children": [
+                                    "kind": "binary",
+                                    "value": "*",
+                                    "children": [
                                       {
-                                        "Kind": "ident",
-                                        "Value": "nowSeed"
+                                        "kind": "ident",
+                                        "value": "nowSeed"
                                       },
                                       {
-                                        "Kind": "literal",
-                                        "Value": "1664525"
+                                        "kind": "literal",
+                                        "value": "1664525"
                                       }
                                     ]
                                   },
                                   {
-                                    "Kind": "literal",
-                                    "Value": "1013904223"
+                                    "kind": "literal",
+                                    "value": "1013904223"
                                   }
                                 ]
                               },
                               {
-                                "Kind": "literal",
-                                "Value": "2147483647"
+                                "kind": "literal",
+                                "value": "2147483647"
                               }
                             ]
                           }
                         ]
                       },
                       {
-                        "Kind": "return",
-                        "Children": [
+                        "kind": "return",
+                        "children": [
                           {
-                            "Kind": "ident",
-                            "Value": "nowSeed"
+                            "kind": "ident",
+                            "value": "nowSeed"
                           }
                         ]
                       }
@@ -218,35 +204,35 @@
                 ]
               },
               {
-                "Kind": "return",
-                "Children": [
+                "kind": "return",
+                "children": [
                   {
-                    "Kind": "binary",
-                    "Value": "%",
-                    "Children": [
+                    "kind": "binary",
+                    "value": "%",
+                    "children": [
                       {
-                        "Kind": "call",
-                        "Value": "ToUnixTimeMilliseconds",
-                        "Children": [
+                        "kind": "call",
+                        "value": "ToUnixTimeMilliseconds",
+                        "children": [
                           {
-                            "Kind": "member",
-                            "Value": "UtcNow",
-                            "Children": [
+                            "kind": "member",
+                            "value": "UtcNow",
+                            "children": [
                               {
-                                "Kind": "ident",
-                                "Value": "DateTimeOffset"
+                                "kind": "ident",
+                                "value": "DateTimeOffset"
                               }
                             ]
                           }
                         ]
                       },
                       {
-                        "Kind": "member",
-                        "Value": "MaxValue",
-                        "Children": [
+                        "kind": "member",
+                        "value": "MaxValue",
+                        "children": [
                           {
-                            "Kind": "ident",
-                            "Value": "int"
+                            "kind": "ident",
+                            "value": "int"
                           }
                         ]
                       }
@@ -256,36 +242,33 @@
               }
             ]
           },
-          "StartLine": 9,
-          "EndLine": 22,
-          "Doc": ""
+          "startline": 9,
+          "endline": 22,
+          "doc": ""
         },
         {
-          "Name": "_mem",
-          "Params": [],
-          "Ret": "long",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        return GC.GetTotalMemory(false);"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "_mem",
+          "params": [],
+          "ret": "long",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "return",
-                "Children": [
+                "kind": "return",
+                "children": [
                   {
-                    "Kind": "call",
-                    "Value": "GetTotalMemory",
-                    "Children": [
+                    "kind": "call",
+                    "value": "GetTotalMemory",
+                    "children": [
                       {
-                        "Kind": "ident",
-                        "Value": "GC"
+                        "kind": "ident",
+                        "value": "GC"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "false"
+                        "kind": "literal",
+                        "value": "false"
                       }
                     ]
                   }
@@ -293,116 +276,100 @@
               }
             ]
           },
-          "StartLine": 23,
-          "EndLine": 25,
-          "Doc": ""
+          "startline": 23,
+          "endline": 25,
+          "doc": ""
         },
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        {",
-            "            var __memStart = _mem();",
-            "            var __start = _now();",
-            "            long n = 1000;",
-            "            long s = 0;",
-            "            for (var i_0 = 1; i_0 \u003c n; i_0++) {",
-            "                s = (s + i_0);",
-            "            }",
-            "            var __end = _now();",
-            "            var __memEnd = _mem();",
-            "            var __dur = (__end - __start) / 1000;",
-            "            var __memDiff = __memEnd - __memStart;",
-            "            Console.WriteLine(JsonSerializer.Serialize(new SortedDictionary\u003cstring, object\u003e{{\"name\", \"simple\"}, {\"duration_us\", __dur}, {\"memory_bytes\", __memDiff}}, new JsonSerializerOptions{ WriteIndented = true }));",
-            "        }"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "block",
-                "Children": [
+                "kind": "block",
+                "children": [
                   {
-                    "Kind": "var",
-                    "Value": "__memStart",
-                    "Children": [
+                    "kind": "var",
+                    "value": "__memStart",
+                    "children": [
                       {
-                        "Kind": "call",
-                        "Value": "_mem"
+                        "kind": "call",
+                        "value": "_mem"
                       }
                     ]
                   },
                   {
-                    "Kind": "var",
-                    "Value": "__start",
-                    "Children": [
+                    "kind": "var",
+                    "value": "__start",
+                    "children": [
                       {
-                        "Kind": "call",
-                        "Value": "_now"
+                        "kind": "call",
+                        "value": "_now"
                       }
                     ]
                   },
                   {
-                    "Kind": "var",
-                    "Value": "n",
-                    "Children": [
+                    "kind": "var",
+                    "value": "n",
+                    "children": [
                       {
-                        "Kind": "literal",
-                        "Value": "1000"
+                        "kind": "literal",
+                        "value": "1000"
                       }
                     ]
                   },
                   {
-                    "Kind": "var",
-                    "Value": "s",
-                    "Children": [
+                    "kind": "var",
+                    "value": "s",
+                    "children": [
                       {
-                        "Kind": "literal",
-                        "Value": "0"
+                        "kind": "literal",
+                        "value": "0"
                       }
                     ]
                   },
                   {
-                    "Kind": "for",
-                    "Value": "i_0",
-                    "Children": [
+                    "kind": "for",
+                    "value": "i_0",
+                    "children": [
                       {
-                        "Kind": "range",
-                        "Children": [
+                        "kind": "range",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "1"
+                            "kind": "literal",
+                            "value": "1"
                           },
                           {
-                            "Kind": "ident",
-                            "Value": "n"
+                            "kind": "ident",
+                            "value": "n"
                           }
                         ]
                       },
                       {
-                        "Kind": "block",
-                        "Children": [
+                        "kind": "block",
+                        "children": [
                           {
-                            "Kind": "assign",
-                            "Children": [
+                            "kind": "assign",
+                            "children": [
                               {
-                                "Kind": "ident",
-                                "Value": "s"
+                                "kind": "ident",
+                                "value": "s"
                               },
                               {
-                                "Kind": "binary",
-                                "Value": "+",
-                                "Children": [
+                                "kind": "binary",
+                                "value": "+",
+                                "children": [
                                   {
-                                    "Kind": "ident",
-                                    "Value": "s"
+                                    "kind": "ident",
+                                    "value": "s"
                                   },
                                   {
-                                    "Kind": "ident",
-                                    "Value": "i_0"
+                                    "kind": "ident",
+                                    "value": "i_0"
                                   }
                                 ]
                               }
@@ -413,130 +380,130 @@
                     ]
                   },
                   {
-                    "Kind": "var",
-                    "Value": "__end",
-                    "Children": [
+                    "kind": "var",
+                    "value": "__end",
+                    "children": [
                       {
-                        "Kind": "call",
-                        "Value": "_now"
+                        "kind": "call",
+                        "value": "_now"
                       }
                     ]
                   },
                   {
-                    "Kind": "var",
-                    "Value": "__memEnd",
-                    "Children": [
+                    "kind": "var",
+                    "value": "__memEnd",
+                    "children": [
                       {
-                        "Kind": "call",
-                        "Value": "_mem"
+                        "kind": "call",
+                        "value": "_mem"
                       }
                     ]
                   },
                   {
-                    "Kind": "var",
-                    "Value": "__dur",
-                    "Children": [
+                    "kind": "var",
+                    "value": "__dur",
+                    "children": [
                       {
-                        "Kind": "binary",
-                        "Value": "/",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "/",
+                        "children": [
                           {
-                            "Kind": "binary",
-                            "Value": "-",
-                            "Children": [
+                            "kind": "binary",
+                            "value": "-",
+                            "children": [
                               {
-                                "Kind": "ident",
-                                "Value": "__end"
+                                "kind": "ident",
+                                "value": "__end"
                               },
                               {
-                                "Kind": "ident",
-                                "Value": "__start"
+                                "kind": "ident",
+                                "value": "__start"
                               }
                             ]
                           },
                           {
-                            "Kind": "literal",
-                            "Value": "1000"
+                            "kind": "literal",
+                            "value": "1000"
                           }
                         ]
                       }
                     ]
                   },
                   {
-                    "Kind": "var",
-                    "Value": "__memDiff",
-                    "Children": [
+                    "kind": "var",
+                    "value": "__memDiff",
+                    "children": [
                       {
-                        "Kind": "binary",
-                        "Value": "-",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "-",
+                        "children": [
                           {
-                            "Kind": "ident",
-                            "Value": "__memEnd"
+                            "kind": "ident",
+                            "value": "__memEnd"
                           },
                           {
-                            "Kind": "ident",
-                            "Value": "__memStart"
+                            "kind": "ident",
+                            "value": "__memStart"
                           }
                         ]
                       }
                     ]
                   },
                   {
-                    "Kind": "call",
-                    "Value": "print",
-                    "Children": [
+                    "kind": "call",
+                    "value": "print",
+                    "children": [
                       {
-                        "Kind": "call",
-                        "Value": "Serialize",
-                        "Children": [
+                        "kind": "call",
+                        "value": "Serialize",
+                        "children": [
                           {
-                            "Kind": "ident",
-                            "Value": "JsonSerializer"
+                            "kind": "ident",
+                            "value": "JsonSerializer"
                           },
                           {
-                            "Kind": "new",
-                            "Value": "SortedDictionary\u003cstring, object\u003e",
-                            "Children": [
+                            "kind": "new",
+                            "value": "SortedDictionary\u003cstring, object\u003e",
+                            "children": [
                               {
-                                "Kind": "init",
-                                "Children": [
+                                "kind": "init",
+                                "children": [
                                   {
-                                    "Kind": "pair",
-                                    "Children": [
+                                    "kind": "pair",
+                                    "children": [
                                       {
-                                        "Kind": "literal",
-                                        "Value": "name"
+                                        "kind": "literal",
+                                        "value": "name"
                                       },
                                       {
-                                        "Kind": "literal",
-                                        "Value": "simple"
+                                        "kind": "literal",
+                                        "value": "simple"
                                       }
                                     ]
                                   },
                                   {
-                                    "Kind": "pair",
-                                    "Children": [
+                                    "kind": "pair",
+                                    "children": [
                                       {
-                                        "Kind": "literal",
-                                        "Value": "duration_us"
+                                        "kind": "literal",
+                                        "value": "duration_us"
                                       },
                                       {
-                                        "Kind": "ident",
-                                        "Value": "__dur"
+                                        "kind": "ident",
+                                        "value": "__dur"
                                       }
                                     ]
                                   },
                                   {
-                                    "Kind": "pair",
-                                    "Children": [
+                                    "kind": "pair",
+                                    "children": [
                                       {
-                                        "Kind": "literal",
-                                        "Value": "memory_bytes"
+                                        "kind": "literal",
+                                        "value": "memory_bytes"
                                       },
                                       {
-                                        "Kind": "ident",
-                                        "Value": "__memDiff"
+                                        "kind": "ident",
+                                        "value": "__memDiff"
                                       }
                                     ]
                                   }
@@ -545,19 +512,19 @@
                             ]
                           },
                           {
-                            "Kind": "new",
-                            "Value": "JsonSerializerOptions",
-                            "Children": [
+                            "kind": "new",
+                            "value": "JsonSerializerOptions",
+                            "children": [
                               {
-                                "Kind": "init",
-                                "Children": [
+                                "kind": "init",
+                                "children": [
                                   {
-                                    "Kind": "field",
-                                    "Value": "WriteIndented",
-                                    "Children": [
+                                    "kind": "field",
+                                    "value": "WriteIndented",
+                                    "children": [
                                       {
-                                        "Kind": "literal",
-                                        "Value": "true"
+                                        "kind": "literal",
+                                        "value": "true"
                                       }
                                     ]
                                   }
@@ -573,13 +540,12 @@
               }
             ]
           },
-          "StartLine": 26,
-          "EndLine": 41,
-          "Doc": ""
+          "startline": 26,
+          "endline": 41,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.39 on 2025-07-24 19:13 UTC\nusing System;\nusing System.Collections.Generic;\nusing System.Text.Json;\n\nclass Program {\n    static bool seededNow = false;\n    static long nowSeed = 0;\n    static int _now() {\n        if (!seededNow) {\n            var s = Environment.GetEnvironmentVariable(\"MOCHI_NOW_SEED\");\n            if (long.TryParse(s, out var v)) {\n                nowSeed = v;\n                seededNow = true;\n            }\n        }\n        if (seededNow) {\n            nowSeed = (nowSeed*1664525 + 1013904223) % 2147483647;\n            return (int)nowSeed;\n        }\n        return (int)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() % int.MaxValue);\n    }\n    static long _mem() {\n        return GC.GetTotalMemory(false);\n    }\n    static void Main() {\n        {\n            var __memStart = _mem();\n            var __start = _now();\n            long n = 1000;\n            long s = 0;\n            for (var i_0 = 1; i_0 \u003c n; i_0++) {\n                s = (s + i_0);\n            }\n            var __end = _now();\n            var __memEnd = _mem();\n            var __dur = (__end - __start) / 1000;\n            var __memDiff = __memEnd - __memStart;\n            Console.WriteLine(JsonSerializer.Serialize(new SortedDictionary\u003cstring, object\u003e{{\"name\", \"simple\"}, {\"duration_us\", __dur}, {\"memory_bytes\", __memDiff}}, new JsonSerializerOptions{ WriteIndented = true }));\n        }\n    }\n}\n"
+  ]
 }

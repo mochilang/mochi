@@ -1,145 +1,140 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 4,
-      "EndLine": 12,
-      "Fields": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 4,
+      "endline": 12,
+      "fields": [
         {
-          "Name": "a",
-          "Type": "int",
-          "Access": "",
-          "Line": 5,
-          "Value": "(10 - 3)",
-          "Ast": {
-            "Kind": "binary",
-            "Value": "-",
-            "Children": [
+          "name": "a",
+          "type": "int",
+          "access": "",
+          "line": 5,
+          "value": "(10 - 3)",
+          "ast": {
+            "kind": "binary",
+            "value": "-",
+            "children": [
               {
-                "Kind": "literal",
-                "Value": "10"
+                "kind": "literal",
+                "value": "10"
               },
               {
-                "Kind": "literal",
-                "Value": "3"
+                "kind": "literal",
+                "value": "3"
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "b",
-          "Type": "int",
-          "Access": "",
-          "Line": 6,
-          "Value": "(2 + 2)",
-          "Ast": {
-            "Kind": "binary",
-            "Value": "+",
-            "Children": [
+          "name": "b",
+          "type": "int",
+          "access": "",
+          "line": 6,
+          "value": "(2 + 2)",
+          "ast": {
+            "kind": "binary",
+            "value": "+",
+            "children": [
               {
-                "Kind": "literal",
-                "Value": "2"
+                "kind": "literal",
+                "value": "2"
               },
               {
-                "Kind": "literal",
-                "Value": "2"
+                "kind": "literal",
+                "value": "2"
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        Console.WriteLine(a);",
-            "        Console.WriteLine(((a == 7) ? \"true\" : \"false\"));",
-            "        Console.WriteLine(((b \u003c 5) ? \"true\" : \"false\"));"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "ident",
-                    "Value": "a"
+                    "kind": "ident",
+                    "value": "a"
                   }
                 ]
               },
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "cond",
-                    "Children": [
+                    "kind": "cond",
+                    "children": [
                       {
-                        "Kind": "binary",
-                        "Value": "==",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "==",
+                        "children": [
                           {
-                            "Kind": "ident",
-                            "Value": "a"
+                            "kind": "ident",
+                            "value": "a"
                           },
                           {
-                            "Kind": "literal",
-                            "Value": "7"
+                            "kind": "literal",
+                            "value": "7"
                           }
                         ]
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "true"
+                        "kind": "literal",
+                        "value": "true"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "false"
+                        "kind": "literal",
+                        "value": "false"
                       }
                     ]
                   }
                 ]
               },
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "cond",
-                    "Children": [
+                    "kind": "cond",
+                    "children": [
                       {
-                        "Kind": "binary",
-                        "Value": "\u003c",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "\u003c",
+                        "children": [
                           {
-                            "Kind": "ident",
-                            "Value": "b"
+                            "kind": "ident",
+                            "value": "b"
                           },
                           {
-                            "Kind": "literal",
-                            "Value": "5"
+                            "kind": "literal",
+                            "value": "5"
                           }
                         ]
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "true"
+                        "kind": "literal",
+                        "value": "true"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "false"
+                        "kind": "literal",
+                        "value": "false"
                       }
                     ]
                   }
@@ -147,13 +142,12 @@
               }
             ]
           },
-          "StartLine": 7,
-          "EndLine": 11,
-          "Doc": ""
+          "startline": 7,
+          "endline": 11,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.33 on 2025-07-21 18:06 +0700\nusing System;\n\nclass Program {\n    static int a = (10 - 3);\n    static int b = (2 + 2);\n    static void Main() {\n        Console.WriteLine(a);\n        Console.WriteLine(((a == 7) ? \"true\" : \"false\"));\n        Console.WriteLine(((b \u003c 5) ? \"true\" : \"false\"));\n    }\n}\n"
+  ]
 }

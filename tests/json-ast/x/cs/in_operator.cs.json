@@ -1,148 +1,144 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 4,
-      "EndLine": 10,
-      "Fields": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 4,
+      "endline": 10,
+      "fields": [
         {
-          "Name": "xs",
-          "Type": "int[]",
-          "Access": "",
-          "Line": 5,
-          "Value": "new int[]{1, 2, 3}",
-          "Ast": {
-            "Kind": "array",
-            "Children": [
+          "name": "xs",
+          "type": "int[]",
+          "access": "",
+          "line": 5,
+          "value": "new int[]{1, 2, 3}",
+          "ast": {
+            "kind": "array",
+            "children": [
               {
-                "Kind": "literal",
-                "Value": "1"
+                "kind": "literal",
+                "value": "1"
               },
               {
-                "Kind": "literal",
-                "Value": "2"
+                "kind": "literal",
+                "value": "2"
               },
               {
-                "Kind": "literal",
-                "Value": "3"
+                "kind": "literal",
+                "value": "3"
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        Console.WriteLine(((Array.IndexOf(xs, 2) \u003e= 0) ? \"true\" : \"false\"));",
-            "        Console.WriteLine(((!(Array.IndexOf(xs, 5) \u003e= 0)) ? \"true\" : \"false\"));"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "cond",
-                    "Children": [
+                    "kind": "cond",
+                    "children": [
                       {
-                        "Kind": "binary",
-                        "Value": "\u003e=",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "\u003e=",
+                        "children": [
                           {
-                            "Kind": "call",
-                            "Value": "IndexOf",
-                            "Children": [
+                            "kind": "call",
+                            "value": "IndexOf",
+                            "children": [
                               {
-                                "Kind": "ident",
-                                "Value": "Array"
+                                "kind": "ident",
+                                "value": "Array"
                               },
                               {
-                                "Kind": "ident",
-                                "Value": "xs"
+                                "kind": "ident",
+                                "value": "xs"
                               },
                               {
-                                "Kind": "literal",
-                                "Value": "2"
+                                "kind": "literal",
+                                "value": "2"
                               }
                             ]
                           },
                           {
-                            "Kind": "literal",
-                            "Value": "0"
+                            "kind": "literal",
+                            "value": "0"
                           }
                         ]
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "true"
+                        "kind": "literal",
+                        "value": "true"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "false"
+                        "kind": "literal",
+                        "value": "false"
                       }
                     ]
                   }
                 ]
               },
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "cond",
-                    "Children": [
+                    "kind": "cond",
+                    "children": [
                       {
-                        "Kind": "unary",
-                        "Value": "!",
-                        "Children": [
+                        "kind": "unary",
+                        "value": "!",
+                        "children": [
                           {
-                            "Kind": "binary",
-                            "Value": "\u003e=",
-                            "Children": [
+                            "kind": "binary",
+                            "value": "\u003e=",
+                            "children": [
                               {
-                                "Kind": "call",
-                                "Value": "IndexOf",
-                                "Children": [
+                                "kind": "call",
+                                "value": "IndexOf",
+                                "children": [
                                   {
-                                    "Kind": "ident",
-                                    "Value": "Array"
+                                    "kind": "ident",
+                                    "value": "Array"
                                   },
                                   {
-                                    "Kind": "ident",
-                                    "Value": "xs"
+                                    "kind": "ident",
+                                    "value": "xs"
                                   },
                                   {
-                                    "Kind": "literal",
-                                    "Value": "5"
+                                    "kind": "literal",
+                                    "value": "5"
                                   }
                                 ]
                               },
                               {
-                                "Kind": "literal",
-                                "Value": "0"
+                                "kind": "literal",
+                                "value": "0"
                               }
                             ]
                           }
                         ]
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "true"
+                        "kind": "literal",
+                        "value": "true"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "false"
+                        "kind": "literal",
+                        "value": "false"
                       }
                     ]
                   }
@@ -150,13 +146,12 @@
               }
             ]
           },
-          "StartLine": 6,
-          "EndLine": 9,
-          "Doc": ""
+          "startline": 6,
+          "endline": 9,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.33 on 2025-07-21 18:06 +0700\nusing System;\n\nclass Program {\n    static int[] xs = new int[]{1, 2, 3};\n    static void Main() {\n        Console.WriteLine(((Array.IndexOf(xs, 2) \u003e= 0) ? \"true\" : \"false\"));\n        Console.WriteLine(((!(Array.IndexOf(xs, 5) \u003e= 0)) ? \"true\" : \"false\"));\n    }\n}\n"
+  ]
 }

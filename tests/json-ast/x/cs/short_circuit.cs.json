@@ -1,154 +1,146 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 4,
-      "EndLine": 14,
-      "Fields": [],
-      "Methods": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 4,
+      "endline": 14,
+      "fields": [],
+      "methods": [
         {
-          "Name": "boom",
-          "Params": [
+          "name": "boom",
+          "params": [
             {
-              "Name": "a",
-              "Type": "int"
+              "name": "a",
+              "type": "int"
             },
             {
-              "Name": "b",
-              "Type": "int"
+              "name": "b",
+              "type": "int"
             }
           ],
-          "Ret": "bool",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "    Console.WriteLine(\"boom\");",
-            "    return true;"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "ret": "bool",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "literal",
-                    "Value": "boom"
+                    "kind": "literal",
+                    "value": "boom"
                   }
                 ]
               },
               {
-                "Kind": "return",
-                "Children": [
+                "kind": "return",
+                "children": [
                   {
-                    "Kind": "literal",
-                    "Value": "true"
+                    "kind": "literal",
+                    "value": "true"
                   }
                 ]
               }
             ]
           },
-          "StartLine": 5,
-          "EndLine": 8,
-          "Doc": ""
+          "startline": 5,
+          "endline": 8,
+          "doc": ""
         },
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        Console.WriteLine(((false \u0026\u0026 boom(1, 2)) ? 1 : 0));",
-            "        Console.WriteLine(((true || boom(1, 2)) ? 1 : 0));"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "cond",
-                    "Children": [
+                    "kind": "cond",
+                    "children": [
                       {
-                        "Kind": "binary",
-                        "Value": "\u0026\u0026",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "\u0026\u0026",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "false"
+                            "kind": "literal",
+                            "value": "false"
                           },
                           {
-                            "Kind": "call",
-                            "Value": "boom",
-                            "Children": [
+                            "kind": "call",
+                            "value": "boom",
+                            "children": [
                               {
-                                "Kind": "literal",
-                                "Value": "1"
+                                "kind": "literal",
+                                "value": "1"
                               },
                               {
-                                "Kind": "literal",
-                                "Value": "2"
+                                "kind": "literal",
+                                "value": "2"
                               }
                             ]
                           }
                         ]
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "1"
+                        "kind": "literal",
+                        "value": "1"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "0"
+                        "kind": "literal",
+                        "value": "0"
                       }
                     ]
                   }
                 ]
               },
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "cond",
-                    "Children": [
+                    "kind": "cond",
+                    "children": [
                       {
-                        "Kind": "binary",
-                        "Value": "||",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "||",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "true"
+                            "kind": "literal",
+                            "value": "true"
                           },
                           {
-                            "Kind": "call",
-                            "Value": "boom",
-                            "Children": [
+                            "kind": "call",
+                            "value": "boom",
+                            "children": [
                               {
-                                "Kind": "literal",
-                                "Value": "1"
+                                "kind": "literal",
+                                "value": "1"
                               },
                               {
-                                "Kind": "literal",
-                                "Value": "2"
+                                "kind": "literal",
+                                "value": "2"
                               }
                             ]
                           }
                         ]
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "1"
+                        "kind": "literal",
+                        "value": "1"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "0"
+                        "kind": "literal",
+                        "value": "0"
                       }
                     ]
                   }
@@ -156,13 +148,12 @@
               }
             ]
           },
-          "StartLine": 10,
-          "EndLine": 13,
-          "Doc": ""
+          "startline": 10,
+          "endline": 13,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.34 on 2025-07-22 09:31 +0700\nusing System;\n\nclass Program {\n    static bool boom(int a, int b) {\n    Console.WriteLine(\"boom\");\n    return true;\n}\n\n    static void Main() {\n        Console.WriteLine(((false \u0026\u0026 boom(1, 2)) ? 1 : 0));\n        Console.WriteLine(((true || boom(1, 2)) ? 1 : 0));\n    }\n}\n"
+  ]
 }

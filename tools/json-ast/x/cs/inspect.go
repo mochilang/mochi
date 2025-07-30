@@ -21,59 +21,57 @@ var (
 
 // Node represents a simplified AST node produced by the helper.
 type Node struct {
-	Kind     string  `json:"Kind"`
-	Value    string  `json:"Value,omitempty"`
-	Children []*Node `json:"Children,omitempty"`
+	Kind     string  `json:"kind"`
+	Value    string  `json:"value,omitempty"`
+	Children []*Node `json:"children,omitempty"`
 }
 
 // Param describes a method parameter.
 type Param struct {
-	Name string `json:"Name"`
-	Type string `json:"Type"`
+	Name string `json:"name"`
+	Type string `json:"type"`
 }
 
 // Method represents a method in a type declaration.
 type Method struct {
-	Name      string   `json:"Name"`
-	Params    []Param  `json:"Params"`
-	Ret       string   `json:"Ret"`
-	Access    string   `json:"Access"`
-	Static    bool     `json:"Static"`
-	Body      []string `json:"Body"`
-	Ast       *Node    `json:"Ast,omitempty"`
-	StartLine int      `json:"StartLine"`
-	EndLine   int      `json:"EndLine"`
-	Doc       string   `json:"Doc"`
+	Name      string  `json:"name"`
+	Params    []Param `json:"params"`
+	Ret       string  `json:"ret"`
+	Access    string  `json:"access"`
+	Static    bool    `json:"static"`
+	Ast       *Node   `json:"ast,omitempty"`
+	StartLine int     `json:"startline"`
+	EndLine   int     `json:"endline"`
+	Doc       string  `json:"doc"`
 }
 
 // Field represents a field or property in a type declaration.
 type Field struct {
-	Name   string `json:"Name"`
-	Type   string `json:"Type"`
-	Access string `json:"Access"`
-	Line   int    `json:"Line"`
-	Value  string `json:"Value"`
-	Ast    *Node  `json:"Ast,omitempty"`
-	Static bool   `json:"Static"`
-	Doc    string `json:"Doc"`
+	Name   string `json:"name"`
+	Type   string `json:"type"`
+	Access string `json:"access"`
+	Line   int    `json:"line"`
+	Value  string `json:"value"`
+	Ast    *Node  `json:"ast,omitempty"`
+	Static bool   `json:"static"`
+	Doc    string `json:"doc"`
 }
 
 // Type describes a type declaration.
 type Type struct {
-	Name      string   `json:"Name"`
-	Kind      string   `json:"Kind"`
-	Access    string   `json:"Access"`
-	StartLine int      `json:"StartLine"`
-	EndLine   int      `json:"EndLine"`
-	Fields    []Field  `json:"Fields"`
-	Methods   []Method `json:"Methods"`
-	Doc       string   `json:"Doc"`
+	Name      string   `json:"name"`
+	Kind      string   `json:"kind"`
+	Access    string   `json:"access"`
+	StartLine int      `json:"startline"`
+	EndLine   int      `json:"endline"`
+	Fields    []Field  `json:"fields"`
+	Methods   []Method `json:"methods"`
+	Doc       string   `json:"doc"`
 }
 
 // Program represents a parsed C# program.
 type Program struct {
-	Types []Type `json:"Types"`
-	Src   string `json:"Src"`
+	Types []Type `json:"types"`
 }
 
 func ensureHelper() error {

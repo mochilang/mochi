@@ -1,211 +1,205 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 4,
-      "EndLine": 11,
-      "Fields": [],
-      "Methods": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 4,
+      "endline": 11,
+      "fields": [],
+      "methods": [
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        Console.WriteLine(((string.Compare(\"a\", \"b\") \u003c 0) ? 1 : 0));",
-            "        Console.WriteLine(((string.Compare(\"a\", \"a\") \u003c= 0) ? 1 : 0));",
-            "        Console.WriteLine(((string.Compare(\"b\", \"a\") \u003e 0) ? 1 : 0));",
-            "        Console.WriteLine(((string.Compare(\"b\", \"b\") \u003e= 0) ? 1 : 0));"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "cond",
-                    "Children": [
+                    "kind": "cond",
+                    "children": [
                       {
-                        "Kind": "binary",
-                        "Value": "\u003c",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "\u003c",
+                        "children": [
                           {
-                            "Kind": "call",
-                            "Value": "Compare",
-                            "Children": [
+                            "kind": "call",
+                            "value": "Compare",
+                            "children": [
                               {
-                                "Kind": "ident",
-                                "Value": "string"
+                                "kind": "ident",
+                                "value": "string"
                               },
                               {
-                                "Kind": "literal",
-                                "Value": "a"
+                                "kind": "literal",
+                                "value": "a"
                               },
                               {
-                                "Kind": "literal",
-                                "Value": "b"
+                                "kind": "literal",
+                                "value": "b"
                               }
                             ]
                           },
                           {
-                            "Kind": "literal",
-                            "Value": "0"
+                            "kind": "literal",
+                            "value": "0"
                           }
                         ]
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "1"
+                        "kind": "literal",
+                        "value": "1"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "0"
+                        "kind": "literal",
+                        "value": "0"
                       }
                     ]
                   }
                 ]
               },
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "cond",
-                    "Children": [
+                    "kind": "cond",
+                    "children": [
                       {
-                        "Kind": "binary",
-                        "Value": "\u003c=",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "\u003c=",
+                        "children": [
                           {
-                            "Kind": "call",
-                            "Value": "Compare",
-                            "Children": [
+                            "kind": "call",
+                            "value": "Compare",
+                            "children": [
                               {
-                                "Kind": "ident",
-                                "Value": "string"
+                                "kind": "ident",
+                                "value": "string"
                               },
                               {
-                                "Kind": "literal",
-                                "Value": "a"
+                                "kind": "literal",
+                                "value": "a"
                               },
                               {
-                                "Kind": "literal",
-                                "Value": "a"
+                                "kind": "literal",
+                                "value": "a"
                               }
                             ]
                           },
                           {
-                            "Kind": "literal",
-                            "Value": "0"
+                            "kind": "literal",
+                            "value": "0"
                           }
                         ]
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "1"
+                        "kind": "literal",
+                        "value": "1"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "0"
+                        "kind": "literal",
+                        "value": "0"
                       }
                     ]
                   }
                 ]
               },
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "cond",
-                    "Children": [
+                    "kind": "cond",
+                    "children": [
                       {
-                        "Kind": "binary",
-                        "Value": "\u003e",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "\u003e",
+                        "children": [
                           {
-                            "Kind": "call",
-                            "Value": "Compare",
-                            "Children": [
+                            "kind": "call",
+                            "value": "Compare",
+                            "children": [
                               {
-                                "Kind": "ident",
-                                "Value": "string"
+                                "kind": "ident",
+                                "value": "string"
                               },
                               {
-                                "Kind": "literal",
-                                "Value": "b"
+                                "kind": "literal",
+                                "value": "b"
                               },
                               {
-                                "Kind": "literal",
-                                "Value": "a"
+                                "kind": "literal",
+                                "value": "a"
                               }
                             ]
                           },
                           {
-                            "Kind": "literal",
-                            "Value": "0"
+                            "kind": "literal",
+                            "value": "0"
                           }
                         ]
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "1"
+                        "kind": "literal",
+                        "value": "1"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "0"
+                        "kind": "literal",
+                        "value": "0"
                       }
                     ]
                   }
                 ]
               },
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "cond",
-                    "Children": [
+                    "kind": "cond",
+                    "children": [
                       {
-                        "Kind": "binary",
-                        "Value": "\u003e=",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "\u003e=",
+                        "children": [
                           {
-                            "Kind": "call",
-                            "Value": "Compare",
-                            "Children": [
+                            "kind": "call",
+                            "value": "Compare",
+                            "children": [
                               {
-                                "Kind": "ident",
-                                "Value": "string"
+                                "kind": "ident",
+                                "value": "string"
                               },
                               {
-                                "Kind": "literal",
-                                "Value": "b"
+                                "kind": "literal",
+                                "value": "b"
                               },
                               {
-                                "Kind": "literal",
-                                "Value": "b"
+                                "kind": "literal",
+                                "value": "b"
                               }
                             ]
                           },
                           {
-                            "Kind": "literal",
-                            "Value": "0"
+                            "kind": "literal",
+                            "value": "0"
                           }
                         ]
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "1"
+                        "kind": "literal",
+                        "value": "1"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "0"
+                        "kind": "literal",
+                        "value": "0"
                       }
                     ]
                   }
@@ -213,13 +207,12 @@
               }
             ]
           },
-          "StartLine": 5,
-          "EndLine": 10,
-          "Doc": ""
+          "startline": 5,
+          "endline": 10,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.34 on 2025-07-22 08:49 +0700\nusing System;\n\nclass Program {\n    static void Main() {\n        Console.WriteLine(((string.Compare(\"a\", \"b\") \u003c 0) ? 1 : 0));\n        Console.WriteLine(((string.Compare(\"a\", \"a\") \u003c= 0) ? 1 : 0));\n        Console.WriteLine(((string.Compare(\"b\", \"a\") \u003e 0) ? 1 : 0));\n        Console.WriteLine(((string.Compare(\"b\", \"b\") \u003e= 0) ? 1 : 0));\n    }\n}\n"
+  ]
 }

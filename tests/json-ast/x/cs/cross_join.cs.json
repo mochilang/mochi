@@ -1,204 +1,201 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "Customer",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 6,
-      "EndLine": 10,
-      "Fields": [
+      "name": "Customer",
+      "kind": "struct",
+      "access": "",
+      "startline": 6,
+      "endline": 10,
+      "fields": [
         {
-          "Name": "id",
-          "Type": "int",
-          "Access": "public",
-          "Line": 7,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "id",
+          "type": "int",
+          "access": "public",
+          "line": 7,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "name",
-          "Type": "string",
-          "Access": "public",
-          "Line": 8,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "name",
+          "type": "string",
+          "access": "public",
+          "line": 8,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 9,
-          "EndLine": 9,
-          "Doc": ""
+          "startline": 9,
+          "endline": 9,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "Order",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 11,
-      "EndLine": 16,
-      "Fields": [
+      "name": "Order",
+      "kind": "struct",
+      "access": "",
+      "startline": 11,
+      "endline": 16,
+      "fields": [
         {
-          "Name": "id",
-          "Type": "int",
-          "Access": "public",
-          "Line": 12,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "id",
+          "type": "int",
+          "access": "public",
+          "line": 12,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "customerId",
-          "Type": "int",
-          "Access": "public",
-          "Line": 13,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "customerId",
+          "type": "int",
+          "access": "public",
+          "line": 13,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "total",
-          "Type": "int",
-          "Access": "public",
-          "Line": 14,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "total",
+          "type": "int",
+          "access": "public",
+          "line": 14,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 15,
-          "EndLine": 15,
-          "Doc": ""
+          "startline": 15,
+          "endline": 15,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "OResult",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 17,
-      "EndLine": 23,
-      "Fields": [
+      "name": "OResult",
+      "kind": "struct",
+      "access": "",
+      "startline": 17,
+      "endline": 23,
+      "fields": [
         {
-          "Name": "orderId",
-          "Type": "int",
-          "Access": "public",
-          "Line": 18,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "orderId",
+          "type": "int",
+          "access": "public",
+          "line": 18,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "orderCustomerId",
-          "Type": "int",
-          "Access": "public",
-          "Line": 19,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "orderCustomerId",
+          "type": "int",
+          "access": "public",
+          "line": 19,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "pairedCustomerName",
-          "Type": "string",
-          "Access": "public",
-          "Line": 20,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "pairedCustomerName",
+          "type": "string",
+          "access": "public",
+          "line": 20,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "orderTotal",
-          "Type": "int",
-          "Access": "public",
-          "Line": 21,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "orderTotal",
+          "type": "int",
+          "access": "public",
+          "line": 21,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 22,
-          "EndLine": 22,
-          "Doc": ""
+          "startline": 22,
+          "endline": 22,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 24,
-      "EndLine": 34,
-      "Fields": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 24,
+      "endline": 34,
+      "fields": [
         {
-          "Name": "customers",
-          "Type": "Customer[]",
-          "Access": "",
-          "Line": 25,
-          "Value": "new Customer[]{new Customer{id = 1, name = \"Alice\"}, new Customer{id = 2, name = \"Bob\"}, new Customer{id = 3, name = \"Charlie\"}}",
-          "Ast": {
-            "Kind": "array",
-            "Children": [
+          "name": "customers",
+          "type": "Customer[]",
+          "access": "",
+          "line": 25,
+          "value": "new Customer[]{new Customer{id = 1, name = \"Alice\"}, new Customer{id = 2, name = \"Bob\"}, new Customer{id = 3, name = \"Charlie\"}}",
+          "ast": {
+            "kind": "array",
+            "children": [
               {
-                "Kind": "new",
-                "Value": "Customer",
-                "Children": [
+                "kind": "new",
+                "value": "Customer",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "id",
-                        "Children": [
+                        "kind": "field",
+                        "value": "id",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "1"
+                            "kind": "literal",
+                            "value": "1"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Alice"
+                            "kind": "literal",
+                            "value": "Alice"
                           }
                         ]
                       }
@@ -207,29 +204,29 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "Customer",
-                "Children": [
+                "kind": "new",
+                "value": "Customer",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "id",
-                        "Children": [
+                        "kind": "field",
+                        "value": "id",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "2"
+                            "kind": "literal",
+                            "value": "2"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Bob"
+                            "kind": "literal",
+                            "value": "Bob"
                           }
                         ]
                       }
@@ -238,29 +235,29 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "Customer",
-                "Children": [
+                "kind": "new",
+                "value": "Customer",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "id",
-                        "Children": [
+                        "kind": "field",
+                        "value": "id",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "3"
+                            "kind": "literal",
+                            "value": "3"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Charlie"
+                            "kind": "literal",
+                            "value": "Charlie"
                           }
                         ]
                       }
@@ -270,52 +267,52 @@
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "orders",
-          "Type": "Order[]",
-          "Access": "",
-          "Line": 26,
-          "Value": "new Order[]{new Order{id = 100, customerId = 1, total = 250}, new Order{id = 101, customerId = 2, total = 125}, new Order{id = 102, customerId = 1, total = 300}}",
-          "Ast": {
-            "Kind": "array",
-            "Children": [
+          "name": "orders",
+          "type": "Order[]",
+          "access": "",
+          "line": 26,
+          "value": "new Order[]{new Order{id = 100, customerId = 1, total = 250}, new Order{id = 101, customerId = 2, total = 125}, new Order{id = 102, customerId = 1, total = 300}}",
+          "ast": {
+            "kind": "array",
+            "children": [
               {
-                "Kind": "new",
-                "Value": "Order",
-                "Children": [
+                "kind": "new",
+                "value": "Order",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "id",
-                        "Children": [
+                        "kind": "field",
+                        "value": "id",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "100"
+                            "kind": "literal",
+                            "value": "100"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "customerId",
-                        "Children": [
+                        "kind": "field",
+                        "value": "customerId",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "1"
+                            "kind": "literal",
+                            "value": "1"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "total",
-                        "Children": [
+                        "kind": "field",
+                        "value": "total",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "250"
+                            "kind": "literal",
+                            "value": "250"
                           }
                         ]
                       }
@@ -324,39 +321,39 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "Order",
-                "Children": [
+                "kind": "new",
+                "value": "Order",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "id",
-                        "Children": [
+                        "kind": "field",
+                        "value": "id",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "101"
+                            "kind": "literal",
+                            "value": "101"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "customerId",
-                        "Children": [
+                        "kind": "field",
+                        "value": "customerId",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "2"
+                            "kind": "literal",
+                            "value": "2"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "total",
-                        "Children": [
+                        "kind": "field",
+                        "value": "total",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "125"
+                            "kind": "literal",
+                            "value": "125"
                           }
                         ]
                       }
@@ -365,39 +362,39 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "Order",
-                "Children": [
+                "kind": "new",
+                "value": "Order",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "id",
-                        "Children": [
+                        "kind": "field",
+                        "value": "id",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "102"
+                            "kind": "literal",
+                            "value": "102"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "customerId",
-                        "Children": [
+                        "kind": "field",
+                        "value": "customerId",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "1"
+                            "kind": "literal",
+                            "value": "1"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "total",
-                        "Children": [
+                        "kind": "field",
+                        "value": "total",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "300"
+                            "kind": "literal",
+                            "value": "300"
                           }
                         ]
                       }
@@ -407,146 +404,140 @@
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "result",
-          "Type": "OResult[]",
-          "Access": "",
-          "Line": 27,
-          "Value": "(from o in orders from c in customers select new OResult{orderId = o.id, orderCustomerId = o.customerId, pairedCustomerName = c.name, orderTotal = o.total}).ToArray()",
-          "Ast": {
-            "Kind": "call",
-            "Value": "ToArray",
-            "Children": [
+          "name": "result",
+          "type": "OResult[]",
+          "access": "",
+          "line": 27,
+          "value": "(from o in orders from c in customers select new OResult{orderId = o.id, orderCustomerId = o.customerId, pairedCustomerName = c.name, orderTotal = o.total}).ToArray()",
+          "ast": {
+            "kind": "call",
+            "value": "ToArray",
+            "children": [
               {
-                "Kind": "unknown"
+                "kind": "unknown"
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        Console.WriteLine(\"--- Cross Join: All order-customer pairs ---\");",
-            "        foreach (var entry in result) {",
-            "    Console.WriteLine(string.Join(\" \", new object[]{\"Order\", entry.orderId, \"(customerId:\", entry.orderCustomerId, \", total: $\", entry.orderTotal, \") paired with\", entry.pairedCustomerName}).TrimEnd());",
-            "}"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "literal",
-                    "Value": "--- Cross Join: All order-customer pairs ---"
+                    "kind": "literal",
+                    "value": "--- Cross Join: All order-customer pairs ---"
                   }
                 ]
               },
               {
-                "Kind": "for",
-                "Value": "entry",
-                "Children": [
+                "kind": "for",
+                "value": "entry",
+                "children": [
                   {
-                    "Kind": "range",
-                    "Children": [
+                    "kind": "range",
+                    "children": [
                       {
-                        "Kind": "ident",
-                        "Value": "result"
+                        "kind": "ident",
+                        "value": "result"
                       }
                     ]
                   },
                   {
-                    "Kind": "block",
-                    "Children": [
+                    "kind": "block",
+                    "children": [
                       {
-                        "Kind": "call",
-                        "Value": "print",
-                        "Children": [
+                        "kind": "call",
+                        "value": "print",
+                        "children": [
                           {
-                            "Kind": "call",
-                            "Value": "TrimEnd",
-                            "Children": [
+                            "kind": "call",
+                            "value": "TrimEnd",
+                            "children": [
                               {
-                                "Kind": "call",
-                                "Value": "Join",
-                                "Children": [
+                                "kind": "call",
+                                "value": "Join",
+                                "children": [
                                   {
-                                    "Kind": "ident",
-                                    "Value": "string"
+                                    "kind": "ident",
+                                    "value": "string"
                                   },
                                   {
-                                    "Kind": "literal",
-                                    "Value": " "
+                                    "kind": "literal",
+                                    "value": " "
                                   },
                                   {
-                                    "Kind": "array",
-                                    "Children": [
+                                    "kind": "array",
+                                    "children": [
                                       {
-                                        "Kind": "literal",
-                                        "Value": "Order"
+                                        "kind": "literal",
+                                        "value": "Order"
                                       },
                                       {
-                                        "Kind": "member",
-                                        "Value": "orderId",
-                                        "Children": [
+                                        "kind": "member",
+                                        "value": "orderId",
+                                        "children": [
                                           {
-                                            "Kind": "ident",
-                                            "Value": "entry"
+                                            "kind": "ident",
+                                            "value": "entry"
                                           }
                                         ]
                                       },
                                       {
-                                        "Kind": "literal",
-                                        "Value": "(customerId:"
+                                        "kind": "literal",
+                                        "value": "(customerId:"
                                       },
                                       {
-                                        "Kind": "member",
-                                        "Value": "orderCustomerId",
-                                        "Children": [
+                                        "kind": "member",
+                                        "value": "orderCustomerId",
+                                        "children": [
                                           {
-                                            "Kind": "ident",
-                                            "Value": "entry"
+                                            "kind": "ident",
+                                            "value": "entry"
                                           }
                                         ]
                                       },
                                       {
-                                        "Kind": "literal",
-                                        "Value": ", total: $"
+                                        "kind": "literal",
+                                        "value": ", total: $"
                                       },
                                       {
-                                        "Kind": "member",
-                                        "Value": "orderTotal",
-                                        "Children": [
+                                        "kind": "member",
+                                        "value": "orderTotal",
+                                        "children": [
                                           {
-                                            "Kind": "ident",
-                                            "Value": "entry"
+                                            "kind": "ident",
+                                            "value": "entry"
                                           }
                                         ]
                                       },
                                       {
-                                        "Kind": "literal",
-                                        "Value": ") paired with"
+                                        "kind": "literal",
+                                        "value": ") paired with"
                                       },
                                       {
-                                        "Kind": "member",
-                                        "Value": "pairedCustomerName",
-                                        "Children": [
+                                        "kind": "member",
+                                        "value": "pairedCustomerName",
+                                        "children": [
                                           {
-                                            "Kind": "ident",
-                                            "Value": "entry"
+                                            "kind": "ident",
+                                            "value": "entry"
                                           }
                                         ]
                                       }
@@ -564,13 +555,12 @@
               }
             ]
           },
-          "StartLine": 28,
-          "EndLine": 33,
-          "Doc": ""
+          "startline": 28,
+          "endline": 33,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.33 on 2025-07-21 18:06 +0700\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\n\nstruct Customer {\n    public int id;\n    public string name;\n    public override string ToString() =\u003e $\"{{\\\"id\\\": {id}, \\\"name\\\": \\\"{name}\\\"}}\";\n}\nstruct Order {\n    public int id;\n    public int customerId;\n    public int total;\n    public override string ToString() =\u003e $\"{{\\\"id\\\": {id}, \\\"customerId\\\": {customerId}, \\\"total\\\": {total}}}\";\n}\nstruct OResult {\n    public int orderId;\n    public int orderCustomerId;\n    public string pairedCustomerName;\n    public int orderTotal;\n    public override string ToString() =\u003e $\"{{\\\"orderId\\\": {orderId}, \\\"orderCustomerId\\\": {orderCustomerId}, \\\"pairedCustomerName\\\": \\\"{pairedCustomerName}\\\", \\\"orderTotal\\\": {orderTotal}}}\";\n}\nclass Program {\n    static Customer[] customers = new Customer[]{new Customer{id = 1, name = \"Alice\"}, new Customer{id = 2, name = \"Bob\"}, new Customer{id = 3, name = \"Charlie\"}};\n    static Order[] orders = new Order[]{new Order{id = 100, customerId = 1, total = 250}, new Order{id = 101, customerId = 2, total = 125}, new Order{id = 102, customerId = 1, total = 300}};\n    static OResult[] result = (from o in orders from c in customers select new OResult{orderId = o.id, orderCustomerId = o.customerId, pairedCustomerName = c.name, orderTotal = o.total}).ToArray();\n    static void Main() {\n        Console.WriteLine(\"--- Cross Join: All order-customer pairs ---\");\n        foreach (var entry in result) {\n    Console.WriteLine(string.Join(\" \", new object[]{\"Order\", entry.orderId, \"(customerId:\", entry.orderCustomerId, \", total: $\", entry.orderTotal, \") paired with\", entry.pairedCustomerName}).TrimEnd());\n}\n    }\n}\n"
+  ]
 }

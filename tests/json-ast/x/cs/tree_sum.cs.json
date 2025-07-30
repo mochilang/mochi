@@ -1,83 +1,83 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 4,
-      "EndLine": 13,
-      "Fields": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 4,
+      "endline": 13,
+      "fields": [
         {
-          "Name": "t",
-          "Type": "Node",
-          "Access": "",
-          "Line": 5,
-          "Value": "new Node{left = Leaf, value = 1, right = new Node{left = Leaf, value = 2, right = Leaf}}",
-          "Ast": {
-            "Kind": "new",
-            "Value": "Node",
-            "Children": [
+          "name": "t",
+          "type": "Node",
+          "access": "",
+          "line": 5,
+          "value": "new Node{left = Leaf, value = 1, right = new Node{left = Leaf, value = 2, right = Leaf}}",
+          "ast": {
+            "kind": "new",
+            "value": "Node",
+            "children": [
               {
-                "Kind": "init",
-                "Children": [
+                "kind": "init",
+                "children": [
                   {
-                    "Kind": "field",
-                    "Value": "left",
-                    "Children": [
+                    "kind": "field",
+                    "value": "left",
+                    "children": [
                       {
-                        "Kind": "ident",
-                        "Value": "Leaf"
+                        "kind": "ident",
+                        "value": "Leaf"
                       }
                     ]
                   },
                   {
-                    "Kind": "field",
-                    "Value": "value",
-                    "Children": [
+                    "kind": "field",
+                    "value": "value",
+                    "children": [
                       {
-                        "Kind": "literal",
-                        "Value": "1"
+                        "kind": "literal",
+                        "value": "1"
                       }
                     ]
                   },
                   {
-                    "Kind": "field",
-                    "Value": "right",
-                    "Children": [
+                    "kind": "field",
+                    "value": "right",
+                    "children": [
                       {
-                        "Kind": "new",
-                        "Value": "Node",
-                        "Children": [
+                        "kind": "new",
+                        "value": "Node",
+                        "children": [
                           {
-                            "Kind": "init",
-                            "Children": [
+                            "kind": "init",
+                            "children": [
                               {
-                                "Kind": "field",
-                                "Value": "left",
-                                "Children": [
+                                "kind": "field",
+                                "value": "left",
+                                "children": [
                                   {
-                                    "Kind": "ident",
-                                    "Value": "Leaf"
+                                    "kind": "ident",
+                                    "value": "Leaf"
                                   }
                                 ]
                               },
                               {
-                                "Kind": "field",
-                                "Value": "value",
-                                "Children": [
+                                "kind": "field",
+                                "value": "value",
+                                "children": [
                                   {
-                                    "Kind": "literal",
-                                    "Value": "2"
+                                    "kind": "literal",
+                                    "value": "2"
                                   }
                                 ]
                               },
                               {
-                                "Kind": "field",
-                                "Value": "right",
-                                "Children": [
+                                "kind": "field",
+                                "value": "right",
+                                "children": [
                                   {
-                                    "Kind": "ident",
-                                    "Value": "Leaf"
+                                    "kind": "ident",
+                                    "value": "Leaf"
                                   }
                                 ]
                               }
@@ -91,150 +91,147 @@
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "sum_tree",
-          "Params": [
+          "name": "sum_tree",
+          "params": [
             {
-              "Name": "t",
-              "Type": "object"
+              "name": "t",
+              "type": "object"
             }
           ],
-          "Ret": "int",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "    return ((t == Leaf) ? 0 : ((t == Node(left, value, right)) ? ((sum_tree(left) + value) + sum_tree(right)) : ((sum_tree(left) + value) + sum_tree(right))));"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "ret": "int",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "return",
-                "Children": [
+                "kind": "return",
+                "children": [
                   {
-                    "Kind": "cond",
-                    "Children": [
+                    "kind": "cond",
+                    "children": [
                       {
-                        "Kind": "binary",
-                        "Value": "==",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "==",
+                        "children": [
                           {
-                            "Kind": "ident",
-                            "Value": "t"
+                            "kind": "ident",
+                            "value": "t"
                           },
                           {
-                            "Kind": "ident",
-                            "Value": "Leaf"
+                            "kind": "ident",
+                            "value": "Leaf"
                           }
                         ]
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "0"
+                        "kind": "literal",
+                        "value": "0"
                       },
                       {
-                        "Kind": "cond",
-                        "Children": [
+                        "kind": "cond",
+                        "children": [
                           {
-                            "Kind": "binary",
-                            "Value": "==",
-                            "Children": [
+                            "kind": "binary",
+                            "value": "==",
+                            "children": [
                               {
-                                "Kind": "ident",
-                                "Value": "t"
+                                "kind": "ident",
+                                "value": "t"
                               },
                               {
-                                "Kind": "call",
-                                "Value": "Node",
-                                "Children": [
+                                "kind": "call",
+                                "value": "Node",
+                                "children": [
                                   {
-                                    "Kind": "ident",
-                                    "Value": "left"
+                                    "kind": "ident",
+                                    "value": "left"
                                   },
                                   {
-                                    "Kind": "ident",
-                                    "Value": "value"
+                                    "kind": "ident",
+                                    "value": "value"
                                   },
                                   {
-                                    "Kind": "ident",
-                                    "Value": "right"
+                                    "kind": "ident",
+                                    "value": "right"
                                   }
                                 ]
                               }
                             ]
                           },
                           {
-                            "Kind": "binary",
-                            "Value": "+",
-                            "Children": [
+                            "kind": "binary",
+                            "value": "+",
+                            "children": [
                               {
-                                "Kind": "binary",
-                                "Value": "+",
-                                "Children": [
+                                "kind": "binary",
+                                "value": "+",
+                                "children": [
                                   {
-                                    "Kind": "call",
-                                    "Value": "sum_tree",
-                                    "Children": [
+                                    "kind": "call",
+                                    "value": "sum_tree",
+                                    "children": [
                                       {
-                                        "Kind": "ident",
-                                        "Value": "left"
+                                        "kind": "ident",
+                                        "value": "left"
                                       }
                                     ]
                                   },
                                   {
-                                    "Kind": "ident",
-                                    "Value": "value"
+                                    "kind": "ident",
+                                    "value": "value"
                                   }
                                 ]
                               },
                               {
-                                "Kind": "call",
-                                "Value": "sum_tree",
-                                "Children": [
+                                "kind": "call",
+                                "value": "sum_tree",
+                                "children": [
                                   {
-                                    "Kind": "ident",
-                                    "Value": "right"
+                                    "kind": "ident",
+                                    "value": "right"
                                   }
                                 ]
                               }
                             ]
                           },
                           {
-                            "Kind": "binary",
-                            "Value": "+",
-                            "Children": [
+                            "kind": "binary",
+                            "value": "+",
+                            "children": [
                               {
-                                "Kind": "binary",
-                                "Value": "+",
-                                "Children": [
+                                "kind": "binary",
+                                "value": "+",
+                                "children": [
                                   {
-                                    "Kind": "call",
-                                    "Value": "sum_tree",
-                                    "Children": [
+                                    "kind": "call",
+                                    "value": "sum_tree",
+                                    "children": [
                                       {
-                                        "Kind": "ident",
-                                        "Value": "left"
+                                        "kind": "ident",
+                                        "value": "left"
                                       }
                                     ]
                                   },
                                   {
-                                    "Kind": "ident",
-                                    "Value": "value"
+                                    "kind": "ident",
+                                    "value": "value"
                                   }
                                 ]
                               },
                               {
-                                "Kind": "call",
-                                "Value": "sum_tree",
-                                "Children": [
+                                "kind": "call",
+                                "value": "sum_tree",
+                                "children": [
                                   {
-                                    "Kind": "ident",
-                                    "Value": "right"
+                                    "kind": "ident",
+                                    "value": "right"
                                   }
                                 ]
                               }
@@ -248,33 +245,30 @@
               }
             ]
           },
-          "StartLine": 6,
-          "EndLine": 8,
-          "Doc": ""
+          "startline": 6,
+          "endline": 8,
+          "doc": ""
         },
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        Console.WriteLine(sum_tree(t));"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "call",
-                    "Value": "sum_tree",
-                    "Children": [
+                    "kind": "call",
+                    "value": "sum_tree",
+                    "children": [
                       {
-                        "Kind": "ident",
-                        "Value": "t"
+                        "kind": "ident",
+                        "value": "t"
                       }
                     ]
                   }
@@ -282,13 +276,12 @@
               }
             ]
           },
-          "StartLine": 10,
-          "EndLine": 12,
-          "Doc": ""
+          "startline": 10,
+          "endline": 12,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.34 on 2025-07-22 09:58 +0700\nusing System;\n\nclass Program {\n    static Node t = new Node{left = Leaf, value = 1, right = new Node{left = Leaf, value = 2, right = Leaf}};\n    static int sum_tree(object t) {\n    return ((t == Leaf) ? 0 : ((t == Node(left, value, right)) ? ((sum_tree(left) + value) + sum_tree(right)) : ((sum_tree(left) + value) + sum_tree(right))));\n}\n\n    static void Main() {\n        Console.WriteLine(sum_tree(t));\n    }\n}\n"
+  ]
 }
