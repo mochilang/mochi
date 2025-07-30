@@ -62,7 +62,7 @@ func TestInspect_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("read src: %v", err)
 			}
-			prog, err := javaast.Inspect(string(data), false)
+			prog, err := javaast.Inspect(string(data))
 			if err != nil {
 				t.Skipf("inspect error: %v", err)
 				return
@@ -72,7 +72,7 @@ func TestInspect_Golden(t *testing.T) {
 				t.Fatalf("marshal: %v", err)
 			}
 			out = append(out, '\n')
-			goldenPath := filepath.Join(outDir, name+".java.json")
+			goldenPath := filepath.Join(outDir, name+".LANGUAGE.json")
 			if *update {
 				if err := os.WriteFile(goldenPath, out, 0644); err != nil {
 					t.Fatalf("write golden: %v", err)
