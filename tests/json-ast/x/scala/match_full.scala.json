@@ -1,3 +1,986 @@
 {
-  "tree": "Block(List(Import(Select(Select(Ident(TermName(\"scala\")), TermName(\"collection\")), TermName(\"mutable\")), List(ImportSelector(TermName(\"ArrayBuffer\"), 93, TermName(\"ArrayBuffer\"), 93), ImportSelector(TermName(\"Map\"), 106, TermName(\"Map\"), 106))), ModuleDef(Modifiers(), TermName(\"Main\"), Template(List(Select(Ident(scala), TypeName(\"AnyRef\"))), noSelfType, List(DefDef(Modifiers(), termNames.CONSTRUCTOR, List(), List(List()), TypeTree(), Block(List(pendingSuperCall), Literal(Constant(())))), DefDef(Modifiers(), TermName(\"classify\"), List(), List(List(ValDef(Modifiers(PARAM), TermName(\"n\"), Ident(TypeName(\"Int\")), EmptyTree))), Ident(TypeName(\"String\")), Return(Match(Ident(TermName(\"n\")), List(CaseDef(Literal(Constant(0)), EmptyTree, Literal(Constant(\"zero\"))), CaseDef(Literal(Constant(1)), EmptyTree, Literal(Constant(\"one\"))), CaseDef(Ident(termNames.WILDCARD), EmptyTree, Literal(Constant(\"many\"))))))), DefDef(Modifiers(), TermName(\"main\"), List(), List(List(ValDef(Modifiers(PARAM), TermName(\"args\"), AppliedTypeTree(Ident(TypeName(\"Array\")), List(Ident(TypeName(\"String\")))), EmptyTree))), Ident(TypeName(\"Unit\")), Block(List(ValDef(Modifiers(), TermName(\"x\"), Ident(TypeName(\"Int\")), Literal(Constant(2))), ValDef(Modifiers(), TermName(\"label\"), TypeTree(), Match(Ident(TermName(\"x\")), List(CaseDef(Literal(Constant(1)), EmptyTree, Literal(Constant(\"one\"))), CaseDef(Literal(Constant(2)), EmptyTree, Literal(Constant(\"two\"))), CaseDef(Literal(Constant(3)), EmptyTree, Literal(Constant(\"three\"))), CaseDef(Ident(termNames.WILDCARD), EmptyTree, Literal(Constant(\"unknown\")))))), Apply(Ident(TermName(\"println\")), List(Ident(TermName(\"label\")))), ValDef(Modifiers(), TermName(\"day\"), Ident(TypeName(\"String\")), Literal(Constant(\"sun\"))), ValDef(Modifiers(), TermName(\"mood\"), TypeTree(), Match(Ident(TermName(\"day\")), List(CaseDef(Literal(Constant(\"mon\")), EmptyTree, Literal(Constant(\"tired\"))), CaseDef(Literal(Constant(\"fri\")), EmptyTree, Literal(Constant(\"excited\"))), CaseDef(Literal(Constant(\"sun\")), EmptyTree, Literal(Constant(\"relaxed\"))), CaseDef(Ident(termNames.WILDCARD), EmptyTree, Literal(Constant(\"normal\")))))), Apply(Ident(TermName(\"println\")), List(Ident(TermName(\"mood\")))), ValDef(Modifiers(), TermName(\"ok\"), Ident(TypeName(\"Boolean\")), Literal(Constant(true))), ValDef(Modifiers(), TermName(\"status\"), TypeTree(), Match(Ident(TermName(\"ok\")), List(CaseDef(Literal(Constant(true)), EmptyTree, Literal(Constant(\"confirmed\"))), CaseDef(Literal(Constant(false)), EmptyTree, Literal(Constant(\"denied\")))))), Apply(Ident(TermName(\"println\")), List(Ident(TermName(\"status\")))), Apply(Ident(TermName(\"println\")), List(Apply(Ident(TermName(\"classify\")), List(Literal(Constant(0))))))), Apply(Ident(TermName(\"println\")), List(Apply(Ident(TermName(\"classify\")), List(Literal(Constant(5)))))))))))), Literal(Constant(())))"
+  "root": {
+    "type": "compilation_unit",
+    "children": [
+      {
+        "type": "comment",
+        "children": [
+          {
+            "type": "//",
+            "text": "//"
+          }
+        ]
+      },
+      {
+        "type": "import_declaration",
+        "children": [
+          {
+            "type": "import",
+            "text": "import"
+          },
+          {
+            "type": "identifier",
+            "text": "scala"
+          },
+          {
+            "type": ".",
+            "text": "."
+          },
+          {
+            "type": "identifier",
+            "text": "collection"
+          },
+          {
+            "type": ".",
+            "text": "."
+          },
+          {
+            "type": "identifier",
+            "text": "mutable"
+          },
+          {
+            "type": ".",
+            "text": "."
+          },
+          {
+            "type": "namespace_selectors",
+            "children": [
+              {
+                "type": "{",
+                "text": "{"
+              },
+              {
+                "type": "identifier",
+                "text": "ArrayBuffer"
+              },
+              {
+                "type": ",",
+                "text": ","
+              },
+              {
+                "type": "identifier",
+                "text": "Map"
+              },
+              {
+                "type": "}",
+                "text": "}"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "object_definition",
+        "children": [
+          {
+            "type": "object",
+            "text": "object"
+          },
+          {
+            "type": "identifier",
+            "text": "Main"
+          },
+          {
+            "type": "template_body",
+            "children": [
+              {
+                "type": "{",
+                "text": "{"
+              },
+              {
+                "type": "function_definition",
+                "children": [
+                  {
+                    "type": "def",
+                    "text": "def"
+                  },
+                  {
+                    "type": "identifier",
+                    "text": "classify"
+                  },
+                  {
+                    "type": "parameters",
+                    "children": [
+                      {
+                        "type": "(",
+                        "text": "("
+                      },
+                      {
+                        "type": "parameter",
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "text": "n"
+                          },
+                          {
+                            "type": ":",
+                            "text": ":"
+                          },
+                          {
+                            "type": "type_identifier",
+                            "text": "Int"
+                          }
+                        ]
+                      },
+                      {
+                        "type": ")",
+                        "text": ")"
+                      }
+                    ]
+                  },
+                  {
+                    "type": ":",
+                    "text": ":"
+                  },
+                  {
+                    "type": "type_identifier",
+                    "text": "String"
+                  },
+                  {
+                    "type": "=",
+                    "text": "="
+                  },
+                  {
+                    "type": "block",
+                    "children": [
+                      {
+                        "type": "{",
+                        "text": "{"
+                      },
+                      {
+                        "type": "match_expression",
+                        "children": [
+                          {
+                            "type": "return_expression",
+                            "children": [
+                              {
+                                "type": "return",
+                                "text": "return"
+                              },
+                              {
+                                "type": "identifier",
+                                "text": "n"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "match",
+                            "text": "match"
+                          },
+                          {
+                            "type": "case_block",
+                            "children": [
+                              {
+                                "type": "{",
+                                "text": "{"
+                              },
+                              {
+                                "type": "case_clause",
+                                "children": [
+                                  {
+                                    "type": "case",
+                                    "text": "case"
+                                  },
+                                  {
+                                    "type": "integer_literal",
+                                    "text": "0"
+                                  },
+                                  {
+                                    "type": "=\u003e",
+                                    "text": "=\u003e"
+                                  },
+                                  {
+                                    "type": "string",
+                                    "text": "\"zero\""
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "case_clause",
+                                "children": [
+                                  {
+                                    "type": "case",
+                                    "text": "case"
+                                  },
+                                  {
+                                    "type": "integer_literal",
+                                    "text": "1"
+                                  },
+                                  {
+                                    "type": "=\u003e",
+                                    "text": "=\u003e"
+                                  },
+                                  {
+                                    "type": "string",
+                                    "text": "\"one\""
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "case_clause",
+                                "children": [
+                                  {
+                                    "type": "case",
+                                    "text": "case"
+                                  },
+                                  {
+                                    "type": "wildcard",
+                                    "children": [
+                                      {
+                                        "type": "_",
+                                        "text": "_"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "=\u003e",
+                                    "text": "=\u003e"
+                                  },
+                                  {
+                                    "type": "string",
+                                    "text": "\"many\""
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "}",
+                                "text": "}"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "}",
+                        "text": "}"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "function_definition",
+                "children": [
+                  {
+                    "type": "def",
+                    "text": "def"
+                  },
+                  {
+                    "type": "identifier",
+                    "text": "main"
+                  },
+                  {
+                    "type": "parameters",
+                    "children": [
+                      {
+                        "type": "(",
+                        "text": "("
+                      },
+                      {
+                        "type": "parameter",
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "text": "args"
+                          },
+                          {
+                            "type": ":",
+                            "text": ":"
+                          },
+                          {
+                            "type": "generic_type",
+                            "children": [
+                              {
+                                "type": "type_identifier",
+                                "text": "Array"
+                              },
+                              {
+                                "type": "type_arguments",
+                                "children": [
+                                  {
+                                    "type": "[",
+                                    "text": "["
+                                  },
+                                  {
+                                    "type": "type_identifier",
+                                    "text": "String"
+                                  },
+                                  {
+                                    "type": "]",
+                                    "text": "]"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": ")",
+                        "text": ")"
+                      }
+                    ]
+                  },
+                  {
+                    "type": ":",
+                    "text": ":"
+                  },
+                  {
+                    "type": "type_identifier",
+                    "text": "Unit"
+                  },
+                  {
+                    "type": "=",
+                    "text": "="
+                  },
+                  {
+                    "type": "block",
+                    "children": [
+                      {
+                        "type": "{",
+                        "text": "{"
+                      },
+                      {
+                        "type": "val_definition",
+                        "children": [
+                          {
+                            "type": "val",
+                            "text": "val"
+                          },
+                          {
+                            "type": "identifier",
+                            "text": "x"
+                          },
+                          {
+                            "type": ":",
+                            "text": ":"
+                          },
+                          {
+                            "type": "type_identifier",
+                            "text": "Int"
+                          },
+                          {
+                            "type": "=",
+                            "text": "="
+                          },
+                          {
+                            "type": "integer_literal",
+                            "text": "2"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "val_definition",
+                        "children": [
+                          {
+                            "type": "val",
+                            "text": "val"
+                          },
+                          {
+                            "type": "identifier",
+                            "text": "label"
+                          },
+                          {
+                            "type": "=",
+                            "text": "="
+                          },
+                          {
+                            "type": "match_expression",
+                            "children": [
+                              {
+                                "type": "identifier",
+                                "text": "x"
+                              },
+                              {
+                                "type": "match",
+                                "text": "match"
+                              },
+                              {
+                                "type": "case_block",
+                                "children": [
+                                  {
+                                    "type": "{",
+                                    "text": "{"
+                                  },
+                                  {
+                                    "type": "case_clause",
+                                    "children": [
+                                      {
+                                        "type": "case",
+                                        "text": "case"
+                                      },
+                                      {
+                                        "type": "integer_literal",
+                                        "text": "1"
+                                      },
+                                      {
+                                        "type": "=\u003e",
+                                        "text": "=\u003e"
+                                      },
+                                      {
+                                        "type": "string",
+                                        "text": "\"one\""
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "case_clause",
+                                    "children": [
+                                      {
+                                        "type": "case",
+                                        "text": "case"
+                                      },
+                                      {
+                                        "type": "integer_literal",
+                                        "text": "2"
+                                      },
+                                      {
+                                        "type": "=\u003e",
+                                        "text": "=\u003e"
+                                      },
+                                      {
+                                        "type": "string",
+                                        "text": "\"two\""
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "case_clause",
+                                    "children": [
+                                      {
+                                        "type": "case",
+                                        "text": "case"
+                                      },
+                                      {
+                                        "type": "integer_literal",
+                                        "text": "3"
+                                      },
+                                      {
+                                        "type": "=\u003e",
+                                        "text": "=\u003e"
+                                      },
+                                      {
+                                        "type": "string",
+                                        "text": "\"three\""
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "case_clause",
+                                    "children": [
+                                      {
+                                        "type": "case",
+                                        "text": "case"
+                                      },
+                                      {
+                                        "type": "wildcard",
+                                        "children": [
+                                          {
+                                            "type": "_",
+                                            "text": "_"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "type": "=\u003e",
+                                        "text": "=\u003e"
+                                      },
+                                      {
+                                        "type": "string",
+                                        "text": "\"unknown\""
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "}",
+                                    "text": "}"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "call_expression",
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "text": "println"
+                          },
+                          {
+                            "type": "arguments",
+                            "children": [
+                              {
+                                "type": "(",
+                                "text": "("
+                              },
+                              {
+                                "type": "identifier",
+                                "text": "label"
+                              },
+                              {
+                                "type": ")",
+                                "text": ")"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "val_definition",
+                        "children": [
+                          {
+                            "type": "val",
+                            "text": "val"
+                          },
+                          {
+                            "type": "identifier",
+                            "text": "day"
+                          },
+                          {
+                            "type": ":",
+                            "text": ":"
+                          },
+                          {
+                            "type": "type_identifier",
+                            "text": "String"
+                          },
+                          {
+                            "type": "=",
+                            "text": "="
+                          },
+                          {
+                            "type": "string",
+                            "text": "\"sun\""
+                          }
+                        ]
+                      },
+                      {
+                        "type": "val_definition",
+                        "children": [
+                          {
+                            "type": "val",
+                            "text": "val"
+                          },
+                          {
+                            "type": "identifier",
+                            "text": "mood"
+                          },
+                          {
+                            "type": "=",
+                            "text": "="
+                          },
+                          {
+                            "type": "match_expression",
+                            "children": [
+                              {
+                                "type": "identifier",
+                                "text": "day"
+                              },
+                              {
+                                "type": "match",
+                                "text": "match"
+                              },
+                              {
+                                "type": "case_block",
+                                "children": [
+                                  {
+                                    "type": "{",
+                                    "text": "{"
+                                  },
+                                  {
+                                    "type": "case_clause",
+                                    "children": [
+                                      {
+                                        "type": "case",
+                                        "text": "case"
+                                      },
+                                      {
+                                        "type": "string",
+                                        "text": "\"mon\""
+                                      },
+                                      {
+                                        "type": "=\u003e",
+                                        "text": "=\u003e"
+                                      },
+                                      {
+                                        "type": "string",
+                                        "text": "\"tired\""
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "case_clause",
+                                    "children": [
+                                      {
+                                        "type": "case",
+                                        "text": "case"
+                                      },
+                                      {
+                                        "type": "string",
+                                        "text": "\"fri\""
+                                      },
+                                      {
+                                        "type": "=\u003e",
+                                        "text": "=\u003e"
+                                      },
+                                      {
+                                        "type": "string",
+                                        "text": "\"excited\""
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "case_clause",
+                                    "children": [
+                                      {
+                                        "type": "case",
+                                        "text": "case"
+                                      },
+                                      {
+                                        "type": "string",
+                                        "text": "\"sun\""
+                                      },
+                                      {
+                                        "type": "=\u003e",
+                                        "text": "=\u003e"
+                                      },
+                                      {
+                                        "type": "string",
+                                        "text": "\"relaxed\""
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "case_clause",
+                                    "children": [
+                                      {
+                                        "type": "case",
+                                        "text": "case"
+                                      },
+                                      {
+                                        "type": "wildcard",
+                                        "children": [
+                                          {
+                                            "type": "_",
+                                            "text": "_"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "type": "=\u003e",
+                                        "text": "=\u003e"
+                                      },
+                                      {
+                                        "type": "string",
+                                        "text": "\"normal\""
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "}",
+                                    "text": "}"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "call_expression",
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "text": "println"
+                          },
+                          {
+                            "type": "arguments",
+                            "children": [
+                              {
+                                "type": "(",
+                                "text": "("
+                              },
+                              {
+                                "type": "identifier",
+                                "text": "mood"
+                              },
+                              {
+                                "type": ")",
+                                "text": ")"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "val_definition",
+                        "children": [
+                          {
+                            "type": "val",
+                            "text": "val"
+                          },
+                          {
+                            "type": "identifier",
+                            "text": "ok"
+                          },
+                          {
+                            "type": ":",
+                            "text": ":"
+                          },
+                          {
+                            "type": "type_identifier",
+                            "text": "Boolean"
+                          },
+                          {
+                            "type": "=",
+                            "text": "="
+                          },
+                          {
+                            "type": "boolean_literal",
+                            "children": [
+                              {
+                                "type": "true",
+                                "text": "true"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "val_definition",
+                        "children": [
+                          {
+                            "type": "val",
+                            "text": "val"
+                          },
+                          {
+                            "type": "identifier",
+                            "text": "status"
+                          },
+                          {
+                            "type": "=",
+                            "text": "="
+                          },
+                          {
+                            "type": "match_expression",
+                            "children": [
+                              {
+                                "type": "identifier",
+                                "text": "ok"
+                              },
+                              {
+                                "type": "match",
+                                "text": "match"
+                              },
+                              {
+                                "type": "case_block",
+                                "children": [
+                                  {
+                                    "type": "{",
+                                    "text": "{"
+                                  },
+                                  {
+                                    "type": "case_clause",
+                                    "children": [
+                                      {
+                                        "type": "case",
+                                        "text": "case"
+                                      },
+                                      {
+                                        "type": "boolean_literal",
+                                        "children": [
+                                          {
+                                            "type": "true",
+                                            "text": "true"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "type": "=\u003e",
+                                        "text": "=\u003e"
+                                      },
+                                      {
+                                        "type": "string",
+                                        "text": "\"confirmed\""
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "case_clause",
+                                    "children": [
+                                      {
+                                        "type": "case",
+                                        "text": "case"
+                                      },
+                                      {
+                                        "type": "boolean_literal",
+                                        "children": [
+                                          {
+                                            "type": "false",
+                                            "text": "false"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "type": "=\u003e",
+                                        "text": "=\u003e"
+                                      },
+                                      {
+                                        "type": "string",
+                                        "text": "\"denied\""
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "}",
+                                    "text": "}"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "call_expression",
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "text": "println"
+                          },
+                          {
+                            "type": "arguments",
+                            "children": [
+                              {
+                                "type": "(",
+                                "text": "("
+                              },
+                              {
+                                "type": "identifier",
+                                "text": "status"
+                              },
+                              {
+                                "type": ")",
+                                "text": ")"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "call_expression",
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "text": "println"
+                          },
+                          {
+                            "type": "arguments",
+                            "children": [
+                              {
+                                "type": "(",
+                                "text": "("
+                              },
+                              {
+                                "type": "call_expression",
+                                "children": [
+                                  {
+                                    "type": "identifier",
+                                    "text": "classify"
+                                  },
+                                  {
+                                    "type": "arguments",
+                                    "children": [
+                                      {
+                                        "type": "(",
+                                        "text": "("
+                                      },
+                                      {
+                                        "type": "integer_literal",
+                                        "text": "0"
+                                      },
+                                      {
+                                        "type": ")",
+                                        "text": ")"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "type": ")",
+                                "text": ")"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "call_expression",
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "text": "println"
+                          },
+                          {
+                            "type": "arguments",
+                            "children": [
+                              {
+                                "type": "(",
+                                "text": "("
+                              },
+                              {
+                                "type": "call_expression",
+                                "children": [
+                                  {
+                                    "type": "identifier",
+                                    "text": "classify"
+                                  },
+                                  {
+                                    "type": "arguments",
+                                    "children": [
+                                      {
+                                        "type": "(",
+                                        "text": "("
+                                      },
+                                      {
+                                        "type": "integer_literal",
+                                        "text": "5"
+                                      },
+                                      {
+                                        "type": ")",
+                                        "text": ")"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "type": ")",
+                                "text": ")"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "}",
+                        "text": "}"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "}",
+                "text": "}"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

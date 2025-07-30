@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"flag"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -36,17 +35,7 @@ func repoRoot(t *testing.T) string {
 	return ""
 }
 
-func ensureScala(t *testing.T) {
-	if _, err := exec.LookPath("scala"); err != nil {
-		t.Skip("scala not installed")
-	}
-	if _, err := exec.LookPath("scalac"); err != nil {
-		t.Skip("scalac not installed")
-	}
-}
-
 func TestInspect_Golden(t *testing.T) {
-	ensureScala(t)
 	root := repoRoot(t)
 	srcDir := filepath.Join(root, "tests", "transpiler", "x", "scala")
 	outDir := filepath.Join(root, "tests", "json-ast", "x", "scala")
@@ -65,11 +54,11 @@ func TestInspect_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("read src: %v", err)
 			}
-               prog, err := scala.Inspect(string(data))
-               if err != nil {
-                       t.Skipf("inspect: %v", err)
-               }
-               out, err := json.MarshalIndent(prog, "", "  ")
+			prog, err := scala.Inspect(string(data))
+			if err != nil {
+				t.Fatalf("inspect: %v", err)
+			}
+			out, err := json.MarshalIndent(prog, "", "  ")
 			if err != nil {
 				t.Fatalf("marshal: %v", err)
 			}
