@@ -1,1980 +1,2739 @@
 {
   "file": {
-    "kind": "program",
-    "start": 0,
-    "end": 1309,
+    "type": "program",
+    "line": 1,
+    "col": 0,
     "children": [
       {
-        "kind": "comment",
-        "start": 0,
-        "end": 32
+        "type": "comment",
+        "line": 1,
+        "col": 0,
+        "endLine": 1,
+        "endCol": 32
       },
       {
-        "kind": "class_definition",
-        "start": 33,
-        "end": 146,
+        "type": "class_definition",
+        "line": 2,
+        "col": 0,
         "children": [
           {
-            "kind": "identifier",
-            "start": 39,
-            "end": 47
+            "type": "identifier",
+            "value": "Customer",
+            "line": 2,
+            "col": 6,
+            "endLine": 2,
+            "endCol": 14
           },
           {
-            "kind": "class_body",
-            "start": 48,
-            "end": 146,
+            "type": "class_body",
+            "line": 2,
+            "col": 15,
             "children": [
               {
-                "kind": "declaration",
-                "start": 52,
-                "end": 64,
+                "type": "declaration",
+                "line": 3,
+                "col": 2,
                 "children": [
                   {
-                    "kind": "final_builtin",
-                    "start": 52,
-                    "end": 57
+                    "type": "final_builtin",
+                    "line": 3,
+                    "col": 2,
+                    "endLine": 3,
+                    "endCol": 7
                   },
                   {
-                    "kind": "type_identifier",
-                    "start": 58,
-                    "end": 61
+                    "type": "type_identifier",
+                    "value": "int",
+                    "line": 3,
+                    "col": 8,
+                    "endLine": 3,
+                    "endCol": 11
                   },
                   {
-                    "kind": "initialized_identifier_list",
-                    "start": 62,
-                    "end": 64,
+                    "type": "initialized_identifier_list",
+                    "line": 3,
+                    "col": 12,
                     "children": [
                       {
-                        "kind": "initialized_identifier",
-                        "start": 62,
-                        "end": 64,
+                        "type": "initialized_identifier",
+                        "line": 3,
+                        "col": 12,
                         "children": [
                           {
-                            "kind": "identifier",
-                            "start": 62,
-                            "end": 64
+                            "type": "identifier",
+                            "value": "id",
+                            "line": 3,
+                            "col": 12,
+                            "endLine": 3,
+                            "endCol": 14
                           }
-                        ]
+                        ],
+                        "endLine": 3,
+                        "endCol": 14
                       }
-                    ]
+                    ],
+                    "endLine": 3,
+                    "endCol": 14
                   }
-                ]
+                ],
+                "endLine": 3,
+                "endCol": 14
               },
               {
-                "kind": "declaration",
-                "start": 68,
-                "end": 85,
+                "type": "declaration",
+                "line": 4,
+                "col": 2,
                 "children": [
                   {
-                    "kind": "final_builtin",
-                    "start": 68,
-                    "end": 73
+                    "type": "final_builtin",
+                    "line": 4,
+                    "col": 2,
+                    "endLine": 4,
+                    "endCol": 7
                   },
                   {
-                    "kind": "type_identifier",
-                    "start": 74,
-                    "end": 80
+                    "type": "type_identifier",
+                    "value": "String",
+                    "line": 4,
+                    "col": 8,
+                    "endLine": 4,
+                    "endCol": 14
                   },
                   {
-                    "kind": "initialized_identifier_list",
-                    "start": 81,
-                    "end": 85,
+                    "type": "initialized_identifier_list",
+                    "line": 4,
+                    "col": 15,
                     "children": [
                       {
-                        "kind": "initialized_identifier",
-                        "start": 81,
-                        "end": 85,
+                        "type": "initialized_identifier",
+                        "line": 4,
+                        "col": 15,
                         "children": [
                           {
-                            "kind": "identifier",
-                            "start": 81,
-                            "end": 85
+                            "type": "identifier",
+                            "value": "name",
+                            "line": 4,
+                            "col": 15,
+                            "endLine": 4,
+                            "endCol": 19
                           }
-                        ]
+                        ],
+                        "endLine": 4,
+                        "endCol": 19
                       }
-                    ]
+                    ],
+                    "endLine": 4,
+                    "endCol": 19
                   }
-                ]
+                ],
+                "endLine": 4,
+                "endCol": 19
               },
               {
-                "kind": "declaration",
-                "start": 89,
-                "end": 143,
+                "type": "declaration",
+                "line": 5,
+                "col": 2,
                 "children": [
                   {
-                    "kind": "constant_constructor_signature",
-                    "start": 89,
-                    "end": 143,
+                    "type": "constant_constructor_signature",
+                    "line": 5,
+                    "col": 2,
                     "children": [
                       {
-                        "kind": "const_builtin",
-                        "start": 89,
-                        "end": 94
+                        "type": "const_builtin",
+                        "value": "const",
+                        "line": 5,
+                        "col": 2,
+                        "endLine": 5,
+                        "endCol": 7
                       },
                       {
-                        "kind": "identifier",
-                        "start": 95,
-                        "end": 103
+                        "type": "identifier",
+                        "value": "Customer",
+                        "line": 5,
+                        "col": 8,
+                        "endLine": 5,
+                        "endCol": 16
                       },
                       {
-                        "kind": "formal_parameter_list",
-                        "start": 103,
-                        "end": 143,
+                        "type": "formal_parameter_list",
+                        "line": 5,
+                        "col": 16,
                         "children": [
                           {
-                            "kind": "optional_formal_parameters",
-                            "start": 104,
-                            "end": 142,
+                            "type": "optional_formal_parameters",
+                            "line": 5,
+                            "col": 17,
                             "children": [
                               {
-                                "kind": "formal_parameter",
-                                "start": 114,
-                                "end": 121,
+                                "type": "formal_parameter",
+                                "line": 5,
+                                "col": 27,
                                 "children": [
                                   {
-                                    "kind": "constructor_param",
-                                    "start": 114,
-                                    "end": 121,
+                                    "type": "constructor_param",
+                                    "line": 5,
+                                    "col": 27,
                                     "children": [
                                       {
-                                        "kind": "this",
-                                        "start": 114,
-                                        "end": 118
+                                        "type": "this",
+                                        "line": 5,
+                                        "col": 27,
+                                        "endLine": 5,
+                                        "endCol": 31
                                       },
                                       {
-                                        "kind": "identifier",
-                                        "start": 119,
-                                        "end": 121
+                                        "type": "identifier",
+                                        "value": "id",
+                                        "line": 5,
+                                        "col": 32,
+                                        "endLine": 5,
+                                        "endCol": 34
                                       }
-                                    ]
+                                    ],
+                                    "endLine": 5,
+                                    "endCol": 34
                                   }
-                                ]
+                                ],
+                                "endLine": 5,
+                                "endCol": 34
                               },
                               {
-                                "kind": "formal_parameter",
-                                "start": 132,
-                                "end": 141,
+                                "type": "formal_parameter",
+                                "line": 5,
+                                "col": 45,
                                 "children": [
                                   {
-                                    "kind": "constructor_param",
-                                    "start": 132,
-                                    "end": 141,
+                                    "type": "constructor_param",
+                                    "line": 5,
+                                    "col": 45,
                                     "children": [
                                       {
-                                        "kind": "this",
-                                        "start": 132,
-                                        "end": 136
+                                        "type": "this",
+                                        "line": 5,
+                                        "col": 45,
+                                        "endLine": 5,
+                                        "endCol": 49
                                       },
                                       {
-                                        "kind": "identifier",
-                                        "start": 137,
-                                        "end": 141
+                                        "type": "identifier",
+                                        "value": "name",
+                                        "line": 5,
+                                        "col": 50,
+                                        "endLine": 5,
+                                        "endCol": 54
                                       }
-                                    ]
+                                    ],
+                                    "endLine": 5,
+                                    "endCol": 54
                                   }
-                                ]
+                                ],
+                                "endLine": 5,
+                                "endCol": 54
                               }
-                            ]
+                            ],
+                            "endLine": 5,
+                            "endCol": 55
                           }
-                        ]
+                        ],
+                        "endLine": 5,
+                        "endCol": 56
                       }
-                    ]
+                    ],
+                    "endLine": 5,
+                    "endCol": 56
                   }
-                ]
+                ],
+                "endLine": 5,
+                "endCol": 56
               }
-            ]
+            ],
+            "endLine": 6,
+            "endCol": 1
           }
-        ]
+        ],
+        "endLine": 6,
+        "endCol": 1
       },
       {
-        "kind": "class_definition",
-        "start": 148,
-        "end": 304,
+        "type": "class_definition",
+        "line": 8,
+        "col": 0,
         "children": [
           {
-            "kind": "identifier",
-            "start": 154,
-            "end": 159
+            "type": "identifier",
+            "value": "Order",
+            "line": 8,
+            "col": 6,
+            "endLine": 8,
+            "endCol": 11
           },
           {
-            "kind": "class_body",
-            "start": 160,
-            "end": 304,
+            "type": "class_body",
+            "line": 8,
+            "col": 12,
             "children": [
               {
-                "kind": "declaration",
-                "start": 164,
-                "end": 176,
+                "type": "declaration",
+                "line": 9,
+                "col": 2,
                 "children": [
                   {
-                    "kind": "final_builtin",
-                    "start": 164,
-                    "end": 169
+                    "type": "final_builtin",
+                    "line": 9,
+                    "col": 2,
+                    "endLine": 9,
+                    "endCol": 7
                   },
                   {
-                    "kind": "type_identifier",
-                    "start": 170,
-                    "end": 173
+                    "type": "type_identifier",
+                    "value": "int",
+                    "line": 9,
+                    "col": 8,
+                    "endLine": 9,
+                    "endCol": 11
                   },
                   {
-                    "kind": "initialized_identifier_list",
-                    "start": 174,
-                    "end": 176,
+                    "type": "initialized_identifier_list",
+                    "line": 9,
+                    "col": 12,
                     "children": [
                       {
-                        "kind": "initialized_identifier",
-                        "start": 174,
-                        "end": 176,
+                        "type": "initialized_identifier",
+                        "line": 9,
+                        "col": 12,
                         "children": [
                           {
-                            "kind": "identifier",
-                            "start": 174,
-                            "end": 176
+                            "type": "identifier",
+                            "value": "id",
+                            "line": 9,
+                            "col": 12,
+                            "endLine": 9,
+                            "endCol": 14
                           }
-                        ]
+                        ],
+                        "endLine": 9,
+                        "endCol": 14
                       }
-                    ]
+                    ],
+                    "endLine": 9,
+                    "endCol": 14
                   }
-                ]
+                ],
+                "endLine": 9,
+                "endCol": 14
               },
               {
-                "kind": "declaration",
-                "start": 180,
-                "end": 200,
+                "type": "declaration",
+                "line": 10,
+                "col": 2,
                 "children": [
                   {
-                    "kind": "final_builtin",
-                    "start": 180,
-                    "end": 185
+                    "type": "final_builtin",
+                    "line": 10,
+                    "col": 2,
+                    "endLine": 10,
+                    "endCol": 7
                   },
                   {
-                    "kind": "type_identifier",
-                    "start": 186,
-                    "end": 189
+                    "type": "type_identifier",
+                    "value": "int",
+                    "line": 10,
+                    "col": 8,
+                    "endLine": 10,
+                    "endCol": 11
                   },
                   {
-                    "kind": "initialized_identifier_list",
-                    "start": 190,
-                    "end": 200,
+                    "type": "initialized_identifier_list",
+                    "line": 10,
+                    "col": 12,
                     "children": [
                       {
-                        "kind": "initialized_identifier",
-                        "start": 190,
-                        "end": 200,
+                        "type": "initialized_identifier",
+                        "line": 10,
+                        "col": 12,
                         "children": [
                           {
-                            "kind": "identifier",
-                            "start": 190,
-                            "end": 200
+                            "type": "identifier",
+                            "value": "customerId",
+                            "line": 10,
+                            "col": 12,
+                            "endLine": 10,
+                            "endCol": 22
                           }
-                        ]
+                        ],
+                        "endLine": 10,
+                        "endCol": 22
                       }
-                    ]
+                    ],
+                    "endLine": 10,
+                    "endCol": 22
                   }
-                ]
+                ],
+                "endLine": 10,
+                "endCol": 22
               },
               {
-                "kind": "declaration",
-                "start": 204,
-                "end": 219,
+                "type": "declaration",
+                "line": 11,
+                "col": 2,
                 "children": [
                   {
-                    "kind": "final_builtin",
-                    "start": 204,
-                    "end": 209
+                    "type": "final_builtin",
+                    "line": 11,
+                    "col": 2,
+                    "endLine": 11,
+                    "endCol": 7
                   },
                   {
-                    "kind": "type_identifier",
-                    "start": 210,
-                    "end": 213
+                    "type": "type_identifier",
+                    "value": "int",
+                    "line": 11,
+                    "col": 8,
+                    "endLine": 11,
+                    "endCol": 11
                   },
                   {
-                    "kind": "initialized_identifier_list",
-                    "start": 214,
-                    "end": 219,
+                    "type": "initialized_identifier_list",
+                    "line": 11,
+                    "col": 12,
                     "children": [
                       {
-                        "kind": "initialized_identifier",
-                        "start": 214,
-                        "end": 219,
+                        "type": "initialized_identifier",
+                        "line": 11,
+                        "col": 12,
                         "children": [
                           {
-                            "kind": "identifier",
-                            "start": 214,
-                            "end": 219
+                            "type": "identifier",
+                            "value": "total",
+                            "line": 11,
+                            "col": 12,
+                            "endLine": 11,
+                            "endCol": 17
                           }
-                        ]
+                        ],
+                        "endLine": 11,
+                        "endCol": 17
                       }
-                    ]
+                    ],
+                    "endLine": 11,
+                    "endCol": 17
                   }
-                ]
+                ],
+                "endLine": 11,
+                "endCol": 17
               },
               {
-                "kind": "declaration",
-                "start": 223,
-                "end": 301,
+                "type": "declaration",
+                "line": 12,
+                "col": 2,
                 "children": [
                   {
-                    "kind": "constant_constructor_signature",
-                    "start": 223,
-                    "end": 301,
+                    "type": "constant_constructor_signature",
+                    "line": 12,
+                    "col": 2,
                     "children": [
                       {
-                        "kind": "const_builtin",
-                        "start": 223,
-                        "end": 228
+                        "type": "const_builtin",
+                        "value": "const",
+                        "line": 12,
+                        "col": 2,
+                        "endLine": 12,
+                        "endCol": 7
                       },
                       {
-                        "kind": "identifier",
-                        "start": 229,
-                        "end": 234
+                        "type": "identifier",
+                        "value": "Order",
+                        "line": 12,
+                        "col": 8,
+                        "endLine": 12,
+                        "endCol": 13
                       },
                       {
-                        "kind": "formal_parameter_list",
-                        "start": 234,
-                        "end": 301,
+                        "type": "formal_parameter_list",
+                        "line": 12,
+                        "col": 13,
                         "children": [
                           {
-                            "kind": "optional_formal_parameters",
-                            "start": 235,
-                            "end": 300,
+                            "type": "optional_formal_parameters",
+                            "line": 12,
+                            "col": 14,
                             "children": [
                               {
-                                "kind": "formal_parameter",
-                                "start": 245,
-                                "end": 252,
+                                "type": "formal_parameter",
+                                "line": 12,
+                                "col": 24,
                                 "children": [
                                   {
-                                    "kind": "constructor_param",
-                                    "start": 245,
-                                    "end": 252,
+                                    "type": "constructor_param",
+                                    "line": 12,
+                                    "col": 24,
                                     "children": [
                                       {
-                                        "kind": "this",
-                                        "start": 245,
-                                        "end": 249
+                                        "type": "this",
+                                        "line": 12,
+                                        "col": 24,
+                                        "endLine": 12,
+                                        "endCol": 28
                                       },
                                       {
-                                        "kind": "identifier",
-                                        "start": 250,
-                                        "end": 252
+                                        "type": "identifier",
+                                        "value": "id",
+                                        "line": 12,
+                                        "col": 29,
+                                        "endLine": 12,
+                                        "endCol": 31
                                       }
-                                    ]
+                                    ],
+                                    "endLine": 12,
+                                    "endCol": 31
                                   }
-                                ]
+                                ],
+                                "endLine": 12,
+                                "endCol": 31
                               },
                               {
-                                "kind": "formal_parameter",
-                                "start": 263,
-                                "end": 278,
+                                "type": "formal_parameter",
+                                "line": 12,
+                                "col": 42,
                                 "children": [
                                   {
-                                    "kind": "constructor_param",
-                                    "start": 263,
-                                    "end": 278,
+                                    "type": "constructor_param",
+                                    "line": 12,
+                                    "col": 42,
                                     "children": [
                                       {
-                                        "kind": "this",
-                                        "start": 263,
-                                        "end": 267
+                                        "type": "this",
+                                        "line": 12,
+                                        "col": 42,
+                                        "endLine": 12,
+                                        "endCol": 46
                                       },
                                       {
-                                        "kind": "identifier",
-                                        "start": 268,
-                                        "end": 278
+                                        "type": "identifier",
+                                        "value": "customerId",
+                                        "line": 12,
+                                        "col": 47,
+                                        "endLine": 12,
+                                        "endCol": 57
                                       }
-                                    ]
+                                    ],
+                                    "endLine": 12,
+                                    "endCol": 57
                                   }
-                                ]
+                                ],
+                                "endLine": 12,
+                                "endCol": 57
                               },
                               {
-                                "kind": "formal_parameter",
-                                "start": 289,
-                                "end": 299,
+                                "type": "formal_parameter",
+                                "line": 12,
+                                "col": 68,
                                 "children": [
                                   {
-                                    "kind": "constructor_param",
-                                    "start": 289,
-                                    "end": 299,
+                                    "type": "constructor_param",
+                                    "line": 12,
+                                    "col": 68,
                                     "children": [
                                       {
-                                        "kind": "this",
-                                        "start": 289,
-                                        "end": 293
+                                        "type": "this",
+                                        "line": 12,
+                                        "col": 68,
+                                        "endLine": 12,
+                                        "endCol": 72
                                       },
                                       {
-                                        "kind": "identifier",
-                                        "start": 294,
-                                        "end": 299
+                                        "type": "identifier",
+                                        "value": "total",
+                                        "line": 12,
+                                        "col": 73,
+                                        "endLine": 12,
+                                        "endCol": 78
                                       }
-                                    ]
+                                    ],
+                                    "endLine": 12,
+                                    "endCol": 78
                                   }
-                                ]
+                                ],
+                                "endLine": 12,
+                                "endCol": 78
                               }
-                            ]
+                            ],
+                            "endLine": 12,
+                            "endCol": 79
                           }
-                        ]
+                        ],
+                        "endLine": 12,
+                        "endCol": 80
                       }
-                    ]
+                    ],
+                    "endLine": 12,
+                    "endCol": 80
                   }
-                ]
+                ],
+                "endLine": 12,
+                "endCol": 80
               }
-            ]
+            ],
+            "endLine": 13,
+            "endCol": 1
           }
-        ]
+        ],
+        "endLine": 13,
+        "endCol": 1
       },
       {
-        "kind": "class_definition",
-        "start": 306,
-        "end": 563,
+        "type": "class_definition",
+        "line": 15,
+        "col": 0,
         "children": [
           {
-            "kind": "identifier",
-            "start": 312,
-            "end": 318
+            "type": "identifier",
+            "value": "Result",
+            "line": 15,
+            "col": 6,
+            "endLine": 15,
+            "endCol": 12
           },
           {
-            "kind": "class_body",
-            "start": 319,
-            "end": 563,
+            "type": "class_body",
+            "line": 15,
+            "col": 13,
             "children": [
               {
-                "kind": "declaration",
-                "start": 323,
-                "end": 340,
+                "type": "declaration",
+                "line": 16,
+                "col": 2,
                 "children": [
                   {
-                    "kind": "final_builtin",
-                    "start": 323,
-                    "end": 328
+                    "type": "final_builtin",
+                    "line": 16,
+                    "col": 2,
+                    "endLine": 16,
+                    "endCol": 7
                   },
                   {
-                    "kind": "type_identifier",
-                    "start": 329,
-                    "end": 332
+                    "type": "type_identifier",
+                    "value": "int",
+                    "line": 16,
+                    "col": 8,
+                    "endLine": 16,
+                    "endCol": 11
                   },
                   {
-                    "kind": "initialized_identifier_list",
-                    "start": 333,
-                    "end": 340,
+                    "type": "initialized_identifier_list",
+                    "line": 16,
+                    "col": 12,
                     "children": [
                       {
-                        "kind": "initialized_identifier",
-                        "start": 333,
-                        "end": 340,
+                        "type": "initialized_identifier",
+                        "line": 16,
+                        "col": 12,
                         "children": [
                           {
-                            "kind": "identifier",
-                            "start": 333,
-                            "end": 340
+                            "type": "identifier",
+                            "value": "orderId",
+                            "line": 16,
+                            "col": 12,
+                            "endLine": 16,
+                            "endCol": 19
                           }
-                        ]
+                        ],
+                        "endLine": 16,
+                        "endCol": 19
                       }
-                    ]
+                    ],
+                    "endLine": 16,
+                    "endCol": 19
                   }
-                ]
+                ],
+                "endLine": 16,
+                "endCol": 19
               },
               {
-                "kind": "declaration",
-                "start": 344,
-                "end": 369,
+                "type": "declaration",
+                "line": 17,
+                "col": 2,
                 "children": [
                   {
-                    "kind": "final_builtin",
-                    "start": 344,
-                    "end": 349
+                    "type": "final_builtin",
+                    "line": 17,
+                    "col": 2,
+                    "endLine": 17,
+                    "endCol": 7
                   },
                   {
-                    "kind": "type_identifier",
-                    "start": 350,
-                    "end": 353
+                    "type": "type_identifier",
+                    "value": "int",
+                    "line": 17,
+                    "col": 8,
+                    "endLine": 17,
+                    "endCol": 11
                   },
                   {
-                    "kind": "initialized_identifier_list",
-                    "start": 354,
-                    "end": 369,
+                    "type": "initialized_identifier_list",
+                    "line": 17,
+                    "col": 12,
                     "children": [
                       {
-                        "kind": "initialized_identifier",
-                        "start": 354,
-                        "end": 369,
+                        "type": "initialized_identifier",
+                        "line": 17,
+                        "col": 12,
                         "children": [
                           {
-                            "kind": "identifier",
-                            "start": 354,
-                            "end": 369
+                            "type": "identifier",
+                            "value": "orderCustomerId",
+                            "line": 17,
+                            "col": 12,
+                            "endLine": 17,
+                            "endCol": 27
                           }
-                        ]
+                        ],
+                        "endLine": 17,
+                        "endCol": 27
                       }
-                    ]
+                    ],
+                    "endLine": 17,
+                    "endCol": 27
                   }
-                ]
+                ],
+                "endLine": 17,
+                "endCol": 27
               },
               {
-                "kind": "declaration",
-                "start": 373,
-                "end": 404,
+                "type": "declaration",
+                "line": 18,
+                "col": 2,
                 "children": [
                   {
-                    "kind": "final_builtin",
-                    "start": 373,
-                    "end": 378
+                    "type": "final_builtin",
+                    "line": 18,
+                    "col": 2,
+                    "endLine": 18,
+                    "endCol": 7
                   },
                   {
-                    "kind": "type_identifier",
-                    "start": 379,
-                    "end": 385
+                    "type": "type_identifier",
+                    "value": "String",
+                    "line": 18,
+                    "col": 8,
+                    "endLine": 18,
+                    "endCol": 14
                   },
                   {
-                    "kind": "initialized_identifier_list",
-                    "start": 386,
-                    "end": 404,
+                    "type": "initialized_identifier_list",
+                    "line": 18,
+                    "col": 15,
                     "children": [
                       {
-                        "kind": "initialized_identifier",
-                        "start": 386,
-                        "end": 404,
+                        "type": "initialized_identifier",
+                        "line": 18,
+                        "col": 15,
                         "children": [
                           {
-                            "kind": "identifier",
-                            "start": 386,
-                            "end": 404
+                            "type": "identifier",
+                            "value": "pairedCustomerName",
+                            "line": 18,
+                            "col": 15,
+                            "endLine": 18,
+                            "endCol": 33
                           }
-                        ]
+                        ],
+                        "endLine": 18,
+                        "endCol": 33
                       }
-                    ]
+                    ],
+                    "endLine": 18,
+                    "endCol": 33
                   }
-                ]
+                ],
+                "endLine": 18,
+                "endCol": 33
               },
               {
-                "kind": "declaration",
-                "start": 408,
-                "end": 428,
+                "type": "declaration",
+                "line": 19,
+                "col": 2,
                 "children": [
                   {
-                    "kind": "final_builtin",
-                    "start": 408,
-                    "end": 413
+                    "type": "final_builtin",
+                    "line": 19,
+                    "col": 2,
+                    "endLine": 19,
+                    "endCol": 7
                   },
                   {
-                    "kind": "type_identifier",
-                    "start": 414,
-                    "end": 417
+                    "type": "type_identifier",
+                    "value": "int",
+                    "line": 19,
+                    "col": 8,
+                    "endLine": 19,
+                    "endCol": 11
                   },
                   {
-                    "kind": "initialized_identifier_list",
-                    "start": 418,
-                    "end": 428,
+                    "type": "initialized_identifier_list",
+                    "line": 19,
+                    "col": 12,
                     "children": [
                       {
-                        "kind": "initialized_identifier",
-                        "start": 418,
-                        "end": 428,
+                        "type": "initialized_identifier",
+                        "line": 19,
+                        "col": 12,
                         "children": [
                           {
-                            "kind": "identifier",
-                            "start": 418,
-                            "end": 428
+                            "type": "identifier",
+                            "value": "orderTotal",
+                            "line": 19,
+                            "col": 12,
+                            "endLine": 19,
+                            "endCol": 22
                           }
-                        ]
+                        ],
+                        "endLine": 19,
+                        "endCol": 22
                       }
-                    ]
+                    ],
+                    "endLine": 19,
+                    "endCol": 22
                   }
-                ]
+                ],
+                "endLine": 19,
+                "endCol": 22
               },
               {
-                "kind": "declaration",
-                "start": 432,
-                "end": 560,
+                "type": "declaration",
+                "line": 20,
+                "col": 2,
                 "children": [
                   {
-                    "kind": "constant_constructor_signature",
-                    "start": 432,
-                    "end": 560,
+                    "type": "constant_constructor_signature",
+                    "line": 20,
+                    "col": 2,
                     "children": [
                       {
-                        "kind": "const_builtin",
-                        "start": 432,
-                        "end": 437
+                        "type": "const_builtin",
+                        "value": "const",
+                        "line": 20,
+                        "col": 2,
+                        "endLine": 20,
+                        "endCol": 7
                       },
                       {
-                        "kind": "identifier",
-                        "start": 438,
-                        "end": 444
+                        "type": "identifier",
+                        "value": "Result",
+                        "line": 20,
+                        "col": 8,
+                        "endLine": 20,
+                        "endCol": 14
                       },
                       {
-                        "kind": "formal_parameter_list",
-                        "start": 444,
-                        "end": 560,
+                        "type": "formal_parameter_list",
+                        "line": 20,
+                        "col": 14,
                         "children": [
                           {
-                            "kind": "optional_formal_parameters",
-                            "start": 445,
-                            "end": 559,
+                            "type": "optional_formal_parameters",
+                            "line": 20,
+                            "col": 15,
                             "children": [
                               {
-                                "kind": "formal_parameter",
-                                "start": 455,
-                                "end": 467,
+                                "type": "formal_parameter",
+                                "line": 20,
+                                "col": 25,
                                 "children": [
                                   {
-                                    "kind": "constructor_param",
-                                    "start": 455,
-                                    "end": 467,
+                                    "type": "constructor_param",
+                                    "line": 20,
+                                    "col": 25,
                                     "children": [
                                       {
-                                        "kind": "this",
-                                        "start": 455,
-                                        "end": 459
+                                        "type": "this",
+                                        "line": 20,
+                                        "col": 25,
+                                        "endLine": 20,
+                                        "endCol": 29
                                       },
                                       {
-                                        "kind": "identifier",
-                                        "start": 460,
-                                        "end": 467
+                                        "type": "identifier",
+                                        "value": "orderId",
+                                        "line": 20,
+                                        "col": 30,
+                                        "endLine": 20,
+                                        "endCol": 37
                                       }
-                                    ]
+                                    ],
+                                    "endLine": 20,
+                                    "endCol": 37
                                   }
-                                ]
+                                ],
+                                "endLine": 20,
+                                "endCol": 37
                               },
                               {
-                                "kind": "formal_parameter",
-                                "start": 478,
-                                "end": 498,
+                                "type": "formal_parameter",
+                                "line": 20,
+                                "col": 48,
                                 "children": [
                                   {
-                                    "kind": "constructor_param",
-                                    "start": 478,
-                                    "end": 498,
+                                    "type": "constructor_param",
+                                    "line": 20,
+                                    "col": 48,
                                     "children": [
                                       {
-                                        "kind": "this",
-                                        "start": 478,
-                                        "end": 482
+                                        "type": "this",
+                                        "line": 20,
+                                        "col": 48,
+                                        "endLine": 20,
+                                        "endCol": 52
                                       },
                                       {
-                                        "kind": "identifier",
-                                        "start": 483,
-                                        "end": 498
+                                        "type": "identifier",
+                                        "value": "orderCustomerId",
+                                        "line": 20,
+                                        "col": 53,
+                                        "endLine": 20,
+                                        "endCol": 68
                                       }
-                                    ]
+                                    ],
+                                    "endLine": 20,
+                                    "endCol": 68
                                   }
-                                ]
+                                ],
+                                "endLine": 20,
+                                "endCol": 68
                               },
                               {
-                                "kind": "formal_parameter",
-                                "start": 509,
-                                "end": 532,
+                                "type": "formal_parameter",
+                                "line": 20,
+                                "col": 79,
                                 "children": [
                                   {
-                                    "kind": "constructor_param",
-                                    "start": 509,
-                                    "end": 532,
+                                    "type": "constructor_param",
+                                    "line": 20,
+                                    "col": 79,
                                     "children": [
                                       {
-                                        "kind": "this",
-                                        "start": 509,
-                                        "end": 513
+                                        "type": "this",
+                                        "line": 20,
+                                        "col": 79,
+                                        "endLine": 20,
+                                        "endCol": 83
                                       },
                                       {
-                                        "kind": "identifier",
-                                        "start": 514,
-                                        "end": 532
+                                        "type": "identifier",
+                                        "value": "pairedCustomerName",
+                                        "line": 20,
+                                        "col": 84,
+                                        "endLine": 20,
+                                        "endCol": 102
                                       }
-                                    ]
+                                    ],
+                                    "endLine": 20,
+                                    "endCol": 102
                                   }
-                                ]
+                                ],
+                                "endLine": 20,
+                                "endCol": 102
                               },
                               {
-                                "kind": "formal_parameter",
-                                "start": 543,
-                                "end": 558,
+                                "type": "formal_parameter",
+                                "line": 20,
+                                "col": 113,
                                 "children": [
                                   {
-                                    "kind": "constructor_param",
-                                    "start": 543,
-                                    "end": 558,
+                                    "type": "constructor_param",
+                                    "line": 20,
+                                    "col": 113,
                                     "children": [
                                       {
-                                        "kind": "this",
-                                        "start": 543,
-                                        "end": 547
+                                        "type": "this",
+                                        "line": 20,
+                                        "col": 113,
+                                        "endLine": 20,
+                                        "endCol": 117
                                       },
                                       {
-                                        "kind": "identifier",
-                                        "start": 548,
-                                        "end": 558
+                                        "type": "identifier",
+                                        "value": "orderTotal",
+                                        "line": 20,
+                                        "col": 118,
+                                        "endLine": 20,
+                                        "endCol": 128
                                       }
-                                    ]
+                                    ],
+                                    "endLine": 20,
+                                    "endCol": 128
                                   }
-                                ]
+                                ],
+                                "endLine": 20,
+                                "endCol": 128
                               }
-                            ]
+                            ],
+                            "endLine": 20,
+                            "endCol": 129
                           }
-                        ]
+                        ],
+                        "endLine": 20,
+                        "endCol": 130
                       }
-                    ]
+                    ],
+                    "endLine": 20,
+                    "endCol": 130
                   }
-                ]
+                ],
+                "endLine": 20,
+                "endCol": 130
               }
-            ]
+            ],
+            "endLine": 21,
+            "endCol": 1
           }
-        ]
+        ],
+        "endLine": 21,
+        "endCol": 1
       },
       {
-        "kind": "function_signature",
-        "start": 565,
-        "end": 576,
+        "type": "function_signature",
+        "line": 23,
+        "col": 0,
         "children": [
           {
-            "kind": "void_type",
-            "start": 565,
-            "end": 569
+            "type": "void_type",
+            "value": "void",
+            "line": 23,
+            "col": 0,
+            "endLine": 23,
+            "endCol": 4
           },
           {
-            "kind": "identifier",
-            "start": 570,
-            "end": 574
+            "type": "identifier",
+            "value": "main",
+            "line": 23,
+            "col": 5,
+            "endLine": 23,
+            "endCol": 9
           },
           {
-            "kind": "formal_parameter_list",
-            "start": 574,
-            "end": 576
+            "type": "formal_parameter_list",
+            "line": 23,
+            "col": 9,
+            "endLine": 23,
+            "endCol": 11
           }
-        ]
+        ],
+        "endLine": 23,
+        "endCol": 11
       },
       {
-        "kind": "function_body",
-        "start": 577,
-        "end": 1308,
+        "type": "function_body",
+        "line": 23,
+        "col": 12,
         "children": [
           {
-            "kind": "block",
-            "start": 577,
-            "end": 1308,
+            "type": "block",
+            "line": 23,
+            "col": 12,
             "children": [
               {
-                "kind": "local_variable_declaration",
-                "start": 581,
-                "end": 711,
+                "type": "local_variable_declaration",
+                "line": 24,
+                "col": 2,
                 "children": [
                   {
-                    "kind": "initialized_variable_definition",
-                    "start": 581,
-                    "end": 710,
+                    "type": "initialized_variable_definition",
+                    "line": 24,
+                    "col": 2,
                     "children": [
                       {
-                        "kind": "final_builtin",
-                        "start": 581,
-                        "end": 586
+                        "type": "final_builtin",
+                        "line": 24,
+                        "col": 2,
+                        "endLine": 24,
+                        "endCol": 7
                       },
                       {
-                        "kind": "type_identifier",
-                        "start": 587,
-                        "end": 591
+                        "type": "type_identifier",
+                        "value": "List",
+                        "line": 24,
+                        "col": 8,
+                        "endLine": 24,
+                        "endCol": 12
                       },
                       {
-                        "kind": "type_arguments",
-                        "start": 591,
-                        "end": 601,
+                        "type": "type_arguments",
+                        "line": 24,
+                        "col": 12,
                         "children": [
                           {
-                            "kind": "type_identifier",
-                            "start": 592,
-                            "end": 600
+                            "type": "type_identifier",
+                            "value": "Customer",
+                            "line": 24,
+                            "col": 13,
+                            "endLine": 24,
+                            "endCol": 21
                           }
-                        ]
+                        ],
+                        "endLine": 24,
+                        "endCol": 22
                       },
                       {
-                        "kind": "identifier",
-                        "start": 602,
-                        "end": 611
+                        "type": "identifier",
+                        "value": "customers",
+                        "line": 24,
+                        "col": 23,
+                        "endLine": 24,
+                        "endCol": 32
                       },
                       {
-                        "kind": "list_literal",
-                        "start": 614,
-                        "end": 710,
+                        "type": "list_literal",
+                        "line": 24,
+                        "col": 35,
                         "children": [
                           {
-                            "kind": "identifier",
-                            "start": 615,
-                            "end": 623
+                            "type": "identifier",
+                            "value": "Customer",
+                            "line": 24,
+                            "col": 36,
+                            "endLine": 24,
+                            "endCol": 44
                           },
                           {
-                            "kind": "selector",
-                            "start": 623,
-                            "end": 645,
+                            "type": "selector",
+                            "line": 24,
+                            "col": 44,
                             "children": [
                               {
-                                "kind": "argument_part",
-                                "start": 623,
-                                "end": 645,
+                                "type": "argument_part",
+                                "line": 24,
+                                "col": 44,
                                 "children": [
                                   {
-                                    "kind": "arguments",
-                                    "start": 623,
-                                    "end": 645,
+                                    "type": "arguments",
+                                    "line": 24,
+                                    "col": 44,
                                     "children": [
                                       {
-                                        "kind": "named_argument",
-                                        "start": 624,
-                                        "end": 629,
+                                        "type": "named_argument",
+                                        "line": 24,
+                                        "col": 45,
                                         "children": [
                                           {
-                                            "kind": "label",
-                                            "start": 624,
-                                            "end": 627,
+                                            "type": "label",
+                                            "line": 24,
+                                            "col": 45,
                                             "children": [
                                               {
-                                                "kind": "identifier",
-                                                "start": 624,
-                                                "end": 626
+                                                "type": "identifier",
+                                                "value": "id",
+                                                "line": 24,
+                                                "col": 45,
+                                                "endLine": 24,
+                                                "endCol": 47
                                               }
-                                            ]
+                                            ],
+                                            "endLine": 24,
+                                            "endCol": 48
                                           },
                                           {
-                                            "kind": "decimal_integer_literal",
-                                            "start": 628,
-                                            "end": 629
+                                            "type": "decimal_integer_literal",
+                                            "value": "1",
+                                            "line": 24,
+                                            "col": 49,
+                                            "endLine": 24,
+                                            "endCol": 50
                                           }
-                                        ]
+                                        ],
+                                        "endLine": 24,
+                                        "endCol": 50
                                       },
                                       {
-                                        "kind": "named_argument",
-                                        "start": 631,
-                                        "end": 644,
+                                        "type": "named_argument",
+                                        "line": 24,
+                                        "col": 52,
                                         "children": [
                                           {
-                                            "kind": "label",
-                                            "start": 631,
-                                            "end": 636,
+                                            "type": "label",
+                                            "line": 24,
+                                            "col": 52,
                                             "children": [
                                               {
-                                                "kind": "identifier",
-                                                "start": 631,
-                                                "end": 635
+                                                "type": "identifier",
+                                                "value": "name",
+                                                "line": 24,
+                                                "col": 52,
+                                                "endLine": 24,
+                                                "endCol": 56
                                               }
-                                            ]
+                                            ],
+                                            "endLine": 24,
+                                            "endCol": 57
                                           },
                                           {
-                                            "kind": "string_literal",
-                                            "start": 637,
-                                            "end": 644
+                                            "type": "string_literal",
+                                            "line": 24,
+                                            "col": 58,
+                                            "endLine": 24,
+                                            "endCol": 65
                                           }
-                                        ]
+                                        ],
+                                        "endLine": 24,
+                                        "endCol": 65
                                       }
-                                    ]
+                                    ],
+                                    "endLine": 24,
+                                    "endCol": 66
                                   }
-                                ]
+                                ],
+                                "endLine": 24,
+                                "endCol": 66
                               }
-                            ]
+                            ],
+                            "endLine": 24,
+                            "endCol": 66
                           },
                           {
-                            "kind": "identifier",
-                            "start": 647,
-                            "end": 655
+                            "type": "identifier",
+                            "value": "Customer",
+                            "line": 24,
+                            "col": 68,
+                            "endLine": 24,
+                            "endCol": 76
                           },
                           {
-                            "kind": "selector",
-                            "start": 655,
-                            "end": 675,
+                            "type": "selector",
+                            "line": 24,
+                            "col": 76,
                             "children": [
                               {
-                                "kind": "argument_part",
-                                "start": 655,
-                                "end": 675,
+                                "type": "argument_part",
+                                "line": 24,
+                                "col": 76,
                                 "children": [
                                   {
-                                    "kind": "arguments",
-                                    "start": 655,
-                                    "end": 675,
+                                    "type": "arguments",
+                                    "line": 24,
+                                    "col": 76,
                                     "children": [
                                       {
-                                        "kind": "named_argument",
-                                        "start": 656,
-                                        "end": 661,
+                                        "type": "named_argument",
+                                        "line": 24,
+                                        "col": 77,
                                         "children": [
                                           {
-                                            "kind": "label",
-                                            "start": 656,
-                                            "end": 659,
+                                            "type": "label",
+                                            "line": 24,
+                                            "col": 77,
                                             "children": [
                                               {
-                                                "kind": "identifier",
-                                                "start": 656,
-                                                "end": 658
+                                                "type": "identifier",
+                                                "value": "id",
+                                                "line": 24,
+                                                "col": 77,
+                                                "endLine": 24,
+                                                "endCol": 79
                                               }
-                                            ]
+                                            ],
+                                            "endLine": 24,
+                                            "endCol": 80
                                           },
                                           {
-                                            "kind": "decimal_integer_literal",
-                                            "start": 660,
-                                            "end": 661
+                                            "type": "decimal_integer_literal",
+                                            "value": "2",
+                                            "line": 24,
+                                            "col": 81,
+                                            "endLine": 24,
+                                            "endCol": 82
                                           }
-                                        ]
+                                        ],
+                                        "endLine": 24,
+                                        "endCol": 82
                                       },
                                       {
-                                        "kind": "named_argument",
-                                        "start": 663,
-                                        "end": 674,
+                                        "type": "named_argument",
+                                        "line": 24,
+                                        "col": 84,
                                         "children": [
                                           {
-                                            "kind": "label",
-                                            "start": 663,
-                                            "end": 668,
+                                            "type": "label",
+                                            "line": 24,
+                                            "col": 84,
                                             "children": [
                                               {
-                                                "kind": "identifier",
-                                                "start": 663,
-                                                "end": 667
+                                                "type": "identifier",
+                                                "value": "name",
+                                                "line": 24,
+                                                "col": 84,
+                                                "endLine": 24,
+                                                "endCol": 88
                                               }
-                                            ]
+                                            ],
+                                            "endLine": 24,
+                                            "endCol": 89
                                           },
                                           {
-                                            "kind": "string_literal",
-                                            "start": 669,
-                                            "end": 674
+                                            "type": "string_literal",
+                                            "line": 24,
+                                            "col": 90,
+                                            "endLine": 24,
+                                            "endCol": 95
                                           }
-                                        ]
+                                        ],
+                                        "endLine": 24,
+                                        "endCol": 95
                                       }
-                                    ]
+                                    ],
+                                    "endLine": 24,
+                                    "endCol": 96
                                   }
-                                ]
+                                ],
+                                "endLine": 24,
+                                "endCol": 96
                               }
-                            ]
+                            ],
+                            "endLine": 24,
+                            "endCol": 96
                           },
                           {
-                            "kind": "identifier",
-                            "start": 677,
-                            "end": 685
+                            "type": "identifier",
+                            "value": "Customer",
+                            "line": 24,
+                            "col": 98,
+                            "endLine": 24,
+                            "endCol": 106
                           },
                           {
-                            "kind": "selector",
-                            "start": 685,
-                            "end": 709,
+                            "type": "selector",
+                            "line": 24,
+                            "col": 106,
                             "children": [
                               {
-                                "kind": "argument_part",
-                                "start": 685,
-                                "end": 709,
+                                "type": "argument_part",
+                                "line": 24,
+                                "col": 106,
                                 "children": [
                                   {
-                                    "kind": "arguments",
-                                    "start": 685,
-                                    "end": 709,
+                                    "type": "arguments",
+                                    "line": 24,
+                                    "col": 106,
                                     "children": [
                                       {
-                                        "kind": "named_argument",
-                                        "start": 686,
-                                        "end": 691,
+                                        "type": "named_argument",
+                                        "line": 24,
+                                        "col": 107,
                                         "children": [
                                           {
-                                            "kind": "label",
-                                            "start": 686,
-                                            "end": 689,
+                                            "type": "label",
+                                            "line": 24,
+                                            "col": 107,
                                             "children": [
                                               {
-                                                "kind": "identifier",
-                                                "start": 686,
-                                                "end": 688
+                                                "type": "identifier",
+                                                "value": "id",
+                                                "line": 24,
+                                                "col": 107,
+                                                "endLine": 24,
+                                                "endCol": 109
                                               }
-                                            ]
+                                            ],
+                                            "endLine": 24,
+                                            "endCol": 110
                                           },
                                           {
-                                            "kind": "decimal_integer_literal",
-                                            "start": 690,
-                                            "end": 691
+                                            "type": "decimal_integer_literal",
+                                            "value": "3",
+                                            "line": 24,
+                                            "col": 111,
+                                            "endLine": 24,
+                                            "endCol": 112
                                           }
-                                        ]
+                                        ],
+                                        "endLine": 24,
+                                        "endCol": 112
                                       },
                                       {
-                                        "kind": "named_argument",
-                                        "start": 693,
-                                        "end": 708,
+                                        "type": "named_argument",
+                                        "line": 24,
+                                        "col": 114,
                                         "children": [
                                           {
-                                            "kind": "label",
-                                            "start": 693,
-                                            "end": 698,
+                                            "type": "label",
+                                            "line": 24,
+                                            "col": 114,
                                             "children": [
                                               {
-                                                "kind": "identifier",
-                                                "start": 693,
-                                                "end": 697
+                                                "type": "identifier",
+                                                "value": "name",
+                                                "line": 24,
+                                                "col": 114,
+                                                "endLine": 24,
+                                                "endCol": 118
                                               }
-                                            ]
+                                            ],
+                                            "endLine": 24,
+                                            "endCol": 119
                                           },
                                           {
-                                            "kind": "string_literal",
-                                            "start": 699,
-                                            "end": 708
+                                            "type": "string_literal",
+                                            "line": 24,
+                                            "col": 120,
+                                            "endLine": 24,
+                                            "endCol": 129
                                           }
-                                        ]
+                                        ],
+                                        "endLine": 24,
+                                        "endCol": 129
                                       }
-                                    ]
+                                    ],
+                                    "endLine": 24,
+                                    "endCol": 130
                                   }
-                                ]
+                                ],
+                                "endLine": 24,
+                                "endCol": 130
                               }
-                            ]
+                            ],
+                            "endLine": 24,
+                            "endCol": 130
                           }
-                        ]
+                        ],
+                        "endLine": 24,
+                        "endCol": 131
                       }
-                    ]
+                    ],
+                    "endLine": 24,
+                    "endCol": 131
                   }
-                ]
+                ],
+                "endLine": 24,
+                "endCol": 132
               },
               {
-                "kind": "local_variable_declaration",
-                "start": 714,
-                "end": 871,
+                "type": "local_variable_declaration",
+                "line": 25,
+                "col": 2,
                 "children": [
                   {
-                    "kind": "initialized_variable_definition",
-                    "start": 714,
-                    "end": 870,
+                    "type": "initialized_variable_definition",
+                    "line": 25,
+                    "col": 2,
                     "children": [
                       {
-                        "kind": "final_builtin",
-                        "start": 714,
-                        "end": 719
+                        "type": "final_builtin",
+                        "line": 25,
+                        "col": 2,
+                        "endLine": 25,
+                        "endCol": 7
                       },
                       {
-                        "kind": "type_identifier",
-                        "start": 720,
-                        "end": 724
+                        "type": "type_identifier",
+                        "value": "List",
+                        "line": 25,
+                        "col": 8,
+                        "endLine": 25,
+                        "endCol": 12
                       },
                       {
-                        "kind": "type_arguments",
-                        "start": 724,
-                        "end": 731,
+                        "type": "type_arguments",
+                        "line": 25,
+                        "col": 12,
                         "children": [
                           {
-                            "kind": "type_identifier",
-                            "start": 725,
-                            "end": 730
+                            "type": "type_identifier",
+                            "value": "Order",
+                            "line": 25,
+                            "col": 13,
+                            "endLine": 25,
+                            "endCol": 18
                           }
-                        ]
+                        ],
+                        "endLine": 25,
+                        "endCol": 19
                       },
                       {
-                        "kind": "identifier",
-                        "start": 732,
-                        "end": 738
+                        "type": "identifier",
+                        "value": "orders",
+                        "line": 25,
+                        "col": 20,
+                        "endLine": 25,
+                        "endCol": 26
                       },
                       {
-                        "kind": "list_literal",
-                        "start": 741,
-                        "end": 870,
+                        "type": "list_literal",
+                        "line": 25,
+                        "col": 29,
                         "children": [
                           {
-                            "kind": "identifier",
-                            "start": 742,
-                            "end": 747
+                            "type": "identifier",
+                            "value": "Order",
+                            "line": 25,
+                            "col": 30,
+                            "endLine": 25,
+                            "endCol": 35
                           },
                           {
-                            "kind": "selector",
-                            "start": 747,
-                            "end": 783,
+                            "type": "selector",
+                            "line": 25,
+                            "col": 35,
                             "children": [
                               {
-                                "kind": "argument_part",
-                                "start": 747,
-                                "end": 783,
+                                "type": "argument_part",
+                                "line": 25,
+                                "col": 35,
                                 "children": [
                                   {
-                                    "kind": "arguments",
-                                    "start": 747,
-                                    "end": 783,
+                                    "type": "arguments",
+                                    "line": 25,
+                                    "col": 35,
                                     "children": [
                                       {
-                                        "kind": "named_argument",
-                                        "start": 748,
-                                        "end": 755,
+                                        "type": "named_argument",
+                                        "line": 25,
+                                        "col": 36,
                                         "children": [
                                           {
-                                            "kind": "label",
-                                            "start": 748,
-                                            "end": 751,
+                                            "type": "label",
+                                            "line": 25,
+                                            "col": 36,
                                             "children": [
                                               {
-                                                "kind": "identifier",
-                                                "start": 748,
-                                                "end": 750
+                                                "type": "identifier",
+                                                "value": "id",
+                                                "line": 25,
+                                                "col": 36,
+                                                "endLine": 25,
+                                                "endCol": 38
                                               }
-                                            ]
+                                            ],
+                                            "endLine": 25,
+                                            "endCol": 39
                                           },
                                           {
-                                            "kind": "decimal_integer_literal",
-                                            "start": 752,
-                                            "end": 755
+                                            "type": "decimal_integer_literal",
+                                            "value": "100",
+                                            "line": 25,
+                                            "col": 40,
+                                            "endLine": 25,
+                                            "endCol": 43
                                           }
-                                        ]
+                                        ],
+                                        "endLine": 25,
+                                        "endCol": 43
                                       },
                                       {
-                                        "kind": "named_argument",
-                                        "start": 757,
-                                        "end": 770,
+                                        "type": "named_argument",
+                                        "line": 25,
+                                        "col": 45,
                                         "children": [
                                           {
-                                            "kind": "label",
-                                            "start": 757,
-                                            "end": 768,
+                                            "type": "label",
+                                            "line": 25,
+                                            "col": 45,
                                             "children": [
                                               {
-                                                "kind": "identifier",
-                                                "start": 757,
-                                                "end": 767
+                                                "type": "identifier",
+                                                "value": "customerId",
+                                                "line": 25,
+                                                "col": 45,
+                                                "endLine": 25,
+                                                "endCol": 55
                                               }
-                                            ]
+                                            ],
+                                            "endLine": 25,
+                                            "endCol": 56
                                           },
                                           {
-                                            "kind": "decimal_integer_literal",
-                                            "start": 769,
-                                            "end": 770
+                                            "type": "decimal_integer_literal",
+                                            "value": "1",
+                                            "line": 25,
+                                            "col": 57,
+                                            "endLine": 25,
+                                            "endCol": 58
                                           }
-                                        ]
+                                        ],
+                                        "endLine": 25,
+                                        "endCol": 58
                                       },
                                       {
-                                        "kind": "named_argument",
-                                        "start": 772,
-                                        "end": 782,
+                                        "type": "named_argument",
+                                        "line": 25,
+                                        "col": 60,
                                         "children": [
                                           {
-                                            "kind": "label",
-                                            "start": 772,
-                                            "end": 778,
+                                            "type": "label",
+                                            "line": 25,
+                                            "col": 60,
                                             "children": [
                                               {
-                                                "kind": "identifier",
-                                                "start": 772,
-                                                "end": 777
+                                                "type": "identifier",
+                                                "value": "total",
+                                                "line": 25,
+                                                "col": 60,
+                                                "endLine": 25,
+                                                "endCol": 65
                                               }
-                                            ]
+                                            ],
+                                            "endLine": 25,
+                                            "endCol": 66
                                           },
                                           {
-                                            "kind": "decimal_integer_literal",
-                                            "start": 779,
-                                            "end": 782
+                                            "type": "decimal_integer_literal",
+                                            "value": "250",
+                                            "line": 25,
+                                            "col": 67,
+                                            "endLine": 25,
+                                            "endCol": 70
                                           }
-                                        ]
+                                        ],
+                                        "endLine": 25,
+                                        "endCol": 70
                                       }
-                                    ]
+                                    ],
+                                    "endLine": 25,
+                                    "endCol": 71
                                   }
-                                ]
+                                ],
+                                "endLine": 25,
+                                "endCol": 71
                               }
-                            ]
+                            ],
+                            "endLine": 25,
+                            "endCol": 71
                           },
                           {
-                            "kind": "identifier",
-                            "start": 785,
-                            "end": 790
+                            "type": "identifier",
+                            "value": "Order",
+                            "line": 25,
+                            "col": 73,
+                            "endLine": 25,
+                            "endCol": 78
                           },
                           {
-                            "kind": "selector",
-                            "start": 790,
-                            "end": 826,
+                            "type": "selector",
+                            "line": 25,
+                            "col": 78,
                             "children": [
                               {
-                                "kind": "argument_part",
-                                "start": 790,
-                                "end": 826,
+                                "type": "argument_part",
+                                "line": 25,
+                                "col": 78,
                                 "children": [
                                   {
-                                    "kind": "arguments",
-                                    "start": 790,
-                                    "end": 826,
+                                    "type": "arguments",
+                                    "line": 25,
+                                    "col": 78,
                                     "children": [
                                       {
-                                        "kind": "named_argument",
-                                        "start": 791,
-                                        "end": 798,
+                                        "type": "named_argument",
+                                        "line": 25,
+                                        "col": 79,
                                         "children": [
                                           {
-                                            "kind": "label",
-                                            "start": 791,
-                                            "end": 794,
+                                            "type": "label",
+                                            "line": 25,
+                                            "col": 79,
                                             "children": [
                                               {
-                                                "kind": "identifier",
-                                                "start": 791,
-                                                "end": 793
+                                                "type": "identifier",
+                                                "value": "id",
+                                                "line": 25,
+                                                "col": 79,
+                                                "endLine": 25,
+                                                "endCol": 81
                                               }
-                                            ]
+                                            ],
+                                            "endLine": 25,
+                                            "endCol": 82
                                           },
                                           {
-                                            "kind": "decimal_integer_literal",
-                                            "start": 795,
-                                            "end": 798
+                                            "type": "decimal_integer_literal",
+                                            "value": "101",
+                                            "line": 25,
+                                            "col": 83,
+                                            "endLine": 25,
+                                            "endCol": 86
                                           }
-                                        ]
+                                        ],
+                                        "endLine": 25,
+                                        "endCol": 86
                                       },
                                       {
-                                        "kind": "named_argument",
-                                        "start": 800,
-                                        "end": 813,
+                                        "type": "named_argument",
+                                        "line": 25,
+                                        "col": 88,
                                         "children": [
                                           {
-                                            "kind": "label",
-                                            "start": 800,
-                                            "end": 811,
+                                            "type": "label",
+                                            "line": 25,
+                                            "col": 88,
                                             "children": [
                                               {
-                                                "kind": "identifier",
-                                                "start": 800,
-                                                "end": 810
+                                                "type": "identifier",
+                                                "value": "customerId",
+                                                "line": 25,
+                                                "col": 88,
+                                                "endLine": 25,
+                                                "endCol": 98
                                               }
-                                            ]
+                                            ],
+                                            "endLine": 25,
+                                            "endCol": 99
                                           },
                                           {
-                                            "kind": "decimal_integer_literal",
-                                            "start": 812,
-                                            "end": 813
+                                            "type": "decimal_integer_literal",
+                                            "value": "2",
+                                            "line": 25,
+                                            "col": 100,
+                                            "endLine": 25,
+                                            "endCol": 101
                                           }
-                                        ]
+                                        ],
+                                        "endLine": 25,
+                                        "endCol": 101
                                       },
                                       {
-                                        "kind": "named_argument",
-                                        "start": 815,
-                                        "end": 825,
+                                        "type": "named_argument",
+                                        "line": 25,
+                                        "col": 103,
                                         "children": [
                                           {
-                                            "kind": "label",
-                                            "start": 815,
-                                            "end": 821,
+                                            "type": "label",
+                                            "line": 25,
+                                            "col": 103,
                                             "children": [
                                               {
-                                                "kind": "identifier",
-                                                "start": 815,
-                                                "end": 820
+                                                "type": "identifier",
+                                                "value": "total",
+                                                "line": 25,
+                                                "col": 103,
+                                                "endLine": 25,
+                                                "endCol": 108
                                               }
-                                            ]
+                                            ],
+                                            "endLine": 25,
+                                            "endCol": 109
                                           },
                                           {
-                                            "kind": "decimal_integer_literal",
-                                            "start": 822,
-                                            "end": 825
+                                            "type": "decimal_integer_literal",
+                                            "value": "125",
+                                            "line": 25,
+                                            "col": 110,
+                                            "endLine": 25,
+                                            "endCol": 113
                                           }
-                                        ]
+                                        ],
+                                        "endLine": 25,
+                                        "endCol": 113
                                       }
-                                    ]
+                                    ],
+                                    "endLine": 25,
+                                    "endCol": 114
                                   }
-                                ]
+                                ],
+                                "endLine": 25,
+                                "endCol": 114
                               }
-                            ]
+                            ],
+                            "endLine": 25,
+                            "endCol": 114
                           },
                           {
-                            "kind": "identifier",
-                            "start": 828,
-                            "end": 833
+                            "type": "identifier",
+                            "value": "Order",
+                            "line": 25,
+                            "col": 116,
+                            "endLine": 25,
+                            "endCol": 121
                           },
                           {
-                            "kind": "selector",
-                            "start": 833,
-                            "end": 869,
+                            "type": "selector",
+                            "line": 25,
+                            "col": 121,
                             "children": [
                               {
-                                "kind": "argument_part",
-                                "start": 833,
-                                "end": 869,
+                                "type": "argument_part",
+                                "line": 25,
+                                "col": 121,
                                 "children": [
                                   {
-                                    "kind": "arguments",
-                                    "start": 833,
-                                    "end": 869,
+                                    "type": "arguments",
+                                    "line": 25,
+                                    "col": 121,
                                     "children": [
                                       {
-                                        "kind": "named_argument",
-                                        "start": 834,
-                                        "end": 841,
+                                        "type": "named_argument",
+                                        "line": 25,
+                                        "col": 122,
                                         "children": [
                                           {
-                                            "kind": "label",
-                                            "start": 834,
-                                            "end": 837,
+                                            "type": "label",
+                                            "line": 25,
+                                            "col": 122,
                                             "children": [
                                               {
-                                                "kind": "identifier",
-                                                "start": 834,
-                                                "end": 836
+                                                "type": "identifier",
+                                                "value": "id",
+                                                "line": 25,
+                                                "col": 122,
+                                                "endLine": 25,
+                                                "endCol": 124
                                               }
-                                            ]
+                                            ],
+                                            "endLine": 25,
+                                            "endCol": 125
                                           },
                                           {
-                                            "kind": "decimal_integer_literal",
-                                            "start": 838,
-                                            "end": 841
+                                            "type": "decimal_integer_literal",
+                                            "value": "102",
+                                            "line": 25,
+                                            "col": 126,
+                                            "endLine": 25,
+                                            "endCol": 129
                                           }
-                                        ]
+                                        ],
+                                        "endLine": 25,
+                                        "endCol": 129
                                       },
                                       {
-                                        "kind": "named_argument",
-                                        "start": 843,
-                                        "end": 856,
+                                        "type": "named_argument",
+                                        "line": 25,
+                                        "col": 131,
                                         "children": [
                                           {
-                                            "kind": "label",
-                                            "start": 843,
-                                            "end": 854,
+                                            "type": "label",
+                                            "line": 25,
+                                            "col": 131,
                                             "children": [
                                               {
-                                                "kind": "identifier",
-                                                "start": 843,
-                                                "end": 853
+                                                "type": "identifier",
+                                                "value": "customerId",
+                                                "line": 25,
+                                                "col": 131,
+                                                "endLine": 25,
+                                                "endCol": 141
                                               }
-                                            ]
+                                            ],
+                                            "endLine": 25,
+                                            "endCol": 142
                                           },
                                           {
-                                            "kind": "decimal_integer_literal",
-                                            "start": 855,
-                                            "end": 856
+                                            "type": "decimal_integer_literal",
+                                            "value": "1",
+                                            "line": 25,
+                                            "col": 143,
+                                            "endLine": 25,
+                                            "endCol": 144
                                           }
-                                        ]
+                                        ],
+                                        "endLine": 25,
+                                        "endCol": 144
                                       },
                                       {
-                                        "kind": "named_argument",
-                                        "start": 858,
-                                        "end": 868,
+                                        "type": "named_argument",
+                                        "line": 25,
+                                        "col": 146,
                                         "children": [
                                           {
-                                            "kind": "label",
-                                            "start": 858,
-                                            "end": 864,
+                                            "type": "label",
+                                            "line": 25,
+                                            "col": 146,
                                             "children": [
                                               {
-                                                "kind": "identifier",
-                                                "start": 858,
-                                                "end": 863
+                                                "type": "identifier",
+                                                "value": "total",
+                                                "line": 25,
+                                                "col": 146,
+                                                "endLine": 25,
+                                                "endCol": 151
                                               }
-                                            ]
+                                            ],
+                                            "endLine": 25,
+                                            "endCol": 152
                                           },
                                           {
-                                            "kind": "decimal_integer_literal",
-                                            "start": 865,
-                                            "end": 868
+                                            "type": "decimal_integer_literal",
+                                            "value": "300",
+                                            "line": 25,
+                                            "col": 153,
+                                            "endLine": 25,
+                                            "endCol": 156
                                           }
-                                        ]
+                                        ],
+                                        "endLine": 25,
+                                        "endCol": 156
                                       }
-                                    ]
+                                    ],
+                                    "endLine": 25,
+                                    "endCol": 157
                                   }
-                                ]
+                                ],
+                                "endLine": 25,
+                                "endCol": 157
                               }
-                            ]
+                            ],
+                            "endLine": 25,
+                            "endCol": 157
                           }
-                        ]
+                        ],
+                        "endLine": 25,
+                        "endCol": 158
                       }
-                    ]
+                    ],
+                    "endLine": 25,
+                    "endCol": 158
                   }
-                ]
+                ],
+                "endLine": 25,
+                "endCol": 159
               },
               {
-                "kind": "local_variable_declaration",
-                "start": 874,
-                "end": 1053,
+                "type": "local_variable_declaration",
+                "line": 26,
+                "col": 2,
                 "children": [
                   {
-                    "kind": "initialized_variable_definition",
-                    "start": 874,
-                    "end": 1052,
+                    "type": "initialized_variable_definition",
+                    "line": 26,
+                    "col": 2,
                     "children": [
                       {
-                        "kind": "final_builtin",
-                        "start": 874,
-                        "end": 879
+                        "type": "final_builtin",
+                        "line": 26,
+                        "col": 2,
+                        "endLine": 26,
+                        "endCol": 7
                       },
                       {
-                        "kind": "type_identifier",
-                        "start": 880,
-                        "end": 884
+                        "type": "type_identifier",
+                        "value": "List",
+                        "line": 26,
+                        "col": 8,
+                        "endLine": 26,
+                        "endCol": 12
                       },
                       {
-                        "kind": "type_arguments",
-                        "start": 884,
-                        "end": 892,
+                        "type": "type_arguments",
+                        "line": 26,
+                        "col": 12,
                         "children": [
                           {
-                            "kind": "type_identifier",
-                            "start": 885,
-                            "end": 891
+                            "type": "type_identifier",
+                            "value": "Result",
+                            "line": 26,
+                            "col": 13,
+                            "endLine": 26,
+                            "endCol": 19
                           }
-                        ]
+                        ],
+                        "endLine": 26,
+                        "endCol": 20
                       },
                       {
-                        "kind": "identifier",
-                        "start": 893,
-                        "end": 899
+                        "type": "identifier",
+                        "value": "result",
+                        "line": 26,
+                        "col": 21,
+                        "endLine": 26,
+                        "endCol": 27
                       },
                       {
-                        "kind": "list_literal",
-                        "start": 902,
-                        "end": 1052,
+                        "type": "list_literal",
+                        "line": 26,
+                        "col": 30,
                         "children": [
                           {
-                            "kind": "for_element",
-                            "start": 903,
-                            "end": 1051,
+                            "type": "for_element",
+                            "line": 26,
+                            "col": 31,
                             "children": [
                               {
-                                "kind": "for_loop_parts",
-                                "start": 907,
-                                "end": 924,
+                                "type": "for_loop_parts",
+                                "line": 26,
+                                "col": 35,
                                 "children": [
                                   {
-                                    "kind": "inferred_type",
-                                    "start": 908,
-                                    "end": 911
+                                    "type": "inferred_type",
+                                    "line": 26,
+                                    "col": 36,
+                                    "endLine": 26,
+                                    "endCol": 39
                                   },
                                   {
-                                    "kind": "identifier",
-                                    "start": 912,
-                                    "end": 913
+                                    "type": "identifier",
+                                    "value": "o",
+                                    "line": 26,
+                                    "col": 40,
+                                    "endLine": 26,
+                                    "endCol": 41
                                   },
                                   {
-                                    "kind": "identifier",
-                                    "start": 917,
-                                    "end": 923
+                                    "type": "identifier",
+                                    "value": "orders",
+                                    "line": 26,
+                                    "col": 45,
+                                    "endLine": 26,
+                                    "endCol": 51
                                   }
-                                ]
+                                ],
+                                "endLine": 26,
+                                "endCol": 52
                               },
                               {
-                                "kind": "for_element",
-                                "start": 925,
-                                "end": 1051,
+                                "type": "for_element",
+                                "line": 26,
+                                "col": 53,
                                 "children": [
                                   {
-                                    "kind": "for_loop_parts",
-                                    "start": 929,
-                                    "end": 949,
+                                    "type": "for_loop_parts",
+                                    "line": 26,
+                                    "col": 57,
                                     "children": [
                                       {
-                                        "kind": "inferred_type",
-                                        "start": 930,
-                                        "end": 933
+                                        "type": "inferred_type",
+                                        "line": 26,
+                                        "col": 58,
+                                        "endLine": 26,
+                                        "endCol": 61
                                       },
                                       {
-                                        "kind": "identifier",
-                                        "start": 934,
-                                        "end": 935
+                                        "type": "identifier",
+                                        "value": "c",
+                                        "line": 26,
+                                        "col": 62,
+                                        "endLine": 26,
+                                        "endCol": 63
                                       },
                                       {
-                                        "kind": "identifier",
-                                        "start": 939,
-                                        "end": 948
+                                        "type": "identifier",
+                                        "value": "customers",
+                                        "line": 26,
+                                        "col": 67,
+                                        "endLine": 26,
+                                        "endCol": 76
                                       }
-                                    ]
+                                    ],
+                                    "endLine": 26,
+                                    "endCol": 77
                                   },
                                   {
-                                    "kind": "identifier",
-                                    "start": 950,
-                                    "end": 956
+                                    "type": "identifier",
+                                    "value": "Result",
+                                    "line": 26,
+                                    "col": 78,
+                                    "endLine": 26,
+                                    "endCol": 84
                                   },
                                   {
-                                    "kind": "selector",
-                                    "start": 956,
-                                    "end": 1051,
+                                    "type": "selector",
+                                    "line": 26,
+                                    "col": 84,
                                     "children": [
                                       {
-                                        "kind": "argument_part",
-                                        "start": 956,
-                                        "end": 1051,
+                                        "type": "argument_part",
+                                        "line": 26,
+                                        "col": 84,
                                         "children": [
                                           {
-                                            "kind": "arguments",
-                                            "start": 956,
-                                            "end": 1051,
+                                            "type": "arguments",
+                                            "line": 26,
+                                            "col": 84,
                                             "children": [
                                               {
-                                                "kind": "named_argument",
-                                                "start": 957,
-                                                "end": 970,
+                                                "type": "named_argument",
+                                                "line": 26,
+                                                "col": 85,
                                                 "children": [
                                                   {
-                                                    "kind": "label",
-                                                    "start": 957,
-                                                    "end": 965,
+                                                    "type": "label",
+                                                    "line": 26,
+                                                    "col": 85,
                                                     "children": [
                                                       {
-                                                        "kind": "identifier",
-                                                        "start": 957,
-                                                        "end": 964
+                                                        "type": "identifier",
+                                                        "value": "orderId",
+                                                        "line": 26,
+                                                        "col": 85,
+                                                        "endLine": 26,
+                                                        "endCol": 92
                                                       }
-                                                    ]
+                                                    ],
+                                                    "endLine": 26,
+                                                    "endCol": 93
                                                   },
                                                   {
-                                                    "kind": "identifier",
-                                                    "start": 966,
-                                                    "end": 967
+                                                    "type": "identifier",
+                                                    "value": "o",
+                                                    "line": 26,
+                                                    "col": 94,
+                                                    "endLine": 26,
+                                                    "endCol": 95
                                                   },
                                                   {
-                                                    "kind": "selector",
-                                                    "start": 967,
-                                                    "end": 970,
+                                                    "type": "selector",
+                                                    "line": 26,
+                                                    "col": 95,
                                                     "children": [
                                                       {
-                                                        "kind": "unconditional_assignable_selector",
-                                                        "start": 967,
-                                                        "end": 970,
+                                                        "type": "unconditional_assignable_selector",
+                                                        "line": 26,
+                                                        "col": 95,
                                                         "children": [
                                                           {
-                                                            "kind": "identifier",
-                                                            "start": 968,
-                                                            "end": 970
+                                                            "type": "identifier",
+                                                            "value": "id",
+                                                            "line": 26,
+                                                            "col": 96,
+                                                            "endLine": 26,
+                                                            "endCol": 98
                                                           }
-                                                        ]
+                                                        ],
+                                                        "endLine": 26,
+                                                        "endCol": 98
                                                       }
-                                                    ]
+                                                    ],
+                                                    "endLine": 26,
+                                                    "endCol": 98
                                                   }
-                                                ]
+                                                ],
+                                                "endLine": 26,
+                                                "endCol": 98
                                               },
                                               {
-                                                "kind": "named_argument",
-                                                "start": 972,
-                                                "end": 1001,
+                                                "type": "named_argument",
+                                                "line": 26,
+                                                "col": 100,
                                                 "children": [
                                                   {
-                                                    "kind": "label",
-                                                    "start": 972,
-                                                    "end": 988,
+                                                    "type": "label",
+                                                    "line": 26,
+                                                    "col": 100,
                                                     "children": [
                                                       {
-                                                        "kind": "identifier",
-                                                        "start": 972,
-                                                        "end": 987
+                                                        "type": "identifier",
+                                                        "value": "orderCustomerId",
+                                                        "line": 26,
+                                                        "col": 100,
+                                                        "endLine": 26,
+                                                        "endCol": 115
                                                       }
-                                                    ]
+                                                    ],
+                                                    "endLine": 26,
+                                                    "endCol": 116
                                                   },
                                                   {
-                                                    "kind": "identifier",
-                                                    "start": 989,
-                                                    "end": 990
+                                                    "type": "identifier",
+                                                    "value": "o",
+                                                    "line": 26,
+                                                    "col": 117,
+                                                    "endLine": 26,
+                                                    "endCol": 118
                                                   },
                                                   {
-                                                    "kind": "selector",
-                                                    "start": 990,
-                                                    "end": 1001,
+                                                    "type": "selector",
+                                                    "line": 26,
+                                                    "col": 118,
                                                     "children": [
                                                       {
-                                                        "kind": "unconditional_assignable_selector",
-                                                        "start": 990,
-                                                        "end": 1001,
+                                                        "type": "unconditional_assignable_selector",
+                                                        "line": 26,
+                                                        "col": 118,
                                                         "children": [
                                                           {
-                                                            "kind": "identifier",
-                                                            "start": 991,
-                                                            "end": 1001
+                                                            "type": "identifier",
+                                                            "value": "customerId",
+                                                            "line": 26,
+                                                            "col": 119,
+                                                            "endLine": 26,
+                                                            "endCol": 129
                                                           }
-                                                        ]
+                                                        ],
+                                                        "endLine": 26,
+                                                        "endCol": 129
                                                       }
-                                                    ]
+                                                    ],
+                                                    "endLine": 26,
+                                                    "endCol": 129
                                                   }
-                                                ]
+                                                ],
+                                                "endLine": 26,
+                                                "endCol": 129
                                               },
                                               {
-                                                "kind": "named_argument",
-                                                "start": 1003,
-                                                "end": 1029,
+                                                "type": "named_argument",
+                                                "line": 26,
+                                                "col": 131,
                                                 "children": [
                                                   {
-                                                    "kind": "label",
-                                                    "start": 1003,
-                                                    "end": 1022,
+                                                    "type": "label",
+                                                    "line": 26,
+                                                    "col": 131,
                                                     "children": [
                                                       {
-                                                        "kind": "identifier",
-                                                        "start": 1003,
-                                                        "end": 1021
+                                                        "type": "identifier",
+                                                        "value": "pairedCustomerName",
+                                                        "line": 26,
+                                                        "col": 131,
+                                                        "endLine": 26,
+                                                        "endCol": 149
                                                       }
-                                                    ]
+                                                    ],
+                                                    "endLine": 26,
+                                                    "endCol": 150
                                                   },
                                                   {
-                                                    "kind": "identifier",
-                                                    "start": 1023,
-                                                    "end": 1024
+                                                    "type": "identifier",
+                                                    "value": "c",
+                                                    "line": 26,
+                                                    "col": 151,
+                                                    "endLine": 26,
+                                                    "endCol": 152
                                                   },
                                                   {
-                                                    "kind": "selector",
-                                                    "start": 1024,
-                                                    "end": 1029,
+                                                    "type": "selector",
+                                                    "line": 26,
+                                                    "col": 152,
                                                     "children": [
                                                       {
-                                                        "kind": "unconditional_assignable_selector",
-                                                        "start": 1024,
-                                                        "end": 1029,
+                                                        "type": "unconditional_assignable_selector",
+                                                        "line": 26,
+                                                        "col": 152,
                                                         "children": [
                                                           {
-                                                            "kind": "identifier",
-                                                            "start": 1025,
-                                                            "end": 1029
+                                                            "type": "identifier",
+                                                            "value": "name",
+                                                            "line": 26,
+                                                            "col": 153,
+                                                            "endLine": 26,
+                                                            "endCol": 157
                                                           }
-                                                        ]
+                                                        ],
+                                                        "endLine": 26,
+                                                        "endCol": 157
                                                       }
-                                                    ]
+                                                    ],
+                                                    "endLine": 26,
+                                                    "endCol": 157
                                                   }
-                                                ]
+                                                ],
+                                                "endLine": 26,
+                                                "endCol": 157
                                               },
                                               {
-                                                "kind": "named_argument",
-                                                "start": 1031,
-                                                "end": 1050,
+                                                "type": "named_argument",
+                                                "line": 26,
+                                                "col": 159,
                                                 "children": [
                                                   {
-                                                    "kind": "label",
-                                                    "start": 1031,
-                                                    "end": 1042,
+                                                    "type": "label",
+                                                    "line": 26,
+                                                    "col": 159,
                                                     "children": [
                                                       {
-                                                        "kind": "identifier",
-                                                        "start": 1031,
-                                                        "end": 1041
+                                                        "type": "identifier",
+                                                        "value": "orderTotal",
+                                                        "line": 26,
+                                                        "col": 159,
+                                                        "endLine": 26,
+                                                        "endCol": 169
                                                       }
-                                                    ]
+                                                    ],
+                                                    "endLine": 26,
+                                                    "endCol": 170
                                                   },
                                                   {
-                                                    "kind": "identifier",
-                                                    "start": 1043,
-                                                    "end": 1044
+                                                    "type": "identifier",
+                                                    "value": "o",
+                                                    "line": 26,
+                                                    "col": 171,
+                                                    "endLine": 26,
+                                                    "endCol": 172
                                                   },
                                                   {
-                                                    "kind": "selector",
-                                                    "start": 1044,
-                                                    "end": 1050,
+                                                    "type": "selector",
+                                                    "line": 26,
+                                                    "col": 172,
                                                     "children": [
                                                       {
-                                                        "kind": "unconditional_assignable_selector",
-                                                        "start": 1044,
-                                                        "end": 1050,
+                                                        "type": "unconditional_assignable_selector",
+                                                        "line": 26,
+                                                        "col": 172,
                                                         "children": [
                                                           {
-                                                            "kind": "identifier",
-                                                            "start": 1045,
-                                                            "end": 1050
+                                                            "type": "identifier",
+                                                            "value": "total",
+                                                            "line": 26,
+                                                            "col": 173,
+                                                            "endLine": 26,
+                                                            "endCol": 178
                                                           }
-                                                        ]
+                                                        ],
+                                                        "endLine": 26,
+                                                        "endCol": 178
                                                       }
-                                                    ]
+                                                    ],
+                                                    "endLine": 26,
+                                                    "endCol": 178
                                                   }
-                                                ]
+                                                ],
+                                                "endLine": 26,
+                                                "endCol": 178
                                               }
-                                            ]
+                                            ],
+                                            "endLine": 26,
+                                            "endCol": 179
                                           }
-                                        ]
+                                        ],
+                                        "endLine": 26,
+                                        "endCol": 179
                                       }
-                                    ]
+                                    ],
+                                    "endLine": 26,
+                                    "endCol": 179
                                   }
-                                ]
+                                ],
+                                "endLine": 26,
+                                "endCol": 179
                               }
-                            ]
+                            ],
+                            "endLine": 26,
+                            "endCol": 179
                           }
-                        ]
+                        ],
+                        "endLine": 26,
+                        "endCol": 180
                       }
-                    ]
+                    ],
+                    "endLine": 26,
+                    "endCol": 180
                   }
-                ]
+                ],
+                "endLine": 26,
+                "endCol": 181
               },
               {
-                "kind": "expression_statement",
-                "start": 1056,
-                "end": 1110,
+                "type": "expression_statement",
+                "line": 27,
+                "col": 2,
                 "children": [
                   {
-                    "kind": "identifier",
-                    "start": 1056,
-                    "end": 1061
+                    "type": "identifier",
+                    "value": "print",
+                    "line": 27,
+                    "col": 2,
+                    "endLine": 27,
+                    "endCol": 7
                   },
                   {
-                    "kind": "selector",
-                    "start": 1061,
-                    "end": 1109,
+                    "type": "selector",
+                    "line": 27,
+                    "col": 7,
                     "children": [
                       {
-                        "kind": "argument_part",
-                        "start": 1061,
-                        "end": 1109,
+                        "type": "argument_part",
+                        "line": 27,
+                        "col": 7,
                         "children": [
                           {
-                            "kind": "arguments",
-                            "start": 1061,
-                            "end": 1109,
+                            "type": "arguments",
+                            "line": 27,
+                            "col": 7,
                             "children": [
                               {
-                                "kind": "argument",
-                                "start": 1062,
-                                "end": 1108,
+                                "type": "argument",
+                                "line": 27,
+                                "col": 8,
                                 "children": [
                                   {
-                                    "kind": "string_literal",
-                                    "start": 1062,
-                                    "end": 1108
+                                    "type": "string_literal",
+                                    "line": 27,
+                                    "col": 8,
+                                    "endLine": 27,
+                                    "endCol": 54
                                   }
-                                ]
+                                ],
+                                "endLine": 27,
+                                "endCol": 54
                               }
-                            ]
+                            ],
+                            "endLine": 27,
+                            "endCol": 55
                           }
-                        ]
+                        ],
+                        "endLine": 27,
+                        "endCol": 55
                       }
-                    ]
+                    ],
+                    "endLine": 27,
+                    "endCol": 55
                   }
-                ]
+                ],
+                "endLine": 27,
+                "endCol": 56
               },
               {
-                "kind": "for_statement",
-                "start": 1113,
-                "end": 1306,
+                "type": "for_statement",
+                "line": 28,
+                "col": 2,
                 "children": [
                   {
-                    "kind": "for_loop_parts",
-                    "start": 1117,
-                    "end": 1138,
+                    "type": "for_loop_parts",
+                    "line": 28,
+                    "col": 6,
                     "children": [
                       {
-                        "kind": "inferred_type",
-                        "start": 1118,
-                        "end": 1121
+                        "type": "inferred_type",
+                        "line": 28,
+                        "col": 7,
+                        "endLine": 28,
+                        "endCol": 10
                       },
                       {
-                        "kind": "identifier",
-                        "start": 1122,
-                        "end": 1127
+                        "type": "identifier",
+                        "value": "entry",
+                        "line": 28,
+                        "col": 11,
+                        "endLine": 28,
+                        "endCol": 16
                       },
                       {
-                        "kind": "identifier",
-                        "start": 1131,
-                        "end": 1137
+                        "type": "identifier",
+                        "value": "result",
+                        "line": 28,
+                        "col": 20,
+                        "endLine": 28,
+                        "endCol": 26
                       }
-                    ]
+                    ],
+                    "endLine": 28,
+                    "endCol": 27
                   },
                   {
-                    "kind": "block",
-                    "start": 1139,
-                    "end": 1306,
+                    "type": "block",
+                    "line": 28,
+                    "col": 28,
                     "children": [
                       {
-                        "kind": "expression_statement",
-                        "start": 1145,
-                        "end": 1302,
+                        "type": "expression_statement",
+                        "line": 29,
+                        "col": 4,
                         "children": [
                           {
-                            "kind": "identifier",
-                            "start": 1145,
-                            "end": 1150
+                            "type": "identifier",
+                            "value": "print",
+                            "line": 29,
+                            "col": 4,
+                            "endLine": 29,
+                            "endCol": 9
                           },
                           {
-                            "kind": "selector",
-                            "start": 1150,
-                            "end": 1301,
+                            "type": "selector",
+                            "line": 29,
+                            "col": 9,
                             "children": [
                               {
-                                "kind": "argument_part",
-                                "start": 1150,
-                                "end": 1301,
+                                "type": "argument_part",
+                                "line": 29,
+                                "col": 9,
                                 "children": [
                                   {
-                                    "kind": "arguments",
-                                    "start": 1150,
-                                    "end": 1301,
+                                    "type": "arguments",
+                                    "line": 29,
+                                    "col": 9,
                                     "children": [
                                       {
-                                        "kind": "argument",
-                                        "start": 1151,
-                                        "end": 1300,
+                                        "type": "argument",
+                                        "line": 29,
+                                        "col": 10,
                                         "children": [
                                           {
-                                            "kind": "list_literal",
-                                            "start": 1151,
-                                            "end": 1290,
+                                            "type": "list_literal",
+                                            "line": 29,
+                                            "col": 10,
                                             "children": [
                                               {
-                                                "kind": "string_literal",
-                                                "start": 1152,
-                                                "end": 1159
+                                                "type": "string_literal",
+                                                "line": 29,
+                                                "col": 11,
+                                                "endLine": 29,
+                                                "endCol": 18
                                               },
                                               {
-                                                "kind": "identifier",
-                                                "start": 1161,
-                                                "end": 1166
+                                                "type": "identifier",
+                                                "value": "entry",
+                                                "line": 29,
+                                                "col": 20,
+                                                "endLine": 29,
+                                                "endCol": 25
                                               },
                                               {
-                                                "kind": "selector",
-                                                "start": 1166,
-                                                "end": 1174,
+                                                "type": "selector",
+                                                "line": 29,
+                                                "col": 25,
                                                 "children": [
                                                   {
-                                                    "kind": "unconditional_assignable_selector",
-                                                    "start": 1166,
-                                                    "end": 1174,
+                                                    "type": "unconditional_assignable_selector",
+                                                    "line": 29,
+                                                    "col": 25,
                                                     "children": [
                                                       {
-                                                        "kind": "identifier",
-                                                        "start": 1167,
-                                                        "end": 1174
+                                                        "type": "identifier",
+                                                        "value": "orderId",
+                                                        "line": 29,
+                                                        "col": 26,
+                                                        "endLine": 29,
+                                                        "endCol": 33
                                                       }
-                                                    ]
+                                                    ],
+                                                    "endLine": 29,
+                                                    "endCol": 33
                                                   }
-                                                ]
+                                                ],
+                                                "endLine": 29,
+                                                "endCol": 33
                                               },
                                               {
-                                                "kind": "string_literal",
-                                                "start": 1176,
-                                                "end": 1190
+                                                "type": "string_literal",
+                                                "line": 29,
+                                                "col": 35,
+                                                "endLine": 29,
+                                                "endCol": 49
                                               },
                                               {
-                                                "kind": "identifier",
-                                                "start": 1192,
-                                                "end": 1197
+                                                "type": "identifier",
+                                                "value": "entry",
+                                                "line": 29,
+                                                "col": 51,
+                                                "endLine": 29,
+                                                "endCol": 56
                                               },
                                               {
-                                                "kind": "selector",
-                                                "start": 1197,
-                                                "end": 1213,
+                                                "type": "selector",
+                                                "line": 29,
+                                                "col": 56,
                                                 "children": [
                                                   {
-                                                    "kind": "unconditional_assignable_selector",
-                                                    "start": 1197,
-                                                    "end": 1213,
+                                                    "type": "unconditional_assignable_selector",
+                                                    "line": 29,
+                                                    "col": 56,
                                                     "children": [
                                                       {
-                                                        "kind": "identifier",
-                                                        "start": 1198,
-                                                        "end": 1213
+                                                        "type": "identifier",
+                                                        "value": "orderCustomerId",
+                                                        "line": 29,
+                                                        "col": 57,
+                                                        "endLine": 29,
+                                                        "endCol": 72
                                                       }
-                                                    ]
+                                                    ],
+                                                    "endLine": 29,
+                                                    "endCol": 72
                                                   }
-                                                ]
+                                                ],
+                                                "endLine": 29,
+                                                "endCol": 72
                                               },
                                               {
-                                                "kind": "string_literal",
-                                                "start": 1215,
-                                                "end": 1228,
+                                                "type": "string_literal",
+                                                "line": 29,
+                                                "col": 74,
                                                 "children": [
                                                   {
-                                                    "kind": "escape_sequence",
-                                                    "start": 1225,
-                                                    "end": 1227
+                                                    "type": "escape_sequence",
+                                                    "value": "\\$",
+                                                    "line": 29,
+                                                    "col": 84,
+                                                    "endLine": 29,
+                                                    "endCol": 86
                                                   }
-                                                ]
+                                                ],
+                                                "endLine": 29,
+                                                "endCol": 87
                                               },
                                               {
-                                                "kind": "identifier",
-                                                "start": 1230,
-                                                "end": 1235
+                                                "type": "identifier",
+                                                "value": "entry",
+                                                "line": 29,
+                                                "col": 89,
+                                                "endLine": 29,
+                                                "endCol": 94
                                               },
                                               {
-                                                "kind": "selector",
-                                                "start": 1235,
-                                                "end": 1246,
+                                                "type": "selector",
+                                                "line": 29,
+                                                "col": 94,
                                                 "children": [
                                                   {
-                                                    "kind": "unconditional_assignable_selector",
-                                                    "start": 1235,
-                                                    "end": 1246,
+                                                    "type": "unconditional_assignable_selector",
+                                                    "line": 29,
+                                                    "col": 94,
                                                     "children": [
                                                       {
-                                                        "kind": "identifier",
-                                                        "start": 1236,
-                                                        "end": 1246
+                                                        "type": "identifier",
+                                                        "value": "orderTotal",
+                                                        "line": 29,
+                                                        "col": 95,
+                                                        "endLine": 29,
+                                                        "endCol": 105
                                                       }
-                                                    ]
+                                                    ],
+                                                    "endLine": 29,
+                                                    "endCol": 105
                                                   }
-                                                ]
+                                                ],
+                                                "endLine": 29,
+                                                "endCol": 105
                                               },
                                               {
-                                                "kind": "string_literal",
-                                                "start": 1248,
-                                                "end": 1263
+                                                "type": "string_literal",
+                                                "line": 29,
+                                                "col": 107,
+                                                "endLine": 29,
+                                                "endCol": 122
                                               },
                                               {
-                                                "kind": "identifier",
-                                                "start": 1265,
-                                                "end": 1270
+                                                "type": "identifier",
+                                                "value": "entry",
+                                                "line": 29,
+                                                "col": 124,
+                                                "endLine": 29,
+                                                "endCol": 129
                                               },
                                               {
-                                                "kind": "selector",
-                                                "start": 1270,
-                                                "end": 1289,
+                                                "type": "selector",
+                                                "line": 29,
+                                                "col": 129,
                                                 "children": [
                                                   {
-                                                    "kind": "unconditional_assignable_selector",
-                                                    "start": 1270,
-                                                    "end": 1289,
+                                                    "type": "unconditional_assignable_selector",
+                                                    "line": 29,
+                                                    "col": 129,
                                                     "children": [
                                                       {
-                                                        "kind": "identifier",
-                                                        "start": 1271,
-                                                        "end": 1289
+                                                        "type": "identifier",
+                                                        "value": "pairedCustomerName",
+                                                        "line": 29,
+                                                        "col": 130,
+                                                        "endLine": 29,
+                                                        "endCol": 148
                                                       }
-                                                    ]
+                                                    ],
+                                                    "endLine": 29,
+                                                    "endCol": 148
                                                   }
-                                                ]
+                                                ],
+                                                "endLine": 29,
+                                                "endCol": 148
                                               }
-                                            ]
+                                            ],
+                                            "endLine": 29,
+                                            "endCol": 149
                                           },
                                           {
-                                            "kind": "selector",
-                                            "start": 1290,
-                                            "end": 1295,
+                                            "type": "selector",
+                                            "line": 29,
+                                            "col": 149,
                                             "children": [
                                               {
-                                                "kind": "unconditional_assignable_selector",
-                                                "start": 1290,
-                                                "end": 1295,
+                                                "type": "unconditional_assignable_selector",
+                                                "line": 29,
+                                                "col": 149,
                                                 "children": [
                                                   {
-                                                    "kind": "identifier",
-                                                    "start": 1291,
-                                                    "end": 1295
+                                                    "type": "identifier",
+                                                    "value": "join",
+                                                    "line": 29,
+                                                    "col": 150,
+                                                    "endLine": 29,
+                                                    "endCol": 154
                                                   }
-                                                ]
+                                                ],
+                                                "endLine": 29,
+                                                "endCol": 154
                                               }
-                                            ]
+                                            ],
+                                            "endLine": 29,
+                                            "endCol": 154
                                           },
                                           {
-                                            "kind": "selector",
-                                            "start": 1295,
-                                            "end": 1300,
+                                            "type": "selector",
+                                            "line": 29,
+                                            "col": 154,
                                             "children": [
                                               {
-                                                "kind": "argument_part",
-                                                "start": 1295,
-                                                "end": 1300,
+                                                "type": "argument_part",
+                                                "line": 29,
+                                                "col": 154,
                                                 "children": [
                                                   {
-                                                    "kind": "arguments",
-                                                    "start": 1295,
-                                                    "end": 1300,
+                                                    "type": "arguments",
+                                                    "line": 29,
+                                                    "col": 154,
                                                     "children": [
                                                       {
-                                                        "kind": "argument",
-                                                        "start": 1296,
-                                                        "end": 1299,
+                                                        "type": "argument",
+                                                        "line": 29,
+                                                        "col": 155,
                                                         "children": [
                                                           {
-                                                            "kind": "string_literal",
-                                                            "start": 1296,
-                                                            "end": 1299
+                                                            "type": "string_literal",
+                                                            "line": 29,
+                                                            "col": 155,
+                                                            "endLine": 29,
+                                                            "endCol": 158
                                                           }
-                                                        ]
+                                                        ],
+                                                        "endLine": 29,
+                                                        "endCol": 158
                                                       }
-                                                    ]
+                                                    ],
+                                                    "endLine": 29,
+                                                    "endCol": 159
                                                   }
-                                                ]
+                                                ],
+                                                "endLine": 29,
+                                                "endCol": 159
                                               }
-                                            ]
+                                            ],
+                                            "endLine": 29,
+                                            "endCol": 159
                                           }
-                                        ]
+                                        ],
+                                        "endLine": 29,
+                                        "endCol": 159
                                       }
-                                    ]
+                                    ],
+                                    "endLine": 29,
+                                    "endCol": 160
                                   }
-                                ]
+                                ],
+                                "endLine": 29,
+                                "endCol": 160
                               }
-                            ]
+                            ],
+                            "endLine": 29,
+                            "endCol": 160
                           }
-                        ]
+                        ],
+                        "endLine": 29,
+                        "endCol": 161
                       }
-                    ]
+                    ],
+                    "endLine": 30,
+                    "endCol": 3
                   }
-                ]
+                ],
+                "endLine": 30,
+                "endCol": 3
               }
-            ]
+            ],
+            "endLine": 31,
+            "endCol": 1
           }
-        ]
+        ],
+        "endLine": 31,
+        "endCol": 1
       }
-    ]
+    ],
+    "endLine": 32,
+    "endCol": 0
   }
 }
