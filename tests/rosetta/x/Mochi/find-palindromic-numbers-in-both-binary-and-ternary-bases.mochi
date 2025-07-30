@@ -10,6 +10,7 @@ fun toBase(n: int, b: int): string {
     x = (x / b) as int
   }
   return s
+}
 
 fun parseIntStr(str: string): int {
   var i = 0
@@ -25,8 +26,6 @@ fun parseIntStr(str: string): int {
   }
   if neg { n = -n }
   return n
-}
-
 }
 
 fun parseIntBase(s: string, b: int): int {
