@@ -1,44 +1,228 @@
 {
-  "items": [
-    {
-      "_kind": "top_level_code_decl",
-      "body": {
-        "range": {
-          "start": 71,
-          "end": 113
-        }
+  "file": {
+    "kind": "source_file",
+    "start": 0,
+    "end": 142,
+    "children": [
+      {
+        "kind": "comment",
+        "start": 0,
+        "end": 70
       },
-      "range": {
+      {
+        "kind": "property_declaration",
         "start": 71,
-        "end": 113
-      }
-    },
-    {
-      "_kind": "var_decl",
-      "name": {
-        "base_name": {
-          "name": "square"
-        }
+        "end": 114,
+        "children": [
+          {
+            "kind": "value_binding_pattern",
+            "start": 71,
+            "end": 74
+          },
+          {
+            "kind": "pattern",
+            "start": 75,
+            "end": 81,
+            "children": [
+              {
+                "kind": "simple_identifier",
+                "start": 75,
+                "end": 81
+              }
+            ]
+          },
+          {
+            "kind": "lambda_literal",
+            "start": 84,
+            "end": 114,
+            "children": [
+              {
+                "kind": "lambda_function_type",
+                "start": 86,
+                "end": 101,
+                "children": [
+                  {
+                    "kind": "lambda_function_type_parameters",
+                    "start": 87,
+                    "end": 93,
+                    "children": [
+                      {
+                        "kind": "lambda_parameter",
+                        "start": 87,
+                        "end": 93,
+                        "children": [
+                          {
+                            "kind": "simple_identifier",
+                            "start": 87,
+                            "end": 88
+                          },
+                          {
+                            "kind": "user_type",
+                            "start": 90,
+                            "end": 93,
+                            "children": [
+                              {
+                                "kind": "type_identifier",
+                                "start": 90,
+                                "end": 93
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "user_type",
+                    "start": 98,
+                    "end": 101,
+                    "children": [
+                      {
+                        "kind": "type_identifier",
+                        "start": 98,
+                        "end": 101
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "statements",
+                "start": 105,
+                "end": 112,
+                "children": [
+                  {
+                    "kind": "tuple_expression",
+                    "start": 105,
+                    "end": 112,
+                    "children": [
+                      {
+                        "kind": "multiplicative_expression",
+                        "start": 106,
+                        "end": 111,
+                        "children": [
+                          {
+                            "kind": "simple_identifier",
+                            "start": 106,
+                            "end": 107
+                          },
+                          {
+                            "kind": "simple_identifier",
+                            "start": 110,
+                            "end": 111
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       },
-      "range": {
-        "start": 75,
-        "end": 75
-      },
-      "interface_type": "$syS2icD",
-      "access": "internal"
-    },
-    {
-      "_kind": "top_level_code_decl",
-      "body": {
-        "range": {
-          "start": 115,
-          "end": 140
-        }
-      },
-      "range": {
+      {
+        "kind": "call_expression",
         "start": 115,
-        "end": 140
+        "end": 141,
+        "children": [
+          {
+            "kind": "simple_identifier",
+            "start": 115,
+            "end": 120
+          },
+          {
+            "kind": "call_suffix",
+            "start": 120,
+            "end": 141,
+            "children": [
+              {
+                "kind": "value_arguments",
+                "start": 120,
+                "end": 141,
+                "children": [
+                  {
+                    "kind": "value_argument",
+                    "start": 121,
+                    "end": 140,
+                    "children": [
+                      {
+                        "kind": "tuple_expression",
+                        "start": 121,
+                        "end": 140,
+                        "children": [
+                          {
+                            "kind": "as_expression",
+                            "start": 122,
+                            "end": 139,
+                            "children": [
+                              {
+                                "kind": "call_expression",
+                                "start": 122,
+                                "end": 131,
+                                "children": [
+                                  {
+                                    "kind": "simple_identifier",
+                                    "start": 122,
+                                    "end": 128
+                                  },
+                                  {
+                                    "kind": "call_suffix",
+                                    "start": 128,
+                                    "end": 131,
+                                    "children": [
+                                      {
+                                        "kind": "value_arguments",
+                                        "start": 128,
+                                        "end": 131,
+                                        "children": [
+                                          {
+                                            "kind": "value_argument",
+                                            "start": 129,
+                                            "end": 130,
+                                            "children": [
+                                              {
+                                                "kind": "integer_literal",
+                                                "start": 129,
+                                                "end": 130
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "as_operator",
+                                "start": 132,
+                                "end": 135
+                              },
+                              {
+                                "kind": "user_type",
+                                "start": 136,
+                                "end": 139,
+                                "children": [
+                                  {
+                                    "kind": "type_identifier",
+                                    "start": 136,
+                                    "end": 139
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
-    }
-  ]
+    ]
+  }
 }

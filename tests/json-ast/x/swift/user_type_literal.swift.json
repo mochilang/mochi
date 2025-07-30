@@ -1,0 +1,366 @@
+{
+  "file": {
+    "kind": "source_file",
+    "start": 0,
+    "end": 220,
+    "children": [
+      {
+        "kind": "comment",
+        "start": 0,
+        "end": 70
+      },
+      {
+        "kind": "import_declaration",
+        "start": 71,
+        "end": 88,
+        "children": [
+          {
+            "kind": "identifier",
+            "start": 78,
+            "end": 88,
+            "children": [
+              {
+                "kind": "simple_identifier",
+                "start": 78,
+                "end": 88
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "property_declaration",
+        "start": 90,
+        "end": 154,
+        "children": [
+          {
+            "kind": "value_binding_pattern",
+            "start": 90,
+            "end": 93
+          },
+          {
+            "kind": "pattern",
+            "start": 94,
+            "end": 98,
+            "children": [
+              {
+                "kind": "simple_identifier",
+                "start": 94,
+                "end": 98
+              }
+            ]
+          },
+          {
+            "kind": "dictionary_literal",
+            "start": 101,
+            "end": 154,
+            "children": [
+              {
+                "kind": "line_string_literal",
+                "start": 102,
+                "end": 109,
+                "children": [
+                  {
+                    "kind": "line_str_text",
+                    "start": 103,
+                    "end": 108
+                  }
+                ]
+              },
+              {
+                "kind": "line_string_literal",
+                "start": 111,
+                "end": 115,
+                "children": [
+                  {
+                    "kind": "line_str_text",
+                    "start": 112,
+                    "end": 114
+                  }
+                ]
+              },
+              {
+                "kind": "line_string_literal",
+                "start": 117,
+                "end": 125,
+                "children": [
+                  {
+                    "kind": "line_str_text",
+                    "start": 118,
+                    "end": 124
+                  }
+                ]
+              },
+              {
+                "kind": "dictionary_literal",
+                "start": 127,
+                "end": 153,
+                "children": [
+                  {
+                    "kind": "line_string_literal",
+                    "start": 128,
+                    "end": 134,
+                    "children": [
+                      {
+                        "kind": "line_str_text",
+                        "start": 129,
+                        "end": 133
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "line_string_literal",
+                    "start": 136,
+                    "end": 141,
+                    "children": [
+                      {
+                        "kind": "line_str_text",
+                        "start": 137,
+                        "end": 140
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "line_string_literal",
+                    "start": 143,
+                    "end": 148,
+                    "children": [
+                      {
+                        "kind": "line_str_text",
+                        "start": 144,
+                        "end": 147
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "integer_literal",
+                    "start": 150,
+                    "end": 152
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call_expression",
+        "start": 155,
+        "end": 219,
+        "children": [
+          {
+            "kind": "simple_identifier",
+            "start": 155,
+            "end": 160
+          },
+          {
+            "kind": "call_suffix",
+            "start": 160,
+            "end": 219,
+            "children": [
+              {
+                "kind": "value_arguments",
+                "start": 160,
+                "end": 219,
+                "children": [
+                  {
+                    "kind": "value_argument",
+                    "start": 161,
+                    "end": 218,
+                    "children": [
+                      {
+                        "kind": "call_expression",
+                        "start": 161,
+                        "end": 218,
+                        "children": [
+                          {
+                            "kind": "simple_identifier",
+                            "start": 161,
+                            "end": 167
+                          },
+                          {
+                            "kind": "call_suffix",
+                            "start": 167,
+                            "end": 218,
+                            "children": [
+                              {
+                                "kind": "value_arguments",
+                                "start": 167,
+                                "end": 218,
+                                "children": [
+                                  {
+                                    "kind": "value_argument",
+                                    "start": 168,
+                                    "end": 217,
+                                    "children": [
+                                      {
+                                        "kind": "value_argument_label",
+                                        "start": 168,
+                                        "end": 178,
+                                        "children": [
+                                          {
+                                            "kind": "simple_identifier",
+                                            "start": 168,
+                                            "end": 178
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "tuple_expression",
+                                        "start": 180,
+                                        "end": 217,
+                                        "children": [
+                                          {
+                                            "kind": "as_expression",
+                                            "start": 181,
+                                            "end": 216,
+                                            "children": [
+                                              {
+                                                "kind": "postfix_expression",
+                                                "start": 181,
+                                                "end": 205,
+                                                "children": [
+                                                  {
+                                                    "kind": "call_expression",
+                                                    "start": 181,
+                                                    "end": 204,
+                                                    "children": [
+                                                      {
+                                                        "kind": "postfix_expression",
+                                                        "start": 181,
+                                                        "end": 196,
+                                                        "children": [
+                                                          {
+                                                            "kind": "call_expression",
+                                                            "start": 181,
+                                                            "end": 195,
+                                                            "children": [
+                                                              {
+                                                                "kind": "simple_identifier",
+                                                                "start": 181,
+                                                                "end": 185
+                                                              },
+                                                              {
+                                                                "kind": "call_suffix",
+                                                                "start": 185,
+                                                                "end": 195,
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "value_arguments",
+                                                                    "start": 185,
+                                                                    "end": 195,
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "value_argument",
+                                                                        "start": 186,
+                                                                        "end": 194,
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "line_string_literal",
+                                                                            "start": 186,
+                                                                            "end": 194,
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "line_str_text",
+                                                                                "start": 187,
+                                                                                "end": 193
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "bang",
+                                                            "start": 195,
+                                                            "end": 196
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "call_suffix",
+                                                        "start": 196,
+                                                        "end": 204,
+                                                        "children": [
+                                                          {
+                                                            "kind": "value_arguments",
+                                                            "start": 196,
+                                                            "end": 204,
+                                                            "children": [
+                                                              {
+                                                                "kind": "value_argument",
+                                                                "start": 197,
+                                                                "end": 203,
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "line_string_literal",
+                                                                    "start": 197,
+                                                                    "end": 203,
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "line_str_text",
+                                                                        "start": 198,
+                                                                        "end": 202
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "bang",
+                                                    "start": 204,
+                                                    "end": 205
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "as_operator",
+                                                "start": 206,
+                                                "end": 209
+                                              },
+                                              {
+                                                "kind": "user_type",
+                                                "start": 210,
+                                                "end": 216,
+                                                "children": [
+                                                  {
+                                                    "kind": "type_identifier",
+                                                    "start": 210,
+                                                    "end": 216
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

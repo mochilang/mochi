@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"flag"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -36,24 +35,7 @@ func repoRoot(t *testing.T) string {
 	return ""
 }
 
-func ensureSwift(t *testing.T) string {
-	if env := os.Getenv("SWIFT"); env != "" {
-		if p, err := exec.LookPath(env); err == nil {
-			return p
-		}
-	}
-	if p, err := exec.LookPath("swiftc"); err == nil {
-		return p
-	}
-	if p, err := exec.LookPath("swift"); err == nil {
-		return p
-	}
-	t.Skip("swift not found")
-	return ""
-}
-
 func TestInspect_Golden(t *testing.T) {
-	_ = ensureSwift(t)
 	root := repoRoot(t)
 	srcDir := filepath.Join(root, "tests", "transpiler", "x", "swift")
 	outDir := filepath.Join(root, "tests", "json-ast", "x", "swift")

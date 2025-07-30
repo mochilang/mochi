@@ -1,58 +1,431 @@
 {
-  "items": [
-    {
-      "_kind": "func_decl",
-      "name": {
-        "base_name": {
-          "name": "sum_rec"
-        }
+  "file": {
+    "kind": "source_file",
+    "start": 0,
+    "end": 251,
+    "children": [
+      {
+        "kind": "comment",
+        "start": 0,
+        "end": 70
       },
-      "params": {
-        "params": [
+      {
+        "kind": "function_declaration",
+        "start": 71,
+        "end": 218,
+        "children": [
           {
-            "name": {
-              "base_name": {
-                "name": "n"
-              }
-            },
-            "interface_type": "$sSiD"
+            "kind": "simple_identifier",
+            "start": 76,
+            "end": 83
           },
           {
-            "name": {
-              "base_name": {
-                "name": "acc"
+            "kind": "parameter",
+            "start": 84,
+            "end": 92,
+            "children": [
+              {
+                "kind": "simple_identifier",
+                "start": 84,
+                "end": 85
+              },
+              {
+                "kind": "simple_identifier",
+                "start": 86,
+                "end": 87
+              },
+              {
+                "kind": "user_type",
+                "start": 89,
+                "end": 92,
+                "children": [
+                  {
+                    "kind": "type_identifier",
+                    "start": 89,
+                    "end": 92
+                  }
+                ]
               }
-            },
-            "interface_type": "$sSiD"
+            ]
+          },
+          {
+            "kind": "parameter",
+            "start": 94,
+            "end": 104,
+            "children": [
+              {
+                "kind": "simple_identifier",
+                "start": 94,
+                "end": 95
+              },
+              {
+                "kind": "simple_identifier",
+                "start": 96,
+                "end": 99
+              },
+              {
+                "kind": "user_type",
+                "start": 101,
+                "end": 104,
+                "children": [
+                  {
+                    "kind": "type_identifier",
+                    "start": 101,
+                    "end": 104
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "user_type",
+            "start": 109,
+            "end": 112,
+            "children": [
+              {
+                "kind": "type_identifier",
+                "start": 109,
+                "end": 112
+              }
+            ]
+          },
+          {
+            "kind": "function_body",
+            "start": 113,
+            "end": 218,
+            "children": [
+              {
+                "kind": "statements",
+                "start": 119,
+                "end": 217,
+                "children": [
+                  {
+                    "kind": "if_statement",
+                    "start": 119,
+                    "end": 167,
+                    "children": [
+                      {
+                        "kind": "tuple_expression",
+                        "start": 122,
+                        "end": 140,
+                        "children": [
+                          {
+                            "kind": "equality_expression",
+                            "start": 123,
+                            "end": 139,
+                            "children": [
+                              {
+                                "kind": "tuple_expression",
+                                "start": 123,
+                                "end": 134,
+                                "children": [
+                                  {
+                                    "kind": "as_expression",
+                                    "start": 124,
+                                    "end": 133,
+                                    "children": [
+                                      {
+                                        "kind": "simple_identifier",
+                                        "start": 124,
+                                        "end": 125
+                                      },
+                                      {
+                                        "kind": "as_operator",
+                                        "start": 126,
+                                        "end": 129
+                                      },
+                                      {
+                                        "kind": "user_type",
+                                        "start": 130,
+                                        "end": 133,
+                                        "children": [
+                                          {
+                                            "kind": "type_identifier",
+                                            "start": 130,
+                                            "end": 133
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "integer_literal",
+                                "start": 138,
+                                "end": 139
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "statements",
+                        "start": 151,
+                        "end": 166,
+                        "children": [
+                          {
+                            "kind": "control_transfer_statement",
+                            "start": 151,
+                            "end": 161,
+                            "children": [
+                              {
+                                "kind": "simple_identifier",
+                                "start": 158,
+                                "end": 161
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "control_transfer_statement",
+                    "start": 172,
+                    "end": 216,
+                    "children": [
+                      {
+                        "kind": "tuple_expression",
+                        "start": 179,
+                        "end": 216,
+                        "children": [
+                          {
+                            "kind": "as_expression",
+                            "start": 180,
+                            "end": 215,
+                            "children": [
+                              {
+                                "kind": "call_expression",
+                                "start": 180,
+                                "end": 207,
+                                "children": [
+                                  {
+                                    "kind": "simple_identifier",
+                                    "start": 180,
+                                    "end": 187
+                                  },
+                                  {
+                                    "kind": "call_suffix",
+                                    "start": 187,
+                                    "end": 207,
+                                    "children": [
+                                      {
+                                        "kind": "value_arguments",
+                                        "start": 187,
+                                        "end": 207,
+                                        "children": [
+                                          {
+                                            "kind": "value_argument",
+                                            "start": 188,
+                                            "end": 195,
+                                            "children": [
+                                              {
+                                                "kind": "tuple_expression",
+                                                "start": 188,
+                                                "end": 195,
+                                                "children": [
+                                                  {
+                                                    "kind": "additive_expression",
+                                                    "start": 189,
+                                                    "end": 194,
+                                                    "children": [
+                                                      {
+                                                        "kind": "simple_identifier",
+                                                        "start": 189,
+                                                        "end": 190
+                                                      },
+                                                      {
+                                                        "kind": "integer_literal",
+                                                        "start": 193,
+                                                        "end": 194
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "value_argument",
+                                            "start": 197,
+                                            "end": 206,
+                                            "children": [
+                                              {
+                                                "kind": "tuple_expression",
+                                                "start": 197,
+                                                "end": 206,
+                                                "children": [
+                                                  {
+                                                    "kind": "additive_expression",
+                                                    "start": 198,
+                                                    "end": 205,
+                                                    "children": [
+                                                      {
+                                                        "kind": "simple_identifier",
+                                                        "start": 198,
+                                                        "end": 201
+                                                      },
+                                                      {
+                                                        "kind": "simple_identifier",
+                                                        "start": 204,
+                                                        "end": 205
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "as_operator",
+                                "start": 208,
+                                "end": 211
+                              },
+                              {
+                                "kind": "user_type",
+                                "start": 212,
+                                "end": 215,
+                                "children": [
+                                  {
+                                    "kind": "type_identifier",
+                                    "start": 212,
+                                    "end": 215
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
           }
         ]
       },
-      "body": {
-        "range": {
-          "start": 113,
-          "end": 217
-        }
-      },
-      "range": {
-        "start": 71,
-        "end": 217
-      },
-      "result": "$sSiD",
-      "interface_type": "$syS2i_SitcD",
-      "access": "internal"
-    },
-    {
-      "_kind": "top_level_code_decl",
-      "body": {
-        "range": {
-          "start": 219,
-          "end": 249
-        }
-      },
-      "range": {
+      {
+        "kind": "call_expression",
         "start": 219,
-        "end": 249
+        "end": 250,
+        "children": [
+          {
+            "kind": "simple_identifier",
+            "start": 219,
+            "end": 224
+          },
+          {
+            "kind": "call_suffix",
+            "start": 224,
+            "end": 250,
+            "children": [
+              {
+                "kind": "value_arguments",
+                "start": 224,
+                "end": 250,
+                "children": [
+                  {
+                    "kind": "value_argument",
+                    "start": 225,
+                    "end": 249,
+                    "children": [
+                      {
+                        "kind": "tuple_expression",
+                        "start": 225,
+                        "end": 249,
+                        "children": [
+                          {
+                            "kind": "as_expression",
+                            "start": 226,
+                            "end": 248,
+                            "children": [
+                              {
+                                "kind": "call_expression",
+                                "start": 226,
+                                "end": 240,
+                                "children": [
+                                  {
+                                    "kind": "simple_identifier",
+                                    "start": 226,
+                                    "end": 233
+                                  },
+                                  {
+                                    "kind": "call_suffix",
+                                    "start": 233,
+                                    "end": 240,
+                                    "children": [
+                                      {
+                                        "kind": "value_arguments",
+                                        "start": 233,
+                                        "end": 240,
+                                        "children": [
+                                          {
+                                            "kind": "value_argument",
+                                            "start": 234,
+                                            "end": 236,
+                                            "children": [
+                                              {
+                                                "kind": "integer_literal",
+                                                "start": 234,
+                                                "end": 236
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "value_argument",
+                                            "start": 238,
+                                            "end": 239,
+                                            "children": [
+                                              {
+                                                "kind": "integer_literal",
+                                                "start": 238,
+                                                "end": 239
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "as_operator",
+                                "start": 241,
+                                "end": 244
+                              },
+                              {
+                                "kind": "user_type",
+                                "start": 245,
+                                "end": 248,
+                                "children": [
+                                  {
+                                    "kind": "type_identifier",
+                                    "start": 245,
+                                    "end": 248
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
-    }
-  ]
+    ]
+  }
 }

@@ -1,17 +1,100 @@
 {
-  "items": [
-    {
-      "_kind": "top_level_code_decl",
-      "body": {
-        "range": {
-          "start": 71,
-          "end": 105
-        }
+  "file": {
+    "kind": "source_file",
+    "start": 0,
+    "end": 107,
+    "children": [
+      {
+        "kind": "comment",
+        "start": 0,
+        "end": 70
       },
-      "range": {
+      {
+        "kind": "for_statement",
         "start": 71,
-        "end": 105
+        "end": 106,
+        "children": [
+          {
+            "kind": "pattern",
+            "start": 75,
+            "end": 76,
+            "children": [
+              {
+                "kind": "simple_identifier",
+                "start": 75,
+                "end": 76
+              }
+            ]
+          },
+          {
+            "kind": "array_literal",
+            "start": 80,
+            "end": 89,
+            "children": [
+              {
+                "kind": "integer_literal",
+                "start": 81,
+                "end": 82
+              },
+              {
+                "kind": "integer_literal",
+                "start": 84,
+                "end": 85
+              },
+              {
+                "kind": "integer_literal",
+                "start": 87,
+                "end": 88
+              }
+            ]
+          },
+          {
+            "kind": "statements",
+            "start": 96,
+            "end": 105,
+            "children": [
+              {
+                "kind": "call_expression",
+                "start": 96,
+                "end": 104,
+                "children": [
+                  {
+                    "kind": "simple_identifier",
+                    "start": 96,
+                    "end": 101
+                  },
+                  {
+                    "kind": "call_suffix",
+                    "start": 101,
+                    "end": 104,
+                    "children": [
+                      {
+                        "kind": "value_arguments",
+                        "start": 101,
+                        "end": 104,
+                        "children": [
+                          {
+                            "kind": "value_argument",
+                            "start": 102,
+                            "end": 103,
+                            "children": [
+                              {
+                                "kind": "simple_identifier",
+                                "start": 102,
+                                "end": 103
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
-    }
-  ]
+    ]
+  }
 }

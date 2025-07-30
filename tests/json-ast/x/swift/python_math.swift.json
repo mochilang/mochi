@@ -1,0 +1,1921 @@
+{
+  "file": {
+    "kind": "source_file",
+    "start": 0,
+    "end": 946,
+    "children": [
+      {
+        "kind": "comment",
+        "start": 0,
+        "end": 70
+      },
+      {
+        "kind": "import_declaration",
+        "start": 71,
+        "end": 88,
+        "children": [
+          {
+            "kind": "identifier",
+            "start": 78,
+            "end": 88,
+            "children": [
+              {
+                "kind": "simple_identifier",
+                "start": 78,
+                "end": 88
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "class_declaration",
+        "start": 90,
+        "end": 104,
+        "children": [
+          {
+            "kind": "type_identifier",
+            "start": 97,
+            "end": 101
+          },
+          {
+            "kind": "class_body",
+            "start": 102,
+            "end": 104
+          }
+        ]
+      },
+      {
+        "kind": "class_declaration",
+        "start": 105,
+        "end": 149,
+        "children": [
+          {
+            "kind": "user_type",
+            "start": 115,
+            "end": 119,
+            "children": [
+              {
+                "kind": "type_identifier",
+                "start": 115,
+                "end": 119
+              }
+            ]
+          },
+          {
+            "kind": "class_body",
+            "start": 120,
+            "end": 149,
+            "children": [
+              {
+                "kind": "property_declaration",
+                "start": 122,
+                "end": 147,
+                "children": [
+                  {
+                    "kind": "modifiers",
+                    "start": 122,
+                    "end": 128,
+                    "children": [
+                      {
+                        "kind": "property_modifier",
+                        "start": 122,
+                        "end": 128
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "value_binding_pattern",
+                    "start": 129,
+                    "end": 132
+                  },
+                  {
+                    "kind": "pattern",
+                    "start": 133,
+                    "end": 135,
+                    "children": [
+                      {
+                        "kind": "simple_identifier",
+                        "start": 133,
+                        "end": 135
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "navigation_expression",
+                    "start": 138,
+                    "end": 147,
+                    "children": [
+                      {
+                        "kind": "simple_identifier",
+                        "start": 138,
+                        "end": 144
+                      },
+                      {
+                        "kind": "navigation_suffix",
+                        "start": 144,
+                        "end": 147,
+                        "children": [
+                          {
+                            "kind": "simple_identifier",
+                            "start": 145,
+                            "end": 147
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "class_declaration",
+        "start": 150,
+        "end": 201,
+        "children": [
+          {
+            "kind": "user_type",
+            "start": 160,
+            "end": 164,
+            "children": [
+              {
+                "kind": "type_identifier",
+                "start": 160,
+                "end": 164
+              }
+            ]
+          },
+          {
+            "kind": "class_body",
+            "start": 165,
+            "end": 201,
+            "children": [
+              {
+                "kind": "property_declaration",
+                "start": 167,
+                "end": 199,
+                "children": [
+                  {
+                    "kind": "modifiers",
+                    "start": 167,
+                    "end": 173,
+                    "children": [
+                      {
+                        "kind": "property_modifier",
+                        "start": 167,
+                        "end": 173
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "value_binding_pattern",
+                    "start": 174,
+                    "end": 177
+                  },
+                  {
+                    "kind": "pattern",
+                    "start": 178,
+                    "end": 179,
+                    "children": [
+                      {
+                        "kind": "simple_identifier",
+                        "start": 178,
+                        "end": 179
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "real_literal",
+                    "start": 182,
+                    "end": 199
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "class_declaration",
+        "start": 202,
+        "end": 283,
+        "children": [
+          {
+            "kind": "user_type",
+            "start": 212,
+            "end": 216,
+            "children": [
+              {
+                "kind": "type_identifier",
+                "start": 212,
+                "end": 216
+              }
+            ]
+          },
+          {
+            "kind": "class_body",
+            "start": 217,
+            "end": 283,
+            "children": [
+              {
+                "kind": "function_declaration",
+                "start": 219,
+                "end": 281,
+                "children": [
+                  {
+                    "kind": "modifiers",
+                    "start": 219,
+                    "end": 225,
+                    "children": [
+                      {
+                        "kind": "property_modifier",
+                        "start": 219,
+                        "end": 225
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "simple_identifier",
+                    "start": 231,
+                    "end": 235
+                  },
+                  {
+                    "kind": "parameter",
+                    "start": 236,
+                    "end": 247,
+                    "children": [
+                      {
+                        "kind": "simple_identifier",
+                        "start": 236,
+                        "end": 237
+                      },
+                      {
+                        "kind": "simple_identifier",
+                        "start": 238,
+                        "end": 239
+                      },
+                      {
+                        "kind": "user_type",
+                        "start": 241,
+                        "end": 247,
+                        "children": [
+                          {
+                            "kind": "type_identifier",
+                            "start": 241,
+                            "end": 247
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "user_type",
+                    "start": 252,
+                    "end": 258,
+                    "children": [
+                      {
+                        "kind": "type_identifier",
+                        "start": 252,
+                        "end": 258
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "function_body",
+                    "start": 259,
+                    "end": 281,
+                    "children": [
+                      {
+                        "kind": "statements",
+                        "start": 261,
+                        "end": 279,
+                        "children": [
+                          {
+                            "kind": "call_expression",
+                            "start": 261,
+                            "end": 279,
+                            "children": [
+                              {
+                                "kind": "navigation_expression",
+                                "start": 261,
+                                "end": 276,
+                                "children": [
+                                  {
+                                    "kind": "simple_identifier",
+                                    "start": 261,
+                                    "end": 271
+                                  },
+                                  {
+                                    "kind": "navigation_suffix",
+                                    "start": 271,
+                                    "end": 276,
+                                    "children": [
+                                      {
+                                        "kind": "simple_identifier",
+                                        "start": 272,
+                                        "end": 276
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "call_suffix",
+                                "start": 276,
+                                "end": 279,
+                                "children": [
+                                  {
+                                    "kind": "value_arguments",
+                                    "start": 276,
+                                    "end": 279,
+                                    "children": [
+                                      {
+                                        "kind": "value_argument",
+                                        "start": 277,
+                                        "end": 278,
+                                        "children": [
+                                          {
+                                            "kind": "simple_identifier",
+                                            "start": 277,
+                                            "end": 278
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "class_declaration",
+        "start": 284,
+        "end": 379,
+        "children": [
+          {
+            "kind": "user_type",
+            "start": 294,
+            "end": 298,
+            "children": [
+              {
+                "kind": "type_identifier",
+                "start": 294,
+                "end": 298
+              }
+            ]
+          },
+          {
+            "kind": "class_body",
+            "start": 299,
+            "end": 379,
+            "children": [
+              {
+                "kind": "function_declaration",
+                "start": 301,
+                "end": 377,
+                "children": [
+                  {
+                    "kind": "modifiers",
+                    "start": 301,
+                    "end": 307,
+                    "children": [
+                      {
+                        "kind": "property_modifier",
+                        "start": 301,
+                        "end": 307
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "simple_identifier",
+                    "start": 313,
+                    "end": 316
+                  },
+                  {
+                    "kind": "parameter",
+                    "start": 317,
+                    "end": 328,
+                    "children": [
+                      {
+                        "kind": "simple_identifier",
+                        "start": 317,
+                        "end": 318
+                      },
+                      {
+                        "kind": "simple_identifier",
+                        "start": 319,
+                        "end": 320
+                      },
+                      {
+                        "kind": "user_type",
+                        "start": 322,
+                        "end": 328,
+                        "children": [
+                          {
+                            "kind": "type_identifier",
+                            "start": 322,
+                            "end": 328
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "parameter",
+                    "start": 330,
+                    "end": 341,
+                    "children": [
+                      {
+                        "kind": "simple_identifier",
+                        "start": 330,
+                        "end": 331
+                      },
+                      {
+                        "kind": "simple_identifier",
+                        "start": 332,
+                        "end": 333
+                      },
+                      {
+                        "kind": "user_type",
+                        "start": 335,
+                        "end": 341,
+                        "children": [
+                          {
+                            "kind": "type_identifier",
+                            "start": 335,
+                            "end": 341
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "user_type",
+                    "start": 346,
+                    "end": 352,
+                    "children": [
+                      {
+                        "kind": "type_identifier",
+                        "start": 346,
+                        "end": 352
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "function_body",
+                    "start": 353,
+                    "end": 377,
+                    "children": [
+                      {
+                        "kind": "statements",
+                        "start": 355,
+                        "end": 375,
+                        "children": [
+                          {
+                            "kind": "call_expression",
+                            "start": 355,
+                            "end": 375,
+                            "children": [
+                              {
+                                "kind": "navigation_expression",
+                                "start": 355,
+                                "end": 369,
+                                "children": [
+                                  {
+                                    "kind": "simple_identifier",
+                                    "start": 355,
+                                    "end": 365
+                                  },
+                                  {
+                                    "kind": "navigation_suffix",
+                                    "start": 365,
+                                    "end": 369,
+                                    "children": [
+                                      {
+                                        "kind": "simple_identifier",
+                                        "start": 366,
+                                        "end": 369
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "call_suffix",
+                                "start": 369,
+                                "end": 375,
+                                "children": [
+                                  {
+                                    "kind": "value_arguments",
+                                    "start": 369,
+                                    "end": 375,
+                                    "children": [
+                                      {
+                                        "kind": "value_argument",
+                                        "start": 370,
+                                        "end": 371,
+                                        "children": [
+                                          {
+                                            "kind": "simple_identifier",
+                                            "start": 370,
+                                            "end": 371
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "value_argument",
+                                        "start": 373,
+                                        "end": 374,
+                                        "children": [
+                                          {
+                                            "kind": "simple_identifier",
+                                            "start": 373,
+                                            "end": 374
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "class_declaration",
+        "start": 380,
+        "end": 459,
+        "children": [
+          {
+            "kind": "user_type",
+            "start": 390,
+            "end": 394,
+            "children": [
+              {
+                "kind": "type_identifier",
+                "start": 390,
+                "end": 394
+              }
+            ]
+          },
+          {
+            "kind": "class_body",
+            "start": 395,
+            "end": 459,
+            "children": [
+              {
+                "kind": "function_declaration",
+                "start": 397,
+                "end": 457,
+                "children": [
+                  {
+                    "kind": "modifiers",
+                    "start": 397,
+                    "end": 403,
+                    "children": [
+                      {
+                        "kind": "property_modifier",
+                        "start": 397,
+                        "end": 403
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "simple_identifier",
+                    "start": 409,
+                    "end": 412
+                  },
+                  {
+                    "kind": "parameter",
+                    "start": 413,
+                    "end": 424,
+                    "children": [
+                      {
+                        "kind": "simple_identifier",
+                        "start": 413,
+                        "end": 414
+                      },
+                      {
+                        "kind": "simple_identifier",
+                        "start": 415,
+                        "end": 416
+                      },
+                      {
+                        "kind": "user_type",
+                        "start": 418,
+                        "end": 424,
+                        "children": [
+                          {
+                            "kind": "type_identifier",
+                            "start": 418,
+                            "end": 424
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "user_type",
+                    "start": 429,
+                    "end": 435,
+                    "children": [
+                      {
+                        "kind": "type_identifier",
+                        "start": 429,
+                        "end": 435
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "function_body",
+                    "start": 436,
+                    "end": 457,
+                    "children": [
+                      {
+                        "kind": "statements",
+                        "start": 438,
+                        "end": 455,
+                        "children": [
+                          {
+                            "kind": "call_expression",
+                            "start": 438,
+                            "end": 455,
+                            "children": [
+                              {
+                                "kind": "navigation_expression",
+                                "start": 438,
+                                "end": 452,
+                                "children": [
+                                  {
+                                    "kind": "simple_identifier",
+                                    "start": 438,
+                                    "end": 448
+                                  },
+                                  {
+                                    "kind": "navigation_suffix",
+                                    "start": 448,
+                                    "end": 452,
+                                    "children": [
+                                      {
+                                        "kind": "simple_identifier",
+                                        "start": 449,
+                                        "end": 452
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "call_suffix",
+                                "start": 452,
+                                "end": 455,
+                                "children": [
+                                  {
+                                    "kind": "value_arguments",
+                                    "start": 452,
+                                    "end": 455,
+                                    "children": [
+                                      {
+                                        "kind": "value_argument",
+                                        "start": 453,
+                                        "end": 454,
+                                        "children": [
+                                          {
+                                            "kind": "simple_identifier",
+                                            "start": 453,
+                                            "end": 454
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "class_declaration",
+        "start": 460,
+        "end": 539,
+        "children": [
+          {
+            "kind": "user_type",
+            "start": 470,
+            "end": 474,
+            "children": [
+              {
+                "kind": "type_identifier",
+                "start": 470,
+                "end": 474
+              }
+            ]
+          },
+          {
+            "kind": "class_body",
+            "start": 475,
+            "end": 539,
+            "children": [
+              {
+                "kind": "function_declaration",
+                "start": 477,
+                "end": 537,
+                "children": [
+                  {
+                    "kind": "modifiers",
+                    "start": 477,
+                    "end": 483,
+                    "children": [
+                      {
+                        "kind": "property_modifier",
+                        "start": 477,
+                        "end": 483
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "simple_identifier",
+                    "start": 489,
+                    "end": 492
+                  },
+                  {
+                    "kind": "parameter",
+                    "start": 493,
+                    "end": 504,
+                    "children": [
+                      {
+                        "kind": "simple_identifier",
+                        "start": 493,
+                        "end": 494
+                      },
+                      {
+                        "kind": "simple_identifier",
+                        "start": 495,
+                        "end": 496
+                      },
+                      {
+                        "kind": "user_type",
+                        "start": 498,
+                        "end": 504,
+                        "children": [
+                          {
+                            "kind": "type_identifier",
+                            "start": 498,
+                            "end": 504
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "user_type",
+                    "start": 509,
+                    "end": 515,
+                    "children": [
+                      {
+                        "kind": "type_identifier",
+                        "start": 509,
+                        "end": 515
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "function_body",
+                    "start": 516,
+                    "end": 537,
+                    "children": [
+                      {
+                        "kind": "statements",
+                        "start": 518,
+                        "end": 535,
+                        "children": [
+                          {
+                            "kind": "call_expression",
+                            "start": 518,
+                            "end": 535,
+                            "children": [
+                              {
+                                "kind": "navigation_expression",
+                                "start": 518,
+                                "end": 532,
+                                "children": [
+                                  {
+                                    "kind": "simple_identifier",
+                                    "start": 518,
+                                    "end": 528
+                                  },
+                                  {
+                                    "kind": "navigation_suffix",
+                                    "start": 528,
+                                    "end": 532,
+                                    "children": [
+                                      {
+                                        "kind": "simple_identifier",
+                                        "start": 529,
+                                        "end": 532
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "call_suffix",
+                                "start": 532,
+                                "end": 535,
+                                "children": [
+                                  {
+                                    "kind": "value_arguments",
+                                    "start": 532,
+                                    "end": 535,
+                                    "children": [
+                                      {
+                                        "kind": "value_argument",
+                                        "start": 533,
+                                        "end": 534,
+                                        "children": [
+                                          {
+                                            "kind": "simple_identifier",
+                                            "start": 533,
+                                            "end": 534
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "property_declaration",
+        "start": 540,
+        "end": 551,
+        "children": [
+          {
+            "kind": "value_binding_pattern",
+            "start": 540,
+            "end": 543
+          },
+          {
+            "kind": "pattern",
+            "start": 544,
+            "end": 545,
+            "children": [
+              {
+                "kind": "simple_identifier",
+                "start": 544,
+                "end": 545
+              }
+            ]
+          },
+          {
+            "kind": "real_literal",
+            "start": 548,
+            "end": 551
+          }
+        ]
+      },
+      {
+        "kind": "property_declaration",
+        "start": 552,
+        "end": 617,
+        "children": [
+          {
+            "kind": "value_binding_pattern",
+            "start": 552,
+            "end": 555
+          },
+          {
+            "kind": "pattern",
+            "start": 556,
+            "end": 560,
+            "children": [
+              {
+                "kind": "simple_identifier",
+                "start": 556,
+                "end": 560
+              }
+            ]
+          },
+          {
+            "kind": "tuple_expression",
+            "start": 563,
+            "end": 617,
+            "children": [
+              {
+                "kind": "multiplicative_expression",
+                "start": 564,
+                "end": 616,
+                "children": [
+                  {
+                    "kind": "navigation_expression",
+                    "start": 564,
+                    "end": 571,
+                    "children": [
+                      {
+                        "kind": "simple_identifier",
+                        "start": 564,
+                        "end": 568
+                      },
+                      {
+                        "kind": "navigation_suffix",
+                        "start": 568,
+                        "end": 571,
+                        "children": [
+                          {
+                            "kind": "simple_identifier",
+                            "start": 569,
+                            "end": 571
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "tuple_expression",
+                    "start": 574,
+                    "end": 616,
+                    "children": [
+                      {
+                        "kind": "as_expression",
+                        "start": 575,
+                        "end": 615,
+                        "children": [
+                          {
+                            "kind": "call_expression",
+                            "start": 575,
+                            "end": 604,
+                            "children": [
+                              {
+                                "kind": "navigation_expression",
+                                "start": 575,
+                                "end": 583,
+                                "children": [
+                                  {
+                                    "kind": "simple_identifier",
+                                    "start": 575,
+                                    "end": 579
+                                  },
+                                  {
+                                    "kind": "navigation_suffix",
+                                    "start": 579,
+                                    "end": 583,
+                                    "children": [
+                                      {
+                                        "kind": "simple_identifier",
+                                        "start": 580,
+                                        "end": 583
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "call_suffix",
+                                "start": 583,
+                                "end": 604,
+                                "children": [
+                                  {
+                                    "kind": "value_arguments",
+                                    "start": 583,
+                                    "end": 604,
+                                    "children": [
+                                      {
+                                        "kind": "value_argument",
+                                        "start": 584,
+                                        "end": 598,
+                                        "children": [
+                                          {
+                                            "kind": "tuple_expression",
+                                            "start": 584,
+                                            "end": 598,
+                                            "children": [
+                                              {
+                                                "kind": "as_expression",
+                                                "start": 585,
+                                                "end": 597,
+                                                "children": [
+                                                  {
+                                                    "kind": "simple_identifier",
+                                                    "start": 585,
+                                                    "end": 586
+                                                  },
+                                                  {
+                                                    "kind": "as_operator",
+                                                    "start": 587,
+                                                    "end": 590
+                                                  },
+                                                  {
+                                                    "kind": "user_type",
+                                                    "start": 591,
+                                                    "end": 597,
+                                                    "children": [
+                                                      {
+                                                        "kind": "type_identifier",
+                                                        "start": 591,
+                                                        "end": 597
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "value_argument",
+                                        "start": 600,
+                                        "end": 603,
+                                        "children": [
+                                          {
+                                            "kind": "real_literal",
+                                            "start": 600,
+                                            "end": 603
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "as_operator",
+                            "start": 605,
+                            "end": 608
+                          },
+                          {
+                            "kind": "user_type",
+                            "start": 609,
+                            "end": 615,
+                            "children": [
+                              {
+                                "kind": "type_identifier",
+                                "start": 609,
+                                "end": 615
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "property_declaration",
+        "start": 618,
+        "end": 657,
+        "children": [
+          {
+            "kind": "value_binding_pattern",
+            "start": 618,
+            "end": 621
+          },
+          {
+            "kind": "pattern",
+            "start": 622,
+            "end": 626,
+            "children": [
+              {
+                "kind": "simple_identifier",
+                "start": 622,
+                "end": 626
+              }
+            ]
+          },
+          {
+            "kind": "tuple_expression",
+            "start": 629,
+            "end": 657,
+            "children": [
+              {
+                "kind": "as_expression",
+                "start": 630,
+                "end": 656,
+                "children": [
+                  {
+                    "kind": "call_expression",
+                    "start": 630,
+                    "end": 645,
+                    "children": [
+                      {
+                        "kind": "navigation_expression",
+                        "start": 630,
+                        "end": 639,
+                        "children": [
+                          {
+                            "kind": "simple_identifier",
+                            "start": 630,
+                            "end": 634
+                          },
+                          {
+                            "kind": "navigation_suffix",
+                            "start": 634,
+                            "end": 639,
+                            "children": [
+                              {
+                                "kind": "simple_identifier",
+                                "start": 635,
+                                "end": 639
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "call_suffix",
+                        "start": 639,
+                        "end": 645,
+                        "children": [
+                          {
+                            "kind": "value_arguments",
+                            "start": 639,
+                            "end": 645,
+                            "children": [
+                              {
+                                "kind": "value_argument",
+                                "start": 640,
+                                "end": 644,
+                                "children": [
+                                  {
+                                    "kind": "real_literal",
+                                    "start": 640,
+                                    "end": 644
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "as_operator",
+                    "start": 646,
+                    "end": 649
+                  },
+                  {
+                    "kind": "user_type",
+                    "start": 650,
+                    "end": 656,
+                    "children": [
+                      {
+                        "kind": "type_identifier",
+                        "start": 650,
+                        "end": 656
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "property_declaration",
+        "start": 658,
+        "end": 708,
+        "children": [
+          {
+            "kind": "value_binding_pattern",
+            "start": 658,
+            "end": 661
+          },
+          {
+            "kind": "pattern",
+            "start": 662,
+            "end": 667,
+            "children": [
+              {
+                "kind": "simple_identifier",
+                "start": 662,
+                "end": 667
+              }
+            ]
+          },
+          {
+            "kind": "tuple_expression",
+            "start": 670,
+            "end": 708,
+            "children": [
+              {
+                "kind": "as_expression",
+                "start": 671,
+                "end": 707,
+                "children": [
+                  {
+                    "kind": "call_expression",
+                    "start": 671,
+                    "end": 696,
+                    "children": [
+                      {
+                        "kind": "navigation_expression",
+                        "start": 671,
+                        "end": 679,
+                        "children": [
+                          {
+                            "kind": "simple_identifier",
+                            "start": 671,
+                            "end": 675
+                          },
+                          {
+                            "kind": "navigation_suffix",
+                            "start": 675,
+                            "end": 679,
+                            "children": [
+                              {
+                                "kind": "simple_identifier",
+                                "start": 676,
+                                "end": 679
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "call_suffix",
+                        "start": 679,
+                        "end": 696,
+                        "children": [
+                          {
+                            "kind": "value_arguments",
+                            "start": 679,
+                            "end": 696,
+                            "children": [
+                              {
+                                "kind": "value_argument",
+                                "start": 680,
+                                "end": 695,
+                                "children": [
+                                  {
+                                    "kind": "tuple_expression",
+                                    "start": 680,
+                                    "end": 695,
+                                    "children": [
+                                      {
+                                        "kind": "multiplicative_expression",
+                                        "start": 681,
+                                        "end": 694,
+                                        "children": [
+                                          {
+                                            "kind": "navigation_expression",
+                                            "start": 681,
+                                            "end": 688,
+                                            "children": [
+                                              {
+                                                "kind": "simple_identifier",
+                                                "start": 681,
+                                                "end": 685
+                                              },
+                                              {
+                                                "kind": "navigation_suffix",
+                                                "start": 685,
+                                                "end": 688,
+                                                "children": [
+                                                  {
+                                                    "kind": "simple_identifier",
+                                                    "start": 686,
+                                                    "end": 688
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "real_literal",
+                                            "start": 691,
+                                            "end": 694
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "as_operator",
+                    "start": 697,
+                    "end": 700
+                  },
+                  {
+                    "kind": "user_type",
+                    "start": 701,
+                    "end": 707,
+                    "children": [
+                      {
+                        "kind": "type_identifier",
+                        "start": 701,
+                        "end": 707
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "property_declaration",
+        "start": 709,
+        "end": 750,
+        "children": [
+          {
+            "kind": "value_binding_pattern",
+            "start": 709,
+            "end": 712
+          },
+          {
+            "kind": "pattern",
+            "start": 713,
+            "end": 718,
+            "children": [
+              {
+                "kind": "simple_identifier",
+                "start": 713,
+                "end": 718
+              }
+            ]
+          },
+          {
+            "kind": "tuple_expression",
+            "start": 721,
+            "end": 750,
+            "children": [
+              {
+                "kind": "as_expression",
+                "start": 722,
+                "end": 749,
+                "children": [
+                  {
+                    "kind": "call_expression",
+                    "start": 722,
+                    "end": 738,
+                    "children": [
+                      {
+                        "kind": "navigation_expression",
+                        "start": 722,
+                        "end": 730,
+                        "children": [
+                          {
+                            "kind": "simple_identifier",
+                            "start": 722,
+                            "end": 726
+                          },
+                          {
+                            "kind": "navigation_suffix",
+                            "start": 726,
+                            "end": 730,
+                            "children": [
+                              {
+                                "kind": "simple_identifier",
+                                "start": 727,
+                                "end": 730
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "call_suffix",
+                        "start": 730,
+                        "end": 738,
+                        "children": [
+                          {
+                            "kind": "value_arguments",
+                            "start": 730,
+                            "end": 738,
+                            "children": [
+                              {
+                                "kind": "value_argument",
+                                "start": 731,
+                                "end": 737,
+                                "children": [
+                                  {
+                                    "kind": "navigation_expression",
+                                    "start": 731,
+                                    "end": 737,
+                                    "children": [
+                                      {
+                                        "kind": "simple_identifier",
+                                        "start": 731,
+                                        "end": 735
+                                      },
+                                      {
+                                        "kind": "navigation_suffix",
+                                        "start": 735,
+                                        "end": 737,
+                                        "children": [
+                                          {
+                                            "kind": "simple_identifier",
+                                            "start": 736,
+                                            "end": 737
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "as_operator",
+                    "start": 739,
+                    "end": 742
+                  },
+                  {
+                    "kind": "user_type",
+                    "start": 743,
+                    "end": 749,
+                    "children": [
+                      {
+                        "kind": "type_identifier",
+                        "start": 743,
+                        "end": 749
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call_expression",
+        "start": 751,
+        "end": 821,
+        "children": [
+          {
+            "kind": "simple_identifier",
+            "start": 751,
+            "end": 756
+          },
+          {
+            "kind": "call_suffix",
+            "start": 756,
+            "end": 821,
+            "children": [
+              {
+                "kind": "value_arguments",
+                "start": 756,
+                "end": 821,
+                "children": [
+                  {
+                    "kind": "value_argument",
+                    "start": 757,
+                    "end": 779,
+                    "children": [
+                      {
+                        "kind": "line_string_literal",
+                        "start": 757,
+                        "end": 779,
+                        "children": [
+                          {
+                            "kind": "line_str_text",
+                            "start": 758,
+                            "end": 778
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "value_argument",
+                    "start": 781,
+                    "end": 795,
+                    "children": [
+                      {
+                        "kind": "tuple_expression",
+                        "start": 781,
+                        "end": 795,
+                        "children": [
+                          {
+                            "kind": "as_expression",
+                            "start": 782,
+                            "end": 794,
+                            "children": [
+                              {
+                                "kind": "simple_identifier",
+                                "start": 782,
+                                "end": 783
+                              },
+                              {
+                                "kind": "as_operator",
+                                "start": 784,
+                                "end": 787
+                              },
+                              {
+                                "kind": "user_type",
+                                "start": 788,
+                                "end": 794,
+                                "children": [
+                                  {
+                                    "kind": "type_identifier",
+                                    "start": 788,
+                                    "end": 794
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "value_argument",
+                    "start": 797,
+                    "end": 801,
+                    "children": [
+                      {
+                        "kind": "line_string_literal",
+                        "start": 797,
+                        "end": 801,
+                        "children": [
+                          {
+                            "kind": "line_str_text",
+                            "start": 798,
+                            "end": 800
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "value_argument",
+                    "start": 803,
+                    "end": 820,
+                    "children": [
+                      {
+                        "kind": "tuple_expression",
+                        "start": 803,
+                        "end": 820,
+                        "children": [
+                          {
+                            "kind": "as_expression",
+                            "start": 804,
+                            "end": 819,
+                            "children": [
+                              {
+                                "kind": "simple_identifier",
+                                "start": 804,
+                                "end": 808
+                              },
+                              {
+                                "kind": "as_operator",
+                                "start": 809,
+                                "end": 812
+                              },
+                              {
+                                "kind": "user_type",
+                                "start": 813,
+                                "end": 819,
+                                "children": [
+                                  {
+                                    "kind": "type_identifier",
+                                    "start": 813,
+                                    "end": 819
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call_expression",
+        "start": 822,
+        "end": 868,
+        "children": [
+          {
+            "kind": "simple_identifier",
+            "start": 822,
+            "end": 827
+          },
+          {
+            "kind": "call_suffix",
+            "start": 827,
+            "end": 868,
+            "children": [
+              {
+                "kind": "value_arguments",
+                "start": 827,
+                "end": 868,
+                "children": [
+                  {
+                    "kind": "value_argument",
+                    "start": 828,
+                    "end": 848,
+                    "children": [
+                      {
+                        "kind": "line_string_literal",
+                        "start": 828,
+                        "end": 848,
+                        "children": [
+                          {
+                            "kind": "line_str_text",
+                            "start": 829,
+                            "end": 847
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "value_argument",
+                    "start": 850,
+                    "end": 867,
+                    "children": [
+                      {
+                        "kind": "tuple_expression",
+                        "start": 850,
+                        "end": 867,
+                        "children": [
+                          {
+                            "kind": "as_expression",
+                            "start": 851,
+                            "end": 866,
+                            "children": [
+                              {
+                                "kind": "simple_identifier",
+                                "start": 851,
+                                "end": 855
+                              },
+                              {
+                                "kind": "as_operator",
+                                "start": 856,
+                                "end": 859
+                              },
+                              {
+                                "kind": "user_type",
+                                "start": 860,
+                                "end": 866,
+                                "children": [
+                                  {
+                                    "kind": "type_identifier",
+                                    "start": 860,
+                                    "end": 866
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call_expression",
+        "start": 869,
+        "end": 908,
+        "children": [
+          {
+            "kind": "simple_identifier",
+            "start": 869,
+            "end": 874
+          },
+          {
+            "kind": "call_suffix",
+            "start": 874,
+            "end": 908,
+            "children": [
+              {
+                "kind": "value_arguments",
+                "start": 874,
+                "end": 908,
+                "children": [
+                  {
+                    "kind": "value_argument",
+                    "start": 875,
+                    "end": 887,
+                    "children": [
+                      {
+                        "kind": "line_string_literal",
+                        "start": 875,
+                        "end": 887,
+                        "children": [
+                          {
+                            "kind": "line_str_text",
+                            "start": 876,
+                            "end": 886
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "value_argument",
+                    "start": 889,
+                    "end": 907,
+                    "children": [
+                      {
+                        "kind": "tuple_expression",
+                        "start": 889,
+                        "end": 907,
+                        "children": [
+                          {
+                            "kind": "as_expression",
+                            "start": 890,
+                            "end": 906,
+                            "children": [
+                              {
+                                "kind": "simple_identifier",
+                                "start": 890,
+                                "end": 895
+                              },
+                              {
+                                "kind": "as_operator",
+                                "start": 896,
+                                "end": 899
+                              },
+                              {
+                                "kind": "user_type",
+                                "start": 900,
+                                "end": 906,
+                                "children": [
+                                  {
+                                    "kind": "type_identifier",
+                                    "start": 900,
+                                    "end": 906
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call_expression",
+        "start": 909,
+        "end": 945,
+        "children": [
+          {
+            "kind": "simple_identifier",
+            "start": 909,
+            "end": 914
+          },
+          {
+            "kind": "call_suffix",
+            "start": 914,
+            "end": 945,
+            "children": [
+              {
+                "kind": "value_arguments",
+                "start": 914,
+                "end": 945,
+                "children": [
+                  {
+                    "kind": "value_argument",
+                    "start": 915,
+                    "end": 924,
+                    "children": [
+                      {
+                        "kind": "line_string_literal",
+                        "start": 915,
+                        "end": 924,
+                        "children": [
+                          {
+                            "kind": "line_str_text",
+                            "start": 916,
+                            "end": 923
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "value_argument",
+                    "start": 926,
+                    "end": 944,
+                    "children": [
+                      {
+                        "kind": "tuple_expression",
+                        "start": 926,
+                        "end": 944,
+                        "children": [
+                          {
+                            "kind": "as_expression",
+                            "start": 927,
+                            "end": 943,
+                            "children": [
+                              {
+                                "kind": "simple_identifier",
+                                "start": 927,
+                                "end": 932
+                              },
+                              {
+                                "kind": "as_operator",
+                                "start": 933,
+                                "end": 936
+                              },
+                              {
+                                "kind": "user_type",
+                                "start": 937,
+                                "end": 943,
+                                "children": [
+                                  {
+                                    "kind": "type_identifier",
+                                    "start": 937,
+                                    "end": 943
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
