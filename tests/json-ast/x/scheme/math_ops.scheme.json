@@ -1,120 +1,159 @@
 {
   "forms": [
     {
-      "list": [
-        {
-          "atom": "import"
-        },
-        {
-          "list": [
-            {
-              "atom": "srfi"
-            },
-            {
-              "atom": "1"
-            }
-          ]
-        },
-        {
-          "list": [
-            {
-              "atom": "srfi"
-            },
-            {
-              "atom": "69"
-            }
-          ]
-        },
-        {
-          "list": [
-            {
-              "atom": "chibi"
-            },
-            {
-              "atom": "string"
-            }
-          ]
-        }
-      ]
+      "kind": "comment",
+      "text": ";; Generated on 2025-07-21 17:26 +0700"
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "display"
+          "kind": "symbol",
+          "text": "import"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "*"
+              "kind": "symbol",
+              "text": "srfi"
             },
             {
-              "atom": "6"
+              "kind": "number",
+              "text": "1"
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "srfi"
             },
             {
-              "atom": "7"
+              "kind": "number",
+              "text": "69"
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "chibi"
+            },
+            {
+              "kind": "symbol",
+              "text": "string"
             }
           ]
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "newline"
-        }
-      ]
-    },
-    {
-      "list": [
-        {
-          "atom": "display"
+          "kind": "symbol",
+          "text": "display"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "quotient"
+              "kind": "symbol",
+              "text": "*"
             },
             {
-              "atom": "7"
+              "kind": "number",
+              "text": "6"
             },
             {
-              "atom": "2"
+              "kind": "number",
+              "text": "7"
             }
           ]
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "newline"
+          "kind": "symbol",
+          "text": "newline"
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "display"
+          "kind": "symbol",
+          "text": "display"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "modulo"
+              "kind": "symbol",
+              "text": "quotient"
             },
             {
-              "atom": "7"
+              "kind": "number",
+              "text": "7"
             },
             {
-              "atom": "2"
+              "kind": "number",
+              "text": "2"
             }
           ]
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "newline"
+          "kind": "symbol",
+          "text": "newline"
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "display"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "modulo"
+            },
+            {
+              "kind": "number",
+              "text": "7"
+            },
+            {
+              "kind": "number",
+              "text": "2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "newline"
         }
       ]
     }

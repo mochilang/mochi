@@ -1,446 +1,240 @@
 {
   "forms": [
     {
-      "list": [
+      "kind": "comment",
+      "text": ";; Generated on 2025-07-25 08:58 +0700"
+    },
+    {
+      "kind": "list",
+      "children": [
         {
-          "atom": "import"
+          "kind": "symbol",
+          "text": "import"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "chibi"
+              "kind": "symbol",
+              "text": "chibi"
             },
             {
-              "atom": "string"
+              "kind": "symbol",
+              "text": "string"
             }
           ]
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "import"
+          "kind": "symbol",
+          "text": "import"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "only"
+              "kind": "symbol",
+              "text": "only"
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "scheme"
+                  "kind": "symbol",
+                  "text": "scheme"
                 },
                 {
-                  "atom": "char"
+                  "kind": "symbol",
+                  "text": "char"
                 }
               ]
             },
             {
-              "atom": "string-upcase"
+              "kind": "symbol",
+              "text": "string-upcase"
             },
             {
-              "atom": "string-downcase"
+              "kind": "symbol",
+              "text": "string-downcase"
             }
           ]
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "define"
+          "kind": "symbol",
+          "text": "define"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "to-str"
+              "kind": "symbol",
+              "text": "to-str"
             },
             {
-              "atom": "x"
+              "kind": "symbol",
+              "text": "x"
             }
           ]
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "cond"
+              "kind": "symbol",
+              "text": "cond"
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "pair?"
+                      "kind": "symbol",
+                      "text": "pair?"
                     },
                     {
-                      "atom": "x"
+                      "kind": "symbol",
+                      "text": "x"
                     }
                   ]
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "string-append"
+                      "kind": "symbol",
+                      "text": "string-append"
                     },
                     {
-                      "atom": "["
+                      "kind": "string",
+                      "text": "\"[\""
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "string-join"
+                          "kind": "symbol",
+                          "text": "string-join"
                         },
                         {
-                          "list": [
+                          "kind": "list",
+                          "children": [
                             {
-                              "atom": "map"
+                              "kind": "symbol",
+                              "text": "map"
                             },
                             {
-                              "atom": "to-str"
+                              "kind": "symbol",
+                              "text": "to-str"
                             },
                             {
-                              "atom": "x"
+                              "kind": "symbol",
+                              "text": "x"
                             }
                           ]
                         },
                         {
-                          "atom": ", "
+                          "kind": "string",
+                          "text": "\", \""
                         }
                       ]
                     },
                     {
-                      "atom": "]"
+                      "kind": "string",
+                      "text": "\"]\""
                     }
                   ]
                 }
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "string?"
+                      "kind": "symbol",
+                      "text": "string?"
                     },
                     {
-                      "atom": "x"
+                      "kind": "symbol",
+                      "text": "x"
                     }
                   ]
                 },
                 {
-                  "atom": "x"
+                  "kind": "symbol",
+                  "text": "x"
                 }
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "boolean?"
+                      "kind": "symbol",
+                      "text": "boolean?"
                     },
                     {
-                      "atom": "x"
+                      "kind": "symbol",
+                      "text": "x"
                     }
                   ]
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "if"
+                      "kind": "symbol",
+                      "text": "if"
                     },
                     {
-                      "atom": "x"
+                      "kind": "symbol",
+                      "text": "x"
                     },
                     {
-                      "atom": "1"
+                      "kind": "string",
+                      "text": "\"1\""
                     },
                     {
-                      "atom": "0"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "list": [
-                {
-                  "atom": "else"
-                },
-                {
-                  "list": [
-                    {
-                      "atom": "number-\u003estring"
-                    },
-                    {
-                      "atom": "x"
+                      "kind": "string",
+                      "text": "\"0\""
                     }
                   ]
                 }
               ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "list": [
-        {
-          "atom": "define"
-        },
-        {
-          "list": [
-            {
-              "atom": "upper"
             },
             {
-              "atom": "s"
-            }
-          ]
-        },
-        {
-          "list": [
-            {
-              "atom": "string-upcase"
-            },
-            {
-              "atom": "s"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "list": [
-        {
-          "atom": "define"
-        },
-        {
-          "list": [
-            {
-              "atom": "lower"
-            },
-            {
-              "atom": "s"
-            }
-          ]
-        },
-        {
-          "list": [
-            {
-              "atom": "string-downcase"
-            },
-            {
-              "atom": "s"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "list": [
-        {
-          "atom": "define"
-        },
-        {
-          "list": [
-            {
-              "atom": "fmod"
-            },
-            {
-              "atom": "a"
-            },
-            {
-              "atom": "b"
-            }
-          ]
-        },
-        {
-          "list": [
-            {
-              "atom": "-"
-            },
-            {
-              "atom": "a"
-            },
-            {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "*"
+                  "kind": "symbol",
+                  "text": "else"
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "floor"
+                      "kind": "symbol",
+                      "text": "number-\u003estring"
                     },
                     {
-                      "list": [
-                        {
-                          "atom": "/"
-                        },
-                        {
-                          "atom": "a"
-                        },
-                        {
-                          "atom": "b"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "atom": "b"
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "list": [
-        {
-          "atom": "display"
-        },
-        {
-          "list": [
-            {
-              "atom": "to-str"
-            },
-            {
-              "list": [
-                {
-                  "atom": "cond"
-                },
-                {
-                  "list": [
-                    {
-                      "list": [
-                        {
-                          "atom": "string?"
-                        },
-                        {
-                          "list": [
-                            {
-                              "atom": "list"
-                            },
-                            {
-                              "atom": "1"
-                            },
-                            {
-                              "atom": "2"
-                            },
-                            {
-                              "atom": "3"
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "list": [
-                        {
-                          "atom": "string-length"
-                        },
-                        {
-                          "list": [
-                            {
-                              "atom": "list"
-                            },
-                            {
-                              "atom": "1"
-                            },
-                            {
-                              "atom": "2"
-                            },
-                            {
-                              "atom": "3"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "list": [
-                    {
-                      "list": [
-                        {
-                          "atom": "hash-table?"
-                        },
-                        {
-                          "list": [
-                            {
-                              "atom": "list"
-                            },
-                            {
-                              "atom": "1"
-                            },
-                            {
-                              "atom": "2"
-                            },
-                            {
-                              "atom": "3"
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "list": [
-                        {
-                          "atom": "hash-table-size"
-                        },
-                        {
-                          "list": [
-                            {
-                              "atom": "list"
-                            },
-                            {
-                              "atom": "1"
-                            },
-                            {
-                              "atom": "2"
-                            },
-                            {
-                              "atom": "3"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "list": [
-                    {
-                      "atom": "else"
-                    },
-                    {
-                      "list": [
-                        {
-                          "atom": "length"
-                        },
-                        {
-                          "list": [
-                            {
-                              "atom": "list"
-                            },
-                            {
-                              "atom": "1"
-                            },
-                            {
-                              "atom": "2"
-                            },
-                            {
-                              "atom": "3"
-                            }
-                          ]
-                        }
-                      ]
+                      "kind": "symbol",
+                      "text": "x"
                     }
                   ]
                 }
@@ -451,9 +245,355 @@
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "newline"
+          "kind": "symbol",
+          "text": "define"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "upper"
+            },
+            {
+              "kind": "symbol",
+              "text": "s"
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "string-upcase"
+            },
+            {
+              "kind": "symbol",
+              "text": "s"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "define"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "lower"
+            },
+            {
+              "kind": "symbol",
+              "text": "s"
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "string-downcase"
+            },
+            {
+              "kind": "symbol",
+              "text": "s"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "define"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "fmod"
+            },
+            {
+              "kind": "symbol",
+              "text": "a"
+            },
+            {
+              "kind": "symbol",
+              "text": "b"
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "-"
+            },
+            {
+              "kind": "symbol",
+              "text": "a"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "*"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "floor"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "/"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "a"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "b"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "symbol",
+                  "text": "b"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "display"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "to-str"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "cond"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "string?"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "list"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "1"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "2"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "3"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "string-length"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "list"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "1"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "2"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "3"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "hash-table?"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "list"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "1"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "2"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "3"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "hash-table-size"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "list"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "1"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "2"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "3"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "else"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "length"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "list"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "1"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "2"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "3"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "newline"
         }
       ]
     }

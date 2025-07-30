@@ -4,16 +4,15 @@ import (
 	sitter "github.com/smacker/go-tree-sitter"
 )
 
-// Node mirrors a tree-sitter node. Leaf nodes store their source text in Text
-// while internal nodes only keep their named children.
-// IncludePos controls whether the conversion functions populate position
-// information. When false (the default), the position fields are left zero and
-// omitted from the JSON output.
+// IncludePos controls whether the conversion functions record positional
+// information on the produced AST nodes. When false (the default) the fields
+// remain zero and will be omitted from the JSON output because of the
+// `omitempty` struct tags.
 var IncludePos bool
 
-// Node mirrors a tree-sitter node. Leaf nodes store their source text in Text
-// while internal nodes only keep their named children. Position fields are
-// optional and only set when IncludePos is true.
+// Node mirrors a tree-sitter node. Only leaves carrying semantic text keep the
+// Text field populated so the resulting JSON remains compact. Position fields
+// are optional and only populated when IncludePos is true.
 type Node struct {
 	Kind     string `json:"kind"`
 	Text     string `json:"text,omitempty"`
@@ -24,9 +23,21 @@ type Node struct {
 	Children []Node `json:"children,omitempty"`
 }
 
+// The following typed aliases mirror the subset of tree-sitter node kinds that
+// appear in the golden files. They provide a slightly more structured API to
+// callers while still serialising exactly like Node.
+type (
+	Form    Node
+	List    Node
+	Symbol  Node
+	String  Node
+	Number  Node
+	Comment Node
+)
+
 // Program represents a parsed Scheme source file.
 type Program struct {
-	Forms []Node `json:"forms"`
+	Forms []Form `json:"forms"`
 }
 
 // isValueNode reports whether the given kind should keep its text content. Only
@@ -81,10 +92,10 @@ func convertProgram(root *sitter.Node, src []byte) *Program {
 	if root == nil {
 		return &Program{}
 	}
-	var forms []Node
+	var forms []Form
 	for i := 0; i < int(root.NamedChildCount()); i++ {
 		if n := convertNode(root.NamedChild(i), src); n != nil {
-			forms = append(forms, *n)
+			forms = append(forms, Form(*n))
 		}
 	}
 	return &Program{Forms: forms}

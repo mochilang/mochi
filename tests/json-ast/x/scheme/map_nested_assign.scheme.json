@@ -1,88 +1,121 @@
 {
   "forms": [
     {
-      "list": [
+      "kind": "comment",
+      "text": ";; Generated on 2025-07-21 17:26 +0700"
+    },
+    {
+      "kind": "list",
+      "children": [
         {
-          "atom": "import"
+          "kind": "symbol",
+          "text": "import"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "srfi"
+              "kind": "symbol",
+              "text": "srfi"
             },
             {
-              "atom": "1"
+              "kind": "number",
+              "text": "1"
             }
           ]
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "srfi"
+              "kind": "symbol",
+              "text": "srfi"
             },
             {
-              "atom": "69"
+              "kind": "number",
+              "text": "69"
             }
           ]
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "chibi"
+              "kind": "symbol",
+              "text": "chibi"
             },
             {
-              "atom": "string"
+              "kind": "symbol",
+              "text": "string"
             }
           ]
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "define"
+          "kind": "symbol",
+          "text": "define"
         },
         {
-          "atom": "data"
+          "kind": "symbol",
+          "text": "data"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "alist-\u003ehash-table"
+              "kind": "symbol",
+              "text": "alist-\u003ehash-table"
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "list"
+                  "kind": "symbol",
+                  "text": "list"
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "cons"
+                      "kind": "symbol",
+                      "text": "cons"
                     },
                     {
-                      "atom": "outer"
+                      "kind": "string",
+                      "text": "\"outer\""
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "alist-\u003ehash-table"
+                          "kind": "symbol",
+                          "text": "alist-\u003ehash-table"
                         },
                         {
-                          "list": [
+                          "kind": "list",
+                          "children": [
                             {
-                              "atom": "list"
+                              "kind": "symbol",
+                              "text": "list"
                             },
                             {
-                              "list": [
+                              "kind": "list",
+                              "children": [
                                 {
-                                  "atom": "cons"
+                                  "kind": "symbol",
+                                  "text": "cons"
                                 },
                                 {
-                                  "atom": "inner"
+                                  "kind": "string",
+                                  "text": "\"inner\""
                                 },
                                 {
-                                  "atom": "1"
+                                  "kind": "number",
+                                  "text": "1"
                                 }
                               ]
                             }
@@ -99,160 +132,209 @@
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "hash-table-set!"
+          "kind": "symbol",
+          "text": "hash-table-set!"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "hash-table-ref"
+              "kind": "symbol",
+              "text": "hash-table-ref"
             },
             {
-              "atom": "data"
+              "kind": "symbol",
+              "text": "data"
             },
             {
-              "atom": "outer"
+              "kind": "string",
+              "text": "\"outer\""
             }
           ]
         },
         {
-          "atom": "inner"
+          "kind": "string",
+          "text": "\"inner\""
         },
         {
-          "atom": "2"
+          "kind": "number",
+          "text": "2"
         }
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "display"
+          "kind": "symbol",
+          "text": "display"
         },
         {
-          "list": [
+          "kind": "list",
+          "children": [
             {
-              "atom": "cond"
+              "kind": "symbol",
+              "text": "cond"
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "string?"
+                      "kind": "symbol",
+                      "text": "string?"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "hash-table-ref"
+                          "kind": "symbol",
+                          "text": "hash-table-ref"
                         },
                         {
-                          "atom": "data"
+                          "kind": "symbol",
+                          "text": "data"
                         },
                         {
-                          "atom": "outer"
+                          "kind": "string",
+                          "text": "\"outer\""
                         }
                       ]
                     }
                   ]
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "string-ref"
+                      "kind": "symbol",
+                      "text": "string-ref"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "hash-table-ref"
+                          "kind": "symbol",
+                          "text": "hash-table-ref"
                         },
                         {
-                          "atom": "data"
+                          "kind": "symbol",
+                          "text": "data"
                         },
                         {
-                          "atom": "outer"
+                          "kind": "string",
+                          "text": "\"outer\""
                         }
                       ]
                     },
                     {
-                      "atom": "inner"
+                      "kind": "string",
+                      "text": "\"inner\""
                     }
                   ]
                 }
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "hash-table?"
+                      "kind": "symbol",
+                      "text": "hash-table?"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "hash-table-ref"
+                          "kind": "symbol",
+                          "text": "hash-table-ref"
                         },
                         {
-                          "atom": "data"
+                          "kind": "symbol",
+                          "text": "data"
                         },
                         {
-                          "atom": "outer"
+                          "kind": "string",
+                          "text": "\"outer\""
                         }
                       ]
                     }
                   ]
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "hash-table-ref"
+                      "kind": "symbol",
+                      "text": "hash-table-ref"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "hash-table-ref"
+                          "kind": "symbol",
+                          "text": "hash-table-ref"
                         },
                         {
-                          "atom": "data"
+                          "kind": "symbol",
+                          "text": "data"
                         },
                         {
-                          "atom": "outer"
+                          "kind": "string",
+                          "text": "\"outer\""
                         }
                       ]
                     },
                     {
-                      "atom": "inner"
+                      "kind": "string",
+                      "text": "\"inner\""
                     }
                   ]
                 }
               ]
             },
             {
-              "list": [
+              "kind": "list",
+              "children": [
                 {
-                  "atom": "else"
+                  "kind": "symbol",
+                  "text": "else"
                 },
                 {
-                  "list": [
+                  "kind": "list",
+                  "children": [
                     {
-                      "atom": "list-ref"
+                      "kind": "symbol",
+                      "text": "list-ref"
                     },
                     {
-                      "list": [
+                      "kind": "list",
+                      "children": [
                         {
-                          "atom": "hash-table-ref"
+                          "kind": "symbol",
+                          "text": "hash-table-ref"
                         },
                         {
-                          "atom": "data"
+                          "kind": "symbol",
+                          "text": "data"
                         },
                         {
-                          "atom": "outer"
+                          "kind": "string",
+                          "text": "\"outer\""
                         }
                       ]
                     },
                     {
-                      "atom": "inner"
+                      "kind": "string",
+                      "text": "\"inner\""
                     }
                   ]
                 }
@@ -263,9 +345,11 @@
       ]
     },
     {
-      "list": [
+      "kind": "list",
+      "children": [
         {
-          "atom": "newline"
+          "kind": "symbol",
+          "text": "newline"
         }
       ]
     }
