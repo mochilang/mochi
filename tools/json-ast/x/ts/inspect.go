@@ -8,60 +8,26 @@ import (
 	"path/filepath"
 )
 
-// Param represents a function parameter.
-type Param struct {
-	Name string `json:"name"`
-	Typ  string `json:"typ"`
-}
-
-// Field represents a struct or class field.
-type Field struct {
-	Name string `json:"name"`
-	Typ  string `json:"typ"`
-}
-
-// Node is a single AST node from the TypeScript parser.
+// Node represents a node in the TypeScript AST.
 type Node struct {
-	Kind      string   `json:"kind"`
-	Name      string   `json:"name"`
-	Node      string   `json:"node,omitempty"`
-	Params    []Param  `json:"params,omitempty"`
-	Ret       string   `json:"ret,omitempty"`
-	Body      string   `json:"body,omitempty"`
-	Value     string   `json:"value,omitempty"`
-	Fields    []Field  `json:"fields,omitempty"`
-	Alias     string   `json:"alias,omitempty"`
-	Variants  []string `json:"variants,omitempty"`
-	Expr      string   `json:"expr,omitempty"`
-	Iter      string   `json:"iter,omitempty"`
-	List      string   `json:"list,omitempty"`
-	StartVal  string   `json:"startVal,omitempty"`
-	EndVal    string   `json:"endVal,omitempty"`
-	Cond      string   `json:"cond,omitempty"`
-	Else      string   `json:"else,omitempty"`
-	BodyNodes []Node   `json:"bodyNodes,omitempty"`
-	ElseNodes []Node   `json:"elseNodes,omitempty"`
-	Start     int      `json:"start,omitempty"`
-	StartCol  int      `json:"startCol,omitempty"`
-	End       int      `json:"end,omitempty"`
-	EndCol    int      `json:"endCol,omitempty"`
-	Snippet   string   `json:"snippet,omitempty"`
-	StartOff  int      `json:"startOff,omitempty"`
-	EndOff    int      `json:"endOff,omitempty"`
-	Doc       string   `json:"doc,omitempty"`
+	Kind     string      `json:"kind"`
+	Name     string      `json:"name,omitempty"`
+	Value    interface{} `json:"value,omitempty"`
+	Start    int         `json:"start"`
+	StartCol int         `json:"startCol"`
+	End      int         `json:"end"`
+	EndCol   int         `json:"endCol"`
+	Children []Node      `json:"children,omitempty"`
 }
 
-// Program is the result of parsing a TypeScript source file.
+// Program represents a parsed TypeScript source file.
 type Program struct {
-	Nodes  []Node `json:"nodes"`
-	Source string `json:"-"`
+	Root Node `json:"root"`
 }
 
-// Inspect parses src using the embedded TypeScript parser and returns a Program.
+// Inspect parses the given TypeScript source code using the official parser
+// and returns its Program structure.
 func Inspect(src string) (*Program, error) {
-	if _, err := exec.LookPath("deno"); err != nil {
-		return nil, fmt.Errorf("deno not installed")
-	}
 	tscBin, err := exec.LookPath("tsc")
 	if err != nil {
 		return nil, fmt.Errorf("tsc not installed")
@@ -83,24 +49,22 @@ func Inspect(src string) (*Program, error) {
 
 	root, err := repoRoot()
 	if err != nil {
-		os.Remove(tmp.Name())
 		return nil, err
 	}
-	scriptPath := filepath.Join(root, "tools", "json-ast", "x", "ts", "parse.ts")
+	script := filepath.Join(root, "tools", "json-ast", "x", "ts", "parse.js")
 
-	cmd := exec.Command("deno", "run", "--quiet", "--allow-read", "--allow-env", scriptPath, tmp.Name())
-	cmd.Dir = filepath.Join(root, "tools", "json-ast", "x", "ts")
-	cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system", "TS_LIB="+tsLib)
+	cmd := exec.Command("node", script, tmp.Name())
+	cmd.Env = append(os.Environ(), "TS_LIB="+tsLib)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		return nil, fmt.Errorf("deno error: %w\n%s", err, out)
+		return nil, fmt.Errorf("node error: %w\n%s", err, out)
 	}
 
-	var nodes []Node
-	if err := json.Unmarshal(out, &nodes); err != nil {
+	var n Node
+	if err := json.Unmarshal(out, &n); err != nil {
 		return nil, err
 	}
-	return &Program{Nodes: nodes, Source: src}, nil
+	return &Program{Root: n}, nil
 }
 
 func repoRoot() (string, error) {
