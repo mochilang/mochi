@@ -31,6 +31,8 @@ type Node struct {
 // converted AST.  They allow Program to expose a slightly more structured API
 // without duplicating the Node fields for each kind.
 type (
+	// ProgramNode represents the root of a PHP source file.
+	ProgramNode                         Node
 	AnonymousFunctionCreationExpression Node
 	AnonymousFunctionUseClause          Node
 	Argument                            Node
