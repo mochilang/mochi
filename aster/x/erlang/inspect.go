@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	sitter "github.com/smacker/go-tree-sitter"
+	sitter "github.com/tree-sitter/go-tree-sitter"
 	tserlang "mochi/third_party/tree-sitter-erlang/bindings/go"
 )
 

@@ -15,7 +15,6 @@ require (
 	github.com/marcboeker/go-duckdb v1.8.5
 	github.com/mark3labs/mcp-go v0.36.0
 	github.com/mattn/go-sqlite3 v1.14.28
-	github.com/smacker/go-tree-sitter v0.0.0-20240827094217-dd81d9e9be82
 	github.com/spf13/cobra v1.9.1
 	github.com/stretchr/testify v1.10.0
 	github.com/tliron/commonlog v0.2.20
@@ -24,7 +23,7 @@ require (
 	github.com/tree-sitter/tree-sitter-c v0.23.4
 	github.com/tree-sitter/tree-sitter-c-sharp v0.23.1
 	github.com/tree-sitter/tree-sitter-cpp v0.23.4
-	github.com/tree-sitter/tree-sitter-elixir v0.3.4
+       github.com/tree-sitter/tree-sitter-elixir v0.3.4
 	github.com/tree-sitter/tree-sitter-fsharp v0.1.0
 	github.com/tree-sitter/tree-sitter-go v0.23.4
 	github.com/tree-sitter/tree-sitter-haskell v0.23.1
@@ -38,12 +37,14 @@ require (
 	github.com/tree-sitter/tree-sitter-swift v0.0.0-20250623040733-277b583bbb02
 	github.com/tree-sitter/tree-sitter-typescript v0.23.2
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
-	github.com/yuin/gopher-lua v1.1.1
-	github.com/z7zmey/php-parser v0.7.2
-	golang.org/x/mod v0.26.0
-	golang.org/x/tools v0.35.0
-	gopkg.in/yaml.v3 v3.0.1
+       github.com/yuin/gopher-lua v1.1.1
+       github.com/z7zmey/php-parser v0.7.2
+       golang.org/x/mod v0.26.0
+       golang.org/x/tools v0.35.0
+       gopkg.in/yaml.v3 v3.0.1
 )
+
+replace github.com/tree-sitter/tree-sitter-elixir => github.com/elixir-lang/tree-sitter-elixir v0.3.4
 
 require github.com/tree-sitter/tree-sitter-scala v0.24.0
 
