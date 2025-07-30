@@ -4,18 +4,22 @@ import (
 	sitter "github.com/smacker/go-tree-sitter"
 )
 
-// Node mirrors a tree-sitter node with position information. Only
-// leaves that contain a real value (identifiers, literals, etc.) have
-// their raw text stored in the Text field so the JSON output stays
-// compact.
+// Node mirrors a tree-sitter node with optional position information. Only
+// leaves that contain a real value (identifiers, literals, etc.) keep their raw
+// text in the Text field so the JSON output stays compact.
 type Node struct {
 	Kind     string  `json:"kind"`
 	Text     string  `json:"text,omitempty"`
-	Start    int     `json:"start"`
-	StartCol int     `json:"startCol"`
-	End      int     `json:"end"`
-	EndCol   int     `json:"endCol"`
+	Start    int     `json:"start,omitempty"`
+	StartCol int     `json:"startCol,omitempty"`
+	End      int     `json:"end,omitempty"`
+	EndCol   int     `json:"endCol,omitempty"`
 	Children []*Node `json:"children,omitempty"`
+}
+
+// Options controls how the AST is generated.
+type Options struct {
+	IncludePos bool
 }
 
 // isValueNode reports whether the given node type should keep its
@@ -32,18 +36,18 @@ func isValueNode(kind string) bool {
 
 // convertNode recursively converts the given tree-sitter node to a Node
 // using the provided source code for leaf values.
-func convertNode(n *sitter.Node, src []byte) *Node {
+func convertNode(n *sitter.Node, src []byte, pos bool) *Node {
 	if n == nil {
 		return nil
 	}
-	start := n.StartPoint()
-	end := n.EndPoint()
-	node := &Node{
-		Kind:     n.Type(),
-		Start:    int(start.Row) + 1,
-		StartCol: int(start.Column),
-		End:      int(end.Row) + 1,
-		EndCol:   int(end.Column),
+	node := &Node{Kind: n.Type()}
+	if pos {
+		start := n.StartPoint()
+		end := n.EndPoint()
+		node.Start = int(start.Row) + 1
+		node.StartCol = int(start.Column)
+		node.End = int(end.Row) + 1
+		node.EndCol = int(end.Column)
 	}
 
 	if n.NamedChildCount() == 0 {
@@ -57,7 +61,7 @@ func convertNode(n *sitter.Node, src []byte) *Node {
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
 		child := n.NamedChild(i)
-		if c := convertNode(child, src); c != nil {
+		if c := convertNode(child, src, pos); c != nil {
 			node.Children = append(node.Children, c)
 		}
 	}
