@@ -1,7 +1,7 @@
 package swift
 
 import (
-	sitter "github.com/smacker/go-tree-sitter"
+	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
 // IncludePositions controls whether converted AST nodes include position
@@ -58,10 +58,10 @@ func convertNode(n *sitter.Node, src []byte) *Node {
 	if n == nil {
 		return nil
 	}
-	out := &Node{Kind: n.Type()}
+	out := &Node{Kind: n.Kind()}
 	if IncludePositions {
-		start := n.StartPoint()
-		end := n.EndPoint()
+		start := n.StartPosition()
+		end := n.EndPosition()
 		out.Start = int(start.Row) + 1
 		out.StartCol = int(start.Column)
 		out.End = int(end.Row) + 1
@@ -70,14 +70,14 @@ func convertNode(n *sitter.Node, src []byte) *Node {
 
 	if n.NamedChildCount() == 0 {
 		if isValueNode(out.Kind) {
-			out.Text = n.Content(src)
+			out.Text = n.Utf8Text(src)
 		} else {
 			return nil
 		}
 	}
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
-		child := n.NamedChild(i)
+		child := n.NamedChild(uint(i))
 		if c := convertNode(child, src); c != nil {
 			out.Children = append(out.Children, c)
 		}

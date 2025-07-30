@@ -3,8 +3,8 @@ package swift
 import (
 	"encoding/json"
 
-	sitter "github.com/smacker/go-tree-sitter"
-	ts "github.com/smacker/go-tree-sitter/swift"
+	sitter "github.com/tree-sitter/go-tree-sitter"
+	tsswift "github.com/tree-sitter/tree-sitter-swift/bindings/go"
 )
 
 // Program represents a parsed Swift source file.
@@ -16,9 +16,9 @@ type Program struct {
 // a Program describing its syntax tree.
 func Inspect(src string) (*Program, error) {
 	p := sitter.NewParser()
-	p.SetLanguage(ts.GetLanguage())
+	p.SetLanguage(sitter.NewLanguage(tsswift.Language()))
 	b := []byte(src)
-	tree := p.Parse(nil, b)
+	tree := p.Parse(b, nil)
 	return &Program{File: ConvertFile(tree.RootNode(), b)}, nil
 }
 

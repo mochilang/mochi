@@ -33,6 +33,7 @@ require (
 	github.com/tree-sitter/tree-sitter-racket v0.24.7
 	github.com/tree-sitter/tree-sitter-ruby v0.23.1
 	github.com/tree-sitter/tree-sitter-scheme v0.24.7
+	github.com/tree-sitter/tree-sitter-swift v0.0.0-20250623040733-277b583bbb02
 	github.com/tree-sitter/tree-sitter-typescript v0.23.2
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	github.com/yuin/gopher-lua v1.1.1
@@ -115,3 +116,5 @@ replace github.com/tree-sitter/tree-sitter-scheme => github.com/6cdh/tree-sitter
 replace github.com/tree-sitter/tree-sitter-fsharp => github.com/ionide/tree-sitter-fsharp v0.1.0
 
 replace github.com/tree-sitter/tree-sitter-elixir => github.com/elixir-lang/tree-sitter-elixir v0.3.4
+
+replace github.com/tree-sitter/tree-sitter-swift => github.com/alex-pinkus/tree-sitter-swift v0.0.0-20250623040733-277b583bbb02
