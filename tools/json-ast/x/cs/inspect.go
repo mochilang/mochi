@@ -14,8 +14,9 @@ import (
 func Inspect(src string) (*Program, error) {
 	p := sitter.NewParser()
 	p.SetLanguage(csharp.GetLanguage())
-	tree := p.Parse(nil, []byte(src))
-	return &Program{File: convert(tree.RootNode())}, nil
+	data := []byte(src)
+	tree := p.Parse(nil, data)
+	return &Program{File: convert(tree.RootNode(), data)}, nil
 }
 
 // MarshalJSON implements json.Marshaler for Program to ensure stable output.
