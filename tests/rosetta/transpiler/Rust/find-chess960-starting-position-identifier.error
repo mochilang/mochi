@@ -1,0 +1,4 @@
+
+thread 'main' panicked at /workspace/mochi/tests/rosetta/transpiler/Rust/find-chess960-starting-position-identifier.rs:82:62:
+no entry found for key
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

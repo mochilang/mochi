@@ -1,0 +1,879 @@
+error: expected identifier, found keyword `fn`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:70:15
+   |
+70 |     fn newFps(fn: &mut impl FnMut(i64) -> f64) -> Fps {
+   |               ^^ expected identifier, found keyword
+   |
+help: escape `fn` to use it as an identifier
+   |
+70 |     fn newFps(r#fn: &mut impl FnMut(i64) -> f64) -> Fps {
+   |               ++
+
+error[E0425]: cannot find value `r#fn` in this scope
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:71:42
+   |
+71 |     return Fps {coeffs: vec![], compute: r#fn}
+   |                                          ^^^^ not found in this scope
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:72:2
+   |
+72 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:80:2
+   |
+80 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:88:2
+   |
+88 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:93:2
+   |
+93 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:98:2
+   |
+98 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:109:2
+    |
+109 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:128:2
+    |
+128 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:133:2
+    |
+133 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:141:2
+    |
+141 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:154:2
+    |
+154 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:158:2
+    |
+158 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:177:2
+    |
+177 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:184:2
+    |
+184 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:193:2
+    |
+193 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:198:2
+    |
+198 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:74:11
+   |
+74 |     while ((f.coeffs.len() as i64) <= n) {
+   |           ^                            ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+74 -     while ((f.coeffs.len() as i64) <= n) {
+74 +     while (f.coeffs.len() as i64) <= n {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:75:23
+   |
+75 |         let mut idx = (f.coeffs.len() as i64);
+   |                       ^                     ^
+   |
+help: remove these parentheses
+   |
+75 -         let mut idx = (f.coeffs.len() as i64);
+75 +         let mut idx = f.coeffs.len() as i64;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:83:8
+   |
+83 |     if (i == 0) {
+   |        ^      ^
+   |
+help: remove these parentheses
+   |
+83 -     if (i == 0) {
+83 +     if i == 0 {
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:91:12
+   |
+91 |     return (extract(a, n) + extract(b, n))
+   |            ^                             ^
+   |
+help: remove these parentheses
+   |
+91 -     return (extract(a, n) + extract(b, n))
+91 +     return extract(a, n) + extract(b, n)
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:96:12
+   |
+96 |     return (extract(a, n) - extract(b, n))
+   |            ^                             ^
+   |
+help: remove these parentheses
+   |
+96 -     return (extract(a, n) - extract(b, n))
+96 +     return extract(a, n) - extract(b, n)
+   |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:103:11
+    |
+103 |     while (k <= n) {
+    |           ^      ^
+    |
+help: remove these parentheses
+    |
+103 -     while (k <= n) {
+103 +     while k <= n {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:104:13
+    |
+104 |         s = (s + (extract(a, k) * extract(b, (n - k))));
+    |             ^                                         ^
+    |
+help: remove these parentheses
+    |
+104 -         s = (s + (extract(a, k) * extract(b, (n - k))));
+104 +         s = s + (extract(a, k) * extract(b, (n - k)));
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:104:46
+    |
+104 |         s = (s + (extract(a, k) * extract(b, (n - k))));
+    |                                              ^     ^
+    |
+help: remove these parentheses
+    |
+104 -         s = (s + (extract(a, k) * extract(b, (n - k))));
+104 +         s = (s + (extract(a, k) * extract(b, n - k)));
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:105:13
+    |
+105 |         k = (k + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+105 -         k = (k + 1);
+105 +         k = k + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:116:8
+    |
+116 |     if (b0 == 0.0) {
+    |        ^         ^
+    |
+help: remove these parentheses
+    |
+116 -     if (b0 == 0.0) {
+116 +     if b0 == 0.0 {
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:117:16
+    |
+117 |         return (0.0 / 0.0)
+    |                ^         ^
+    |
+help: remove these parentheses
+    |
+117 -         return (0.0 / 0.0)
+117 +         return 0.0 / 0.0
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:121:11
+    |
+121 |     while (k <= n) {
+    |           ^      ^
+    |
+help: remove these parentheses
+    |
+121 -     while (k <= n) {
+121 +     while k <= n {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:122:13
+    |
+122 |         s = (s - (extract(b, k) * extract(q, (n - k))));
+    |             ^                                         ^
+    |
+help: remove these parentheses
+    |
+122 -         s = (s - (extract(b, k) * extract(q, (n - k))));
+122 +         s = s - (extract(b, k) * extract(q, (n - k)));
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:122:46
+    |
+122 |         s = (s - (extract(b, k) * extract(q, (n - k))));
+    |                                              ^     ^
+    |
+help: remove these parentheses
+    |
+122 -         s = (s - (extract(b, k) * extract(q, (n - k))));
+122 +         s = (s - (extract(b, k) * extract(q, n - k)));
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:123:13
+    |
+123 |         k = (k + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+123 -         k = (k + 1);
+123 +         k = k + 1;
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:125:12
+    |
+125 |     return (s / b0)
+    |            ^      ^
+    |
+help: remove these parentheses
+    |
+125 -     return (s / b0)
+125 +     return s / b0
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:131:12
+    |
+131 |     return (((n + 1) as f64) * extract(a, (n + 1)))
+    |            ^                                      ^
+    |
+help: remove these parentheses
+    |
+131 -     return (((n + 1) as f64) * extract(a, (n + 1)))
+131 +     return ((n + 1) as f64) * extract(a, (n + 1))
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:131:43
+    |
+131 |     return (((n + 1) as f64) * extract(a, (n + 1)))
+    |                                           ^     ^
+    |
+help: remove these parentheses
+    |
+131 -     return (((n + 1) as f64) * extract(a, (n + 1)))
+131 +     return (((n + 1) as f64) * extract(a, n + 1))
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:136:8
+    |
+136 |     if (n == 0) {
+    |        ^      ^
+    |
+help: remove these parentheses
+    |
+136 -     if (n == 0) {
+136 +     if n == 0 {
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:139:12
+    |
+139 |     return (extract(a, (n - 1)) / (n as f64))
+    |            ^                                ^
+    |
+help: remove these parentheses
+    |
+139 -     return (extract(a, (n - 1)) / (n as f64))
+139 +     return extract(a, (n - 1)) / (n as f64)
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:139:24
+    |
+139 |     return (extract(a, (n - 1)) / (n as f64))
+    |                        ^     ^
+    |
+help: remove these parentheses
+    |
+139 -     return (extract(a, (n - 1)) / (n as f64))
+139 +     return (extract(a, n - 1) / (n as f64))
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:148:8
+    |
+148 |     if (n == 0) {
+    |        ^      ^
+    |
+help: remove these parentheses
+    |
+148 -     if (n == 0) {
+148 +     if n == 0 {
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:151:12
+    |
+151 |     return (extract(cos, (n - 1)) / (n as f64))
+    |            ^                                  ^
+    |
+help: remove these parentheses
+    |
+151 -     return (extract(cos, (n - 1)) / (n as f64))
+151 +     return extract(cos, (n - 1)) / (n as f64)
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:151:26
+    |
+151 |     return (extract(cos, (n - 1)) / (n as f64))
+    |                          ^     ^
+    |
+help: remove these parentheses
+    |
+151 -     return (extract(cos, (n - 1)) / (n as f64))
+151 +     return (extract(cos, n - 1) / (n as f64))
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:156:22
+    |
+156 |     let mut y: i64 = (x as i64);
+    |                      ^        ^
+    |
+help: remove these parentheses
+    |
+156 -     let mut y: i64 = (x as i64);
+156 +     let mut y: i64 = x as i64;
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:157:12
+    |
+157 |     return (y as f64)
+    |            ^        ^
+    |
+help: remove these parentheses
+    |
+157 -     return (y as f64)
+157 +     return y as f64
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:160:22
+    |
+160 |     let mut y: f64 = (floorf(((x * 100000.0) + 0.5)) / 100000.0);
+    |                      ^                                         ^
+    |
+help: remove these parentheses
+    |
+160 -     let mut y: f64 = (floorf(((x * 100000.0) + 0.5)) / 100000.0);
+160 +     let mut y: f64 = floorf(((x * 100000.0) + 0.5)) / 100000.0;
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:160:30
+    |
+160 |     let mut y: f64 = (floorf(((x * 100000.0) + 0.5)) / 100000.0);
+    |                              ^                    ^
+    |
+help: remove these parentheses
+    |
+160 -     let mut y: f64 = (floorf(((x * 100000.0) + 0.5)) / 100000.0);
+160 +     let mut y: f64 = (floorf((x * 100000.0) + 0.5) / 100000.0);
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:163:8
+    |
+163 |     if (dot == (0 - 1)) {
+    |        ^              ^
+    |
+help: remove these parentheses
+    |
+163 -     if (dot == (0 - 1)) {
+163 +     if dot == (0 - 1) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:166:24
+    |
+166 |         let mut decs = (((s.len() as i64) - dot) - 1);
+    |                        ^                            ^
+    |
+help: remove these parentheses
+    |
+166 -         let mut decs = (((s.len() as i64) - dot) - 1);
+166 +         let mut decs = ((s.len() as i64) - dot) - 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:167:12
+    |
+167 |         if (decs > 5) {
+    |            ^        ^
+    |
+help: remove these parentheses
+    |
+167 -         if (decs > 5) {
+167 +         if decs > 5 {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:170:19
+    |
+170 |             while (decs < 5) {
+    |                   ^        ^
+    |
+help: remove these parentheses
+    |
+170 -             while (decs < 5) {
+170 +             while decs < 5 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:172:24
+    |
+172 |                 decs = (decs + 1);
+    |                        ^        ^
+    |
+help: remove these parentheses
+    |
+172 -                 decs = (decs + 1);
+172 +                 decs = decs + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:180:11
+    |
+180 |     while ((s.len() as i64) < width) {
+    |           ^                        ^
+    |
+help: remove these parentheses
+    |
+180 -     while ((s.len() as i64) < width) {
+180 +     while (s.len() as i64) < width {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:188:11
+    |
+188 |     while (i < 6) {
+    |           ^     ^
+    |
+help: remove these parentheses
+    |
+188 -     while (i < 6) {
+188 +     while i < 6 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:190:13
+    |
+190 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+190 -         i = (i + 1);
+190 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:202:28
+    |
+202 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+202 -     let duration_us: i64 = ((_end - _start) / 1000);
+202 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:203:29
+    |
+203 |     let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                             ^                     ^
+    |
+help: remove these parentheses
+    |
+203 -     let memory_bytes: i64 = (_end_mem - _start_mem);
+203 +     let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+error[E0599]: no method named `compute` found for struct `Fps` in the current scope
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:76:23
+   |
+38 | struct Fps {
+   | ---------- method `compute` not found for this struct
+...
+76 |         let mut v = f.compute(idx);
+   |                       ^^^^^^^----- help: remove the arguments
+   |                       |
+   |                       field, not a method
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:91:21
+   |
+91 |     return (extract(a, n) + extract(b, n))
+   |             ------- ^ expected `Fps`, found `&Fps`
+   |             |
+   |             arguments to this function are incorrect
+   |
+note: function defined here
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:73:8
+   |
+73 |     fn extract(mut f: Fps, mut n: i64) -> f64 {
+   |        ^^^^^^^ ----------
+help: consider using clone here
+   |
+91 |     return (extract(a.clone(), n) + extract(b, n))
+   |                      ++++++++
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:91:37
+   |
+91 |     return (extract(a, n) + extract(b, n))
+   |                             ------- ^ expected `Fps`, found `&Fps`
+   |                             |
+   |                             arguments to this function are incorrect
+   |
+note: function defined here
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:73:8
+   |
+73 |     fn extract(mut f: Fps, mut n: i64) -> f64 {
+   |        ^^^^^^^ ----------
+help: consider using clone here
+   |
+91 |     return (extract(a, n) + extract(b.clone(), n))
+   |                                      ++++++++
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:96:21
+   |
+96 |     return (extract(a, n) - extract(b, n))
+   |             ------- ^ expected `Fps`, found `&Fps`
+   |             |
+   |             arguments to this function are incorrect
+   |
+note: function defined here
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:73:8
+   |
+73 |     fn extract(mut f: Fps, mut n: i64) -> f64 {
+   |        ^^^^^^^ ----------
+help: consider using clone here
+   |
+96 |     return (extract(a.clone(), n) - extract(b, n))
+   |                      ++++++++
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:96:37
+   |
+96 |     return (extract(a, n) - extract(b, n))
+   |                             ------- ^ expected `Fps`, found `&Fps`
+   |                             |
+   |                             arguments to this function are incorrect
+   |
+note: function defined here
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:73:8
+   |
+73 |     fn extract(mut f: Fps, mut n: i64) -> f64 {
+   |        ^^^^^^^ ----------
+help: consider using clone here
+   |
+96 |     return (extract(a, n) - extract(b.clone(), n))
+   |                                      ++++++++
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:104:27
+    |
+104 |         s = (s + (extract(a, k) * extract(b, (n - k))));
+    |                   ------- ^ expected `Fps`, found `&Fps`
+    |                   |
+    |                   arguments to this function are incorrect
+    |
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:73:8
+    |
+73  |     fn extract(mut f: Fps, mut n: i64) -> f64 {
+    |        ^^^^^^^ ----------
+help: consider using clone here
+    |
+104 |         s = (s + (extract(a.clone(), k) * extract(b, (n - k))));
+    |                            ++++++++
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:104:43
+    |
+104 |         s = (s + (extract(a, k) * extract(b, (n - k))));
+    |                                   ------- ^ expected `Fps`, found `&Fps`
+    |                                   |
+    |                                   arguments to this function are incorrect
+    |
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:73:8
+    |
+73  |     fn extract(mut f: Fps, mut n: i64) -> f64 {
+    |        ^^^^^^^ ----------
+help: consider using clone here
+    |
+104 |         s = (s + (extract(a, k) * extract(b.clone(), (n - k))));
+    |                                            ++++++++
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:115:31
+    |
+115 |     let mut b0: f64 = extract(b, 0);
+    |                       ------- ^ expected `Fps`, found `&Fps`
+    |                       |
+    |                       arguments to this function are incorrect
+    |
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:73:8
+    |
+73  |     fn extract(mut f: Fps, mut n: i64) -> f64 {
+    |        ^^^^^^^ ----------
+help: consider using clone here
+    |
+115 |     let mut b0: f64 = extract(b.clone(), 0);
+    |                                ++++++++
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:119:30
+    |
+119 |     let mut s: f64 = extract(a, n);
+    |                      ------- ^ expected `Fps`, found `&Fps`
+    |                      |
+    |                      arguments to this function are incorrect
+    |
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:73:8
+    |
+73  |     fn extract(mut f: Fps, mut n: i64) -> f64 {
+    |        ^^^^^^^ ----------
+help: consider using clone here
+    |
+119 |     let mut s: f64 = extract(a.clone(), n);
+    |                               ++++++++
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:122:27
+    |
+122 |         s = (s - (extract(b, k) * extract(q, (n - k))));
+    |                   ------- ^ expected `Fps`, found `&Fps`
+    |                   |
+    |                   arguments to this function are incorrect
+    |
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:73:8
+    |
+73  |     fn extract(mut f: Fps, mut n: i64) -> f64 {
+    |        ^^^^^^^ ----------
+help: consider using clone here
+    |
+122 |         s = (s - (extract(b.clone(), k) * extract(q, (n - k))));
+    |                            ++++++++
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:114:17
+    |
+114 |       q.compute = move |n: i64| -> f64 {
+    |  _____---------___^
+    | |     |
+    | |     expected due to the type of this binding
+115 | |     let mut b0: f64 = extract(b, 0);
+116 | |     if (b0 == 0.0) {
+117 | |         return (0.0 / 0.0)
+...   |
+125 | |     return (s / b0)
+126 | | };
+    | |_^ expected `i64`, found closure
+    |
+    = note: expected type `i64`
+            found closure `{closure@/workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:114:17: 114:37}`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:131:40
+    |
+131 |     return (((n + 1) as f64) * extract(a, (n + 1)))
+    |                                ------- ^ expected `Fps`, found `&Fps`
+    |                                |
+    |                                arguments to this function are incorrect
+    |
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:73:8
+    |
+73  |     fn extract(mut f: Fps, mut n: i64) -> f64 {
+    |        ^^^^^^^ ----------
+help: consider using clone here
+    |
+131 |     return (((n + 1) as f64) * extract(a.clone(), (n + 1)))
+    |                                         ++++++++
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:139:21
+    |
+139 |     return (extract(a, (n - 1)) / (n as f64))
+    |             ------- ^ expected `Fps`, found `&Fps`
+    |             |
+    |             arguments to this function are incorrect
+    |
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:73:8
+    |
+73  |     fn extract(mut f: Fps, mut n: i64) -> f64 {
+    |        ^^^^^^^ ----------
+help: consider using clone here
+    |
+139 |     return (extract(a.clone(), (n - 1)) / (n as f64))
+    |                      ++++++++
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:147:19
+    |
+147 |       sin.compute = move |n: i64| -> f64 {
+    |  _____-----------___^
+    | |     |
+    | |     expected due to the type of this binding
+148 | |     if (n == 0) {
+149 | |         return 0.0
+...   |
+152 | | };
+    | |_^ expected `i64`, found closure
+    |
+    = note: expected type `i64`
+            found closure `{closure@/workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:147:19: 147:39}`
+
+error[E0425]: cannot find function `indexOf` in this scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:162:19
+    |
+162 |     let mut dot = indexOf(s, ".");
+    |                   ^^^^^^^ not found in this scope
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:189:92
+    |
+189 |         out = format!("{}{}", format!("{}{}", format!("{}{}", out, " "), padFloat5(extract(f, i), 8)), " ");
+    |                                                                                    ------- ^ expected `Fps`, found `&Fps`
+    |                                                                                    |
+    |                                                                                    arguments to this function are incorrect
+    |
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:73:8
+    |
+73  |     fn extract(mut f: Fps, mut n: i64) -> f64 {
+    |        ^^^^^^^ ----------
+help: consider using clone here
+    |
+189 |         out = format!("{}{}", format!("{}{}", format!("{}{}", out, " "), padFloat5(extract(f.clone(), i), 8)), " ");
+    |                                                                                             ++++++++
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:155:15
+    |
+155 |     fn floorf(mut x: f64) -> f64 {
+    |               ----^
+    |               |
+    |               help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:156:9
+    |
+156 |     let mut y: i64 = (x as i64);
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:178:18
+    |
+178 |     fn padFloat5(mut x: f64, mut width: i64) -> String {
+    |                  ----^
+    |                  |
+    |                  help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:178:30
+    |
+178 |     fn padFloat5(mut x: f64, mut width: i64) -> String {
+    |                              ----^^^^^
+    |                              |
+    |                              help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/formal-power-series.rs:195:9
+    |
+195 |     let mut p: Pair = sinCos();
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+error: aborting due to 18 previous errors; 58 warnings emitted
+
+Some errors have detailed explanations: E0308, E0425, E0599.
+For more information about an error, try `rustc --explain E0308`.

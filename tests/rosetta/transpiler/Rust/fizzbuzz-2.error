@@ -1,0 +1,68 @@
+warning: unnecessary parentheses around index expression
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fizzbuzz-2.rs:43:43
+   |
+43 |         println!("{}", m[&((i % 5) == 0)][((i % 3) == 0)]);
+   |                                           ^            ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+43 -         println!("{}", m[&((i % 5) == 0)][((i % 3) == 0)]);
+43 +         println!("{}", m[&((i % 5) == 0)][(i % 3) == 0]);
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fizzbuzz-2.rs:47:28
+   |
+47 |     let duration_us: i64 = ((_end - _start) / 1000);
+   |                            ^                      ^
+   |
+help: remove these parentheses
+   |
+47 -     let duration_us: i64 = ((_end - _start) / 1000);
+47 +     let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fizzbuzz-2.rs:48:29
+   |
+48 |     let memory_bytes: i64 = (_end_mem - _start_mem);
+   |                             ^                     ^
+   |
+help: remove these parentheses
+   |
+48 -     let memory_bytes: i64 = (_end_mem - _start_mem);
+48 +     let memory_bytes: i64 = _end_mem - _start_mem;
+   |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fizzbuzz-2.rs:42:90
+   |
+42 | ...:from([(false, i.to_string()), (true, "Fizz")])), (true, HashMap::from([(false, "Buzz"), (true, "FizzBuzz")]))]);
+   |                                          ^^^^^^- help: try using a conversion method: `.to_string()`
+   |                                          |
+   |                                          expected `String`, found `&str`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fizzbuzz-2.rs:42:109
+   |
+42 | ...), (true, HashMap::from([(false, "Buzz"), (true, "FizzBuzz")]))]);
+   |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<bool, String>`, found `HashMap<bool, &str>`
+   |
+   = note: expected struct `HashMap<_, String>`
+              found struct `HashMap<_, &str>`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/fizzbuzz-2.rs:43:43
+   |
+43 |         println!("{}", m[&((i % 5) == 0)][((i % 3) == 0)]);
+   |                                           ^^^^^^^^^^^^^^ expected `&bool`, found `bool`
+   |
+help: consider borrowing here
+   |
+43 |         println!("{}", m[&((i % 5) == 0)][&(((i % 3) == 0))]);
+   |                                           ++              +
+
+error: aborting due to 3 previous errors; 3 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.

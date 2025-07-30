@@ -1,0 +1,90 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/file-input-output-3.rs:45:110
+   |
+45 |         static g_fs: LazyLock<Mutex<HashMap<String, String>>> = LazyLock::new(|| Mutex::new(HashMap::new()));;
+   |                                                                                                              ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/file-input-output-3.rs:52:2
+   |
+52 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/file-input-output-3.rs:56:2
+   |
+56 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/file-input-output-3.rs:60:32
+   |
+60 |         let duration_us: i64 = ((_end - _start) / 1000);
+   |                                ^                      ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+60 -         let duration_us: i64 = ((_end - _start) / 1000);
+60 +         let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/file-input-output-3.rs:61:33
+   |
+61 |         let memory_bytes: i64 = (_end_mem - _start_mem);
+   |                                 ^                     ^
+   |
+help: remove these parentheses
+   |
+61 -         let memory_bytes: i64 = (_end_mem - _start_mem);
+61 +         let memory_bytes: i64 = _end_mem - _start_mem;
+   |
+
+error[E0277]: the trait bound `String: Borrow<&str>` is not satisfied
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/file-input-output-3.rs:48:36
+   |
+48 |     for ch in g_fs.lock().unwrap()[&inp].clone() {
+   |                                    ^^^^ the trait `Borrow<&str>` is not implemented for `String`
+   |
+   = help: the trait `Borrow<&_>` is not implemented for `String`
+           but trait `Borrow<_>` is implemented for it
+   = help: for that trait implementation, expected `str`, found `&str`
+   = note: required for `HashMap<String, String>` to implement `Index<&&str>`
+
+error[E0277]: `String` is not an iterator
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/file-input-output-3.rs:48:15
+   |
+48 |     for ch in g_fs.lock().unwrap()[&inp].clone() {
+   |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `String` is not an iterator; try calling `.chars()` or `.bytes()`
+   |
+   = help: the trait `Iterator` is not implemented for `String`
+   = note: required for `String` to implement `IntoIterator`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/file-input-output-3.rs:51:70
+   |
+51 |     { let mut _map = g_fs.lock().unwrap(); let _val = s; _map.insert(out.clone(), _val); };
+   |                                                               ------ ^^^^-----^^
+   |                                                               |      |   |
+   |                                                               |      |   help: try using a conversion method: `to_string`
+   |                                                               |      expected `String`, found `&str`
+   |                                                               arguments to this method are incorrect
+   |
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/file-input-output-3.rs:55:54
+   |
+55 |     println!("{}", g_fs.lock().unwrap()["output.txt".as_str()].clone());
+   |                                                      ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error: aborting due to 4 previous errors; 5 warnings emitted
+
+Some errors have detailed explanations: E0277, E0308, E0658.
+For more information about an error, try `rustc --explain E0277`.

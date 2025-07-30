@@ -51,6 +51,7 @@ var usesInput bool
 var usesInt bool
 var useAbs bool
 var useSHA256 bool
+var usePad bool
 var builtinAliases map[string]string
 var globalRenames map[string]string
 var globalRenameBack map[string]string
@@ -165,6 +166,7 @@ type Program struct {
 	UseInt      bool
 	UseAbs      bool
 	UseSHA256   bool
+	UsePad      bool
 	UseLazy     bool
 	UseRefCell  bool
 	Types       []TypeDecl
@@ -1058,6 +1060,24 @@ func (s *SubstringExpr) emit(w io.Writer) {
 	io.WriteString(w, " - ")
 	s.Start.emit(w)
 	io.WriteString(w, ") as usize).collect::<String>() }")
+}
+
+// PadStartExpr represents a call to the `padStart` builtin.
+type PadStartExpr struct {
+	Str   Expr
+	Width Expr
+	Pad   Expr
+}
+
+func (p *PadStartExpr) emit(w io.Writer) {
+	io.WriteString(w, "{")
+	io.WriteString(w, " let mut out = ")
+	(&StringCastExpr{Expr: p.Str}).emit(w)
+	io.WriteString(w, "; while out.len() < (")
+	p.Width.emit(w)
+	io.WriteString(w, " as usize) { out = ")
+	(&StringCastExpr{Expr: p.Pad}).emit(w)
+	io.WriteString(w, " + &out; } out }")
 }
 
 // StringCastExpr converts an expression to a Rust String.
@@ -2049,6 +2069,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	usesInt = false
 	useAbs = false
 	useSHA256 = false
+	usePad = false
 	useLazy = false
 	useRefCell = false
 	mapVars = make(map[string]bool)
@@ -2113,6 +2134,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	prog.UseInt = usesInt
 	prog.UseAbs = useAbs
 	prog.UseSHA256 = useSHA256
+	prog.UsePad = usePad
 	prog.UseLazy = useLazy
 	prog.UseRefCell = useRefCell
 	return prog, nil
@@ -3507,8 +3529,15 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if name == "max" && len(args) == 1 {
 			return &MaxExpr{List: args[0]}, nil
 		}
-		if name == "substring" && len(args) == 3 {
+		if name == "slice" && len(args) == 3 {
+			return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
+		}
+		if (name == "substring" || name == "substr") && len(args) == 3 {
 			return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
+		}
+		if name == "padStart" && len(args) == 3 {
+			usePad = true
+			return &PadStartExpr{Str: args[0], Width: args[1], Pad: args[2]}, nil
 		}
 		if name == "upper" && len(args) == 1 {
 			return &UpperExpr{Value: args[0]}, nil
@@ -4412,6 +4441,8 @@ func inferType(e Expr) string {
 		return "HashMap<String, i64>"
 	case *SubstringExpr:
 		return "String"
+	case *PadStartExpr:
+		return "String"
 	case *UpperExpr, *LowerExpr:
 		return "String"
 	case *MethodCallExpr:
@@ -4990,6 +5021,12 @@ func Emit(prog *Program) []byte {
 	if prog.UseAbs {
 		buf.WriteString("fn abs(x: f64) -> f64 { x.abs() }\n")
 	}
+	if prog.UsePad {
+		buf.WriteString("fn _pad_start(mut s: String, w: i64, p: String) -> String {\n")
+		buf.WriteString("    while s.len() < w as usize { s = p.clone() + &s; }\n")
+		buf.WriteString("    s\n")
+		buf.WriteString("}\n")
+	}
 	if prog.UseSHA256 {
 		buf.WriteString("fn _sha256(bs: Vec<i64>) -> Vec<i64> {\n")
 		buf.WriteString("    let mut child = Command::new(\"sha256sum\")\n")
@@ -5256,6 +5293,12 @@ func exprNode(e Expr) *ast.Node {
 		n.Children = append(n.Children, exprNode(ex.Str))
 		n.Children = append(n.Children, exprNode(ex.Start))
 		n.Children = append(n.Children, exprNode(ex.End))
+		return n
+	case *PadStartExpr:
+		n := &ast.Node{Kind: "padStart"}
+		n.Children = append(n.Children, exprNode(ex.Str))
+		n.Children = append(n.Children, exprNode(ex.Width))
+		n.Children = append(n.Children, exprNode(ex.Pad))
 		return n
 	case *UpperExpr:
 		n := &ast.Node{Kind: "upper"}

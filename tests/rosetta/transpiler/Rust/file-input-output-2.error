@@ -1,0 +1,81 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/file-input-output-2.rs:45:110
+   |
+45 |         static g_fs: LazyLock<Mutex<HashMap<String, String>>> = LazyLock::new(|| Mutex::new(HashMap::new()));;
+   |                                                                                                              ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/file-input-output-2.rs:48:2
+   |
+48 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/file-input-output-2.rs:52:2
+   |
+52 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/file-input-output-2.rs:56:32
+   |
+56 |         let duration_us: i64 = ((_end - _start) / 1000);
+   |                                ^                      ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+56 -         let duration_us: i64 = ((_end - _start) / 1000);
+56 +         let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/file-input-output-2.rs:57:33
+   |
+57 |         let memory_bytes: i64 = (_end_mem - _start_mem);
+   |                                 ^                     ^
+   |
+help: remove these parentheses
+   |
+57 -         let memory_bytes: i64 = (_end_mem - _start_mem);
+57 +         let memory_bytes: i64 = _end_mem - _start_mem;
+   |
+
+error[E0277]: the trait bound `String: Borrow<&str>` is not satisfied
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/file-input-output-2.rs:47:60
+   |
+47 |     { let mut _map = g_fs.lock().unwrap(); let _val = _map[&inp]; _map.insert(out.clone(), _val); };
+   |                                                            ^^^^ the trait `Borrow<&str>` is not implemented for `String`
+   |
+   = help: the trait `Borrow<&_>` is not implemented for `String`
+           but trait `Borrow<_>` is implemented for it
+   = help: for that trait implementation, expected `str`, found `&str`
+   = note: required for `HashMap<String, String>` to implement `Index<&&str>`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/file-input-output-2.rs:47:79
+   |
+47 |     { let mut _map = g_fs.lock().unwrap(); let _val = _map[&inp]; _map.insert(out.clone(), _val); };
+   |                                                                        ------ ^^^^-----^^
+   |                                                                        |      |   |
+   |                                                                        |      |   help: try using a conversion method: `to_string`
+   |                                                                        |      expected `String`, found `&str`
+   |                                                                        arguments to this method are incorrect
+   |
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/file-input-output-2.rs:51:54
+   |
+51 |     println!("{}", g_fs.lock().unwrap()["output.txt".as_str()].clone());
+   |                                                      ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error: aborting due to 3 previous errors; 5 warnings emitted
+
+Some errors have detailed explanations: E0277, E0308, E0658.
+For more information about an error, try `rustc --explain E0277`.

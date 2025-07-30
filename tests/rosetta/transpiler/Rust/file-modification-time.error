@@ -1,0 +1,64 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/file-modification-time.rs:45:107
+   |
+45 |         static g_fs: LazyLock<Mutex<HashMap<String, i64>>> = LazyLock::new(|| Mutex::new(HashMap::new()));;
+   |                                                                                                           ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/file-modification-time.rs:53:2
+   |
+53 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/file-modification-time.rs:57:32
+   |
+57 |         let duration_us: i64 = ((_end - _start) / 1000);
+   |                                ^                      ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+57 -         let duration_us: i64 = ((_end - _start) / 1000);
+57 +         let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/file-modification-time.rs:58:33
+   |
+58 |         let memory_bytes: i64 = (_end_mem - _start_mem);
+   |                                 ^                     ^
+   |
+help: remove these parentheses
+   |
+58 -         let memory_bytes: i64 = (_end_mem - _start_mem);
+58 +         let memory_bytes: i64 = _end_mem - _start_mem;
+   |
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/file-modification-time.rs:47:57
+   |
+47 |     let mut old: i64 = g_fs.lock().unwrap()["input.txt".as_str()];
+   |                                                         ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/file-modification-time.rs:51:74
+   |
+51 |     { let mut _map = g_fs.lock().unwrap(); let _val = mtime; _map.insert("input.txt".clone(), _val); };
+   |                                                                   ------ ^^^^^^^^^^^^-----^^
+   |                                                                   |      |           |
+   |                                                                   |      |           help: try using a conversion method: `to_string`
+   |                                                                   |      expected `String`, found `&str`
+   |                                                                   arguments to this method are incorrect
+   |
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error: aborting due to 2 previous errors; 4 warnings emitted
+
+Some errors have detailed explanations: E0308, E0658.
+For more information about an error, try `rustc --explain E0308`.
