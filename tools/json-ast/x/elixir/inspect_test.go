@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"flag"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -36,14 +35,7 @@ func repoRoot(t *testing.T) string {
 	return ""
 }
 
-func ensureElixir(t *testing.T) {
-	if _, err := exec.LookPath("elixir"); err != nil {
-		t.Skip("elixir not installed")
-	}
-}
-
 func TestInspect_Golden(t *testing.T) {
-	ensureElixir(t)
 	root := repoRoot(t)
 	srcDir := filepath.Join(root, "tests", "transpiler", "x", "elixir")
 	outDir := filepath.Join(root, "tests", "json-ast", "x", "elixir")

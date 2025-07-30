@@ -1,56 +1,50 @@
 package elixir
 
 import (
-	"bytes"
-	_ "embed"
-	"encoding/json"
+	"context"
 	"fmt"
-	"os/exec"
-	"strings"
+
+	sitter "github.com/smacker/go-tree-sitter"
+	ts "github.com/smacker/go-tree-sitter/elixir"
 )
 
-//go:embed parse.exs
-var elixirParser string
-
-// Meta stores position information for an AST node.
-type Meta struct {
-	Line   int `json:"line,omitempty"`
-	Column int `json:"column,omitempty"`
-}
-
-// Node represents a single AST node produced by the Elixir parser.
+// Node represents a tree-sitter node.
 type Node struct {
 	Type     string `json:"type"`
-	Meta     *Meta  `json:"meta,omitempty"`
-	Args     []any  `json:"args,omitempty"`
-	Ctx      string `json:"ctx,omitempty"`
-	Key      *Node  `json:"key,omitempty"`
-	Value    any    `json:"value,omitempty"`
-	Elements []any  `json:"elements,omitempty"`
+	Start    int    `json:"start"`
+	End      int    `json:"end"`
+	Text     string `json:"text,omitempty"`
+	Children []Node `json:"children,omitempty"`
 }
 
-// Program holds the parsed AST of an Elixir file.
+// Program is the root of a parsed Elixir source file.
 type Program struct {
-	AST Node `json:"ast"`
+	Root Node `json:"root"`
 }
 
-// Inspect parses Elixir source code using the official parser and returns the Program.
+// Inspect parses Elixir source code using tree-sitter and returns the Program.
 func Inspect(src string) (*Program, error) {
-	if _, err := exec.LookPath("elixir"); err != nil {
-		return nil, fmt.Errorf("elixir not installed")
+	parser := sitter.NewParser()
+	parser.SetLanguage(ts.GetLanguage())
+	tree, err := parser.ParseCtx(context.Background(), nil, []byte(src))
+	if err != nil {
+		return nil, fmt.Errorf("parse: %w", err)
 	}
-	cmd := exec.Command("elixir", "-e", elixirParser)
-	cmd.Stdin = strings.NewReader(src)
-	var out bytes.Buffer
-	var errBuf bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &errBuf
-	if err := cmd.Run(); err != nil {
-		return nil, fmt.Errorf("elixir parse error: %v: %s", err, errBuf.String())
+	root := convertNode(tree.RootNode(), []byte(src))
+	return &Program{Root: root}, nil
+}
+
+func convertNode(n *sitter.Node, src []byte) Node {
+	node := Node{Type: n.Type(), Start: int(n.StartByte()), End: int(n.EndByte())}
+	if n.ChildCount() == 0 {
+		node.Text = n.Content(src)
 	}
-	var ast Node
-	if err := json.Unmarshal(out.Bytes(), &ast); err != nil {
-		return nil, err
+	for i := 0; i < int(n.ChildCount()); i++ {
+		child := n.Child(i)
+		if child == nil {
+			continue
+		}
+		node.Children = append(node.Children, convertNode(child, src))
 	}
-	return &Program{AST: ast}, nil
+	return node
 }
