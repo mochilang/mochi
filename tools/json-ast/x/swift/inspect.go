@@ -12,22 +12,20 @@ import (
 
 // Program represents a parsed Swift source file as produced by
 // `swiftc -dump-ast -dump-ast-format json`.
+// Program represents a parsed Swift source file including its full AST.
 type Program struct {
-	Items []item `json:"items"`
+	File *Node `json:"file"`
 }
 
-type item struct {
-	Kind          string      `json:"_kind"`
-	Name          *declName   `json:"name,omitempty"`
-	Params        *paramList  `json:"params,omitempty"`
-	Body          *body       `json:"body,omitempty"`
-	Range         offsetRange `json:"range"`
-	Result        string      `json:"result,omitempty"`
-	InterfaceType string      `json:"interface_type,omitempty"`
-	ThrownType    string      `json:"thrown_type,omitempty"`
-	Access        string      `json:"access,omitempty"`
-	Members       []item      `json:"members,omitempty"`
-	Elements      []item      `json:"elements,omitempty"`
+// Node represents a single Swift AST node.
+// Only a subset of common fields are captured explicitly and all
+// child nodes are recursively stored in Children.
+type Node struct {
+	Kind     string       `json:"kind"`
+	Name     string       `json:"name,omitempty"`
+	Type     string       `json:"type,omitempty"`
+	Range    *offsetRange `json:"range,omitempty"`
+	Children []*Node      `json:"children,omitempty"`
 }
 
 type declName struct {
@@ -36,19 +34,6 @@ type declName struct {
 
 type baseName struct {
 	Name string `json:"name"`
-}
-
-type paramList struct {
-	Params []param `json:"params"`
-}
-
-type param struct {
-	Name          declName `json:"name"`
-	InterfaceType string   `json:"interface_type,omitempty"`
-}
-
-type body struct {
-	Range offsetRange `json:"range"`
 }
 
 type offsetRange struct {
@@ -80,11 +65,15 @@ func Inspect(src string) (*Program, error) {
 		return nil, fmt.Errorf("swiftc: %v: %s", err, out.String())
 	}
 	data := filterOutput(out.Bytes())
-	var prog Program
-	if err := json.Unmarshal(data, &prog); err != nil {
+	var raw json.RawMessage
+	if err := json.Unmarshal(data, &raw); err != nil {
 		return nil, err
 	}
-	return &prog, nil
+	node, err := parseNode(raw)
+	if err != nil {
+		return nil, err
+	}
+	return &Program{File: node}, nil
 }
 
 func filterOutput(data []byte) []byte {
@@ -130,4 +119,56 @@ func filterOutput(data []byte) []byte {
 		}
 	}
 	return data
+}
+
+func parseNode(data json.RawMessage) (*Node, error) {
+	var m map[string]json.RawMessage
+	if err := json.Unmarshal(data, &m); err != nil {
+		return nil, err
+	}
+	kindVal, ok := m["_kind"]
+	if !ok {
+		return nil, fmt.Errorf("missing _kind")
+	}
+	var n Node
+	if err := json.Unmarshal(kindVal, &n.Kind); err != nil {
+		return nil, err
+	}
+	delete(m, "_kind")
+	for k, v := range m {
+		switch k {
+		case "name":
+			var dn declName
+			if err := json.Unmarshal(v, &dn); err == nil {
+				n.Name = dn.BaseName.Name
+			}
+		case "type":
+			_ = json.Unmarshal(v, &n.Type)
+		case "range":
+			var r offsetRange
+			if err := json.Unmarshal(v, &r); err == nil {
+				n.Range = &r
+			}
+		default:
+			trimmed := bytes.TrimSpace(v)
+			if len(trimmed) == 0 {
+				continue
+			}
+			if trimmed[0] == '{' {
+				if child, err := parseNode(v); err == nil {
+					n.Children = append(n.Children, child)
+				}
+			} else if trimmed[0] == '[' {
+				var arr []json.RawMessage
+				if err := json.Unmarshal(v, &arr); err == nil {
+					for _, a := range arr {
+						if child, err := parseNode(a); err == nil {
+							n.Children = append(n.Children, child)
+						}
+					}
+				}
+			}
+		}
+	}
+	return &n, nil
 }
