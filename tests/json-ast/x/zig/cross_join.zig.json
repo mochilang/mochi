@@ -1,0 +1,36 @@
+[
+  {
+    "tag": "simple_var_decl",
+    "type_node": null,
+    "visib_token": null,
+    "init_node": {
+      "tag": "builtin_call_two"
+    }
+  },
+  {
+    "tag": "simple_var_decl",
+    "type_node": null,
+    "visib_token": null,
+    "init_node": {
+      "tag": "container_decl_two_trailing"
+    }
+  },
+  {
+    "tag": "simple_var_decl",
+    "type_node": null,
+    "visib_token": null,
+    "init_node": {
+      "tag": "container_decl_trailing"
+    }
+  },
+  {
+    "tag": "fn_decl",
+    "name_token": {
+      "value": "main"
+    },
+    "params": [],
+    "visib_token": {
+      "value": "pub"
+    }
+  }
+]

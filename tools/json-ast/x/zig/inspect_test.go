@@ -6,12 +6,12 @@ import (
 	"encoding/json"
 	"flag"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
 	"testing"
 
+	zigcode "mochi/compiler/x/zig"
 	z "mochi/tools/json-ast/x/zig"
 )
 
@@ -37,8 +37,8 @@ func repoRoot(t *testing.T) string {
 }
 
 func ensureZig(t *testing.T) {
-	if _, err := exec.LookPath("zig"); err != nil {
-		t.Skip("zig not installed")
+	if _, err := zigcode.EnsureZig(); err != nil {
+		t.Skipf("zig not installed: %v", err)
 	}
 }
 
