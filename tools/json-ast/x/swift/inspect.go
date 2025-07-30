@@ -17,8 +17,9 @@ type Program struct {
 func Inspect(src string) (*Program, error) {
 	p := sitter.NewParser()
 	p.SetLanguage(ts.GetLanguage())
-	tree := p.Parse(nil, []byte(src))
-	return &Program{File: ConvertFile(tree.RootNode())}, nil
+	b := []byte(src)
+	tree := p.Parse(nil, b)
+	return &Program{File: ConvertFile(tree.RootNode(), b)}, nil
 }
 
 // MarshalJSON implements json.Marshaler for Program to ensure stable output.
