@@ -1,0 +1,2865 @@
+{
+  "ast": {
+    "type": "program",
+    "children": [
+      {
+        "type": "list",
+        "children": [
+          {
+            "type": "assign",
+            "line": 2,
+            "children": [
+              {
+                "type": "var_field",
+                "line": 2,
+                "children": [
+                  {
+                    "type": "@const",
+                    "value": "CustomersItem",
+                    "line": 2,
+                    "endline": 2
+                  }
+                ],
+                "endline": 2
+              },
+              {
+                "type": "method_add_arg",
+                "line": 2,
+                "col": 16,
+                "children": [
+                  {
+                    "type": "call",
+                    "line": 2,
+                    "col": 16,
+                    "children": [
+                      {
+                        "type": "var_ref",
+                        "line": 2,
+                        "col": 16,
+                        "children": [
+                          {
+                            "type": "@const",
+                            "value": "Struct",
+                            "line": 2,
+                            "col": 16,
+                            "endline": 2,
+                            "endcol": 16
+                          }
+                        ],
+                        "endline": 2,
+                        "endcol": 16
+                      },
+                      {
+                        "type": "@period",
+                        "value": ".",
+                        "line": 2,
+                        "col": 22,
+                        "endline": 2,
+                        "endcol": 22
+                      },
+                      {
+                        "type": "@ident",
+                        "value": "new",
+                        "line": 2,
+                        "col": 23,
+                        "endline": 2,
+                        "endcol": 23
+                      }
+                    ],
+                    "endline": 2,
+                    "endcol": 23
+                  },
+                  {
+                    "type": "arg_paren",
+                    "children": [
+                      {
+                        "type": "args_add_block",
+                        "children": [
+                          {
+                            "type": "list",
+                            "children": [
+                              {
+                                "type": "symbol_literal",
+                                "line": 2,
+                                "col": 28,
+                                "children": [
+                                  {
+                                    "type": "symbol",
+                                    "line": 2,
+                                    "col": 28,
+                                    "children": [
+                                      {
+                                        "type": "@ident",
+                                        "value": "id",
+                                        "line": 2,
+                                        "col": 28,
+                                        "endline": 2,
+                                        "endcol": 28
+                                      }
+                                    ],
+                                    "endline": 2,
+                                    "endcol": 28
+                                  }
+                                ],
+                                "endline": 2,
+                                "endcol": 28
+                              },
+                              {
+                                "type": "symbol_literal",
+                                "line": 2,
+                                "col": 33,
+                                "children": [
+                                  {
+                                    "type": "symbol",
+                                    "line": 2,
+                                    "col": 33,
+                                    "children": [
+                                      {
+                                        "type": "@ident",
+                                        "value": "name",
+                                        "line": 2,
+                                        "col": 33,
+                                        "endline": 2,
+                                        "endcol": 33
+                                      }
+                                    ],
+                                    "endline": 2,
+                                    "endcol": 33
+                                  }
+                                ],
+                                "endline": 2,
+                                "endcol": 33
+                              },
+                              {
+                                "type": "bare_assoc_hash",
+                                "children": [
+                                  {
+                                    "type": "list",
+                                    "children": [
+                                      {
+                                        "type": "assoc_new",
+                                        "line": 2,
+                                        "col": 39,
+                                        "children": [
+                                          {
+                                            "type": "@label",
+                                            "value": "keyword_init:",
+                                            "line": 2,
+                                            "col": 39,
+                                            "endline": 2,
+                                            "endcol": 39
+                                          },
+                                          {
+                                            "type": "var_ref",
+                                            "line": 2,
+                                            "col": 53,
+                                            "children": [
+                                              {
+                                                "type": "@kw",
+                                                "value": "true",
+                                                "line": 2,
+                                                "col": 53,
+                                                "endline": 2,
+                                                "endcol": 53
+                                              }
+                                            ],
+                                            "endline": 2,
+                                            "endcol": 53
+                                          }
+                                        ],
+                                        "endline": 2,
+                                        "endcol": 53
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assign",
+            "line": 3,
+            "children": [
+              {
+                "type": "var_field",
+                "line": 3,
+                "children": [
+                  {
+                    "type": "@ident",
+                    "value": "customers",
+                    "line": 3,
+                    "endline": 3
+                  }
+                ],
+                "endline": 3
+              },
+              {
+                "type": "array",
+                "children": [
+                  {
+                    "type": "list",
+                    "children": [
+                      {
+                        "type": "method_add_arg",
+                        "line": 3,
+                        "col": 13,
+                        "children": [
+                          {
+                            "type": "call",
+                            "line": 3,
+                            "col": 13,
+                            "children": [
+                              {
+                                "type": "var_ref",
+                                "line": 3,
+                                "col": 13,
+                                "children": [
+                                  {
+                                    "type": "@const",
+                                    "value": "CustomersItem",
+                                    "line": 3,
+                                    "col": 13,
+                                    "endline": 3,
+                                    "endcol": 13
+                                  }
+                                ],
+                                "endline": 3,
+                                "endcol": 13
+                              },
+                              {
+                                "type": "@period",
+                                "value": ".",
+                                "line": 3,
+                                "col": 26,
+                                "endline": 3,
+                                "endcol": 26
+                              },
+                              {
+                                "type": "@ident",
+                                "value": "new",
+                                "line": 3,
+                                "col": 27,
+                                "endline": 3,
+                                "endcol": 27
+                              }
+                            ],
+                            "endline": 3,
+                            "endcol": 27
+                          },
+                          {
+                            "type": "arg_paren",
+                            "children": [
+                              {
+                                "type": "args_add_block",
+                                "children": [
+                                  {
+                                    "type": "list",
+                                    "children": [
+                                      {
+                                        "type": "bare_assoc_hash",
+                                        "children": [
+                                          {
+                                            "type": "list",
+                                            "children": [
+                                              {
+                                                "type": "assoc_new",
+                                                "line": 3,
+                                                "col": 31,
+                                                "children": [
+                                                  {
+                                                    "type": "@label",
+                                                    "value": "id:",
+                                                    "line": 3,
+                                                    "col": 31,
+                                                    "endline": 3,
+                                                    "endcol": 31
+                                                  },
+                                                  {
+                                                    "type": "@int",
+                                                    "value": "1",
+                                                    "line": 3,
+                                                    "col": 35,
+                                                    "endline": 3,
+                                                    "endcol": 35
+                                                  }
+                                                ],
+                                                "endline": 3,
+                                                "endcol": 35
+                                              },
+                                              {
+                                                "type": "assoc_new",
+                                                "line": 3,
+                                                "col": 38,
+                                                "children": [
+                                                  {
+                                                    "type": "@label",
+                                                    "value": "name:",
+                                                    "line": 3,
+                                                    "col": 38,
+                                                    "endline": 3,
+                                                    "endcol": 38
+                                                  },
+                                                  {
+                                                    "type": "string_literal",
+                                                    "line": 3,
+                                                    "col": 45,
+                                                    "children": [
+                                                      {
+                                                        "type": "string_content",
+                                                        "line": 3,
+                                                        "col": 45,
+                                                        "children": [
+                                                          {
+                                                            "type": "@tstring_content",
+                                                            "value": "Alice",
+                                                            "line": 3,
+                                                            "col": 45,
+                                                            "endline": 3,
+                                                            "endcol": 45
+                                                          }
+                                                        ],
+                                                        "endline": 3,
+                                                        "endcol": 45
+                                                      }
+                                                    ],
+                                                    "endline": 3,
+                                                    "endcol": 45
+                                                  }
+                                                ],
+                                                "endline": 3,
+                                                "endcol": 45
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "method_add_arg",
+                        "line": 3,
+                        "col": 54,
+                        "children": [
+                          {
+                            "type": "call",
+                            "line": 3,
+                            "col": 54,
+                            "children": [
+                              {
+                                "type": "var_ref",
+                                "line": 3,
+                                "col": 54,
+                                "children": [
+                                  {
+                                    "type": "@const",
+                                    "value": "CustomersItem",
+                                    "line": 3,
+                                    "col": 54,
+                                    "endline": 3,
+                                    "endcol": 54
+                                  }
+                                ],
+                                "endline": 3,
+                                "endcol": 54
+                              },
+                              {
+                                "type": "@period",
+                                "value": ".",
+                                "line": 3,
+                                "col": 67,
+                                "endline": 3,
+                                "endcol": 67
+                              },
+                              {
+                                "type": "@ident",
+                                "value": "new",
+                                "line": 3,
+                                "col": 68,
+                                "endline": 3,
+                                "endcol": 68
+                              }
+                            ],
+                            "endline": 3,
+                            "endcol": 68
+                          },
+                          {
+                            "type": "arg_paren",
+                            "children": [
+                              {
+                                "type": "args_add_block",
+                                "children": [
+                                  {
+                                    "type": "list",
+                                    "children": [
+                                      {
+                                        "type": "bare_assoc_hash",
+                                        "children": [
+                                          {
+                                            "type": "list",
+                                            "children": [
+                                              {
+                                                "type": "assoc_new",
+                                                "line": 3,
+                                                "col": 72,
+                                                "children": [
+                                                  {
+                                                    "type": "@label",
+                                                    "value": "id:",
+                                                    "line": 3,
+                                                    "col": 72,
+                                                    "endline": 3,
+                                                    "endcol": 72
+                                                  },
+                                                  {
+                                                    "type": "@int",
+                                                    "value": "2",
+                                                    "line": 3,
+                                                    "col": 76,
+                                                    "endline": 3,
+                                                    "endcol": 76
+                                                  }
+                                                ],
+                                                "endline": 3,
+                                                "endcol": 76
+                                              },
+                                              {
+                                                "type": "assoc_new",
+                                                "line": 3,
+                                                "col": 79,
+                                                "children": [
+                                                  {
+                                                    "type": "@label",
+                                                    "value": "name:",
+                                                    "line": 3,
+                                                    "col": 79,
+                                                    "endline": 3,
+                                                    "endcol": 79
+                                                  },
+                                                  {
+                                                    "type": "string_literal",
+                                                    "line": 3,
+                                                    "col": 86,
+                                                    "children": [
+                                                      {
+                                                        "type": "string_content",
+                                                        "line": 3,
+                                                        "col": 86,
+                                                        "children": [
+                                                          {
+                                                            "type": "@tstring_content",
+                                                            "value": "Bob",
+                                                            "line": 3,
+                                                            "col": 86,
+                                                            "endline": 3,
+                                                            "endcol": 86
+                                                          }
+                                                        ],
+                                                        "endline": 3,
+                                                        "endcol": 86
+                                                      }
+                                                    ],
+                                                    "endline": 3,
+                                                    "endcol": 86
+                                                  }
+                                                ],
+                                                "endline": 3,
+                                                "endcol": 86
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "method_add_arg",
+                        "line": 3,
+                        "col": 93,
+                        "children": [
+                          {
+                            "type": "call",
+                            "line": 3,
+                            "col": 93,
+                            "children": [
+                              {
+                                "type": "var_ref",
+                                "line": 3,
+                                "col": 93,
+                                "children": [
+                                  {
+                                    "type": "@const",
+                                    "value": "CustomersItem",
+                                    "line": 3,
+                                    "col": 93,
+                                    "endline": 3,
+                                    "endcol": 93
+                                  }
+                                ],
+                                "endline": 3,
+                                "endcol": 93
+                              },
+                              {
+                                "type": "@period",
+                                "value": ".",
+                                "line": 3,
+                                "col": 106,
+                                "endline": 3,
+                                "endcol": 106
+                              },
+                              {
+                                "type": "@ident",
+                                "value": "new",
+                                "line": 3,
+                                "col": 107,
+                                "endline": 3,
+                                "endcol": 107
+                              }
+                            ],
+                            "endline": 3,
+                            "endcol": 107
+                          },
+                          {
+                            "type": "arg_paren",
+                            "children": [
+                              {
+                                "type": "args_add_block",
+                                "children": [
+                                  {
+                                    "type": "list",
+                                    "children": [
+                                      {
+                                        "type": "bare_assoc_hash",
+                                        "children": [
+                                          {
+                                            "type": "list",
+                                            "children": [
+                                              {
+                                                "type": "assoc_new",
+                                                "line": 3,
+                                                "col": 111,
+                                                "children": [
+                                                  {
+                                                    "type": "@label",
+                                                    "value": "id:",
+                                                    "line": 3,
+                                                    "col": 111,
+                                                    "endline": 3,
+                                                    "endcol": 111
+                                                  },
+                                                  {
+                                                    "type": "@int",
+                                                    "value": "3",
+                                                    "line": 3,
+                                                    "col": 115,
+                                                    "endline": 3,
+                                                    "endcol": 115
+                                                  }
+                                                ],
+                                                "endline": 3,
+                                                "endcol": 115
+                                              },
+                                              {
+                                                "type": "assoc_new",
+                                                "line": 3,
+                                                "col": 118,
+                                                "children": [
+                                                  {
+                                                    "type": "@label",
+                                                    "value": "name:",
+                                                    "line": 3,
+                                                    "col": 118,
+                                                    "endline": 3,
+                                                    "endcol": 118
+                                                  },
+                                                  {
+                                                    "type": "string_literal",
+                                                    "line": 3,
+                                                    "col": 125,
+                                                    "children": [
+                                                      {
+                                                        "type": "string_content",
+                                                        "line": 3,
+                                                        "col": 125,
+                                                        "children": [
+                                                          {
+                                                            "type": "@tstring_content",
+                                                            "value": "Charlie",
+                                                            "line": 3,
+                                                            "col": 125,
+                                                            "endline": 3,
+                                                            "endcol": 125
+                                                          }
+                                                        ],
+                                                        "endline": 3,
+                                                        "endcol": 125
+                                                      }
+                                                    ],
+                                                    "endline": 3,
+                                                    "endcol": 125
+                                                  }
+                                                ],
+                                                "endline": 3,
+                                                "endcol": 125
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assign",
+            "line": 4,
+            "children": [
+              {
+                "type": "var_field",
+                "line": 4,
+                "children": [
+                  {
+                    "type": "@const",
+                    "value": "OrdersItem",
+                    "line": 4,
+                    "endline": 4
+                  }
+                ],
+                "endline": 4
+              },
+              {
+                "type": "method_add_arg",
+                "line": 4,
+                "col": 13,
+                "children": [
+                  {
+                    "type": "call",
+                    "line": 4,
+                    "col": 13,
+                    "children": [
+                      {
+                        "type": "var_ref",
+                        "line": 4,
+                        "col": 13,
+                        "children": [
+                          {
+                            "type": "@const",
+                            "value": "Struct",
+                            "line": 4,
+                            "col": 13,
+                            "endline": 4,
+                            "endcol": 13
+                          }
+                        ],
+                        "endline": 4,
+                        "endcol": 13
+                      },
+                      {
+                        "type": "@period",
+                        "value": ".",
+                        "line": 4,
+                        "col": 19,
+                        "endline": 4,
+                        "endcol": 19
+                      },
+                      {
+                        "type": "@ident",
+                        "value": "new",
+                        "line": 4,
+                        "col": 20,
+                        "endline": 4,
+                        "endcol": 20
+                      }
+                    ],
+                    "endline": 4,
+                    "endcol": 20
+                  },
+                  {
+                    "type": "arg_paren",
+                    "children": [
+                      {
+                        "type": "args_add_block",
+                        "children": [
+                          {
+                            "type": "list",
+                            "children": [
+                              {
+                                "type": "symbol_literal",
+                                "line": 4,
+                                "col": 25,
+                                "children": [
+                                  {
+                                    "type": "symbol",
+                                    "line": 4,
+                                    "col": 25,
+                                    "children": [
+                                      {
+                                        "type": "@ident",
+                                        "value": "id",
+                                        "line": 4,
+                                        "col": 25,
+                                        "endline": 4,
+                                        "endcol": 25
+                                      }
+                                    ],
+                                    "endline": 4,
+                                    "endcol": 25
+                                  }
+                                ],
+                                "endline": 4,
+                                "endcol": 25
+                              },
+                              {
+                                "type": "symbol_literal",
+                                "line": 4,
+                                "col": 30,
+                                "children": [
+                                  {
+                                    "type": "symbol",
+                                    "line": 4,
+                                    "col": 30,
+                                    "children": [
+                                      {
+                                        "type": "@ident",
+                                        "value": "customerId",
+                                        "line": 4,
+                                        "col": 30,
+                                        "endline": 4,
+                                        "endcol": 30
+                                      }
+                                    ],
+                                    "endline": 4,
+                                    "endcol": 30
+                                  }
+                                ],
+                                "endline": 4,
+                                "endcol": 30
+                              },
+                              {
+                                "type": "symbol_literal",
+                                "line": 4,
+                                "col": 43,
+                                "children": [
+                                  {
+                                    "type": "symbol",
+                                    "line": 4,
+                                    "col": 43,
+                                    "children": [
+                                      {
+                                        "type": "@ident",
+                                        "value": "total",
+                                        "line": 4,
+                                        "col": 43,
+                                        "endline": 4,
+                                        "endcol": 43
+                                      }
+                                    ],
+                                    "endline": 4,
+                                    "endcol": 43
+                                  }
+                                ],
+                                "endline": 4,
+                                "endcol": 43
+                              },
+                              {
+                                "type": "bare_assoc_hash",
+                                "children": [
+                                  {
+                                    "type": "list",
+                                    "children": [
+                                      {
+                                        "type": "assoc_new",
+                                        "line": 4,
+                                        "col": 50,
+                                        "children": [
+                                          {
+                                            "type": "@label",
+                                            "value": "keyword_init:",
+                                            "line": 4,
+                                            "col": 50,
+                                            "endline": 4,
+                                            "endcol": 50
+                                          },
+                                          {
+                                            "type": "var_ref",
+                                            "line": 4,
+                                            "col": 64,
+                                            "children": [
+                                              {
+                                                "type": "@kw",
+                                                "value": "true",
+                                                "line": 4,
+                                                "col": 64,
+                                                "endline": 4,
+                                                "endcol": 64
+                                              }
+                                            ],
+                                            "endline": 4,
+                                            "endcol": 64
+                                          }
+                                        ],
+                                        "endline": 4,
+                                        "endcol": 64
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assign",
+            "line": 5,
+            "children": [
+              {
+                "type": "var_field",
+                "line": 5,
+                "children": [
+                  {
+                    "type": "@ident",
+                    "value": "orders",
+                    "line": 5,
+                    "endline": 5
+                  }
+                ],
+                "endline": 5
+              },
+              {
+                "type": "array",
+                "children": [
+                  {
+                    "type": "list",
+                    "children": [
+                      {
+                        "type": "method_add_arg",
+                        "line": 5,
+                        "col": 10,
+                        "children": [
+                          {
+                            "type": "call",
+                            "line": 5,
+                            "col": 10,
+                            "children": [
+                              {
+                                "type": "var_ref",
+                                "line": 5,
+                                "col": 10,
+                                "children": [
+                                  {
+                                    "type": "@const",
+                                    "value": "OrdersItem",
+                                    "line": 5,
+                                    "col": 10,
+                                    "endline": 5,
+                                    "endcol": 10
+                                  }
+                                ],
+                                "endline": 5,
+                                "endcol": 10
+                              },
+                              {
+                                "type": "@period",
+                                "value": ".",
+                                "line": 5,
+                                "col": 20,
+                                "endline": 5,
+                                "endcol": 20
+                              },
+                              {
+                                "type": "@ident",
+                                "value": "new",
+                                "line": 5,
+                                "col": 21,
+                                "endline": 5,
+                                "endcol": 21
+                              }
+                            ],
+                            "endline": 5,
+                            "endcol": 21
+                          },
+                          {
+                            "type": "arg_paren",
+                            "children": [
+                              {
+                                "type": "args_add_block",
+                                "children": [
+                                  {
+                                    "type": "list",
+                                    "children": [
+                                      {
+                                        "type": "bare_assoc_hash",
+                                        "children": [
+                                          {
+                                            "type": "list",
+                                            "children": [
+                                              {
+                                                "type": "assoc_new",
+                                                "line": 5,
+                                                "col": 25,
+                                                "children": [
+                                                  {
+                                                    "type": "@label",
+                                                    "value": "id:",
+                                                    "line": 5,
+                                                    "col": 25,
+                                                    "endline": 5,
+                                                    "endcol": 25
+                                                  },
+                                                  {
+                                                    "type": "@int",
+                                                    "value": "100",
+                                                    "line": 5,
+                                                    "col": 29,
+                                                    "endline": 5,
+                                                    "endcol": 29
+                                                  }
+                                                ],
+                                                "endline": 5,
+                                                "endcol": 29
+                                              },
+                                              {
+                                                "type": "assoc_new",
+                                                "line": 5,
+                                                "col": 34,
+                                                "children": [
+                                                  {
+                                                    "type": "@label",
+                                                    "value": "customerId:",
+                                                    "line": 5,
+                                                    "col": 34,
+                                                    "endline": 5,
+                                                    "endcol": 34
+                                                  },
+                                                  {
+                                                    "type": "@int",
+                                                    "value": "1",
+                                                    "line": 5,
+                                                    "col": 46,
+                                                    "endline": 5,
+                                                    "endcol": 46
+                                                  }
+                                                ],
+                                                "endline": 5,
+                                                "endcol": 46
+                                              },
+                                              {
+                                                "type": "assoc_new",
+                                                "line": 5,
+                                                "col": 49,
+                                                "children": [
+                                                  {
+                                                    "type": "@label",
+                                                    "value": "total:",
+                                                    "line": 5,
+                                                    "col": 49,
+                                                    "endline": 5,
+                                                    "endcol": 49
+                                                  },
+                                                  {
+                                                    "type": "@int",
+                                                    "value": "250",
+                                                    "line": 5,
+                                                    "col": 56,
+                                                    "endline": 5,
+                                                    "endcol": 56
+                                                  }
+                                                ],
+                                                "endline": 5,
+                                                "endcol": 56
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "method_add_arg",
+                        "line": 5,
+                        "col": 62,
+                        "children": [
+                          {
+                            "type": "call",
+                            "line": 5,
+                            "col": 62,
+                            "children": [
+                              {
+                                "type": "var_ref",
+                                "line": 5,
+                                "col": 62,
+                                "children": [
+                                  {
+                                    "type": "@const",
+                                    "value": "OrdersItem",
+                                    "line": 5,
+                                    "col": 62,
+                                    "endline": 5,
+                                    "endcol": 62
+                                  }
+                                ],
+                                "endline": 5,
+                                "endcol": 62
+                              },
+                              {
+                                "type": "@period",
+                                "value": ".",
+                                "line": 5,
+                                "col": 72,
+                                "endline": 5,
+                                "endcol": 72
+                              },
+                              {
+                                "type": "@ident",
+                                "value": "new",
+                                "line": 5,
+                                "col": 73,
+                                "endline": 5,
+                                "endcol": 73
+                              }
+                            ],
+                            "endline": 5,
+                            "endcol": 73
+                          },
+                          {
+                            "type": "arg_paren",
+                            "children": [
+                              {
+                                "type": "args_add_block",
+                                "children": [
+                                  {
+                                    "type": "list",
+                                    "children": [
+                                      {
+                                        "type": "bare_assoc_hash",
+                                        "children": [
+                                          {
+                                            "type": "list",
+                                            "children": [
+                                              {
+                                                "type": "assoc_new",
+                                                "line": 5,
+                                                "col": 77,
+                                                "children": [
+                                                  {
+                                                    "type": "@label",
+                                                    "value": "id:",
+                                                    "line": 5,
+                                                    "col": 77,
+                                                    "endline": 5,
+                                                    "endcol": 77
+                                                  },
+                                                  {
+                                                    "type": "@int",
+                                                    "value": "101",
+                                                    "line": 5,
+                                                    "col": 81,
+                                                    "endline": 5,
+                                                    "endcol": 81
+                                                  }
+                                                ],
+                                                "endline": 5,
+                                                "endcol": 81
+                                              },
+                                              {
+                                                "type": "assoc_new",
+                                                "line": 5,
+                                                "col": 86,
+                                                "children": [
+                                                  {
+                                                    "type": "@label",
+                                                    "value": "customerId:",
+                                                    "line": 5,
+                                                    "col": 86,
+                                                    "endline": 5,
+                                                    "endcol": 86
+                                                  },
+                                                  {
+                                                    "type": "@int",
+                                                    "value": "2",
+                                                    "line": 5,
+                                                    "col": 98,
+                                                    "endline": 5,
+                                                    "endcol": 98
+                                                  }
+                                                ],
+                                                "endline": 5,
+                                                "endcol": 98
+                                              },
+                                              {
+                                                "type": "assoc_new",
+                                                "line": 5,
+                                                "col": 101,
+                                                "children": [
+                                                  {
+                                                    "type": "@label",
+                                                    "value": "total:",
+                                                    "line": 5,
+                                                    "col": 101,
+                                                    "endline": 5,
+                                                    "endcol": 101
+                                                  },
+                                                  {
+                                                    "type": "@int",
+                                                    "value": "125",
+                                                    "line": 5,
+                                                    "col": 108,
+                                                    "endline": 5,
+                                                    "endcol": 108
+                                                  }
+                                                ],
+                                                "endline": 5,
+                                                "endcol": 108
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "method_add_arg",
+                        "line": 5,
+                        "col": 114,
+                        "children": [
+                          {
+                            "type": "call",
+                            "line": 5,
+                            "col": 114,
+                            "children": [
+                              {
+                                "type": "var_ref",
+                                "line": 5,
+                                "col": 114,
+                                "children": [
+                                  {
+                                    "type": "@const",
+                                    "value": "OrdersItem",
+                                    "line": 5,
+                                    "col": 114,
+                                    "endline": 5,
+                                    "endcol": 114
+                                  }
+                                ],
+                                "endline": 5,
+                                "endcol": 114
+                              },
+                              {
+                                "type": "@period",
+                                "value": ".",
+                                "line": 5,
+                                "col": 124,
+                                "endline": 5,
+                                "endcol": 124
+                              },
+                              {
+                                "type": "@ident",
+                                "value": "new",
+                                "line": 5,
+                                "col": 125,
+                                "endline": 5,
+                                "endcol": 125
+                              }
+                            ],
+                            "endline": 5,
+                            "endcol": 125
+                          },
+                          {
+                            "type": "arg_paren",
+                            "children": [
+                              {
+                                "type": "args_add_block",
+                                "children": [
+                                  {
+                                    "type": "list",
+                                    "children": [
+                                      {
+                                        "type": "bare_assoc_hash",
+                                        "children": [
+                                          {
+                                            "type": "list",
+                                            "children": [
+                                              {
+                                                "type": "assoc_new",
+                                                "line": 5,
+                                                "col": 129,
+                                                "children": [
+                                                  {
+                                                    "type": "@label",
+                                                    "value": "id:",
+                                                    "line": 5,
+                                                    "col": 129,
+                                                    "endline": 5,
+                                                    "endcol": 129
+                                                  },
+                                                  {
+                                                    "type": "@int",
+                                                    "value": "102",
+                                                    "line": 5,
+                                                    "col": 133,
+                                                    "endline": 5,
+                                                    "endcol": 133
+                                                  }
+                                                ],
+                                                "endline": 5,
+                                                "endcol": 133
+                                              },
+                                              {
+                                                "type": "assoc_new",
+                                                "line": 5,
+                                                "col": 138,
+                                                "children": [
+                                                  {
+                                                    "type": "@label",
+                                                    "value": "customerId:",
+                                                    "line": 5,
+                                                    "col": 138,
+                                                    "endline": 5,
+                                                    "endcol": 138
+                                                  },
+                                                  {
+                                                    "type": "@int",
+                                                    "value": "1",
+                                                    "line": 5,
+                                                    "col": 150,
+                                                    "endline": 5,
+                                                    "endcol": 150
+                                                  }
+                                                ],
+                                                "endline": 5,
+                                                "endcol": 150
+                                              },
+                                              {
+                                                "type": "assoc_new",
+                                                "line": 5,
+                                                "col": 153,
+                                                "children": [
+                                                  {
+                                                    "type": "@label",
+                                                    "value": "total:",
+                                                    "line": 5,
+                                                    "col": 153,
+                                                    "endline": 5,
+                                                    "endcol": 153
+                                                  },
+                                                  {
+                                                    "type": "@int",
+                                                    "value": "300",
+                                                    "line": 5,
+                                                    "col": 160,
+                                                    "endline": 5,
+                                                    "endcol": 160
+                                                  }
+                                                ],
+                                                "endline": 5,
+                                                "endcol": 160
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assign",
+            "line": 6,
+            "children": [
+              {
+                "type": "var_field",
+                "line": 6,
+                "children": [
+                  {
+                    "type": "@const",
+                    "value": "Result",
+                    "line": 6,
+                    "endline": 6
+                  }
+                ],
+                "endline": 6
+              },
+              {
+                "type": "method_add_arg",
+                "line": 6,
+                "col": 9,
+                "children": [
+                  {
+                    "type": "call",
+                    "line": 6,
+                    "col": 9,
+                    "children": [
+                      {
+                        "type": "var_ref",
+                        "line": 6,
+                        "col": 9,
+                        "children": [
+                          {
+                            "type": "@const",
+                            "value": "Struct",
+                            "line": 6,
+                            "col": 9,
+                            "endline": 6,
+                            "endcol": 9
+                          }
+                        ],
+                        "endline": 6,
+                        "endcol": 9
+                      },
+                      {
+                        "type": "@period",
+                        "value": ".",
+                        "line": 6,
+                        "col": 15,
+                        "endline": 6,
+                        "endcol": 15
+                      },
+                      {
+                        "type": "@ident",
+                        "value": "new",
+                        "line": 6,
+                        "col": 16,
+                        "endline": 6,
+                        "endcol": 16
+                      }
+                    ],
+                    "endline": 6,
+                    "endcol": 16
+                  },
+                  {
+                    "type": "arg_paren",
+                    "children": [
+                      {
+                        "type": "args_add_block",
+                        "children": [
+                          {
+                            "type": "list",
+                            "children": [
+                              {
+                                "type": "symbol_literal",
+                                "line": 6,
+                                "col": 21,
+                                "children": [
+                                  {
+                                    "type": "symbol",
+                                    "line": 6,
+                                    "col": 21,
+                                    "children": [
+                                      {
+                                        "type": "@ident",
+                                        "value": "orderId",
+                                        "line": 6,
+                                        "col": 21,
+                                        "endline": 6,
+                                        "endcol": 21
+                                      }
+                                    ],
+                                    "endline": 6,
+                                    "endcol": 21
+                                  }
+                                ],
+                                "endline": 6,
+                                "endcol": 21
+                              },
+                              {
+                                "type": "symbol_literal",
+                                "line": 6,
+                                "col": 31,
+                                "children": [
+                                  {
+                                    "type": "symbol",
+                                    "line": 6,
+                                    "col": 31,
+                                    "children": [
+                                      {
+                                        "type": "@ident",
+                                        "value": "orderCustomerId",
+                                        "line": 6,
+                                        "col": 31,
+                                        "endline": 6,
+                                        "endcol": 31
+                                      }
+                                    ],
+                                    "endline": 6,
+                                    "endcol": 31
+                                  }
+                                ],
+                                "endline": 6,
+                                "endcol": 31
+                              },
+                              {
+                                "type": "symbol_literal",
+                                "line": 6,
+                                "col": 49,
+                                "children": [
+                                  {
+                                    "type": "symbol",
+                                    "line": 6,
+                                    "col": 49,
+                                    "children": [
+                                      {
+                                        "type": "@ident",
+                                        "value": "pairedCustomerName",
+                                        "line": 6,
+                                        "col": 49,
+                                        "endline": 6,
+                                        "endcol": 49
+                                      }
+                                    ],
+                                    "endline": 6,
+                                    "endcol": 49
+                                  }
+                                ],
+                                "endline": 6,
+                                "endcol": 49
+                              },
+                              {
+                                "type": "symbol_literal",
+                                "line": 6,
+                                "col": 70,
+                                "children": [
+                                  {
+                                    "type": "symbol",
+                                    "line": 6,
+                                    "col": 70,
+                                    "children": [
+                                      {
+                                        "type": "@ident",
+                                        "value": "orderTotal",
+                                        "line": 6,
+                                        "col": 70,
+                                        "endline": 6,
+                                        "endcol": 70
+                                      }
+                                    ],
+                                    "endline": 6,
+                                    "endcol": 70
+                                  }
+                                ],
+                                "endline": 6,
+                                "endcol": 70
+                              },
+                              {
+                                "type": "bare_assoc_hash",
+                                "children": [
+                                  {
+                                    "type": "list",
+                                    "children": [
+                                      {
+                                        "type": "assoc_new",
+                                        "line": 6,
+                                        "col": 82,
+                                        "children": [
+                                          {
+                                            "type": "@label",
+                                            "value": "keyword_init:",
+                                            "line": 6,
+                                            "col": 82,
+                                            "endline": 6,
+                                            "endcol": 82
+                                          },
+                                          {
+                                            "type": "var_ref",
+                                            "line": 6,
+                                            "col": 96,
+                                            "children": [
+                                              {
+                                                "type": "@kw",
+                                                "value": "true",
+                                                "line": 6,
+                                                "col": 96,
+                                                "endline": 6,
+                                                "endcol": 96
+                                              }
+                                            ],
+                                            "endline": 6,
+                                            "endcol": 96
+                                          }
+                                        ],
+                                        "endline": 6,
+                                        "endcol": 96
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "assign",
+            "line": 7,
+            "children": [
+              {
+                "type": "var_field",
+                "line": 7,
+                "children": [
+                  {
+                    "type": "@ident",
+                    "value": "result",
+                    "line": 7,
+                    "endline": 7
+                  }
+                ],
+                "endline": 7
+              },
+              {
+                "type": "paren",
+                "children": [
+                  {
+                    "type": "list",
+                    "children": [
+                      {
+                        "type": "begin",
+                        "children": [
+                          {
+                            "type": "bodystmt",
+                            "children": [
+                              {
+                                "type": "list",
+                                "children": [
+                                  {
+                                    "type": "assign",
+                                    "line": 8,
+                                    "col": 2,
+                                    "children": [
+                                      {
+                                        "type": "var_field",
+                                        "line": 8,
+                                        "col": 2,
+                                        "children": [
+                                          {
+                                            "type": "@ident",
+                                            "value": "_res",
+                                            "line": 8,
+                                            "col": 2,
+                                            "endline": 8,
+                                            "endcol": 2
+                                          }
+                                        ],
+                                        "endline": 8,
+                                        "endcol": 2
+                                      },
+                                      {
+                                        "type": "array"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "method_add_block",
+                                    "line": 9,
+                                    "col": 2,
+                                    "children": [
+                                      {
+                                        "type": "call",
+                                        "line": 9,
+                                        "col": 2,
+                                        "children": [
+                                          {
+                                            "type": "var_ref",
+                                            "line": 9,
+                                            "col": 2,
+                                            "children": [
+                                              {
+                                                "type": "@ident",
+                                                "value": "orders",
+                                                "line": 9,
+                                                "col": 2,
+                                                "endline": 9,
+                                                "endcol": 2
+                                              }
+                                            ],
+                                            "endline": 9,
+                                            "endcol": 2
+                                          },
+                                          {
+                                            "type": "@period",
+                                            "value": ".",
+                                            "line": 9,
+                                            "col": 8,
+                                            "endline": 9,
+                                            "endcol": 8
+                                          },
+                                          {
+                                            "type": "@ident",
+                                            "value": "each",
+                                            "line": 9,
+                                            "col": 9,
+                                            "endline": 9,
+                                            "endcol": 9
+                                          }
+                                        ],
+                                        "endline": 9,
+                                        "endcol": 9
+                                      },
+                                      {
+                                        "type": "do_block",
+                                        "children": [
+                                          {
+                                            "type": "block_var",
+                                            "children": [
+                                              {
+                                                "type": "params",
+                                                "children": [
+                                                  {
+                                                    "type": "list",
+                                                    "children": [
+                                                      {
+                                                        "type": "@ident",
+                                                        "value": "o",
+                                                        "line": 9,
+                                                        "col": 18,
+                                                        "endline": 9,
+                                                        "endcol": 18
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "type": "bodystmt",
+                                            "children": [
+                                              {
+                                                "type": "list",
+                                                "children": [
+                                                  {
+                                                    "type": "method_add_block",
+                                                    "line": 10,
+                                                    "col": 4,
+                                                    "children": [
+                                                      {
+                                                        "type": "call",
+                                                        "line": 10,
+                                                        "col": 4,
+                                                        "children": [
+                                                          {
+                                                            "type": "var_ref",
+                                                            "line": 10,
+                                                            "col": 4,
+                                                            "children": [
+                                                              {
+                                                                "type": "@ident",
+                                                                "value": "customers",
+                                                                "line": 10,
+                                                                "col": 4,
+                                                                "endline": 10,
+                                                                "endcol": 4
+                                                              }
+                                                            ],
+                                                            "endline": 10,
+                                                            "endcol": 4
+                                                          },
+                                                          {
+                                                            "type": "@period",
+                                                            "value": ".",
+                                                            "line": 10,
+                                                            "col": 13,
+                                                            "endline": 10,
+                                                            "endcol": 13
+                                                          },
+                                                          {
+                                                            "type": "@ident",
+                                                            "value": "each",
+                                                            "line": 10,
+                                                            "col": 14,
+                                                            "endline": 10,
+                                                            "endcol": 14
+                                                          }
+                                                        ],
+                                                        "endline": 10,
+                                                        "endcol": 14
+                                                      },
+                                                      {
+                                                        "type": "do_block",
+                                                        "children": [
+                                                          {
+                                                            "type": "block_var",
+                                                            "children": [
+                                                              {
+                                                                "type": "params",
+                                                                "children": [
+                                                                  {
+                                                                    "type": "list",
+                                                                    "children": [
+                                                                      {
+                                                                        "type": "@ident",
+                                                                        "value": "c",
+                                                                        "line": 10,
+                                                                        "col": 23,
+                                                                        "endline": 10,
+                                                                        "endcol": 23
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "type": "bodystmt",
+                                                            "children": [
+                                                              {
+                                                                "type": "list",
+                                                                "children": [
+                                                                  {
+                                                                    "type": "binary",
+                                                                    "line": 11,
+                                                                    "col": 6,
+                                                                    "children": [
+                                                                      {
+                                                                        "type": "var_ref",
+                                                                        "line": 11,
+                                                                        "col": 6,
+                                                                        "children": [
+                                                                          {
+                                                                            "type": "@ident",
+                                                                            "value": "_res",
+                                                                            "line": 11,
+                                                                            "col": 6,
+                                                                            "endline": 11,
+                                                                            "endcol": 6
+                                                                          }
+                                                                        ],
+                                                                        "endline": 11,
+                                                                        "endcol": 6
+                                                                      },
+                                                                      {
+                                                                        "type": "@tok",
+                                                                        "value": "\u003c\u003c"
+                                                                      },
+                                                                      {
+                                                                        "type": "method_add_arg",
+                                                                        "line": 11,
+                                                                        "col": 14,
+                                                                        "children": [
+                                                                          {
+                                                                            "type": "call",
+                                                                            "line": 11,
+                                                                            "col": 14,
+                                                                            "children": [
+                                                                              {
+                                                                                "type": "var_ref",
+                                                                                "line": 11,
+                                                                                "col": 14,
+                                                                                "children": [
+                                                                                  {
+                                                                                    "type": "@const",
+                                                                                    "value": "Result",
+                                                                                    "line": 11,
+                                                                                    "col": 14,
+                                                                                    "endline": 11,
+                                                                                    "endcol": 14
+                                                                                  }
+                                                                                ],
+                                                                                "endline": 11,
+                                                                                "endcol": 14
+                                                                              },
+                                                                              {
+                                                                                "type": "@period",
+                                                                                "value": ".",
+                                                                                "line": 11,
+                                                                                "col": 20,
+                                                                                "endline": 11,
+                                                                                "endcol": 20
+                                                                              },
+                                                                              {
+                                                                                "type": "@ident",
+                                                                                "value": "new",
+                                                                                "line": 11,
+                                                                                "col": 21,
+                                                                                "endline": 11,
+                                                                                "endcol": 21
+                                                                              }
+                                                                            ],
+                                                                            "endline": 11,
+                                                                            "endcol": 21
+                                                                          },
+                                                                          {
+                                                                            "type": "arg_paren",
+                                                                            "children": [
+                                                                              {
+                                                                                "type": "args_add_block",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "type": "list",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "type": "bare_assoc_hash",
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "type": "list",
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "type": "assoc_new",
+                                                                                                "line": 11,
+                                                                                                "col": 25,
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "type": "@label",
+                                                                                                    "value": "orderId:",
+                                                                                                    "line": 11,
+                                                                                                    "col": 25,
+                                                                                                    "endline": 11,
+                                                                                                    "endcol": 25
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "type": "aref",
+                                                                                                    "line": 11,
+                                                                                                    "col": 34,
+                                                                                                    "children": [
+                                                                                                      {
+                                                                                                        "type": "var_ref",
+                                                                                                        "line": 11,
+                                                                                                        "col": 34,
+                                                                                                        "children": [
+                                                                                                          {
+                                                                                                            "type": "@ident",
+                                                                                                            "value": "o",
+                                                                                                            "line": 11,
+                                                                                                            "col": 34,
+                                                                                                            "endline": 11,
+                                                                                                            "endcol": 34
+                                                                                                          }
+                                                                                                        ],
+                                                                                                        "endline": 11,
+                                                                                                        "endcol": 34
+                                                                                                      },
+                                                                                                      {
+                                                                                                        "type": "args_add_block",
+                                                                                                        "children": [
+                                                                                                          {
+                                                                                                            "type": "list",
+                                                                                                            "children": [
+                                                                                                              {
+                                                                                                                "type": "string_literal",
+                                                                                                                "line": 11,
+                                                                                                                "col": 37,
+                                                                                                                "children": [
+                                                                                                                  {
+                                                                                                                    "type": "string_content",
+                                                                                                                    "line": 11,
+                                                                                                                    "col": 37,
+                                                                                                                    "children": [
+                                                                                                                      {
+                                                                                                                        "type": "@tstring_content",
+                                                                                                                        "value": "id",
+                                                                                                                        "line": 11,
+                                                                                                                        "col": 37,
+                                                                                                                        "endline": 11,
+                                                                                                                        "endcol": 37
+                                                                                                                      }
+                                                                                                                    ],
+                                                                                                                    "endline": 11,
+                                                                                                                    "endcol": 37
+                                                                                                                  }
+                                                                                                                ],
+                                                                                                                "endline": 11,
+                                                                                                                "endcol": 37
+                                                                                                              }
+                                                                                                            ]
+                                                                                                          }
+                                                                                                        ]
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  }
+                                                                                                ]
+                                                                                              },
+                                                                                              {
+                                                                                                "type": "assoc_new",
+                                                                                                "line": 11,
+                                                                                                "col": 43,
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "type": "@label",
+                                                                                                    "value": "orderCustomerId:",
+                                                                                                    "line": 11,
+                                                                                                    "col": 43,
+                                                                                                    "endline": 11,
+                                                                                                    "endcol": 43
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "type": "aref",
+                                                                                                    "line": 11,
+                                                                                                    "col": 60,
+                                                                                                    "children": [
+                                                                                                      {
+                                                                                                        "type": "var_ref",
+                                                                                                        "line": 11,
+                                                                                                        "col": 60,
+                                                                                                        "children": [
+                                                                                                          {
+                                                                                                            "type": "@ident",
+                                                                                                            "value": "o",
+                                                                                                            "line": 11,
+                                                                                                            "col": 60,
+                                                                                                            "endline": 11,
+                                                                                                            "endcol": 60
+                                                                                                          }
+                                                                                                        ],
+                                                                                                        "endline": 11,
+                                                                                                        "endcol": 60
+                                                                                                      },
+                                                                                                      {
+                                                                                                        "type": "args_add_block",
+                                                                                                        "children": [
+                                                                                                          {
+                                                                                                            "type": "list",
+                                                                                                            "children": [
+                                                                                                              {
+                                                                                                                "type": "string_literal",
+                                                                                                                "line": 11,
+                                                                                                                "col": 63,
+                                                                                                                "children": [
+                                                                                                                  {
+                                                                                                                    "type": "string_content",
+                                                                                                                    "line": 11,
+                                                                                                                    "col": 63,
+                                                                                                                    "children": [
+                                                                                                                      {
+                                                                                                                        "type": "@tstring_content",
+                                                                                                                        "value": "customerId",
+                                                                                                                        "line": 11,
+                                                                                                                        "col": 63,
+                                                                                                                        "endline": 11,
+                                                                                                                        "endcol": 63
+                                                                                                                      }
+                                                                                                                    ],
+                                                                                                                    "endline": 11,
+                                                                                                                    "endcol": 63
+                                                                                                                  }
+                                                                                                                ],
+                                                                                                                "endline": 11,
+                                                                                                                "endcol": 63
+                                                                                                              }
+                                                                                                            ]
+                                                                                                          }
+                                                                                                        ]
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  }
+                                                                                                ]
+                                                                                              },
+                                                                                              {
+                                                                                                "type": "assoc_new",
+                                                                                                "line": 11,
+                                                                                                "col": 77,
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "type": "@label",
+                                                                                                    "value": "pairedCustomerName:",
+                                                                                                    "line": 11,
+                                                                                                    "col": 77,
+                                                                                                    "endline": 11,
+                                                                                                    "endcol": 77
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "type": "aref",
+                                                                                                    "line": 11,
+                                                                                                    "col": 97,
+                                                                                                    "children": [
+                                                                                                      {
+                                                                                                        "type": "var_ref",
+                                                                                                        "line": 11,
+                                                                                                        "col": 97,
+                                                                                                        "children": [
+                                                                                                          {
+                                                                                                            "type": "@ident",
+                                                                                                            "value": "c",
+                                                                                                            "line": 11,
+                                                                                                            "col": 97,
+                                                                                                            "endline": 11,
+                                                                                                            "endcol": 97
+                                                                                                          }
+                                                                                                        ],
+                                                                                                        "endline": 11,
+                                                                                                        "endcol": 97
+                                                                                                      },
+                                                                                                      {
+                                                                                                        "type": "args_add_block",
+                                                                                                        "children": [
+                                                                                                          {
+                                                                                                            "type": "list",
+                                                                                                            "children": [
+                                                                                                              {
+                                                                                                                "type": "string_literal",
+                                                                                                                "line": 11,
+                                                                                                                "col": 100,
+                                                                                                                "children": [
+                                                                                                                  {
+                                                                                                                    "type": "string_content",
+                                                                                                                    "line": 11,
+                                                                                                                    "col": 100,
+                                                                                                                    "children": [
+                                                                                                                      {
+                                                                                                                        "type": "@tstring_content",
+                                                                                                                        "value": "name",
+                                                                                                                        "line": 11,
+                                                                                                                        "col": 100,
+                                                                                                                        "endline": 11,
+                                                                                                                        "endcol": 100
+                                                                                                                      }
+                                                                                                                    ],
+                                                                                                                    "endline": 11,
+                                                                                                                    "endcol": 100
+                                                                                                                  }
+                                                                                                                ],
+                                                                                                                "endline": 11,
+                                                                                                                "endcol": 100
+                                                                                                              }
+                                                                                                            ]
+                                                                                                          }
+                                                                                                        ]
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  }
+                                                                                                ]
+                                                                                              },
+                                                                                              {
+                                                                                                "type": "assoc_new",
+                                                                                                "line": 11,
+                                                                                                "col": 108,
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "type": "@label",
+                                                                                                    "value": "orderTotal:",
+                                                                                                    "line": 11,
+                                                                                                    "col": 108,
+                                                                                                    "endline": 11,
+                                                                                                    "endcol": 108
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "type": "aref",
+                                                                                                    "line": 11,
+                                                                                                    "col": 120,
+                                                                                                    "children": [
+                                                                                                      {
+                                                                                                        "type": "var_ref",
+                                                                                                        "line": 11,
+                                                                                                        "col": 120,
+                                                                                                        "children": [
+                                                                                                          {
+                                                                                                            "type": "@ident",
+                                                                                                            "value": "o",
+                                                                                                            "line": 11,
+                                                                                                            "col": 120,
+                                                                                                            "endline": 11,
+                                                                                                            "endcol": 120
+                                                                                                          }
+                                                                                                        ],
+                                                                                                        "endline": 11,
+                                                                                                        "endcol": 120
+                                                                                                      },
+                                                                                                      {
+                                                                                                        "type": "args_add_block",
+                                                                                                        "children": [
+                                                                                                          {
+                                                                                                            "type": "list",
+                                                                                                            "children": [
+                                                                                                              {
+                                                                                                                "type": "string_literal",
+                                                                                                                "line": 11,
+                                                                                                                "col": 123,
+                                                                                                                "children": [
+                                                                                                                  {
+                                                                                                                    "type": "string_content",
+                                                                                                                    "line": 11,
+                                                                                                                    "col": 123,
+                                                                                                                    "children": [
+                                                                                                                      {
+                                                                                                                        "type": "@tstring_content",
+                                                                                                                        "value": "total",
+                                                                                                                        "line": 11,
+                                                                                                                        "col": 123,
+                                                                                                                        "endline": 11,
+                                                                                                                        "endcol": 123
+                                                                                                                      }
+                                                                                                                    ],
+                                                                                                                    "endline": 11,
+                                                                                                                    "endcol": 123
+                                                                                                                  }
+                                                                                                                ],
+                                                                                                                "endline": 11,
+                                                                                                                "endcol": 123
+                                                                                                              }
+                                                                                                            ]
+                                                                                                          }
+                                                                                                        ]
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  }
+                                                                                                ]
+                                                                                              }
+                                                                                            ]
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "var_ref",
+                                    "line": 14,
+                                    "children": [
+                                      {
+                                        "type": "@ident",
+                                        "value": "_res",
+                                        "line": 14,
+                                        "endline": 14
+                                      }
+                                    ],
+                                    "endline": 14
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "method_add_arg",
+            "line": 16,
+            "children": [
+              {
+                "type": "fcall",
+                "line": 16,
+                "children": [
+                  {
+                    "type": "@ident",
+                    "value": "puts",
+                    "line": 16,
+                    "endline": 16
+                  }
+                ],
+                "endline": 16
+              },
+              {
+                "type": "arg_paren",
+                "children": [
+                  {
+                    "type": "args_add_block",
+                    "children": [
+                      {
+                        "type": "list",
+                        "children": [
+                          {
+                            "type": "string_literal",
+                            "line": 16,
+                            "col": 6,
+                            "children": [
+                              {
+                                "type": "string_content",
+                                "line": 16,
+                                "col": 6,
+                                "children": [
+                                  {
+                                    "type": "@tstring_content",
+                                    "value": "--- Cross Join: All order-customer pairs ---",
+                                    "line": 16,
+                                    "col": 6,
+                                    "endline": 16,
+                                    "endcol": 6
+                                  }
+                                ],
+                                "endline": 16,
+                                "endcol": 6
+                              }
+                            ],
+                            "endline": 16,
+                            "endcol": 6
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "method_add_block",
+            "line": 17,
+            "children": [
+              {
+                "type": "call",
+                "line": 17,
+                "children": [
+                  {
+                    "type": "var_ref",
+                    "line": 17,
+                    "children": [
+                      {
+                        "type": "@ident",
+                        "value": "result",
+                        "line": 17,
+                        "endline": 17
+                      }
+                    ],
+                    "endline": 17
+                  },
+                  {
+                    "type": "@period",
+                    "value": ".",
+                    "line": 17,
+                    "col": 6,
+                    "endline": 17,
+                    "endcol": 6
+                  },
+                  {
+                    "type": "@ident",
+                    "value": "each",
+                    "line": 17,
+                    "col": 7,
+                    "endline": 17,
+                    "endcol": 7
+                  }
+                ],
+                "endline": 17,
+                "endcol": 7
+              },
+              {
+                "type": "do_block",
+                "children": [
+                  {
+                    "type": "block_var",
+                    "children": [
+                      {
+                        "type": "params",
+                        "children": [
+                          {
+                            "type": "list",
+                            "children": [
+                              {
+                                "type": "@ident",
+                                "value": "entry",
+                                "line": 17,
+                                "col": 16,
+                                "endline": 17,
+                                "endcol": 16
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "bodystmt",
+                    "children": [
+                      {
+                        "type": "list",
+                        "children": [
+                          {
+                            "type": "method_add_arg",
+                            "line": 18,
+                            "children": [
+                              {
+                                "type": "fcall",
+                                "line": 18,
+                                "children": [
+                                  {
+                                    "type": "@ident",
+                                    "value": "puts",
+                                    "line": 18,
+                                    "endline": 18
+                                  }
+                                ],
+                                "endline": 18
+                              },
+                              {
+                                "type": "arg_paren",
+                                "children": [
+                                  {
+                                    "type": "args_add_block",
+                                    "children": [
+                                      {
+                                        "type": "list",
+                                        "children": [
+                                          {
+                                            "type": "method_add_arg",
+                                            "line": 18,
+                                            "col": 157,
+                                            "children": [
+                                              {
+                                                "type": "call",
+                                                "line": 18,
+                                                "col": 157,
+                                                "children": [
+                                                  {
+                                                    "type": "method_add_arg",
+                                                    "line": 18,
+                                                    "col": 157,
+                                                    "children": [
+                                                      {
+                                                        "type": "call",
+                                                        "line": 18,
+                                                        "col": 157,
+                                                        "children": [
+                                                          {
+                                                            "type": "paren",
+                                                            "children": [
+                                                              {
+                                                                "type": "list",
+                                                                "children": [
+                                                                  {
+                                                                    "type": "array",
+                                                                    "children": [
+                                                                      {
+                                                                        "type": "list",
+                                                                        "children": [
+                                                                          {
+                                                                            "type": "string_literal",
+                                                                            "line": 18,
+                                                                            "col": 8,
+                                                                            "children": [
+                                                                              {
+                                                                                "type": "string_content",
+                                                                                "line": 18,
+                                                                                "col": 8,
+                                                                                "children": [
+                                                                                  {
+                                                                                    "type": "@tstring_content",
+                                                                                    "value": "Order",
+                                                                                    "line": 18,
+                                                                                    "col": 8,
+                                                                                    "endline": 18,
+                                                                                    "endcol": 8
+                                                                                  }
+                                                                                ],
+                                                                                "endline": 18,
+                                                                                "endcol": 8
+                                                                              }
+                                                                            ],
+                                                                            "endline": 18,
+                                                                            "endcol": 8
+                                                                          },
+                                                                          {
+                                                                            "type": "aref",
+                                                                            "line": 18,
+                                                                            "col": 16,
+                                                                            "children": [
+                                                                              {
+                                                                                "type": "var_ref",
+                                                                                "line": 18,
+                                                                                "col": 16,
+                                                                                "children": [
+                                                                                  {
+                                                                                    "type": "@ident",
+                                                                                    "value": "entry",
+                                                                                    "line": 18,
+                                                                                    "col": 16,
+                                                                                    "endline": 18,
+                                                                                    "endcol": 16
+                                                                                  }
+                                                                                ],
+                                                                                "endline": 18,
+                                                                                "endcol": 16
+                                                                              },
+                                                                              {
+                                                                                "type": "args_add_block",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "type": "list",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "type": "string_literal",
+                                                                                        "line": 18,
+                                                                                        "col": 23,
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "type": "string_content",
+                                                                                            "line": 18,
+                                                                                            "col": 23,
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "type": "@tstring_content",
+                                                                                                "value": "orderId",
+                                                                                                "line": 18,
+                                                                                                "col": 23,
+                                                                                                "endline": 18,
+                                                                                                "endcol": 23
+                                                                                              }
+                                                                                            ],
+                                                                                            "endline": 18,
+                                                                                            "endcol": 23
+                                                                                          }
+                                                                                        ],
+                                                                                        "endline": 18,
+                                                                                        "endcol": 23
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "type": "string_literal",
+                                                                            "line": 18,
+                                                                            "col": 35,
+                                                                            "children": [
+                                                                              {
+                                                                                "type": "string_content",
+                                                                                "line": 18,
+                                                                                "col": 35,
+                                                                                "children": [
+                                                                                  {
+                                                                                    "type": "@tstring_content",
+                                                                                    "value": "(customerId:",
+                                                                                    "line": 18,
+                                                                                    "col": 35,
+                                                                                    "endline": 18,
+                                                                                    "endcol": 35
+                                                                                  }
+                                                                                ],
+                                                                                "endline": 18,
+                                                                                "endcol": 35
+                                                                              }
+                                                                            ],
+                                                                            "endline": 18,
+                                                                            "endcol": 35
+                                                                          },
+                                                                          {
+                                                                            "type": "aref",
+                                                                            "line": 18,
+                                                                            "col": 50,
+                                                                            "children": [
+                                                                              {
+                                                                                "type": "var_ref",
+                                                                                "line": 18,
+                                                                                "col": 50,
+                                                                                "children": [
+                                                                                  {
+                                                                                    "type": "@ident",
+                                                                                    "value": "entry",
+                                                                                    "line": 18,
+                                                                                    "col": 50,
+                                                                                    "endline": 18,
+                                                                                    "endcol": 50
+                                                                                  }
+                                                                                ],
+                                                                                "endline": 18,
+                                                                                "endcol": 50
+                                                                              },
+                                                                              {
+                                                                                "type": "args_add_block",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "type": "list",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "type": "string_literal",
+                                                                                        "line": 18,
+                                                                                        "col": 57,
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "type": "string_content",
+                                                                                            "line": 18,
+                                                                                            "col": 57,
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "type": "@tstring_content",
+                                                                                                "value": "orderCustomerId",
+                                                                                                "line": 18,
+                                                                                                "col": 57,
+                                                                                                "endline": 18,
+                                                                                                "endcol": 57
+                                                                                              }
+                                                                                            ],
+                                                                                            "endline": 18,
+                                                                                            "endcol": 57
+                                                                                          }
+                                                                                        ],
+                                                                                        "endline": 18,
+                                                                                        "endcol": 57
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "type": "string_literal",
+                                                                            "line": 18,
+                                                                            "col": 77,
+                                                                            "children": [
+                                                                              {
+                                                                                "type": "string_content",
+                                                                                "line": 18,
+                                                                                "col": 77,
+                                                                                "children": [
+                                                                                  {
+                                                                                    "type": "@tstring_content",
+                                                                                    "value": ", total: $",
+                                                                                    "line": 18,
+                                                                                    "col": 77,
+                                                                                    "endline": 18,
+                                                                                    "endcol": 77
+                                                                                  }
+                                                                                ],
+                                                                                "endline": 18,
+                                                                                "endcol": 77
+                                                                              }
+                                                                            ],
+                                                                            "endline": 18,
+                                                                            "endcol": 77
+                                                                          },
+                                                                          {
+                                                                            "type": "aref",
+                                                                            "line": 18,
+                                                                            "col": 90,
+                                                                            "children": [
+                                                                              {
+                                                                                "type": "var_ref",
+                                                                                "line": 18,
+                                                                                "col": 90,
+                                                                                "children": [
+                                                                                  {
+                                                                                    "type": "@ident",
+                                                                                    "value": "entry",
+                                                                                    "line": 18,
+                                                                                    "col": 90,
+                                                                                    "endline": 18,
+                                                                                    "endcol": 90
+                                                                                  }
+                                                                                ],
+                                                                                "endline": 18,
+                                                                                "endcol": 90
+                                                                              },
+                                                                              {
+                                                                                "type": "args_add_block",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "type": "list",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "type": "string_literal",
+                                                                                        "line": 18,
+                                                                                        "col": 97,
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "type": "string_content",
+                                                                                            "line": 18,
+                                                                                            "col": 97,
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "type": "@tstring_content",
+                                                                                                "value": "orderTotal",
+                                                                                                "line": 18,
+                                                                                                "col": 97,
+                                                                                                "endline": 18,
+                                                                                                "endcol": 97
+                                                                                              }
+                                                                                            ],
+                                                                                            "endline": 18,
+                                                                                            "endcol": 97
+                                                                                          }
+                                                                                        ],
+                                                                                        "endline": 18,
+                                                                                        "endcol": 97
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "type": "string_literal",
+                                                                            "line": 18,
+                                                                            "col": 112,
+                                                                            "children": [
+                                                                              {
+                                                                                "type": "string_content",
+                                                                                "line": 18,
+                                                                                "col": 112,
+                                                                                "children": [
+                                                                                  {
+                                                                                    "type": "@tstring_content",
+                                                                                    "value": ") paired with",
+                                                                                    "line": 18,
+                                                                                    "col": 112,
+                                                                                    "endline": 18,
+                                                                                    "endcol": 112
+                                                                                  }
+                                                                                ],
+                                                                                "endline": 18,
+                                                                                "endcol": 112
+                                                                              }
+                                                                            ],
+                                                                            "endline": 18,
+                                                                            "endcol": 112
+                                                                          },
+                                                                          {
+                                                                            "type": "aref",
+                                                                            "line": 18,
+                                                                            "col": 128,
+                                                                            "children": [
+                                                                              {
+                                                                                "type": "var_ref",
+                                                                                "line": 18,
+                                                                                "col": 128,
+                                                                                "children": [
+                                                                                  {
+                                                                                    "type": "@ident",
+                                                                                    "value": "entry",
+                                                                                    "line": 18,
+                                                                                    "col": 128,
+                                                                                    "endline": 18,
+                                                                                    "endcol": 128
+                                                                                  }
+                                                                                ],
+                                                                                "endline": 18,
+                                                                                "endcol": 128
+                                                                              },
+                                                                              {
+                                                                                "type": "args_add_block",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "type": "list",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "type": "string_literal",
+                                                                                        "line": 18,
+                                                                                        "col": 135,
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "type": "string_content",
+                                                                                            "line": 18,
+                                                                                            "col": 135,
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "type": "@tstring_content",
+                                                                                                "value": "pairedCustomerName",
+                                                                                                "line": 18,
+                                                                                                "col": 135,
+                                                                                                "endline": 18,
+                                                                                                "endcol": 135
+                                                                                              }
+                                                                                            ],
+                                                                                            "endline": 18,
+                                                                                            "endcol": 135
+                                                                                          }
+                                                                                        ],
+                                                                                        "endline": 18,
+                                                                                        "endcol": 135
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "type": "@period",
+                                                            "value": ".",
+                                                            "line": 18,
+                                                            "col": 157,
+                                                            "endline": 18,
+                                                            "endcol": 157
+                                                          },
+                                                          {
+                                                            "type": "@ident",
+                                                            "value": "join",
+                                                            "line": 18,
+                                                            "col": 158,
+                                                            "endline": 18,
+                                                            "endcol": 158
+                                                          }
+                                                        ],
+                                                        "endline": 18,
+                                                        "endcol": 158
+                                                      },
+                                                      {
+                                                        "type": "arg_paren",
+                                                        "children": [
+                                                          {
+                                                            "type": "args_add_block",
+                                                            "children": [
+                                                              {
+                                                                "type": "list",
+                                                                "children": [
+                                                                  {
+                                                                    "type": "string_literal",
+                                                                    "line": 18,
+                                                                    "col": 164,
+                                                                    "children": [
+                                                                      {
+                                                                        "type": "string_content",
+                                                                        "line": 18,
+                                                                        "col": 164,
+                                                                        "children": [
+                                                                          {
+                                                                            "type": "@tstring_content",
+                                                                            "value": " ",
+                                                                            "line": 18,
+                                                                            "col": 164,
+                                                                            "endline": 18,
+                                                                            "endcol": 164
+                                                                          }
+                                                                        ],
+                                                                        "endline": 18,
+                                                                        "endcol": 164
+                                                                      }
+                                                                    ],
+                                                                    "endline": 18,
+                                                                    "endcol": 164
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "type": "@period",
+                                                    "value": ".",
+                                                    "line": 18,
+                                                    "col": 167,
+                                                    "endline": 18,
+                                                    "endcol": 167
+                                                  },
+                                                  {
+                                                    "type": "@ident",
+                                                    "value": "rstrip",
+                                                    "line": 18,
+                                                    "col": 168,
+                                                    "endline": 18,
+                                                    "endcol": 168
+                                                  }
+                                                ],
+                                                "endline": 18,
+                                                "endcol": 168
+                                              },
+                                              {
+                                                "type": "arg_paren"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
