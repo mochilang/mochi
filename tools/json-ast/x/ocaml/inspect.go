@@ -1,13 +1,10 @@
 package ocaml
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"os"
-	"os/exec"
-	"path/filepath"
 	"strings"
+
+	sitter "github.com/smacker/go-tree-sitter"
+	tsocaml "github.com/smacker/go-tree-sitter/ocaml"
 )
 
 // Program represents a parsed OCaml source file as produced by the
@@ -73,53 +70,54 @@ type Field struct {
 // Inspect parses the given OCaml source code and returns a Program
 // describing its structure using the bundled tree-sitter parser.
 func Inspect(src string) (*Program, error) {
-	tmp, err := os.CreateTemp("", "ocaml-*.ml")
-	if err != nil {
-		return nil, err
-	}
-	defer os.Remove(tmp.Name())
-	if _, err := tmp.WriteString(src); err != nil {
-		return nil, err
-	}
-	tmp.Close()
+	parser := sitter.NewParser()
+	parser.SetLanguage(tsocaml.GetLanguage())
+	tree := parser.Parse(nil, []byte(src))
 
-	root, err := repoRoot()
-	if err != nil {
-		return nil, err
+	prog := &Program{
+		Funcs:  []Func{},
+		Prints: []Print{},
+		Types:  []Type{},
+		Vars:   []Var{},
 	}
-	script := filepath.Join(root, "tools", "a2mochi", "x", "ocaml", "ocaml_ast.js")
-	cmd := exec.Command("node", script, tmp.Name())
-	var out, errBuf bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &errBuf
-	if err := cmd.Run(); err != nil {
-		msg := strings.TrimSpace(errBuf.String())
-		if msg == "" {
-			msg = err.Error()
+	root := tree.RootNode()
+	for i := 0; i < int(root.NamedChildCount()); i++ {
+		child := root.NamedChild(i)
+		if child == nil {
+			continue
 		}
-		return nil, fmt.Errorf("node: %s", msg)
+		switch child.Type() {
+		case "value_definition", "expression_item":
+			prog.Prints = append(prog.Prints, extractPrint(child, []byte(src)))
+		}
 	}
-	var prog Program
-	if err := json.Unmarshal(out.Bytes(), &prog); err != nil {
-		return nil, err
-	}
-	return &prog, nil
+	return prog, nil
 }
 
-func repoRoot() (string, error) {
-	dir, err := os.Getwd()
-	if err != nil {
-		return "", err
-	}
-	for i := 0; i < 10; i++ {
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-			return dir, nil
+func extractPrint(n *sitter.Node, src []byte) Print {
+	start := n.StartPoint()
+	end := n.EndPoint()
+	snippet := n.Content(src)
+	expr := snippet
+
+	if n.Type() == "value_definition" && n.NamedChildCount() > 0 {
+		lb := n.NamedChild(0)
+		for i := 0; i < int(lb.ChildCount()); i++ {
+			ch := lb.Child(i)
+			if ch != nil && ch.Type() == "=" && i+1 < int(lb.ChildCount()) {
+				exprNode := lb.Child(i + 1)
+				expr = string(src[exprNode.StartByte():lb.EndByte()])
+				break
+			}
 		}
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			break
-		}
-		dir = parent
 	}
-	return "", os.ErrNotExist
+
+	return Print{
+		Expr:    strings.TrimSpace(expr),
+		Line:    int(start.Row) + 1,
+		Col:     int(start.Column) + 1,
+		EndLine: int(end.Row) + 1,
+		EndCol:  int(end.Column) + 1,
+		Snippet: snippet,
+	}
 }
