@@ -10,25 +10,6 @@ import (
 	"time"
 )
 
-// Node represents a Clojure form in a type-safe structure.
-type Node struct {
-	Sym    string     `json:"sym,omitempty"`
-	Kw     string     `json:"kw,omitempty"`
-	Str    string     `json:"str,omitempty"`
-	Num    *float64   `json:"num,omitempty"`
-	Bool   *bool      `json:"bool,omitempty"`
-	Nil    bool       `json:"nil,omitempty"`
-	List   []*Node    `json:"list,omitempty"`
-	Vector []*Node    `json:"vector,omitempty"`
-	Map    []MapEntry `json:"map,omitempty"`
-}
-
-// MapEntry represents a key/value pair within a map literal.
-type MapEntry struct {
-	Key *Node `json:"key"`
-	Val *Node `json:"val"`
-}
-
 // Program represents a parsed Clojure source file.
 type Program struct {
 	Forms []*Node `json:"forms"`
