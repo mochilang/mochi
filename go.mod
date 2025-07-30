@@ -55,6 +55,7 @@ require github.com/tree-sitter/tree-sitter-scala v0.24.0
 require (
 	github.com/tree-sitter-grammars/tree-sitter-kotlin v1.1.0
 	github.com/tree-sitter-grammars/tree-sitter-lua v0.4.0
+	github.com/tree-sitter-grammars/tree-sitter-zig v1.1.2
 	github.com/tree-sitter/tree-sitter-scheme v0.24.7
 )
 

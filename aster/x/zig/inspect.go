@@ -5,8 +5,8 @@ package zig
 import (
 	"context"
 
+	tsz "github.com/tree-sitter-grammars/tree-sitter-zig/bindings/go"
 	sitter "github.com/tree-sitter/go-tree-sitter"
-	tsz "github.com/tree-sitter/tree-sitter-zig/bindings/go"
 )
 
 // Program describes a parsed Zig source file.
