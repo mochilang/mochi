@@ -1,0 +1,11 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/fasta-format.erl:87:25: Warning: variable 'Out_3' exported from 'case' (line 72, column 17)
+%   87| {Hdr, Idx_2, Key, Line, Out_3, Text, Val} = Fun_3(Hdr, Idx, Key, Line, Out_3, Text, Val),
+%     |                         ^
+
+"Rosetta_Example_1: THERECANBENOSPACE"
+"Rosetta_Example_2: THERECANBESEVERALLINESBUTTHEYALLMUSTBECONCATENATED"
+{
+  "duration_us": 18043,
+  "memory_bytes": 297840,
+  "name": "main"
+}

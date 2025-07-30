@@ -1250,29 +1250,24 @@ func isIntExpr(e Expr, env *types.Env, ctx *context) bool {
 			}
 		}
 	case *NameRef:
+		name := v.Name
 		if ctx != nil {
-			name := ctx.original(v.Name)
+			name = ctx.original(v.Name)
 			if ctx.isFloatVar(name) || ctx.isStringVar(name) || ctx.isBoolVar(name) || ctx.isMapVar(name) || ctx.isListStrVar(name) {
 				return false
 			}
-			if env != nil {
-				if t, err := env.GetVar(name); err == nil {
-					switch t.(type) {
-					case types.IntType, types.Int64Type, types.BigIntType:
-						return true
-					}
-				}
-			}
-			return true
 		}
 		if env != nil {
-			if t, err := env.GetVar(v.Name); err == nil {
+			if t, err := env.GetVar(name); err == nil {
 				switch t.(type) {
 				case types.IntType, types.Int64Type, types.BigIntType:
 					return true
+				default:
+					return false
 				}
 			}
 		}
+		return false
 	}
 	return false
 }

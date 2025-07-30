@@ -1,0 +1,30 @@
+exit status 127
+/workspace/mochi/tests/rosetta/transpiler/erl/fermat-numbers.erl:108:12: Warning: variable 'Neg_3' exported from 'case' (line 88, column 9)
+%  108| {I_4, N_2, Neg_3, Str} = Fun_3(I_3, N, Neg_3, Str),
+%     |            ^
+
+First 8 Fermat numbers:
+3
+5
+17
+257
+65537
+4294967297
+18446744073709551617
+340282366920938463463374607431768211457
+
+Factors:
+F0 = 3
+F1 = 5
+F2 = 17
+F3 = 257
+F4 = 65537
+escript: exception error: an error occurred when evaluating an arithmetic expression
+  in operator  rem/2
+     called as 6700417.0 rem 641
+  in call from main:'-primefactorsbig/1-Fun_5_loop/4-2-'/4 (/workspace/mochi/tests/rosetta/transpiler/erl/fermat-numbers.erl, line 143)
+  in call from main:'-primefactorsbig/1-Fun_6_loop/4-1-'/4 (/workspace/mochi/tests/rosetta/transpiler/erl/fermat-numbers.erl, line 151)
+  in call from main:primefactorsbig/1 (/workspace/mochi/tests/rosetta/transpiler/erl/fermat-numbers.erl, line 157)
+  in call from main:'-main/0-Fun_10_loop/3-2-'/3 (/workspace/mochi/tests/rosetta/transpiler/erl/fermat-numbers.erl, line 218)
+  in call from main:main/0 (/workspace/mochi/tests/rosetta/transpiler/erl/fermat-numbers.erl, line 229)
+  in call from main:main/1 (/workspace/mochi/tests/rosetta/transpiler/erl/fermat-numbers.erl, line 236)

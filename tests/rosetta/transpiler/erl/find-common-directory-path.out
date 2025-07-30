@@ -1,0 +1,6 @@
+Common path: /home/user1/tmp/coverage/test
+{
+  "duration_us": 20208,
+  "memory_bytes": 43928,
+  "name": "main"
+}

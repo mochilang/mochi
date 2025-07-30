@@ -1,0 +1,11 @@
+exit status 127
+escript: exception error: an error occurred when evaluating an arithmetic expression
+  in operator  +/2
+     called as false + 1
+  in call from main:'-main/1-Fun_loop/1-0-'/1 (/workspace/mochi/tests/rosetta/transpiler/erl/fizzbuzz-2.erl, line 36)
+  in call from main:main/1 (/workspace/mochi/tests/rosetta/transpiler/erl/fizzbuzz-2.erl, line 40)
+  in call from escript:run/2 (escript.erl, line 904)
+  in call from escript:start/1 (escript.erl, line 418)
+  in call from init:start_it/1 
+  in call from init:start_em/1 
+  in call from init:do_boot/3 

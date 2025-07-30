@@ -1,0 +1,6 @@
+exit status 127
+/workspace/mochi/tests/rosetta/transpiler/erl/fibonacci-n-step-number-sequences.erl:71:32: function slice/3 undefined
+%   71|             B_2 = lists:append(slice(B, 1, length(B)), [Next]),
+%     |                                ^
+
+escript: There were compilation errors.
