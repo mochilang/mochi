@@ -1,0 +1,10 @@
+run: exit status 1
+** (MismatchedDelimiterError) mismatched delimiter found on /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:137:37:
+     error: unexpected reserved word: end
+     │
+ 137 │           while_fun_2.(while_fun_2, end)
+     │                       │             └ mismatched closing delimiter (expected ")")
+     │                       └ unclosed delimiter
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:137:37
+    (elixir 1.18.3) lib/code.ex:1525: Code.require_file/2

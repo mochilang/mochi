@@ -1,0 +1,10 @@
+main: start
+foo: start
+bar: start
+baz: start
+baz: raising U0
+foo: caught U0
+bar: start
+baz: start
+baz: raising U1
+main: unhandled U1
