@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"flag"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -36,9 +35,6 @@ func repoRoot(t *testing.T) string {
 }
 
 func TestInspect_Golden(t *testing.T) {
-	if _, err := exec.LookPath("clang++"); err != nil {
-		t.Skipf("clang++ not installed: %v", err)
-	}
 
 	root := repoRoot(t)
 	pattern := filepath.Join(root, "tests", "transpiler", "x", "cpp", "*.cpp")
