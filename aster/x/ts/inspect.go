@@ -8,18 +8,19 @@ import (
 // Inspect parses the given TypeScript source code using tree-sitter and
 // returns its Program structure.
 func Inspect(src string) (*Program, error) {
-	return inspect(src, false)
+	return InspectWithOption(src, Option{})
 }
 
 // InspectWithPositions parses the source and keeps position information.
 func InspectWithPositions(src string) (*Program, error) {
-	return inspect(src, true)
+	return InspectWithOption(src, Option{Positions: true})
 }
 
-func inspect(src string, pos bool) (*Program, error) {
+// InspectWithOption parses the source with the provided options.
+func InspectWithOption(src string, opt Option) (*Program, error) {
 	p := sitter.NewParser()
 	p.SetLanguage(sitter.NewLanguage(tstypescript.LanguageTypescript()))
 	tree := p.Parse([]byte(src), nil)
-	root := convert(tree.RootNode(), []byte(src), pos)
+	root := convert(tree.RootNode(), []byte(src), opt)
 	return &Program{Root: (*ProgramNode)(root)}, nil
 }
