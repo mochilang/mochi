@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/http.py", line 49, in <module>
+    main()
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/http.py", line 48, in main
+    print(todo.title)
+          ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'title'

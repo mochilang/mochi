@@ -1,0 +1,8 @@
+Start: pos=(100,100) size=(640x480) max=False icon=False visible=True
+Maximize: pos=(100,100) size=(800x600) max=True icon=False visible=True
+Unmaximize: pos=(100,100) size=(640x480) max=False icon=False visible=True
+Iconify: pos=(100,100) size=(640x480) max=False icon=True visible=False
+Deiconify: pos=(100,100) size=(640x480) max=False icon=False visible=True
+Hide: pos=(100,100) size=(640x480) max=False icon=False visible=False
+Show: pos=(100,100) size=(640x480) max=False icon=False visible=True
+Move: pos=(110,110) size=(640x480) max=False icon=False visible=True

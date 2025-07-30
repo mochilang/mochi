@@ -1,12 +1,85 @@
-start
-[0, 1, 0, 1, 0]
-[1, 0, 1, 0, 1]
-[0, 1, 0, 1, 0]
-[1, 0, 1, 0, 1]
-[0, 1, 0, 1, 0]
-after
-[1, 0, 1, 0, 1]
-[0, 1, 0, 1, 0]
-[1, 0, 1, 0, 1]
-[0, 1, 0, 1, 0]
-[1, 0, 1, 0, 1]
+____________________________________________________________
+
+
+ T     T T T T T T T     T T     T T       T T       T      
+
+               T T T T       T     T T       T T       T T  
+
+ T T T T       T T       T   T T T T   T   T   T T   T T   T
+
+ T T T     T T T   T T         T       T T T     T T T   T  
+
+ T T T   T T   T T           T T T           T   T   T T    
+
+     T T T   T   T   T   T T   T T     T T     T T T T T T T
+
+ T T T   T T T   T             T       T         T          
+
+ T       T T T       T T T   T   T T T     T   T   T T      
+
+   T T     T T   T T   T       T   T     T   T T     T      
+
+     T T T T T       T       T   T T T         T         T  
+
+   T     T   T T   T   T   T T T   T T T T     T T   T      
+
+   T T       T     T T T T T   T       T T   T   T     T   T
+
+ T   T T   T T T     T         T T T     T   T T     T T    
+
+ T   T T T       T   T T   T   T T         T   T T     T T  
+
+ T       T     T T   T T T   T       T   T       T T       T
+
+   T T T T T T T   T T T   T T       T T       T   T T T    
+
+ T T     T   T T T T T   T         T T T     T   T   T T T  
+
+   T     T T T   T         T T T       T     T   T   T T T  
+
+     T T T T T     T T     T T T   T T T   T             T  
+
+     T T               T     T T   T   T T T   T T T T     T
+
+____________________________________________________________
+
+
+ T     T T T T T T T     T T     T T       T T       T      
+
+               T T T T       T     T T       T T T     T T  
+
+ T T T T       T T       T   T T T T   T   T   T T   T T   T
+
+ T T T     T T T   T T         T       T T T     T T T   T  
+
+ T T T   T T   T T           T T T           T   T   T T    
+
+     T T T   T   T   T   T T   T T     T T     T T T T T T T
+
+ T T T   T T T   T             T       T         T          
+
+ T       T T T       T T T   T   T T T     T   T   T T      
+
+   T T     T T   T T   T       T   T     T   T T     T      
+
+     T T T T T       T       T   T T T         T         T  
+
+   T     T   T T   T   T   T T T   T T T T     T T   T      
+
+   T T       T     T T T T T   T       T T   T   T     T   T
+
+ T   T T   T T T     T T       T T T     T   T T     T T    
+
+ T   T T T       T   T T   T   T T         T   T T     T T  
+
+ T       T     T T   T T T   T       T   T       T T       T
+
+   T T T T T T T   T T T   T T       T T       T   T T T    
+
+ T T     T   T T T T T   T         T T T     T   T   T T T  
+
+   T     T T T   T         T T T       T     T   T   T T T  
+
+     T T T T T     T T     T T T   T T T   T             T  
+
+     T T               T     T T   T   T T T   T T T T     T

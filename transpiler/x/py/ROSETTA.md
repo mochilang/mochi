@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-30 21:28 GMT+7
+Last updated: 2025-07-30 21:47 GMT+7
 
-## Rosetta Golden Test Checklist (468/493)
+## Rosetta Golden Test Checklist (470/493)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 105.0µs | 12.55MB |
@@ -23,7 +23,7 @@ Last updated: 2025-07-30 21:28 GMT+7
 | 14 | 99-bottles-of-beer | ✓ | 310.0µs | 13.00MB |
 | 15 | dns-query |   |  |  |
 | 16 | duffinian-numbers |   |  |  |
-| 17 | find-if-a-point-is-within-a-triangle | error | 79.0µs | 13.62MB |
+| 17 | find-if-a-point-is-within-a-triangle |   | 79.0µs | 13.62MB |
 | 18 | a+b | ✓ | 34.0µs | 12.51MB |
 | 19 | abbreviations-automatic | ✓ | 2.0ms | 14.14MB |
 | 20 | abbreviations-easy | ✓ | 549.0µs | 13.98MB |
@@ -409,12 +409,12 @@ Last updated: 2025-07-30 21:28 GMT+7
 | 400 | fasta-format | ✓ | 51.0µs | 13.31MB |
 | 401 | faulhabers-formula | ✓ | 3.0ms | 12.93MB |
 | 402 | faulhabers-triangle | ✓ | 19.0µs | 12.42MB |
-| 403 | feigenbaum-constant-calculation | error | 21.0ms | 12.75MB |
+| 403 | feigenbaum-constant-calculation | ✓ | 21.0ms | 12.75MB |
 | 404 | fermat-numbers | ✓ | 32.0µs | 12.81MB |
 | 405 | fibonacci-n-step-number-sequences | ✓ | 68.0µs | 13.44MB |
 | 406 | fibonacci-sequence-1 | ✓ | 1.0µs | 12.70MB |
 | 407 | fibonacci-sequence-2 | ✓ | 1.0µs | 13.06MB |
-| 408 | fibonacci-sequence-3 | error | 3.0µs | 12.95MB |
+| 408 | fibonacci-sequence-3 | ✓ | 3.0µs | 12.95MB |
 | 409 | fibonacci-sequence-4 | ✓ | 25.0µs | 12.67MB |
 | 410 | fibonacci-sequence-5 |   |  |  |
 | 411 | fibonacci-word-fractal | ✓ | 417.0µs | 12.68MB |
@@ -431,7 +431,7 @@ Last updated: 2025-07-30 21:28 GMT+7
 | 422 | find-chess960-starting-position-identifier | ✓ | 208.0µs | 13.93MB |
 | 423 | find-common-directory-path | ✓ | 244.0µs | 13.37MB |
 | 424 | find-duplicate-files | ✓ | 11.0µs | 13.09MB |
-| 425 | find-if-a-point-is-within-a-triangle | error | 79.0µs | 13.62MB |
+| 425 | find-if-a-point-is-within-a-triangle |   | 79.0µs | 13.62MB |
 | 426 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 3.0ms | 13.09MB |
 | 427 | find-limit-of-recursion | ✓ | 4.0ms | 12.51MB |
 | 428 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 26.57s | 12.84MB |
@@ -456,47 +456,47 @@ Last updated: 2025-07-30 21:28 GMT+7
 | 447 | flipping-bits-game | ✓ | 31.0µs | 13.05MB |
 | 448 | flow-control-structures-1 | ✓ | 12.0µs | 12.61MB |
 | 449 | flow-control-structures-2 | ✓ | 9.0µs | 12.12MB |
-| 450 | flow-control-structures-3 | ✓ | 13.0µs | 12.68MB |
-| 451 | flow-control-structures-4 | ✓ | 8.0µs | 12.31MB |
-| 452 | floyd-warshall-algorithm | ✓ | 112.0µs | 13.62MB |
-| 453 | floyd-warshall-algorithm2 | ✓ | 517.0µs | 14.38MB |
-| 454 | floyds-triangle | ✓ | 111.0µs | 12.95MB |
-| 455 | forest-fire | ✓ | 1.0ms | 13.59MB |
-| 456 | fork-2 | ✓ | 11.0µs | 12.60MB |
-| 457 | fork | ✓ | 12.0µs | 12.74MB |
-| 458 | formal-power-series | ✓ | 869.0µs | 13.86MB |
-| 459 | formatted-numeric-output | ✓ | 13.0µs | 13.11MB |
-| 460 | forward-difference | ✓ | 25.0µs | 12.93MB |
-| 461 | four-bit-adder-1 | ✓ | 21.0µs | 13.24MB |
-| 462 | four-is-magic | ✓ | 66.0µs | 13.36MB |
+| 450 | flow-control-structures-3 | ✓ | 12.0µs | 12.62MB |
+| 451 | flow-control-structures-4 | ✓ | 9.0µs | 12.75MB |
+| 452 | floyd-warshall-algorithm | ✓ | 144.0µs | 13.88MB |
+| 453 | floyd-warshall-algorithm2 | ✓ | 1.0ms | 13.87MB |
+| 454 | floyds-triangle | ✓ | 155.0µs | 13.03MB |
+| 455 | forest-fire | ✓ | 2.0ms | 13.53MB |
+| 456 | fork-2 | ✓ | 15.0µs | 12.75MB |
+| 457 | fork | ✓ | 14.0µs | 12.62MB |
+| 458 | formal-power-series | ✓ | 1.0ms | 14.12MB |
+| 459 | formatted-numeric-output | ✓ | 21.0µs | 13.07MB |
+| 460 | forward-difference | ✓ | 37.0µs | 13.05MB |
+| 461 | four-bit-adder-1 | ✓ | 35.0µs | 12.75MB |
+| 462 | four-is-magic | ✓ | 110.0µs | 12.95MB |
 | 463 | four-is-the-number-of-letters-in-the-... | error |  |  |
-| 464 | fractal-tree | ✓ | 1.0ms | 13.82MB |
-| 465 | fractran | ✓ | 2.13s | 13.36MB |
-| 466 | french-republican-calendar | ✓ | 25.0µs | 14.36MB |
+| 464 | fractal-tree | ✓ | 2.0ms | 14.06MB |
+| 465 | fractran | ✓ | 2.83s | 13.06MB |
+| 466 | french-republican-calendar | ✓ | 30.0µs | 14.49MB |
 | 467 | ftp | error |  |  |
-| 468 | function-frequency | ✓ | 641.0µs | 13.82MB |
-| 469 | function-prototype | ✓ | 3.0µs | 12.50MB |
-| 470 | functional-coverage-tree | ✓ | 311.0µs | 14.82MB |
-| 471 | fusc-sequence | ✓ | 105.0µs | 13.43MB |
-| 472 | gamma-function | ✓ | 106.0µs | 13.12MB |
-| 473 | general-fizzbuzz | ✓ | 34.0µs | 12.76MB |
-| 474 | generic-swap | ✓ | 9.0µs | 12.69MB |
-| 475 | get-system-command-output | ✓ | 7.0µs | 12.00MB |
-| 476 | giuga-numbers | ✓ | 23.0µs | 12.98MB |
-| 477 | globally-replace-text-in-several-files | ✓ | 6.0µs | 12.10MB |
-| 478 | goldbachs-comet | ✓ | 2.0ms | 13.00MB |
-| 479 | golden-ratio-convergence | ✓ | 25.0µs | 13.17MB |
-| 480 | graph-colouring | ✓ | 7.0µs | 11.84MB |
-| 481 | gray-code | ✓ | 214.0µs | 13.57MB |
-| 482 | gui-component-interaction | ✓ | 55.0µs | 13.15MB |
-| 483 | gui-enabling-disabling-of-controls | ✓ | 79.0µs | 12.87MB |
-| 484 | gui-maximum-window-dimensions | ✓ | 26.0µs | 12.97MB |
+| 468 | function-frequency | ✓ | 931.0µs | 14.16MB |
+| 469 | function-prototype | ✓ | 3.0µs | 12.30MB |
+| 470 | functional-coverage-tree | ✓ | 375.0µs | 14.27MB |
+| 471 | fusc-sequence | ✓ | 159.0µs | 13.12MB |
+| 472 | gamma-function | ✓ | 164.0µs | 13.38MB |
+| 473 | general-fizzbuzz | ✓ | 45.0µs | 12.70MB |
+| 474 | generic-swap | ✓ | 13.0µs | 12.54MB |
+| 475 | get-system-command-output | ✓ | 8.0µs | 12.55MB |
+| 476 | giuga-numbers | ✓ | 31.0µs | 12.62MB |
+| 477 | globally-replace-text-in-several-files | ✓ | 8.0µs | 12.30MB |
+| 478 | goldbachs-comet | ✓ | 3.0ms | 12.99MB |
+| 479 | golden-ratio-convergence | ✓ | 39.0µs | 12.52MB |
+| 480 | graph-colouring | ✓ | 9.0µs | 12.25MB |
+| 481 | gray-code | ✓ | 314.0µs | 12.75MB |
+| 482 | gui-component-interaction | ✓ | 121.0µs | 13.00MB |
+| 483 | gui-enabling-disabling-of-controls | ✓ | 91.0µs | 12.91MB |
+| 484 | gui-maximum-window-dimensions | ✓ | 67.0µs | 13.09MB |
 | 485 | http | error |  |  |
-| 486 | image-noise | ✓ | 64.0ms | 13.05MB |
-| 487 | loops-increment-loop-index-within-loop-body | ✓ | 1.18s | 13.00MB |
-| 488 | md5 | ✓ | 33.0µs | 14.00MB |
-| 489 | nim-game | ✓ | 78.0µs | 13.19MB |
-| 490 | plasma-effect | ✓ | 76.0ms | 13.12MB |
-| 491 | sorting-algorithms-bubble-sort | ✓ | 25.0µs | 13.09MB |
-| 492 | window-management | ✓ | 72.0µs | 13.18MB |
+| 486 | image-noise | ✓ | 90.0ms | 13.09MB |
+| 487 | loops-increment-loop-index-within-loop-body | ✓ | 1.43s | 12.86MB |
+| 488 | md5 | ✓ | 47.0µs | 13.91MB |
+| 489 | nim-game | ✓ | 98.0µs | 13.15MB |
+| 490 | plasma-effect | ✓ | 119.0ms | 12.86MB |
+| 491 | sorting-algorithms-bubble-sort | ✓ | 37.0µs | 12.31MB |
+| 492 | window-management | ✓ | 101.0µs | 12.95MB |
 | 493 | zumkeller-numbers | ✓ | 41.12s | 13.80MB |
