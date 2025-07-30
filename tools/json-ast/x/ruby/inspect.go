@@ -3,7 +3,7 @@ package ruby
 // Program represents a parsed Ruby source file.
 // Program is the JSON representation returned by Inspect.
 type Program struct {
-	Root Node `json:"root"`
+	Root *Node `json:"root"`
 }
 
 // Inspect parses the given Ruby source code and returns a Program describing
@@ -13,5 +13,5 @@ func Inspect(src string) (*Program, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Program{Root: *node}, nil
+	return &Program{Root: node}, nil
 }
