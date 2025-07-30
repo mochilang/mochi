@@ -2,9 +2,10 @@ package php
 
 import "encoding/json"
 
-// Program represents a parsed PHP file.
+// Program holds the statements of a PHP source file after conversion to a
+// minimal AST form.
 type Program struct {
-	Root *Node `json:"root"`
+	Statements []*Node `json:"statements,omitempty"`
 }
 
 // Inspect parses PHP source code using tree-sitter and returns its AST.
@@ -17,7 +18,11 @@ func Inspect(src string, opts *Options) (*Program, error) {
 		o = *opts
 	}
 	root := convert(tree.RootNode(), []byte(src), o)
-	return &Program{Root: root}, nil
+	var stmts []*Node
+	if root != nil {
+		stmts = root.Children
+	}
+	return &Program{Statements: stmts}, nil
 }
 
 // MarshalJSON ensures stable output for Program.

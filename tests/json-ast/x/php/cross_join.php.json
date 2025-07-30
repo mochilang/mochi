@@ -1,1327 +1,1324 @@
 {
-  "root": {
-    "kind": "program",
-    "children": [
-      {
-        "kind": "expression_statement",
-        "children": [
-          {
-            "kind": "assignment_expression",
-            "children": [
-              {
-                "kind": "variable_name",
-                "children": [
-                  {
-                    "kind": "name",
-                    "text": "customers"
-                  }
-                ]
-              },
-              {
-                "kind": "array_creation_expression",
-                "children": [
-                  {
-                    "kind": "array_element_initializer",
-                    "children": [
-                      {
-                        "kind": "array_creation_expression",
-                        "children": [
-                          {
-                            "kind": "array_element_initializer",
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "text": "id"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "integer",
-                                "text": "1"
-                              }
-                            ]
-                          },
-                          {
-                            "kind": "array_element_initializer",
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "text": "name"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "encapsed_string",
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "text": "Alice"
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "kind": "array_element_initializer",
-                    "children": [
-                      {
-                        "kind": "array_creation_expression",
-                        "children": [
-                          {
-                            "kind": "array_element_initializer",
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "text": "id"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "integer",
-                                "text": "2"
-                              }
-                            ]
-                          },
-                          {
-                            "kind": "array_element_initializer",
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "text": "name"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "encapsed_string",
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "text": "Bob"
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "kind": "array_element_initializer",
-                    "children": [
-                      {
-                        "kind": "array_creation_expression",
-                        "children": [
-                          {
-                            "kind": "array_element_initializer",
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "text": "id"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "integer",
-                                "text": "3"
-                              }
-                            ]
-                          },
-                          {
-                            "kind": "array_element_initializer",
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "text": "name"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "encapsed_string",
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "text": "Charlie"
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "kind": "expression_statement",
-        "children": [
-          {
-            "kind": "assignment_expression",
-            "children": [
-              {
-                "kind": "variable_name",
-                "children": [
-                  {
-                    "kind": "name",
-                    "text": "orders"
-                  }
-                ]
-              },
-              {
-                "kind": "array_creation_expression",
-                "children": [
-                  {
-                    "kind": "array_element_initializer",
-                    "children": [
-                      {
-                        "kind": "array_creation_expression",
-                        "children": [
-                          {
-                            "kind": "array_element_initializer",
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "text": "id"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "integer",
-                                "text": "100"
-                              }
-                            ]
-                          },
-                          {
-                            "kind": "array_element_initializer",
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "text": "customerId"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "integer",
-                                "text": "1"
-                              }
-                            ]
-                          },
-                          {
-                            "kind": "array_element_initializer",
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "text": "total"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "integer",
-                                "text": "250"
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "kind": "array_element_initializer",
-                    "children": [
-                      {
-                        "kind": "array_creation_expression",
-                        "children": [
-                          {
-                            "kind": "array_element_initializer",
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "text": "id"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "integer",
-                                "text": "101"
-                              }
-                            ]
-                          },
-                          {
-                            "kind": "array_element_initializer",
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "text": "customerId"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "integer",
-                                "text": "2"
-                              }
-                            ]
-                          },
-                          {
-                            "kind": "array_element_initializer",
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "text": "total"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "integer",
-                                "text": "125"
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "kind": "array_element_initializer",
-                    "children": [
-                      {
-                        "kind": "array_creation_expression",
-                        "children": [
-                          {
-                            "kind": "array_element_initializer",
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "text": "id"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "integer",
-                                "text": "102"
-                              }
-                            ]
-                          },
-                          {
-                            "kind": "array_element_initializer",
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "text": "customerId"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "integer",
-                                "text": "1"
-                              }
-                            ]
-                          },
-                          {
-                            "kind": "array_element_initializer",
-                            "children": [
-                              {
-                                "kind": "encapsed_string",
-                                "children": [
-                                  {
-                                    "kind": "string_content",
-                                    "text": "total"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "integer",
-                                "text": "300"
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "kind": "expression_statement",
-        "children": [
-          {
-            "kind": "assignment_expression",
-            "children": [
-              {
-                "kind": "variable_name",
-                "children": [
-                  {
-                    "kind": "name",
-                    "text": "result"
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "kind": "foreach_statement",
-        "children": [
-          {
-            "kind": "variable_name",
-            "children": [
-              {
-                "kind": "name",
-                "text": "orders"
-              }
-            ]
-          },
-          {
-            "kind": "variable_name",
-            "children": [
-              {
-                "kind": "name",
-                "text": "o"
-              }
-            ]
-          },
-          {
-            "kind": "compound_statement",
-            "children": [
-              {
-                "kind": "foreach_statement",
-                "children": [
-                  {
-                    "kind": "variable_name",
-                    "children": [
-                      {
-                        "kind": "name",
-                        "text": "customers"
-                      }
-                    ]
-                  },
-                  {
-                    "kind": "variable_name",
-                    "children": [
-                      {
-                        "kind": "name",
-                        "text": "c"
-                      }
-                    ]
-                  },
-                  {
-                    "kind": "compound_statement",
-                    "children": [
-                      {
-                        "kind": "expression_statement",
-                        "children": [
-                          {
-                            "kind": "assignment_expression",
-                            "children": [
-                              {
-                                "kind": "subscript_expression",
-                                "children": [
-                                  {
-                                    "kind": "variable_name",
-                                    "children": [
-                                      {
-                                        "kind": "name",
-                                        "text": "result"
-                                      }
-                                    ]
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "array_creation_expression",
-                                "children": [
-                                  {
-                                    "kind": "array_element_initializer",
-                                    "children": [
-                                      {
-                                        "kind": "encapsed_string",
-                                        "children": [
-                                          {
-                                            "kind": "string_content",
-                                            "text": "orderId"
-                                          }
-                                        ]
-                                      },
-                                      {
-                                        "kind": "subscript_expression",
-                                        "children": [
-                                          {
-                                            "kind": "variable_name",
-                                            "children": [
-                                              {
-                                                "kind": "name",
-                                                "text": "o"
-                                              }
-                                            ]
-                                          },
-                                          {
-                                            "kind": "encapsed_string",
-                                            "children": [
-                                              {
-                                                "kind": "string_content",
-                                                "text": "id"
-                                              }
-                                            ]
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "kind": "array_element_initializer",
-                                    "children": [
-                                      {
-                                        "kind": "encapsed_string",
-                                        "children": [
-                                          {
-                                            "kind": "string_content",
-                                            "text": "orderCustomerId"
-                                          }
-                                        ]
-                                      },
-                                      {
-                                        "kind": "subscript_expression",
-                                        "children": [
-                                          {
-                                            "kind": "variable_name",
-                                            "children": [
-                                              {
-                                                "kind": "name",
-                                                "text": "o"
-                                              }
-                                            ]
-                                          },
-                                          {
-                                            "kind": "encapsed_string",
-                                            "children": [
-                                              {
-                                                "kind": "string_content",
-                                                "text": "customerId"
-                                              }
-                                            ]
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "kind": "array_element_initializer",
-                                    "children": [
-                                      {
-                                        "kind": "encapsed_string",
-                                        "children": [
-                                          {
-                                            "kind": "string_content",
-                                            "text": "pairedCustomerName"
-                                          }
-                                        ]
-                                      },
-                                      {
-                                        "kind": "subscript_expression",
-                                        "children": [
-                                          {
-                                            "kind": "variable_name",
-                                            "children": [
-                                              {
-                                                "kind": "name",
-                                                "text": "c"
-                                              }
-                                            ]
-                                          },
-                                          {
-                                            "kind": "encapsed_string",
-                                            "children": [
-                                              {
-                                                "kind": "string_content",
-                                                "text": "name"
-                                              }
-                                            ]
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "kind": "array_element_initializer",
-                                    "children": [
-                                      {
-                                        "kind": "encapsed_string",
-                                        "children": [
-                                          {
-                                            "kind": "string_content",
-                                            "text": "orderTotal"
-                                          }
-                                        ]
-                                      },
-                                      {
-                                        "kind": "subscript_expression",
-                                        "children": [
-                                          {
-                                            "kind": "variable_name",
-                                            "children": [
-                                              {
-                                                "kind": "name",
-                                                "text": "o"
-                                              }
-                                            ]
-                                          },
-                                          {
-                                            "kind": "encapsed_string",
-                                            "children": [
-                                              {
-                                                "kind": "string_content",
-                                                "text": "total"
-                                              }
-                                            ]
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "kind": "echo_statement",
-        "children": [
-          {
-            "kind": "sequence_expression",
-            "children": [
-              {
-                "kind": "encapsed_string",
-                "children": [
-                  {
-                    "kind": "string_content",
-                    "text": "--- Cross Join: All order-customer pairs ---"
-                  }
-                ]
-              },
-              {
-                "kind": "name",
-                "text": "PHP_EOL"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "kind": "foreach_statement",
-        "children": [
-          {
-            "kind": "variable_name",
-            "children": [
-              {
-                "kind": "name",
-                "text": "result"
-              }
-            ]
-          },
-          {
-            "kind": "variable_name",
-            "children": [
-              {
-                "kind": "name",
-                "text": "entry"
-              }
-            ]
-          },
-          {
-            "kind": "compound_statement",
-            "children": [
-              {
-                "kind": "echo_statement",
-                "children": [
-                  {
-                    "kind": "sequence_expression",
-                    "children": [
-                      {
-                        "kind": "binary_expression",
-                        "children": [
-                          {
-                            "kind": "binary_expression",
-                            "children": [
-                              {
-                                "kind": "binary_expression",
-                                "children": [
-                                  {
-                                    "kind": "binary_expression",
-                                    "children": [
-                                      {
-                                        "kind": "binary_expression",
-                                        "children": [
-                                          {
-                                            "kind": "binary_expression",
-                                            "children": [
-                                              {
-                                                "kind": "binary_expression",
-                                                "children": [
-                                                  {
-                                                    "kind": "binary_expression",
-                                                    "children": [
-                                                      {
-                                                        "kind": "binary_expression",
-                                                        "children": [
-                                                          {
-                                                            "kind": "binary_expression",
-                                                            "children": [
-                                                              {
-                                                                "kind": "binary_expression",
-                                                                "children": [
-                                                                  {
-                                                                    "kind": "binary_expression",
-                                                                    "children": [
-                                                                      {
-                                                                        "kind": "binary_expression",
-                                                                        "children": [
-                                                                          {
-                                                                            "kind": "binary_expression",
-                                                                            "children": [
-                                                                              {
-                                                                                "kind": "encapsed_string",
-                                                                                "children": [
-                                                                                  {
-                                                                                    "kind": "string_content",
-                                                                                    "text": "Order"
-                                                                                  }
-                                                                                ]
-                                                                              }
-                                                                            ]
-                                                                          },
-                                                                          {
-                                                                            "kind": "parenthesized_expression",
-                                                                            "children": [
-                                                                              {
-                                                                                "kind": "conditional_expression",
-                                                                                "children": [
-                                                                                  {
-                                                                                    "kind": "function_call_expression",
-                                                                                    "children": [
-                                                                                      {
-                                                                                        "kind": "name",
-                                                                                        "text": "is_float"
-                                                                                      },
-                                                                                      {
-                                                                                        "kind": "arguments",
-                                                                                        "children": [
-                                                                                          {
-                                                                                            "kind": "argument",
-                                                                                            "children": [
-                                                                                              {
-                                                                                                "kind": "subscript_expression",
-                                                                                                "children": [
-                                                                                                  {
-                                                                                                    "kind": "variable_name",
-                                                                                                    "children": [
-                                                                                                      {
-                                                                                                        "kind": "name",
-                                                                                                        "text": "entry"
-                                                                                                      }
-                                                                                                    ]
-                                                                                                  },
-                                                                                                  {
-                                                                                                    "kind": "encapsed_string",
-                                                                                                    "children": [
-                                                                                                      {
-                                                                                                        "kind": "string_content",
-                                                                                                        "text": "orderId"
-                                                                                                      }
-                                                                                                    ]
-                                                                                                  }
-                                                                                                ]
-                                                                                              }
-                                                                                            ]
-                                                                                          }
-                                                                                        ]
-                                                                                      }
-                                                                                    ]
-                                                                                  },
-                                                                                  {
-                                                                                    "kind": "function_call_expression",
-                                                                                    "children": [
-                                                                                      {
-                                                                                        "kind": "name",
-                                                                                        "text": "json_encode"
-                                                                                      },
-                                                                                      {
-                                                                                        "kind": "arguments",
-                                                                                        "children": [
-                                                                                          {
-                                                                                            "kind": "argument",
-                                                                                            "children": [
-                                                                                              {
-                                                                                                "kind": "subscript_expression",
-                                                                                                "children": [
-                                                                                                  {
-                                                                                                    "kind": "variable_name",
-                                                                                                    "children": [
-                                                                                                      {
-                                                                                                        "kind": "name",
-                                                                                                        "text": "entry"
-                                                                                                      }
-                                                                                                    ]
-                                                                                                  },
-                                                                                                  {
-                                                                                                    "kind": "encapsed_string",
-                                                                                                    "children": [
-                                                                                                      {
-                                                                                                        "kind": "string_content",
-                                                                                                        "text": "orderId"
-                                                                                                      }
-                                                                                                    ]
-                                                                                                  }
-                                                                                                ]
-                                                                                              }
-                                                                                            ]
-                                                                                          },
-                                                                                          {
-                                                                                            "kind": "argument",
-                                                                                            "children": [
-                                                                                              {
-                                                                                                "kind": "integer",
-                                                                                                "text": "1344"
-                                                                                              }
-                                                                                            ]
-                                                                                          }
-                                                                                        ]
-                                                                                      }
-                                                                                    ]
-                                                                                  },
-                                                                                  {
-                                                                                    "kind": "subscript_expression",
-                                                                                    "children": [
-                                                                                      {
-                                                                                        "kind": "variable_name",
-                                                                                        "children": [
-                                                                                          {
-                                                                                            "kind": "name",
-                                                                                            "text": "entry"
-                                                                                          }
-                                                                                        ]
-                                                                                      },
-                                                                                      {
-                                                                                        "kind": "encapsed_string",
-                                                                                        "children": [
-                                                                                          {
-                                                                                            "kind": "string_content",
-                                                                                            "text": "orderId"
-                                                                                          }
-                                                                                        ]
-                                                                                      }
-                                                                                    ]
-                                                                                  }
-                                                                                ]
-                                                                              }
-                                                                            ]
-                                                                          }
-                                                                        ]
-                                                                      }
-                                                                    ]
-                                                                  },
-                                                                  {
-                                                                    "kind": "encapsed_string",
-                                                                    "children": [
-                                                                      {
-                                                                        "kind": "string_content",
-                                                                        "text": "(customerId:"
-                                                                      }
-                                                                    ]
-                                                                  }
-                                                                ]
-                                                              }
-                                                            ]
-                                                          },
-                                                          {
-                                                            "kind": "parenthesized_expression",
-                                                            "children": [
-                                                              {
-                                                                "kind": "conditional_expression",
-                                                                "children": [
-                                                                  {
-                                                                    "kind": "function_call_expression",
-                                                                    "children": [
-                                                                      {
-                                                                        "kind": "name",
-                                                                        "text": "is_float"
-                                                                      },
-                                                                      {
-                                                                        "kind": "arguments",
-                                                                        "children": [
-                                                                          {
-                                                                            "kind": "argument",
-                                                                            "children": [
-                                                                              {
-                                                                                "kind": "subscript_expression",
-                                                                                "children": [
-                                                                                  {
-                                                                                    "kind": "variable_name",
-                                                                                    "children": [
-                                                                                      {
-                                                                                        "kind": "name",
-                                                                                        "text": "entry"
-                                                                                      }
-                                                                                    ]
-                                                                                  },
-                                                                                  {
-                                                                                    "kind": "encapsed_string",
-                                                                                    "children": [
-                                                                                      {
-                                                                                        "kind": "string_content",
-                                                                                        "text": "orderCustomerId"
-                                                                                      }
-                                                                                    ]
-                                                                                  }
-                                                                                ]
-                                                                              }
-                                                                            ]
-                                                                          }
-                                                                        ]
-                                                                      }
-                                                                    ]
-                                                                  },
-                                                                  {
-                                                                    "kind": "function_call_expression",
-                                                                    "children": [
-                                                                      {
-                                                                        "kind": "name",
-                                                                        "text": "json_encode"
-                                                                      },
-                                                                      {
-                                                                        "kind": "arguments",
-                                                                        "children": [
-                                                                          {
-                                                                            "kind": "argument",
-                                                                            "children": [
-                                                                              {
-                                                                                "kind": "subscript_expression",
-                                                                                "children": [
-                                                                                  {
-                                                                                    "kind": "variable_name",
-                                                                                    "children": [
-                                                                                      {
-                                                                                        "kind": "name",
-                                                                                        "text": "entry"
-                                                                                      }
-                                                                                    ]
-                                                                                  },
-                                                                                  {
-                                                                                    "kind": "encapsed_string",
-                                                                                    "children": [
-                                                                                      {
-                                                                                        "kind": "string_content",
-                                                                                        "text": "orderCustomerId"
-                                                                                      }
-                                                                                    ]
-                                                                                  }
-                                                                                ]
-                                                                              }
-                                                                            ]
-                                                                          },
-                                                                          {
-                                                                            "kind": "argument",
-                                                                            "children": [
-                                                                              {
-                                                                                "kind": "integer",
-                                                                                "text": "1344"
-                                                                              }
-                                                                            ]
-                                                                          }
-                                                                        ]
-                                                                      }
-                                                                    ]
-                                                                  },
-                                                                  {
-                                                                    "kind": "subscript_expression",
-                                                                    "children": [
-                                                                      {
-                                                                        "kind": "variable_name",
-                                                                        "children": [
-                                                                          {
-                                                                            "kind": "name",
-                                                                            "text": "entry"
-                                                                          }
-                                                                        ]
-                                                                      },
-                                                                      {
-                                                                        "kind": "encapsed_string",
-                                                                        "children": [
-                                                                          {
-                                                                            "kind": "string_content",
-                                                                            "text": "orderCustomerId"
-                                                                          }
-                                                                        ]
-                                                                      }
-                                                                    ]
-                                                                  }
-                                                                ]
-                                                              }
-                                                            ]
-                                                          }
-                                                        ]
-                                                      }
-                                                    ]
-                                                  },
-                                                  {
-                                                    "kind": "encapsed_string",
-                                                    "children": [
-                                                      {
-                                                        "kind": "string_content",
-                                                        "text": ", total: $"
-                                                      }
-                                                    ]
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          },
-                                          {
-                                            "kind": "parenthesized_expression",
-                                            "children": [
-                                              {
-                                                "kind": "conditional_expression",
-                                                "children": [
-                                                  {
-                                                    "kind": "function_call_expression",
-                                                    "children": [
-                                                      {
-                                                        "kind": "name",
-                                                        "text": "is_float"
-                                                      },
-                                                      {
-                                                        "kind": "arguments",
-                                                        "children": [
-                                                          {
-                                                            "kind": "argument",
-                                                            "children": [
-                                                              {
-                                                                "kind": "subscript_expression",
-                                                                "children": [
-                                                                  {
-                                                                    "kind": "variable_name",
-                                                                    "children": [
-                                                                      {
-                                                                        "kind": "name",
-                                                                        "text": "entry"
-                                                                      }
-                                                                    ]
-                                                                  },
-                                                                  {
-                                                                    "kind": "encapsed_string",
-                                                                    "children": [
-                                                                      {
-                                                                        "kind": "string_content",
-                                                                        "text": "orderTotal"
-                                                                      }
-                                                                    ]
-                                                                  }
-                                                                ]
-                                                              }
-                                                            ]
-                                                          }
-                                                        ]
-                                                      }
-                                                    ]
-                                                  },
-                                                  {
-                                                    "kind": "function_call_expression",
-                                                    "children": [
-                                                      {
-                                                        "kind": "name",
-                                                        "text": "json_encode"
-                                                      },
-                                                      {
-                                                        "kind": "arguments",
-                                                        "children": [
-                                                          {
-                                                            "kind": "argument",
-                                                            "children": [
-                                                              {
-                                                                "kind": "subscript_expression",
-                                                                "children": [
-                                                                  {
-                                                                    "kind": "variable_name",
-                                                                    "children": [
-                                                                      {
-                                                                        "kind": "name",
-                                                                        "text": "entry"
-                                                                      }
-                                                                    ]
-                                                                  },
-                                                                  {
-                                                                    "kind": "encapsed_string",
-                                                                    "children": [
-                                                                      {
-                                                                        "kind": "string_content",
-                                                                        "text": "orderTotal"
-                                                                      }
-                                                                    ]
-                                                                  }
-                                                                ]
-                                                              }
-                                                            ]
-                                                          },
-                                                          {
-                                                            "kind": "argument",
-                                                            "children": [
-                                                              {
-                                                                "kind": "integer",
-                                                                "text": "1344"
-                                                              }
-                                                            ]
-                                                          }
-                                                        ]
-                                                      }
-                                                    ]
-                                                  },
-                                                  {
-                                                    "kind": "subscript_expression",
-                                                    "children": [
-                                                      {
-                                                        "kind": "variable_name",
-                                                        "children": [
-                                                          {
-                                                            "kind": "name",
-                                                            "text": "entry"
-                                                          }
-                                                        ]
-                                                      },
-                                                      {
-                                                        "kind": "encapsed_string",
-                                                        "children": [
-                                                          {
-                                                            "kind": "string_content",
-                                                            "text": "orderTotal"
-                                                          }
-                                                        ]
-                                                      }
-                                                    ]
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "kind": "encapsed_string",
-                                    "children": [
-                                      {
-                                        "kind": "string_content",
-                                        "text": ") paired with"
-                                      }
-                                    ]
-                                  }
-                                ]
-                              }
-                            ]
-                          },
-                          {
-                            "kind": "parenthesized_expression",
-                            "children": [
-                              {
-                                "kind": "conditional_expression",
-                                "children": [
-                                  {
-                                    "kind": "function_call_expression",
-                                    "children": [
-                                      {
-                                        "kind": "name",
-                                        "text": "is_float"
-                                      },
-                                      {
-                                        "kind": "arguments",
-                                        "children": [
-                                          {
-                                            "kind": "argument",
-                                            "children": [
-                                              {
-                                                "kind": "subscript_expression",
-                                                "children": [
-                                                  {
-                                                    "kind": "variable_name",
-                                                    "children": [
-                                                      {
-                                                        "kind": "name",
-                                                        "text": "entry"
-                                                      }
-                                                    ]
-                                                  },
-                                                  {
-                                                    "kind": "encapsed_string",
-                                                    "children": [
-                                                      {
-                                                        "kind": "string_content",
-                                                        "text": "pairedCustomerName"
-                                                      }
-                                                    ]
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "kind": "function_call_expression",
-                                    "children": [
-                                      {
-                                        "kind": "name",
-                                        "text": "json_encode"
-                                      },
-                                      {
-                                        "kind": "arguments",
-                                        "children": [
-                                          {
-                                            "kind": "argument",
-                                            "children": [
-                                              {
-                                                "kind": "subscript_expression",
-                                                "children": [
-                                                  {
-                                                    "kind": "variable_name",
-                                                    "children": [
-                                                      {
-                                                        "kind": "name",
-                                                        "text": "entry"
-                                                      }
-                                                    ]
-                                                  },
-                                                  {
-                                                    "kind": "encapsed_string",
-                                                    "children": [
-                                                      {
-                                                        "kind": "string_content",
-                                                        "text": "pairedCustomerName"
-                                                      }
-                                                    ]
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          },
-                                          {
-                                            "kind": "argument",
-                                            "children": [
-                                              {
-                                                "kind": "integer",
-                                                "text": "1344"
-                                              }
-                                            ]
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "kind": "subscript_expression",
-                                    "children": [
-                                      {
-                                        "kind": "variable_name",
-                                        "children": [
-                                          {
-                                            "kind": "name",
-                                            "text": "entry"
-                                          }
-                                        ]
-                                      },
-                                      {
-                                        "kind": "encapsed_string",
-                                        "children": [
-                                          {
-                                            "kind": "string_content",
-                                            "text": "pairedCustomerName"
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "name",
-                        "text": "PHP_EOL"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  }
+  "statements": [
+    {
+      "kind": "expression_statement",
+      "children": [
+        {
+          "kind": "assignment_expression",
+          "children": [
+            {
+              "kind": "variable_name",
+              "children": [
+                {
+                  "kind": "name",
+                  "text": "customers"
+                }
+              ]
+            },
+            {
+              "kind": "array_creation_expression",
+              "children": [
+                {
+                  "kind": "array_element_initializer",
+                  "children": [
+                    {
+                      "kind": "array_creation_expression",
+                      "children": [
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "id"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "integer",
+                              "text": "1"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "name"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "Alice"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "array_element_initializer",
+                  "children": [
+                    {
+                      "kind": "array_creation_expression",
+                      "children": [
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "id"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "integer",
+                              "text": "2"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "name"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "Bob"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "array_element_initializer",
+                  "children": [
+                    {
+                      "kind": "array_creation_expression",
+                      "children": [
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "id"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "integer",
+                              "text": "3"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "name"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "Charlie"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "expression_statement",
+      "children": [
+        {
+          "kind": "assignment_expression",
+          "children": [
+            {
+              "kind": "variable_name",
+              "children": [
+                {
+                  "kind": "name",
+                  "text": "orders"
+                }
+              ]
+            },
+            {
+              "kind": "array_creation_expression",
+              "children": [
+                {
+                  "kind": "array_element_initializer",
+                  "children": [
+                    {
+                      "kind": "array_creation_expression",
+                      "children": [
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "id"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "integer",
+                              "text": "100"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "customerId"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "integer",
+                              "text": "1"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "total"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "integer",
+                              "text": "250"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "array_element_initializer",
+                  "children": [
+                    {
+                      "kind": "array_creation_expression",
+                      "children": [
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "id"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "integer",
+                              "text": "101"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "customerId"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "integer",
+                              "text": "2"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "total"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "integer",
+                              "text": "125"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "array_element_initializer",
+                  "children": [
+                    {
+                      "kind": "array_creation_expression",
+                      "children": [
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "id"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "integer",
+                              "text": "102"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "customerId"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "integer",
+                              "text": "1"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "array_element_initializer",
+                          "children": [
+                            {
+                              "kind": "encapsed_string",
+                              "children": [
+                                {
+                                  "kind": "string_content",
+                                  "text": "total"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "integer",
+                              "text": "300"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "expression_statement",
+      "children": [
+        {
+          "kind": "assignment_expression",
+          "children": [
+            {
+              "kind": "variable_name",
+              "children": [
+                {
+                  "kind": "name",
+                  "text": "result"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "foreach_statement",
+      "children": [
+        {
+          "kind": "variable_name",
+          "children": [
+            {
+              "kind": "name",
+              "text": "orders"
+            }
+          ]
+        },
+        {
+          "kind": "variable_name",
+          "children": [
+            {
+              "kind": "name",
+              "text": "o"
+            }
+          ]
+        },
+        {
+          "kind": "compound_statement",
+          "children": [
+            {
+              "kind": "foreach_statement",
+              "children": [
+                {
+                  "kind": "variable_name",
+                  "children": [
+                    {
+                      "kind": "name",
+                      "text": "customers"
+                    }
+                  ]
+                },
+                {
+                  "kind": "variable_name",
+                  "children": [
+                    {
+                      "kind": "name",
+                      "text": "c"
+                    }
+                  ]
+                },
+                {
+                  "kind": "compound_statement",
+                  "children": [
+                    {
+                      "kind": "expression_statement",
+                      "children": [
+                        {
+                          "kind": "assignment_expression",
+                          "children": [
+                            {
+                              "kind": "subscript_expression",
+                              "children": [
+                                {
+                                  "kind": "variable_name",
+                                  "children": [
+                                    {
+                                      "kind": "name",
+                                      "text": "result"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "array_creation_expression",
+                              "children": [
+                                {
+                                  "kind": "array_element_initializer",
+                                  "children": [
+                                    {
+                                      "kind": "encapsed_string",
+                                      "children": [
+                                        {
+                                          "kind": "string_content",
+                                          "text": "orderId"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": "subscript_expression",
+                                      "children": [
+                                        {
+                                          "kind": "variable_name",
+                                          "children": [
+                                            {
+                                              "kind": "name",
+                                              "text": "o"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": "encapsed_string",
+                                          "children": [
+                                            {
+                                              "kind": "string_content",
+                                              "text": "id"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "array_element_initializer",
+                                  "children": [
+                                    {
+                                      "kind": "encapsed_string",
+                                      "children": [
+                                        {
+                                          "kind": "string_content",
+                                          "text": "orderCustomerId"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": "subscript_expression",
+                                      "children": [
+                                        {
+                                          "kind": "variable_name",
+                                          "children": [
+                                            {
+                                              "kind": "name",
+                                              "text": "o"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": "encapsed_string",
+                                          "children": [
+                                            {
+                                              "kind": "string_content",
+                                              "text": "customerId"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "array_element_initializer",
+                                  "children": [
+                                    {
+                                      "kind": "encapsed_string",
+                                      "children": [
+                                        {
+                                          "kind": "string_content",
+                                          "text": "pairedCustomerName"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": "subscript_expression",
+                                      "children": [
+                                        {
+                                          "kind": "variable_name",
+                                          "children": [
+                                            {
+                                              "kind": "name",
+                                              "text": "c"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": "encapsed_string",
+                                          "children": [
+                                            {
+                                              "kind": "string_content",
+                                              "text": "name"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "array_element_initializer",
+                                  "children": [
+                                    {
+                                      "kind": "encapsed_string",
+                                      "children": [
+                                        {
+                                          "kind": "string_content",
+                                          "text": "orderTotal"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": "subscript_expression",
+                                      "children": [
+                                        {
+                                          "kind": "variable_name",
+                                          "children": [
+                                            {
+                                              "kind": "name",
+                                              "text": "o"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": "encapsed_string",
+                                          "children": [
+                                            {
+                                              "kind": "string_content",
+                                              "text": "total"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "echo_statement",
+      "children": [
+        {
+          "kind": "sequence_expression",
+          "children": [
+            {
+              "kind": "encapsed_string",
+              "children": [
+                {
+                  "kind": "string_content",
+                  "text": "--- Cross Join: All order-customer pairs ---"
+                }
+              ]
+            },
+            {
+              "kind": "name",
+              "text": "PHP_EOL"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "foreach_statement",
+      "children": [
+        {
+          "kind": "variable_name",
+          "children": [
+            {
+              "kind": "name",
+              "text": "result"
+            }
+          ]
+        },
+        {
+          "kind": "variable_name",
+          "children": [
+            {
+              "kind": "name",
+              "text": "entry"
+            }
+          ]
+        },
+        {
+          "kind": "compound_statement",
+          "children": [
+            {
+              "kind": "echo_statement",
+              "children": [
+                {
+                  "kind": "sequence_expression",
+                  "children": [
+                    {
+                      "kind": "binary_expression",
+                      "children": [
+                        {
+                          "kind": "binary_expression",
+                          "children": [
+                            {
+                              "kind": "binary_expression",
+                              "children": [
+                                {
+                                  "kind": "binary_expression",
+                                  "children": [
+                                    {
+                                      "kind": "binary_expression",
+                                      "children": [
+                                        {
+                                          "kind": "binary_expression",
+                                          "children": [
+                                            {
+                                              "kind": "binary_expression",
+                                              "children": [
+                                                {
+                                                  "kind": "binary_expression",
+                                                  "children": [
+                                                    {
+                                                      "kind": "binary_expression",
+                                                      "children": [
+                                                        {
+                                                          "kind": "binary_expression",
+                                                          "children": [
+                                                            {
+                                                              "kind": "binary_expression",
+                                                              "children": [
+                                                                {
+                                                                  "kind": "binary_expression",
+                                                                  "children": [
+                                                                    {
+                                                                      "kind": "binary_expression",
+                                                                      "children": [
+                                                                        {
+                                                                          "kind": "binary_expression",
+                                                                          "children": [
+                                                                            {
+                                                                              "kind": "encapsed_string",
+                                                                              "children": [
+                                                                                {
+                                                                                  "kind": "string_content",
+                                                                                  "text": "Order"
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          ]
+                                                                        },
+                                                                        {
+                                                                          "kind": "parenthesized_expression",
+                                                                          "children": [
+                                                                            {
+                                                                              "kind": "conditional_expression",
+                                                                              "children": [
+                                                                                {
+                                                                                  "kind": "function_call_expression",
+                                                                                  "children": [
+                                                                                    {
+                                                                                      "kind": "name",
+                                                                                      "text": "is_float"
+                                                                                    },
+                                                                                    {
+                                                                                      "kind": "arguments",
+                                                                                      "children": [
+                                                                                        {
+                                                                                          "kind": "argument",
+                                                                                          "children": [
+                                                                                            {
+                                                                                              "kind": "subscript_expression",
+                                                                                              "children": [
+                                                                                                {
+                                                                                                  "kind": "variable_name",
+                                                                                                  "children": [
+                                                                                                    {
+                                                                                                      "kind": "name",
+                                                                                                      "text": "entry"
+                                                                                                    }
+                                                                                                  ]
+                                                                                                },
+                                                                                                {
+                                                                                                  "kind": "encapsed_string",
+                                                                                                  "children": [
+                                                                                                    {
+                                                                                                      "kind": "string_content",
+                                                                                                      "text": "orderId"
+                                                                                                    }
+                                                                                                  ]
+                                                                                                }
+                                                                                              ]
+                                                                                            }
+                                                                                          ]
+                                                                                        }
+                                                                                      ]
+                                                                                    }
+                                                                                  ]
+                                                                                },
+                                                                                {
+                                                                                  "kind": "function_call_expression",
+                                                                                  "children": [
+                                                                                    {
+                                                                                      "kind": "name",
+                                                                                      "text": "json_encode"
+                                                                                    },
+                                                                                    {
+                                                                                      "kind": "arguments",
+                                                                                      "children": [
+                                                                                        {
+                                                                                          "kind": "argument",
+                                                                                          "children": [
+                                                                                            {
+                                                                                              "kind": "subscript_expression",
+                                                                                              "children": [
+                                                                                                {
+                                                                                                  "kind": "variable_name",
+                                                                                                  "children": [
+                                                                                                    {
+                                                                                                      "kind": "name",
+                                                                                                      "text": "entry"
+                                                                                                    }
+                                                                                                  ]
+                                                                                                },
+                                                                                                {
+                                                                                                  "kind": "encapsed_string",
+                                                                                                  "children": [
+                                                                                                    {
+                                                                                                      "kind": "string_content",
+                                                                                                      "text": "orderId"
+                                                                                                    }
+                                                                                                  ]
+                                                                                                }
+                                                                                              ]
+                                                                                            }
+                                                                                          ]
+                                                                                        },
+                                                                                        {
+                                                                                          "kind": "argument",
+                                                                                          "children": [
+                                                                                            {
+                                                                                              "kind": "integer",
+                                                                                              "text": "1344"
+                                                                                            }
+                                                                                          ]
+                                                                                        }
+                                                                                      ]
+                                                                                    }
+                                                                                  ]
+                                                                                },
+                                                                                {
+                                                                                  "kind": "subscript_expression",
+                                                                                  "children": [
+                                                                                    {
+                                                                                      "kind": "variable_name",
+                                                                                      "children": [
+                                                                                        {
+                                                                                          "kind": "name",
+                                                                                          "text": "entry"
+                                                                                        }
+                                                                                      ]
+                                                                                    },
+                                                                                    {
+                                                                                      "kind": "encapsed_string",
+                                                                                      "children": [
+                                                                                        {
+                                                                                          "kind": "string_content",
+                                                                                          "text": "orderId"
+                                                                                        }
+                                                                                      ]
+                                                                                    }
+                                                                                  ]
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          ]
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  ]
+                                                                },
+                                                                {
+                                                                  "kind": "encapsed_string",
+                                                                  "children": [
+                                                                    {
+                                                                      "kind": "string_content",
+                                                                      "text": "(customerId:"
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        },
+                                                        {
+                                                          "kind": "parenthesized_expression",
+                                                          "children": [
+                                                            {
+                                                              "kind": "conditional_expression",
+                                                              "children": [
+                                                                {
+                                                                  "kind": "function_call_expression",
+                                                                  "children": [
+                                                                    {
+                                                                      "kind": "name",
+                                                                      "text": "is_float"
+                                                                    },
+                                                                    {
+                                                                      "kind": "arguments",
+                                                                      "children": [
+                                                                        {
+                                                                          "kind": "argument",
+                                                                          "children": [
+                                                                            {
+                                                                              "kind": "subscript_expression",
+                                                                              "children": [
+                                                                                {
+                                                                                  "kind": "variable_name",
+                                                                                  "children": [
+                                                                                    {
+                                                                                      "kind": "name",
+                                                                                      "text": "entry"
+                                                                                    }
+                                                                                  ]
+                                                                                },
+                                                                                {
+                                                                                  "kind": "encapsed_string",
+                                                                                  "children": [
+                                                                                    {
+                                                                                      "kind": "string_content",
+                                                                                      "text": "orderCustomerId"
+                                                                                    }
+                                                                                  ]
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          ]
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  ]
+                                                                },
+                                                                {
+                                                                  "kind": "function_call_expression",
+                                                                  "children": [
+                                                                    {
+                                                                      "kind": "name",
+                                                                      "text": "json_encode"
+                                                                    },
+                                                                    {
+                                                                      "kind": "arguments",
+                                                                      "children": [
+                                                                        {
+                                                                          "kind": "argument",
+                                                                          "children": [
+                                                                            {
+                                                                              "kind": "subscript_expression",
+                                                                              "children": [
+                                                                                {
+                                                                                  "kind": "variable_name",
+                                                                                  "children": [
+                                                                                    {
+                                                                                      "kind": "name",
+                                                                                      "text": "entry"
+                                                                                    }
+                                                                                  ]
+                                                                                },
+                                                                                {
+                                                                                  "kind": "encapsed_string",
+                                                                                  "children": [
+                                                                                    {
+                                                                                      "kind": "string_content",
+                                                                                      "text": "orderCustomerId"
+                                                                                    }
+                                                                                  ]
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          ]
+                                                                        },
+                                                                        {
+                                                                          "kind": "argument",
+                                                                          "children": [
+                                                                            {
+                                                                              "kind": "integer",
+                                                                              "text": "1344"
+                                                                            }
+                                                                          ]
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  ]
+                                                                },
+                                                                {
+                                                                  "kind": "subscript_expression",
+                                                                  "children": [
+                                                                    {
+                                                                      "kind": "variable_name",
+                                                                      "children": [
+                                                                        {
+                                                                          "kind": "name",
+                                                                          "text": "entry"
+                                                                        }
+                                                                      ]
+                                                                    },
+                                                                    {
+                                                                      "kind": "encapsed_string",
+                                                                      "children": [
+                                                                        {
+                                                                          "kind": "string_content",
+                                                                          "text": "orderCustomerId"
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "encapsed_string",
+                                                  "children": [
+                                                    {
+                                                      "kind": "string_content",
+                                                      "text": ", total: $"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": "parenthesized_expression",
+                                          "children": [
+                                            {
+                                              "kind": "conditional_expression",
+                                              "children": [
+                                                {
+                                                  "kind": "function_call_expression",
+                                                  "children": [
+                                                    {
+                                                      "kind": "name",
+                                                      "text": "is_float"
+                                                    },
+                                                    {
+                                                      "kind": "arguments",
+                                                      "children": [
+                                                        {
+                                                          "kind": "argument",
+                                                          "children": [
+                                                            {
+                                                              "kind": "subscript_expression",
+                                                              "children": [
+                                                                {
+                                                                  "kind": "variable_name",
+                                                                  "children": [
+                                                                    {
+                                                                      "kind": "name",
+                                                                      "text": "entry"
+                                                                    }
+                                                                  ]
+                                                                },
+                                                                {
+                                                                  "kind": "encapsed_string",
+                                                                  "children": [
+                                                                    {
+                                                                      "kind": "string_content",
+                                                                      "text": "orderTotal"
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "function_call_expression",
+                                                  "children": [
+                                                    {
+                                                      "kind": "name",
+                                                      "text": "json_encode"
+                                                    },
+                                                    {
+                                                      "kind": "arguments",
+                                                      "children": [
+                                                        {
+                                                          "kind": "argument",
+                                                          "children": [
+                                                            {
+                                                              "kind": "subscript_expression",
+                                                              "children": [
+                                                                {
+                                                                  "kind": "variable_name",
+                                                                  "children": [
+                                                                    {
+                                                                      "kind": "name",
+                                                                      "text": "entry"
+                                                                    }
+                                                                  ]
+                                                                },
+                                                                {
+                                                                  "kind": "encapsed_string",
+                                                                  "children": [
+                                                                    {
+                                                                      "kind": "string_content",
+                                                                      "text": "orderTotal"
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        },
+                                                        {
+                                                          "kind": "argument",
+                                                          "children": [
+                                                            {
+                                                              "kind": "integer",
+                                                              "text": "1344"
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "subscript_expression",
+                                                  "children": [
+                                                    {
+                                                      "kind": "variable_name",
+                                                      "children": [
+                                                        {
+                                                          "kind": "name",
+                                                          "text": "entry"
+                                                        }
+                                                      ]
+                                                    },
+                                                    {
+                                                      "kind": "encapsed_string",
+                                                      "children": [
+                                                        {
+                                                          "kind": "string_content",
+                                                          "text": "orderTotal"
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "encapsed_string",
+                                  "children": [
+                                    {
+                                      "kind": "string_content",
+                                      "text": ") paired with"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "parenthesized_expression",
+                          "children": [
+                            {
+                              "kind": "conditional_expression",
+                              "children": [
+                                {
+                                  "kind": "function_call_expression",
+                                  "children": [
+                                    {
+                                      "kind": "name",
+                                      "text": "is_float"
+                                    },
+                                    {
+                                      "kind": "arguments",
+                                      "children": [
+                                        {
+                                          "kind": "argument",
+                                          "children": [
+                                            {
+                                              "kind": "subscript_expression",
+                                              "children": [
+                                                {
+                                                  "kind": "variable_name",
+                                                  "children": [
+                                                    {
+                                                      "kind": "name",
+                                                      "text": "entry"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "encapsed_string",
+                                                  "children": [
+                                                    {
+                                                      "kind": "string_content",
+                                                      "text": "pairedCustomerName"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "function_call_expression",
+                                  "children": [
+                                    {
+                                      "kind": "name",
+                                      "text": "json_encode"
+                                    },
+                                    {
+                                      "kind": "arguments",
+                                      "children": [
+                                        {
+                                          "kind": "argument",
+                                          "children": [
+                                            {
+                                              "kind": "subscript_expression",
+                                              "children": [
+                                                {
+                                                  "kind": "variable_name",
+                                                  "children": [
+                                                    {
+                                                      "kind": "name",
+                                                      "text": "entry"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "encapsed_string",
+                                                  "children": [
+                                                    {
+                                                      "kind": "string_content",
+                                                      "text": "pairedCustomerName"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": "argument",
+                                          "children": [
+                                            {
+                                              "kind": "integer",
+                                              "text": "1344"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "subscript_expression",
+                                  "children": [
+                                    {
+                                      "kind": "variable_name",
+                                      "children": [
+                                        {
+                                          "kind": "name",
+                                          "text": "entry"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": "encapsed_string",
+                                      "children": [
+                                        {
+                                          "kind": "string_content",
+                                          "text": "pairedCustomerName"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "name",
+                      "text": "PHP_EOL"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }
