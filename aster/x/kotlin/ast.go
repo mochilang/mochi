@@ -63,15 +63,15 @@ func isValueLeaf(n *sitter.Node) bool {
 	if n.NamedChildCount() != 0 {
 		return false
 	}
-	switch n.Type() {
+	switch n.Kind() {
 	case "simple_identifier", "type_identifier", "integer_literal",
 		"string_literal", "string_content":
 		return true
 	}
-	if strings.HasSuffix(n.Type(), "_identifier") {
+	if strings.HasSuffix(n.Kind(), "_identifier") {
 		return true
 	}
-	if strings.HasSuffix(n.Type(), "_literal") {
+	if strings.HasSuffix(n.Kind(), "_literal") {
 		return true
 	}
 	return false
@@ -84,10 +84,10 @@ func convert(n *sitter.Node, src []byte, withPos bool) *Node {
 	if n == nil {
 		return nil
 	}
-	node := &Node{Kind: n.Type()}
+	node := &Node{Kind: n.Kind()}
 	if withPos {
-		start := n.StartPoint()
-		end := n.EndPoint()
+		start := n.StartPosition()
+		end := n.EndPosition()
 		node.Start = int(start.Row) + 1
 		node.StartCol = int(start.Column)
 		node.End = int(end.Row) + 1
@@ -96,14 +96,14 @@ func convert(n *sitter.Node, src []byte, withPos bool) *Node {
 
 	if n.NamedChildCount() == 0 {
 		if isValueLeaf(n) {
-			node.Text = n.Content(src)
+			node.Text = n.Utf8Text(src)
 		} else {
 			return nil
 		}
 	}
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
-		child := convert(n.NamedChild(i), src, withPos)
+		child := convert(n.NamedChild(uint(i)), src, withPos)
 		if child != nil {
 			node.Children = append(node.Children, *child)
 		}
