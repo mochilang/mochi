@@ -9,7 +9,7 @@ import (
 
 // Program represents a parsed Dart source file.
 type Program struct {
-	File *Node `json:"file"`
+	Root *Node `json:"root"`
 }
 
 // Inspect parses Dart source code using tree-sitter and returns
@@ -19,7 +19,7 @@ func Inspect(src string) (*Program, error) {
 	parser.SetLanguage(sitter.NewLanguage(ts.Language()))
 	tree := parser.Parse(nil, []byte(src))
 	root := convertNode(tree.RootNode(), []byte(src))
-	return &Program{File: &root}, nil
+	return &Program{Root: root}, nil
 }
 
 // MarshalJSON ensures stable output ordering.
