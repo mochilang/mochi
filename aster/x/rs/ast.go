@@ -8,6 +8,17 @@ import (
 // Leaves that carry semantic value keep their text while punctuation-only nodes
 // are omitted. Positional information is optional and encoded only when
 // explicitly requested.
+// Option controls how the AST is produced.
+// When Positions is false (the default) all position fields remain zero and are
+// omitted from the marshalled JSON thanks to the `omitempty` struct tags.
+type Option struct {
+	Positions bool
+}
+
+// Node represents a simplified Rust AST node converted from tree-sitter.
+// Leaves that carry semantic value keep their text while punctuation-only nodes
+// are omitted. Positional information is optional and encoded only when
+// explicitly requested.
 type Node struct {
 	Kind     string  `json:"kind"`
 	Text     string  `json:"text,omitempty"`
@@ -53,6 +64,17 @@ type (
 	ReferenceType        Node
 	Self                 Node
 	SelfParameter        Node
+	AttributeItem        Node
+	Attribute            Node
+	CallExpression       Node
+	DeclarationList      Node
+	ExpressionStatement  Node
+	ForExpression        Node
+	ImplItem             Node
+	Lifetime             Node
+	StructExpression     Node
+	StructItem           Node
+	TryExpression        Node
 )
 
 // Program represents a parsed Rust source file composed of AST nodes.
@@ -60,16 +82,27 @@ type Program struct {
 	Root *SourceFile `json:"root"`
 }
 
-// convert turns a tree-sitter node into our Node representation. The includePos
-// flag controls whether positional information is recorded. Non semantic leaves
-// (punctuation) are omitted to keep the tree compact.
-func convert(n *sitter.Node, src []byte, includePos bool) *Node {
+// convertProgram converts the root tree-sitter node into a Program. When
+// opt.Positions is false the position fields remain zero and are omitted from
+// the JSON output.
+func convertProgram(root *sitter.Node, src []byte, opt Option) *Program {
+	n := convert(root, src, opt)
+	if n == nil {
+		return &Program{}
+	}
+	return &Program{Root: (*SourceFile)(n)}
+}
+
+// convert transforms a tree-sitter node into our Node representation. Non
+// semantic leaves (keywords, punctuation) are dropped. Position information is
+// recorded when opt.Positions is true.
+func convert(n *sitter.Node, src []byte, opt Option) *Node {
 	if n == nil {
 		return nil
 	}
 
 	node := &Node{Kind: n.Kind()}
-	if includePos {
+	if opt.Positions {
 		sp := n.StartPosition()
 		ep := n.EndPosition()
 		node.Start = int(sp.Row) + 1
@@ -87,7 +120,7 @@ func convert(n *sitter.Node, src []byte, includePos bool) *Node {
 	}
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
-		child := convert(n.NamedChild(uint(i)), src, includePos)
+		child := convert(n.NamedChild(uint(i)), src, opt)
 		if child != nil {
 			node.Children = append(node.Children, child)
 		}
