@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 
 	sitter "github.com/tree-sitter/go-tree-sitter"
-	tsswift "github.com/tree-sitter/tree-sitter-swift/bindings/go"
+       tsswift "github.com/alex-pinkus/tree-sitter-swift/bindings/go"
 )
 
 // Program represents a parsed Swift source file.

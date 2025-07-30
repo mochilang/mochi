@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 
 	sitter "github.com/tree-sitter/go-tree-sitter"
-	tspython "github.com/tree-sitter/go-tree-sitter/python"
+       tspython "github.com/smacker/go-tree-sitter/python"
 )
 
 // Program represents a parsed Python source file.
