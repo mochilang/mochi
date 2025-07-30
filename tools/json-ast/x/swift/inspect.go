@@ -7,17 +7,9 @@ import (
 	ts "github.com/smacker/go-tree-sitter/swift"
 )
 
-// Node represents a node in the Swift syntax tree.
-type Node struct {
-	Kind     string  `json:"kind"`
-	Start    int     `json:"start"`
-	End      int     `json:"end"`
-	Children []*Node `json:"children,omitempty"`
-}
-
 // Program represents a parsed Swift source file.
 type Program struct {
-	File *Node `json:"file"`
+	File *SourceFile `json:"file"`
 }
 
 // Inspect parses the given Swift source code using tree-sitter and returns
@@ -26,19 +18,7 @@ func Inspect(src string) (*Program, error) {
 	p := sitter.NewParser()
 	p.SetLanguage(ts.GetLanguage())
 	tree := p.Parse(nil, []byte(src))
-	return &Program{File: toNode(tree.RootNode())}, nil
-}
-
-func toNode(n *sitter.Node) *Node {
-	if n == nil {
-		return nil
-	}
-	out := &Node{Kind: n.Type(), Start: int(n.StartByte()), End: int(n.EndByte())}
-	for i := 0; i < int(n.NamedChildCount()); i++ {
-		child := n.NamedChild(i)
-		out.Children = append(out.Children, toNode(child))
-	}
-	return out
+	return &Program{File: ConvertFile(tree.RootNode())}, nil
 }
 
 // MarshalJSON implements json.Marshaler for Program to ensure stable output.
