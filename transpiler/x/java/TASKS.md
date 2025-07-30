@@ -1,4 +1,50 @@
-## Progress (2025-07-28 11:48 +0700)
+## Progress (2025-07-30 21:42 +0700)
+- java transpiler: handle bigrat/bigint unary and slice builtins (a36b6863e7)
+
+- java transpiler: handle bigrat/bigint unary and slice builtins (a36b6863e7)
+
+- java transpiler: handle bigrat/bigint unary and slice builtins (a36b6863e7)
+
+- java transpiler: handle bigrat/bigint unary and slice builtins (a36b6863e7)
+
+- java transpiler: handle bigrat/bigint unary and slice builtins (a36b6863e7)
+
+- java transpiler: handle bigrat/bigint unary and slice builtins (a36b6863e7)
+
+- java transpiler: handle bigrat/bigint unary and slice builtins (a36b6863e7)
+
+- java transpiler: handle bigrat/bigint unary and slice builtins (a36b6863e7)
+
+- java transpiler: handle bigrat/bigint unary and slice builtins (a36b6863e7)
+
+- java transpiler: handle bigrat/bigint unary and slice builtins (a36b6863e7)
+
+- java transpiler: handle bigrat/bigint unary and slice builtins (a36b6863e7)
+
+- java transpiler: handle bigrat/bigint unary and slice builtins (a36b6863e7)
+
+- java transpiler: handle bigrat/bigint unary and slice builtins (a36b6863e7)
+
+- java transpiler: handle bigrat/bigint unary and slice builtins (a36b6863e7)
+
+- java transpiler: handle bigrat/bigint unary and slice builtins (a36b6863e7)
+
+- java transpiler: handle bigrat/bigint unary and slice builtins (a36b6863e7)
+
+- java transpiler: handle bigrat/bigint unary and slice builtins (a36b6863e7)
+
+- java transpiler: handle bigrat/bigint unary and slice builtins (a36b6863e7)
+
+- java transpiler: handle bigrat/bigint unary and slice builtins (a36b6863e7)
+
+- java transpiler: handle bigrat/bigint unary and slice builtins (a36b6863e7)
+
+- java transpiler: handle bigrat/bigint unary and slice builtins (a36b6863e7)
+
+- java transpiler: handle bigrat/bigint unary and slice builtins (a36b6863e7)
+
+- java transpiler: handle bigrat/bigint unary and slice builtins (a36b6863e7)
+
 - hs transpiler: add dice probabilities case (0f6b7a3ff7)
 
 - hs transpiler: add dice probabilities case (0f6b7a3ff7)
