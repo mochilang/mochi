@@ -15,10 +15,16 @@ type Program struct {
 // Inspect parses Dart source code using tree-sitter and returns
 // its Program structure.
 func Inspect(src string) (*Program, error) {
+	return InspectWithOptions(src, Options{})
+}
+
+// InspectWithOptions parses Dart source code using tree-sitter and returns its
+// Program structure configured by opts.
+func InspectWithOptions(src string, opts Options) (*Program, error) {
 	parser := sitter.NewParser()
 	parser.SetLanguage(sitter.NewLanguage(ts.Language()))
 	tree := parser.Parse(nil, []byte(src))
-	root := convertNode(tree.RootNode(), []byte(src))
+	root := convertNode(tree.RootNode(), []byte(src), opts.IncludePos)
 	return &Program{Root: root}, nil
 }
 
