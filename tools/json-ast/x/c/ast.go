@@ -11,15 +11,48 @@ import (
 type Node struct {
 	Kind     string  `json:"kind"`
 	Text     string  `json:"text,omitempty"`
-	Start    int     `json:"start,omitempty"`    // 1-based line number
-	StartCol int     `json:"startCol,omitempty"` // 0-based column number
-	End      int     `json:"end,omitempty"`      // 1-based line number
+	Start    int     `json:"start,omitempty"`
+	StartCol int     `json:"startCol,omitempty"`
+	End      int     `json:"end,omitempty"`
 	EndCol   int     `json:"endCol,omitempty"`
 	Children []*Node `json:"children,omitempty"`
 }
 
-// toNode converts a tree-sitter node into our Node type.
-func toNode(n *sitter.Node, src []byte, pos bool) *Node {
+// Typed aliases give a clearer structure when composing a Program. Only node
+// kinds that hold values or appear in the golden tests are enumerated here.
+// Additional kinds will still be represented by Node at runtime.
+type (
+	TranslationUnit      Node
+	PreprocInclude       Node
+	Declaration          Node
+	FunctionDefinition   Node
+	ParameterDeclaration Node
+	ParameterList        Node
+	CompoundStatement    Node
+	ExpressionStatement  Node
+	ReturnStatement      Node
+	CallExpression       Node
+	AssignmentExpression Node
+	BinaryExpression     Node
+	IfStatement          Node
+	ForStatement         Node
+	WhileStatement       Node
+	StructSpecifier      Node
+	Identifier           Node
+	NumberLiteral        Node
+	CharLiteral          Node
+	StringLiteral        Node
+	SystemLibString      Node
+	PrimitiveType        Node
+	TypeIdentifier       Node
+	StringContent        Node
+	EscapeSequence       Node
+	Comment              Node
+)
+
+// convert transforms a tree-sitter node into a *Node. When pos is true the
+// resulting node includes positional information.
+func convert(n *sitter.Node, src []byte, pos bool) *Node {
 	if n == nil {
 		return nil
 	}
@@ -49,7 +82,7 @@ func toNode(n *sitter.Node, src []byte, pos bool) *Node {
 		if child == nil {
 			continue
 		}
-		if c := toNode(child, src, pos); c != nil {
+		if c := convert(child, src, pos); c != nil {
 			node.Children = append(node.Children, c)
 		}
 	}
