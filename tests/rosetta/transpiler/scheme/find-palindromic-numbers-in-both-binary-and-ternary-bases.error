@@ -1,0 +1,25 @@
+exit status 70
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+WARNING: importing already defined binding: display
+WARNING: importing already defined binding: write
+ERROR on line 468 of file /workspace/mochi/tests/rosetta/transpiler/scheme/find-palindromic-numbers-in-both-binary-and-ternary-bases.scm: invalid type, expected Integer: 5/3
+  called from loop30 on line 431 of file /workspace/mochi/tests/rosetta/transpiler/scheme/find-palindromic-numbers-in-both-binary-and-ternary-bases.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from loop26 on line 377 of file /workspace/mochi/tests/rosetta/transpiler/scheme/find-palindromic-numbers-in-both-binary-and-ternary-bases.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 576 of file /workspace/mochi/tests/rosetta/transpiler/scheme/find-palindromic-numbers-in-both-binary-and-ternary-bases.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+The first 6 numbers which are palindromic in both binary and ternary are :
+
+Decimal : 0
+Binary  : 0
+Ternary : 0
+
+Decimal : 1
+Binary  : 1
+Ternary : 1
+

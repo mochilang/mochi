@@ -2,8 +2,8 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (273/493)
-Last updated: 2025-07-28 05:10 UTC
+## Checklist (319/493)
+Last updated: 2025-07-30 14:18 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -21,9 +21,9 @@ Last updated: 2025-07-28 05:10 UTC
 | 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
 | 13 | 99-bottles-of-beer-2 | ✓ | 64.07ms | 13.5 MB |
 | 14 | 99-bottles-of-beer | ✓ | 1.473ms | 12.5 MB |
-| 15 | DNS-query | ✓ |  |  |
-| 16 | Duffinian-numbers |   |  |  |
-| 17 | Find-if-a-point-is-within-a-triangle |   |  |  |
+| 15 | dns-query |   |  |  |
+| 16 | duffinian-numbers |   |  |  |
+| 17 | find-if-a-point-is-within-a-triangle |   |  |  |
 | 18 | a+b | ✓ |  |  |
 | 19 | abbreviations-automatic | ✓ |  |  |
 | 20 | abbreviations-easy | ✓ |  |  |
@@ -406,57 +406,57 @@ Last updated: 2025-07-28 05:10 UTC
 | 397 | fairshare-between-two-and-more |   |  |  |
 | 398 | farey-sequence |   |  |  |
 | 399 | fast-fourier-transform |   |  |  |
-| 400 | fasta-format |   |  |  |
-| 401 | faulhabers-formula |   |  |  |
-| 402 | faulhabers-triangle |   |  |  |
-| 403 | feigenbaum-constant-calculation |   |  |  |
-| 404 | fermat-numbers |   |  |  |
+| 400 | fasta-format | ✓ | 571.223ms | 13.0 MB |
+| 401 | faulhabers-formula | ✓ | 571.223ms | 12.6 MB |
+| 402 | faulhabers-triangle | ✓ | 571.223ms | 13.4 MB |
+| 403 | feigenbaum-constant-calculation | ✓ | 571.223ms | 12.7 MB |
+| 404 | fermat-numbers | ✓ | 571.223ms | 13.5 MB |
 | 405 | fibonacci-n-step-number-sequences |   |  |  |
-| 406 | fibonacci-sequence-1 |   |  |  |
-| 407 | fibonacci-sequence-2 |   |  |  |
-| 408 | fibonacci-sequence-3 |   |  |  |
-| 409 | fibonacci-sequence-4 |   |  |  |
-| 410 | fibonacci-sequence-5 |   |  |  |
-| 411 | fibonacci-word-fractal |   |  |  |
+| 406 | fibonacci-sequence-1 | ✓ | 571.223ms | 12.1 MB |
+| 407 | fibonacci-sequence-2 | ✓ | 571.223ms | 12.3 MB |
+| 408 | fibonacci-sequence-3 | ✓ | 571.223ms | 12.1 MB |
+| 409 | fibonacci-sequence-4 | ✓ | 571.223ms | 11.9 MB |
+| 410 | fibonacci-sequence-5 | ✓ | 571.223ms | 12.4 MB |
+| 411 | fibonacci-word-fractal | ✓ | 571.223ms | 12.4 MB |
 | 412 | fibonacci-word |   |  |  |
-| 413 | file-extension-is-in-extensions-list |   |  |  |
-| 414 | file-input-output-1 |   |  |  |
-| 415 | file-input-output-2 |   |  |  |
-| 416 | file-input-output-3 |   |  |  |
-| 417 | file-modification-time |   |  |  |
-| 418 | file-size-distribution |   |  |  |
-| 419 | file-size |   |  |  |
-| 420 | filter |   |  |  |
-| 421 | find-chess960-starting-position-identifier-2 |   |  |  |
-| 422 | find-chess960-starting-position-identifier |   |  |  |
-| 423 | find-common-directory-path |   |  |  |
-| 424 | find-duplicate-files |   |  |  |
+| 413 | file-extension-is-in-extensions-list | ✓ | 571.223ms | 12.1 MB |
+| 414 | file-input-output-1 | ✓ | 571.223ms | 12.1 MB |
+| 415 | file-input-output-2 | ✓ | 571.223ms | 12.2 MB |
+| 416 | file-input-output-3 | ✓ | 571.223ms | 12.0 MB |
+| 417 | file-modification-time | ✓ | 410.002ms | 12.2 MB |
+| 418 | file-size-distribution | ✓ | 571.223ms | 12.0 MB |
+| 419 | file-size | ✓ | 571.223ms | 11.8 MB |
+| 420 | filter | ✓ | 497.379ms | 12.0 MB |
+| 421 | find-chess960-starting-position-identifier-2 | ✓ | 571.223ms | 13.4 MB |
+| 422 | find-chess960-starting-position-identifier | ✓ | 571.223ms | 13.1 MB |
+| 423 | find-common-directory-path | ✓ | 571.223ms | 12.7 MB |
+| 424 | find-duplicate-files | ✓ | 571.223ms | 12.1 MB |
 | 425 | find-if-a-point-is-within-a-triangle |   |  |  |
-| 426 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
-| 427 | find-limit-of-recursion |   |  |  |
+| 426 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 571.223ms | 12.3 MB |
+| 427 | find-limit-of-recursion | ✓ | 571.223ms | 12.0 MB |
 | 428 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
-| 429 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
-| 430 | find-the-intersection-of-two-lines |   |  |  |
-| 431 | find-the-last-sunday-of-each-month |   |  |  |
-| 432 | find-the-missing-permutation |   |  |  |
-| 433 | first-class-environments |   |  |  |
-| 434 | first-class-functions-use-numbers-analogously |   |  |  |
-| 435 | first-power-of-2-that-has-leading-decimal-digits-of-12 |   |  |  |
-| 436 | five-weekends |   |  |  |
-| 437 | fivenum-1 |   |  |  |
-| 438 | fivenum-2 |   |  |  |
-| 439 | fivenum-3 |   |  |  |
-| 440 | fixed-length-records-1 |   |  |  |
-| 441 | fixed-length-records-2 |   |  |  |
-| 442 | fizzbuzz-1 |   |  |  |
-| 443 | fizzbuzz-2 |   |  |  |
-| 444 | fizzbuzz |   |  |  |
-| 445 | flatten-a-list-1 |   |  |  |
-| 446 | flatten-a-list-2 |   |  |  |
-| 447 | flipping-bits-game |   |  |  |
-| 448 | flow-control-structures-1 |   |  |  |
-| 449 | flow-control-structures-2 |   |  |  |
-| 450 | flow-control-structures-3 |   |  |  |
+| 429 | find-the-intersection-of-a-line-with-a-plane | ✓ | 571.223ms | 12.3 MB |
+| 430 | find-the-intersection-of-two-lines | ✓ | 571.223ms | 11.9 MB |
+| 431 | find-the-last-sunday-of-each-month | ✓ | 571.223ms | 12.4 MB |
+| 432 | find-the-missing-permutation | ✓ | 571.223ms | 12.4 MB |
+| 433 | first-class-environments | ✓ | 571.223ms | 12.5 MB |
+| 434 | first-class-functions-use-numbers-analogously | ✓ | 571.223ms | 12.0 MB |
+| 435 | first-power-of-2-that-has-leading-decimal-digits-of-12 | ✓ | 571.223ms | 12.8 MB |
+| 436 | five-weekends | ✓ | 571.223ms | 12.7 MB |
+| 437 | fivenum-1 | ✓ | 571.223ms | 11.9 MB |
+| 438 | fivenum-2 | ✓ | 232.815ms | 12.8 MB |
+| 439 | fivenum-3 | ✓ | 571.223ms | 12.1 MB |
+| 440 | fixed-length-records-1 | ✓ | 571.223ms | 11.8 MB |
+| 441 | fixed-length-records-2 | ✓ | 571.223ms | 12.6 MB |
+| 442 | fizzbuzz-1 | ✓ | 571.223ms | 11.9 MB |
+| 443 | fizzbuzz-2 | ✓ | 571.223ms | 11.9 MB |
+| 444 | fizzbuzz | ✓ | 571.223ms | 12.2 MB |
+| 445 | flatten-a-list-1 | ✓ | 571.223ms | 12.4 MB |
+| 446 | flatten-a-list-2 | ✓ | 571.223ms | 12.0 MB |
+| 447 | flipping-bits-game | ✓ | 571.223ms | 13.9 MB |
+| 448 | flow-control-structures-1 | ✓ | 571.223ms | 11.8 MB |
+| 449 | flow-control-structures-2 | ✓ | 571.223ms | 11.9 MB |
+| 450 | flow-control-structures-3 | ✓ | 571.223ms | 11.9 MB |
 | 451 | flow-control-structures-4 |   |  |  |
 | 452 | floyd-warshall-algorithm |   |  |  |
 | 453 | floyd-warshall-algorithm2 |   |  |  |
