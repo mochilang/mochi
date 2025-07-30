@@ -6,13 +6,21 @@ import (
 
 // Node mirrors a tree-sitter node. Leaf nodes store their source text in Text
 // while internal nodes only keep their named children.
+// IncludePos controls whether the conversion functions populate position
+// information. When false (the default), the position fields are left zero and
+// omitted from the JSON output.
+var IncludePos bool
+
+// Node mirrors a tree-sitter node. Leaf nodes store their source text in Text
+// while internal nodes only keep their named children. Position fields are
+// optional and only set when IncludePos is true.
 type Node struct {
 	Kind     string `json:"kind"`
 	Text     string `json:"text,omitempty"`
-	Start    int    `json:"start"`
-	StartCol int    `json:"startCol"`
-	End      int    `json:"end"`
-	EndCol   int    `json:"endCol"`
+	Start    int    `json:"start,omitempty"`
+	StartCol int    `json:"startCol,omitempty"`
+	End      int    `json:"end,omitempty"`
+	EndCol   int    `json:"endCol,omitempty"`
 	Children []Node `json:"children,omitempty"`
 }
 
@@ -21,28 +29,49 @@ type Program struct {
 	Forms []Node `json:"forms"`
 }
 
+// isValueNode reports whether the given kind should keep its text content. Only
+// semantic leaves are preserved so the resulting JSON stays compact.
+func isValueNode(kind string) bool {
+	switch kind {
+	case "comment", "symbol", "string", "number":
+		return true
+	default:
+		return false
+	}
+}
+
 // convertNode converts a tree-sitter node to our Node representation.
-func convertNode(n *sitter.Node, src []byte) Node {
-	start := n.StartPoint()
-	end := n.EndPoint()
-	node := Node{
-		Kind:     n.Type(),
-		Start:    int(start.Row) + 1,
-		StartCol: int(start.Column),
-		End:      int(end.Row) + 1,
-		EndCol:   int(end.Column),
+func convertNode(n *sitter.Node, src []byte) *Node {
+	if n == nil {
+		return nil
+	}
+
+	node := &Node{Kind: n.Type()}
+	if IncludePos {
+		sp := n.StartPoint()
+		ep := n.EndPoint()
+		node.Start = int(sp.Row) + 1
+		node.StartCol = int(sp.Column)
+		node.End = int(ep.Row) + 1
+		node.EndCol = int(ep.Column)
 	}
 
 	if n.NamedChildCount() == 0 {
-		node.Text = n.Content(src)
-		return node
-	}
-	for i := 0; i < int(n.NamedChildCount()); i++ {
-		child := n.NamedChild(i)
-		if child == nil {
-			continue
+		if isValueNode(n.Type()) {
+			node.Text = n.Content(src)
+		} else {
+			return nil
 		}
-		node.Children = append(node.Children, convertNode(child, src))
+	}
+
+	for i := 0; i < int(n.NamedChildCount()); i++ {
+		if c := convertNode(n.NamedChild(i), src); c != nil {
+			node.Children = append(node.Children, *c)
+		}
+	}
+
+	if node.Text == "" && len(node.Children) == 0 {
+		return nil
 	}
 	return node
 }
@@ -54,7 +83,9 @@ func convertProgram(root *sitter.Node, src []byte) *Program {
 	}
 	var forms []Node
 	for i := 0; i < int(root.NamedChildCount()); i++ {
-		forms = append(forms, convertNode(root.NamedChild(i), src))
+		if n := convertNode(root.NamedChild(i), src); n != nil {
+			forms = append(forms, *n)
+		}
 	}
 	return &Program{Forms: forms}
 }
