@@ -696,6 +696,20 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		}},
 	}}
 	pr.Forms = append(pr.Forms, inFn)
+
+	padStartFn := &Defn{Name: "padStart", Params: []Node{Symbol("s"), Symbol("w"), Symbol("p")}, Body: []Node{
+		&List{Elems: []Node{
+			Symbol("loop"),
+			&Vector{Elems: []Node{Symbol("out"), &List{Elems: []Node{Symbol("str"), Symbol("s")}}}},
+			&List{Elems: []Node{
+				Symbol("if"),
+				&List{Elems: []Node{Symbol("<"), &List{Elems: []Node{Symbol("count"), Symbol("out")}}, Symbol("w")}},
+				&List{Elems: []Node{Symbol("recur"), &List{Elems: []Node{Symbol("str"), Symbol("p"), Symbol("out")}}}},
+				Symbol("out"),
+			}},
+		}},
+	}}
+	pr.Forms = append(pr.Forms, padStartFn)
 	initSeed := &List{Elems: []Node{
 		Symbol("let"), &Vector{Elems: []Node{
 			Symbol("s"), &List{Elems: []Node{Symbol("System/getenv"), StringLit("MOCHI_NOW_SEED")}},
@@ -891,6 +905,29 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 			stringListVars[s.Assign.Name] = true
 		}
 		name := renameVar(s.Assign.Name)
+		if transpileEnv != nil && len(path) >= 1 {
+			if typ, err := transpileEnv.GetVar(s.Assign.Name); err == nil {
+				t := typ
+				for i := 0; i < len(path); i++ {
+					if lt, ok := t.(types.ListType); ok {
+						t = lt.Elem
+					} else if st, ok := t.(types.StructType); ok && i < len(path) {
+						fld := ""
+						if kw, ok2 := path[i].(Keyword); ok2 {
+							fld = string(kw)
+						}
+						if ft, ok2 := st.Fields[fld]; ok2 {
+							t = ft
+						} else {
+							break
+						}
+					}
+				}
+				if _, ok := t.(types.BigIntType); ok {
+					v = &List{Elems: []Node{Symbol("bigint"), v}}
+				}
+			}
+		}
 		if simple && len(path) > 0 {
 			var assign Node
 			if len(path) == 1 {
@@ -1134,7 +1171,8 @@ func applyBinOp(op string, left, right Node) Node {
 			cat := &List{Elems: []Node{Symbol("concat"), left, right}}
 			return &List{Elems: []Node{Symbol("vec"), cat}}
 		}
-		return &List{Elems: []Node{Symbol("+"), left, right}}
+		// use +' to avoid overflow and support bigints
+		return &List{Elems: []Node{Symbol("+'"), left, right}}
 	case "union":
 		setFn := func(x Node) Node { return &List{Elems: []Node{Symbol("set"), x}} }
 		u := &List{Elems: []Node{Symbol("clojure.set/union"), setFn(left), setFn(right)}}
@@ -1327,6 +1365,26 @@ func isNumberNode(n Node) bool {
 			if typ, err := transpileEnv.GetVar(string(t)); err == nil {
 				switch typ.(type) {
 				case types.IntType, types.FloatType:
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func isBigIntNode(n Node) bool {
+	switch t := n.(type) {
+	case *List:
+		if len(t.Elems) > 0 {
+			if sym, ok := t.Elems[0].(Symbol); ok && sym == "bigint" {
+				return true
+			}
+		}
+	case Symbol:
+		if transpileEnv != nil {
+			if typ, err := transpileEnv.GetVar(string(t)); err == nil {
+				if _, ok := typ.(types.BigIntType); ok {
 					return true
 				}
 			}
@@ -2499,6 +2557,8 @@ func defaultValue(t *parser.TypeRef) Node {
 		return &Vector{}
 	case "map":
 		return &Map{}
+	case "bigint":
+		return IntLit(0)
 	default:
 		return Symbol("nil")
 	}
@@ -2535,6 +2595,8 @@ func castNode(n Node, t *parser.TypeRef) (Node, error) {
 		return &List{Elems: []Node{Symbol("double"), n}}, nil
 	case "string":
 		return &List{Elems: []Node{Symbol("str"), n}}, nil
+	case "bigint":
+		return &List{Elems: []Node{Symbol("bigint"), n}}, nil
 	case "bigrat":
 		// force ratio by converting to BigInteger before division
 		n = &List{Elems: []Node{Symbol("bigint"), n}}
