@@ -4,6 +4,11 @@ import (
 	sitter "github.com/smacker/go-tree-sitter"
 )
 
+// IncludePositions controls whether Start/End position fields are populated.
+// When false (the default) these fields remain zero and are omitted from the
+// marshalled JSON due to the `omitempty` tags on the struct fields.
+var IncludePositions bool
+
 // Node represents a node in the TypeScript AST. Only leaf nodes that carry
 // a value (identifiers, literals, etc.) populate the Text field to keep the
 // resulting JSON minimal.
@@ -24,7 +29,7 @@ type Program struct {
 
 // convertNode converts a tree-sitter node into our Node representation.
 // Non-value leaves are omitted to keep the JSON small.
-func convertNode(n *sitter.Node, src []byte, withPos bool) *Node {
+func convertNode(n *sitter.Node, src []byte) *Node {
 	if n == nil {
 		return nil
 	}
@@ -33,7 +38,7 @@ func convertNode(n *sitter.Node, src []byte, withPos bool) *Node {
 	node := Node{
 		Kind: n.Type(),
 	}
-	if withPos {
+	if IncludePositions {
 		node.Start = int(start.Row) + 1
 		node.StartCol = int(start.Column)
 		node.End = int(end.Row) + 1
@@ -50,7 +55,7 @@ func convertNode(n *sitter.Node, src []byte, withPos bool) *Node {
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
 		child := n.NamedChild(i)
-		if c := convertNode(child, src, withPos); c != nil {
+		if c := convertNode(child, src); c != nil {
 			node.Children = append(node.Children, *c)
 		}
 	}

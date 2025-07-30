@@ -7,7 +7,7 @@ import (
 
 // Inspect parses the given TypeScript source code using tree-sitter and
 // returns its Program structure.
-func Inspect(src string, withPos bool) (*Program, error) {
+func Inspect(src string) (*Program, error) {
 	p := sitter.NewParser()
 	p.SetLanguage(tstypescript.GetLanguage())
 	tree := p.Parse(nil, []byte(src))
@@ -15,7 +15,7 @@ func Inspect(src string, withPos bool) (*Program, error) {
 	var stmts []Node
 	for i := 0; i < int(root.NamedChildCount()); i++ {
 		child := root.NamedChild(i)
-		if n := convertNode(child, []byte(src), withPos); n != nil {
+		if n := convertNode(child, []byte(src)); n != nil {
 			stmts = append(stmts, *n)
 		}
 	}
