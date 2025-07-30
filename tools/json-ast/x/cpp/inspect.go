@@ -1,32 +1,50 @@
-//go:build slow
-
 package cpp
 
 import (
-	a2cpp "mochi/tools/a2mochi/x/cpp"
+	"context"
+	"fmt"
+
+	sitter "github.com/smacker/go-tree-sitter"
+	ts "github.com/smacker/go-tree-sitter/cpp"
 )
 
-// Program describes a C++ source file as parsed by clang++.
-type Program struct {
-	Funcs   []a2cpp.Func   `json:"funcs"`
-	Enums   []a2cpp.Enum   `json:"enums"`
-	Structs []a2cpp.Struct `json:"structs"`
-	Globals []a2cpp.Global `json:"globals"`
-	Source  string         `json:"source"`
+// Node represents a tree-sitter node in a generic form.
+type Node struct {
+	Type     string `json:"type"`
+	Text     string `json:"text,omitempty"`
+	Children []Node `json:"children,omitempty"`
 }
 
-// Inspect parses the provided C++ source code using clang++ and
-// returns a Program describing its structure.
+// Program is the root of a parsed C++ translation unit.
+type Program struct {
+	Root Node `json:"root"`
+}
+
+// Inspect parses the given C++ source code using tree-sitter and
+// returns its Program structure.
 func Inspect(src string) (*Program, error) {
-	p, err := a2cpp.Parse(src)
+	parser := sitter.NewParser()
+	parser.SetLanguage(ts.GetLanguage())
+	tree, err := parser.ParseCtx(context.Background(), nil, []byte(src))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("parse: %w", err)
 	}
-	return &Program{
-		Funcs:   p.Funcs,
-		Enums:   p.Enums,
-		Structs: p.Structs,
-		Globals: p.Globals,
-		Source:  p.Src,
-	}, nil
+	root := convertNode(tree.RootNode(), []byte(src))
+	return &Program{Root: root}, nil
+}
+
+// convertNode converts a tree-sitter node into our Node type.
+func convertNode(n *sitter.Node, src []byte) Node {
+	node := Node{Type: n.Type()}
+	if n.ChildCount() == 0 {
+		node.Text = n.Content(src)
+	}
+	for i := 0; i < int(n.ChildCount()); i++ {
+		child := n.Child(i)
+		if child == nil {
+			continue
+		}
+		node.Children = append(node.Children, convertNode(child, src))
+	}
+	return node
 }
