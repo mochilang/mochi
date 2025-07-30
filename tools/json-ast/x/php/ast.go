@@ -6,8 +6,11 @@ import (
 )
 
 // Node represents a tree-sitter node in PHP's syntax tree.
+// Node is a lightweight representation of a PHP AST node. Only
+// semantically relevant nodes are kept. Leaf nodes contain their
+// source text in the Text field.
 type Node struct {
-	Type     string `json:"type"`
+	Kind     string `json:"kind"`
 	Start    int    `json:"start"`
 	End      int    `json:"end"`
 	Text     string `json:"text,omitempty"`
@@ -15,13 +18,16 @@ type Node struct {
 }
 
 // convert converts a tree-sitter node to our Node structure.
+// convert transforms a tree-sitter node into our Node representation.
+// Only named (semantic) children are included to keep the AST compact.
 func convert(n *sitter.Node, src []byte) Node {
-	node := Node{Type: n.Type(), Start: int(n.StartByte()), End: int(n.EndByte())}
-	if n.ChildCount() == 0 {
+	node := Node{Kind: n.Type(), Start: int(n.StartByte()), End: int(n.EndByte())}
+	if n.NamedChildCount() == 0 {
 		node.Text = n.Content(src)
+		return node
 	}
-	for i := 0; i < int(n.ChildCount()); i++ {
-		child := n.Child(i)
+	for i := 0; i < int(n.NamedChildCount()); i++ {
+		child := n.NamedChild(i)
 		if child == nil {
 			continue
 		}
