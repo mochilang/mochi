@@ -1,426 +1,1461 @@
 {
-  "stmts": [
-    {
-      "lhs": [
-        {
-          "value": "customers"
-        }
-      ],
-      "rhs": [
-        {
-          "fields": [
-            {
-              "key": null,
-              "value": {
-                "fields": [
-                  {
-                    "key": {
-                      "value": "id"
-                    },
-                    "value": {
-                      "value": "1"
-                    }
-                  },
-                  {
-                    "key": {
-                      "value": "name"
-                    },
-                    "value": {
-                      "value": "Alice"
-                    }
-                  }
-                ]
+  "root": {
+    "type": "program",
+    "line": 1,
+    "col": 0,
+    "endLine": 19,
+    "endCol": 0,
+    "children": [
+      {
+        "type": "comment",
+        "line": 1,
+        "col": 0,
+        "endLine": 1,
+        "endCol": 56
+      },
+      {
+        "type": "variable_declaration",
+        "line": 1,
+        "col": 56,
+        "endLine": 2,
+        "endCol": 90,
+        "children": [
+          {
+            "type": "variable_declarator",
+            "line": 1,
+            "col": 56,
+            "endLine": 2,
+            "endCol": 9,
+            "children": [
+              {
+                "type": "identifier",
+                "value": "\ncustomers",
+                "line": 1,
+                "col": 56,
+                "endLine": 2,
+                "endCol": 9
               }
-            },
-            {
-              "key": null,
-              "value": {
-                "fields": [
-                  {
-                    "key": {
-                      "value": "id"
-                    },
-                    "value": {
-                      "value": "2"
-                    }
-                  },
-                  {
-                    "key": {
-                      "value": "name"
-                    },
-                    "value": {
-                      "value": "Bob"
-                    }
-                  }
-                ]
-              }
-            },
-            {
-              "key": null,
-              "value": {
-                "fields": [
-                  {
-                    "key": {
-                      "value": "id"
-                    },
-                    "value": {
-                      "value": "3"
-                    }
-                  },
-                  {
-                    "key": {
-                      "value": "name"
-                    },
-                    "value": {
-                      "value": "Charlie"
-                    }
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "lhs": [
-        {
-          "value": "orders"
-        }
-      ],
-      "rhs": [
-        {
-          "fields": [
-            {
-              "key": null,
-              "value": {
-                "fields": [
-                  {
-                    "key": {
-                      "value": "id"
-                    },
-                    "value": {
-                      "value": "100"
-                    }
-                  },
-                  {
-                    "key": {
-                      "value": "customerId"
-                    },
-                    "value": {
-                      "value": "1"
-                    }
-                  },
-                  {
-                    "key": {
-                      "value": "total"
-                    },
-                    "value": {
-                      "value": "250"
-                    }
-                  }
-                ]
-              }
-            },
-            {
-              "key": null,
-              "value": {
-                "fields": [
-                  {
-                    "key": {
-                      "value": "id"
-                    },
-                    "value": {
-                      "value": "101"
-                    }
-                  },
-                  {
-                    "key": {
-                      "value": "customerId"
-                    },
-                    "value": {
-                      "value": "2"
-                    }
-                  },
-                  {
-                    "key": {
-                      "value": "total"
-                    },
-                    "value": {
-                      "value": "125"
-                    }
-                  }
-                ]
-              }
-            },
-            {
-              "key": null,
-              "value": {
-                "fields": [
-                  {
-                    "key": {
-                      "value": "id"
-                    },
-                    "value": {
-                      "value": "102"
-                    }
-                  },
-                  {
-                    "key": {
-                      "value": "customerId"
-                    },
-                    "value": {
-                      "value": "1"
-                    }
-                  },
-                  {
-                    "key": {
-                      "value": "total"
-                    },
-                    "value": {
-                      "value": "300"
-                    }
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "lhs": [
-        {
-          "value": "result"
-        }
-      ],
-      "rhs": [
-        {
-          "fields": []
-        }
-      ]
-    },
-    {
-      "names": [
-        "_",
-        "o"
-      ],
-      "exprs": [
-        {
-          "func": {
-            "value": "ipairs"
+            ]
           },
-          "receiver": null,
-          "method": "",
-          "args": [
-            {
-              "value": "orders"
-            }
-          ],
-          "adjustret": false
-        }
-      ],
-      "stmts": [
-        {
-          "names": [
-            "_",
-            "c"
-          ],
-          "exprs": [
-            {
-              "func": {
-                "value": "ipairs"
-              },
-              "receiver": null,
-              "method": "",
-              "args": [
-                {
-                  "value": "customers"
-                }
-              ],
-              "adjustret": false
-            }
-          ],
-          "stmts": [
-            {
-              "expr": {
-                "func": {
-                  "object": {
-                    "value": "table"
-                  },
-                  "key": {
-                    "value": "insert"
-                  }
-                },
-                "receiver": null,
-                "method": "",
-                "args": [
+          {
+            "type": "tableconstructor",
+            "line": 2,
+            "col": 12,
+            "endLine": 2,
+            "endCol": 90,
+            "children": [
+              {
+                "type": "fieldlist",
+                "line": 2,
+                "col": 13,
+                "endLine": 2,
+                "endCol": 89,
+                "children": [
                   {
-                    "value": "result"
+                    "type": "field",
+                    "line": 2,
+                    "col": 13,
+                    "endLine": 2,
+                    "endCol": 37,
+                    "children": [
+                      {
+                        "type": "tableconstructor",
+                        "line": 2,
+                        "col": 13,
+                        "endLine": 2,
+                        "endCol": 37,
+                        "children": [
+                          {
+                            "type": "fieldlist",
+                            "line": 2,
+                            "col": 14,
+                            "endLine": 2,
+                            "endCol": 36,
+                            "children": [
+                              {
+                                "type": "field",
+                                "line": 2,
+                                "col": 14,
+                                "endLine": 2,
+                                "endCol": 20,
+                                "children": [
+                                  {
+                                    "type": "identifier",
+                                    "value": "id",
+                                    "line": 2,
+                                    "col": 14,
+                                    "endLine": 2,
+                                    "endCol": 16
+                                  },
+                                  {
+                                    "type": "number",
+                                    "value": "1",
+                                    "line": 2,
+                                    "col": 19,
+                                    "endLine": 2,
+                                    "endCol": 20
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "field",
+                                "line": 2,
+                                "col": 22,
+                                "endLine": 2,
+                                "endCol": 36,
+                                "children": [
+                                  {
+                                    "type": "identifier",
+                                    "value": "name",
+                                    "line": 2,
+                                    "col": 22,
+                                    "endLine": 2,
+                                    "endCol": 26
+                                  },
+                                  {
+                                    "type": "string",
+                                    "line": 2,
+                                    "col": 29,
+                                    "endLine": 2,
+                                    "endCol": 36
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
                   },
                   {
-                    "fields": [
+                    "type": "field",
+                    "line": 2,
+                    "col": 39,
+                    "endLine": 2,
+                    "endCol": 61,
+                    "children": [
                       {
-                        "key": {
-                          "value": "orderId"
-                        },
-                        "value": {
-                          "object": {
-                            "value": "o"
-                          },
-                          "key": {
-                            "value": "id"
+                        "type": "tableconstructor",
+                        "line": 2,
+                        "col": 39,
+                        "endLine": 2,
+                        "endCol": 61,
+                        "children": [
+                          {
+                            "type": "fieldlist",
+                            "line": 2,
+                            "col": 40,
+                            "endLine": 2,
+                            "endCol": 60,
+                            "children": [
+                              {
+                                "type": "field",
+                                "line": 2,
+                                "col": 40,
+                                "endLine": 2,
+                                "endCol": 46,
+                                "children": [
+                                  {
+                                    "type": "identifier",
+                                    "value": "id",
+                                    "line": 2,
+                                    "col": 40,
+                                    "endLine": 2,
+                                    "endCol": 42
+                                  },
+                                  {
+                                    "type": "number",
+                                    "value": "2",
+                                    "line": 2,
+                                    "col": 45,
+                                    "endLine": 2,
+                                    "endCol": 46
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "field",
+                                "line": 2,
+                                "col": 48,
+                                "endLine": 2,
+                                "endCol": 60,
+                                "children": [
+                                  {
+                                    "type": "identifier",
+                                    "value": "name",
+                                    "line": 2,
+                                    "col": 48,
+                                    "endLine": 2,
+                                    "endCol": 52
+                                  },
+                                  {
+                                    "type": "string",
+                                    "line": 2,
+                                    "col": 55,
+                                    "endLine": 2,
+                                    "endCol": 60
+                                  }
+                                ]
+                              }
+                            ]
                           }
-                        }
-                      },
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "field",
+                    "line": 2,
+                    "col": 63,
+                    "endLine": 2,
+                    "endCol": 89,
+                    "children": [
                       {
-                        "key": {
-                          "value": "orderCustomerId"
-                        },
-                        "value": {
-                          "object": {
-                            "value": "o"
-                          },
-                          "key": {
-                            "value": "customerId"
+                        "type": "tableconstructor",
+                        "line": 2,
+                        "col": 63,
+                        "endLine": 2,
+                        "endCol": 89,
+                        "children": [
+                          {
+                            "type": "fieldlist",
+                            "line": 2,
+                            "col": 64,
+                            "endLine": 2,
+                            "endCol": 88,
+                            "children": [
+                              {
+                                "type": "field",
+                                "line": 2,
+                                "col": 64,
+                                "endLine": 2,
+                                "endCol": 70,
+                                "children": [
+                                  {
+                                    "type": "identifier",
+                                    "value": "id",
+                                    "line": 2,
+                                    "col": 64,
+                                    "endLine": 2,
+                                    "endCol": 66
+                                  },
+                                  {
+                                    "type": "number",
+                                    "value": "3",
+                                    "line": 2,
+                                    "col": 69,
+                                    "endLine": 2,
+                                    "endCol": 70
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "field",
+                                "line": 2,
+                                "col": 72,
+                                "endLine": 2,
+                                "endCol": 88,
+                                "children": [
+                                  {
+                                    "type": "identifier",
+                                    "value": "name",
+                                    "line": 2,
+                                    "col": 72,
+                                    "endLine": 2,
+                                    "endCol": 76
+                                  },
+                                  {
+                                    "type": "string",
+                                    "line": 2,
+                                    "col": 79,
+                                    "endLine": 2,
+                                    "endCol": 88
+                                  }
+                                ]
+                              }
+                            ]
                           }
-                        }
-                      },
-                      {
-                        "key": {
-                          "value": "pairedCustomerName"
-                        },
-                        "value": {
-                          "object": {
-                            "value": "c"
-                          },
-                          "key": {
-                            "value": "name"
-                          }
-                        }
-                      },
-                      {
-                        "key": {
-                          "value": "orderTotal"
-                        },
-                        "value": {
-                          "object": {
-                            "value": "o"
-                          },
-                          "key": {
-                            "value": "total"
-                          }
-                        }
+                        ]
                       }
                     ]
                   }
-                ],
-                "adjustret": false
+                ]
               }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "expr": {
-        "func": {
-          "value": "print"
-        },
-        "receiver": null,
-        "method": "",
-        "args": [
+            ]
+          }
+        ]
+      },
+      {
+        "type": "variable_declaration",
+        "line": 2,
+        "col": 90,
+        "endLine": 4,
+        "endCol": 132,
+        "children": [
           {
-            "value": "--- Cross Join: All order-customer pairs ---"
-          }
-        ],
-        "adjustret": false
-      }
-    },
-    {
-      "names": [
-        "_",
-        "entry"
-      ],
-      "exprs": [
-        {
-          "func": {
-            "value": "ipairs"
-          },
-          "receiver": null,
-          "method": "",
-          "args": [
-            {
-              "value": "result"
-            }
-          ],
-          "adjustret": false
-        }
-      ],
-      "stmts": [
-        {
-          "expr": {
-            "func": {
-              "value": "print"
-            },
-            "receiver": null,
-            "method": "",
-            "args": [
+            "type": "variable_declarator",
+            "line": 2,
+            "col": 90,
+            "endLine": 4,
+            "endCol": 6,
+            "children": [
               {
-                "func": {
-                  "object": {
-                    "value": "string"
-                  },
-                  "key": {
-                    "value": "format"
-                  }
-                },
-                "receiver": null,
-                "method": "",
-                "args": [
-                  {
-                    "value": "Order %s (customerId: %s , total: $ %s ) paired with %s"
-                  },
-                  {
-                    "object": {
-                      "value": "entry"
-                    },
-                    "key": {
-                      "value": "orderId"
-                    }
-                  },
-                  {
-                    "object": {
-                      "value": "entry"
-                    },
-                    "key": {
-                      "value": "orderCustomerId"
-                    }
-                  },
-                  {
-                    "object": {
-                      "value": "entry"
-                    },
-                    "key": {
-                      "value": "orderTotal"
-                    }
-                  },
-                  {
-                    "object": {
-                      "value": "entry"
-                    },
-                    "key": {
-                      "value": "pairedCustomerName"
-                    }
-                  }
-                ],
-                "adjustret": false
+                "type": "identifier",
+                "value": "\n\norders",
+                "line": 2,
+                "col": 90,
+                "endLine": 4,
+                "endCol": 6
               }
-            ],
-            "adjustret": false
+            ]
+          },
+          {
+            "type": "tableconstructor",
+            "line": 4,
+            "col": 9,
+            "endLine": 4,
+            "endCol": 132,
+            "children": [
+              {
+                "type": "fieldlist",
+                "line": 4,
+                "col": 10,
+                "endLine": 4,
+                "endCol": 131,
+                "children": [
+                  {
+                    "type": "field",
+                    "line": 4,
+                    "col": 10,
+                    "endLine": 4,
+                    "endCol": 49,
+                    "children": [
+                      {
+                        "type": "tableconstructor",
+                        "line": 4,
+                        "col": 10,
+                        "endLine": 4,
+                        "endCol": 49,
+                        "children": [
+                          {
+                            "type": "fieldlist",
+                            "line": 4,
+                            "col": 11,
+                            "endLine": 4,
+                            "endCol": 48,
+                            "children": [
+                              {
+                                "type": "field",
+                                "line": 4,
+                                "col": 11,
+                                "endLine": 4,
+                                "endCol": 19,
+                                "children": [
+                                  {
+                                    "type": "identifier",
+                                    "value": "id",
+                                    "line": 4,
+                                    "col": 11,
+                                    "endLine": 4,
+                                    "endCol": 13
+                                  },
+                                  {
+                                    "type": "number",
+                                    "value": "100",
+                                    "line": 4,
+                                    "col": 16,
+                                    "endLine": 4,
+                                    "endCol": 19
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "field",
+                                "line": 4,
+                                "col": 21,
+                                "endLine": 4,
+                                "endCol": 35,
+                                "children": [
+                                  {
+                                    "type": "identifier",
+                                    "value": "customerId",
+                                    "line": 4,
+                                    "col": 21,
+                                    "endLine": 4,
+                                    "endCol": 31
+                                  },
+                                  {
+                                    "type": "number",
+                                    "value": "1",
+                                    "line": 4,
+                                    "col": 34,
+                                    "endLine": 4,
+                                    "endCol": 35
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "field",
+                                "line": 4,
+                                "col": 37,
+                                "endLine": 4,
+                                "endCol": 48,
+                                "children": [
+                                  {
+                                    "type": "identifier",
+                                    "value": "total",
+                                    "line": 4,
+                                    "col": 37,
+                                    "endLine": 4,
+                                    "endCol": 42
+                                  },
+                                  {
+                                    "type": "number",
+                                    "value": "250",
+                                    "line": 4,
+                                    "col": 45,
+                                    "endLine": 4,
+                                    "endCol": 48
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "field",
+                    "line": 4,
+                    "col": 51,
+                    "endLine": 4,
+                    "endCol": 90,
+                    "children": [
+                      {
+                        "type": "tableconstructor",
+                        "line": 4,
+                        "col": 51,
+                        "endLine": 4,
+                        "endCol": 90,
+                        "children": [
+                          {
+                            "type": "fieldlist",
+                            "line": 4,
+                            "col": 52,
+                            "endLine": 4,
+                            "endCol": 89,
+                            "children": [
+                              {
+                                "type": "field",
+                                "line": 4,
+                                "col": 52,
+                                "endLine": 4,
+                                "endCol": 60,
+                                "children": [
+                                  {
+                                    "type": "identifier",
+                                    "value": "id",
+                                    "line": 4,
+                                    "col": 52,
+                                    "endLine": 4,
+                                    "endCol": 54
+                                  },
+                                  {
+                                    "type": "number",
+                                    "value": "101",
+                                    "line": 4,
+                                    "col": 57,
+                                    "endLine": 4,
+                                    "endCol": 60
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "field",
+                                "line": 4,
+                                "col": 62,
+                                "endLine": 4,
+                                "endCol": 76,
+                                "children": [
+                                  {
+                                    "type": "identifier",
+                                    "value": "customerId",
+                                    "line": 4,
+                                    "col": 62,
+                                    "endLine": 4,
+                                    "endCol": 72
+                                  },
+                                  {
+                                    "type": "number",
+                                    "value": "2",
+                                    "line": 4,
+                                    "col": 75,
+                                    "endLine": 4,
+                                    "endCol": 76
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "field",
+                                "line": 4,
+                                "col": 78,
+                                "endLine": 4,
+                                "endCol": 89,
+                                "children": [
+                                  {
+                                    "type": "identifier",
+                                    "value": "total",
+                                    "line": 4,
+                                    "col": 78,
+                                    "endLine": 4,
+                                    "endCol": 83
+                                  },
+                                  {
+                                    "type": "number",
+                                    "value": "125",
+                                    "line": 4,
+                                    "col": 86,
+                                    "endLine": 4,
+                                    "endCol": 89
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "field",
+                    "line": 4,
+                    "col": 92,
+                    "endLine": 4,
+                    "endCol": 131,
+                    "children": [
+                      {
+                        "type": "tableconstructor",
+                        "line": 4,
+                        "col": 92,
+                        "endLine": 4,
+                        "endCol": 131,
+                        "children": [
+                          {
+                            "type": "fieldlist",
+                            "line": 4,
+                            "col": 93,
+                            "endLine": 4,
+                            "endCol": 130,
+                            "children": [
+                              {
+                                "type": "field",
+                                "line": 4,
+                                "col": 93,
+                                "endLine": 4,
+                                "endCol": 101,
+                                "children": [
+                                  {
+                                    "type": "identifier",
+                                    "value": "id",
+                                    "line": 4,
+                                    "col": 93,
+                                    "endLine": 4,
+                                    "endCol": 95
+                                  },
+                                  {
+                                    "type": "number",
+                                    "value": "102",
+                                    "line": 4,
+                                    "col": 98,
+                                    "endLine": 4,
+                                    "endCol": 101
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "field",
+                                "line": 4,
+                                "col": 103,
+                                "endLine": 4,
+                                "endCol": 117,
+                                "children": [
+                                  {
+                                    "type": "identifier",
+                                    "value": "customerId",
+                                    "line": 4,
+                                    "col": 103,
+                                    "endLine": 4,
+                                    "endCol": 113
+                                  },
+                                  {
+                                    "type": "number",
+                                    "value": "1",
+                                    "line": 4,
+                                    "col": 116,
+                                    "endLine": 4,
+                                    "endCol": 117
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "field",
+                                "line": 4,
+                                "col": 119,
+                                "endLine": 4,
+                                "endCol": 130,
+                                "children": [
+                                  {
+                                    "type": "identifier",
+                                    "value": "total",
+                                    "line": 4,
+                                    "col": 119,
+                                    "endLine": 4,
+                                    "endCol": 124
+                                  },
+                                  {
+                                    "type": "number",
+                                    "value": "300",
+                                    "line": 4,
+                                    "col": 127,
+                                    "endLine": 4,
+                                    "endCol": 130
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
           }
-        }
-      ]
-    }
-  ]
+        ]
+      },
+      {
+        "type": "variable_declaration",
+        "line": 4,
+        "col": 132,
+        "endLine": 6,
+        "endCol": 11,
+        "children": [
+          {
+            "type": "variable_declarator",
+            "line": 4,
+            "col": 132,
+            "endLine": 6,
+            "endCol": 6,
+            "children": [
+              {
+                "type": "identifier",
+                "value": "\n\nresult",
+                "line": 4,
+                "col": 132,
+                "endLine": 6,
+                "endCol": 6
+              }
+            ]
+          },
+          {
+            "type": "tableconstructor",
+            "line": 6,
+            "col": 9,
+            "endLine": 6,
+            "endCol": 11
+          }
+        ]
+      },
+      {
+        "type": "for_statement",
+        "line": 6,
+        "col": 11,
+        "endLine": 11,
+        "endCol": 3,
+        "children": [
+          {
+            "type": "for_start",
+            "value": "\nfor",
+            "line": 6,
+            "col": 11,
+            "endLine": 7,
+            "endCol": 3
+          },
+          {
+            "type": "for_generic",
+            "line": 7,
+            "col": 4,
+            "endLine": 7,
+            "endCol": 26,
+            "children": [
+              {
+                "type": "identifier_list",
+                "line": 7,
+                "col": 4,
+                "endLine": 7,
+                "endCol": 8,
+                "children": [
+                  {
+                    "type": "identifier",
+                    "value": "_",
+                    "line": 7,
+                    "col": 4,
+                    "endLine": 7,
+                    "endCol": 5
+                  },
+                  {
+                    "type": "identifier",
+                    "value": "o",
+                    "line": 7,
+                    "col": 7,
+                    "endLine": 7,
+                    "endCol": 8
+                  }
+                ]
+              },
+              {
+                "type": "for_in",
+                "value": "in",
+                "line": 7,
+                "col": 9,
+                "endLine": 7,
+                "endCol": 11
+              },
+              {
+                "type": "function_call",
+                "line": 7,
+                "col": 12,
+                "endLine": 7,
+                "endCol": 26,
+                "children": [
+                  {
+                    "type": "identifier",
+                    "value": "ipairs",
+                    "line": 7,
+                    "col": 12,
+                    "endLine": 7,
+                    "endCol": 18
+                  },
+                  {
+                    "type": "function_call_paren",
+                    "value": "(",
+                    "line": 7,
+                    "col": 18,
+                    "endLine": 7,
+                    "endCol": 19
+                  },
+                  {
+                    "type": "function_arguments",
+                    "line": 7,
+                    "col": 19,
+                    "endLine": 7,
+                    "endCol": 25,
+                    "children": [
+                      {
+                        "type": "identifier",
+                        "value": "orders",
+                        "line": 7,
+                        "col": 19,
+                        "endLine": 7,
+                        "endCol": 25
+                      }
+                    ]
+                  },
+                  {
+                    "type": "function_call_paren",
+                    "line": 7,
+                    "col": 25,
+                    "endLine": 7,
+                    "endCol": 26
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "for_do",
+            "value": "do",
+            "line": 7,
+            "col": 27,
+            "endLine": 7,
+            "endCol": 29
+          },
+          {
+            "type": "for_statement",
+            "line": 8,
+            "col": 2,
+            "endLine": 10,
+            "endCol": 5,
+            "children": [
+              {
+                "type": "for_start",
+                "value": "for",
+                "line": 8,
+                "col": 2,
+                "endLine": 8,
+                "endCol": 5
+              },
+              {
+                "type": "for_generic",
+                "line": 8,
+                "col": 6,
+                "endLine": 8,
+                "endCol": 31,
+                "children": [
+                  {
+                    "type": "identifier_list",
+                    "line": 8,
+                    "col": 6,
+                    "endLine": 8,
+                    "endCol": 10,
+                    "children": [
+                      {
+                        "type": "identifier",
+                        "value": "_",
+                        "line": 8,
+                        "col": 6,
+                        "endLine": 8,
+                        "endCol": 7
+                      },
+                      {
+                        "type": "identifier",
+                        "value": "c",
+                        "line": 8,
+                        "col": 9,
+                        "endLine": 8,
+                        "endCol": 10
+                      }
+                    ]
+                  },
+                  {
+                    "type": "for_in",
+                    "value": "in",
+                    "line": 8,
+                    "col": 11,
+                    "endLine": 8,
+                    "endCol": 13
+                  },
+                  {
+                    "type": "function_call",
+                    "line": 8,
+                    "col": 14,
+                    "endLine": 8,
+                    "endCol": 31,
+                    "children": [
+                      {
+                        "type": "identifier",
+                        "value": "ipairs",
+                        "line": 8,
+                        "col": 14,
+                        "endLine": 8,
+                        "endCol": 20
+                      },
+                      {
+                        "type": "function_call_paren",
+                        "value": "(",
+                        "line": 8,
+                        "col": 20,
+                        "endLine": 8,
+                        "endCol": 21
+                      },
+                      {
+                        "type": "function_arguments",
+                        "line": 8,
+                        "col": 21,
+                        "endLine": 8,
+                        "endCol": 30,
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "value": "customers",
+                            "line": 8,
+                            "col": 21,
+                            "endLine": 8,
+                            "endCol": 30
+                          }
+                        ]
+                      },
+                      {
+                        "type": "function_call_paren",
+                        "line": 8,
+                        "col": 30,
+                        "endLine": 8,
+                        "endCol": 31
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "for_do",
+                "value": "do",
+                "line": 8,
+                "col": 32,
+                "endLine": 8,
+                "endCol": 34
+              },
+              {
+                "type": "function_call",
+                "line": 9,
+                "col": 4,
+                "endLine": 9,
+                "endCol": 125,
+                "children": [
+                  {
+                    "type": "identifier",
+                    "value": "table",
+                    "line": 9,
+                    "col": 4,
+                    "endLine": 9,
+                    "endCol": 9
+                  },
+                  {
+                    "type": "identifier",
+                    "value": "insert",
+                    "line": 9,
+                    "col": 10,
+                    "endLine": 9,
+                    "endCol": 16
+                  },
+                  {
+                    "type": "function_call_paren",
+                    "value": "(",
+                    "line": 9,
+                    "col": 16,
+                    "endLine": 9,
+                    "endCol": 17
+                  },
+                  {
+                    "type": "function_arguments",
+                    "line": 9,
+                    "col": 17,
+                    "endLine": 9,
+                    "endCol": 124,
+                    "children": [
+                      {
+                        "type": "identifier",
+                        "value": "result",
+                        "line": 9,
+                        "col": 17,
+                        "endLine": 9,
+                        "endCol": 23
+                      },
+                      {
+                        "type": "tableconstructor",
+                        "line": 9,
+                        "col": 25,
+                        "endLine": 9,
+                        "endCol": 124,
+                        "children": [
+                          {
+                            "type": "fieldlist",
+                            "line": 9,
+                            "col": 26,
+                            "endLine": 9,
+                            "endCol": 123,
+                            "children": [
+                              {
+                                "type": "field",
+                                "line": 9,
+                                "col": 26,
+                                "endLine": 9,
+                                "endCol": 40,
+                                "children": [
+                                  {
+                                    "type": "identifier",
+                                    "value": "orderId",
+                                    "line": 9,
+                                    "col": 26,
+                                    "endLine": 9,
+                                    "endCol": 33
+                                  },
+                                  {
+                                    "type": "identifier",
+                                    "value": "o",
+                                    "line": 9,
+                                    "col": 36,
+                                    "endLine": 9,
+                                    "endCol": 37
+                                  },
+                                  {
+                                    "type": "identifier",
+                                    "value": "id",
+                                    "line": 9,
+                                    "col": 38,
+                                    "endLine": 9,
+                                    "endCol": 40
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "field",
+                                "line": 9,
+                                "col": 42,
+                                "endLine": 9,
+                                "endCol": 72,
+                                "children": [
+                                  {
+                                    "type": "identifier",
+                                    "value": "orderCustomerId",
+                                    "line": 9,
+                                    "col": 42,
+                                    "endLine": 9,
+                                    "endCol": 57
+                                  },
+                                  {
+                                    "type": "identifier",
+                                    "value": "o",
+                                    "line": 9,
+                                    "col": 60,
+                                    "endLine": 9,
+                                    "endCol": 61
+                                  },
+                                  {
+                                    "type": "identifier",
+                                    "value": "customerId",
+                                    "line": 9,
+                                    "col": 62,
+                                    "endLine": 9,
+                                    "endCol": 72
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "field",
+                                "line": 9,
+                                "col": 74,
+                                "endLine": 9,
+                                "endCol": 101,
+                                "children": [
+                                  {
+                                    "type": "identifier",
+                                    "value": "pairedCustomerName",
+                                    "line": 9,
+                                    "col": 74,
+                                    "endLine": 9,
+                                    "endCol": 92
+                                  },
+                                  {
+                                    "type": "identifier",
+                                    "value": "c",
+                                    "line": 9,
+                                    "col": 95,
+                                    "endLine": 9,
+                                    "endCol": 96
+                                  },
+                                  {
+                                    "type": "identifier",
+                                    "value": "name",
+                                    "line": 9,
+                                    "col": 97,
+                                    "endLine": 9,
+                                    "endCol": 101
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "field",
+                                "line": 9,
+                                "col": 103,
+                                "endLine": 9,
+                                "endCol": 123,
+                                "children": [
+                                  {
+                                    "type": "identifier",
+                                    "value": "orderTotal",
+                                    "line": 9,
+                                    "col": 103,
+                                    "endLine": 9,
+                                    "endCol": 113
+                                  },
+                                  {
+                                    "type": "identifier",
+                                    "value": "o",
+                                    "line": 9,
+                                    "col": 116,
+                                    "endLine": 9,
+                                    "endCol": 117
+                                  },
+                                  {
+                                    "type": "identifier",
+                                    "value": "total",
+                                    "line": 9,
+                                    "col": 118,
+                                    "endLine": 9,
+                                    "endCol": 123
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "function_call_paren",
+                    "line": 9,
+                    "col": 124,
+                    "endLine": 9,
+                    "endCol": 125
+                  }
+                ]
+              },
+              {
+                "type": "for_end",
+                "value": "end",
+                "line": 10,
+                "col": 2,
+                "endLine": 10,
+                "endCol": 5
+              }
+            ]
+          },
+          {
+            "type": "for_end",
+            "value": "end",
+            "line": 11,
+            "col": 0,
+            "endLine": 11,
+            "endCol": 3
+          }
+        ]
+      },
+      {
+        "type": "function_call",
+        "line": 11,
+        "col": 3,
+        "endLine": 14,
+        "endCol": 53,
+        "children": [
+          {
+            "type": "identifier",
+            "value": "\n\n\nprint",
+            "line": 11,
+            "col": 3,
+            "endLine": 14,
+            "endCol": 5
+          },
+          {
+            "type": "function_call_paren",
+            "value": "(",
+            "line": 14,
+            "col": 5,
+            "endLine": 14,
+            "endCol": 6
+          },
+          {
+            "type": "function_arguments",
+            "line": 14,
+            "col": 6,
+            "endLine": 14,
+            "endCol": 52,
+            "children": [
+              {
+                "type": "string",
+                "line": 14,
+                "col": 6,
+                "endLine": 14,
+                "endCol": 52
+              }
+            ]
+          },
+          {
+            "type": "function_call_paren",
+            "line": 14,
+            "col": 52,
+            "endLine": 14,
+            "endCol": 53
+          }
+        ]
+      },
+      {
+        "type": "for_statement",
+        "line": 14,
+        "col": 53,
+        "endLine": 18,
+        "endCol": 3,
+        "children": [
+          {
+            "type": "for_start",
+            "value": "\n\nfor",
+            "line": 14,
+            "col": 53,
+            "endLine": 16,
+            "endCol": 3
+          },
+          {
+            "type": "for_generic",
+            "line": 16,
+            "col": 4,
+            "endLine": 16,
+            "endCol": 30,
+            "children": [
+              {
+                "type": "identifier_list",
+                "line": 16,
+                "col": 4,
+                "endLine": 16,
+                "endCol": 12,
+                "children": [
+                  {
+                    "type": "identifier",
+                    "value": "_",
+                    "line": 16,
+                    "col": 4,
+                    "endLine": 16,
+                    "endCol": 5
+                  },
+                  {
+                    "type": "identifier",
+                    "value": "entry",
+                    "line": 16,
+                    "col": 7,
+                    "endLine": 16,
+                    "endCol": 12
+                  }
+                ]
+              },
+              {
+                "type": "for_in",
+                "value": "in",
+                "line": 16,
+                "col": 13,
+                "endLine": 16,
+                "endCol": 15
+              },
+              {
+                "type": "function_call",
+                "line": 16,
+                "col": 16,
+                "endLine": 16,
+                "endCol": 30,
+                "children": [
+                  {
+                    "type": "identifier",
+                    "value": "ipairs",
+                    "line": 16,
+                    "col": 16,
+                    "endLine": 16,
+                    "endCol": 22
+                  },
+                  {
+                    "type": "function_call_paren",
+                    "value": "(",
+                    "line": 16,
+                    "col": 22,
+                    "endLine": 16,
+                    "endCol": 23
+                  },
+                  {
+                    "type": "function_arguments",
+                    "line": 16,
+                    "col": 23,
+                    "endLine": 16,
+                    "endCol": 29,
+                    "children": [
+                      {
+                        "type": "identifier",
+                        "value": "result",
+                        "line": 16,
+                        "col": 23,
+                        "endLine": 16,
+                        "endCol": 29
+                      }
+                    ]
+                  },
+                  {
+                    "type": "function_call_paren",
+                    "line": 16,
+                    "col": 29,
+                    "endLine": 16,
+                    "endCol": 30
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "for_do",
+            "value": "do",
+            "line": 16,
+            "col": 31,
+            "endLine": 16,
+            "endCol": 33
+          },
+          {
+            "type": "function_call",
+            "line": 17,
+            "col": 2,
+            "endLine": 17,
+            "endCol": 163,
+            "children": [
+              {
+                "type": "identifier",
+                "value": "print",
+                "line": 17,
+                "col": 2,
+                "endLine": 17,
+                "endCol": 7
+              },
+              {
+                "type": "function_call_paren",
+                "value": "(",
+                "line": 17,
+                "col": 7,
+                "endLine": 17,
+                "endCol": 8
+              },
+              {
+                "type": "function_arguments",
+                "line": 17,
+                "col": 8,
+                "endLine": 17,
+                "endCol": 162,
+                "children": [
+                  {
+                    "type": "function_call",
+                    "line": 17,
+                    "col": 8,
+                    "endLine": 17,
+                    "endCol": 162,
+                    "children": [
+                      {
+                        "type": "identifier",
+                        "value": "string",
+                        "line": 17,
+                        "col": 8,
+                        "endLine": 17,
+                        "endCol": 14
+                      },
+                      {
+                        "type": "identifier",
+                        "value": "format",
+                        "line": 17,
+                        "col": 15,
+                        "endLine": 17,
+                        "endCol": 21
+                      },
+                      {
+                        "type": "function_call_paren",
+                        "value": "(",
+                        "line": 17,
+                        "col": 21,
+                        "endLine": 17,
+                        "endCol": 22
+                      },
+                      {
+                        "type": "function_arguments",
+                        "line": 17,
+                        "col": 22,
+                        "endLine": 17,
+                        "endCol": 161,
+                        "children": [
+                          {
+                            "type": "string",
+                            "line": 17,
+                            "col": 22,
+                            "endLine": 17,
+                            "endCol": 79
+                          },
+                          {
+                            "type": "identifier",
+                            "value": "entry",
+                            "line": 17,
+                            "col": 81,
+                            "endLine": 17,
+                            "endCol": 86
+                          },
+                          {
+                            "type": "identifier",
+                            "value": "orderId",
+                            "line": 17,
+                            "col": 87,
+                            "endLine": 17,
+                            "endCol": 94
+                          },
+                          {
+                            "type": "identifier",
+                            "value": "entry",
+                            "line": 17,
+                            "col": 96,
+                            "endLine": 17,
+                            "endCol": 101
+                          },
+                          {
+                            "type": "identifier",
+                            "value": "orderCustomerId",
+                            "line": 17,
+                            "col": 102,
+                            "endLine": 17,
+                            "endCol": 117
+                          },
+                          {
+                            "type": "identifier",
+                            "value": "entry",
+                            "line": 17,
+                            "col": 119,
+                            "endLine": 17,
+                            "endCol": 124
+                          },
+                          {
+                            "type": "identifier",
+                            "value": "orderTotal",
+                            "line": 17,
+                            "col": 125,
+                            "endLine": 17,
+                            "endCol": 135
+                          },
+                          {
+                            "type": "identifier",
+                            "value": "entry",
+                            "line": 17,
+                            "col": 137,
+                            "endLine": 17,
+                            "endCol": 142
+                          },
+                          {
+                            "type": "identifier",
+                            "value": "pairedCustomerName",
+                            "line": 17,
+                            "col": 143,
+                            "endLine": 17,
+                            "endCol": 161
+                          }
+                        ]
+                      },
+                      {
+                        "type": "function_call_paren",
+                        "line": 17,
+                        "col": 161,
+                        "endLine": 17,
+                        "endCol": 162
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "function_call_paren",
+                "line": 17,
+                "col": 162,
+                "endLine": 17,
+                "endCol": 163
+              }
+            ]
+          },
+          {
+            "type": "for_end",
+            "value": "end",
+            "line": 18,
+            "col": 0,
+            "endLine": 18,
+            "endCol": 3
+          }
+        ]
+      }
+    ]
+  }
 }
