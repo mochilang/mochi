@@ -1,20 +1,8 @@
 run: exit status 1
 Traceback (most recent call last):
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/http.py", line 72, in <module>
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/http.py", line 49, in <module>
     main()
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/http.py", line 67, in main
-    todo = _fetch("https://jsonplaceholder.typicode.com/todos/1", None)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/http.py", line 35, in _fetch
-    import urllib.request, urllib.parse, json
-  File "/root/.pyenv/versions/3.11.12/lib/python3.11/urllib/request.py", line 88, in <module>
-    import http.client
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/http.py", line 72, in <module>
-    main()
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/http.py", line 67, in main
-    todo = _fetch("https://jsonplaceholder.typicode.com/todos/1", None)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/http.py", line 52, in _fetch
-    req = urllib.request.Request(url, data=data, headers=headers, method=method)
-          ^^^^^^^^^^^^^^
-AttributeError: cannot access submodule 'request' of module 'urllib' (most likely due to a circular import)
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/http.py", line 48, in main
+    print(todo.title)
+          ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'title'

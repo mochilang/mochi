@@ -1,4 +1,4 @@
-File "/workspace/mochi/tests/rosetta/transpiler/Python/ftp.py", line 26
+File "/workspace/mochi/tests/rosetta/transpiler/Python/ftp.py", line 29
     def login(conn, user, pass):
                           ^^^^
 SyntaxError: invalid syntax

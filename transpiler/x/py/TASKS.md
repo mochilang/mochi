@@ -1,5 +1,5 @@
-## Progress (2025-07-30 21:26 +0700)
-- Commit ec3938e4c2: transpiler(py): capture outer vars for nested functions
+## Progress (2025-07-30 21:42 +0700)
+- Commit 0411cf30c8: py transpiler: remove script dir from sys.path
 - Generated Python for 104/105 programs
 - Updated README checklist and outputs
 - Removed runtime helpers and improved boolean type inference
