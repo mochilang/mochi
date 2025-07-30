@@ -1,0 +1,58 @@
+{
+  "items": [
+    {
+      "_kind": "func_decl",
+      "name": {
+        "base_name": {
+          "name": "sum_rec"
+        }
+      },
+      "params": {
+        "params": [
+          {
+            "name": {
+              "base_name": {
+                "name": "n"
+              }
+            },
+            "interface_type": "$sSiD"
+          },
+          {
+            "name": {
+              "base_name": {
+                "name": "acc"
+              }
+            },
+            "interface_type": "$sSiD"
+          }
+        ]
+      },
+      "body": {
+        "range": {
+          "start": 113,
+          "end": 217
+        }
+      },
+      "range": {
+        "start": 71,
+        "end": 217
+      },
+      "result": "$sSiD",
+      "interface_type": "$syS2i_SitcD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 219,
+          "end": 249
+        }
+      },
+      "range": {
+        "start": 219,
+        "end": 249
+      }
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "items": [
+    {
+      "_kind": "func_decl",
+      "name": {
+        "base_name": {
+          "name": "add"
+        }
+      },
+      "params": {
+        "params": [
+          {
+            "name": {
+              "base_name": {
+                "name": "a"
+              }
+            },
+            "interface_type": "$sSiD"
+          },
+          {
+            "name": {
+              "base_name": {
+                "name": "b"
+              }
+            },
+            "interface_type": "$sSiD"
+          }
+        ]
+      },
+      "body": {
+        "range": {
+          "start": 107,
+          "end": 128
+        }
+      },
+      "range": {
+        "start": 71,
+        "end": 128
+      },
+      "result": "$sSiD",
+      "interface_type": "$syS2i_SitcD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 130,
+          "end": 155
+        }
+      },
+      "range": {
+        "start": 130,
+        "end": 155
+      }
+    }
+  ]
+}

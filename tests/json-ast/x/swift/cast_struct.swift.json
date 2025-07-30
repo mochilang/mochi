@@ -1,0 +1,114 @@
+{
+  "items": [
+    {
+      "_kind": "import_decl",
+      "range": {
+        "start": 71,
+        "end": 78
+      }
+    },
+    {
+      "_kind": "struct_decl",
+      "name": {
+        "base_name": {
+          "name": "Todo"
+        }
+      },
+      "range": {
+        "start": 90,
+        "end": 126
+      },
+      "interface_type": "$s4main4TodoVmD",
+      "access": "internal",
+      "members": [
+        {
+          "_kind": "pattern_binding_decl",
+          "range": {
+            "start": 108,
+            "end": 119
+          }
+        },
+        {
+          "_kind": "var_decl",
+          "name": {
+            "base_name": {
+              "name": "title"
+            }
+          },
+          "range": {
+            "start": 112,
+            "end": 112
+          },
+          "interface_type": "$sSSD",
+          "access": "internal"
+        },
+        {
+          "_kind": "constructor_decl",
+          "name": {
+            "base_name": {
+              "name": ""
+            }
+          },
+          "params": {
+            "params": [
+              {
+                "name": {
+                  "base_name": {
+                    "name": "title"
+                  }
+                },
+                "interface_type": "$sSSD"
+              }
+            ]
+          },
+          "range": {
+            "start": 97,
+            "end": 97
+          },
+          "interface_type": "$sy4main4TodoVSS_tcACmcD",
+          "access": "internal"
+        }
+      ]
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 128,
+          "end": 155
+        }
+      },
+      "range": {
+        "start": 128,
+        "end": 155
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "todo"
+        }
+      },
+      "range": {
+        "start": 132,
+        "end": 132
+      },
+      "interface_type": "$s4main4TodoVD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 157,
+          "end": 173
+        }
+      },
+      "range": {
+        "start": 157,
+        "end": 173
+      }
+    }
+  ]
+}

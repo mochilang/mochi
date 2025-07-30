@@ -1,0 +1,172 @@
+{
+  "items": [
+    {
+      "_kind": "import_decl",
+      "range": {
+        "start": 71,
+        "end": 78
+      }
+    },
+    {
+      "_kind": "struct_decl",
+      "name": {
+        "base_name": {
+          "name": "testpkg"
+        }
+      },
+      "range": {
+        "start": 90,
+        "end": 223
+      },
+      "interface_type": "$s4main7testpkgVmD",
+      "access": "internal",
+      "members": [
+        {
+          "_kind": "func_decl",
+          "name": {
+            "base_name": {
+              "name": "Add"
+            }
+          },
+          "params": {
+            "params": [
+              {
+                "name": {
+                  "base_name": {
+                    "name": "a"
+                  }
+                },
+                "interface_type": "$sSiD"
+              },
+              {
+                "name": {
+                  "base_name": {
+                    "name": "b"
+                  }
+                },
+                "interface_type": "$sSiD"
+              }
+            ]
+          },
+          "body": {
+            "range": {
+              "start": 154,
+              "end": 169
+            }
+          },
+          "range": {
+            "start": 111,
+            "end": 169
+          },
+          "result": "$sSiD",
+          "interface_type": "$syS2i_Sitc4main7testpkgVmcD",
+          "access": "internal"
+        },
+        {
+          "_kind": "pattern_binding_decl",
+          "range": {
+            "start": 175,
+            "end": 191
+          }
+        },
+        {
+          "_kind": "var_decl",
+          "name": {
+            "base_name": {
+              "name": "Pi"
+            }
+          },
+          "range": {
+            "start": 186,
+            "end": 186
+          },
+          "interface_type": "$sSdD",
+          "access": "internal"
+        },
+        {
+          "_kind": "pattern_binding_decl",
+          "range": {
+            "start": 200,
+            "end": 220
+          }
+        },
+        {
+          "_kind": "var_decl",
+          "name": {
+            "base_name": {
+              "name": "Answer"
+            }
+          },
+          "range": {
+            "start": 211,
+            "end": 211
+          },
+          "interface_type": "$sSiD",
+          "access": "internal"
+        },
+        {
+          "_kind": "constructor_decl",
+          "name": {
+            "base_name": {
+              "name": ""
+            }
+          },
+          "params": {
+            "params": null
+          },
+          "body": {
+            "range": {
+              "start": 97,
+              "end": 97
+            }
+          },
+          "range": {
+            "start": 97,
+            "end": 97
+          },
+          "interface_type": "$sy4main7testpkgVycACmcD",
+          "access": "internal"
+        }
+      ]
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 225,
+          "end": 248
+        }
+      },
+      "range": {
+        "start": 225,
+        "end": 248
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 250,
+          "end": 266
+        }
+      },
+      "range": {
+        "start": 250,
+        "end": 266
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 268,
+          "end": 288
+        }
+      },
+      "range": {
+        "start": 268,
+        "end": 288
+      }
+    }
+  ]
+}

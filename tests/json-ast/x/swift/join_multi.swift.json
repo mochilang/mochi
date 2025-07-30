@@ -1,0 +1,138 @@
+{
+  "items": [
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 71,
+          "end": 140
+        }
+      },
+      "range": {
+        "start": 71,
+        "end": 140
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "customers"
+        }
+      },
+      "range": {
+        "start": 75,
+        "end": 75
+      },
+      "interface_type": "$sSSypXSDXSaD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 142,
+          "end": 214
+        }
+      },
+      "range": {
+        "start": 142,
+        "end": 214
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "orders"
+        }
+      },
+      "range": {
+        "start": 146,
+        "end": 146
+      },
+      "interface_type": "$sSSSiXSDXSaD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 216,
+          "end": 287
+        }
+      },
+      "range": {
+        "start": 216,
+        "end": 287
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "items"
+        }
+      },
+      "range": {
+        "start": 220,
+        "end": 220
+      },
+      "interface_type": "$sSSypXSDXSaD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 289,
+          "end": 678
+        }
+      },
+      "range": {
+        "start": 289,
+        "end": 678
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "result"
+        }
+      },
+      "range": {
+        "start": 293,
+        "end": 293
+      },
+      "interface_type": "$sSSypXSDXSaD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 680,
+          "end": 706
+        }
+      },
+      "range": {
+        "start": 680,
+        "end": 706
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 708,
+          "end": 774
+        }
+      },
+      "range": {
+        "start": 708,
+        "end": 774
+      }
+    }
+  ]
+}

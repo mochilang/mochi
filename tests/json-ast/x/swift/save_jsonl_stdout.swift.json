@@ -1,0 +1,84 @@
+{
+  "items": [
+    {
+      "_kind": "import_decl",
+      "range": {
+        "start": 71,
+        "end": 78
+      }
+    },
+    {
+      "_kind": "func_decl",
+      "name": {
+        "base_name": {
+          "name": "toJsonObj"
+        }
+      },
+      "params": {
+        "params": [
+          {
+            "name": {
+              "base_name": {
+                "name": "v"
+              }
+            },
+            "interface_type": "$sypD"
+          }
+        ]
+      },
+      "body": {
+        "range": {
+          "start": 122,
+          "end": 354
+        }
+      },
+      "range": {
+        "start": 90,
+        "end": 354
+      },
+      "result": "$sypD",
+      "interface_type": "$syypypcD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 356,
+          "end": 438
+        }
+      },
+      "range": {
+        "start": 356,
+        "end": 438
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "people"
+        }
+      },
+      "range": {
+        "start": 360,
+        "end": 360
+      },
+      "interface_type": "$sypXSaD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 440,
+          "end": 642
+        }
+      },
+      "range": {
+        "start": 440,
+        "end": 642
+      }
+    }
+  ]
+}

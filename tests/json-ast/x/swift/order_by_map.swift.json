@@ -1,0 +1,78 @@
+{
+  "items": [
+    {
+      "_kind": "import_decl",
+      "range": {
+        "start": 71,
+        "end": 78
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 90,
+          "end": 154
+        }
+      },
+      "range": {
+        "start": 90,
+        "end": 154
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "data"
+        }
+      },
+      "range": {
+        "start": 94,
+        "end": 94
+      },
+      "interface_type": "$sSSSiXSDXSaD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 156,
+          "end": 501
+        }
+      },
+      "range": {
+        "start": 156,
+        "end": 501
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "sorted"
+        }
+      },
+      "range": {
+        "start": 160,
+        "end": 160
+      },
+      "interface_type": "$sSSSiXSDXSaD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 503,
+          "end": 535
+        }
+      },
+      "range": {
+        "start": 503,
+        "end": 535
+      }
+    }
+  ]
+}

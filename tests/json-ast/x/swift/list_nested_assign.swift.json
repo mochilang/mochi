@@ -1,0 +1,57 @@
+{
+  "items": [
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 71,
+          "end": 99
+        }
+      },
+      "range": {
+        "start": 71,
+        "end": 99
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "matrix"
+        }
+      },
+      "range": {
+        "start": 75,
+        "end": 75
+      },
+      "interface_type": "$sSiXSaXSaD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 101,
+          "end": 116
+        }
+      },
+      "range": {
+        "start": 101,
+        "end": 116
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 118,
+          "end": 146
+        }
+      },
+      "range": {
+        "start": 118,
+        "end": 146
+      }
+    }
+  ]
+}

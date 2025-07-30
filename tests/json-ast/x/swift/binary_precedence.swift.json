@@ -1,0 +1,56 @@
+{
+  "items": [
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 71,
+          "end": 78
+        }
+      },
+      "range": {
+        "start": 71,
+        "end": 78
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 80,
+          "end": 87
+        }
+      },
+      "range": {
+        "start": 80,
+        "end": 87
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 89,
+          "end": 96
+        }
+      },
+      "range": {
+        "start": 89,
+        "end": 96
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 98,
+          "end": 105
+        }
+      },
+      "range": {
+        "start": 98,
+        "end": 105
+      }
+    }
+  ]
+}

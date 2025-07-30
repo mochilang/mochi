@@ -1,0 +1,190 @@
+{
+  "items": [
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 71,
+          "end": 88
+        }
+      },
+      "range": {
+        "start": 71,
+        "end": 88
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "xs"
+        }
+      },
+      "range": {
+        "start": 75,
+        "end": 75
+      },
+      "interface_type": "$sSiXSaD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 90,
+          "end": 227
+        }
+      },
+      "range": {
+        "start": 90,
+        "end": 227
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "ys"
+        }
+      },
+      "range": {
+        "start": 94,
+        "end": 94
+      },
+      "interface_type": "$sSiXSaD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 229,
+          "end": 251
+        }
+      },
+      "range": {
+        "start": 229,
+        "end": 251
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 253,
+          "end": 275
+        }
+      },
+      "range": {
+        "start": 253,
+        "end": 275
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 277,
+          "end": 292
+        }
+      },
+      "range": {
+        "start": 277,
+        "end": 292
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "m"
+        }
+      },
+      "range": {
+        "start": 281,
+        "end": 281
+      },
+      "interface_type": "$sSSSiXSDD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 294,
+          "end": 315
+        }
+      },
+      "range": {
+        "start": 294,
+        "end": 315
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 317,
+          "end": 338
+        }
+      },
+      "range": {
+        "start": 317,
+        "end": 338
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 340,
+          "end": 348
+        }
+      },
+      "range": {
+        "start": 340,
+        "end": 348
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "s"
+        }
+      },
+      "range": {
+        "start": 344,
+        "end": 344
+      },
+      "interface_type": "$sSSD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 356,
+          "end": 394
+        }
+      },
+      "range": {
+        "start": 356,
+        "end": 394
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 396,
+          "end": 434
+        }
+      },
+      "range": {
+        "start": 396,
+        "end": 434
+      }
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "items": [
+    {
+      "_kind": "import_decl",
+      "range": {
+        "start": 71,
+        "end": 78
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 90,
+          "end": 352
+        }
+      },
+      "range": {
+        "start": 90,
+        "end": 352
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "products"
+        }
+      },
+      "range": {
+        "start": 94,
+        "end": 94
+      },
+      "interface_type": "$sSSypXSDXSaD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 354,
+          "end": 719
+        }
+      },
+      "range": {
+        "start": 354,
+        "end": 719
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "expensive"
+        }
+      },
+      "range": {
+        "start": 358,
+        "end": 358
+      },
+      "interface_type": "$sSSypXSDXSaD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 721,
+          "end": 776
+        }
+      },
+      "range": {
+        "start": 721,
+        "end": 776
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 778,
+          "end": 894
+        }
+      },
+      "range": {
+        "start": 778,
+        "end": 894
+      }
+    }
+  ]
+}

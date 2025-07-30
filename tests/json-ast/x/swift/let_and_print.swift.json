@@ -1,0 +1,71 @@
+{
+  "items": [
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 71,
+          "end": 79
+        }
+      },
+      "range": {
+        "start": 71,
+        "end": 79
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "a"
+        }
+      },
+      "range": {
+        "start": 75,
+        "end": 75
+      },
+      "interface_type": "$sSiD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 82,
+          "end": 90
+        }
+      },
+      "range": {
+        "start": 82,
+        "end": 90
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "b"
+        }
+      },
+      "range": {
+        "start": 86,
+        "end": 86
+      },
+      "interface_type": "$sSiD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 93,
+          "end": 126
+        }
+      },
+      "range": {
+        "start": 93,
+        "end": 126
+      }
+    }
+  ]
+}

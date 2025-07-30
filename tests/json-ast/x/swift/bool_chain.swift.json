@@ -1,0 +1,67 @@
+{
+  "items": [
+    {
+      "_kind": "func_decl",
+      "name": {
+        "base_name": {
+          "name": "boom"
+        }
+      },
+      "params": {
+        "params": null
+      },
+      "body": {
+        "range": {
+          "start": 91,
+          "end": 127
+        }
+      },
+      "range": {
+        "start": 71,
+        "end": 127
+      },
+      "result": "$sSbD",
+      "interface_type": "$sSbycD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 129,
+          "end": 211
+        }
+      },
+      "range": {
+        "start": 129,
+        "end": 211
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 213,
+          "end": 294
+        }
+      },
+      "range": {
+        "start": 213,
+        "end": 294
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 296,
+          "end": 401
+        }
+      },
+      "range": {
+        "start": 296,
+        "end": 401
+      }
+    }
+  ]
+}

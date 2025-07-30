@@ -1,0 +1,97 @@
+{
+  "items": [
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 71,
+          "end": 86
+        }
+      },
+      "range": {
+        "start": 71,
+        "end": 86
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "a"
+        }
+      },
+      "range": {
+        "start": 75,
+        "end": 75
+      },
+      "interface_type": "$sSiD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 88,
+          "end": 102
+        }
+      },
+      "range": {
+        "start": 88,
+        "end": 102
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "b"
+        }
+      },
+      "range": {
+        "start": 92,
+        "end": 92
+      },
+      "interface_type": "$sSiD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 104,
+          "end": 111
+        }
+      },
+      "range": {
+        "start": 104,
+        "end": 111
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 113,
+          "end": 137
+        }
+      },
+      "range": {
+        "start": 113,
+        "end": 137
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 139,
+          "end": 162
+        }
+      },
+      "range": {
+        "start": 139,
+        "end": 162
+      }
+    }
+  ]
+}
