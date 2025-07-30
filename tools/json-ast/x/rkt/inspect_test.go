@@ -11,7 +11,6 @@ import (
 	"strings"
 	"testing"
 
-	rack "mochi/compiler/x/racket"
 	rkt "mochi/tools/json-ast/x/rkt"
 )
 
@@ -36,14 +35,7 @@ func repoRoot(t *testing.T) string {
 	return ""
 }
 
-func ensureRacket(t *testing.T) {
-	if err := rack.EnsureRacket(); err != nil {
-		t.Skipf("racket not installed: %v", err)
-	}
-}
-
 func TestInspect_Golden(t *testing.T) {
-	ensureRacket(t)
 	root := repoRoot(t)
 	srcDir := filepath.Join(root, "tests", "transpiler", "x", "rkt")
 	outDir := filepath.Join(root, "tests", "json-ast", "x", "rkt")

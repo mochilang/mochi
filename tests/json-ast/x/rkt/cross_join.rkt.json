@@ -1,404 +1,1039 @@
 {
-  "forms": [
-    {
-      "datum": [
-        {
-          "sym": "require"
-        },
-        {
-          "sym": "racket/list"
-        },
-        {
-          "sym": "racket/string"
-        }
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "define"
-        },
-        {
-          "sym": "customers"
-        },
-        [
+  "root": {
+    "type": "program",
+    "start": 0,
+    "end": 1119,
+    "children": [
+      {
+        "type": "comment",
+        "start": 0,
+        "end": 55
+      },
+      {
+        "type": "extension",
+        "start": 56,
+        "end": 68,
+        "children": [
           {
-            "sym": "list"
-          },
-          [
-            {
-              "sym": "hash"
-            },
-            "id",
-            1,
-            "name",
-            "Alice"
-          ],
-          [
-            {
-              "sym": "hash"
-            },
-            "id",
-            2,
-            "name",
-            "Bob"
-          ],
-          [
-            {
-              "sym": "hash"
-            },
-            "id",
-            3,
-            "name",
-            "Charlie"
-          ]
-        ]
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "define"
-        },
-        {
-          "sym": "orders"
-        },
-        [
-          {
-            "sym": "list"
-          },
-          [
-            {
-              "sym": "hash"
-            },
-            "id",
-            100,
-            "customerId",
-            1,
-            "total",
-            250
-          ],
-          [
-            {
-              "sym": "hash"
-            },
-            "id",
-            101,
-            "customerId",
-            2,
-            "total",
-            125
-          ],
-          [
-            {
-              "sym": "hash"
-            },
-            "id",
-            102,
-            "customerId",
-            1,
-            "total",
-            300
-          ]
-        ]
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "define"
-        },
-        {
-          "sym": "result"
-        },
-        [
-          {
-            "sym": "let"
-          },
-          [
-            [
-              {
-                "sym": "_res"
-              },
-              [
-                {
-                  "sym": "quote"
-                },
-                []
-              ]
-            ]
-          ],
-          [
-            {
-              "sym": "for"
-            },
-            [
-              [
-                {
-                  "sym": "o"
-                },
-                {
-                  "sym": "orders"
-                }
-              ]
-            ],
-            [
-              {
-                "sym": "for"
-              },
-              [
-                [
-                  {
-                    "sym": "c"
-                  },
-                  {
-                    "sym": "customers"
-                  }
-                ]
-              ],
-              [
-                {
-                  "sym": "set!"
-                },
-                {
-                  "sym": "_res"
-                },
-                [
-                  {
-                    "sym": "append"
-                  },
-                  {
-                    "sym": "_res"
-                  },
-                  [
-                    {
-                      "sym": "list"
-                    },
-                    [
-                      {
-                        "sym": "hash"
-                      },
-                      "orderId",
-                      [
-                        {
-                          "sym": "hash-ref"
-                        },
-                        {
-                          "sym": "o"
-                        },
-                        "id"
-                      ],
-                      "orderCustomerId",
-                      [
-                        {
-                          "sym": "hash-ref"
-                        },
-                        {
-                          "sym": "o"
-                        },
-                        "customerId"
-                      ],
-                      "pairedCustomerName",
-                      [
-                        {
-                          "sym": "hash-ref"
-                        },
-                        {
-                          "sym": "c"
-                        },
-                        "name"
-                      ],
-                      "orderTotal",
-                      [
-                        {
-                          "sym": "hash-ref"
-                        },
-                        {
-                          "sym": "o"
-                        },
-                        "total"
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ],
-          {
-            "sym": "_res"
+            "type": "lang_name",
+            "start": 62,
+            "end": 68
           }
         ]
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "displayln"
-        },
-        "--- Cross Join: All order-customer pairs ---"
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "for"
-        },
-        [
-          [
-            {
-              "sym": "entry"
-            },
-            {
-              "sym": "result"
-            }
-          ]
-        ],
-        [
+      },
+      {
+        "type": "list",
+        "start": 69,
+        "end": 104,
+        "children": [
           {
-            "sym": "displayln"
+            "type": "symbol",
+            "start": 70,
+            "end": 77
           },
-          [
-            {
-              "sym": "string-join"
-            },
-            [
-              {
-                "sym": "filter"
-              },
-              [
-                {
-                  "sym": "lambda"
-                },
-                [
-                  {
-                    "sym": "s"
-                  }
-                ],
-                [
-                  {
-                    "sym": "not"
-                  },
-                  [
-                    {
-                      "sym": "string=?"
-                    },
-                    {
-                      "sym": "s"
-                    },
-                    ""
-                  ]
-                ]
-              ],
-              [
-                {
-                  "sym": "list"
-                },
-                [
-                  {
-                    "sym": "format"
-                  },
-                  "~a",
-                  "Order"
-                ],
-                [
-                  {
-                    "sym": "format"
-                  },
-                  "~a",
-                  [
-                    {
-                      "sym": "hash-ref"
-                    },
-                    {
-                      "sym": "entry"
-                    },
-                    "orderId"
-                  ]
-                ],
-                [
-                  {
-                    "sym": "format"
-                  },
-                  "~a",
-                  "(customerId:"
-                ],
-                [
-                  {
-                    "sym": "format"
-                  },
-                  "~a",
-                  [
-                    {
-                      "sym": "hash-ref"
-                    },
-                    {
-                      "sym": "entry"
-                    },
-                    "orderCustomerId"
-                  ]
-                ],
-                [
-                  {
-                    "sym": "format"
-                  },
-                  "~a",
-                  ", total: $"
-                ],
-                [
-                  {
-                    "sym": "format"
-                  },
-                  "~a",
-                  [
-                    {
-                      "sym": "hash-ref"
-                    },
-                    {
-                      "sym": "entry"
-                    },
-                    "orderTotal"
-                  ]
-                ],
-                [
-                  {
-                    "sym": "format"
-                  },
-                  "~a",
-                  ") paired with"
-                ],
-                [
-                  {
-                    "sym": "format"
-                  },
-                  "~a",
-                  [
-                    {
-                      "sym": "hash-ref"
-                    },
-                    {
-                      "sym": "entry"
-                    },
-                    "pairedCustomerName"
-                  ]
-                ]
-              ]
-            ],
-            " "
-          ]
+          {
+            "type": "symbol",
+            "start": 78,
+            "end": 89
+          },
+          {
+            "type": "symbol",
+            "start": 90,
+            "end": 103
+          }
         ]
-      ],
-      "line": 0,
-      "col": 0
-    }
-  ]
+      },
+      {
+        "type": "list",
+        "start": 106,
+        "end": 218,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 107,
+            "end": 113
+          },
+          {
+            "type": "symbol",
+            "start": 114,
+            "end": 123
+          },
+          {
+            "type": "list",
+            "start": 124,
+            "end": 217,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 125,
+                "end": 129
+              },
+              {
+                "type": "list",
+                "start": 130,
+                "end": 158,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 131,
+                    "end": 135
+                  },
+                  {
+                    "type": "string",
+                    "start": 136,
+                    "end": 140
+                  },
+                  {
+                    "type": "number",
+                    "start": 141,
+                    "end": 142
+                  },
+                  {
+                    "type": "string",
+                    "start": 143,
+                    "end": 149
+                  },
+                  {
+                    "type": "string",
+                    "start": 150,
+                    "end": 157
+                  }
+                ]
+              },
+              {
+                "type": "list",
+                "start": 159,
+                "end": 185,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 160,
+                    "end": 164
+                  },
+                  {
+                    "type": "string",
+                    "start": 165,
+                    "end": 169
+                  },
+                  {
+                    "type": "number",
+                    "start": 170,
+                    "end": 171
+                  },
+                  {
+                    "type": "string",
+                    "start": 172,
+                    "end": 178
+                  },
+                  {
+                    "type": "string",
+                    "start": 179,
+                    "end": 184
+                  }
+                ]
+              },
+              {
+                "type": "list",
+                "start": 186,
+                "end": 216,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 187,
+                    "end": 191
+                  },
+                  {
+                    "type": "string",
+                    "start": 192,
+                    "end": 196
+                  },
+                  {
+                    "type": "number",
+                    "start": 197,
+                    "end": 198
+                  },
+                  {
+                    "type": "string",
+                    "start": 199,
+                    "end": 205
+                  },
+                  {
+                    "type": "string",
+                    "start": 206,
+                    "end": 215
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "start": 219,
+        "end": 370,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 220,
+            "end": 226
+          },
+          {
+            "type": "symbol",
+            "start": 227,
+            "end": 233
+          },
+          {
+            "type": "list",
+            "start": 234,
+            "end": 369,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 235,
+                "end": 239
+              },
+              {
+                "type": "list",
+                "start": 240,
+                "end": 282,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 241,
+                    "end": 245
+                  },
+                  {
+                    "type": "string",
+                    "start": 246,
+                    "end": 250
+                  },
+                  {
+                    "type": "number",
+                    "start": 251,
+                    "end": 254
+                  },
+                  {
+                    "type": "string",
+                    "start": 255,
+                    "end": 267
+                  },
+                  {
+                    "type": "number",
+                    "start": 268,
+                    "end": 269
+                  },
+                  {
+                    "type": "string",
+                    "start": 270,
+                    "end": 277
+                  },
+                  {
+                    "type": "number",
+                    "start": 278,
+                    "end": 281
+                  }
+                ]
+              },
+              {
+                "type": "list",
+                "start": 283,
+                "end": 325,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 284,
+                    "end": 288
+                  },
+                  {
+                    "type": "string",
+                    "start": 289,
+                    "end": 293
+                  },
+                  {
+                    "type": "number",
+                    "start": 294,
+                    "end": 297
+                  },
+                  {
+                    "type": "string",
+                    "start": 298,
+                    "end": 310
+                  },
+                  {
+                    "type": "number",
+                    "start": 311,
+                    "end": 312
+                  },
+                  {
+                    "type": "string",
+                    "start": 313,
+                    "end": 320
+                  },
+                  {
+                    "type": "number",
+                    "start": 321,
+                    "end": 324
+                  }
+                ]
+              },
+              {
+                "type": "list",
+                "start": 326,
+                "end": 368,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 327,
+                    "end": 331
+                  },
+                  {
+                    "type": "string",
+                    "start": 332,
+                    "end": 336
+                  },
+                  {
+                    "type": "number",
+                    "start": 337,
+                    "end": 340
+                  },
+                  {
+                    "type": "string",
+                    "start": 341,
+                    "end": 353
+                  },
+                  {
+                    "type": "number",
+                    "start": 354,
+                    "end": 355
+                  },
+                  {
+                    "type": "string",
+                    "start": 356,
+                    "end": 363
+                  },
+                  {
+                    "type": "number",
+                    "start": 364,
+                    "end": 367
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "start": 371,
+        "end": 660,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 372,
+            "end": 378
+          },
+          {
+            "type": "symbol",
+            "start": 379,
+            "end": 385
+          },
+          {
+            "type": "list",
+            "start": 386,
+            "end": 659,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 387,
+                "end": 390
+              },
+              {
+                "type": "list",
+                "start": 391,
+                "end": 403,
+                "children": [
+                  {
+                    "type": "list",
+                    "start": 392,
+                    "end": 402,
+                    "children": [
+                      {
+                        "type": "symbol",
+                        "start": 393,
+                        "end": 397
+                      },
+                      {
+                        "type": "quote",
+                        "start": 398,
+                        "end": 401,
+                        "children": [
+                          {
+                            "type": "list",
+                            "start": 399,
+                            "end": 401
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "list",
+                "start": 406,
+                "end": 651,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 407,
+                    "end": 410
+                  },
+                  {
+                    "type": "list",
+                    "start": 411,
+                    "end": 423,
+                    "children": [
+                      {
+                        "type": "list",
+                        "start": 412,
+                        "end": 422,
+                        "children": [
+                          {
+                            "type": "symbol",
+                            "start": 413,
+                            "end": 414
+                          },
+                          {
+                            "type": "symbol",
+                            "start": 415,
+                            "end": 421
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "list",
+                    "start": 428,
+                    "end": 647,
+                    "children": [
+                      {
+                        "type": "symbol",
+                        "start": 429,
+                        "end": 432
+                      },
+                      {
+                        "type": "list",
+                        "start": 433,
+                        "end": 448,
+                        "children": [
+                          {
+                            "type": "list",
+                            "start": 434,
+                            "end": 447,
+                            "children": [
+                              {
+                                "type": "symbol",
+                                "start": 435,
+                                "end": 436
+                              },
+                              {
+                                "type": "symbol",
+                                "start": 437,
+                                "end": 446
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "list",
+                        "start": 455,
+                        "end": 641,
+                        "children": [
+                          {
+                            "type": "symbol",
+                            "start": 456,
+                            "end": 460
+                          },
+                          {
+                            "type": "symbol",
+                            "start": 461,
+                            "end": 465
+                          },
+                          {
+                            "type": "list",
+                            "start": 466,
+                            "end": 640,
+                            "children": [
+                              {
+                                "type": "symbol",
+                                "start": 467,
+                                "end": 473
+                              },
+                              {
+                                "type": "symbol",
+                                "start": 474,
+                                "end": 478
+                              },
+                              {
+                                "type": "list",
+                                "start": 479,
+                                "end": 639,
+                                "children": [
+                                  {
+                                    "type": "symbol",
+                                    "start": 480,
+                                    "end": 484
+                                  },
+                                  {
+                                    "type": "list",
+                                    "start": 485,
+                                    "end": 638,
+                                    "children": [
+                                      {
+                                        "type": "symbol",
+                                        "start": 486,
+                                        "end": 490
+                                      },
+                                      {
+                                        "type": "string",
+                                        "start": 491,
+                                        "end": 500
+                                      },
+                                      {
+                                        "type": "list",
+                                        "start": 501,
+                                        "end": 518,
+                                        "children": [
+                                          {
+                                            "type": "symbol",
+                                            "start": 502,
+                                            "end": 510
+                                          },
+                                          {
+                                            "type": "symbol",
+                                            "start": 511,
+                                            "end": 512
+                                          },
+                                          {
+                                            "type": "string",
+                                            "start": 513,
+                                            "end": 517
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "type": "string",
+                                        "start": 519,
+                                        "end": 536
+                                      },
+                                      {
+                                        "type": "list",
+                                        "start": 537,
+                                        "end": 562,
+                                        "children": [
+                                          {
+                                            "type": "symbol",
+                                            "start": 538,
+                                            "end": 546
+                                          },
+                                          {
+                                            "type": "symbol",
+                                            "start": 547,
+                                            "end": 548
+                                          },
+                                          {
+                                            "type": "string",
+                                            "start": 549,
+                                            "end": 561
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "type": "string",
+                                        "start": 563,
+                                        "end": 583
+                                      },
+                                      {
+                                        "type": "list",
+                                        "start": 584,
+                                        "end": 603,
+                                        "children": [
+                                          {
+                                            "type": "symbol",
+                                            "start": 585,
+                                            "end": 593
+                                          },
+                                          {
+                                            "type": "symbol",
+                                            "start": 594,
+                                            "end": 595
+                                          },
+                                          {
+                                            "type": "string",
+                                            "start": 596,
+                                            "end": 602
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "type": "string",
+                                        "start": 604,
+                                        "end": 616
+                                      },
+                                      {
+                                        "type": "list",
+                                        "start": 617,
+                                        "end": 637,
+                                        "children": [
+                                          {
+                                            "type": "symbol",
+                                            "start": 618,
+                                            "end": 626
+                                          },
+                                          {
+                                            "type": "symbol",
+                                            "start": 627,
+                                            "end": 628
+                                          },
+                                          {
+                                            "type": "string",
+                                            "start": 629,
+                                            "end": 636
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "symbol",
+                "start": 654,
+                "end": 658
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "start": 661,
+        "end": 719,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 662,
+            "end": 671
+          },
+          {
+            "type": "string",
+            "start": 672,
+            "end": 718
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "start": 720,
+        "end": 1118,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 721,
+            "end": 724
+          },
+          {
+            "type": "list",
+            "start": 725,
+            "end": 741,
+            "children": [
+              {
+                "type": "list",
+                "start": 726,
+                "end": 740,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 727,
+                    "end": 732
+                  },
+                  {
+                    "type": "symbol",
+                    "start": 733,
+                    "end": 739
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "list",
+            "start": 742,
+            "end": 1116,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 743,
+                "end": 752
+              },
+              {
+                "type": "list",
+                "start": 753,
+                "end": 1115,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 754,
+                    "end": 765
+                  },
+                  {
+                    "type": "list",
+                    "start": 766,
+                    "end": 1110,
+                    "children": [
+                      {
+                        "type": "symbol",
+                        "start": 767,
+                        "end": 773
+                      },
+                      {
+                        "type": "list",
+                        "start": 774,
+                        "end": 808,
+                        "children": [
+                          {
+                            "type": "symbol",
+                            "start": 775,
+                            "end": 781
+                          },
+                          {
+                            "type": "list",
+                            "start": 782,
+                            "end": 785,
+                            "children": [
+                              {
+                                "type": "symbol",
+                                "start": 783,
+                                "end": 784
+                              }
+                            ]
+                          },
+                          {
+                            "type": "list",
+                            "start": 786,
+                            "end": 807,
+                            "children": [
+                              {
+                                "type": "symbol",
+                                "start": 787,
+                                "end": 790
+                              },
+                              {
+                                "type": "list",
+                                "start": 791,
+                                "end": 806,
+                                "children": [
+                                  {
+                                    "type": "symbol",
+                                    "start": 792,
+                                    "end": 800
+                                  },
+                                  {
+                                    "type": "symbol",
+                                    "start": 801,
+                                    "end": 802
+                                  },
+                                  {
+                                    "type": "string",
+                                    "start": 803,
+                                    "end": 805
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "list",
+                        "start": 809,
+                        "end": 1109,
+                        "children": [
+                          {
+                            "type": "symbol",
+                            "start": 810,
+                            "end": 814
+                          },
+                          {
+                            "type": "list",
+                            "start": 815,
+                            "end": 836,
+                            "children": [
+                              {
+                                "type": "symbol",
+                                "start": 816,
+                                "end": 822
+                              },
+                              {
+                                "type": "string",
+                                "start": 823,
+                                "end": 827
+                              },
+                              {
+                                "type": "string",
+                                "start": 828,
+                                "end": 835
+                              }
+                            ]
+                          },
+                          {
+                            "type": "list",
+                            "start": 837,
+                            "end": 877,
+                            "children": [
+                              {
+                                "type": "symbol",
+                                "start": 838,
+                                "end": 844
+                              },
+                              {
+                                "type": "string",
+                                "start": 845,
+                                "end": 849
+                              },
+                              {
+                                "type": "list",
+                                "start": 850,
+                                "end": 876,
+                                "children": [
+                                  {
+                                    "type": "symbol",
+                                    "start": 851,
+                                    "end": 859
+                                  },
+                                  {
+                                    "type": "symbol",
+                                    "start": 860,
+                                    "end": 865
+                                  },
+                                  {
+                                    "type": "string",
+                                    "start": 866,
+                                    "end": 875
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "type": "list",
+                            "start": 878,
+                            "end": 906,
+                            "children": [
+                              {
+                                "type": "symbol",
+                                "start": 879,
+                                "end": 885
+                              },
+                              {
+                                "type": "string",
+                                "start": 886,
+                                "end": 890
+                              },
+                              {
+                                "type": "string",
+                                "start": 891,
+                                "end": 905
+                              }
+                            ]
+                          },
+                          {
+                            "type": "list",
+                            "start": 907,
+                            "end": 955,
+                            "children": [
+                              {
+                                "type": "symbol",
+                                "start": 908,
+                                "end": 914
+                              },
+                              {
+                                "type": "string",
+                                "start": 915,
+                                "end": 919
+                              },
+                              {
+                                "type": "list",
+                                "start": 920,
+                                "end": 954,
+                                "children": [
+                                  {
+                                    "type": "symbol",
+                                    "start": 921,
+                                    "end": 929
+                                  },
+                                  {
+                                    "type": "symbol",
+                                    "start": 930,
+                                    "end": 935
+                                  },
+                                  {
+                                    "type": "string",
+                                    "start": 936,
+                                    "end": 953
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "type": "list",
+                            "start": 956,
+                            "end": 982,
+                            "children": [
+                              {
+                                "type": "symbol",
+                                "start": 957,
+                                "end": 963
+                              },
+                              {
+                                "type": "string",
+                                "start": 964,
+                                "end": 968
+                              },
+                              {
+                                "type": "string",
+                                "start": 969,
+                                "end": 981
+                              }
+                            ]
+                          },
+                          {
+                            "type": "list",
+                            "start": 983,
+                            "end": 1026,
+                            "children": [
+                              {
+                                "type": "symbol",
+                                "start": 984,
+                                "end": 990
+                              },
+                              {
+                                "type": "string",
+                                "start": 991,
+                                "end": 995
+                              },
+                              {
+                                "type": "list",
+                                "start": 996,
+                                "end": 1025,
+                                "children": [
+                                  {
+                                    "type": "symbol",
+                                    "start": 997,
+                                    "end": 1005
+                                  },
+                                  {
+                                    "type": "symbol",
+                                    "start": 1006,
+                                    "end": 1011
+                                  },
+                                  {
+                                    "type": "string",
+                                    "start": 1012,
+                                    "end": 1024
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "type": "list",
+                            "start": 1027,
+                            "end": 1056,
+                            "children": [
+                              {
+                                "type": "symbol",
+                                "start": 1028,
+                                "end": 1034
+                              },
+                              {
+                                "type": "string",
+                                "start": 1035,
+                                "end": 1039
+                              },
+                              {
+                                "type": "string",
+                                "start": 1040,
+                                "end": 1055
+                              }
+                            ]
+                          },
+                          {
+                            "type": "list",
+                            "start": 1057,
+                            "end": 1108,
+                            "children": [
+                              {
+                                "type": "symbol",
+                                "start": 1058,
+                                "end": 1064
+                              },
+                              {
+                                "type": "string",
+                                "start": 1065,
+                                "end": 1069
+                              },
+                              {
+                                "type": "list",
+                                "start": 1070,
+                                "end": 1107,
+                                "children": [
+                                  {
+                                    "type": "symbol",
+                                    "start": 1071,
+                                    "end": 1079
+                                  },
+                                  {
+                                    "type": "symbol",
+                                    "start": 1080,
+                                    "end": 1085
+                                  },
+                                  {
+                                    "type": "string",
+                                    "start": 1086,
+                                    "end": 1106
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "string",
+                    "start": 1111,
+                    "end": 1114
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

@@ -1,0 +1,28 @@
+name: Build
+on:
+  push:
+    branches:
+      - main
+jobs:
+  wasm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up tree sitter
+        uses: tree-sitter/setup-action/cli@v1
+        with:
+          tree-sitter-ref: v0.24.7
+      - name: wasm build
+        run: tree-sitter build -w -o tree-sitter-racket.wasm
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+      - name: Set up tree sitter
+        uses: tree-sitter/setup-action/cli@v1
+        with:
+          tree-sitter-ref: v0.24.7
+      - name: rust build
+        run: cargo test --all-features

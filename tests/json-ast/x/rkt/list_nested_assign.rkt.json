@@ -1,107 +1,228 @@
 {
-  "forms": [
-    {
-      "datum": [
-        {
-          "sym": "require"
-        },
-        {
-          "sym": "racket/list"
-        },
-        {
-          "sym": "racket/string"
-        }
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "struct"
-        },
-        {
-          "sym": "group"
-        },
-        [
+  "root": {
+    "type": "program",
+    "start": 0,
+    "end": 239,
+    "children": [
+      {
+        "type": "comment",
+        "start": 0,
+        "end": 55
+      },
+      {
+        "type": "extension",
+        "start": 56,
+        "end": 68,
+        "children": [
           {
-            "sym": "key"
-          },
-          {
-            "sym": "items"
+            "type": "lang_name",
+            "start": 62,
+            "end": 68
           }
         ]
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "define"
-        },
-        {
-          "sym": "matrix"
-        },
-        [
+      },
+      {
+        "type": "list",
+        "start": 69,
+        "end": 104,
+        "children": [
           {
-            "sym": "list"
+            "type": "symbol",
+            "start": 70,
+            "end": 77
           },
-          [
-            {
-              "sym": "list"
-            },
-            1,
-            2
-          ],
-          [
-            {
-              "sym": "list"
-            },
-            3,
-            4
-          ]
-        ]
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "set!"
-        },
-        {
-          "sym": "matrix"
-        },
-        5
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "displayln"
-        },
-        [
           {
-            "sym": "list-ref"
+            "type": "symbol",
+            "start": 78,
+            "end": 89
           },
-          [
-            {
-              "sym": "list-ref"
-            },
-            {
-              "sym": "matrix"
-            },
-            1
-          ],
-          0
+          {
+            "type": "symbol",
+            "start": 90,
+            "end": 103
+          }
         ]
-      ],
-      "line": 0,
-      "col": 0
-    }
-  ]
+      },
+      {
+        "type": "list",
+        "start": 105,
+        "end": 131,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 106,
+            "end": 112
+          },
+          {
+            "type": "symbol",
+            "start": 113,
+            "end": 118
+          },
+          {
+            "type": "list",
+            "start": 119,
+            "end": 130,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 120,
+                "end": 123
+              },
+              {
+                "type": "symbol",
+                "start": 124,
+                "end": 129
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "start": 133,
+        "end": 177,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 134,
+            "end": 140
+          },
+          {
+            "type": "symbol",
+            "start": 141,
+            "end": 147
+          },
+          {
+            "type": "list",
+            "start": 148,
+            "end": 176,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 149,
+                "end": 153
+              },
+              {
+                "type": "list",
+                "start": 154,
+                "end": 164,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 155,
+                    "end": 159
+                  },
+                  {
+                    "type": "number",
+                    "start": 160,
+                    "end": 161
+                  },
+                  {
+                    "type": "number",
+                    "start": 162,
+                    "end": 163
+                  }
+                ]
+              },
+              {
+                "type": "list",
+                "start": 165,
+                "end": 175,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 166,
+                    "end": 170
+                  },
+                  {
+                    "type": "number",
+                    "start": 171,
+                    "end": 172
+                  },
+                  {
+                    "type": "number",
+                    "start": 173,
+                    "end": 174
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "start": 178,
+        "end": 193,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 179,
+            "end": 183
+          },
+          {
+            "type": "symbol",
+            "start": 184,
+            "end": 190
+          },
+          {
+            "type": "number",
+            "start": 191,
+            "end": 192
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "start": 194,
+        "end": 238,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 195,
+            "end": 204
+          },
+          {
+            "type": "list",
+            "start": 205,
+            "end": 237,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 206,
+                "end": 214
+              },
+              {
+                "type": "list",
+                "start": 215,
+                "end": 234,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 216,
+                    "end": 224
+                  },
+                  {
+                    "type": "symbol",
+                    "start": 225,
+                    "end": 231
+                  },
+                  {
+                    "type": "number",
+                    "start": 232,
+                    "end": 233
+                  }
+                ]
+              },
+              {
+                "type": "number",
+                "start": 235,
+                "end": 236
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

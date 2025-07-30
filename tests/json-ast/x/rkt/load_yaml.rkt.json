@@ -1,219 +1,550 @@
 {
-  "forms": [
-    {
-      "datum": [
-        {
-          "sym": "require"
-        },
-        {
-          "sym": "racket/list"
-        },
-        {
-          "sym": "racket/string"
-        },
-        {
-          "sym": "json"
-        }
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "define"
-        },
-        {
-          "sym": "people"
-        },
-        [
+  "root": {
+    "type": "program",
+    "start": 0,
+    "end": 656,
+    "children": [
+      {
+        "type": "comment",
+        "start": 0,
+        "end": 55
+      },
+      {
+        "type": "extension",
+        "start": 56,
+        "end": 73,
+        "children": [
           {
-            "sym": "list"
-          },
-          [
-            {
-              "sym": "hash"
-            },
-            "name",
-            "Alice",
-            "age",
-            30,
-            "email",
-            "alice@example.com"
-          ],
-          [
-            {
-              "sym": "hash"
-            },
-            "name",
-            "Bob",
-            "age",
-            15,
-            "email",
-            "bob@example.com"
-          ],
-          [
-            {
-              "sym": "hash"
-            },
-            "name",
-            "Charlie",
-            "age",
-            20,
-            "email",
-            "charlie@example.com"
-          ]
+            "type": "lang_name",
+            "start": 62,
+            "end": 73
+          }
         ]
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "define"
-        },
-        {
-          "sym": "adults"
-        },
-        [
+      },
+      {
+        "type": "list",
+        "start": 74,
+        "end": 114,
+        "children": [
           {
-            "sym": "for/list"
+            "type": "symbol",
+            "start": 75,
+            "end": 82
           },
-          [
-            [
+          {
+            "type": "symbol",
+            "start": 83,
+            "end": 94
+          },
+          {
+            "type": "symbol",
+            "start": 95,
+            "end": 108
+          },
+          {
+            "type": "symbol",
+            "start": 109,
+            "end": 113
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "start": 116,
+        "end": 329,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 117,
+            "end": 123
+          },
+          {
+            "type": "symbol",
+            "start": 124,
+            "end": 130
+          },
+          {
+            "type": "list",
+            "start": 133,
+            "end": 328,
+            "children": [
               {
-                "sym": "p"
+                "type": "symbol",
+                "start": 134,
+                "end": 138
               },
               {
-                "sym": "people"
+                "type": "list",
+                "start": 143,
+                "end": 201,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 144,
+                    "end": 148
+                  },
+                  {
+                    "type": "string",
+                    "start": 149,
+                    "end": 155
+                  },
+                  {
+                    "type": "string",
+                    "start": 156,
+                    "end": 163
+                  },
+                  {
+                    "type": "string",
+                    "start": 164,
+                    "end": 169
+                  },
+                  {
+                    "type": "number",
+                    "start": 170,
+                    "end": 172
+                  },
+                  {
+                    "type": "string",
+                    "start": 173,
+                    "end": 180
+                  },
+                  {
+                    "type": "string",
+                    "start": 181,
+                    "end": 200
+                  }
+                ]
+              },
+              {
+                "type": "list",
+                "start": 206,
+                "end": 260,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 207,
+                    "end": 211
+                  },
+                  {
+                    "type": "string",
+                    "start": 212,
+                    "end": 218
+                  },
+                  {
+                    "type": "string",
+                    "start": 219,
+                    "end": 224
+                  },
+                  {
+                    "type": "string",
+                    "start": 225,
+                    "end": 230
+                  },
+                  {
+                    "type": "number",
+                    "start": 231,
+                    "end": 233
+                  },
+                  {
+                    "type": "string",
+                    "start": 234,
+                    "end": 241
+                  },
+                  {
+                    "type": "string",
+                    "start": 242,
+                    "end": 259
+                  }
+                ]
+              },
+              {
+                "type": "list",
+                "start": 265,
+                "end": 327,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 266,
+                    "end": 270
+                  },
+                  {
+                    "type": "string",
+                    "start": 271,
+                    "end": 277
+                  },
+                  {
+                    "type": "string",
+                    "start": 278,
+                    "end": 287
+                  },
+                  {
+                    "type": "string",
+                    "start": 288,
+                    "end": 293
+                  },
+                  {
+                    "type": "number",
+                    "start": 294,
+                    "end": 296
+                  },
+                  {
+                    "type": "string",
+                    "start": 297,
+                    "end": 304
+                  },
+                  {
+                    "type": "string",
+                    "start": 305,
+                    "end": 326
+                  }
+                ]
               }
-            ],
-            {
-              "sym": "when"
-            },
-            [
-              {
-                "sym": "\u003e="
-              },
-              [
-                {
-                  "sym": "hash-ref"
-                },
-                {
-                  "sym": "p"
-                },
-                "age"
-              ],
-              18
             ]
-          ],
-          [
-            {
-              "sym": "hash"
-            },
-            "name",
-            [
-              {
-                "sym": "hash-ref"
-              },
-              {
-                "sym": "p"
-              },
-              "name"
-            ],
-            "email",
-            [
-              {
-                "sym": "hash-ref"
-              },
-              {
-                "sym": "p"
-              },
-              "email"
-            ]
-          ]
+          }
         ]
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "for"
-        },
-        [
-          [
-            {
-              "sym": "a"
-            },
-            {
-              "sym": "adults"
-            }
-          ]
-        ],
-        [
+      },
+      {
+        "type": "list",
+        "start": 331,
+        "end": 473,
+        "children": [
           {
-            "sym": "displayln"
+            "type": "symbol",
+            "start": 332,
+            "end": 338
           },
-          [
-            {
-              "sym": "string-join"
-            },
-            [
+          {
+            "type": "symbol",
+            "start": 339,
+            "end": 345
+          },
+          {
+            "type": "list",
+            "start": 348,
+            "end": 472,
+            "children": [
               {
-                "sym": "map"
+                "type": "symbol",
+                "start": 349,
+                "end": 357
               },
-              [
-                {
-                  "sym": "lambda"
-                },
-                [
+              {
+                "type": "list",
+                "start": 358,
+                "end": 404,
+                "children": [
                   {
-                    "sym": "x"
-                  }
-                ],
-                [
-                  {
-                    "sym": "format"
+                    "type": "list",
+                    "start": 359,
+                    "end": 369,
+                    "children": [
+                      {
+                        "type": "symbol",
+                        "start": 360,
+                        "end": 361
+                      },
+                      {
+                        "type": "symbol",
+                        "start": 362,
+                        "end": 368
+                      }
+                    ]
                   },
-                  "~a",
                   {
-                    "sym": "x"
+                    "type": "keyword",
+                    "start": 370,
+                    "end": 376
+                  },
+                  {
+                    "type": "list",
+                    "start": 377,
+                    "end": 403,
+                    "children": [
+                      {
+                        "type": "symbol",
+                        "start": 378,
+                        "end": 380
+                      },
+                      {
+                        "type": "list",
+                        "start": 381,
+                        "end": 399,
+                        "children": [
+                          {
+                            "type": "symbol",
+                            "start": 382,
+                            "end": 390
+                          },
+                          {
+                            "type": "symbol",
+                            "start": 391,
+                            "end": 392
+                          },
+                          {
+                            "type": "string",
+                            "start": 393,
+                            "end": 398
+                          }
+                        ]
+                      },
+                      {
+                        "type": "number",
+                        "start": 400,
+                        "end": 402
+                      }
+                    ]
                   }
                 ]
-              ],
-              [
-                {
-                  "sym": "list"
-                },
-                [
+              },
+              {
+                "type": "list",
+                "start": 409,
+                "end": 471,
+                "children": [
                   {
-                    "sym": "hash-ref"
+                    "type": "symbol",
+                    "start": 410,
+                    "end": 414
                   },
                   {
-                    "sym": "a"
-                  },
-                  "name"
-                ],
-                [
-                  {
-                    "sym": "hash-ref"
+                    "type": "string",
+                    "start": 415,
+                    "end": 421
                   },
                   {
-                    "sym": "a"
+                    "type": "list",
+                    "start": 422,
+                    "end": 441,
+                    "children": [
+                      {
+                        "type": "symbol",
+                        "start": 423,
+                        "end": 431
+                      },
+                      {
+                        "type": "symbol",
+                        "start": 432,
+                        "end": 433
+                      },
+                      {
+                        "type": "string",
+                        "start": 434,
+                        "end": 440
+                      }
+                    ]
                   },
-                  "email"
+                  {
+                    "type": "string",
+                    "start": 442,
+                    "end": 449
+                  },
+                  {
+                    "type": "list",
+                    "start": 450,
+                    "end": 470,
+                    "children": [
+                      {
+                        "type": "symbol",
+                        "start": 451,
+                        "end": 459
+                      },
+                      {
+                        "type": "symbol",
+                        "start": 460,
+                        "end": 461
+                      },
+                      {
+                        "type": "string",
+                        "start": 462,
+                        "end": 469
+                      }
+                    ]
+                  }
                 ]
-              ]
-            ],
-            " "
-          ]
+              }
+            ]
+          }
         ]
-      ],
-      "line": 0,
-      "col": 0
-    }
-  ]
+      },
+      {
+        "type": "list",
+        "start": 475,
+        "end": 655,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 476,
+            "end": 479
+          },
+          {
+            "type": "list",
+            "start": 480,
+            "end": 492,
+            "children": [
+              {
+                "type": "list",
+                "start": 481,
+                "end": 491,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 482,
+                    "end": 483
+                  },
+                  {
+                    "type": "symbol",
+                    "start": 484,
+                    "end": 490
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "list",
+            "start": 495,
+            "end": 654,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 496,
+                "end": 505
+              },
+              {
+                "type": "list",
+                "start": 506,
+                "end": 653,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 507,
+                    "end": 518
+                  },
+                  {
+                    "type": "list",
+                    "start": 533,
+                    "end": 634,
+                    "children": [
+                      {
+                        "type": "symbol",
+                        "start": 534,
+                        "end": 537
+                      },
+                      {
+                        "type": "list",
+                        "start": 538,
+                        "end": 566,
+                        "children": [
+                          {
+                            "type": "symbol",
+                            "start": 539,
+                            "end": 545
+                          },
+                          {
+                            "type": "list",
+                            "start": 546,
+                            "end": 549,
+                            "children": [
+                              {
+                                "type": "symbol",
+                                "start": 547,
+                                "end": 548
+                              }
+                            ]
+                          },
+                          {
+                            "type": "list",
+                            "start": 550,
+                            "end": 565,
+                            "children": [
+                              {
+                                "type": "symbol",
+                                "start": 551,
+                                "end": 557
+                              },
+                              {
+                                "type": "string",
+                                "start": 558,
+                                "end": 562
+                              },
+                              {
+                                "type": "symbol",
+                                "start": 563,
+                                "end": 564
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "list",
+                        "start": 586,
+                        "end": 633,
+                        "children": [
+                          {
+                            "type": "symbol",
+                            "start": 587,
+                            "end": 591
+                          },
+                          {
+                            "type": "list",
+                            "start": 592,
+                            "end": 611,
+                            "children": [
+                              {
+                                "type": "symbol",
+                                "start": 593,
+                                "end": 601
+                              },
+                              {
+                                "type": "symbol",
+                                "start": 602,
+                                "end": 603
+                              },
+                              {
+                                "type": "string",
+                                "start": 604,
+                                "end": 610
+                              }
+                            ]
+                          },
+                          {
+                            "type": "list",
+                            "start": 612,
+                            "end": 632,
+                            "children": [
+                              {
+                                "type": "symbol",
+                                "start": 613,
+                                "end": 621
+                              },
+                              {
+                                "type": "symbol",
+                                "start": 622,
+                                "end": 623
+                              },
+                              {
+                                "type": "string",
+                                "start": 624,
+                                "end": 631
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "string",
+                    "start": 649,
+                    "end": 652
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

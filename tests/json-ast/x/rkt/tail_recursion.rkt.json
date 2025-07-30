@@ -1,122 +1,257 @@
 {
-  "forms": [
-    {
-      "datum": [
-        {
-          "sym": "require"
-        },
-        {
-          "sym": "racket/list"
-        },
-        {
-          "sym": "racket/string"
-        }
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "struct"
-        },
-        {
-          "sym": "group"
-        },
-        [
+  "root": {
+    "type": "program",
+    "start": 0,
+    "end": 240,
+    "children": [
+      {
+        "type": "comment",
+        "start": 0,
+        "end": 55
+      },
+      {
+        "type": "extension",
+        "start": 56,
+        "end": 68,
+        "children": [
           {
-            "sym": "key"
-          },
-          {
-            "sym": "items"
+            "type": "lang_name",
+            "start": 62,
+            "end": 68
           }
         ]
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "define"
-        },
-        [
+      },
+      {
+        "type": "list",
+        "start": 69,
+        "end": 104,
+        "children": [
           {
-            "sym": "sum_rec"
+            "type": "symbol",
+            "start": 70,
+            "end": 77
           },
           {
-            "sym": "n"
+            "type": "symbol",
+            "start": 78,
+            "end": 89
           },
           {
-            "sym": "acc"
+            "type": "symbol",
+            "start": 90,
+            "end": 103
           }
-        ],
-        [
-          {
-            "sym": "if"
-          },
-          [
-            {
-              "sym": "="
-            },
-            {
-              "sym": "n"
-            },
-            0
-          ],
-          [
-            {
-              "sym": "begin"
-            },
-            {
-              "sym": "acc"
-            }
-          ]
-        ],
-        [
-          {
-            "sym": "sum_rec"
-          },
-          [
-            {
-              "sym": "-"
-            },
-            {
-              "sym": "n"
-            },
-            1
-          ],
-          [
-            {
-              "sym": "+"
-            },
-            {
-              "sym": "acc"
-            },
-            {
-              "sym": "n"
-            }
-          ]
         ]
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "displayln"
-        },
-        [
+      },
+      {
+        "type": "list",
+        "start": 105,
+        "end": 131,
+        "children": [
           {
-            "sym": "sum_rec"
+            "type": "symbol",
+            "start": 106,
+            "end": 112
           },
-          10,
-          0
+          {
+            "type": "symbol",
+            "start": 113,
+            "end": 118
+          },
+          {
+            "type": "list",
+            "start": 119,
+            "end": 130,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 120,
+                "end": 123
+              },
+              {
+                "type": "symbol",
+                "start": 124,
+                "end": 129
+              }
+            ]
+          }
         ]
-      ],
-      "line": 0,
-      "col": 0
-    }
-  ]
+      },
+      {
+        "type": "list",
+        "start": 133,
+        "end": 212,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 134,
+            "end": 140
+          },
+          {
+            "type": "list",
+            "start": 141,
+            "end": 156,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 142,
+                "end": 149
+              },
+              {
+                "type": "symbol",
+                "start": 150,
+                "end": 151
+              },
+              {
+                "type": "symbol",
+                "start": 152,
+                "end": 155
+              }
+            ]
+          },
+          {
+            "type": "list",
+            "start": 157,
+            "end": 182,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 158,
+                "end": 160
+              },
+              {
+                "type": "list",
+                "start": 161,
+                "end": 168,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 162,
+                    "end": 163
+                  },
+                  {
+                    "type": "symbol",
+                    "start": 164,
+                    "end": 165
+                  },
+                  {
+                    "type": "number",
+                    "start": 166,
+                    "end": 167
+                  }
+                ]
+              },
+              {
+                "type": "list",
+                "start": 169,
+                "end": 181,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 170,
+                    "end": 175
+                  },
+                  {
+                    "type": "symbol",
+                    "start": 176,
+                    "end": 179
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "list",
+            "start": 183,
+            "end": 210,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 184,
+                "end": 191
+              },
+              {
+                "type": "list",
+                "start": 192,
+                "end": 199,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 193,
+                    "end": 194
+                  },
+                  {
+                    "type": "symbol",
+                    "start": 195,
+                    "end": 196
+                  },
+                  {
+                    "type": "number",
+                    "start": 197,
+                    "end": 198
+                  }
+                ]
+              },
+              {
+                "type": "list",
+                "start": 200,
+                "end": 209,
+                "children": [
+                  {
+                    "type": "symbol",
+                    "start": 201,
+                    "end": 202
+                  },
+                  {
+                    "type": "symbol",
+                    "start": 203,
+                    "end": 206
+                  },
+                  {
+                    "type": "symbol",
+                    "start": 207,
+                    "end": 208
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "start": 213,
+        "end": 239,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 214,
+            "end": 223
+          },
+          {
+            "type": "list",
+            "start": 224,
+            "end": 238,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 225,
+                "end": 232
+              },
+              {
+                "type": "number",
+                "start": 233,
+                "end": 235
+              },
+              {
+                "type": "number",
+                "start": 236,
+                "end": 237
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

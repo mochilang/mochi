@@ -1,116 +1,216 @@
 {
-  "forms": [
-    {
-      "datum": [
-        {
-          "sym": "require"
-        },
-        {
-          "sym": "racket/list"
-        },
-        {
-          "sym": "racket/string"
-        }
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "define"
-        },
-        [
+  "root": {
+    "type": "program",
+    "start": 0,
+    "end": 273,
+    "children": [
+      {
+        "type": "comment",
+        "start": 0,
+        "end": 55
+      },
+      {
+        "type": "extension",
+        "start": 56,
+        "end": 68,
+        "children": [
           {
-            "sym": "testpkg_Add"
-          },
-          {
-            "sym": "a"
-          },
-          {
-            "sym": "b"
-          }
-        ],
-        [
-          {
-            "sym": "+"
-          },
-          {
-            "sym": "a"
-          },
-          {
-            "sym": "b"
+            "type": "lang_name",
+            "start": 62,
+            "end": 68
           }
         ]
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "define"
-        },
-        {
-          "sym": "testpkg_Pi"
-        },
-        3.14
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "define"
-        },
-        {
-          "sym": "testpkg_Answer"
-        },
-        42
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "displayln"
-        },
-        [
+      },
+      {
+        "type": "list",
+        "start": 69,
+        "end": 104,
+        "children": [
           {
-            "sym": "testpkg_Add"
+            "type": "symbol",
+            "start": 70,
+            "end": 77
           },
-          2,
-          3
+          {
+            "type": "symbol",
+            "start": 78,
+            "end": 89
+          },
+          {
+            "type": "symbol",
+            "start": 90,
+            "end": 103
+          }
         ]
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "displayln"
-        },
-        {
-          "sym": "testpkg_Pi"
-        }
-      ],
-      "line": 0,
-      "col": 0
-    },
-    {
-      "datum": [
-        {
-          "sym": "displayln"
-        },
-        {
-          "sym": "testpkg_Answer"
-        }
-      ],
-      "line": 0,
-      "col": 0
-    }
-  ]
+      },
+      {
+        "type": "list",
+        "start": 106,
+        "end": 140,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 107,
+            "end": 113
+          },
+          {
+            "type": "list",
+            "start": 114,
+            "end": 131,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 115,
+                "end": 126
+              },
+              {
+                "type": "symbol",
+                "start": 127,
+                "end": 128
+              },
+              {
+                "type": "symbol",
+                "start": 129,
+                "end": 130
+              }
+            ]
+          },
+          {
+            "type": "list",
+            "start": 132,
+            "end": 139,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 133,
+                "end": 134
+              },
+              {
+                "type": "symbol",
+                "start": 135,
+                "end": 136
+              },
+              {
+                "type": "symbol",
+                "start": 137,
+                "end": 138
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "start": 141,
+        "end": 165,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 142,
+            "end": 148
+          },
+          {
+            "type": "symbol",
+            "start": 149,
+            "end": 159
+          },
+          {
+            "type": "number",
+            "start": 160,
+            "end": 164
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "start": 166,
+        "end": 192,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 167,
+            "end": 173
+          },
+          {
+            "type": "symbol",
+            "start": 174,
+            "end": 188
+          },
+          {
+            "type": "number",
+            "start": 189,
+            "end": 191
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "start": 193,
+        "end": 222,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 194,
+            "end": 203
+          },
+          {
+            "type": "list",
+            "start": 204,
+            "end": 221,
+            "children": [
+              {
+                "type": "symbol",
+                "start": 205,
+                "end": 216
+              },
+              {
+                "type": "number",
+                "start": 217,
+                "end": 218
+              },
+              {
+                "type": "number",
+                "start": 219,
+                "end": 220
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "start": 223,
+        "end": 245,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 224,
+            "end": 233
+          },
+          {
+            "type": "symbol",
+            "start": 234,
+            "end": 244
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "start": 246,
+        "end": 272,
+        "children": [
+          {
+            "type": "symbol",
+            "start": 247,
+            "end": 256
+          },
+          {
+            "type": "symbol",
+            "start": 257,
+            "end": 271
+          }
+        ]
+      }
+    ]
+  }
 }
