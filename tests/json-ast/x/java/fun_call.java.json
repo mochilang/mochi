@@ -1,56 +1,167 @@
 {
-  "body": [
-    {
-      "kind": "FnDecl",
-      "name": "add",
-      "type": "int",
-      "body": [
-        {
-          "kind": "Return",
-          "expr": {
-            "kind": "Binary",
-            "left": {
-              "kind": "Ident",
-              "name": "a"
-            },
-            "right": {
-              "kind": "Ident",
-              "name": "b"
-            },
-            "op": "PLUS"
-          }
-        }
-      ],
-      "params": [
-        {
-          "name": "a",
-          "type": "int"
-        },
-        {
-          "name": "b",
-          "type": "int"
-        }
-      ]
-    },
-    {
-      "kind": "Print",
-      "expr": {
-        "kind": "Call",
-        "target": {
-          "kind": "Ident",
-          "name": "add"
-        },
-        "args": [
+  "root": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "class_declaration",
+        "children": [
           {
-            "kind": "Literal",
-            "value": "2"
+            "kind": "identifier",
+            "text": "Main"
           },
           {
-            "kind": "Literal",
-            "value": "3"
+            "kind": "class_body",
+            "children": [
+              {
+                "kind": "method_declaration",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "add"
+                  },
+                  {
+                    "kind": "formal_parameters",
+                    "children": [
+                      {
+                        "kind": "formal_parameter",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "a"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "formal_parameter",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "b"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "block",
+                    "children": [
+                      {
+                        "kind": "return_statement",
+                        "children": [
+                          {
+                            "kind": "binary_expression",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "a"
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "b"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "method_declaration",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "main"
+                  },
+                  {
+                    "kind": "formal_parameters",
+                    "children": [
+                      {
+                        "kind": "formal_parameter",
+                        "children": [
+                          {
+                            "kind": "array_type",
+                            "children": [
+                              {
+                                "kind": "type_identifier",
+                                "text": "String"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "args"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "block",
+                    "children": [
+                      {
+                        "kind": "expression_statement",
+                        "children": [
+                          {
+                            "kind": "method_invocation",
+                            "children": [
+                              {
+                                "kind": "field_access",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "System"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "out"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "println"
+                              },
+                              {
+                                "kind": "argument_list",
+                                "children": [
+                                  {
+                                    "kind": "method_invocation",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "add"
+                                      },
+                                      {
+                                        "kind": "argument_list",
+                                        "children": [
+                                          {
+                                            "kind": "decimal_integer_literal",
+                                            "text": "2"
+                                          },
+                                          {
+                                            "kind": "decimal_integer_literal",
+                                            "text": "3"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
           }
         ]
       }
-    }
-  ]
+    ]
+  }
 }

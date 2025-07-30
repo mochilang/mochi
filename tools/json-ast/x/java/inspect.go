@@ -12,7 +12,7 @@ import (
 
 // Program represents a parsed Java source file.
 type Program struct {
-	Root *Node `json:"root"`
+	Root *ProgramNode `json:"root"`
 }
 
 // Inspect parses the given Java source code using tree-sitter and returns
@@ -25,5 +25,5 @@ func Inspect(src string) (*Program, error) {
 		return nil, fmt.Errorf("parse: %w", err)
 	}
 	root := convert(tree.RootNode(), []byte(src))
-	return &Program{Root: root}, nil
+	return &Program{Root: (*ProgramNode)(root)}, nil
 }
