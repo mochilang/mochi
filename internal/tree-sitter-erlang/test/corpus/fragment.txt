@@ -1,0 +1,93 @@
+================================================================================
+simple expression with ending dot
+================================================================================
+
+maps:get(hello, World).
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (call
+    (remote
+      (remote_module
+        (atom))
+      (atom))
+    (expr_args
+      (atom)
+      (var))))
+
+================================================================================
+simple expression without ending dot
+================================================================================
+
+maps:get(hello, World)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (call
+    (remote
+      (remote_module
+        (atom))
+      (atom))
+    (expr_args
+      (atom)
+      (var))))
+
+================================================================================
+rebar.config
+================================================================================
+
+{erl_opts, [debug_info]}.
+
+{deps, []}.
+
+{dialyzer, [
+    {plt_apps, all_deps},
+    {plt_extra_apps, [
+        common_test,
+        syntax_tools
+    ]},
+    {warnings, [
+        unknown,
+        unmatched_returns
+    ]},
+    incremental
+]}.
+
+{shell, [{apps, [foo]}]}.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  exprs: (tuple
+    expr: (atom)
+    expr: (list
+      exprs: (atom)))
+  exprs: (tuple
+    expr: (atom)
+    expr: (list))
+  exprs: (tuple
+    expr: (atom)
+    expr: (list
+      exprs: (tuple
+        expr: (atom)
+        expr: (atom))
+      exprs: (tuple
+        expr: (atom)
+        expr: (list
+          exprs: (atom)
+          exprs: (atom)))
+      exprs: (tuple
+        expr: (atom)
+        expr: (list
+          exprs: (atom)
+          exprs: (atom)))
+      exprs: (atom)))
+  exprs: (tuple
+    expr: (atom)
+    expr: (list
+      exprs: (tuple
+        expr: (atom)
+        expr: (list
+          exprs: (atom))))))

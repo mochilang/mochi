@@ -1,0 +1,2317 @@
+================================================================================
+record index
+================================================================================
+
+f() -> #record.field.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (record_index_expr
+          (record_name
+            (atom))
+          (record_field_name
+            (atom)))))))
+
+================================================================================
+record field
+================================================================================
+
+f(X) -> X#record.field.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args
+        (var))
+      (clause_body
+        (record_field_expr
+          (var)
+          (record_name
+            (atom))
+          (record_field_name
+            (atom)))))))
+
+================================================================================
+record expr
+================================================================================
+
+f() -> #record{a = 1}.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (record_expr
+          (record_name
+            (atom))
+          (record_field
+            (atom)
+            (field_expr
+              (integer))))))))
+
+================================================================================
+record update
+================================================================================
+
+f(X) -> X#record{a = 1}.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args
+        (var))
+      (clause_body
+        (record_update_expr
+          (var)
+          (record_name
+            (atom))
+          (record_field
+            (atom)
+            (field_expr
+              (integer))))))))
+
+================================================================================
+try
+================================================================================
+
+f(X) ->
+  try 1 of
+    X -> ok;
+    Y when Z -> ok
+  catch
+    Pattern -> ok;
+    error:Pattern -> ok;
+    throw:Pattern:Stack -> ok;
+    exit:Complex + Pattern:Stack -> ok
+  after
+    ok
+  end,
+  try _
+  catch
+  end.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args
+        (var))
+      (clause_body
+        (try_expr
+          (integer)
+          (cr_clause
+            (var)
+            (clause_body
+              (atom)))
+          (cr_clause
+            (var)
+            (guard
+              (guard_clause
+                (var)))
+            (clause_body
+              (atom)))
+          (catch_clause
+            (var)
+            (clause_body
+              (atom)))
+          (catch_clause
+            (try_class
+              (atom))
+            (var)
+            (clause_body
+              (atom)))
+          (catch_clause
+            (try_class
+              (atom))
+            (var)
+            (try_stack
+              (var))
+            (clause_body
+              (atom)))
+          (catch_clause
+            (try_class
+              (atom))
+            (binary_op_expr
+              (var)
+              (var))
+            (try_stack
+              (var))
+            (clause_body
+              (atom)))
+          (try_after
+            (atom)))
+        (try_expr
+          (var))))))
+
+================================================================================
+funs
+================================================================================
+
+f() -> [
+  fun foo/1,
+  fun mod:foo/1,
+  fun () -> ok end
+].
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (list
+          (internal_fun
+            (atom)
+            (arity
+              (integer)))
+          (external_fun
+            (module
+              (atom))
+            (atom)
+            (arity
+              (integer)))
+          (anonymous_fun
+            (fun_clause
+              (expr_args)
+              (clause_body
+                (atom)))))))))
+
+================================================================================
+list
+================================================================================
+
+f() ->
+  [],
+  [A],
+  [A, B],
+  [A | B],
+  [A + B | B + C],
+  [A, B | C],
+  [A = B | C].
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (list)
+        (list
+          (var))
+        (list
+          (var)
+          (var))
+        (list
+          (pipe
+            (var)
+            (var)))
+        (list
+          (pipe
+            (binary_op_expr
+              (var)
+              (var))
+            (binary_op_expr
+              (var)
+              (var))))
+        (list
+          (var)
+          (pipe
+            (var)
+            (var)))
+        (list
+          (pipe
+            (match_expr
+              (var)
+              (var))
+            (var)))))))
+
+================================================================================
+binary
+================================================================================
+
+f(<<_>>) ->
+  <<>>,
+  <<1>>,
+  <<1/integer>>,
+  <<1:32/integer>>,
+  <<+1:32/integer>>,
+  <<1:32/integer-unit:8>>.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args
+        (binary
+          (bin_element
+            (var))))
+      (clause_body
+        (binary)
+        (binary
+          (bin_element
+            (integer)))
+        (binary
+          (bin_element
+            (integer)
+            (bit_type_list
+              (atom))))
+        (binary
+          (bin_element
+            (integer)
+            (bit_size_expr
+              (integer))
+            (bit_type_list
+              (atom))))
+        (binary
+          (bin_element
+            (unary_op_expr
+              (integer))
+            (bit_size_expr
+              (integer))
+            (bit_type_list
+              (atom))))
+        (binary
+          (bin_element
+            (integer)
+            (bit_size_expr
+              (integer))
+            (bit_type_list
+              (atom)
+              (bit_type_unit
+                (integer)))))))))
+
+================================================================================
+catch
+================================================================================
+
+f() ->
+  catch 1 + 2.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (catch_expr
+          (binary_op_expr
+            (integer)
+            (integer)))))))
+
+================================================================================
+receive
+================================================================================
+
+f() ->
+  receive
+  end,
+  receive
+    ok -> ok;
+    error -> error
+  end,
+  receive
+    after 1000 -> ok
+  end,
+  receive
+    ok -> ok
+    after Timeout -> timeout
+  end.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (receive_expr)
+        (receive_expr
+          (cr_clause
+            (atom)
+            (clause_body
+              (atom)))
+          (cr_clause
+            (atom)
+            (clause_body
+              (atom))))
+        (receive_expr
+          (receive_after
+            (integer)
+            (clause_body
+              (atom))))
+        (receive_expr
+          (cr_clause
+            (atom)
+            (clause_body
+              (atom)))
+          (receive_after
+            (var)
+            (clause_body
+              (atom))))))))
+
+================================================================================
+case
+================================================================================
+
+f() ->
+  case _ of
+  end,
+  case Foo of
+    A when A; B, C -> ok;
+    _ -> error
+  end.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (case_expr
+          (var))
+        (case_expr
+          (var)
+          (cr_clause
+            (var)
+            (guard
+              (guard_clause
+                (var))
+              (guard_clause
+                (var)
+                (var)))
+            (clause_body
+              (atom)))
+          (cr_clause
+            (var)
+            (clause_body
+              (atom))))))))
+
+================================================================================
+function call
+================================================================================
+
+f() ->
+  foo(),
+  (foo)(),
+  mod:foo(),
+  (mod:foo)(),
+  (Mod):(Foo)().
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (call
+          (atom)
+          (expr_args))
+        (call
+          (paren_expr
+            (atom))
+          (expr_args))
+        (call
+          (remote
+            (remote_module
+              (atom))
+            (atom))
+          (expr_args))
+        (call
+          (paren_expr
+            (remote
+              (remote_module
+                (atom))
+              (atom)))
+          (expr_args))
+        (call
+          (remote
+            (remote_module
+              (paren_expr
+                (var)))
+            (paren_expr
+              (var)))
+          (expr_args))))))
+
+================================================================================
+variable assignment
+================================================================================
+
+f() ->
+  A = 3 + B.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (match_expr
+          (var)
+          (binary_op_expr
+            (integer)
+            (var)))))))
+
+================================================================================
+fun
+================================================================================
+
+ foo() -> fun(X) -> X end.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (anonymous_fun
+          (fun_clause
+            (expr_args
+              (var))
+            (clause_body
+              (var))))))))
+
+================================================================================
+named fun
+================================================================================
+
+ foo() -> fun Named(X) -> X end.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (anonymous_fun
+          (fun_clause
+            (var)
+            (expr_args
+              (var))
+            (clause_body
+              (var))))))))
+
+================================================================================
+maybe
+================================================================================
+f() ->
+  maybe
+    {ok, A} ?= a(),
+    true = A >= 0,
+    {ok, B} ?= b(),
+    A + B
+  end.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (maybe_expr
+          (cond_match_expr
+            (tuple
+              (atom)
+              (var))
+            (call
+              (atom)
+              (expr_args)))
+          (match_expr
+            (atom)
+            (binary_op_expr
+              (var)
+              (integer)))
+          (cond_match_expr
+            (tuple
+              (atom)
+              (var))
+            (call
+              (atom)
+              (expr_args)))
+          (binary_op_expr
+            (var)
+            (var)))))))
+
+================================================================================
+maybe else
+================================================================================
+f() ->
+  maybe
+    {ok, A} ?= a(),
+    true = A >= 0,
+    A
+  else
+    Err when Err /= warn -> error;
+    false -> error
+  end.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (maybe_expr
+          (cond_match_expr
+            (tuple
+              (atom)
+              (var))
+            (call
+              (atom)
+              (expr_args)))
+          (match_expr
+            (atom)
+            (binary_op_expr
+              (var)
+              (integer)))
+          (var)
+          (cr_clause
+            (var)
+            (guard
+              (guard_clause
+                (binary_op_expr
+                  (var)
+                  (atom))))
+            (clause_body
+              (atom)))
+          (cr_clause
+            (atom)
+            (clause_body
+              (atom))))))))
+
+================================================================================
+simple map comprehension
+================================================================================
+f() ->
+  #{K => V || K := V <- #{1 => 2, 3 => 4}}.
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (map_comprehension
+          (map_field
+            (var)
+            (var))
+          (lc_exprs
+            (lc_or_zc_expr
+              (map_generator
+                (map_field
+                  (var)
+                  (var))
+                (map_expr
+                  (map_field
+                    (integer)
+                    (integer))
+                  (map_field
+                    (integer)
+                    (integer)))))))))))
+
+================================================================================
+simple map comprehension with filter
+================================================================================
+f() ->
+  #{K => V || K := V <- #{1 => 2, 3 => 4}, K>1}.
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (map_comprehension
+          (map_field
+            (var)
+            (var))
+          (lc_exprs
+            (lc_or_zc_expr
+              (map_generator
+                (map_field
+                  (var)
+                  (var))
+                (map_expr
+                  (map_field
+                    (integer)
+                    (integer))
+                  (map_field
+                    (integer)
+                    (integer)))))
+            (lc_or_zc_expr
+              (binary_op_expr
+                (var)
+                (integer)))))))))
+
+================================================================================
+map comprehension with list generator
+================================================================================
+f() ->
+  #{K => K + 1 || K <- [1, 2, 3], K>1}.
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (map_comprehension
+          (map_field
+            (var)
+            (binary_op_expr
+              (var)
+              (integer)))
+          (lc_exprs
+            (lc_or_zc_expr
+              (generator
+                (var)
+                (list
+                  (integer)
+                  (integer)
+                  (integer))))
+            (lc_or_zc_expr
+              (binary_op_expr
+                (var)
+                (integer)))))))))
+
+================================================================================
+map comprehension with binary generator
+================================================================================
+f() ->
+  #{K => V || <<K, V>> <= <<1, 2, 3, 4>>, K>1}.
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (map_comprehension
+          (map_field
+            (var)
+            (var))
+          (lc_exprs
+            (lc_or_zc_expr
+              (b_generator
+                (binary
+                  (bin_element
+                    (var))
+                  (bin_element
+                    (var)))
+                (binary
+                  (bin_element
+                    (integer))
+                  (bin_element
+                    (integer))
+                  (bin_element
+                    (integer))
+                  (bin_element
+                    (integer)))))
+            (lc_or_zc_expr
+              (binary_op_expr
+                (var)
+                (integer)))))))))
+
+================================================================================
+list comprehension with map generator
+================================================================================
+f() ->
+  [{K, V} || K := V <- #{1 => 2, 3 => 4}, K>1].
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (list_comprehension
+          (tuple
+            (var)
+            (var))
+          (lc_exprs
+            (lc_or_zc_expr
+              (map_generator
+                (map_field
+                  (var)
+                  (var))
+                (map_expr
+                  (map_field
+                    (integer)
+                    (integer))
+                  (map_field
+                    (integer)
+                    (integer)))))
+            (lc_or_zc_expr
+              (binary_op_expr
+                (var)
+                (integer)))))))))
+
+================================================================================
+strict generator basic
+================================================================================
+f() ->
+   <<2,3,4>> = << <<(X+1)>> || X <:- [1,2,3]>>.
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (match_expr
+          (binary
+            (bin_element
+              (integer))
+            (bin_element
+              (integer))
+            (bin_element
+              (integer)))
+          (binary_comprehension
+            (binary
+              (bin_element
+                (paren_expr
+                  (binary_op_expr
+                    (var)
+                    (integer)))))
+            (lc_exprs
+              (lc_or_zc_expr
+                (generator
+                  (var)
+                  (list
+                    (integer)
+                    (integer)
+                    (integer)))))))))))
+
+================================================================================
+strict generator binary
+================================================================================
+f() ->
+  <<2,3,4>> = << <<(X+1)>> || <<X>> <:= <<1,2,3>> >>.
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (match_expr
+          (binary
+            (bin_element
+              (integer))
+            (bin_element
+              (integer))
+            (bin_element
+              (integer)))
+          (binary_comprehension
+            (binary
+              (bin_element
+                (paren_expr
+                  (binary_op_expr
+                    (var)
+                    (integer)))))
+            (lc_exprs
+              (lc_or_zc_expr
+                (b_generator
+                  (binary
+                    (bin_element
+                      (var)))
+                  (binary
+                    (bin_element
+                      (integer))
+                    (bin_element
+                      (integer))
+                    (bin_element
+                      (integer))))))))))))
+
+================================================================================
+strict generator map
+================================================================================
+f() ->
+  <<2,12>> = << <<(X*Y)>> || X := Y <:- #{1 => 2, 3 => 4} >>.
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (match_expr
+          (binary
+            (bin_element
+              (integer))
+            (bin_element
+              (integer)))
+          (binary_comprehension
+            (binary
+              (bin_element
+                (paren_expr
+                  (binary_op_expr
+                    (var)
+                    (var)))))
+            (lc_exprs
+              (lc_or_zc_expr
+                (map_generator
+                  (map_field
+                    (var)
+                    (var))
+                  (map_expr
+                    (map_field
+                      (integer)
+                      (integer))
+                    (map_field
+                      (integer)
+                      (integer))))))))))))
+
+================================================================================
+zip generator simple normal and binary
+================================================================================
+f() ->
+  [{X,Y} || X <- [1,2,3] && <<Y>> <= <<4,5,6>>].
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (list_comprehension
+          (tuple
+            (var)
+            (var))
+          (lc_exprs
+            (lc_or_zc_expr
+              (generator
+                (var)
+                (list
+                  (integer)
+                  (integer)
+                  (integer)))
+              (b_generator
+                (binary
+                  (bin_element
+                    (var)))
+                (binary
+                  (bin_element
+                    (integer))
+                  (bin_element
+                    (integer))
+                  (bin_element
+                    (integer)))))))))))
+
+================================================================================
+zip generator simple normal and normal
+================================================================================
+f() ->
+    begin X = 32, Y = 32, [{X, Y} || X <- [1,2,3] && Y <- [4,5,6]] end.
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (block_expr
+          (match_expr
+            (var)
+            (integer))
+          (match_expr
+            (var)
+            (integer))
+          (list_comprehension
+            (tuple
+              (var)
+              (var))
+            (lc_exprs
+              (lc_or_zc_expr
+                (generator
+                  (var)
+                  (list
+                    (integer)
+                    (integer)
+                    (integer)))
+                (generator
+                  (var)
+                  (list
+                    (integer)
+                    (integer)
+                    (integer)))))))))))
+
+================================================================================
+zip generator normal list and normal list
+================================================================================
+f() ->
+    begin
+        S1 = [x, y, z],
+        S2 = [5, 10, 15],
+        X = 32, Y = 32,
+        [{X, Y} || X <- S1 && Y <- S2]
+    end.
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (block_expr
+          (match_expr
+            (var)
+            (list
+              (atom)
+              (atom)
+              (atom)))
+          (match_expr
+            (var)
+            (list
+              (integer)
+              (integer)
+              (integer)))
+          (match_expr
+            (var)
+            (integer))
+          (match_expr
+            (var)
+            (integer))
+          (list_comprehension
+            (tuple
+              (var)
+              (var))
+            (lc_exprs
+              (lc_or_zc_expr
+                (generator
+                  (var)
+                  (var))
+                (generator
+                  (var)
+                  (var))))))))))
+
+================================================================================
+zip generator strict and map generator
+================================================================================
+
+f() ->
+   begin [{X, Y, K} || X <:- [1,2,3] &&  Y:=K <- #{1=>a, 2=>b, 3=>c}] end.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (block_expr
+          (list_comprehension
+            (tuple
+              (var)
+              (var)
+              (var))
+            (lc_exprs
+              (lc_or_zc_expr
+                (generator
+                  (var)
+                  (list
+                    (integer)
+                    (integer)
+                    (integer)))
+                (map_generator
+                  (map_field
+                    (var)
+                    (var))
+                  (map_expr
+                    (map_field
+                      (integer)
+                      (atom))
+                    (map_field
+                      (integer)
+                      (atom))
+                    (map_field
+                      (integer)
+                      (atom))))))))))))
+
+================================================================================
+zip generator combined with normal one
+================================================================================
+f() ->
+   begin [{X, W+Y} || X <- [a, b, c] && <<Y>> <= <<2, 4, 6>>, W <- [1,2]] end.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (block_expr
+          (list_comprehension
+            (tuple
+              (var)
+              (binary_op_expr
+                (var)
+                (var)))
+            (lc_exprs
+              (lc_or_zc_expr
+                (generator
+                  (var)
+                  (list
+                    (atom)
+                    (atom)
+                    (atom)))
+                (b_generator
+                  (binary
+                    (bin_element
+                      (var)))
+                  (binary
+                    (bin_element
+                      (integer))
+                    (bin_element
+                      (integer))
+                    (bin_element
+                      (integer)))))
+              (lc_or_zc_expr
+                (generator
+                  (var)
+                  (list
+                    (integer)
+                    (integer)))))))))))
+
+================================================================================
+zip generator normal followed by zip then filter
+================================================================================
+f() ->
+   begin
+      [{X, W+Y} || W <- [0],
+                   X <- [a, b, c] && <<Y>> <:= <<2, 4, 6>>,
+                   Y<4]
+   end.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (block_expr
+          (list_comprehension
+            (tuple
+              (var)
+              (binary_op_expr
+                (var)
+                (var)))
+            (lc_exprs
+              (lc_or_zc_expr
+                (generator
+                  (var)
+                  (list
+                    (integer))))
+              (lc_or_zc_expr
+                (generator
+                  (var)
+                  (list
+                    (atom)
+                    (atom)
+                    (atom)))
+                (b_generator
+                  (binary
+                    (bin_element
+                      (var)))
+                  (binary
+                    (bin_element
+                      (integer))
+                    (bin_element
+                      (integer))
+                    (bin_element
+                      (integer)))))
+              (lc_or_zc_expr
+                (binary_op_expr
+                  (var)
+                  (integer))))))))))
+
+================================================================================
+zip generator LHS match
+================================================================================
+f() ->
+   begin [{X,Y}|| a=b=X <- [1,2] && Y <-[1,2]] end.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (block_expr
+          (list_comprehension
+            (tuple
+              (var)
+              (var))
+            (lc_exprs
+              (lc_or_zc_expr
+                (generator
+                  (match_expr
+                    (atom)
+                    (match_expr
+                      (atom)
+                      (var)))
+                  (list
+                    (integer)
+                    (integer)))
+                (generator
+                  (var)
+                  (list
+                    (integer)
+                    (integer)))))))))))
+
+================================================================================
+zip generator normal followed by zip
+================================================================================
+f() ->
+   begin
+      [{A,B,W} || {Same,W} <- [{a,1}],
+                  {Same,A} <- [{a,1},{b,9},{x,10}] &&
+                  {Same,B} <- [{a,7},{wrong,8},{x,20}]]
+   end.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (block_expr
+          (list_comprehension
+            (tuple
+              (var)
+              (var)
+              (var))
+            (lc_exprs
+              (lc_or_zc_expr
+                (generator
+                  (tuple
+                    (var)
+                    (var))
+                  (list
+                    (tuple
+                      (atom)
+                      (integer)))))
+              (lc_or_zc_expr
+                (generator
+                  (tuple
+                    (var)
+                    (var))
+                  (list
+                    (tuple
+                      (atom)
+                      (integer))
+                    (tuple
+                      (atom)
+                      (integer))
+                    (tuple
+                      (atom)
+                      (integer))))
+                (generator
+                  (tuple
+                    (var)
+                    (var))
+                  (list
+                    (tuple
+                      (atom)
+                      (integer))
+                    (tuple
+                      (atom)
+                      (integer))
+                    (tuple
+                      (atom)
+                      (integer))))))))))))
+
+================================================================================
+zip generator binary and binary
+================================================================================
+
+f() ->
+   begin
+      X = 32, Y = 32,
+      << <<(X+Y)/integer>> || <<X>> <= <<1,2,3>> && <<Y>> <= <<2,2,2>> >>
+   end.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (block_expr
+          (match_expr
+            (var)
+            (integer))
+          (match_expr
+            (var)
+            (integer))
+          (binary_comprehension
+            (binary
+              (bin_element
+                (paren_expr
+                  (binary_op_expr
+                    (var)
+                    (var)))
+                (bit_type_list
+                  (atom))))
+            (lc_exprs
+              (lc_or_zc_expr
+                (b_generator
+                  (binary
+                    (bin_element
+                      (var)))
+                  (binary
+                    (bin_element
+                      (integer))
+                    (bin_element
+                      (integer))
+                    (bin_element
+                      (integer))))
+                (b_generator
+                  (binary
+                    (bin_element
+                      (var)))
+                  (binary
+                    (bin_element
+                      (integer))
+                    (bin_element
+                      (integer))
+                    (bin_element
+                      (integer))))))))))))
+
+================================================================================
+zip generator binary and binary followed by normal
+================================================================================
+f() ->
+   begin
+      X = 32, Y = 32, Z = 32,
+      << <<(X+Y+Z)/integer>> || <<X>> <= <<1,2,3>> && <<Y>> <= <<2,2,2>>,
+                                Z<-[1,2,3] >>
+   end.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (block_expr
+          (match_expr
+            (var)
+            (integer))
+          (match_expr
+            (var)
+            (integer))
+          (match_expr
+            (var)
+            (integer))
+          (binary_comprehension
+            (binary
+              (bin_element
+                (paren_expr
+                  (binary_op_expr
+                    (binary_op_expr
+                      (var)
+                      (var))
+                    (var)))
+                (bit_type_list
+                  (atom))))
+            (lc_exprs
+              (lc_or_zc_expr
+                (b_generator
+                  (binary
+                    (bin_element
+                      (var)))
+                  (binary
+                    (bin_element
+                      (integer))
+                    (bin_element
+                      (integer))
+                    (bin_element
+                      (integer))))
+                (b_generator
+                  (binary
+                    (bin_element
+                      (var)))
+                  (binary
+                    (bin_element
+                      (integer))
+                    (bin_element
+                      (integer))
+                    (bin_element
+                      (integer)))))
+              (lc_or_zc_expr
+                (generator
+                  (var)
+                  (list
+                    (integer)
+                    (integer)
+                    (integer)))))))))))
+
+================================================================================
+zip generator three binary lists
+================================================================================
+f() ->
+   begin
+      L1 = <<1, 2, 3>>,
+      L2 = <<1, 1, 1>>,
+      L3 = <<2, 2, 2>>,
+      << <<(X+Y+Z)/integer>> || <<X>> <= L1 && <<Y>> <= L2 && <<Z>> <= L3 >>
+   end.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (block_expr
+          (match_expr
+            (var)
+            (binary
+              (bin_element
+                (integer))
+              (bin_element
+                (integer))
+              (bin_element
+                (integer))))
+          (match_expr
+            (var)
+            (binary
+              (bin_element
+                (integer))
+              (bin_element
+                (integer))
+              (bin_element
+                (integer))))
+          (match_expr
+            (var)
+            (binary
+              (bin_element
+                (integer))
+              (bin_element
+                (integer))
+              (bin_element
+                (integer))))
+          (binary_comprehension
+            (binary
+              (bin_element
+                (paren_expr
+                  (binary_op_expr
+                    (binary_op_expr
+                      (var)
+                      (var))
+                    (var)))
+                (bit_type_list
+                  (atom))))
+            (lc_exprs
+              (lc_or_zc_expr
+                (b_generator
+                  (binary
+                    (bin_element
+                      (var)))
+                  (var))
+                (b_generator
+                  (binary
+                    (bin_element
+                      (var)))
+                  (var))
+                (b_generator
+                  (binary
+                    (bin_element
+                      (var)))
+                  (var))))))))))
+
+================================================================================
+zip generator match LHS and normal
+================================================================================
+f() ->
+   begin << <<(X+Y):64>>|| a=b=X <- [1,2] && Y <- [1,2] >> end.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (block_expr
+          (binary_comprehension
+            (binary
+              (bin_element
+                (paren_expr
+                  (binary_op_expr
+                    (var)
+                    (var)))
+                (bit_size_expr
+                  (integer))))
+            (lc_exprs
+              (lc_or_zc_expr
+                (generator
+                  (match_expr
+                    (atom)
+                    (match_expr
+                      (atom)
+                      (var)))
+                  (list
+                    (integer)
+                    (integer)))
+                (generator
+                  (var)
+                  (list
+                    (integer)
+                    (integer)))))))))))
+
+================================================================================
+zip generator match lhs and binary
+================================================================================
+f() ->
+   begin << <<(X+Y):64>>|| a=b=X <- [1,2] && <<Y>> <= <<1,2>> >> end.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (block_expr
+          (binary_comprehension
+            (binary
+              (bin_element
+                (paren_expr
+                  (binary_op_expr
+                    (var)
+                    (var)))
+                (bit_size_expr
+                  (integer))))
+            (lc_exprs
+              (lc_or_zc_expr
+                (generator
+                  (match_expr
+                    (atom)
+                    (match_expr
+                      (atom)
+                      (var)))
+                  (list
+                    (integer)
+                    (integer)))
+                (b_generator
+                  (binary
+                    (bin_element
+                      (var)))
+                  (binary
+                    (bin_element
+                      (integer))
+                    (bin_element
+                      (integer))))))))))))
+
+================================================================================
+zip generator match LHS and map
+================================================================================
+f() ->
+   begin << <<(X+V):64>>|| a=b=X <- [1,2] && _K:=V <- #{a=>1,b=>2}>> end.
+
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (block_expr
+          (binary_comprehension
+            (binary
+              (bin_element
+                (paren_expr
+                  (binary_op_expr
+                    (var)
+                    (var)))
+                (bit_size_expr
+                  (integer))))
+            (lc_exprs
+              (lc_or_zc_expr
+                (generator
+                  (match_expr
+                    (atom)
+                    (match_expr
+                      (atom)
+                      (var)))
+                  (list
+                    (integer)
+                    (integer)))
+                (map_generator
+                  (map_field
+                    (var)
+                    (var))
+                  (map_expr
+                    (map_field
+                      (atom)
+                      (integer))
+                    (map_field
+                      (atom)
+                      (integer))))))))))))
+
+================================================================================
+zip generator maps from variables
+================================================================================
+f() ->
+   begin
+      M1 = #{a=>1},
+      M2 = #{b=>3},
+      [{K1, K2, V1, V2} || K1 := V1 <- M1 && K2 := V2 <- M2]
+   end.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (block_expr
+          (match_expr
+            (var)
+            (map_expr
+              (map_field
+                (atom)
+                (integer))))
+          (match_expr
+            (var)
+            (map_expr
+              (map_field
+                (atom)
+                (integer))))
+          (list_comprehension
+            (tuple
+              (var)
+              (var)
+              (var)
+              (var))
+            (lc_exprs
+              (lc_or_zc_expr
+                (map_generator
+                  (map_field
+                    (var)
+                    (var))
+                  (var))
+                (map_generator
+                  (map_field
+                    (var)
+                    (var))
+                  (var))))))))))
+
+================================================================================
+zip generator maps from variables 2
+================================================================================
+f() ->
+   begin
+      Seq = lists:seq(1, 50),
+        M1 = maps:iterator(#{X=>X || X <- Seq}, ordered),
+        M2 = maps:iterator(#{X=>X || X <- lists:seq(1,50)}, ordered),
+        [X+Y+Z+W || X := Y <- M1 && Z := W <- M2]
+   end.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (block_expr
+          (match_expr
+            (var)
+            (call
+              (remote
+                (remote_module
+                  (atom))
+                (atom))
+              (expr_args
+                (integer)
+                (integer))))
+          (match_expr
+            (var)
+            (call
+              (remote
+                (remote_module
+                  (atom))
+                (atom))
+              (expr_args
+                (map_comprehension
+                  (map_field
+                    (var)
+                    (var))
+                  (lc_exprs
+                    (lc_or_zc_expr
+                      (generator
+                        (var)
+                        (var)))))
+                (atom))))
+          (match_expr
+            (var)
+            (call
+              (remote
+                (remote_module
+                  (atom))
+                (atom))
+              (expr_args
+                (map_comprehension
+                  (map_field
+                    (var)
+                    (var))
+                  (lc_exprs
+                    (lc_or_zc_expr
+                      (generator
+                        (var)
+                        (call
+                          (remote
+                            (remote_module
+                              (atom))
+                            (atom))
+                          (expr_args
+                            (integer)
+                            (integer)))))))
+                (atom))))
+          (list_comprehension
+            (binary_op_expr
+              (binary_op_expr
+                (binary_op_expr
+                  (var)
+                  (var))
+                (var))
+              (var))
+            (lc_exprs
+              (lc_or_zc_expr
+                (map_generator
+                  (map_field
+                    (var)
+                    (var))
+                  (var))
+                (map_generator
+                  (map_field
+                    (var)
+                    (var))
+                  (var))))))))))
+
+================================================================================
+zip generator maps from variables 3
+================================================================================
+f() ->
+   begin
+      Seq = lists:seq(1, 50),
+      M3 = maps:iterator(#{X=>X*3 || X <- Seq}, ordered),
+      M4 = maps:iterator(#{X*2=>X*4 || X <- Seq}, ordered),
+      [{X, Y, Z, W} || X := Y <- M3 && Z := W <- M4]
+   end.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (block_expr
+          (match_expr
+            (var)
+            (call
+              (remote
+                (remote_module
+                  (atom))
+                (atom))
+              (expr_args
+                (integer)
+                (integer))))
+          (match_expr
+            (var)
+            (call
+              (remote
+                (remote_module
+                  (atom))
+                (atom))
+              (expr_args
+                (map_comprehension
+                  (map_field
+                    (var)
+                    (binary_op_expr
+                      (var)
+                      (integer)))
+                  (lc_exprs
+                    (lc_or_zc_expr
+                      (generator
+                        (var)
+                        (var)))))
+                (atom))))
+          (match_expr
+            (var)
+            (call
+              (remote
+                (remote_module
+                  (atom))
+                (atom))
+              (expr_args
+                (map_comprehension
+                  (map_field
+                    (binary_op_expr
+                      (var)
+                      (integer))
+                    (binary_op_expr
+                      (var)
+                      (integer)))
+                  (lc_exprs
+                    (lc_or_zc_expr
+                      (generator
+                        (var)
+                        (var)))))
+                (atom))))
+          (list_comprehension
+            (tuple
+              (var)
+              (var)
+              (var)
+              (var))
+            (lc_exprs
+              (lc_or_zc_expr
+                (map_generator
+                  (map_field
+                    (var)
+                    (var))
+                  (var))
+                (map_generator
+                  (map_field
+                    (var)
+                    (var))
+                  (var))))))))))
+
+================================================================================
+zip generator map and map
+================================================================================
+f() ->
+   begin
+      #{K1 => V1+V2 || K1:=V1 <- #{a=>1} && _K2:=V2 <- #{b=>3}}
+   end.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (block_expr
+          (map_comprehension
+            (map_field
+              (var)
+              (binary_op_expr
+                (var)
+                (var)))
+            (lc_exprs
+              (lc_or_zc_expr
+                (map_generator
+                  (map_field
+                    (var)
+                    (var))
+                  (map_expr
+                    (map_field
+                      (atom)
+                      (integer))))
+                (map_generator
+                  (map_field
+                    (var)
+                    (var))
+                  (map_expr
+                    (map_field
+                      (atom)
+                      (integer))))))))))))
+
+================================================================================
+zip generator simple
+================================================================================
+f() ->
+   begin
+      #{K=>V || a := b <- #{x => y} && K := V <- #{x => y}}
+   end.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (block_expr
+          (map_comprehension
+            (map_field
+              (var)
+              (var))
+            (lc_exprs
+              (lc_or_zc_expr
+                (map_generator
+                  (map_field
+                    (atom)
+                    (atom))
+                  (map_expr
+                    (map_field
+                      (atom)
+                      (atom))))
+                (map_generator
+                  (map_field
+                    (var)
+                    (var))
+                  (map_expr
+                    (map_field
+                      (atom)
+                      (atom))))))))))))
+
+================================================================================
+Operator precedence, =:= vs orelse
+================================================================================
+
+fn(A, B) -> A =:= -1 orelse B =:= -1.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args
+        (var)
+        (var))
+      (clause_body
+        (binary_op_expr
+          (binary_op_expr
+            (var)
+            (unary_op_expr
+              (integer)))
+          (binary_op_expr
+            (var)
+            (unary_op_expr
+              (integer))))))))
+
+================================================================================
+Operator precedence, and vs >
+================================================================================
+
+fn(X) -> my_is_integer(X) and X > 0.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args
+        (var))
+      (clause_body
+        (binary_op_expr
+          (binary_op_expr
+            (call
+              (atom)
+              (expr_args
+                (var)))
+            (var))
+          (integer))))))
+
+================================================================================
+Based floating point literals (EEP-75)
+================================================================================
+
+fn(X) ->
+      [{10#1.0,1.0},
+       {10#012345.625, 012345.625},
+       {10#3.31200,3.31200},
+       {10#1.0#e0,1.0e0},
+       {10#1.0#E17,1.0E17},
+       {10#34.21#E-18, 34.21E-18},
+       {10#17.0#E+14, 17.0E+14},
+       {10#12345.625#e3, 12345.625e3},
+       {10#12345.625#E-3, 12345.625E-3},
+
+       {2#1.0, 1.0},
+       {2#101.0, 5.0},
+       {2#101.1, 5.5},
+       {2#101.101, 5.625},
+       {2#101.1#e0, 5.5},
+       {2#1.0#e+3, 8.0},
+       {2#1.0#e-3, 0.125},
+       {2#000100.001000, 4.125},
+       {2#0.10000000000000000000000000000000000000000000000000001,
+             0.5000000000000001}, % 53 bits
+       {2#0.100000000000000000000000000000000000000000000000000001,
+             0.5}, % not 54 bits
+       {2#0.11001001000011111101101010100010001000010110100011000#e+2,
+             math:pi()}, % pi to 53 bits
+
+       {3#102.12, 3#10212/3#100},
+
+       {16#100.0, 256.0},
+       {16#ff.d, 16#ffd/16},
+       {16#1.0, 1.0},
+       {16#abc.def, 16#abcdef/16#1000},
+       {16#00100.001000, 256.0 + 1/16#1000},
+       {16#0.80000000000008, 0.5000000000000001}, % 53-bit fraction
+       {16#0.80000000000004, 0.5}, % not 54 bits
+       {16#fe.8#e0, 16#fe8/16},
+       {16#f.e#e+3, float(16#fe*16#100)},
+       {16#c.0#e-1, 16#c/16},
+       {16#0.0e0, 16#e/16#100}, % e is a hex digit, not exponent
+       {16#0.0E0, 16#e/16#100}, % same for E
+       {16#0.3243f6a8885a30#e+1, math:pi()} % pi to 53 bits
+       ].
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args
+        (var))
+      (clause_body
+        (list
+          (tuple
+            (float)
+            (float))
+          (tuple
+            (float)
+            (float))
+          (tuple
+            (float)
+            (float))
+          (tuple
+            (float)
+            (float))
+          (tuple
+            (float)
+            (float))
+          (tuple
+            (float)
+            (float))
+          (tuple
+            (float)
+            (float))
+          (tuple
+            (float)
+            (float))
+          (tuple
+            (float)
+            (float))
+          (tuple
+            (float)
+            (float))
+          (tuple
+            (float)
+            (float))
+          (tuple
+            (float)
+            (float))
+          (tuple
+            (float)
+            (float))
+          (tuple
+            (float)
+            (float))
+          (tuple
+            (float)
+            (float))
+          (tuple
+            (float)
+            (float))
+          (tuple
+            (float)
+            (float))
+          (tuple
+            (float)
+            (float))
+          (comment)
+          (tuple
+            (float)
+            (float))
+          (comment)
+          (tuple
+            (float)
+            (call
+              (remote
+                (remote_module
+                  (atom))
+                (atom))
+              (expr_args)))
+          (comment)
+          (tuple
+            (float)
+            (binary_op_expr
+              (integer)
+              (integer)))
+          (tuple
+            (float)
+            (float))
+          (tuple
+            (float)
+            (binary_op_expr
+              (integer)
+              (integer)))
+          (tuple
+            (float)
+            (float))
+          (tuple
+            (float)
+            (binary_op_expr
+              (integer)
+              (integer)))
+          (tuple
+            (float)
+            (binary_op_expr
+              (float)
+              (binary_op_expr
+                (integer)
+                (integer))))
+          (tuple
+            (float)
+            (float))
+          (comment)
+          (tuple
+            (float)
+            (float))
+          (comment)
+          (tuple
+            (float)
+            (binary_op_expr
+              (integer)
+              (integer)))
+          (tuple
+            (float)
+            (call
+              (atom)
+              (expr_args
+                (binary_op_expr
+                  (integer)
+                  (integer)))))
+          (tuple
+            (float)
+            (binary_op_expr
+              (integer)
+              (integer)))
+          (tuple
+            (float)
+            (binary_op_expr
+              (integer)
+              (integer)))
+          (comment)
+          (tuple
+            (float)
+            (binary_op_expr
+              (integer)
+              (integer)))
+          (comment)
+          (tuple
+            (float)
+            (call
+              (remote
+                (remote_module
+                  (atom))
+                (atom))
+              (expr_args)))
+          (comment))))))
+
+================================================================================
+Based floating point literals, with underscore (EEP-75)
+================================================================================
+
+fn() ->
+   [{1_6#000_100.0_0, 256.0},
+    {16#0.3243_f6a8_885a_30#e+1, math:pi()},
+    {16#3243_f6a8.885a_30#e-7, math:pi()},
+    {16#3243_f6a8_885a.30#e-1_1, math:pi()},
+    {2#1.010101010101010101010#e+2_1, 2796202.0}].
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (list
+          (tuple
+            (float)
+            (float))
+          (tuple
+            (float)
+            (call
+              (remote
+                (remote_module
+                  (atom))
+                (atom))
+              (expr_args)))
+          (tuple
+            (float)
+            (call
+              (remote
+                (remote_module
+                  (atom))
+                (atom))
+              (expr_args)))
+          (tuple
+            (float)
+            (call
+              (remote
+                (remote_module
+                  (atom))
+                (atom))
+              (expr_args)))
+          (tuple
+            (float)
+            (float)))))))
+
+================================================================================
+Based integer literals, with underscore
+================================================================================
+
+fn() ->
+   [{1_6#000_100, 256},
+    {16#03243_f6a8_885a_30},
+    {16#3243_f6a8_885a},
+    {2#1010101010101010101010}].
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fun_decl
+    (function_clause
+      (atom)
+      (expr_args)
+      (clause_body
+        (list
+          (tuple
+            (integer)
+            (integer))
+          (tuple
+            (integer))
+          (tuple
+            (integer))
+          (tuple
+            (integer)))))))
+
+================================================================================
+Types using based ranges
+================================================================================
+
+-type goo() :: 0..16.
+-type foo() :: 0..16#ffffffff.
+-type bar() :: 0..16#ffffffffffffffff.
+-type baz() :: 0 | 1 | 2 | 4 | 8.
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (type_alias
+    (type_name
+      (atom)
+      (var_args))
+    (range_type
+      (integer)
+      (integer)))
+  (type_alias
+    (type_name
+      (atom)
+      (var_args))
+    (range_type
+      (integer)
+      (integer)))
+  (type_alias
+    (type_name
+      (atom)
+      (var_args))
+    (range_type
+      (integer)
+      (integer)))
+  (type_alias
+    (type_name
+      (atom)
+      (var_args))
+    (pipe
+      (integer)
+      (pipe
+        (integer)
+        (pipe
+          (integer)
+          (pipe
+            (integer)
+            (integer)))))))

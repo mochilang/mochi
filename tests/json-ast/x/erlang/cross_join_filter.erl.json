@@ -3,27 +3,6 @@
     "kind": "source_file",
     "children": [
       {
-        "kind": "ERROR",
-        "children": [
-          {
-            "kind": "atom",
-            "text": "usr"
-          },
-          {
-            "kind": "atom",
-            "text": "bin"
-          },
-          {
-            "kind": "atom",
-            "text": "env"
-          },
-          {
-            "kind": "atom",
-            "text": "escript"
-          }
-        ]
-      },
-      {
         "kind": "module_attribute",
         "children": [
           {
@@ -174,58 +153,73 @@
                             "kind": "lc_exprs",
                             "children": [
                               {
-                                "kind": "generator",
+                                "kind": "lc_or_zc_expr",
                                 "children": [
                                   {
-                                    "kind": "var",
-                                    "text": "N"
-                                  },
-                                  {
-                                    "kind": "var",
-                                    "text": "Nums"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "generator",
-                                "children": [
-                                  {
-                                    "kind": "var",
-                                    "text": "L"
-                                  },
-                                  {
-                                    "kind": "var",
-                                    "text": "Letters"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "paren_expr",
-                                "children": [
-                                  {
-                                    "kind": "binary_op_expr",
+                                    "kind": "generator",
                                     "children": [
                                       {
-                                        "kind": "paren_expr",
-                                        "children": [
-                                          {
-                                            "kind": "binary_op_expr",
-                                            "children": [
-                                              {
-                                                "kind": "var",
-                                                "text": "N"
-                                              },
-                                              {
-                                                "kind": "integer",
-                                                "text": "2"
-                                              }
-                                            ]
-                                          }
-                                        ]
+                                        "kind": "var",
+                                        "text": "N"
                                       },
                                       {
-                                        "kind": "integer",
-                                        "text": "0"
+                                        "kind": "var",
+                                        "text": "Nums"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "lc_or_zc_expr",
+                                "children": [
+                                  {
+                                    "kind": "generator",
+                                    "children": [
+                                      {
+                                        "kind": "var",
+                                        "text": "L"
+                                      },
+                                      {
+                                        "kind": "var",
+                                        "text": "Letters"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "lc_or_zc_expr",
+                                "children": [
+                                  {
+                                    "kind": "paren_expr",
+                                    "children": [
+                                      {
+                                        "kind": "binary_op_expr",
+                                        "children": [
+                                          {
+                                            "kind": "paren_expr",
+                                            "children": [
+                                              {
+                                                "kind": "binary_op_expr",
+                                                "children": [
+                                                  {
+                                                    "kind": "var",
+                                                    "text": "N"
+                                                  },
+                                                  {
+                                                    "kind": "integer",
+                                                    "text": "2"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "integer",
+                                            "text": "0"
+                                          }
+                                        ]
                                       }
                                     ]
                                   }

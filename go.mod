@@ -22,6 +22,7 @@ require (
 	github.com/tliron/commonlog v0.2.20
 	github.com/tliron/glsp v0.2.2
 	github.com/tree-sitter/go-tree-sitter v0.25.0
+	github.com/tree-sitter/tree-sitter-erlang v0.0.0-20250613112728-07dad1469ecb
 	github.com/tree-sitter/tree-sitter-fsharp v0.1.0
 	github.com/tree-sitter/tree-sitter-haskell v0.23.1
 	github.com/tree-sitter/tree-sitter-racket v0.24.7
@@ -98,6 +99,8 @@ require (
 replace mochi/tools/any2mochi => ./archived/tools/any2mochi
 
 replace github.com/tree-sitter/tree-sitter-racket => ./third_party/tree-sitter-racket
+
+replace github.com/tree-sitter/tree-sitter-erlang => ./internal/tree-sitter-erlang
 
 replace github.com/tree-sitter/tree-sitter-scheme => github.com/6cdh/tree-sitter-scheme v0.24.7
 

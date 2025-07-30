@@ -3,27 +3,6 @@
     "kind": "source_file",
     "children": [
       {
-        "kind": "ERROR",
-        "children": [
-          {
-            "kind": "atom",
-            "text": "usr"
-          },
-          {
-            "kind": "atom",
-            "text": "bin"
-          },
-          {
-            "kind": "atom",
-            "text": "env"
-          },
-          {
-            "kind": "atom",
-            "text": "escript"
-          }
-        ]
-      },
-      {
         "kind": "module_attribute",
         "children": [
           {
@@ -205,41 +184,56 @@
                             "kind": "lc_exprs",
                             "children": [
                               {
-                                "kind": "generator",
+                                "kind": "lc_or_zc_expr",
                                 "children": [
                                   {
-                                    "kind": "var",
-                                    "text": "N"
-                                  },
-                                  {
-                                    "kind": "var",
-                                    "text": "Nums"
+                                    "kind": "generator",
+                                    "children": [
+                                      {
+                                        "kind": "var",
+                                        "text": "N"
+                                      },
+                                      {
+                                        "kind": "var",
+                                        "text": "Nums"
+                                      }
+                                    ]
                                   }
                                 ]
                               },
                               {
-                                "kind": "generator",
+                                "kind": "lc_or_zc_expr",
                                 "children": [
                                   {
-                                    "kind": "var",
-                                    "text": "L"
-                                  },
-                                  {
-                                    "kind": "var",
-                                    "text": "Letters"
+                                    "kind": "generator",
+                                    "children": [
+                                      {
+                                        "kind": "var",
+                                        "text": "L"
+                                      },
+                                      {
+                                        "kind": "var",
+                                        "text": "Letters"
+                                      }
+                                    ]
                                   }
                                 ]
                               },
                               {
-                                "kind": "generator",
+                                "kind": "lc_or_zc_expr",
                                 "children": [
                                   {
-                                    "kind": "var",
-                                    "text": "B"
-                                  },
-                                  {
-                                    "kind": "var",
-                                    "text": "Bools"
+                                    "kind": "generator",
+                                    "children": [
+                                      {
+                                        "kind": "var",
+                                        "text": "B"
+                                      },
+                                      {
+                                        "kind": "var",
+                                        "text": "Bools"
+                                      }
+                                    ]
                                   }
                                 ]
                               }
