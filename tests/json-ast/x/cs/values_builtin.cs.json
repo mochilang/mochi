@@ -1,105 +1,104 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "M",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 6,
-      "EndLine": 11,
-      "Fields": [
+      "name": "M",
+      "kind": "struct",
+      "access": "",
+      "startline": 6,
+      "endline": 11,
+      "fields": [
         {
-          "Name": "a",
-          "Type": "int",
-          "Access": "public",
-          "Line": 7,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "a",
+          "type": "int",
+          "access": "public",
+          "line": 7,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "b",
-          "Type": "int",
-          "Access": "public",
-          "Line": 8,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "b",
+          "type": "int",
+          "access": "public",
+          "line": 8,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "c",
-          "Type": "int",
-          "Access": "public",
-          "Line": 9,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "c",
+          "type": "int",
+          "access": "public",
+          "line": 9,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 10,
-          "EndLine": 10,
-          "Doc": ""
+          "startline": 10,
+          "endline": 10,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 12,
-      "EndLine": 17,
-      "Fields": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 12,
+      "endline": 17,
+      "fields": [
         {
-          "Name": "m",
-          "Type": "M",
-          "Access": "",
-          "Line": 13,
-          "Value": "new M{a = 1, b = 2, c = 3}",
-          "Ast": {
-            "Kind": "new",
-            "Value": "M",
-            "Children": [
+          "name": "m",
+          "type": "M",
+          "access": "",
+          "line": 13,
+          "value": "new M{a = 1, b = 2, c = 3}",
+          "ast": {
+            "kind": "new",
+            "value": "M",
+            "children": [
               {
-                "Kind": "init",
-                "Children": [
+                "kind": "init",
+                "children": [
                   {
-                    "Kind": "field",
-                    "Value": "a",
-                    "Children": [
+                    "kind": "field",
+                    "value": "a",
+                    "children": [
                       {
-                        "Kind": "literal",
-                        "Value": "1"
+                        "kind": "literal",
+                        "value": "1"
                       }
                     ]
                   },
                   {
-                    "Kind": "field",
-                    "Value": "b",
-                    "Children": [
+                    "kind": "field",
+                    "value": "b",
+                    "children": [
                       {
-                        "Kind": "literal",
-                        "Value": "2"
+                        "kind": "literal",
+                        "value": "2"
                       }
                     ]
                   },
                   {
-                    "Kind": "field",
-                    "Value": "c",
-                    "Children": [
+                    "kind": "field",
+                    "value": "c",
+                    "children": [
                       {
-                        "Kind": "literal",
-                        "Value": "3"
+                        "kind": "literal",
+                        "value": "3"
                       }
                     ]
                   }
@@ -107,62 +106,59 @@
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        Console.WriteLine((\"[\" + (string.Join(\", \", m.Values.ToList()) + \"]\")));"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "binary",
-                    "Value": "+",
-                    "Children": [
+                    "kind": "binary",
+                    "value": "+",
+                    "children": [
                       {
-                        "Kind": "literal",
-                        "Value": "["
+                        "kind": "literal",
+                        "value": "["
                       },
                       {
-                        "Kind": "binary",
-                        "Value": "+",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "+",
+                        "children": [
                           {
-                            "Kind": "call",
-                            "Value": "Join",
-                            "Children": [
+                            "kind": "call",
+                            "value": "Join",
+                            "children": [
                               {
-                                "Kind": "ident",
-                                "Value": "string"
+                                "kind": "ident",
+                                "value": "string"
                               },
                               {
-                                "Kind": "literal",
-                                "Value": ", "
+                                "kind": "literal",
+                                "value": ", "
                               },
                               {
-                                "Kind": "call",
-                                "Value": "ToList",
-                                "Children": [
+                                "kind": "call",
+                                "value": "ToList",
+                                "children": [
                                   {
-                                    "Kind": "member",
-                                    "Value": "Values",
-                                    "Children": [
+                                    "kind": "member",
+                                    "value": "Values",
+                                    "children": [
                                       {
-                                        "Kind": "ident",
-                                        "Value": "m"
+                                        "kind": "ident",
+                                        "value": "m"
                                       }
                                     ]
                                   }
@@ -171,8 +167,8 @@
                             ]
                           },
                           {
-                            "Kind": "literal",
-                            "Value": "]"
+                            "kind": "literal",
+                            "value": "]"
                           }
                         ]
                       }
@@ -182,13 +178,12 @@
               }
             ]
           },
-          "StartLine": 14,
-          "EndLine": 16,
-          "Doc": ""
+          "startline": 14,
+          "endline": 16,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.34 on 2025-07-22 09:58 +0700\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\n\nstruct M {\n    public int a;\n    public int b;\n    public int c;\n    public override string ToString() =\u003e $\"M {{a = {a}, b = {b}, c = {c}}}\";\n}\nclass Program {\n    static M m = new M{a = 1, b = 2, c = 3};\n    static void Main() {\n        Console.WriteLine((\"[\" + (string.Join(\", \", m.Values.ToList()) + \"]\")));\n    }\n}\n"
+  ]
 }

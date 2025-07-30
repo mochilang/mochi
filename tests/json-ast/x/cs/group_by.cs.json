@@ -1,205 +1,202 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "People",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 6,
-      "EndLine": 11,
-      "Fields": [
+      "name": "People",
+      "kind": "struct",
+      "access": "",
+      "startline": 6,
+      "endline": 11,
+      "fields": [
         {
-          "Name": "name",
-          "Type": "string",
-          "Access": "public",
-          "Line": 7,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "name",
+          "type": "string",
+          "access": "public",
+          "line": 7,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "age",
-          "Type": "int",
-          "Access": "public",
-          "Line": 8,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "age",
+          "type": "int",
+          "access": "public",
+          "line": 8,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "city",
-          "Type": "string",
-          "Access": "public",
-          "Line": 9,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "city",
+          "type": "string",
+          "access": "public",
+          "line": 9,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 10,
-          "EndLine": 10,
-          "Doc": ""
+          "startline": 10,
+          "endline": 10,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "GGroup",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 12,
-      "EndLine": 16,
-      "Fields": [
+      "name": "GGroup",
+      "kind": "struct",
+      "access": "",
+      "startline": 12,
+      "endline": 16,
+      "fields": [
         {
-          "Name": "key",
-          "Type": "string",
-          "Access": "public",
-          "Line": 13,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "key",
+          "type": "string",
+          "access": "public",
+          "line": 13,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "items",
-          "Type": "People[]",
-          "Access": "public",
-          "Line": 14,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "items",
+          "type": "People[]",
+          "access": "public",
+          "line": 14,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 15,
-          "EndLine": 15,
-          "Doc": ""
+          "startline": 15,
+          "endline": 15,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "GResult",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 17,
-      "EndLine": 22,
-      "Fields": [
+      "name": "GResult",
+      "kind": "struct",
+      "access": "",
+      "startline": 17,
+      "endline": 22,
+      "fields": [
         {
-          "Name": "city",
-          "Type": "string",
-          "Access": "public",
-          "Line": 18,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "city",
+          "type": "string",
+          "access": "public",
+          "line": 18,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "count",
-          "Type": "int",
-          "Access": "public",
-          "Line": 19,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "count",
+          "type": "int",
+          "access": "public",
+          "line": 19,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "avg_age",
-          "Type": "double",
-          "Access": "public",
-          "Line": 20,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "avg_age",
+          "type": "double",
+          "access": "public",
+          "line": 20,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 21,
-          "EndLine": 21,
-          "Doc": ""
+          "startline": 21,
+          "endline": 21,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 23,
-      "EndLine": 32,
-      "Fields": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 23,
+      "endline": 32,
+      "fields": [
         {
-          "Name": "people",
-          "Type": "People[]",
-          "Access": "",
-          "Line": 24,
-          "Value": "new People[]{new People{name = \"Alice\", age = 30, city = \"Paris\"}, new People{name = \"Bob\", age = 15, city = \"Hanoi\"}, new People{name = \"Charlie\", age = 65, city = \"Paris\"}, new People{name = \"Diana\", age = 45, city = \"Hanoi\"}, new People{name = \"Eve\", age = 70, city = \"Paris\"}, new People{name = \"Frank\", age = 22, city = \"Hanoi\"}}",
-          "Ast": {
-            "Kind": "array",
-            "Children": [
+          "name": "people",
+          "type": "People[]",
+          "access": "",
+          "line": 24,
+          "value": "new People[]{new People{name = \"Alice\", age = 30, city = \"Paris\"}, new People{name = \"Bob\", age = 15, city = \"Hanoi\"}, new People{name = \"Charlie\", age = 65, city = \"Paris\"}, new People{name = \"Diana\", age = 45, city = \"Hanoi\"}, new People{name = \"Eve\", age = 70, city = \"Paris\"}, new People{name = \"Frank\", age = 22, city = \"Hanoi\"}}",
+          "ast": {
+            "kind": "array",
+            "children": [
               {
-                "Kind": "new",
-                "Value": "People",
-                "Children": [
+                "kind": "new",
+                "value": "People",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Alice"
+                            "kind": "literal",
+                            "value": "Alice"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "age",
-                        "Children": [
+                        "kind": "field",
+                        "value": "age",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "30"
+                            "kind": "literal",
+                            "value": "30"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "city",
-                        "Children": [
+                        "kind": "field",
+                        "value": "city",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Paris"
+                            "kind": "literal",
+                            "value": "Paris"
                           }
                         ]
                       }
@@ -208,39 +205,39 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "People",
-                "Children": [
+                "kind": "new",
+                "value": "People",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Bob"
+                            "kind": "literal",
+                            "value": "Bob"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "age",
-                        "Children": [
+                        "kind": "field",
+                        "value": "age",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "15"
+                            "kind": "literal",
+                            "value": "15"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "city",
-                        "Children": [
+                        "kind": "field",
+                        "value": "city",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Hanoi"
+                            "kind": "literal",
+                            "value": "Hanoi"
                           }
                         ]
                       }
@@ -249,39 +246,39 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "People",
-                "Children": [
+                "kind": "new",
+                "value": "People",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Charlie"
+                            "kind": "literal",
+                            "value": "Charlie"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "age",
-                        "Children": [
+                        "kind": "field",
+                        "value": "age",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "65"
+                            "kind": "literal",
+                            "value": "65"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "city",
-                        "Children": [
+                        "kind": "field",
+                        "value": "city",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Paris"
+                            "kind": "literal",
+                            "value": "Paris"
                           }
                         ]
                       }
@@ -290,39 +287,39 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "People",
-                "Children": [
+                "kind": "new",
+                "value": "People",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Diana"
+                            "kind": "literal",
+                            "value": "Diana"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "age",
-                        "Children": [
+                        "kind": "field",
+                        "value": "age",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "45"
+                            "kind": "literal",
+                            "value": "45"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "city",
-                        "Children": [
+                        "kind": "field",
+                        "value": "city",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Hanoi"
+                            "kind": "literal",
+                            "value": "Hanoi"
                           }
                         ]
                       }
@@ -331,39 +328,39 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "People",
-                "Children": [
+                "kind": "new",
+                "value": "People",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Eve"
+                            "kind": "literal",
+                            "value": "Eve"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "age",
-                        "Children": [
+                        "kind": "field",
+                        "value": "age",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "70"
+                            "kind": "literal",
+                            "value": "70"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "city",
-                        "Children": [
+                        "kind": "field",
+                        "value": "city",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Paris"
+                            "kind": "literal",
+                            "value": "Paris"
                           }
                         ]
                       }
@@ -372,39 +369,39 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "People",
-                "Children": [
+                "kind": "new",
+                "value": "People",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Frank"
+                            "kind": "literal",
+                            "value": "Frank"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "age",
-                        "Children": [
+                        "kind": "field",
+                        "value": "age",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "22"
+                            "kind": "literal",
+                            "value": "22"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "city",
-                        "Children": [
+                        "kind": "field",
+                        "value": "city",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Hanoi"
+                            "kind": "literal",
+                            "value": "Hanoi"
                           }
                         ]
                       }
@@ -414,128 +411,122 @@
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "stats",
-          "Type": "GResult[]",
-          "Access": "",
-          "Line": 25,
-          "Value": "(from person in people group person by person.city into gTmp let g = new GGroup{ key = gTmp.Key, items = gTmp.ToArray() } select new GResult{city = g.key, count = g.items.Length, avg_age = ((from p in g.items select p.age).ToArray().Average())}).ToArray()",
-          "Ast": {
-            "Kind": "call",
-            "Value": "ToArray",
-            "Children": [
+          "name": "stats",
+          "type": "GResult[]",
+          "access": "",
+          "line": 25,
+          "value": "(from person in people group person by person.city into gTmp let g = new GGroup{ key = gTmp.Key, items = gTmp.ToArray() } select new GResult{city = g.key, count = g.items.Length, avg_age = ((from p in g.items select p.age).ToArray().Average())}).ToArray()",
+          "ast": {
+            "kind": "call",
+            "value": "ToArray",
+            "children": [
               {
-                "Kind": "unknown"
+                "kind": "unknown"
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        Console.WriteLine(\"--- People grouped by city ---\");",
-            "        foreach (var s in stats) {",
-            "    Console.WriteLine(string.Join(\" \", new object[]{s.city, \": count =\", s.count, \", avg_age =\", s.avg_age}).TrimEnd());",
-            "}"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "literal",
-                    "Value": "--- People grouped by city ---"
+                    "kind": "literal",
+                    "value": "--- People grouped by city ---"
                   }
                 ]
               },
               {
-                "Kind": "for",
-                "Value": "s",
-                "Children": [
+                "kind": "for",
+                "value": "s",
+                "children": [
                   {
-                    "Kind": "range",
-                    "Children": [
+                    "kind": "range",
+                    "children": [
                       {
-                        "Kind": "ident",
-                        "Value": "stats"
+                        "kind": "ident",
+                        "value": "stats"
                       }
                     ]
                   },
                   {
-                    "Kind": "block",
-                    "Children": [
+                    "kind": "block",
+                    "children": [
                       {
-                        "Kind": "call",
-                        "Value": "print",
-                        "Children": [
+                        "kind": "call",
+                        "value": "print",
+                        "children": [
                           {
-                            "Kind": "call",
-                            "Value": "TrimEnd",
-                            "Children": [
+                            "kind": "call",
+                            "value": "TrimEnd",
+                            "children": [
                               {
-                                "Kind": "call",
-                                "Value": "Join",
-                                "Children": [
+                                "kind": "call",
+                                "value": "Join",
+                                "children": [
                                   {
-                                    "Kind": "ident",
-                                    "Value": "string"
+                                    "kind": "ident",
+                                    "value": "string"
                                   },
                                   {
-                                    "Kind": "literal",
-                                    "Value": " "
+                                    "kind": "literal",
+                                    "value": " "
                                   },
                                   {
-                                    "Kind": "array",
-                                    "Children": [
+                                    "kind": "array",
+                                    "children": [
                                       {
-                                        "Kind": "member",
-                                        "Value": "city",
-                                        "Children": [
+                                        "kind": "member",
+                                        "value": "city",
+                                        "children": [
                                           {
-                                            "Kind": "ident",
-                                            "Value": "s"
+                                            "kind": "ident",
+                                            "value": "s"
                                           }
                                         ]
                                       },
                                       {
-                                        "Kind": "literal",
-                                        "Value": ": count ="
+                                        "kind": "literal",
+                                        "value": ": count ="
                                       },
                                       {
-                                        "Kind": "member",
-                                        "Value": "count",
-                                        "Children": [
+                                        "kind": "member",
+                                        "value": "count",
+                                        "children": [
                                           {
-                                            "Kind": "ident",
-                                            "Value": "s"
+                                            "kind": "ident",
+                                            "value": "s"
                                           }
                                         ]
                                       },
                                       {
-                                        "Kind": "literal",
-                                        "Value": ", avg_age ="
+                                        "kind": "literal",
+                                        "value": ", avg_age ="
                                       },
                                       {
-                                        "Kind": "member",
-                                        "Value": "avg_age",
-                                        "Children": [
+                                        "kind": "member",
+                                        "value": "avg_age",
+                                        "children": [
                                           {
-                                            "Kind": "ident",
-                                            "Value": "s"
+                                            "kind": "ident",
+                                            "value": "s"
                                           }
                                         ]
                                       }
@@ -553,13 +544,12 @@
               }
             ]
           },
-          "StartLine": 26,
-          "EndLine": 31,
-          "Doc": ""
+          "startline": 26,
+          "endline": 31,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.33 on 2025-07-21 18:06 +0700\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\n\nstruct People {\n    public string name;\n    public int age;\n    public string city;\n    public override string ToString() =\u003e $\"{{\\\"name\\\": \\\"{name}\\\", \\\"age\\\": {age}, \\\"city\\\": \\\"{city}\\\"}}\";\n}\nstruct GGroup {\n    public string key;\n    public People[] items;\n    public override string ToString() =\u003e $\"{{\\\"key\\\": \\\"{key}\\\", \\\"items\\\": {items}}}\";\n}\nstruct GResult {\n    public string city;\n    public int count;\n    public double avg_age;\n    public override string ToString() =\u003e $\"{{\\\"city\\\": \\\"{city}\\\", \\\"count\\\": {count}, \\\"avg_age\\\": {avg_age}}}\";\n}\nclass Program {\n    static People[] people = new People[]{new People{name = \"Alice\", age = 30, city = \"Paris\"}, new People{name = \"Bob\", age = 15, city = \"Hanoi\"}, new People{name = \"Charlie\", age = 65, city = \"Paris\"}, new People{name = \"Diana\", age = 45, city = \"Hanoi\"}, new People{name = \"Eve\", age = 70, city = \"Paris\"}, new People{name = \"Frank\", age = 22, city = \"Hanoi\"}};\n    static GResult[] stats = (from person in people group person by person.city into gTmp let g = new GGroup{ key = gTmp.Key, items = gTmp.ToArray() } select new GResult{city = g.key, count = g.items.Length, avg_age = ((from p in g.items select p.age).ToArray().Average())}).ToArray();\n    static void Main() {\n        Console.WriteLine(\"--- People grouped by city ---\");\n        foreach (var s in stats) {\n    Console.WriteLine(string.Join(\" \", new object[]{s.city, \": count =\", s.count, \", avg_age =\", s.avg_age}).TrimEnd());\n}\n    }\n}\n"
+  ]
 }

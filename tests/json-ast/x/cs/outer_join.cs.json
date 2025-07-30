@@ -1,142 +1,140 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "Customer",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 5,
-      "EndLine": 9,
-      "Fields": [
+      "name": "Customer",
+      "kind": "struct",
+      "access": "",
+      "startline": 5,
+      "endline": 9,
+      "fields": [
         {
-          "Name": "id",
-          "Type": "int",
-          "Access": "public",
-          "Line": 6,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "id",
+          "type": "int",
+          "access": "public",
+          "line": 6,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "name",
-          "Type": "string",
-          "Access": "public",
-          "Line": 7,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "name",
+          "type": "string",
+          "access": "public",
+          "line": 7,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 8,
-          "EndLine": 8,
-          "Doc": ""
+          "startline": 8,
+          "endline": 8,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "Order",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 10,
-      "EndLine": 15,
-      "Fields": [
+      "name": "Order",
+      "kind": "struct",
+      "access": "",
+      "startline": 10,
+      "endline": 15,
+      "fields": [
         {
-          "Name": "id",
-          "Type": "int",
-          "Access": "public",
-          "Line": 11,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "id",
+          "type": "int",
+          "access": "public",
+          "line": 11,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "customerId",
-          "Type": "int",
-          "Access": "public",
-          "Line": 12,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "customerId",
+          "type": "int",
+          "access": "public",
+          "line": 12,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "total",
-          "Type": "int",
-          "Access": "public",
-          "Line": 13,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "total",
+          "type": "int",
+          "access": "public",
+          "line": 13,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 14,
-          "EndLine": 14,
-          "Doc": ""
+          "startline": 14,
+          "endline": 14,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 16,
-      "EndLine": 34,
-      "Fields": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 16,
+      "endline": 34,
+      "fields": [
         {
-          "Name": "customers",
-          "Type": "Customer[]",
-          "Access": "",
-          "Line": 17,
-          "Value": "new Customer[]{new Customer{id = 1, name = \"Alice\"}, new Customer{id = 2, name = \"Bob\"}, new Customer{id = 3, name = \"Charlie\"}, new Customer{id = 4, name = \"Diana\"}}",
-          "Ast": {
-            "Kind": "array",
-            "Children": [
+          "name": "customers",
+          "type": "Customer[]",
+          "access": "",
+          "line": 17,
+          "value": "new Customer[]{new Customer{id = 1, name = \"Alice\"}, new Customer{id = 2, name = \"Bob\"}, new Customer{id = 3, name = \"Charlie\"}, new Customer{id = 4, name = \"Diana\"}}",
+          "ast": {
+            "kind": "array",
+            "children": [
               {
-                "Kind": "new",
-                "Value": "Customer",
-                "Children": [
+                "kind": "new",
+                "value": "Customer",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "id",
-                        "Children": [
+                        "kind": "field",
+                        "value": "id",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "1"
+                            "kind": "literal",
+                            "value": "1"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Alice"
+                            "kind": "literal",
+                            "value": "Alice"
                           }
                         ]
                       }
@@ -145,29 +143,29 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "Customer",
-                "Children": [
+                "kind": "new",
+                "value": "Customer",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "id",
-                        "Children": [
+                        "kind": "field",
+                        "value": "id",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "2"
+                            "kind": "literal",
+                            "value": "2"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Bob"
+                            "kind": "literal",
+                            "value": "Bob"
                           }
                         ]
                       }
@@ -176,29 +174,29 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "Customer",
-                "Children": [
+                "kind": "new",
+                "value": "Customer",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "id",
-                        "Children": [
+                        "kind": "field",
+                        "value": "id",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "3"
+                            "kind": "literal",
+                            "value": "3"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Charlie"
+                            "kind": "literal",
+                            "value": "Charlie"
                           }
                         ]
                       }
@@ -207,29 +205,29 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "Customer",
-                "Children": [
+                "kind": "new",
+                "value": "Customer",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "id",
-                        "Children": [
+                        "kind": "field",
+                        "value": "id",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "4"
+                            "kind": "literal",
+                            "value": "4"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Diana"
+                            "kind": "literal",
+                            "value": "Diana"
                           }
                         ]
                       }
@@ -239,52 +237,52 @@
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "orders",
-          "Type": "Order[]",
-          "Access": "",
-          "Line": 18,
-          "Value": "new Order[]{new Order{id = 100, customerId = 1, total = 250}, new Order{id = 101, customerId = 2, total = 125}, new Order{id = 102, customerId = 1, total = 300}, new Order{id = 103, customerId = 5, total = 80}}",
-          "Ast": {
-            "Kind": "array",
-            "Children": [
+          "name": "orders",
+          "type": "Order[]",
+          "access": "",
+          "line": 18,
+          "value": "new Order[]{new Order{id = 100, customerId = 1, total = 250}, new Order{id = 101, customerId = 2, total = 125}, new Order{id = 102, customerId = 1, total = 300}, new Order{id = 103, customerId = 5, total = 80}}",
+          "ast": {
+            "kind": "array",
+            "children": [
               {
-                "Kind": "new",
-                "Value": "Order",
-                "Children": [
+                "kind": "new",
+                "value": "Order",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "id",
-                        "Children": [
+                        "kind": "field",
+                        "value": "id",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "100"
+                            "kind": "literal",
+                            "value": "100"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "customerId",
-                        "Children": [
+                        "kind": "field",
+                        "value": "customerId",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "1"
+                            "kind": "literal",
+                            "value": "1"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "total",
-                        "Children": [
+                        "kind": "field",
+                        "value": "total",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "250"
+                            "kind": "literal",
+                            "value": "250"
                           }
                         ]
                       }
@@ -293,39 +291,39 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "Order",
-                "Children": [
+                "kind": "new",
+                "value": "Order",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "id",
-                        "Children": [
+                        "kind": "field",
+                        "value": "id",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "101"
+                            "kind": "literal",
+                            "value": "101"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "customerId",
-                        "Children": [
+                        "kind": "field",
+                        "value": "customerId",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "2"
+                            "kind": "literal",
+                            "value": "2"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "total",
-                        "Children": [
+                        "kind": "field",
+                        "value": "total",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "125"
+                            "kind": "literal",
+                            "value": "125"
                           }
                         ]
                       }
@@ -334,39 +332,39 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "Order",
-                "Children": [
+                "kind": "new",
+                "value": "Order",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "id",
-                        "Children": [
+                        "kind": "field",
+                        "value": "id",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "102"
+                            "kind": "literal",
+                            "value": "102"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "customerId",
-                        "Children": [
+                        "kind": "field",
+                        "value": "customerId",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "1"
+                            "kind": "literal",
+                            "value": "1"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "total",
-                        "Children": [
+                        "kind": "field",
+                        "value": "total",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "300"
+                            "kind": "literal",
+                            "value": "300"
                           }
                         ]
                       }
@@ -375,39 +373,39 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "Order",
-                "Children": [
+                "kind": "new",
+                "value": "Order",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "id",
-                        "Children": [
+                        "kind": "field",
+                        "value": "id",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "103"
+                            "kind": "literal",
+                            "value": "103"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "customerId",
-                        "Children": [
+                        "kind": "field",
+                        "value": "customerId",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "5"
+                            "kind": "literal",
+                            "value": "5"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "total",
-                        "Children": [
+                        "kind": "field",
+                        "value": "total",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "80"
+                            "kind": "literal",
+                            "value": "80"
                           }
                         ]
                       }
@@ -417,191 +415,177 @@
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "result",
-          "Type": "Dictionary\u003cstring, object\u003e[]",
-          "Access": "",
-          "Line": 19,
-          "Value": "(() =\u003e { var _res = new List\u003cDictionary\u003cstring, object\u003e\u003e(); foreach (var o in orders) { bool _matched = false; foreach (var c in customers) { if (!((o.customerId == c.id))) continue; _matched = true; _res.Add(new Dictionary\u003cstring, object\u003e{{\"order\", o}, {\"customer\", c}}); } if (!_matched) { var c = default(Customer); _res.Add(new Dictionary\u003cstring, object\u003e{{\"order\", o}, {\"customer\", c}}); } } foreach (var c in customers) { bool _exists = false; foreach (var o in orders) { if ((o.customerId == c.id)) { _exists = true; break; } } if (!_exists) { var o = default(Order); _res.Add(new Dictionary\u003cstring, object\u003e{{\"order\", o}, {\"customer\", c}}); } } return _res.ToArray(); })()",
-          "Ast": {
-            "Kind": "call",
-            "Value": "(() =\u003e { var _res = new List\u003cDictionary\u003cstring, object\u003e\u003e(); foreach (var o in orders) { bool _matched = false; foreach (var c in customers) { if (!((o.customerId == c.id))) continue; _matched = true; _res.Add(new Dictionary\u003cstring, object\u003e{{\"order\", o}, {\"customer\", c}}); } if (!_matched) { var c = default(Customer); _res.Add(new Dictionary\u003cstring, object\u003e{{\"order\", o}, {\"customer\", c}}); } } foreach (var c in customers) { bool _exists = false; foreach (var o in orders) { if ((o.customerId == c.id)) { _exists = true; break; } } if (!_exists) { var o = default(Order); _res.Add(new Dictionary\u003cstring, object\u003e{{\"order\", o}, {\"customer\", c}}); } } return _res.ToArray(); })"
+          "name": "result",
+          "type": "Dictionary\u003cstring, object\u003e[]",
+          "access": "",
+          "line": 19,
+          "value": "(() =\u003e { var _res = new List\u003cDictionary\u003cstring, object\u003e\u003e(); foreach (var o in orders) { bool _matched = false; foreach (var c in customers) { if (!((o.customerId == c.id))) continue; _matched = true; _res.Add(new Dictionary\u003cstring, object\u003e{{\"order\", o}, {\"customer\", c}}); } if (!_matched) { var c = default(Customer); _res.Add(new Dictionary\u003cstring, object\u003e{{\"order\", o}, {\"customer\", c}}); } } foreach (var c in customers) { bool _exists = false; foreach (var o in orders) { if ((o.customerId == c.id)) { _exists = true; break; } } if (!_exists) { var o = default(Order); _res.Add(new Dictionary\u003cstring, object\u003e{{\"order\", o}, {\"customer\", c}}); } } return _res.ToArray(); })()",
+          "ast": {
+            "kind": "call",
+            "value": "(() =\u003e { var _res = new List\u003cDictionary\u003cstring, object\u003e\u003e(); foreach (var o in orders) { bool _matched = false; foreach (var c in customers) { if (!((o.customerId == c.id))) continue; _matched = true; _res.Add(new Dictionary\u003cstring, object\u003e{{\"order\", o}, {\"customer\", c}}); } if (!_matched) { var c = default(Customer); _res.Add(new Dictionary\u003cstring, object\u003e{{\"order\", o}, {\"customer\", c}}); } } foreach (var c in customers) { bool _exists = false; foreach (var o in orders) { if ((o.customerId == c.id)) { _exists = true; break; } } if (!_exists) { var o = default(Order); _res.Add(new Dictionary\u003cstring, object\u003e{{\"order\", o}, {\"customer\", c}}); } } return _res.ToArray(); })"
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        Console.WriteLine(\"--- Outer Join using syntax ---\");",
-            "        foreach (var row in result) {",
-            "    if (row.order) {",
-            "    if (row.customer) {",
-            "    Console.WriteLine((\"[\" + (string.Join(\", \", new object[]{\"Order\", row.order.id, \"by\", row.customer.name, \"- $\", row.order.total}) + \"]\")));",
-            "} else {",
-            "    Console.WriteLine((\"[\" + (string.Join(\", \", new object[]{\"Order\", row.order.id, \"by\", \"Unknown\", \"- $\", row.order.total}) + \"]\")));",
-            "}",
-            "} else {",
-            "    Console.WriteLine((\"[\" + (string.Join(\", \", new object[]{\"Customer\", row.customer.name, \"has no orders\"}) + \"]\")));",
-            "}",
-            "}"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "literal",
-                    "Value": "--- Outer Join using syntax ---"
+                    "kind": "literal",
+                    "value": "--- Outer Join using syntax ---"
                   }
                 ]
               },
               {
-                "Kind": "for",
-                "Value": "row",
-                "Children": [
+                "kind": "for",
+                "value": "row",
+                "children": [
                   {
-                    "Kind": "range",
-                    "Children": [
+                    "kind": "range",
+                    "children": [
                       {
-                        "Kind": "ident",
-                        "Value": "result"
+                        "kind": "ident",
+                        "value": "result"
                       }
                     ]
                   },
                   {
-                    "Kind": "block",
-                    "Children": [
+                    "kind": "block",
+                    "children": [
                       {
-                        "Kind": "if",
-                        "Children": [
+                        "kind": "if",
+                        "children": [
                           {
-                            "Kind": "member",
-                            "Value": "order",
-                            "Children": [
+                            "kind": "member",
+                            "value": "order",
+                            "children": [
                               {
-                                "Kind": "ident",
-                                "Value": "row"
+                                "kind": "ident",
+                                "value": "row"
                               }
                             ]
                           },
                           {
-                            "Kind": "block",
-                            "Children": [
+                            "kind": "block",
+                            "children": [
                               {
-                                "Kind": "if",
-                                "Children": [
+                                "kind": "if",
+                                "children": [
                                   {
-                                    "Kind": "member",
-                                    "Value": "customer",
-                                    "Children": [
+                                    "kind": "member",
+                                    "value": "customer",
+                                    "children": [
                                       {
-                                        "Kind": "ident",
-                                        "Value": "row"
+                                        "kind": "ident",
+                                        "value": "row"
                                       }
                                     ]
                                   },
                                   {
-                                    "Kind": "block",
-                                    "Children": [
+                                    "kind": "block",
+                                    "children": [
                                       {
-                                        "Kind": "call",
-                                        "Value": "print",
-                                        "Children": [
+                                        "kind": "call",
+                                        "value": "print",
+                                        "children": [
                                           {
-                                            "Kind": "binary",
-                                            "Value": "+",
-                                            "Children": [
+                                            "kind": "binary",
+                                            "value": "+",
+                                            "children": [
                                               {
-                                                "Kind": "literal",
-                                                "Value": "["
+                                                "kind": "literal",
+                                                "value": "["
                                               },
                                               {
-                                                "Kind": "binary",
-                                                "Value": "+",
-                                                "Children": [
+                                                "kind": "binary",
+                                                "value": "+",
+                                                "children": [
                                                   {
-                                                    "Kind": "call",
-                                                    "Value": "Join",
-                                                    "Children": [
+                                                    "kind": "call",
+                                                    "value": "Join",
+                                                    "children": [
                                                       {
-                                                        "Kind": "ident",
-                                                        "Value": "string"
+                                                        "kind": "ident",
+                                                        "value": "string"
                                                       },
                                                       {
-                                                        "Kind": "literal",
-                                                        "Value": ", "
+                                                        "kind": "literal",
+                                                        "value": ", "
                                                       },
                                                       {
-                                                        "Kind": "array",
-                                                        "Children": [
+                                                        "kind": "array",
+                                                        "children": [
                                                           {
-                                                            "Kind": "literal",
-                                                            "Value": "Order"
+                                                            "kind": "literal",
+                                                            "value": "Order"
                                                           },
                                                           {
-                                                            "Kind": "member",
-                                                            "Value": "id",
-                                                            "Children": [
+                                                            "kind": "member",
+                                                            "value": "id",
+                                                            "children": [
                                                               {
-                                                                "Kind": "member",
-                                                                "Value": "order",
-                                                                "Children": [
+                                                                "kind": "member",
+                                                                "value": "order",
+                                                                "children": [
                                                                   {
-                                                                    "Kind": "ident",
-                                                                    "Value": "row"
+                                                                    "kind": "ident",
+                                                                    "value": "row"
                                                                   }
                                                                 ]
                                                               }
                                                             ]
                                                           },
                                                           {
-                                                            "Kind": "literal",
-                                                            "Value": "by"
+                                                            "kind": "literal",
+                                                            "value": "by"
                                                           },
                                                           {
-                                                            "Kind": "member",
-                                                            "Value": "name",
-                                                            "Children": [
+                                                            "kind": "member",
+                                                            "value": "name",
+                                                            "children": [
                                                               {
-                                                                "Kind": "member",
-                                                                "Value": "customer",
-                                                                "Children": [
+                                                                "kind": "member",
+                                                                "value": "customer",
+                                                                "children": [
                                                                   {
-                                                                    "Kind": "ident",
-                                                                    "Value": "row"
+                                                                    "kind": "ident",
+                                                                    "value": "row"
                                                                   }
                                                                 ]
                                                               }
                                                             ]
                                                           },
                                                           {
-                                                            "Kind": "literal",
-                                                            "Value": "- $"
+                                                            "kind": "literal",
+                                                            "value": "- $"
                                                           },
                                                           {
-                                                            "Kind": "member",
-                                                            "Value": "total",
-                                                            "Children": [
+                                                            "kind": "member",
+                                                            "value": "total",
+                                                            "children": [
                                                               {
-                                                                "Kind": "member",
-                                                                "Value": "order",
-                                                                "Children": [
+                                                                "kind": "member",
+                                                                "value": "order",
+                                                                "children": [
                                                                   {
-                                                                    "Kind": "ident",
-                                                                    "Value": "row"
+                                                                    "kind": "ident",
+                                                                    "value": "row"
                                                                   }
                                                                 ]
                                                               }
@@ -612,8 +596,8 @@
                                                     ]
                                                   },
                                                   {
-                                                    "Kind": "literal",
-                                                    "Value": "]"
+                                                    "kind": "literal",
+                                                    "value": "]"
                                                   }
                                                 ]
                                               }
@@ -624,82 +608,82 @@
                                     ]
                                   },
                                   {
-                                    "Kind": "block",
-                                    "Children": [
+                                    "kind": "block",
+                                    "children": [
                                       {
-                                        "Kind": "call",
-                                        "Value": "print",
-                                        "Children": [
+                                        "kind": "call",
+                                        "value": "print",
+                                        "children": [
                                           {
-                                            "Kind": "binary",
-                                            "Value": "+",
-                                            "Children": [
+                                            "kind": "binary",
+                                            "value": "+",
+                                            "children": [
                                               {
-                                                "Kind": "literal",
-                                                "Value": "["
+                                                "kind": "literal",
+                                                "value": "["
                                               },
                                               {
-                                                "Kind": "binary",
-                                                "Value": "+",
-                                                "Children": [
+                                                "kind": "binary",
+                                                "value": "+",
+                                                "children": [
                                                   {
-                                                    "Kind": "call",
-                                                    "Value": "Join",
-                                                    "Children": [
+                                                    "kind": "call",
+                                                    "value": "Join",
+                                                    "children": [
                                                       {
-                                                        "Kind": "ident",
-                                                        "Value": "string"
+                                                        "kind": "ident",
+                                                        "value": "string"
                                                       },
                                                       {
-                                                        "Kind": "literal",
-                                                        "Value": ", "
+                                                        "kind": "literal",
+                                                        "value": ", "
                                                       },
                                                       {
-                                                        "Kind": "array",
-                                                        "Children": [
+                                                        "kind": "array",
+                                                        "children": [
                                                           {
-                                                            "Kind": "literal",
-                                                            "Value": "Order"
+                                                            "kind": "literal",
+                                                            "value": "Order"
                                                           },
                                                           {
-                                                            "Kind": "member",
-                                                            "Value": "id",
-                                                            "Children": [
+                                                            "kind": "member",
+                                                            "value": "id",
+                                                            "children": [
                                                               {
-                                                                "Kind": "member",
-                                                                "Value": "order",
-                                                                "Children": [
+                                                                "kind": "member",
+                                                                "value": "order",
+                                                                "children": [
                                                                   {
-                                                                    "Kind": "ident",
-                                                                    "Value": "row"
+                                                                    "kind": "ident",
+                                                                    "value": "row"
                                                                   }
                                                                 ]
                                                               }
                                                             ]
                                                           },
                                                           {
-                                                            "Kind": "literal",
-                                                            "Value": "by"
+                                                            "kind": "literal",
+                                                            "value": "by"
                                                           },
                                                           {
-                                                            "Kind": "literal",
-                                                            "Value": "Unknown"
+                                                            "kind": "literal",
+                                                            "value": "Unknown"
                                                           },
                                                           {
-                                                            "Kind": "literal",
-                                                            "Value": "- $"
+                                                            "kind": "literal",
+                                                            "value": "- $"
                                                           },
                                                           {
-                                                            "Kind": "member",
-                                                            "Value": "total",
-                                                            "Children": [
+                                                            "kind": "member",
+                                                            "value": "total",
+                                                            "children": [
                                                               {
-                                                                "Kind": "member",
-                                                                "Value": "order",
-                                                                "Children": [
+                                                                "kind": "member",
+                                                                "value": "order",
+                                                                "children": [
                                                                   {
-                                                                    "Kind": "ident",
-                                                                    "Value": "row"
+                                                                    "kind": "ident",
+                                                                    "value": "row"
                                                                   }
                                                                 ]
                                                               }
@@ -710,8 +694,8 @@
                                                     ]
                                                   },
                                                   {
-                                                    "Kind": "literal",
-                                                    "Value": "]"
+                                                    "kind": "literal",
+                                                    "value": "]"
                                                   }
                                                 ]
                                               }
@@ -726,70 +710,70 @@
                             ]
                           },
                           {
-                            "Kind": "block",
-                            "Children": [
+                            "kind": "block",
+                            "children": [
                               {
-                                "Kind": "call",
-                                "Value": "print",
-                                "Children": [
+                                "kind": "call",
+                                "value": "print",
+                                "children": [
                                   {
-                                    "Kind": "binary",
-                                    "Value": "+",
-                                    "Children": [
+                                    "kind": "binary",
+                                    "value": "+",
+                                    "children": [
                                       {
-                                        "Kind": "literal",
-                                        "Value": "["
+                                        "kind": "literal",
+                                        "value": "["
                                       },
                                       {
-                                        "Kind": "binary",
-                                        "Value": "+",
-                                        "Children": [
+                                        "kind": "binary",
+                                        "value": "+",
+                                        "children": [
                                           {
-                                            "Kind": "call",
-                                            "Value": "Join",
-                                            "Children": [
+                                            "kind": "call",
+                                            "value": "Join",
+                                            "children": [
                                               {
-                                                "Kind": "ident",
-                                                "Value": "string"
+                                                "kind": "ident",
+                                                "value": "string"
                                               },
                                               {
-                                                "Kind": "literal",
-                                                "Value": ", "
+                                                "kind": "literal",
+                                                "value": ", "
                                               },
                                               {
-                                                "Kind": "array",
-                                                "Children": [
+                                                "kind": "array",
+                                                "children": [
                                                   {
-                                                    "Kind": "literal",
-                                                    "Value": "Customer"
+                                                    "kind": "literal",
+                                                    "value": "Customer"
                                                   },
                                                   {
-                                                    "Kind": "member",
-                                                    "Value": "name",
-                                                    "Children": [
+                                                    "kind": "member",
+                                                    "value": "name",
+                                                    "children": [
                                                       {
-                                                        "Kind": "member",
-                                                        "Value": "customer",
-                                                        "Children": [
+                                                        "kind": "member",
+                                                        "value": "customer",
+                                                        "children": [
                                                           {
-                                                            "Kind": "ident",
-                                                            "Value": "row"
+                                                            "kind": "ident",
+                                                            "value": "row"
                                                           }
                                                         ]
                                                       }
                                                     ]
                                                   },
                                                   {
-                                                    "Kind": "literal",
-                                                    "Value": "has no orders"
+                                                    "kind": "literal",
+                                                    "value": "has no orders"
                                                   }
                                                 ]
                                               }
                                             ]
                                           },
                                           {
-                                            "Kind": "literal",
-                                            "Value": "]"
+                                            "kind": "literal",
+                                            "value": "]"
                                           }
                                         ]
                                       }
@@ -807,13 +791,12 @@
               }
             ]
           },
-          "StartLine": 20,
-          "EndLine": 33,
-          "Doc": ""
+          "startline": 20,
+          "endline": 33,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.34 on 2025-07-22 06:00 +0700\nusing System;\nusing System.Collections.Generic;\n\nstruct Customer {\n    public int id;\n    public string name;\n    public override string ToString() =\u003e $\"{{'id': {id}, 'name': '{name}'}}\";\n}\nstruct Order {\n    public int id;\n    public int customerId;\n    public int total;\n    public override string ToString() =\u003e $\"{{'id': {id}, 'customerId': {customerId}, 'total': {total}}}\";\n}\nclass Program {\n    static Customer[] customers = new Customer[]{new Customer{id = 1, name = \"Alice\"}, new Customer{id = 2, name = \"Bob\"}, new Customer{id = 3, name = \"Charlie\"}, new Customer{id = 4, name = \"Diana\"}};\n    static Order[] orders = new Order[]{new Order{id = 100, customerId = 1, total = 250}, new Order{id = 101, customerId = 2, total = 125}, new Order{id = 102, customerId = 1, total = 300}, new Order{id = 103, customerId = 5, total = 80}};\n    static Dictionary\u003cstring, object\u003e[] result = (() =\u003e { var _res = new List\u003cDictionary\u003cstring, object\u003e\u003e(); foreach (var o in orders) { bool _matched = false; foreach (var c in customers) { if (!((o.customerId == c.id))) continue; _matched = true; _res.Add(new Dictionary\u003cstring, object\u003e{{\"order\", o}, {\"customer\", c}}); } if (!_matched) { var c = default(Customer); _res.Add(new Dictionary\u003cstring, object\u003e{{\"order\", o}, {\"customer\", c}}); } } foreach (var c in customers) { bool _exists = false; foreach (var o in orders) { if ((o.customerId == c.id)) { _exists = true; break; } } if (!_exists) { var o = default(Order); _res.Add(new Dictionary\u003cstring, object\u003e{{\"order\", o}, {\"customer\", c}}); } } return _res.ToArray(); })();\n    static void Main() {\n        Console.WriteLine(\"--- Outer Join using syntax ---\");\n        foreach (var row in result) {\n    if (row.order) {\n    if (row.customer) {\n    Console.WriteLine((\"[\" + (string.Join(\", \", new object[]{\"Order\", row.order.id, \"by\", row.customer.name, \"- $\", row.order.total}) + \"]\")));\n} else {\n    Console.WriteLine((\"[\" + (string.Join(\", \", new object[]{\"Order\", row.order.id, \"by\", \"Unknown\", \"- $\", row.order.total}) + \"]\")));\n}\n} else {\n    Console.WriteLine((\"[\" + (string.Join(\", \", new object[]{\"Customer\", row.customer.name, \"has no orders\"}) + \"]\")));\n}\n}\n    }\n}\n"
+  ]
 }

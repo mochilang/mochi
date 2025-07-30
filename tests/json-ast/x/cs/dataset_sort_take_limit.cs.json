@@ -1,89 +1,88 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "Product",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 6,
-      "EndLine": 10,
-      "Fields": [
+      "name": "Product",
+      "kind": "struct",
+      "access": "",
+      "startline": 6,
+      "endline": 10,
+      "fields": [
         {
-          "Name": "name",
-          "Type": "string",
-          "Access": "public",
-          "Line": 7,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "name",
+          "type": "string",
+          "access": "public",
+          "line": 7,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "price",
-          "Type": "int",
-          "Access": "public",
-          "Line": 8,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "price",
+          "type": "int",
+          "access": "public",
+          "line": 8,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 9,
-          "EndLine": 9,
-          "Doc": ""
+          "startline": 9,
+          "endline": 9,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 11,
-      "EndLine": 20,
-      "Fields": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 11,
+      "endline": 20,
+      "fields": [
         {
-          "Name": "products",
-          "Type": "Product[]",
-          "Access": "",
-          "Line": 12,
-          "Value": "new Product[]{new Product{name = \"Laptop\", price = 1500}, new Product{name = \"Smartphone\", price = 900}, new Product{name = \"Tablet\", price = 600}, new Product{name = \"Monitor\", price = 300}, new Product{name = \"Keyboard\", price = 100}, new Product{name = \"Mouse\", price = 50}, new Product{name = \"Headphones\", price = 200}}",
-          "Ast": {
-            "Kind": "array",
-            "Children": [
+          "name": "products",
+          "type": "Product[]",
+          "access": "",
+          "line": 12,
+          "value": "new Product[]{new Product{name = \"Laptop\", price = 1500}, new Product{name = \"Smartphone\", price = 900}, new Product{name = \"Tablet\", price = 600}, new Product{name = \"Monitor\", price = 300}, new Product{name = \"Keyboard\", price = 100}, new Product{name = \"Mouse\", price = 50}, new Product{name = \"Headphones\", price = 200}}",
+          "ast": {
+            "kind": "array",
+            "children": [
               {
-                "Kind": "new",
-                "Value": "Product",
-                "Children": [
+                "kind": "new",
+                "value": "Product",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Laptop"
+                            "kind": "literal",
+                            "value": "Laptop"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "price",
-                        "Children": [
+                        "kind": "field",
+                        "value": "price",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "1500"
+                            "kind": "literal",
+                            "value": "1500"
                           }
                         ]
                       }
@@ -92,29 +91,29 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "Product",
-                "Children": [
+                "kind": "new",
+                "value": "Product",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Smartphone"
+                            "kind": "literal",
+                            "value": "Smartphone"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "price",
-                        "Children": [
+                        "kind": "field",
+                        "value": "price",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "900"
+                            "kind": "literal",
+                            "value": "900"
                           }
                         ]
                       }
@@ -123,29 +122,29 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "Product",
-                "Children": [
+                "kind": "new",
+                "value": "Product",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Tablet"
+                            "kind": "literal",
+                            "value": "Tablet"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "price",
-                        "Children": [
+                        "kind": "field",
+                        "value": "price",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "600"
+                            "kind": "literal",
+                            "value": "600"
                           }
                         ]
                       }
@@ -154,29 +153,29 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "Product",
-                "Children": [
+                "kind": "new",
+                "value": "Product",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Monitor"
+                            "kind": "literal",
+                            "value": "Monitor"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "price",
-                        "Children": [
+                        "kind": "field",
+                        "value": "price",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "300"
+                            "kind": "literal",
+                            "value": "300"
                           }
                         ]
                       }
@@ -185,29 +184,29 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "Product",
-                "Children": [
+                "kind": "new",
+                "value": "Product",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Keyboard"
+                            "kind": "literal",
+                            "value": "Keyboard"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "price",
-                        "Children": [
+                        "kind": "field",
+                        "value": "price",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "100"
+                            "kind": "literal",
+                            "value": "100"
                           }
                         ]
                       }
@@ -216,29 +215,29 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "Product",
-                "Children": [
+                "kind": "new",
+                "value": "Product",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Mouse"
+                            "kind": "literal",
+                            "value": "Mouse"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "price",
-                        "Children": [
+                        "kind": "field",
+                        "value": "price",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "50"
+                            "kind": "literal",
+                            "value": "50"
                           }
                         ]
                       }
@@ -247,29 +246,29 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "Product",
-                "Children": [
+                "kind": "new",
+                "value": "Product",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Headphones"
+                            "kind": "literal",
+                            "value": "Headphones"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "price",
-                        "Children": [
+                        "kind": "field",
+                        "value": "price",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "200"
+                            "kind": "literal",
+                            "value": "200"
                           }
                         ]
                       }
@@ -279,134 +278,128 @@
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "expensive",
-          "Type": "Product[]",
-          "Access": "",
-          "Line": 13,
-          "Value": "(((from p in products orderby p.price descending select p).Skip(1)).Take(3)).ToArray()",
-          "Ast": {
-            "Kind": "call",
-            "Value": "ToArray",
-            "Children": [
+          "name": "expensive",
+          "type": "Product[]",
+          "access": "",
+          "line": 13,
+          "value": "(((from p in products orderby p.price descending select p).Skip(1)).Take(3)).ToArray()",
+          "ast": {
+            "kind": "call",
+            "value": "ToArray",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "Take",
-                "Children": [
+                "kind": "call",
+                "value": "Take",
+                "children": [
                   {
-                    "Kind": "call",
-                    "Value": "Skip",
-                    "Children": [
+                    "kind": "call",
+                    "value": "Skip",
+                    "children": [
                       {
-                        "Kind": "unknown"
+                        "kind": "unknown"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "1"
+                        "kind": "literal",
+                        "value": "1"
                       }
                     ]
                   },
                   {
-                    "Kind": "literal",
-                    "Value": "3"
+                    "kind": "literal",
+                    "value": "3"
                   }
                 ]
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        Console.WriteLine(\"--- Top products (excluding most expensive) ---\");",
-            "        foreach (var item in expensive) {",
-            "    Console.WriteLine(string.Join(\" \", new object[]{item.name, \"costs $\", item.price}).TrimEnd());",
-            "}"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "literal",
-                    "Value": "--- Top products (excluding most expensive) ---"
+                    "kind": "literal",
+                    "value": "--- Top products (excluding most expensive) ---"
                   }
                 ]
               },
               {
-                "Kind": "for",
-                "Value": "item",
-                "Children": [
+                "kind": "for",
+                "value": "item",
+                "children": [
                   {
-                    "Kind": "range",
-                    "Children": [
+                    "kind": "range",
+                    "children": [
                       {
-                        "Kind": "ident",
-                        "Value": "expensive"
+                        "kind": "ident",
+                        "value": "expensive"
                       }
                     ]
                   },
                   {
-                    "Kind": "block",
-                    "Children": [
+                    "kind": "block",
+                    "children": [
                       {
-                        "Kind": "call",
-                        "Value": "print",
-                        "Children": [
+                        "kind": "call",
+                        "value": "print",
+                        "children": [
                           {
-                            "Kind": "call",
-                            "Value": "TrimEnd",
-                            "Children": [
+                            "kind": "call",
+                            "value": "TrimEnd",
+                            "children": [
                               {
-                                "Kind": "call",
-                                "Value": "Join",
-                                "Children": [
+                                "kind": "call",
+                                "value": "Join",
+                                "children": [
                                   {
-                                    "Kind": "ident",
-                                    "Value": "string"
+                                    "kind": "ident",
+                                    "value": "string"
                                   },
                                   {
-                                    "Kind": "literal",
-                                    "Value": " "
+                                    "kind": "literal",
+                                    "value": " "
                                   },
                                   {
-                                    "Kind": "array",
-                                    "Children": [
+                                    "kind": "array",
+                                    "children": [
                                       {
-                                        "Kind": "member",
-                                        "Value": "name",
-                                        "Children": [
+                                        "kind": "member",
+                                        "value": "name",
+                                        "children": [
                                           {
-                                            "Kind": "ident",
-                                            "Value": "item"
+                                            "kind": "ident",
+                                            "value": "item"
                                           }
                                         ]
                                       },
                                       {
-                                        "Kind": "literal",
-                                        "Value": "costs $"
+                                        "kind": "literal",
+                                        "value": "costs $"
                                       },
                                       {
-                                        "Kind": "member",
-                                        "Value": "price",
-                                        "Children": [
+                                        "kind": "member",
+                                        "value": "price",
+                                        "children": [
                                           {
-                                            "Kind": "ident",
-                                            "Value": "item"
+                                            "kind": "ident",
+                                            "value": "item"
                                           }
                                         ]
                                       }
@@ -424,13 +417,12 @@
               }
             ]
           },
-          "StartLine": 14,
-          "EndLine": 19,
-          "Doc": ""
+          "startline": 14,
+          "endline": 19,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.33 on 2025-07-21 18:06 +0700\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\n\nstruct Product {\n    public string name;\n    public int price;\n    public override string ToString() =\u003e $\"{{\\\"name\\\": \\\"{name}\\\", \\\"price\\\": {price}}}\";\n}\nclass Program {\n    static Product[] products = new Product[]{new Product{name = \"Laptop\", price = 1500}, new Product{name = \"Smartphone\", price = 900}, new Product{name = \"Tablet\", price = 600}, new Product{name = \"Monitor\", price = 300}, new Product{name = \"Keyboard\", price = 100}, new Product{name = \"Mouse\", price = 50}, new Product{name = \"Headphones\", price = 200}};\n    static Product[] expensive = (((from p in products orderby p.price descending select p).Skip(1)).Take(3)).ToArray();\n    static void Main() {\n        Console.WriteLine(\"--- Top products (excluding most expensive) ---\");\n        foreach (var item in expensive) {\n    Console.WriteLine(string.Join(\" \", new object[]{item.name, \"costs $\", item.price}).TrimEnd());\n}\n    }\n}\n"
+  ]
 }

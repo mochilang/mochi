@@ -1,187 +1,183 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 4,
-      "EndLine": 12,
-      "Fields": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 4,
+      "endline": 12,
+      "fields": [
         {
-          "Name": "prefix",
-          "Type": "string",
-          "Access": "",
-          "Line": 5,
-          "Value": "\"fore\"",
-          "Ast": {
-            "Kind": "literal",
-            "Value": "fore"
+          "name": "prefix",
+          "type": "string",
+          "access": "",
+          "line": 5,
+          "value": "\"fore\"",
+          "ast": {
+            "kind": "literal",
+            "value": "fore"
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "s1",
-          "Type": "string",
-          "Access": "",
-          "Line": 6,
-          "Value": "\"forest\"",
-          "Ast": {
-            "Kind": "literal",
-            "Value": "forest"
+          "name": "s1",
+          "type": "string",
+          "access": "",
+          "line": 6,
+          "value": "\"forest\"",
+          "ast": {
+            "kind": "literal",
+            "value": "forest"
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "s2",
-          "Type": "string",
-          "Access": "",
-          "Line": 7,
-          "Value": "\"desert\"",
-          "Ast": {
-            "Kind": "literal",
-            "Value": "desert"
+          "name": "s2",
+          "type": "string",
+          "access": "",
+          "line": 7,
+          "value": "\"desert\"",
+          "ast": {
+            "kind": "literal",
+            "value": "desert"
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        Console.WriteLine(((s1.Substring(0, (prefix.Length - 0)) == prefix) ? 1 : 0));",
-            "        Console.WriteLine(((s2.Substring(0, (prefix.Length - 0)) == prefix) ? 1 : 0));"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "cond",
-                    "Children": [
+                    "kind": "cond",
+                    "children": [
                       {
-                        "Kind": "binary",
-                        "Value": "==",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "==",
+                        "children": [
                           {
-                            "Kind": "call",
-                            "Value": "Substring",
-                            "Children": [
+                            "kind": "call",
+                            "value": "Substring",
+                            "children": [
                               {
-                                "Kind": "ident",
-                                "Value": "s1"
+                                "kind": "ident",
+                                "value": "s1"
                               },
                               {
-                                "Kind": "literal",
-                                "Value": "0"
+                                "kind": "literal",
+                                "value": "0"
                               },
                               {
-                                "Kind": "binary",
-                                "Value": "-",
-                                "Children": [
+                                "kind": "binary",
+                                "value": "-",
+                                "children": [
                                   {
-                                    "Kind": "member",
-                                    "Value": "Length",
-                                    "Children": [
+                                    "kind": "member",
+                                    "value": "Length",
+                                    "children": [
                                       {
-                                        "Kind": "ident",
-                                        "Value": "prefix"
+                                        "kind": "ident",
+                                        "value": "prefix"
                                       }
                                     ]
                                   },
                                   {
-                                    "Kind": "literal",
-                                    "Value": "0"
+                                    "kind": "literal",
+                                    "value": "0"
                                   }
                                 ]
                               }
                             ]
                           },
                           {
-                            "Kind": "ident",
-                            "Value": "prefix"
+                            "kind": "ident",
+                            "value": "prefix"
                           }
                         ]
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "1"
+                        "kind": "literal",
+                        "value": "1"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "0"
+                        "kind": "literal",
+                        "value": "0"
                       }
                     ]
                   }
                 ]
               },
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "cond",
-                    "Children": [
+                    "kind": "cond",
+                    "children": [
                       {
-                        "Kind": "binary",
-                        "Value": "==",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "==",
+                        "children": [
                           {
-                            "Kind": "call",
-                            "Value": "Substring",
-                            "Children": [
+                            "kind": "call",
+                            "value": "Substring",
+                            "children": [
                               {
-                                "Kind": "ident",
-                                "Value": "s2"
+                                "kind": "ident",
+                                "value": "s2"
                               },
                               {
-                                "Kind": "literal",
-                                "Value": "0"
+                                "kind": "literal",
+                                "value": "0"
                               },
                               {
-                                "Kind": "binary",
-                                "Value": "-",
-                                "Children": [
+                                "kind": "binary",
+                                "value": "-",
+                                "children": [
                                   {
-                                    "Kind": "member",
-                                    "Value": "Length",
-                                    "Children": [
+                                    "kind": "member",
+                                    "value": "Length",
+                                    "children": [
                                       {
-                                        "Kind": "ident",
-                                        "Value": "prefix"
+                                        "kind": "ident",
+                                        "value": "prefix"
                                       }
                                     ]
                                   },
                                   {
-                                    "Kind": "literal",
-                                    "Value": "0"
+                                    "kind": "literal",
+                                    "value": "0"
                                   }
                                 ]
                               }
                             ]
                           },
                           {
-                            "Kind": "ident",
-                            "Value": "prefix"
+                            "kind": "ident",
+                            "value": "prefix"
                           }
                         ]
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "1"
+                        "kind": "literal",
+                        "value": "1"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "0"
+                        "kind": "literal",
+                        "value": "0"
                       }
                     ]
                   }
@@ -189,13 +185,12 @@
               }
             ]
           },
-          "StartLine": 8,
-          "EndLine": 11,
-          "Doc": ""
+          "startline": 8,
+          "endline": 11,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.34 on 2025-07-22 09:31 +0700\nusing System;\n\nclass Program {\n    static string prefix = \"fore\";\n    static string s1 = \"forest\";\n    static string s2 = \"desert\";\n    static void Main() {\n        Console.WriteLine(((s1.Substring(0, (prefix.Length - 0)) == prefix) ? 1 : 0));\n        Console.WriteLine(((s2.Substring(0, (prefix.Length - 0)) == prefix) ? 1 : 0));\n    }\n}\n"
+  ]
 }

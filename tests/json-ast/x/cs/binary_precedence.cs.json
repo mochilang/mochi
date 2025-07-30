@@ -1,51 +1,45 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 4,
-      "EndLine": 11,
-      "Fields": [],
-      "Methods": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 4,
+      "endline": 11,
+      "fields": [],
+      "methods": [
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        Console.WriteLine((1 + (2 * 3)));",
-            "        Console.WriteLine(((1 + 2) * 3));",
-            "        Console.WriteLine(((2 * 3) + 1));",
-            "        Console.WriteLine((2 * (3 + 1)));"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "binary",
-                    "Value": "+",
-                    "Children": [
+                    "kind": "binary",
+                    "value": "+",
+                    "children": [
                       {
-                        "Kind": "literal",
-                        "Value": "1"
+                        "kind": "literal",
+                        "value": "1"
                       },
                       {
-                        "Kind": "binary",
-                        "Value": "*",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "*",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "2"
+                            "kind": "literal",
+                            "value": "2"
                           },
                           {
-                            "Kind": "literal",
-                            "Value": "3"
+                            "kind": "literal",
+                            "value": "3"
                           }
                         ]
                       }
@@ -54,88 +48,88 @@
                 ]
               },
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "binary",
-                    "Value": "*",
-                    "Children": [
+                    "kind": "binary",
+                    "value": "*",
+                    "children": [
                       {
-                        "Kind": "binary",
-                        "Value": "+",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "+",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "1"
+                            "kind": "literal",
+                            "value": "1"
                           },
                           {
-                            "Kind": "literal",
-                            "Value": "2"
+                            "kind": "literal",
+                            "value": "2"
                           }
                         ]
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "3"
+                        "kind": "literal",
+                        "value": "3"
                       }
                     ]
                   }
                 ]
               },
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "binary",
-                    "Value": "+",
-                    "Children": [
+                    "kind": "binary",
+                    "value": "+",
+                    "children": [
                       {
-                        "Kind": "binary",
-                        "Value": "*",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "*",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "2"
+                            "kind": "literal",
+                            "value": "2"
                           },
                           {
-                            "Kind": "literal",
-                            "Value": "3"
+                            "kind": "literal",
+                            "value": "3"
                           }
                         ]
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "1"
+                        "kind": "literal",
+                        "value": "1"
                       }
                     ]
                   }
                 ]
               },
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "binary",
-                    "Value": "*",
-                    "Children": [
+                    "kind": "binary",
+                    "value": "*",
+                    "children": [
                       {
-                        "Kind": "literal",
-                        "Value": "2"
+                        "kind": "literal",
+                        "value": "2"
                       },
                       {
-                        "Kind": "binary",
-                        "Value": "+",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "+",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "3"
+                            "kind": "literal",
+                            "value": "3"
                           },
                           {
-                            "Kind": "literal",
-                            "Value": "1"
+                            "kind": "literal",
+                            "value": "1"
                           }
                         ]
                       }
@@ -145,13 +139,12 @@
               }
             ]
           },
-          "StartLine": 5,
-          "EndLine": 10,
-          "Doc": ""
+          "startline": 5,
+          "endline": 10,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.33 on 2025-07-21 18:06 +0700\nusing System;\n\nclass Program {\n    static void Main() {\n        Console.WriteLine((1 + (2 * 3)));\n        Console.WriteLine(((1 + 2) * 3));\n        Console.WriteLine(((2 * 3) + 1));\n        Console.WriteLine((2 * (3 + 1)));\n    }\n}\n"
+  ]
 }

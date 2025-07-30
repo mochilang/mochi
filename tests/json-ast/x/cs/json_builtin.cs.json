@@ -1,86 +1,85 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "M",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 6,
-      "EndLine": 10,
-      "Fields": [
+      "name": "M",
+      "kind": "struct",
+      "access": "",
+      "startline": 6,
+      "endline": 10,
+      "fields": [
         {
-          "Name": "a",
-          "Type": "int",
-          "Access": "public",
-          "Line": 7,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "a",
+          "type": "int",
+          "access": "public",
+          "line": 7,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "b",
-          "Type": "int",
-          "Access": "public",
-          "Line": 8,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "b",
+          "type": "int",
+          "access": "public",
+          "line": 8,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 9,
-          "EndLine": 9,
-          "Doc": ""
+          "startline": 9,
+          "endline": 9,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 11,
-      "EndLine": 16,
-      "Fields": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 11,
+      "endline": 16,
+      "fields": [
         {
-          "Name": "m",
-          "Type": "M",
-          "Access": "",
-          "Line": 12,
-          "Value": "new M{a = 1, b = 2}",
-          "Ast": {
-            "Kind": "new",
-            "Value": "M",
-            "Children": [
+          "name": "m",
+          "type": "M",
+          "access": "",
+          "line": 12,
+          "value": "new M{a = 1, b = 2}",
+          "ast": {
+            "kind": "new",
+            "value": "M",
+            "children": [
               {
-                "Kind": "init",
-                "Children": [
+                "kind": "init",
+                "children": [
                   {
-                    "Kind": "field",
-                    "Value": "a",
-                    "Children": [
+                    "kind": "field",
+                    "value": "a",
+                    "children": [
                       {
-                        "Kind": "literal",
-                        "Value": "1"
+                        "kind": "literal",
+                        "value": "1"
                       }
                     ]
                   },
                   {
-                    "Kind": "field",
-                    "Value": "b",
-                    "Children": [
+                    "kind": "field",
+                    "value": "b",
+                    "children": [
                       {
-                        "Kind": "literal",
-                        "Value": "2"
+                        "kind": "literal",
+                        "value": "2"
                       }
                     ]
                   }
@@ -88,38 +87,35 @@
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        Console.WriteLine(JsonSerializer.Serialize(m));"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "call",
-                    "Value": "Serialize",
-                    "Children": [
+                    "kind": "call",
+                    "value": "Serialize",
+                    "children": [
                       {
-                        "Kind": "ident",
-                        "Value": "JsonSerializer"
+                        "kind": "ident",
+                        "value": "JsonSerializer"
                       },
                       {
-                        "Kind": "ident",
-                        "Value": "m"
+                        "kind": "ident",
+                        "value": "m"
                       }
                     ]
                   }
@@ -127,13 +123,12 @@
               }
             ]
           },
-          "StartLine": 13,
-          "EndLine": 15,
-          "Doc": ""
+          "startline": 13,
+          "endline": 15,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.33 on 2025-07-21 18:06 +0700\nusing System;\nusing System.Collections.Generic;\nusing System.Text.Json;\n\nstruct M {\n    public int a;\n    public int b;\n    public override string ToString() =\u003e $\"{{\\\"a\\\": {a}, \\\"b\\\": {b}}}\";\n}\nclass Program {\n    static M m = new M{a = 1, b = 2};\n    static void Main() {\n        Console.WriteLine(JsonSerializer.Serialize(m));\n    }\n}\n"
+  ]
 }

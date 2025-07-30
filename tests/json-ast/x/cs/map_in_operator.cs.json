@@ -1,48 +1,48 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 5,
-      "EndLine": 11,
-      "Fields": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 5,
+      "endline": 11,
+      "fields": [
         {
-          "Name": "m",
-          "Type": "Dictionary\u003cint, string\u003e",
-          "Access": "",
-          "Line": 6,
-          "Value": "new Dictionary\u003cint, string\u003e{{1, \"a\"}, {2, \"b\"}}",
-          "Ast": {
-            "Kind": "new",
-            "Value": "Dictionary\u003cint, string\u003e",
-            "Children": [
+          "name": "m",
+          "type": "Dictionary\u003cint, string\u003e",
+          "access": "",
+          "line": 6,
+          "value": "new Dictionary\u003cint, string\u003e{{1, \"a\"}, {2, \"b\"}}",
+          "ast": {
+            "kind": "new",
+            "value": "Dictionary\u003cint, string\u003e",
+            "children": [
               {
-                "Kind": "init",
-                "Children": [
+                "kind": "init",
+                "children": [
                   {
-                    "Kind": "pair",
-                    "Children": [
+                    "kind": "pair",
+                    "children": [
                       {
-                        "Kind": "literal",
-                        "Value": "1"
+                        "kind": "literal",
+                        "value": "1"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "a"
+                        "kind": "literal",
+                        "value": "a"
                       }
                     ]
                   },
                   {
-                    "Kind": "pair",
-                    "Children": [
+                    "kind": "pair",
+                    "children": [
                       {
-                        "Kind": "literal",
-                        "Value": "2"
+                        "kind": "literal",
+                        "value": "2"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "b"
+                        "kind": "literal",
+                        "value": "b"
                       }
                     ]
                   }
@@ -50,85 +50,81 @@
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        Console.WriteLine(((m.ContainsKey(1)) ? \"true\" : \"false\"));",
-            "        Console.WriteLine(((m.ContainsKey(3)) ? \"true\" : \"false\"));"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "cond",
-                    "Children": [
+                    "kind": "cond",
+                    "children": [
                       {
-                        "Kind": "call",
-                        "Value": "ContainsKey",
-                        "Children": [
+                        "kind": "call",
+                        "value": "ContainsKey",
+                        "children": [
                           {
-                            "Kind": "ident",
-                            "Value": "m"
+                            "kind": "ident",
+                            "value": "m"
                           },
                           {
-                            "Kind": "literal",
-                            "Value": "1"
+                            "kind": "literal",
+                            "value": "1"
                           }
                         ]
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "true"
+                        "kind": "literal",
+                        "value": "true"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "false"
+                        "kind": "literal",
+                        "value": "false"
                       }
                     ]
                   }
                 ]
               },
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "cond",
-                    "Children": [
+                    "kind": "cond",
+                    "children": [
                       {
-                        "Kind": "call",
-                        "Value": "ContainsKey",
-                        "Children": [
+                        "kind": "call",
+                        "value": "ContainsKey",
+                        "children": [
                           {
-                            "Kind": "ident",
-                            "Value": "m"
+                            "kind": "ident",
+                            "value": "m"
                           },
                           {
-                            "Kind": "literal",
-                            "Value": "3"
+                            "kind": "literal",
+                            "value": "3"
                           }
                         ]
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "true"
+                        "kind": "literal",
+                        "value": "true"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "false"
+                        "kind": "literal",
+                        "value": "false"
                       }
                     ]
                   }
@@ -136,13 +132,12 @@
               }
             ]
           },
-          "StartLine": 7,
-          "EndLine": 10,
-          "Doc": ""
+          "startline": 7,
+          "endline": 10,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.33 on 2025-07-21 18:06 +0700\nusing System;\nusing System.Collections.Generic;\n\nclass Program {\n    static Dictionary\u003cint, string\u003e m = new Dictionary\u003cint, string\u003e{{1, \"a\"}, {2, \"b\"}};\n    static void Main() {\n        Console.WriteLine(((m.ContainsKey(1)) ? \"true\" : \"false\"));\n        Console.WriteLine(((m.ContainsKey(3)) ? \"true\" : \"false\"));\n    }\n}\n"
+  ]
 }

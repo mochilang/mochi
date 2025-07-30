@@ -1,89 +1,88 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "People",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 7,
-      "EndLine": 11,
-      "Fields": [
+      "name": "People",
+      "kind": "struct",
+      "access": "",
+      "startline": 7,
+      "endline": 11,
+      "fields": [
         {
-          "Name": "name",
-          "Type": "string",
-          "Access": "public",
-          "Line": 8,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "name",
+          "type": "string",
+          "access": "public",
+          "line": 8,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "age",
-          "Type": "int",
-          "Access": "public",
-          "Line": 9,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "age",
+          "type": "int",
+          "access": "public",
+          "line": 9,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 10,
-          "EndLine": 10,
-          "Doc": ""
+          "startline": 10,
+          "endline": 10,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 12,
-      "EndLine": 20,
-      "Fields": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 12,
+      "endline": 20,
+      "fields": [
         {
-          "Name": "people",
-          "Type": "People[]",
-          "Access": "",
-          "Line": 13,
-          "Value": "new People[]{new People{name = \"Alice\", age = 30}, new People{name = \"Bob\", age = 25}}",
-          "Ast": {
-            "Kind": "array",
-            "Children": [
+          "name": "people",
+          "type": "People[]",
+          "access": "",
+          "line": 13,
+          "value": "new People[]{new People{name = \"Alice\", age = 30}, new People{name = \"Bob\", age = 25}}",
+          "ast": {
+            "kind": "array",
+            "children": [
               {
-                "Kind": "new",
-                "Value": "People",
-                "Children": [
+                "kind": "new",
+                "value": "People",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Alice"
+                            "kind": "literal",
+                            "value": "Alice"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "age",
-                        "Children": [
+                        "kind": "field",
+                        "value": "age",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "30"
+                            "kind": "literal",
+                            "value": "30"
                           }
                         ]
                       }
@@ -92,29 +91,29 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "People",
-                "Children": [
+                "kind": "new",
+                "value": "People",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Bob"
+                            "kind": "literal",
+                            "value": "Bob"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "age",
-                        "Children": [
+                        "kind": "field",
+                        "value": "age",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "25"
+                            "kind": "literal",
+                            "value": "25"
                           }
                         ]
                       }
@@ -124,86 +123,80 @@
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        foreach (var _row in people) {",
-            "    var _tmp = new SortedDictionary\u003cstring, object\u003e{{\"age\", _row.age}, {\"name\", _row.name}};",
-            "    Console.WriteLine(JsonSerializer.Serialize(_tmp));",
-            "};"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "for",
-                "Value": "_row",
-                "Children": [
+                "kind": "for",
+                "value": "_row",
+                "children": [
                   {
-                    "Kind": "range",
-                    "Children": [
+                    "kind": "range",
+                    "children": [
                       {
-                        "Kind": "ident",
-                        "Value": "people"
+                        "kind": "ident",
+                        "value": "people"
                       }
                     ]
                   },
                   {
-                    "Kind": "block",
-                    "Children": [
+                    "kind": "block",
+                    "children": [
                       {
-                        "Kind": "var",
-                        "Value": "_tmp",
-                        "Children": [
+                        "kind": "var",
+                        "value": "_tmp",
+                        "children": [
                           {
-                            "Kind": "new",
-                            "Value": "SortedDictionary\u003cstring, object\u003e",
-                            "Children": [
+                            "kind": "new",
+                            "value": "SortedDictionary\u003cstring, object\u003e",
+                            "children": [
                               {
-                                "Kind": "init",
-                                "Children": [
+                                "kind": "init",
+                                "children": [
                                   {
-                                    "Kind": "pair",
-                                    "Children": [
+                                    "kind": "pair",
+                                    "children": [
                                       {
-                                        "Kind": "literal",
-                                        "Value": "age"
+                                        "kind": "literal",
+                                        "value": "age"
                                       },
                                       {
-                                        "Kind": "member",
-                                        "Value": "age",
-                                        "Children": [
+                                        "kind": "member",
+                                        "value": "age",
+                                        "children": [
                                           {
-                                            "Kind": "ident",
-                                            "Value": "_row"
+                                            "kind": "ident",
+                                            "value": "_row"
                                           }
                                         ]
                                       }
                                     ]
                                   },
                                   {
-                                    "Kind": "pair",
-                                    "Children": [
+                                    "kind": "pair",
+                                    "children": [
                                       {
-                                        "Kind": "literal",
-                                        "Value": "name"
+                                        "kind": "literal",
+                                        "value": "name"
                                       },
                                       {
-                                        "Kind": "member",
-                                        "Value": "name",
-                                        "Children": [
+                                        "kind": "member",
+                                        "value": "name",
+                                        "children": [
                                           {
-                                            "Kind": "ident",
-                                            "Value": "_row"
+                                            "kind": "ident",
+                                            "value": "_row"
                                           }
                                         ]
                                       }
@@ -216,20 +209,20 @@
                         ]
                       },
                       {
-                        "Kind": "call",
-                        "Value": "print",
-                        "Children": [
+                        "kind": "call",
+                        "value": "print",
+                        "children": [
                           {
-                            "Kind": "call",
-                            "Value": "Serialize",
-                            "Children": [
+                            "kind": "call",
+                            "value": "Serialize",
+                            "children": [
                               {
-                                "Kind": "ident",
-                                "Value": "JsonSerializer"
+                                "kind": "ident",
+                                "value": "JsonSerializer"
                               },
                               {
-                                "Kind": "ident",
-                                "Value": "_tmp"
+                                "kind": "ident",
+                                "value": "_tmp"
                               }
                             ]
                           }
@@ -240,17 +233,16 @@
                 ]
               },
               {
-                "Kind": "empty"
+                "kind": "empty"
               }
             ]
           },
-          "StartLine": 14,
-          "EndLine": 19,
-          "Doc": ""
+          "startline": 14,
+          "endline": 19,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.34 on 2025-07-22 09:58 +0700\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Text.Json;\n\nstruct People {\n    public string name;\n    public int age;\n    public override string ToString() =\u003e $\"People {{name = \\\"{name}\\\", age = {age}}}\";\n}\nclass Program {\n    static People[] people = new People[]{new People{name = \"Alice\", age = 30}, new People{name = \"Bob\", age = 25}};\n    static void Main() {\n        foreach (var _row in people) {\n    var _tmp = new SortedDictionary\u003cstring, object\u003e{{\"age\", _row.age}, {\"name\", _row.name}};\n    Console.WriteLine(JsonSerializer.Serialize(_tmp));\n};\n    }\n}\n"
+  ]
 }

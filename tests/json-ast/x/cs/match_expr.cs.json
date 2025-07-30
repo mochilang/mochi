@@ -1,97 +1,97 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 4,
-      "EndLine": 10,
-      "Fields": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 4,
+      "endline": 10,
+      "fields": [
         {
-          "Name": "x",
-          "Type": "int",
-          "Access": "",
-          "Line": 5,
-          "Value": "2",
-          "Ast": {
-            "Kind": "literal",
-            "Value": "2"
+          "name": "x",
+          "type": "int",
+          "access": "",
+          "line": 5,
+          "value": "2",
+          "ast": {
+            "kind": "literal",
+            "value": "2"
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "label",
-          "Type": "string",
-          "Access": "",
-          "Line": 6,
-          "Value": "((x == 1) ? \"one\" : ((x == 2) ? \"two\" : ((x == 3) ? \"three\" : \"unknown\")))",
-          "Ast": {
-            "Kind": "cond",
-            "Children": [
+          "name": "label",
+          "type": "string",
+          "access": "",
+          "line": 6,
+          "value": "((x == 1) ? \"one\" : ((x == 2) ? \"two\" : ((x == 3) ? \"three\" : \"unknown\")))",
+          "ast": {
+            "kind": "cond",
+            "children": [
               {
-                "Kind": "binary",
-                "Value": "==",
-                "Children": [
+                "kind": "binary",
+                "value": "==",
+                "children": [
                   {
-                    "Kind": "ident",
-                    "Value": "x"
+                    "kind": "ident",
+                    "value": "x"
                   },
                   {
-                    "Kind": "literal",
-                    "Value": "1"
+                    "kind": "literal",
+                    "value": "1"
                   }
                 ]
               },
               {
-                "Kind": "literal",
-                "Value": "one"
+                "kind": "literal",
+                "value": "one"
               },
               {
-                "Kind": "cond",
-                "Children": [
+                "kind": "cond",
+                "children": [
                   {
-                    "Kind": "binary",
-                    "Value": "==",
-                    "Children": [
+                    "kind": "binary",
+                    "value": "==",
+                    "children": [
                       {
-                        "Kind": "ident",
-                        "Value": "x"
+                        "kind": "ident",
+                        "value": "x"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "2"
+                        "kind": "literal",
+                        "value": "2"
                       }
                     ]
                   },
                   {
-                    "Kind": "literal",
-                    "Value": "two"
+                    "kind": "literal",
+                    "value": "two"
                   },
                   {
-                    "Kind": "cond",
-                    "Children": [
+                    "kind": "cond",
+                    "children": [
                       {
-                        "Kind": "binary",
-                        "Value": "==",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "==",
+                        "children": [
                           {
-                            "Kind": "ident",
-                            "Value": "x"
+                            "kind": "ident",
+                            "value": "x"
                           },
                           {
-                            "Kind": "literal",
-                            "Value": "3"
+                            "kind": "literal",
+                            "value": "3"
                           }
                         ]
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "three"
+                        "kind": "literal",
+                        "value": "three"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "unknown"
+                        "kind": "literal",
+                        "value": "unknown"
                       }
                     ]
                   }
@@ -99,42 +99,38 @@
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        Console.WriteLine(label);"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "ident",
-                    "Value": "label"
+                    "kind": "ident",
+                    "value": "label"
                   }
                 ]
               }
             ]
           },
-          "StartLine": 7,
-          "EndLine": 9,
-          "Doc": ""
+          "startline": 7,
+          "endline": 9,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.34 on 2025-07-21 23:52 +0700\nusing System;\n\nclass Program {\n    static int x = 2;\n    static string label = ((x == 1) ? \"one\" : ((x == 2) ? \"two\" : ((x == 3) ? \"three\" : \"unknown\")));\n    static void Main() {\n        Console.WriteLine(label);\n    }\n}\n"
+  ]
 }

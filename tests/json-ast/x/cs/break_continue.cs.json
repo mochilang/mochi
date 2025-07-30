@@ -1,194 +1,183 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 4,
-      "EndLine": 17,
-      "Fields": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 4,
+      "endline": 17,
+      "fields": [
         {
-          "Name": "numbers",
-          "Type": "int[]",
-          "Access": "",
-          "Line": 5,
-          "Value": "new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9}",
-          "Ast": {
-            "Kind": "array",
-            "Children": [
+          "name": "numbers",
+          "type": "int[]",
+          "access": "",
+          "line": 5,
+          "value": "new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9}",
+          "ast": {
+            "kind": "array",
+            "children": [
               {
-                "Kind": "literal",
-                "Value": "1"
+                "kind": "literal",
+                "value": "1"
               },
               {
-                "Kind": "literal",
-                "Value": "2"
+                "kind": "literal",
+                "value": "2"
               },
               {
-                "Kind": "literal",
-                "Value": "3"
+                "kind": "literal",
+                "value": "3"
               },
               {
-                "Kind": "literal",
-                "Value": "4"
+                "kind": "literal",
+                "value": "4"
               },
               {
-                "Kind": "literal",
-                "Value": "5"
+                "kind": "literal",
+                "value": "5"
               },
               {
-                "Kind": "literal",
-                "Value": "6"
+                "kind": "literal",
+                "value": "6"
               },
               {
-                "Kind": "literal",
-                "Value": "7"
+                "kind": "literal",
+                "value": "7"
               },
               {
-                "Kind": "literal",
-                "Value": "8"
+                "kind": "literal",
+                "value": "8"
               },
               {
-                "Kind": "literal",
-                "Value": "9"
+                "kind": "literal",
+                "value": "9"
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        foreach (var n in numbers) {",
-            "    if (((n % 2) == 0)) {",
-            "    continue;",
-            "}",
-            "    if ((n \u003e 7)) {",
-            "    break;",
-            "}",
-            "    Console.WriteLine(string.Join(\" \", new object[]{\"odd number:\", n}).TrimEnd());",
-            "}"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "for",
-                "Value": "n",
-                "Children": [
+                "kind": "for",
+                "value": "n",
+                "children": [
                   {
-                    "Kind": "range",
-                    "Children": [
+                    "kind": "range",
+                    "children": [
                       {
-                        "Kind": "ident",
-                        "Value": "numbers"
+                        "kind": "ident",
+                        "value": "numbers"
                       }
                     ]
                   },
                   {
-                    "Kind": "block",
-                    "Children": [
+                    "kind": "block",
+                    "children": [
                       {
-                        "Kind": "if",
-                        "Children": [
+                        "kind": "if",
+                        "children": [
                           {
-                            "Kind": "binary",
-                            "Value": "==",
-                            "Children": [
+                            "kind": "binary",
+                            "value": "==",
+                            "children": [
                               {
-                                "Kind": "binary",
-                                "Value": "%",
-                                "Children": [
+                                "kind": "binary",
+                                "value": "%",
+                                "children": [
                                   {
-                                    "Kind": "ident",
-                                    "Value": "n"
+                                    "kind": "ident",
+                                    "value": "n"
                                   },
                                   {
-                                    "Kind": "literal",
-                                    "Value": "2"
+                                    "kind": "literal",
+                                    "value": "2"
                                   }
                                 ]
                               },
                               {
-                                "Kind": "literal",
-                                "Value": "0"
+                                "kind": "literal",
+                                "value": "0"
                               }
                             ]
                           },
                           {
-                            "Kind": "block",
-                            "Children": [
+                            "kind": "block",
+                            "children": [
                               {
-                                "Kind": "continue"
+                                "kind": "continue"
                               }
                             ]
                           }
                         ]
                       },
                       {
-                        "Kind": "if",
-                        "Children": [
+                        "kind": "if",
+                        "children": [
                           {
-                            "Kind": "binary",
-                            "Value": "\u003e",
-                            "Children": [
+                            "kind": "binary",
+                            "value": "\u003e",
+                            "children": [
                               {
-                                "Kind": "ident",
-                                "Value": "n"
+                                "kind": "ident",
+                                "value": "n"
                               },
                               {
-                                "Kind": "literal",
-                                "Value": "7"
+                                "kind": "literal",
+                                "value": "7"
                               }
                             ]
                           },
                           {
-                            "Kind": "block",
-                            "Children": [
+                            "kind": "block",
+                            "children": [
                               {
-                                "Kind": "break"
+                                "kind": "break"
                               }
                             ]
                           }
                         ]
                       },
                       {
-                        "Kind": "call",
-                        "Value": "print",
-                        "Children": [
+                        "kind": "call",
+                        "value": "print",
+                        "children": [
                           {
-                            "Kind": "call",
-                            "Value": "TrimEnd",
-                            "Children": [
+                            "kind": "call",
+                            "value": "TrimEnd",
+                            "children": [
                               {
-                                "Kind": "call",
-                                "Value": "Join",
-                                "Children": [
+                                "kind": "call",
+                                "value": "Join",
+                                "children": [
                                   {
-                                    "Kind": "ident",
-                                    "Value": "string"
+                                    "kind": "ident",
+                                    "value": "string"
                                   },
                                   {
-                                    "Kind": "literal",
-                                    "Value": " "
+                                    "kind": "literal",
+                                    "value": " "
                                   },
                                   {
-                                    "Kind": "array",
-                                    "Children": [
+                                    "kind": "array",
+                                    "children": [
                                       {
-                                        "Kind": "literal",
-                                        "Value": "odd number:"
+                                        "kind": "literal",
+                                        "value": "odd number:"
                                       },
                                       {
-                                        "Kind": "ident",
-                                        "Value": "n"
+                                        "kind": "ident",
+                                        "value": "n"
                                       }
                                     ]
                                   }
@@ -204,13 +193,12 @@
               }
             ]
           },
-          "StartLine": 6,
-          "EndLine": 16,
-          "Doc": ""
+          "startline": 6,
+          "endline": 16,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.33 on 2025-07-21 18:06 +0700\nusing System;\n\nclass Program {\n    static int[] numbers = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9};\n    static void Main() {\n        foreach (var n in numbers) {\n    if (((n % 2) == 0)) {\n    continue;\n}\n    if ((n \u003e 7)) {\n    break;\n}\n    Console.WriteLine(string.Join(\" \", new object[]{\"odd number:\", n}).TrimEnd());\n}\n    }\n}\n"
+  ]
 }

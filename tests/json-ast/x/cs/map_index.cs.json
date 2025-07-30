@@ -1,86 +1,85 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "M",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 5,
-      "EndLine": 9,
-      "Fields": [
+      "name": "M",
+      "kind": "struct",
+      "access": "",
+      "startline": 5,
+      "endline": 9,
+      "fields": [
         {
-          "Name": "a",
-          "Type": "int",
-          "Access": "public",
-          "Line": 6,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "a",
+          "type": "int",
+          "access": "public",
+          "line": 6,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "b",
-          "Type": "int",
-          "Access": "public",
-          "Line": 7,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "b",
+          "type": "int",
+          "access": "public",
+          "line": 7,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 8,
-          "EndLine": 8,
-          "Doc": ""
+          "startline": 8,
+          "endline": 8,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 10,
-      "EndLine": 15,
-      "Fields": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 10,
+      "endline": 15,
+      "fields": [
         {
-          "Name": "m",
-          "Type": "M",
-          "Access": "",
-          "Line": 11,
-          "Value": "new M{a = 1, b = 2}",
-          "Ast": {
-            "Kind": "new",
-            "Value": "M",
-            "Children": [
+          "name": "m",
+          "type": "M",
+          "access": "",
+          "line": 11,
+          "value": "new M{a = 1, b = 2}",
+          "ast": {
+            "kind": "new",
+            "value": "M",
+            "children": [
               {
-                "Kind": "init",
-                "Children": [
+                "kind": "init",
+                "children": [
                   {
-                    "Kind": "field",
-                    "Value": "a",
-                    "Children": [
+                    "kind": "field",
+                    "value": "a",
+                    "children": [
                       {
-                        "Kind": "literal",
-                        "Value": "1"
+                        "kind": "literal",
+                        "value": "1"
                       }
                     ]
                   },
                   {
-                    "Kind": "field",
-                    "Value": "b",
-                    "Children": [
+                    "kind": "field",
+                    "value": "b",
+                    "children": [
                       {
-                        "Kind": "literal",
-                        "Value": "2"
+                        "kind": "literal",
+                        "value": "2"
                       }
                     ]
                   }
@@ -88,34 +87,31 @@
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        Console.WriteLine(m.b);"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "member",
-                    "Value": "b",
-                    "Children": [
+                    "kind": "member",
+                    "value": "b",
+                    "children": [
                       {
-                        "Kind": "ident",
-                        "Value": "m"
+                        "kind": "ident",
+                        "value": "m"
                       }
                     ]
                   }
@@ -123,13 +119,12 @@
               }
             ]
           },
-          "StartLine": 12,
-          "EndLine": 14,
-          "Doc": ""
+          "startline": 12,
+          "endline": 14,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.34 on 2025-07-21 21:46 +0700\nusing System;\nusing System.Collections.Generic;\n\nstruct M {\n    public int a;\n    public int b;\n    public override string ToString() =\u003e $\"{{'a': {a}, 'b': {b}}}\";\n}\nclass Program {\n    static M m = new M{a = 1, b = 2};\n    static void Main() {\n        Console.WriteLine(m.b);\n    }\n}\n"
+  ]
 }

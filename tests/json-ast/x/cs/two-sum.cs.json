@@ -1,210 +1,199 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 4,
-      "EndLine": 22,
-      "Fields": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 4,
+      "endline": 22,
+      "fields": [
         {
-          "Name": "result",
-          "Type": "int[]",
-          "Access": "",
-          "Line": 5,
-          "Value": "twoSum(new int[]{2, 7, 11, 15}, 9)",
-          "Ast": {
-            "Kind": "call",
-            "Value": "twoSum",
-            "Children": [
+          "name": "result",
+          "type": "int[]",
+          "access": "",
+          "line": 5,
+          "value": "twoSum(new int[]{2, 7, 11, 15}, 9)",
+          "ast": {
+            "kind": "call",
+            "value": "twoSum",
+            "children": [
               {
-                "Kind": "array",
-                "Children": [
+                "kind": "array",
+                "children": [
                   {
-                    "Kind": "literal",
-                    "Value": "2"
+                    "kind": "literal",
+                    "value": "2"
                   },
                   {
-                    "Kind": "literal",
-                    "Value": "7"
+                    "kind": "literal",
+                    "value": "7"
                   },
                   {
-                    "Kind": "literal",
-                    "Value": "11"
+                    "kind": "literal",
+                    "value": "11"
                   },
                   {
-                    "Kind": "literal",
-                    "Value": "15"
+                    "kind": "literal",
+                    "value": "15"
                   }
                 ]
               },
               {
-                "Kind": "literal",
-                "Value": "9"
+                "kind": "literal",
+                "value": "9"
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "twoSum",
-          "Params": [
+          "name": "twoSum",
+          "params": [
             {
-              "Name": "nums",
-              "Type": "int[]"
+              "name": "nums",
+              "type": "int[]"
             },
             {
-              "Name": "target",
-              "Type": "int"
+              "name": "target",
+              "type": "int"
             }
           ],
-          "Ret": "int[]",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "    var n = nums.Length;",
-            "    for (var i = 0; i \u003c n; i++) {",
-            "    for (var j = (i + 1); j \u003c n; j++) {",
-            "    if (((nums[i] + nums[j]) == target)) {",
-            "    return new int[]{i, j};",
-            "}",
-            "}",
-            "};",
-            "    return new object[]{-1, -1};"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "ret": "int[]",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "var",
-                "Value": "n",
-                "Children": [
+                "kind": "var",
+                "value": "n",
+                "children": [
                   {
-                    "Kind": "member",
-                    "Value": "Length",
-                    "Children": [
+                    "kind": "member",
+                    "value": "Length",
+                    "children": [
                       {
-                        "Kind": "ident",
-                        "Value": "nums"
+                        "kind": "ident",
+                        "value": "nums"
                       }
                     ]
                   }
                 ]
               },
               {
-                "Kind": "for",
-                "Value": "i",
-                "Children": [
+                "kind": "for",
+                "value": "i",
+                "children": [
                   {
-                    "Kind": "range",
-                    "Children": [
+                    "kind": "range",
+                    "children": [
                       {
-                        "Kind": "literal",
-                        "Value": "0"
+                        "kind": "literal",
+                        "value": "0"
                       },
                       {
-                        "Kind": "ident",
-                        "Value": "n"
+                        "kind": "ident",
+                        "value": "n"
                       }
                     ]
                   },
                   {
-                    "Kind": "block",
-                    "Children": [
+                    "kind": "block",
+                    "children": [
                       {
-                        "Kind": "for",
-                        "Value": "j",
-                        "Children": [
+                        "kind": "for",
+                        "value": "j",
+                        "children": [
                           {
-                            "Kind": "range",
-                            "Children": [
+                            "kind": "range",
+                            "children": [
                               {
-                                "Kind": "binary",
-                                "Value": "+",
-                                "Children": [
+                                "kind": "binary",
+                                "value": "+",
+                                "children": [
                                   {
-                                    "Kind": "ident",
-                                    "Value": "i"
+                                    "kind": "ident",
+                                    "value": "i"
                                   },
                                   {
-                                    "Kind": "literal",
-                                    "Value": "1"
+                                    "kind": "literal",
+                                    "value": "1"
                                   }
                                 ]
                               },
                               {
-                                "Kind": "ident",
-                                "Value": "n"
+                                "kind": "ident",
+                                "value": "n"
                               }
                             ]
                           },
                           {
-                            "Kind": "block",
-                            "Children": [
+                            "kind": "block",
+                            "children": [
                               {
-                                "Kind": "if",
-                                "Children": [
+                                "kind": "if",
+                                "children": [
                                   {
-                                    "Kind": "binary",
-                                    "Value": "==",
-                                    "Children": [
+                                    "kind": "binary",
+                                    "value": "==",
+                                    "children": [
                                       {
-                                        "Kind": "binary",
-                                        "Value": "+",
-                                        "Children": [
+                                        "kind": "binary",
+                                        "value": "+",
+                                        "children": [
                                           {
-                                            "Kind": "index",
-                                            "Children": [
+                                            "kind": "index",
+                                            "children": [
                                               {
-                                                "Kind": "ident",
-                                                "Value": "nums"
+                                                "kind": "ident",
+                                                "value": "nums"
                                               },
                                               {
-                                                "Kind": "ident",
-                                                "Value": "i"
+                                                "kind": "ident",
+                                                "value": "i"
                                               }
                                             ]
                                           },
                                           {
-                                            "Kind": "index",
-                                            "Children": [
+                                            "kind": "index",
+                                            "children": [
                                               {
-                                                "Kind": "ident",
-                                                "Value": "nums"
+                                                "kind": "ident",
+                                                "value": "nums"
                                               },
                                               {
-                                                "Kind": "ident",
-                                                "Value": "j"
+                                                "kind": "ident",
+                                                "value": "j"
                                               }
                                             ]
                                           }
                                         ]
                                       },
                                       {
-                                        "Kind": "ident",
-                                        "Value": "target"
+                                        "kind": "ident",
+                                        "value": "target"
                                       }
                                     ]
                                   },
                                   {
-                                    "Kind": "block",
-                                    "Children": [
+                                    "kind": "block",
+                                    "children": [
                                       {
-                                        "Kind": "return",
-                                        "Children": [
+                                        "kind": "return",
+                                        "children": [
                                           {
-                                            "Kind": "array",
-                                            "Children": [
+                                            "kind": "array",
+                                            "children": [
                                               {
-                                                "Kind": "ident",
-                                                "Value": "i"
+                                                "kind": "ident",
+                                                "value": "i"
                                               },
                                               {
-                                                "Kind": "ident",
-                                                "Value": "j"
+                                                "kind": "ident",
+                                                "value": "j"
                                               }
                                             ]
                                           }
@@ -223,31 +212,31 @@
                 ]
               },
               {
-                "Kind": "empty"
+                "kind": "empty"
               },
               {
-                "Kind": "return",
-                "Children": [
+                "kind": "return",
+                "children": [
                   {
-                    "Kind": "array",
-                    "Children": [
+                    "kind": "array",
+                    "children": [
                       {
-                        "Kind": "unary",
-                        "Value": "-",
-                        "Children": [
+                        "kind": "unary",
+                        "value": "-",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "1"
+                            "kind": "literal",
+                            "value": "1"
                           }
                         ]
                       },
                       {
-                        "Kind": "unary",
-                        "Value": "-",
-                        "Children": [
+                        "kind": "unary",
+                        "value": "-",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "1"
+                            "kind": "literal",
+                            "value": "1"
                           }
                         ]
                       }
@@ -257,56 +246,52 @@
               }
             ]
           },
-          "StartLine": 6,
-          "EndLine": 16,
-          "Doc": ""
+          "startline": 6,
+          "endline": 16,
+          "doc": ""
         },
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        Console.WriteLine(result[0]);",
-            "        Console.WriteLine(result[1]);"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "index",
-                    "Children": [
+                    "kind": "index",
+                    "children": [
                       {
-                        "Kind": "ident",
-                        "Value": "result"
+                        "kind": "ident",
+                        "value": "result"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "0"
+                        "kind": "literal",
+                        "value": "0"
                       }
                     ]
                   }
                 ]
               },
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "index",
-                    "Children": [
+                    "kind": "index",
+                    "children": [
                       {
-                        "Kind": "ident",
-                        "Value": "result"
+                        "kind": "ident",
+                        "value": "result"
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "1"
+                        "kind": "literal",
+                        "value": "1"
                       }
                     ]
                   }
@@ -314,13 +299,12 @@
               }
             ]
           },
-          "StartLine": 18,
-          "EndLine": 21,
-          "Doc": ""
+          "startline": 18,
+          "endline": 21,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.34 on 2025-07-22 09:58 +0700\nusing System;\n\nclass Program {\n    static int[] result = twoSum(new int[]{2, 7, 11, 15}, 9);\n    static int[] twoSum(int[] nums, int target) {\n    var n = nums.Length;\n    for (var i = 0; i \u003c n; i++) {\n    for (var j = (i + 1); j \u003c n; j++) {\n    if (((nums[i] + nums[j]) == target)) {\n    return new int[]{i, j};\n}\n}\n};\n    return new object[]{-1, -1};\n}\n\n    static void Main() {\n        Console.WriteLine(result[0]);\n        Console.WriteLine(result[1]);\n    }\n}\n"
+  ]
 }

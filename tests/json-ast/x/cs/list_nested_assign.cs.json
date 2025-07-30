@@ -1,121 +1,117 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 4,
-      "EndLine": 10,
-      "Fields": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 4,
+      "endline": 10,
+      "fields": [
         {
-          "Name": "matrix",
-          "Type": "int[][]",
-          "Access": "",
-          "Line": 5,
-          "Value": "new int[][]{new int[]{1, 2}, new int[]{3, 4}}",
-          "Ast": {
-            "Kind": "array",
-            "Children": [
+          "name": "matrix",
+          "type": "int[][]",
+          "access": "",
+          "line": 5,
+          "value": "new int[][]{new int[]{1, 2}, new int[]{3, 4}}",
+          "ast": {
+            "kind": "array",
+            "children": [
               {
-                "Kind": "array",
-                "Children": [
+                "kind": "array",
+                "children": [
                   {
-                    "Kind": "literal",
-                    "Value": "1"
+                    "kind": "literal",
+                    "value": "1"
                   },
                   {
-                    "Kind": "literal",
-                    "Value": "2"
+                    "kind": "literal",
+                    "value": "2"
                   }
                 ]
               },
               {
-                "Kind": "array",
-                "Children": [
+                "kind": "array",
+                "children": [
                   {
-                    "Kind": "literal",
-                    "Value": "3"
+                    "kind": "literal",
+                    "value": "3"
                   },
                   {
-                    "Kind": "literal",
-                    "Value": "4"
+                    "kind": "literal",
+                    "value": "4"
                   }
                 ]
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        matrix[1][0] = 5;",
-            "        Console.WriteLine(matrix[1][0]);"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "assign",
-                "Children": [
+                "kind": "assign",
+                "children": [
                   {
-                    "Kind": "index",
-                    "Children": [
+                    "kind": "index",
+                    "children": [
                       {
-                        "Kind": "index",
-                        "Children": [
+                        "kind": "index",
+                        "children": [
                           {
-                            "Kind": "ident",
-                            "Value": "matrix"
+                            "kind": "ident",
+                            "value": "matrix"
                           },
                           {
-                            "Kind": "literal",
-                            "Value": "1"
+                            "kind": "literal",
+                            "value": "1"
                           }
                         ]
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "0"
+                        "kind": "literal",
+                        "value": "0"
                       }
                     ]
                   },
                   {
-                    "Kind": "literal",
-                    "Value": "5"
+                    "kind": "literal",
+                    "value": "5"
                   }
                 ]
               },
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "index",
-                    "Children": [
+                    "kind": "index",
+                    "children": [
                       {
-                        "Kind": "index",
-                        "Children": [
+                        "kind": "index",
+                        "children": [
                           {
-                            "Kind": "ident",
-                            "Value": "matrix"
+                            "kind": "ident",
+                            "value": "matrix"
                           },
                           {
-                            "Kind": "literal",
-                            "Value": "1"
+                            "kind": "literal",
+                            "value": "1"
                           }
                         ]
                       },
                       {
-                        "Kind": "literal",
-                        "Value": "0"
+                        "kind": "literal",
+                        "value": "0"
                       }
                     ]
                   }
@@ -123,13 +119,12 @@
               }
             ]
           },
-          "StartLine": 6,
-          "EndLine": 9,
-          "Doc": ""
+          "startline": 6,
+          "endline": 9,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.33 on 2025-07-21 18:06 +0700\nusing System;\n\nclass Program {\n    static int[][] matrix = new int[][]{new int[]{1, 2}, new int[]{3, 4}};\n    static void Main() {\n        matrix[1][0] = 5;\n        Console.WriteLine(matrix[1][0]);\n    }\n}\n"
+  ]
 }

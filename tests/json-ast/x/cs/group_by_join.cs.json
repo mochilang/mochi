@@ -1,221 +1,217 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "Customer",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 6,
-      "EndLine": 10,
-      "Fields": [
+      "name": "Customer",
+      "kind": "struct",
+      "access": "",
+      "startline": 6,
+      "endline": 10,
+      "fields": [
         {
-          "Name": "id",
-          "Type": "int",
-          "Access": "public",
-          "Line": 7,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "id",
+          "type": "int",
+          "access": "public",
+          "line": 7,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "name",
-          "Type": "string",
-          "Access": "public",
-          "Line": 8,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "name",
+          "type": "string",
+          "access": "public",
+          "line": 8,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 9,
-          "EndLine": 9,
-          "Doc": ""
+          "startline": 9,
+          "endline": 9,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "Order",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 11,
-      "EndLine": 15,
-      "Fields": [
+      "name": "Order",
+      "kind": "struct",
+      "access": "",
+      "startline": 11,
+      "endline": 15,
+      "fields": [
         {
-          "Name": "id",
-          "Type": "int",
-          "Access": "public",
-          "Line": 12,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "id",
+          "type": "int",
+          "access": "public",
+          "line": 12,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "customerId",
-          "Type": "int",
-          "Access": "public",
-          "Line": 13,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "customerId",
+          "type": "int",
+          "access": "public",
+          "line": 13,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 14,
-          "EndLine": 14,
-          "Doc": ""
+          "startline": 14,
+          "endline": 14,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "GGroup",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 16,
-      "EndLine": 20,
-      "Fields": [
+      "name": "GGroup",
+      "kind": "struct",
+      "access": "",
+      "startline": 16,
+      "endline": 20,
+      "fields": [
         {
-          "Name": "key",
-          "Type": "string",
-          "Access": "public",
-          "Line": 17,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "key",
+          "type": "string",
+          "access": "public",
+          "line": 17,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "items",
-          "Type": "Order[]",
-          "Access": "public",
-          "Line": 18,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "items",
+          "type": "Order[]",
+          "access": "public",
+          "line": 18,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 19,
-          "EndLine": 19,
-          "Doc": ""
+          "startline": 19,
+          "endline": 19,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "GResult",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 21,
-      "EndLine": 25,
-      "Fields": [
+      "name": "GResult",
+      "kind": "struct",
+      "access": "",
+      "startline": 21,
+      "endline": 25,
+      "fields": [
         {
-          "Name": "name",
-          "Type": "string",
-          "Access": "public",
-          "Line": 22,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "name",
+          "type": "string",
+          "access": "public",
+          "line": 22,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "count",
-          "Type": "int",
-          "Access": "public",
-          "Line": 23,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "count",
+          "type": "int",
+          "access": "public",
+          "line": 23,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 24,
-          "EndLine": 24,
-          "Doc": ""
+          "startline": 24,
+          "endline": 24,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 26,
-      "EndLine": 36,
-      "Fields": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 26,
+      "endline": 36,
+      "fields": [
         {
-          "Name": "customers",
-          "Type": "Customer[]",
-          "Access": "",
-          "Line": 27,
-          "Value": "new Customer[]{new Customer{id = 1, name = \"Alice\"}, new Customer{id = 2, name = \"Bob\"}}",
-          "Ast": {
-            "Kind": "array",
-            "Children": [
+          "name": "customers",
+          "type": "Customer[]",
+          "access": "",
+          "line": 27,
+          "value": "new Customer[]{new Customer{id = 1, name = \"Alice\"}, new Customer{id = 2, name = \"Bob\"}}",
+          "ast": {
+            "kind": "array",
+            "children": [
               {
-                "Kind": "new",
-                "Value": "Customer",
-                "Children": [
+                "kind": "new",
+                "value": "Customer",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "id",
-                        "Children": [
+                        "kind": "field",
+                        "value": "id",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "1"
+                            "kind": "literal",
+                            "value": "1"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Alice"
+                            "kind": "literal",
+                            "value": "Alice"
                           }
                         ]
                       }
@@ -224,29 +220,29 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "Customer",
-                "Children": [
+                "kind": "new",
+                "value": "Customer",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "id",
-                        "Children": [
+                        "kind": "field",
+                        "value": "id",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "2"
+                            "kind": "literal",
+                            "value": "2"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Bob"
+                            "kind": "literal",
+                            "value": "Bob"
                           }
                         ]
                       }
@@ -256,42 +252,42 @@
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "orders",
-          "Type": "Order[]",
-          "Access": "",
-          "Line": 28,
-          "Value": "new Order[]{new Order{id = 100, customerId = 1}, new Order{id = 101, customerId = 1}, new Order{id = 102, customerId = 2}}",
-          "Ast": {
-            "Kind": "array",
-            "Children": [
+          "name": "orders",
+          "type": "Order[]",
+          "access": "",
+          "line": 28,
+          "value": "new Order[]{new Order{id = 100, customerId = 1}, new Order{id = 101, customerId = 1}, new Order{id = 102, customerId = 2}}",
+          "ast": {
+            "kind": "array",
+            "children": [
               {
-                "Kind": "new",
-                "Value": "Order",
-                "Children": [
+                "kind": "new",
+                "value": "Order",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "id",
-                        "Children": [
+                        "kind": "field",
+                        "value": "id",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "100"
+                            "kind": "literal",
+                            "value": "100"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "customerId",
-                        "Children": [
+                        "kind": "field",
+                        "value": "customerId",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "1"
+                            "kind": "literal",
+                            "value": "1"
                           }
                         ]
                       }
@@ -300,29 +296,29 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "Order",
-                "Children": [
+                "kind": "new",
+                "value": "Order",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "id",
-                        "Children": [
+                        "kind": "field",
+                        "value": "id",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "101"
+                            "kind": "literal",
+                            "value": "101"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "customerId",
-                        "Children": [
+                        "kind": "field",
+                        "value": "customerId",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "1"
+                            "kind": "literal",
+                            "value": "1"
                           }
                         ]
                       }
@@ -331,29 +327,29 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "Order",
-                "Children": [
+                "kind": "new",
+                "value": "Order",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "id",
-                        "Children": [
+                        "kind": "field",
+                        "value": "id",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "102"
+                            "kind": "literal",
+                            "value": "102"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "customerId",
-                        "Children": [
+                        "kind": "field",
+                        "value": "customerId",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "2"
+                            "kind": "literal",
+                            "value": "2"
                           }
                         ]
                       }
@@ -363,114 +359,108 @@
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "stats",
-          "Type": "GResult[]",
-          "Access": "",
-          "Line": 29,
-          "Value": "(from o in orders join c in customers on o.customerId equals c.id group o by c.name into gTmp let g = new GGroup{ key = gTmp.Key, items = gTmp.ToArray() } select new GResult{name = g.key, count = g.items.Length}).ToArray()",
-          "Ast": {
-            "Kind": "call",
-            "Value": "ToArray",
-            "Children": [
+          "name": "stats",
+          "type": "GResult[]",
+          "access": "",
+          "line": 29,
+          "value": "(from o in orders join c in customers on o.customerId equals c.id group o by c.name into gTmp let g = new GGroup{ key = gTmp.Key, items = gTmp.ToArray() } select new GResult{name = g.key, count = g.items.Length}).ToArray()",
+          "ast": {
+            "kind": "call",
+            "value": "ToArray",
+            "children": [
               {
-                "Kind": "unknown"
+                "kind": "unknown"
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        Console.WriteLine(\"--- Orders per customer ---\");",
-            "        foreach (var s in stats) {",
-            "    Console.WriteLine(string.Join(\" \", new object[]{s.name, \"orders:\", s.count}).TrimEnd());",
-            "}"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "literal",
-                    "Value": "--- Orders per customer ---"
+                    "kind": "literal",
+                    "value": "--- Orders per customer ---"
                   }
                 ]
               },
               {
-                "Kind": "for",
-                "Value": "s",
-                "Children": [
+                "kind": "for",
+                "value": "s",
+                "children": [
                   {
-                    "Kind": "range",
-                    "Children": [
+                    "kind": "range",
+                    "children": [
                       {
-                        "Kind": "ident",
-                        "Value": "stats"
+                        "kind": "ident",
+                        "value": "stats"
                       }
                     ]
                   },
                   {
-                    "Kind": "block",
-                    "Children": [
+                    "kind": "block",
+                    "children": [
                       {
-                        "Kind": "call",
-                        "Value": "print",
-                        "Children": [
+                        "kind": "call",
+                        "value": "print",
+                        "children": [
                           {
-                            "Kind": "call",
-                            "Value": "TrimEnd",
-                            "Children": [
+                            "kind": "call",
+                            "value": "TrimEnd",
+                            "children": [
                               {
-                                "Kind": "call",
-                                "Value": "Join",
-                                "Children": [
+                                "kind": "call",
+                                "value": "Join",
+                                "children": [
                                   {
-                                    "Kind": "ident",
-                                    "Value": "string"
+                                    "kind": "ident",
+                                    "value": "string"
                                   },
                                   {
-                                    "Kind": "literal",
-                                    "Value": " "
+                                    "kind": "literal",
+                                    "value": " "
                                   },
                                   {
-                                    "Kind": "array",
-                                    "Children": [
+                                    "kind": "array",
+                                    "children": [
                                       {
-                                        "Kind": "member",
-                                        "Value": "name",
-                                        "Children": [
+                                        "kind": "member",
+                                        "value": "name",
+                                        "children": [
                                           {
-                                            "Kind": "ident",
-                                            "Value": "s"
+                                            "kind": "ident",
+                                            "value": "s"
                                           }
                                         ]
                                       },
                                       {
-                                        "Kind": "literal",
-                                        "Value": "orders:"
+                                        "kind": "literal",
+                                        "value": "orders:"
                                       },
                                       {
-                                        "Kind": "member",
-                                        "Value": "count",
-                                        "Children": [
+                                        "kind": "member",
+                                        "value": "count",
+                                        "children": [
                                           {
-                                            "Kind": "ident",
-                                            "Value": "s"
+                                            "kind": "ident",
+                                            "value": "s"
                                           }
                                         ]
                                       }
@@ -488,13 +478,12 @@
               }
             ]
           },
-          "StartLine": 30,
-          "EndLine": 35,
-          "Doc": ""
+          "startline": 30,
+          "endline": 35,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.33 on 2025-07-21 18:06 +0700\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\n\nstruct Customer {\n    public int id;\n    public string name;\n    public override string ToString() =\u003e $\"{{\\\"id\\\": {id}, \\\"name\\\": \\\"{name}\\\"}}\";\n}\nstruct Order {\n    public int id;\n    public int customerId;\n    public override string ToString() =\u003e $\"{{\\\"id\\\": {id}, \\\"customerId\\\": {customerId}}}\";\n}\nstruct GGroup {\n    public string key;\n    public Order[] items;\n    public override string ToString() =\u003e $\"{{\\\"key\\\": \\\"{key}\\\", \\\"items\\\": {items}}}\";\n}\nstruct GResult {\n    public string name;\n    public int count;\n    public override string ToString() =\u003e $\"{{\\\"name\\\": \\\"{name}\\\", \\\"count\\\": {count}}}\";\n}\nclass Program {\n    static Customer[] customers = new Customer[]{new Customer{id = 1, name = \"Alice\"}, new Customer{id = 2, name = \"Bob\"}};\n    static Order[] orders = new Order[]{new Order{id = 100, customerId = 1}, new Order{id = 101, customerId = 1}, new Order{id = 102, customerId = 2}};\n    static GResult[] stats = (from o in orders join c in customers on o.customerId equals c.id group o by c.name into gTmp let g = new GGroup{ key = gTmp.Key, items = gTmp.ToArray() } select new GResult{name = g.key, count = g.items.Length}).ToArray();\n    static void Main() {\n        Console.WriteLine(\"--- Orders per customer ---\");\n        foreach (var s in stats) {\n    Console.WriteLine(string.Join(\" \", new object[]{s.name, \"orders:\", s.count}).TrimEnd());\n}\n    }\n}\n"
+  ]
 }

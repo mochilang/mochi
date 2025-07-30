@@ -1,142 +1,140 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "People",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 6,
-      "EndLine": 10,
-      "Fields": [
+      "name": "People",
+      "kind": "struct",
+      "access": "",
+      "startline": 6,
+      "endline": 10,
+      "fields": [
         {
-          "Name": "name",
-          "Type": "string",
-          "Access": "public",
-          "Line": 7,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "name",
+          "type": "string",
+          "access": "public",
+          "line": 7,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "age",
-          "Type": "int",
-          "Access": "public",
-          "Line": 8,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "age",
+          "type": "int",
+          "access": "public",
+          "line": 8,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 9,
-          "EndLine": 9,
-          "Doc": ""
+          "startline": 9,
+          "endline": 9,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "PersonResult",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 11,
-      "EndLine": 16,
-      "Fields": [
+      "name": "PersonResult",
+      "kind": "struct",
+      "access": "",
+      "startline": 11,
+      "endline": 16,
+      "fields": [
         {
-          "Name": "name",
-          "Type": "string",
-          "Access": "public",
-          "Line": 12,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "name",
+          "type": "string",
+          "access": "public",
+          "line": 12,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "age",
-          "Type": "int",
-          "Access": "public",
-          "Line": 13,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "age",
+          "type": "int",
+          "access": "public",
+          "line": 13,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "is_senior",
-          "Type": "bool",
-          "Access": "public",
-          "Line": 14,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "is_senior",
+          "type": "bool",
+          "access": "public",
+          "line": 14,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 15,
-          "EndLine": 15,
-          "Doc": ""
+          "startline": 15,
+          "endline": 15,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 17,
-      "EndLine": 26,
-      "Fields": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 17,
+      "endline": 26,
+      "fields": [
         {
-          "Name": "people",
-          "Type": "People[]",
-          "Access": "",
-          "Line": 18,
-          "Value": "new People[]{new People{name = \"Alice\", age = 30}, new People{name = \"Bob\", age = 15}, new People{name = \"Charlie\", age = 65}, new People{name = \"Diana\", age = 45}}",
-          "Ast": {
-            "Kind": "array",
-            "Children": [
+          "name": "people",
+          "type": "People[]",
+          "access": "",
+          "line": 18,
+          "value": "new People[]{new People{name = \"Alice\", age = 30}, new People{name = \"Bob\", age = 15}, new People{name = \"Charlie\", age = 65}, new People{name = \"Diana\", age = 45}}",
+          "ast": {
+            "kind": "array",
+            "children": [
               {
-                "Kind": "new",
-                "Value": "People",
-                "Children": [
+                "kind": "new",
+                "value": "People",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Alice"
+                            "kind": "literal",
+                            "value": "Alice"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "age",
-                        "Children": [
+                        "kind": "field",
+                        "value": "age",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "30"
+                            "kind": "literal",
+                            "value": "30"
                           }
                         ]
                       }
@@ -145,29 +143,29 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "People",
-                "Children": [
+                "kind": "new",
+                "value": "People",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Bob"
+                            "kind": "literal",
+                            "value": "Bob"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "age",
-                        "Children": [
+                        "kind": "field",
+                        "value": "age",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "15"
+                            "kind": "literal",
+                            "value": "15"
                           }
                         ]
                       }
@@ -176,29 +174,29 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "People",
-                "Children": [
+                "kind": "new",
+                "value": "People",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Charlie"
+                            "kind": "literal",
+                            "value": "Charlie"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "age",
-                        "Children": [
+                        "kind": "field",
+                        "value": "age",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "65"
+                            "kind": "literal",
+                            "value": "65"
                           }
                         ]
                       }
@@ -207,29 +205,29 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "People",
-                "Children": [
+                "kind": "new",
+                "value": "People",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "name",
-                        "Children": [
+                        "kind": "field",
+                        "value": "name",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "Diana"
+                            "kind": "literal",
+                            "value": "Diana"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "age",
-                        "Children": [
+                        "kind": "field",
+                        "value": "age",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "45"
+                            "kind": "literal",
+                            "value": "45"
                           }
                         ]
                       }
@@ -239,136 +237,130 @@
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "adults",
-          "Type": "PersonResult[]",
-          "Access": "",
-          "Line": 19,
-          "Value": "(from person in people where (person.age \u003e= 18) select new PersonResult{name = person.name, age = person.age, is_senior = (person.age \u003e= 60)}).ToArray()",
-          "Ast": {
-            "Kind": "call",
-            "Value": "ToArray",
-            "Children": [
+          "name": "adults",
+          "type": "PersonResult[]",
+          "access": "",
+          "line": 19,
+          "value": "(from person in people where (person.age \u003e= 18) select new PersonResult{name = person.name, age = person.age, is_senior = (person.age \u003e= 60)}).ToArray()",
+          "ast": {
+            "kind": "call",
+            "value": "ToArray",
+            "children": [
               {
-                "Kind": "unknown"
+                "kind": "unknown"
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        Console.WriteLine(\"--- Adults ---\");",
-            "        foreach (var person in adults) {",
-            "    Console.WriteLine(string.Join(\" \", new object[]{person.name, \"is\", person.age, (person.is_senior ? \" (senior)\" : \"\")}).TrimEnd());",
-            "}"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "literal",
-                    "Value": "--- Adults ---"
+                    "kind": "literal",
+                    "value": "--- Adults ---"
                   }
                 ]
               },
               {
-                "Kind": "for",
-                "Value": "person",
-                "Children": [
+                "kind": "for",
+                "value": "person",
+                "children": [
                   {
-                    "Kind": "range",
-                    "Children": [
+                    "kind": "range",
+                    "children": [
                       {
-                        "Kind": "ident",
-                        "Value": "adults"
+                        "kind": "ident",
+                        "value": "adults"
                       }
                     ]
                   },
                   {
-                    "Kind": "block",
-                    "Children": [
+                    "kind": "block",
+                    "children": [
                       {
-                        "Kind": "call",
-                        "Value": "print",
-                        "Children": [
+                        "kind": "call",
+                        "value": "print",
+                        "children": [
                           {
-                            "Kind": "call",
-                            "Value": "TrimEnd",
-                            "Children": [
+                            "kind": "call",
+                            "value": "TrimEnd",
+                            "children": [
                               {
-                                "Kind": "call",
-                                "Value": "Join",
-                                "Children": [
+                                "kind": "call",
+                                "value": "Join",
+                                "children": [
                                   {
-                                    "Kind": "ident",
-                                    "Value": "string"
+                                    "kind": "ident",
+                                    "value": "string"
                                   },
                                   {
-                                    "Kind": "literal",
-                                    "Value": " "
+                                    "kind": "literal",
+                                    "value": " "
                                   },
                                   {
-                                    "Kind": "array",
-                                    "Children": [
+                                    "kind": "array",
+                                    "children": [
                                       {
-                                        "Kind": "member",
-                                        "Value": "name",
-                                        "Children": [
+                                        "kind": "member",
+                                        "value": "name",
+                                        "children": [
                                           {
-                                            "Kind": "ident",
-                                            "Value": "person"
+                                            "kind": "ident",
+                                            "value": "person"
                                           }
                                         ]
                                       },
                                       {
-                                        "Kind": "literal",
-                                        "Value": "is"
+                                        "kind": "literal",
+                                        "value": "is"
                                       },
                                       {
-                                        "Kind": "member",
-                                        "Value": "age",
-                                        "Children": [
+                                        "kind": "member",
+                                        "value": "age",
+                                        "children": [
                                           {
-                                            "Kind": "ident",
-                                            "Value": "person"
+                                            "kind": "ident",
+                                            "value": "person"
                                           }
                                         ]
                                       },
                                       {
-                                        "Kind": "cond",
-                                        "Children": [
+                                        "kind": "cond",
+                                        "children": [
                                           {
-                                            "Kind": "member",
-                                            "Value": "is_senior",
-                                            "Children": [
+                                            "kind": "member",
+                                            "value": "is_senior",
+                                            "children": [
                                               {
-                                                "Kind": "ident",
-                                                "Value": "person"
+                                                "kind": "ident",
+                                                "value": "person"
                                               }
                                             ]
                                           },
                                           {
-                                            "Kind": "literal",
-                                            "Value": " (senior)"
+                                            "kind": "literal",
+                                            "value": " (senior)"
                                           },
                                           {
-                                            "Kind": "literal"
+                                            "kind": "literal"
                                           }
                                         ]
                                       }
@@ -386,13 +378,12 @@
               }
             ]
           },
-          "StartLine": 20,
-          "EndLine": 25,
-          "Doc": ""
+          "startline": 20,
+          "endline": 25,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.33 on 2025-07-21 18:06 +0700\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\n\nstruct People {\n    public string name;\n    public int age;\n    public override string ToString() =\u003e $\"{{\\\"name\\\": \\\"{name}\\\", \\\"age\\\": {age}}}\";\n}\nstruct PersonResult {\n    public string name;\n    public int age;\n    public bool is_senior;\n    public override string ToString() =\u003e $\"{{\\\"name\\\": \\\"{name}\\\", \\\"age\\\": {age}, \\\"is_senior\\\": {is_senior}}}\";\n}\nclass Program {\n    static People[] people = new People[]{new People{name = \"Alice\", age = 30}, new People{name = \"Bob\", age = 15}, new People{name = \"Charlie\", age = 65}, new People{name = \"Diana\", age = 45}};\n    static PersonResult[] adults = (from person in people where (person.age \u003e= 18) select new PersonResult{name = person.name, age = person.age, is_senior = (person.age \u003e= 60)}).ToArray();\n    static void Main() {\n        Console.WriteLine(\"--- Adults ---\");\n        foreach (var person in adults) {\n    Console.WriteLine(string.Join(\" \", new object[]{person.name, \"is\", person.age, (person.is_senior ? \" (senior)\" : \"\")}).TrimEnd());\n}\n    }\n}\n"
+  ]
 }

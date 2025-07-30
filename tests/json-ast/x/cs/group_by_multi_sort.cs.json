@@ -1,249 +1,245 @@
 {
-  "Types": [
+  "types": [
     {
-      "Name": "Item",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 6,
-      "EndLine": 11,
-      "Fields": [
+      "name": "Item",
+      "kind": "struct",
+      "access": "",
+      "startline": 6,
+      "endline": 11,
+      "fields": [
         {
-          "Name": "a",
-          "Type": "string",
-          "Access": "public",
-          "Line": 7,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "a",
+          "type": "string",
+          "access": "public",
+          "line": 7,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "b",
-          "Type": "int",
-          "Access": "public",
-          "Line": 8,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "b",
+          "type": "int",
+          "access": "public",
+          "line": 8,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "val",
-          "Type": "int",
-          "Access": "public",
-          "Line": 9,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "val",
+          "type": "int",
+          "access": "public",
+          "line": 9,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 10,
-          "EndLine": 10,
-          "Doc": ""
+          "startline": 10,
+          "endline": 10,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "GKey",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 12,
-      "EndLine": 16,
-      "Fields": [
+      "name": "GKey",
+      "kind": "struct",
+      "access": "",
+      "startline": 12,
+      "endline": 16,
+      "fields": [
         {
-          "Name": "a",
-          "Type": "string",
-          "Access": "public",
-          "Line": 13,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "a",
+          "type": "string",
+          "access": "public",
+          "line": 13,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "b",
-          "Type": "int",
-          "Access": "public",
-          "Line": 14,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "b",
+          "type": "int",
+          "access": "public",
+          "line": 14,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 15,
-          "EndLine": 15,
-          "Doc": ""
+          "startline": 15,
+          "endline": 15,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "GGroup",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 17,
-      "EndLine": 21,
-      "Fields": [
+      "name": "GGroup",
+      "kind": "struct",
+      "access": "",
+      "startline": 17,
+      "endline": 21,
+      "fields": [
         {
-          "Name": "key",
-          "Type": "GKey",
-          "Access": "public",
-          "Line": 18,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "key",
+          "type": "GKey",
+          "access": "public",
+          "line": 18,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "items",
-          "Type": "Item[]",
-          "Access": "public",
-          "Line": 19,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "items",
+          "type": "Item[]",
+          "access": "public",
+          "line": 19,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 20,
-          "EndLine": 20,
-          "Doc": ""
+          "startline": 20,
+          "endline": 20,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "GResult",
-      "Kind": "struct",
-      "Access": "",
-      "StartLine": 22,
-      "EndLine": 27,
-      "Fields": [
+      "name": "GResult",
+      "kind": "struct",
+      "access": "",
+      "startline": 22,
+      "endline": 27,
+      "fields": [
         {
-          "Name": "a",
-          "Type": "string",
-          "Access": "public",
-          "Line": 23,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "a",
+          "type": "string",
+          "access": "public",
+          "line": 23,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "b",
-          "Type": "int",
-          "Access": "public",
-          "Line": 24,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "b",
+          "type": "int",
+          "access": "public",
+          "line": 24,
+          "value": "",
+          "static": false,
+          "doc": ""
         },
         {
-          "Name": "total",
-          "Type": "int",
-          "Access": "public",
-          "Line": 25,
-          "Value": "",
-          "Static": false,
-          "Doc": ""
+          "name": "total",
+          "type": "int",
+          "access": "public",
+          "line": 25,
+          "value": "",
+          "static": false,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "ToString",
-          "Params": [],
-          "Ret": "string",
-          "Access": "public",
-          "Static": false,
-          "Body": [],
-          "Ast": {
-            "Kind": "block"
+          "name": "ToString",
+          "params": [],
+          "ret": "string",
+          "access": "public",
+          "static": false,
+          "ast": {
+            "kind": "block"
           },
-          "StartLine": 26,
-          "EndLine": 26,
-          "Doc": ""
+          "startline": 26,
+          "endline": 26,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     },
     {
-      "Name": "Program",
-      "Kind": "class",
-      "Access": "",
-      "StartLine": 28,
-      "EndLine": 34,
-      "Fields": [
+      "name": "Program",
+      "kind": "class",
+      "access": "",
+      "startline": 28,
+      "endline": 34,
+      "fields": [
         {
-          "Name": "items",
-          "Type": "Item[]",
-          "Access": "",
-          "Line": 29,
-          "Value": "new Item[]{new Item{a = \"x\", b = 1, val = 2}, new Item{a = \"x\", b = 2, val = 3}, new Item{a = \"y\", b = 1, val = 4}, new Item{a = \"y\", b = 2, val = 1}}",
-          "Ast": {
-            "Kind": "array",
-            "Children": [
+          "name": "items",
+          "type": "Item[]",
+          "access": "",
+          "line": 29,
+          "value": "new Item[]{new Item{a = \"x\", b = 1, val = 2}, new Item{a = \"x\", b = 2, val = 3}, new Item{a = \"y\", b = 1, val = 4}, new Item{a = \"y\", b = 2, val = 1}}",
+          "ast": {
+            "kind": "array",
+            "children": [
               {
-                "Kind": "new",
-                "Value": "Item",
-                "Children": [
+                "kind": "new",
+                "value": "Item",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "a",
-                        "Children": [
+                        "kind": "field",
+                        "value": "a",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "x"
+                            "kind": "literal",
+                            "value": "x"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "b",
-                        "Children": [
+                        "kind": "field",
+                        "value": "b",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "1"
+                            "kind": "literal",
+                            "value": "1"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "val",
-                        "Children": [
+                        "kind": "field",
+                        "value": "val",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "2"
+                            "kind": "literal",
+                            "value": "2"
                           }
                         ]
                       }
@@ -252,39 +248,39 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "Item",
-                "Children": [
+                "kind": "new",
+                "value": "Item",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "a",
-                        "Children": [
+                        "kind": "field",
+                        "value": "a",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "x"
+                            "kind": "literal",
+                            "value": "x"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "b",
-                        "Children": [
+                        "kind": "field",
+                        "value": "b",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "2"
+                            "kind": "literal",
+                            "value": "2"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "val",
-                        "Children": [
+                        "kind": "field",
+                        "value": "val",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "3"
+                            "kind": "literal",
+                            "value": "3"
                           }
                         ]
                       }
@@ -293,39 +289,39 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "Item",
-                "Children": [
+                "kind": "new",
+                "value": "Item",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "a",
-                        "Children": [
+                        "kind": "field",
+                        "value": "a",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "y"
+                            "kind": "literal",
+                            "value": "y"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "b",
-                        "Children": [
+                        "kind": "field",
+                        "value": "b",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "1"
+                            "kind": "literal",
+                            "value": "1"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "val",
-                        "Children": [
+                        "kind": "field",
+                        "value": "val",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "4"
+                            "kind": "literal",
+                            "value": "4"
                           }
                         ]
                       }
@@ -334,39 +330,39 @@
                 ]
               },
               {
-                "Kind": "new",
-                "Value": "Item",
-                "Children": [
+                "kind": "new",
+                "value": "Item",
+                "children": [
                   {
-                    "Kind": "init",
-                    "Children": [
+                    "kind": "init",
+                    "children": [
                       {
-                        "Kind": "field",
-                        "Value": "a",
-                        "Children": [
+                        "kind": "field",
+                        "value": "a",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "y"
+                            "kind": "literal",
+                            "value": "y"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "b",
-                        "Children": [
+                        "kind": "field",
+                        "value": "b",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "2"
+                            "kind": "literal",
+                            "value": "2"
                           }
                         ]
                       },
                       {
-                        "Kind": "field",
-                        "Value": "val",
-                        "Children": [
+                        "kind": "field",
+                        "value": "val",
+                        "children": [
                           {
-                            "Kind": "literal",
-                            "Value": "1"
+                            "kind": "literal",
+                            "value": "1"
                           }
                         ]
                       }
@@ -376,78 +372,75 @@
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         },
         {
-          "Name": "grouped",
-          "Type": "GResult[]",
-          "Access": "",
-          "Line": 30,
-          "Value": "(from i in items group i by new GKey{a = i.a, b = i.b} into gTmp let g = new GGroup{ key = gTmp.Key, items = gTmp.ToArray() } orderby ((from x in g.items select x.val).ToArray().Sum()) descending select new GResult{a = g.key.a, b = g.key.b, total = ((from x in g.items select x.val).ToArray().Sum())}).ToArray()",
-          "Ast": {
-            "Kind": "call",
-            "Value": "ToArray",
-            "Children": [
+          "name": "grouped",
+          "type": "GResult[]",
+          "access": "",
+          "line": 30,
+          "value": "(from i in items group i by new GKey{a = i.a, b = i.b} into gTmp let g = new GGroup{ key = gTmp.Key, items = gTmp.ToArray() } orderby ((from x in g.items select x.val).ToArray().Sum()) descending select new GResult{a = g.key.a, b = g.key.b, total = ((from x in g.items select x.val).ToArray().Sum())}).ToArray()",
+          "ast": {
+            "kind": "call",
+            "value": "ToArray",
+            "children": [
               {
-                "Kind": "unknown"
+                "kind": "unknown"
               }
             ]
           },
-          "Static": true,
-          "Doc": ""
+          "static": true,
+          "doc": ""
         }
       ],
-      "Methods": [
+      "methods": [
         {
-          "Name": "Main",
-          "Params": [],
-          "Ret": "void",
-          "Access": "",
-          "Static": true,
-          "Body": [
-            "        Console.WriteLine((\"[\" + (string.Join(\", \", grouped) + \"]\")));"
-          ],
-          "Ast": {
-            "Kind": "block",
-            "Children": [
+          "name": "Main",
+          "params": [],
+          "ret": "void",
+          "access": "",
+          "static": true,
+          "ast": {
+            "kind": "block",
+            "children": [
               {
-                "Kind": "call",
-                "Value": "print",
-                "Children": [
+                "kind": "call",
+                "value": "print",
+                "children": [
                   {
-                    "Kind": "binary",
-                    "Value": "+",
-                    "Children": [
+                    "kind": "binary",
+                    "value": "+",
+                    "children": [
                       {
-                        "Kind": "literal",
-                        "Value": "["
+                        "kind": "literal",
+                        "value": "["
                       },
                       {
-                        "Kind": "binary",
-                        "Value": "+",
-                        "Children": [
+                        "kind": "binary",
+                        "value": "+",
+                        "children": [
                           {
-                            "Kind": "call",
-                            "Value": "Join",
-                            "Children": [
+                            "kind": "call",
+                            "value": "Join",
+                            "children": [
                               {
-                                "Kind": "ident",
-                                "Value": "string"
+                                "kind": "ident",
+                                "value": "string"
                               },
                               {
-                                "Kind": "literal",
-                                "Value": ", "
+                                "kind": "literal",
+                                "value": ", "
                               },
                               {
-                                "Kind": "ident",
-                                "Value": "grouped"
+                                "kind": "ident",
+                                "value": "grouped"
                               }
                             ]
                           },
                           {
-                            "Kind": "literal",
-                            "Value": "]"
+                            "kind": "literal",
+                            "value": "]"
                           }
                         ]
                       }
@@ -457,13 +450,12 @@
               }
             ]
           },
-          "StartLine": 31,
-          "EndLine": 33,
-          "Doc": ""
+          "startline": 31,
+          "endline": 33,
+          "doc": ""
         }
       ],
-      "Doc": ""
+      "doc": ""
     }
-  ],
-  "Src": "// Generated by Mochi 0.10.34 on 2025-07-22 10:24 +0700\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\n\nstruct Item {\n    public string a;\n    public int b;\n    public int val;\n    public override string ToString() =\u003e $\"Item {{a = \\\"{a}\\\", b = {b}, val = {val}}}\";\n}\nstruct GKey {\n    public string a;\n    public int b;\n    public override string ToString() =\u003e $\"GKey {{a = \\\"{a}\\\", b = {b}}}\";\n}\nstruct GGroup {\n    public GKey key;\n    public Item[] items;\n    public override string ToString() =\u003e $\"GGroup {{key = {key}, items = {items}}}\";\n}\nstruct GResult {\n    public string a;\n    public int b;\n    public int total;\n    public override string ToString() =\u003e $\"GResult {{a = \\\"{a}\\\", b = {b}, total = {total}}}\";\n}\nclass Program {\n    static Item[] items = new Item[]{new Item{a = \"x\", b = 1, val = 2}, new Item{a = \"x\", b = 2, val = 3}, new Item{a = \"y\", b = 1, val = 4}, new Item{a = \"y\", b = 2, val = 1}};\n    static GResult[] grouped = (from i in items group i by new GKey{a = i.a, b = i.b} into gTmp let g = new GGroup{ key = gTmp.Key, items = gTmp.ToArray() } orderby ((from x in g.items select x.val).ToArray().Sum()) descending select new GResult{a = g.key.a, b = g.key.b, total = ((from x in g.items select x.val).ToArray().Sum())}).ToArray();\n    static void Main() {\n        Console.WriteLine((\"[\" + (string.Join(\", \", grouped) + \"]\")));\n    }\n}\n"
+  ]
 }
