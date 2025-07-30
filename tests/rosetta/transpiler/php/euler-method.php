@@ -113,7 +113,7 @@ $__start = _now();
 };
   function newCoolingRateDy($k, $ambient) {
   $cr = newCoolingRate($k);
-  return function($_x, $obj) use ($ambient, $k, $cr) {
+  return function($_x, $obj) use ($ambient, $cr, $k) {
   return $cr($obj - $ambient);
 };
 };

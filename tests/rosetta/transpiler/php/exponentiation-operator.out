@@ -20,7 +20,7 @@ other interesting cases for 32 bit float type
 10^-39: 1.0E-39
 -10^39: -1.0E+39
 {
-  "duration_us": 102,
+  "duration_us": 71,
   "memory_bytes": 96,
   "name": "main"
 }

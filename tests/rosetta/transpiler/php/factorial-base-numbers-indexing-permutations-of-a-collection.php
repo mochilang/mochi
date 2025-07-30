@@ -41,8 +41,8 @@ function parseIntStr($s, $base = 10) {
 }
 function _intdiv($a, $b) {
     if (function_exists('bcdiv')) {
-        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
-        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
     return intdiv($a, $b);
