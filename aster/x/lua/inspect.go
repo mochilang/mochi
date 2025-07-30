@@ -9,7 +9,7 @@ import (
 
 // Program describes a parsed Lua source file.
 type Program struct {
-	Root *Node `json:"root"`
+	Root *ProgramNode `json:"root"`
 }
 
 // Inspect parses Lua source code using tree-sitter and returns its Program.
@@ -22,6 +22,5 @@ func InspectWithPositions(src string, withPos bool) (*Program, error) {
 	parser := sitter.NewParser()
 	parser.SetLanguage(sitter.NewLanguage(tslua.Language()))
 	tree := parser.ParseCtx(context.Background(), []byte(src), nil)
-	root, _ := convertNode(tree.RootNode(), []byte(src), withPos)
-	return &Program{Root: &root}, nil
+	return convertProgram(tree.RootNode(), []byte(src), withPos), nil
 }
