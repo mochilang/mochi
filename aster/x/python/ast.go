@@ -15,6 +15,13 @@ type Node struct {
 	Children []*Node `json:"children,omitempty"`
 }
 
+// Option controls AST generation. When Positions is true the Start/End fields
+// of nodes are populated; otherwise they remain zero and are omitted from the
+// JSON output due to the `omitempty` tags.
+type Option struct {
+	Positions bool
+}
+
 // Several typed aliases are provided so Program can expose a more structured
 // representation while still using Node internally. Only node kinds that appear
 // in the golden test are defined here.
@@ -41,13 +48,11 @@ type (
 	Type                  Node
 )
 
-// toNode converts a tree-sitter node to a Node.
-// toNode converts a tree-sitter node into our Node structure. It filters out
-// pure syntax leaves to keep the JSON representation small.
-// toNode converts a tree-sitter node into a Node. When withPos is true the
-// positional information is recorded in the Node, otherwise those fields remain
-// zero and will be omitted from the resulting JSON due to the omitempty tags.
-func toNode(n *sitter.Node, src []byte, withPos bool) *Node {
+// convert transforms a tree-sitter node into our Node representation. Pure
+// syntax leaves are omitted. When opt.Positions is true the Start/End fields are
+// populated; otherwise they remain zero and are omitted from the JSON due to the
+// `omitempty` tags.
+func convert(n *sitter.Node, src []byte, opt Option) *Node {
 	if n == nil {
 		return nil
 	}
@@ -55,7 +60,7 @@ func toNode(n *sitter.Node, src []byte, withPos bool) *Node {
 	start := n.StartPosition()
 	end := n.EndPosition()
 	node := &Node{Kind: n.Kind()}
-	if withPos {
+	if opt.Positions {
 		node.Start = int(n.StartByte())
 		node.StartCol = int(start.Column)
 		node.End = int(n.EndByte())
@@ -75,7 +80,7 @@ func toNode(n *sitter.Node, src []byte, withPos bool) *Node {
 		if child == nil {
 			continue
 		}
-		if c := toNode(child, src, withPos); c != nil {
+		if c := convert(child, src, opt); c != nil {
 			node.Children = append(node.Children, c)
 		}
 	}

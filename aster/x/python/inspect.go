@@ -17,12 +17,25 @@ type Program struct {
 // a Program describing its syntax tree.
 // Inspect parses the given Python source code using tree-sitter. When withPos
 // is true the returned AST includes positional information.
-func Inspect(src string, withPos bool) (*Program, error) {
+// Inspect parses the given Python source code using tree-sitter. By default the
+// resulting AST omits positional information. Use InspectWithOption to include
+// positions.
+func Inspect(src string) (*Program, error) {
+	return InspectWithOption(src, Option{})
+}
+
+// InspectWithOption behaves like Inspect but allows callers to request
+// positional information in the resulting AST.
+func InspectWithOption(src string, opt Option) (*Program, error) {
 	p := sitter.NewParser()
 	p.SetLanguage(sitter.NewLanguage(tspython.Language()))
 	data := []byte(src)
 	tree := p.Parse(data, nil)
-	return &Program{File: (*Module)(toNode(tree.RootNode(), data, withPos))}, nil
+	root := convert(tree.RootNode(), data, opt)
+	if root == nil {
+		root = &Node{}
+	}
+	return &Program{File: (*Module)(root)}, nil
 }
 
 // MarshalJSON implements json.Marshaler for Program to ensure stable output.
