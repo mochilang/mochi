@@ -1,0 +1,94 @@
+{
+  "ast": {
+    "Name": "main",
+    "Files": null,
+    "Block": {
+      "Parent": {
+        "Parent": null,
+        "Routine": null,
+        "Labels": null,
+        "Constants": [
+          {
+            "Name": "maxint",
+            "Value": {
+              "Value": 9223372036854775807
+            }
+          }
+        ],
+        "Types": [
+          {
+            "Name": "boolean",
+            "Type": {
+              "Identifiers": [
+                "false",
+                "true"
+              ]
+            }
+          },
+          {
+            "Name": "text",
+            "Type": {
+              "ElementType": {},
+              "Packed": false
+            }
+          }
+        ],
+        "Variables": null,
+        "EnumValues": null,
+        "Procedures": null,
+        "Functions": null,
+        "Statements": null
+      },
+      "Routine": null,
+      "Labels": null,
+      "Constants": null,
+      "Types": null,
+      "Variables": [
+        {
+          "Name": "y",
+          "Type": {},
+          "IsRecordField": false,
+          "BelongsToExpr": null,
+          "BelongsToType": null
+        }
+      ],
+      "EnumValues": null,
+      "Procedures": null,
+      "Functions": null,
+      "Statements": [
+        {
+          "AppendNewLine": true,
+          "FileVar": null,
+          "ActualParams": [
+            {
+              "Expr": {
+                "Name": "y",
+                "Type_": {},
+                "VarDecl": {
+                  "Name": "y",
+                  "Type": {},
+                  "IsRecordField": false,
+                  "BelongsToExpr": null,
+                  "BelongsToType": null
+                },
+                "ParamDecl": null,
+                "IsReturnValue": false
+              },
+              "Width": null,
+              "DecimalPlaces": null
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "lines": [
+    "{$mode objfpc}",
+    "program Main;",
+    "var",
+    "  y: integer;",
+    "begin",
+    "  writeln(y);",
+    "end."
+  ]
+}

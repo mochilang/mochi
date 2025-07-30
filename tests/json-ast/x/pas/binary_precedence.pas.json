@@ -1,0 +1,204 @@
+{
+  "ast": {
+    "Name": "main",
+    "Files": null,
+    "Block": {
+      "Parent": {
+        "Parent": null,
+        "Routine": null,
+        "Labels": null,
+        "Constants": [
+          {
+            "Name": "maxint",
+            "Value": {
+              "Value": 9223372036854775807
+            }
+          }
+        ],
+        "Types": [
+          {
+            "Name": "boolean",
+            "Type": {
+              "Identifiers": [
+                "false",
+                "true"
+              ]
+            }
+          },
+          {
+            "Name": "text",
+            "Type": {
+              "ElementType": {},
+              "Packed": false
+            }
+          }
+        ],
+        "Variables": null,
+        "EnumValues": null,
+        "Procedures": null,
+        "Functions": null,
+        "Statements": null
+      },
+      "Routine": null,
+      "Labels": null,
+      "Constants": null,
+      "Types": null,
+      "Variables": null,
+      "EnumValues": null,
+      "Procedures": null,
+      "Functions": null,
+      "Statements": [
+        {
+          "AppendNewLine": true,
+          "FileVar": null,
+          "ActualParams": [
+            {
+              "Expr": {
+                "Sign": "",
+                "First": {
+                  "Value": 1
+                },
+                "Next": [
+                  {
+                    "Operator": "+",
+                    "Term": {
+                      "First": {
+                        "Value": 2
+                      },
+                      "Next": [
+                        {
+                          "Operator": "*",
+                          "Factor": {
+                            "Value": 3
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "Width": null,
+              "DecimalPlaces": null
+            }
+          ]
+        },
+        {
+          "AppendNewLine": true,
+          "FileVar": null,
+          "ActualParams": [
+            {
+              "Expr": {
+                "First": {
+                  "Expr": {
+                    "Sign": "",
+                    "First": {
+                      "Value": 1
+                    },
+                    "Next": [
+                      {
+                        "Operator": "+",
+                        "Term": {
+                          "Value": 2
+                        }
+                      }
+                    ]
+                  }
+                },
+                "Next": [
+                  {
+                    "Operator": "*",
+                    "Factor": {
+                      "Value": 3
+                    }
+                  }
+                ]
+              },
+              "Width": null,
+              "DecimalPlaces": null
+            }
+          ]
+        },
+        {
+          "AppendNewLine": true,
+          "FileVar": null,
+          "ActualParams": [
+            {
+              "Expr": {
+                "Sign": "",
+                "First": {
+                  "First": {
+                    "Value": 2
+                  },
+                  "Next": [
+                    {
+                      "Operator": "*",
+                      "Factor": {
+                        "Value": 3
+                      }
+                    }
+                  ]
+                },
+                "Next": [
+                  {
+                    "Operator": "+",
+                    "Term": {
+                      "Value": 1
+                    }
+                  }
+                ]
+              },
+              "Width": null,
+              "DecimalPlaces": null
+            }
+          ]
+        },
+        {
+          "AppendNewLine": true,
+          "FileVar": null,
+          "ActualParams": [
+            {
+              "Expr": {
+                "First": {
+                  "Value": 2
+                },
+                "Next": [
+                  {
+                    "Operator": "*",
+                    "Factor": {
+                      "Expr": {
+                        "Sign": "",
+                        "First": {
+                          "Value": 3
+                        },
+                        "Next": [
+                          {
+                            "Operator": "+",
+                            "Term": {
+                              "Value": 1
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              },
+              "Width": null,
+              "DecimalPlaces": null
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "lines": [
+    "{$mode objfpc}",
+    "program Main;",
+    "begin",
+    "  writeln(1 + (2 * 3));",
+    "  writeln((1 + 2) * 3);",
+    "  writeln((2 * 3) + 1);",
+    "  writeln(2 * (3 + 1));",
+    "end."
+  ]
+}
