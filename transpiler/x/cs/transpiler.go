@@ -1448,6 +1448,47 @@ func simpleType(t string) types.Type {
 	}
 }
 
+func zeroExprForType(t *parser.TypeRef) Expr {
+	if t == nil {
+		return &RawExpr{Code: "null"}
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int", "bigint":
+			return &IntLit{Value: 0}
+		case "string":
+			return &StringLit{Value: ""}
+		case "bool":
+			return &BoolLit{Value: false}
+		case "float":
+			return &RawExpr{Code: "0.0"}
+		default:
+			if _, ok := structTypes[*t.Simple]; ok {
+				return &RawExpr{Code: fmt.Sprintf("new %s()", csType(t))}
+			}
+		}
+	}
+	if t.Generic != nil {
+		switch t.Generic.Name {
+		case "list":
+			elem := "object[]"
+			if len(t.Generic.Args) == 1 {
+				elem = fmt.Sprintf("%s[]", csType(t.Generic.Args[0]))
+			}
+			return &ListLit{ElemType: elem}
+		case "map":
+			kt := "object"
+			vt := "object"
+			if len(t.Generic.Args) == 2 {
+				kt = csType(t.Generic.Args[0])
+				vt = csType(t.Generic.Args[1])
+			}
+			return &MapLit{KeyType: kt, ValType: vt}
+		}
+	}
+	return &RawExpr{Code: "null"}
+}
+
 func inferStructMap(varName string, prog *Program, m *MapLit) (Expr, bool) {
 	return m, false
 }
@@ -2400,7 +2441,9 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 				args[i] = ex
 			}
 			if fe, ok := expr.(*FieldExpr); ok {
-				if fe.Name == "contains" {
+				if vr, ok2 := fe.Target.(*VarRef); ok2 && vr.Name == "stdout" && fe.Name == "write" && len(args) == 1 {
+					expr = &CallExpr{Func: "Console.Write", Args: args}
+				} else if fe.Name == "contains" {
 					if len(args) != 1 {
 						return nil, fmt.Errorf("unsupported method call")
 					}
@@ -2429,7 +2472,11 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 					expr = &MethodCallExpr{Target: fe.Target, Name: fe.Name, Args: args}
 				}
 			} else if vr, ok := expr.(*VarRef); ok {
-				expr = &CallExpr{Func: vr.Name, Args: args}
+				if vr.Name == "stdout" && len(args) == 1 {
+					expr = &CallExpr{Func: "Console.Write", Args: args}
+				} else {
+					expr = &CallExpr{Func: vr.Name, Args: args}
+				}
 			} else if _, ok := expr.(*IndexExpr); ok {
 				var sb strings.Builder
 				sb.WriteString(exprString(expr))
@@ -2632,19 +2679,10 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			if s.Var.Type != nil {
 				varTypes[s.Var.Name] = csType(s.Var.Type)
 			}
-		} else if s.Var.Type != nil && s.Var.Type.Simple != nil {
-			switch *s.Var.Type.Simple {
-			case "int":
-				val = &IntLit{Value: 0}
-			case "string":
-				val = &StringLit{Value: ""}
+		} else if s.Var.Type != nil {
+			val = zeroExprForType(s.Var.Type)
+			if isStringExpr(val) {
 				stringVars[s.Var.Name] = true
-			case "bool":
-				val = &BoolLit{Value: false}
-			case "bigint":
-				val = &IntLit{Value: 0}
-			default:
-				return nil, fmt.Errorf("unsupported var type")
 			}
 			varTypes[s.Var.Name] = csType(s.Var.Type)
 		}

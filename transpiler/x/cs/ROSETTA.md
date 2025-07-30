@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 305/491
-Last updated: 2025-07-30 21:05 +0700
+Completed programs: 347/491
+Last updated: 2025-07-31 00:08 +0700
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -273,56 +273,56 @@ Last updated: 2025-07-30 21:05 +0700
 | 265 | currency | ✓ | 2.51ms | 32.1KB |
 | 266 | currying | ✓ | 5.813ms | 1.0MB |
 | 267 | curzon-numbers | ✓ | 8.432ms | 1.2MB |
-| 268 | cusip |   |  |  |
+| 268 | cusip | ✓ | 9.607ms | 1.0MB |
 | 269 | cyclops-numbers |   |  |  |
-| 270 | damm-algorithm |   |  |  |
-| 271 | date-format |   |  |  |
-| 272 | date-manipulation |   |  |  |
-| 273 | day-of-the-week |   |  |  |
-| 274 | de-bruijn-sequences |   |  |  |
-| 275 | deal-cards-for-freecell |   |  |  |
-| 276 | death-star |   |  |  |
-| 277 | deceptive-numbers |   |  |  |
-| 278 | deconvolution-1d-2 |   |  |  |
-| 279 | deconvolution-1d-3 |   |  |  |
-| 280 | deconvolution-1d |   |  |  |
-| 281 | deepcopy-1 |   |  |  |
+| 270 | damm-algorithm | ✓ | 2.235ms | 24.1KB |
+| 271 | date-format | ✓ | 15.374ms | 2.7MB |
+| 272 | date-manipulation | ✓ | 12.877ms | 1.7MB |
+| 273 | day-of-the-week | ✓ | 11.615ms | 2.4MB |
+| 274 | de-bruijn-sequences | ✓ | 34.436ms | 15.9MB |
+| 275 | deal-cards-for-freecell | ✓ | 2.157ms | 52.9KB |
+| 276 | death-star | ✓ | 14.912ms | 5.8MB |
+| 277 | deceptive-numbers | ✓ | 18.468ms | 20.6MB |
+| 278 | deconvolution-1d-2 | ✓ | 10.179ms | 1.8MB |
+| 279 | deconvolution-1d-3 | ✓ | 11.274ms | 1.9MB |
+| 280 | deconvolution-1d | ✓ | 11.27ms | 1.3MB |
+| 281 | deepcopy-1 | ✓ | 8.915ms | 1.1MB |
 | 282 | define-a-primitive-data-type |   |  |  |
 | 283 | delegates |   |  |  |
-| 284 | demings-funnel |   |  |  |
-| 285 | department-numbers |   |  |  |
-| 286 | descending-primes |   |  |  |
-| 287 | detect-division-by-zero |   |  |  |
-| 288 | determine-if-a-string-has-all-the-same-characters |   |  |  |
-| 289 | determine-if-a-string-has-all-unique-characters |   |  |  |
+| 284 | demings-funnel | ✓ | 12.476ms | 2.5MB |
+| 285 | department-numbers | ✓ | 1.8ms | 16.0KB |
+| 286 | descending-primes | ✓ | 8.068ms | 1.1MB |
+| 287 | detect-division-by-zero | ✓ | 2.027ms | 16.0KB |
+| 288 | determine-if-a-string-has-all-the-same-characters | ✓ | 2.026ms | 24.1KB |
+| 289 | determine-if-a-string-has-all-unique-characters | ✓ | 11.392ms | 1.2MB |
 | 290 | determine-if-a-string-is-collapsible |   |  |  |
-| 291 | determine-if-a-string-is-numeric-1 |   |  |  |
-| 292 | determine-if-a-string-is-numeric-2 |   |  |  |
-| 293 | determine-if-a-string-is-squeezable |   |  |  |
-| 294 | determine-if-only-one-instance-is-running |   |  |  |
-| 295 | determine-if-two-triangles-overlap |   |  |  |
-| 296 | determine-sentence-type |   |  |  |
-| 297 | dice-game-probabilities-1 |   |  |  |
-| 298 | dice-game-probabilities-2 |   |  |  |
+| 291 | determine-if-a-string-is-numeric-1 | ✓ | 1.958ms | 16.0KB |
+| 292 | determine-if-a-string-is-numeric-2 | ✓ | 2.373ms | 16.0KB |
+| 293 | determine-if-a-string-is-squeezable | ✓ | 1.853ms | 77.0KB |
+| 294 | determine-if-only-one-instance-is-running | ✓ | 1.8ms | 16.0KB |
+| 295 | determine-if-two-triangles-overlap | ✓ | 10.503ms | 1.1MB |
+| 296 | determine-sentence-type | ✓ | 8.411ms | 1.0MB |
+| 297 | dice-game-probabilities-1 | ✓ | 11.753ms | 2.0MB |
+| 298 | dice-game-probabilities-2 | ✓ | 11.576ms | 1.5MB |
 | 299 | digital-root-multiplicative-digital-root |   |  |  |
 | 300 | dijkstras-algorithm |   |  |  |
-| 301 | dinesmans-multiple-dwelling-problem |   |  |  |
-| 302 | dining-philosophers-1 |   |  |  |
-| 303 | dining-philosophers-2 |   |  |  |
-| 304 | disarium-numbers |   |  |  |
-| 305 | discordian-date |   |  |  |
-| 306 | display-a-linear-combination |   |  |  |
+| 301 | dinesmans-multiple-dwelling-problem | ✓ | 2.034ms | 16.0KB |
+| 302 | dining-philosophers-1 | ✓ | 1.863ms | 16.0KB |
+| 303 | dining-philosophers-2 | ✓ | 1.757ms | 16.0KB |
+| 304 | disarium-numbers | ✓ | 156.357ms | 10.9MB |
+| 305 | discordian-date | ✓ | 2.327ms | 24.1KB |
+| 306 | display-a-linear-combination | ✓ | 8.45ms | 1.2MB |
 | 307 | display-an-outline-as-a-nested-table |   |  |  |
-| 308 | distance-and-bearing |   |  |  |
+| 308 | distance-and-bearing | ✓ | 14.33ms | 2.7MB |
 | 309 | distributed-programming |   |  |  |
-| 310 | diversity-prediction-theorem |   |  |  |
-| 311 | dns-query |   |  |  |
-| 312 | documentation |   |  |  |
-| 313 | doomsday-rule |   |  |  |
-| 314 | dot-product |   |  |  |
-| 315 | doubly-linked-list-definition-1 |   |  |  |
-| 316 | doubly-linked-list-definition-2 |   |  |  |
-| 317 | doubly-linked-list-element-definition |   |  |  |
+| 310 | diversity-prediction-theorem | ✓ | 10.45ms | 1.7MB |
+| 311 | dns-query | ✓ | 3.195ms | 2.3MB |
+| 312 | documentation | ✓ |  |  |
+| 313 | doomsday-rule | ✓ | 2.062ms | 36.8KB |
+| 314 | dot-product | ✓ | 1.76ms | 16.0KB |
+| 315 | doubly-linked-list-definition-1 | ✓ |  |  |
+| 316 | doubly-linked-list-definition-2 | ✓ | 15.625ms | 3.3MB |
+| 317 | doubly-linked-list-element-definition | ✓ | 10.831ms | 2.1MB |
 | 318 | doubly-linked-list-traversal |   |  |  |
 | 319 | dragon-curve |   |  |  |
 | 320 | draw-a-clock |   |  |  |
