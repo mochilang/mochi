@@ -1,0 +1,40 @@
+{
+  "vars": null,
+  "prints": null,
+  "stmts": [
+    {
+      "name": "outer",
+      "params": [
+        {
+          "name": "x",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "let rec inner y =",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "expr": "x + y",
+          "line": 0,
+          "raw": ""
+        },
+        {
+          "expr": "inner 5",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (outer 3))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

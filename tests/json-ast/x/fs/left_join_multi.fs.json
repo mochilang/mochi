@@ -1,0 +1,54 @@
+{
+  "vars": [
+    {
+      "name": "customers",
+      "expr": "[{ id = 1; name = \"Alice\" }; { id = 2; name = \"Bob\" }]",
+      "mutable": false,
+      "type": "Anon2 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "orders",
+      "expr": "[{ id = 100; customerId = 1 }; { id = 101; customerId = 2 }]",
+      "mutable": false,
+      "type": "Anon4 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "items",
+      "expr": "[{ orderId = 100; sku = \"a\" }]",
+      "mutable": false,
+      "type": "Anon6 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "result",
+      "expr": "[ for o in orders do for c in customers do if (o.customerId) = (c.id) then for i in items do if (o.id) = (i.orderId) then yield { orderId = o.id; name = c.name; item = i } ]",
+      "mutable": false,
+      "type": "Anon8 list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(string \"--- Left Join Multi ---\")"
+  ],
+  "stmts": [
+    {
+      "var": "r",
+      "expr": "result",
+      "body": [
+        {
+          "expr": "(String.concat \" \" [string (r.orderId); string (r.name); string (r.item)])",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

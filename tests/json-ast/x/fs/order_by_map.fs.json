@@ -1,0 +1,24 @@
+{
+  "vars": [
+    {
+      "name": "data",
+      "expr": "[{ a = 1; b = 2 }; { a = 1; b = 1 }; { a = 0; b = 5 }]",
+      "mutable": false,
+      "type": "Anon2 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "sorted",
+      "expr": "[ for x in List.sortBy (fun x -\u003e { a = x.a; b = x.b }) data do yield x ]",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "((\"[\" + (String.concat \", \" (List.map string sorted))) + \"]\")"
+  ],
+  "stmts": null
+}

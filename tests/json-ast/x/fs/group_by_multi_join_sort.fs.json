@@ -1,0 +1,91 @@
+{
+  "vars": [
+    {
+      "name": "nation",
+      "expr": "[{ n_nationkey = 1; n_name = \"BRAZIL\" }]",
+      "mutable": false,
+      "type": "Anon2 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "customer",
+      "expr": "[{ c_custkey = 1; c_name = \"Alice\"; c_acctbal = 100.0; c_nationkey = 1; c_address = \"123 St\"; c_phone = \"123-456\"; c_comment = \"Loyal\" }]",
+      "mutable": false,
+      "type": "Anon4 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "orders",
+      "expr": "[{ o_orderkey = 1000; o_custkey = 1; o_orderdate = \"1993-10-15\" }; { o_orderkey = 2000; o_custkey = 1; o_orderdate = \"1994-01-02\" }]",
+      "mutable": false,
+      "type": "Anon6 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "lineitem",
+      "expr": "[{ l_orderkey = 1000; l_returnflag = \"R\"; l_extendedprice = 1000.0; l_discount = 0.1 }; { l_orderkey = 2000; l_returnflag = \"N\"; l_extendedprice = 500.0; l_discount = 0.0 }]",
+      "mutable": false,
+      "type": "Anon8 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "start_date",
+      "expr": "\"1993-10-01\"",
+      "mutable": false,
+      "type": "string",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "end_date",
+      "expr": "\"1994-01-01\"",
+      "mutable": false,
+      "type": "string",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "result",
+      "expr": "[ for (key, items) in List.groupBy (fun { c = c; o = o; l = l; n = n } -\u003e { c_custkey = c.c_custkey; c_name = c.c_name; c_acctbal = c.c_acctbal; c_address = c.c_address; c_phone = c.c_phone; c_comment = c.c_comment; n_name = n.n_name }) [ for c in customer do for o in orders do if (o.o_custkey) = (c.c_custkey) then for l in lineitem do if (l.l_orderkey) = (o.o_orderkey) then for n in nation do if (n.n_nationkey) = (c.c_nationkey) then if (((o.o_orderdate) \u003e= start_date) \u0026\u0026 ((o.o_orderdate) \u003c end_date)) \u0026\u0026 ((l.l_returnflag) = \"R\") then yield { c = c; o = o; l = l; n = n } : Anon11 ] do",
+      "mutable": false,
+      "type": "Anon13 list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "g",
+      "params": [
+        {
+          "name": ":",
+          "type": ""
+        },
+        {
+          "name": "Anon12",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "{ key = key; items = items }",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "((\"[\" + (String.concat \", \" (List.map string result))) + \"]\")",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

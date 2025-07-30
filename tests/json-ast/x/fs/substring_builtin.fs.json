@@ -1,0 +1,7 @@
+{
+  "vars": null,
+  "prints": [
+    "(string (\"mochi\".Substring(1, 4 - 1)))"
+  ],
+  "stmts": null
+}

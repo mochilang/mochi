@@ -1,0 +1,16 @@
+{
+  "vars": [
+    {
+      "name": "a",
+      "expr": "[1; 2]",
+      "mutable": false,
+      "type": "int list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "((\"[\" + (String.concat \", \" (List.map string (a @ [3])))) + \"]\")"
+  ],
+  "stmts": null
+}

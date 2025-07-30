@@ -1,0 +1,61 @@
+{
+  "vars": [
+    {
+      "name": "Pi",
+      "expr": "3.14",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "Answer",
+      "expr": "42",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "Add",
+      "params": [
+        {
+          "name": "a",
+          "type": ""
+        },
+        {
+          "name": "b",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "a + b",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (testpkg.Add(2, 3)))",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (testpkg.Pi))",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (testpkg.Answer))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

@@ -1,0 +1,163 @@
+{
+  "vars": [
+    {
+      "name": "pi",
+      "expr": "System.Math.PI",
+      "mutable": false,
+      "type": "float",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "e",
+      "expr": "System.Math.E",
+      "mutable": false,
+      "type": "float",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "r",
+      "expr": "3.0",
+      "mutable": false,
+      "type": "float",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "area",
+      "expr": "(math.pi) * (math.pow(r, 2.0))",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "root",
+      "expr": "math.sqrt(49.0)",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "sin45",
+      "expr": "math.sin((math.pi) / 4.0)",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "log_e",
+      "expr": "math.log(math.e)",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "sqrt",
+      "params": [
+        {
+          "name": "x",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "System.Math.Sqrt x",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "pow",
+      "params": [
+        {
+          "name": "x",
+          "type": ""
+        },
+        {
+          "name": "y",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "System.Math.Pow x y",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "sin",
+      "params": [
+        {
+          "name": "x",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "System.Math.Sin x",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "log",
+      "params": [
+        {
+          "name": "x",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "System.Math.Log x",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(String.concat \" \" [string \"Circle area with r =\"; sprintf \"%.1f\" r; string \"=\u003e\"; string area])",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(String.concat \" \" [string \"Square root of 49:\"; string root])",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(String.concat \" \" [string \"sin(π/4):\"; string sin45])",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(String.concat \" \" [string \"log(e):\"; string log_e])",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

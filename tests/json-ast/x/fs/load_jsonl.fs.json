@@ -1,0 +1,36 @@
+{
+  "vars": [
+    {
+      "name": "people",
+      "expr": "(File.ReadLines(\"../interpreter/valid/people.jsonl\") |\u003e Seq.map (fun line -\u003e JsonSerializer.Deserialize\u003cPerson\u003e(line)) |\u003e Seq.toList)",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "adults",
+      "expr": "[ for p in people do if (p.age) \u003e= 18 then yield Map.ofList [(name, p.name); (email, p.email)] ]",
+      "mutable": false,
+      "type": "Anon1 list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "var": "a",
+      "expr": "adults",
+      "body": [
+        {
+          "expr": "(String.concat \" \" [string (a.name); string (a.email)])",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

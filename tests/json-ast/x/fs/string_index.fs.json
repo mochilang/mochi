@@ -1,0 +1,16 @@
+{
+  "vars": [
+    {
+      "name": "s",
+      "expr": "\"mochi\"",
+      "mutable": false,
+      "type": "string",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(string (s.[1]))"
+  ],
+  "stmts": null
+}

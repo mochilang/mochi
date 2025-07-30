@@ -1,0 +1,20 @@
+{
+  "vars": null,
+  "prints": null,
+  "stmts": [
+    {
+      "var": "i",
+      "start": "1",
+      "end": "(4 - 1)",
+      "body": [
+        {
+          "expr": "(string i)",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

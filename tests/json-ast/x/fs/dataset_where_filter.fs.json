@@ -1,0 +1,38 @@
+{
+  "vars": [
+    {
+      "name": "people",
+      "expr": "[{ name = \"Alice\"; age = 30 }; { name = \"Bob\"; age = 15 }; { name = \"Charlie\"; age = 65 }; { name = \"Diana\"; age = 45 }]",
+      "mutable": false,
+      "type": "Anon2 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "adults",
+      "expr": "[ for person in people do if (person.age) \u003e= 18 then yield { name = person.name; age = person.age; is_senior = (person.age) \u003e= 60 } ]",
+      "mutable": false,
+      "type": "Anon4 list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "\"--- Adults ---\""
+  ],
+  "stmts": [
+    {
+      "var": "person",
+      "expr": "adults",
+      "body": [
+        {
+          "expr": "(String.concat \" \" [string (person.name); string \"is\"; string (person.age); string (if person.is_senior then \" (senior)\" else \"\")])",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

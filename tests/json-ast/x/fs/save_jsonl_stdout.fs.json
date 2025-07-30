@@ -1,0 +1,14 @@
+{
+  "vars": [
+    {
+      "name": "people",
+      "expr": "[{ name = \"Alice\"; age = 30 }; { name = \"Bob\"; age = 25 }]",
+      "mutable": false,
+      "type": "Anon2 list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": null
+}

@@ -1,0 +1,38 @@
+{
+  "vars": null,
+  "prints": null,
+  "stmts": [
+    {
+      "name": "sum3",
+      "params": [
+        {
+          "name": "a",
+          "type": ""
+        },
+        {
+          "name": "b",
+          "type": ""
+        },
+        {
+          "name": "c",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "(a + b) + c",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (sum3 1 2 3))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

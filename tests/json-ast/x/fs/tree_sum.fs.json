@@ -1,0 +1,39 @@
+{
+  "vars": [
+    {
+      "name": "t",
+      "expr": "Node(Leaf, 1, Node(Leaf, 2, Leaf))",
+      "mutable": false,
+      "type": "Tree",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "sum_tree",
+      "params": [
+        {
+          "name": "t",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "match t with",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (sum_tree t))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "vars": [
+    {
+      "name": "m",
+      "expr": "Map.ofList [(\"a\", 1); (\"b\", 2)]",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(string (m.[\"b\"]))"
+  ],
+  "stmts": null
+}

@@ -1,0 +1,27 @@
+{
+  "vars": [
+    {
+      "name": "nums",
+      "expr": "[1; 2]",
+      "mutable": true,
+      "type": "int list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "nums",
+      "index": "1",
+      "expr": "3",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (nums.[1]))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

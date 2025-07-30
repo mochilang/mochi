@@ -1,0 +1,27 @@
+{
+  "vars": [
+    {
+      "name": "data",
+      "expr": "{ outer = { inner = 1 } }",
+      "mutable": true,
+      "type": "Anon1",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "data",
+      "index": "\"outer\"].[\"inner\"",
+      "expr": "2",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (data.[\"outer\"].[\"inner\"]))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

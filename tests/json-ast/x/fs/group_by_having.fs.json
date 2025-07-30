@@ -1,0 +1,46 @@
+{
+  "vars": [
+    {
+      "name": "people",
+      "expr": "[{ name = \"Alice\"; city = \"Paris\" }; { name = \"Bob\"; city = \"Hanoi\" }; { name = \"Charlie\"; city = \"Paris\" }; { name = \"Diana\"; city = \"Hanoi\" }; { name = \"Eve\"; city = \"Paris\" }; { name = \"Frank\"; city = \"Hanoi\" }; { name = \"George\"; city = \"Paris\" }]",
+      "mutable": false,
+      "type": "Anon2 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "big",
+      "expr": "[ for (key, items) in List.groupBy (fun p -\u003e p.city) people do",
+      "mutable": false,
+      "type": "Anon6 list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "g",
+      "params": [
+        {
+          "name": ":",
+          "type": ""
+        },
+        {
+          "name": "Anon5",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "{ key = key; items = items }",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

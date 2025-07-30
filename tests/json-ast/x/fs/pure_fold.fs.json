@@ -1,0 +1,30 @@
+{
+  "vars": null,
+  "prints": null,
+  "stmts": [
+    {
+      "name": "triple",
+      "params": [
+        {
+          "name": "x",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "x * 3",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (triple (1 + 2)))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

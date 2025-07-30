@@ -1,0 +1,24 @@
+{
+  "vars": [
+    {
+      "name": "x",
+      "expr": "12",
+      "mutable": false,
+      "type": "int",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "msg",
+      "expr": "if x \u003e 10 then \"yes\" else \"no\"",
+      "mutable": false,
+      "type": "string",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(string msg)"
+  ],
+  "stmts": null
+}

@@ -1,0 +1,54 @@
+{
+  "vars": [
+    {
+      "name": "nums",
+      "expr": "[1; 2]",
+      "mutable": false,
+      "type": "int list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "letters",
+      "expr": "[\"A\"; \"B\"]",
+      "mutable": false,
+      "type": "string list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "bools",
+      "expr": "[true; false]",
+      "mutable": false,
+      "type": "bool list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "combos",
+      "expr": "[ for n in nums do for l in letters do for b in bools do yield { n = n; l = l; b = b } ]",
+      "mutable": false,
+      "type": "Anon2 list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(string \"--- Cross Join of three lists ---\")"
+  ],
+  "stmts": [
+    {
+      "var": "c",
+      "expr": "combos",
+      "body": [
+        {
+          "expr": "(String.concat \" \" [string (c.n); string (c.l); string (c.b)])",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

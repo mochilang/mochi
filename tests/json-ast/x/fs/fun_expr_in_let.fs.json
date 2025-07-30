@@ -1,0 +1,16 @@
+{
+  "vars": [
+    {
+      "name": "square",
+      "expr": "fun x -\u003e (x * x)",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(string (square 6))"
+  ],
+  "stmts": null
+}

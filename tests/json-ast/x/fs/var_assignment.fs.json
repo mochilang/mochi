@@ -1,0 +1,27 @@
+{
+  "vars": [
+    {
+      "name": "x",
+      "expr": "1",
+      "mutable": true,
+      "type": "int",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "x",
+      "index": "",
+      "expr": "2",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "x",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "vars": [
+    {
+      "name": "a",
+      "expr": "10 - 3",
+      "mutable": false,
+      "type": "int",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "b",
+      "expr": "2 + 2",
+      "mutable": false,
+      "type": "int",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "a",
+    "(a = 7)",
+    "(b \u003c 5)"
+  ],
+  "stmts": null
+}

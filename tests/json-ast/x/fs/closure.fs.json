@@ -1,0 +1,39 @@
+{
+  "vars": [
+    {
+      "name": "add10",
+      "expr": "makeAdder 10",
+      "mutable": false,
+      "type": "",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "makeAdder",
+      "params": [
+        {
+          "name": "n",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "fun x -\u003e (x + n)",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (add10 7))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "vars": [
+    {
+      "name": "pi",
+      "expr": "System.Math.PI",
+      "mutable": false,
+      "type": "float",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "e",
+      "expr": "System.Math.E",
+      "mutable": false,
+      "type": "float",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "sqrt",
+      "params": [
+        {
+          "name": "x",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "System.Math.Sqrt x",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "pow",
+      "params": [
+        {
+          "name": "x",
+          "type": ""
+        },
+        {
+          "name": "y",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "System.Math.Pow x y",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "sin",
+      "params": [
+        {
+          "name": "x",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "System.Math.Sin x",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "log",
+      "params": [
+        {
+          "name": "x",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "System.Math.Log x",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (math.sqrt(16.0)))",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (math.pi))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "vars": [
+    {
+      "name": "nums",
+      "expr": "[3; 1; 4]",
+      "mutable": false,
+      "type": "int list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(string (min nums))",
+    "(string (max nums))"
+  ],
+  "stmts": null
+}

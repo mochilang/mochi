@@ -1,0 +1,16 @@
+{
+  "vars": [
+    {
+      "name": "book",
+      "expr": "{ title = \"Go\"; author = { name = \"Bob\"; age = 42 } }",
+      "mutable": false,
+      "type": "Book",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(string (book.author.name))"
+  ],
+  "stmts": null
+}

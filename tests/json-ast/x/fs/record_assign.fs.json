@@ -1,0 +1,39 @@
+{
+  "vars": [
+    {
+      "name": "c",
+      "expr": "{ n = 0 }",
+      "mutable": true,
+      "type": "Counter",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "inc",
+      "params": [
+        {
+          "name": "c",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "{ c with n = (c.n) + 1 }",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "(string (c.n))",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

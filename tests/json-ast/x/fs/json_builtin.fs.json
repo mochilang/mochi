@@ -1,0 +1,14 @@
+{
+  "vars": [
+    {
+      "name": "m",
+      "expr": "{ a = 1; b = 2 }",
+      "mutable": false,
+      "type": "Anon1",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": null
+}

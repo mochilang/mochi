@@ -1,0 +1,27 @@
+{
+  "vars": [
+    {
+      "name": "people",
+      "expr": "[{ name = \"Alice\"; age = 17; status = \"minor\" }; { name = \"Bob\"; age = 25; status = \"unknown\" }; { name = \"Charlie\"; age = 18; status = \"unknown\" }; { name = \"Diana\"; age = 16; status = \"minor\" }]",
+      "mutable": false,
+      "type": "struct list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "people",
+      "index": "",
+      "expr": "List.map (fun item -\u003e if age \u003e= 18 then { { item with status = \"adult\" } with age = age + 1 } else item) people",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "\"ok\"",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

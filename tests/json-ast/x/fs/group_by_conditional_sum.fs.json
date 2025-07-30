@@ -1,0 +1,51 @@
+{
+  "vars": [
+    {
+      "name": "items",
+      "expr": "[{ cat = \"a\"; val = 10; flag = true }; { cat = \"a\"; val = 5; flag = false }; { cat = \"b\"; val = 20; flag = true }]",
+      "mutable": false,
+      "type": "Anon2 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "result",
+      "expr": "[ for (key, items) in List.groupBy (fun i -\u003e i.cat) items do",
+      "mutable": false,
+      "type": "Anon6 list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": null,
+  "stmts": [
+    {
+      "name": "g",
+      "params": [
+        {
+          "name": ":",
+          "type": ""
+        },
+        {
+          "name": "Anon5",
+          "type": ""
+        }
+      ],
+      "ret": "",
+      "body": [
+        {
+          "expr": "{ key = key; items = items }",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "expr": "((\"[\" + (String.concat \", \" (List.map string result))) + \"]\")",
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

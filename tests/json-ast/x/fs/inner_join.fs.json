@@ -1,0 +1,46 @@
+{
+  "vars": [
+    {
+      "name": "customers",
+      "expr": "[{ id = 1; name = \"Alice\" }; { id = 2; name = \"Bob\" }; { id = 3; name = \"Charlie\" }]",
+      "mutable": false,
+      "type": "Anon2 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "orders",
+      "expr": "[{ id = 100; customerId = 1; total = 250 }; { id = 101; customerId = 2; total = 125 }; { id = 102; customerId = 1; total = 300 }; { id = 103; customerId = 4; total = 80 }]",
+      "mutable": false,
+      "type": "Anon4 list",
+      "line": 0,
+      "raw": ""
+    },
+    {
+      "name": "result",
+      "expr": "[ for o in orders do for c in customers do if (o.customerId) = (c.id) then yield { orderId = o.id; customerName = c.name; total = o.total } ]",
+      "mutable": false,
+      "type": "Anon6 list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(string \"--- Orders with customer info ---\")"
+  ],
+  "stmts": [
+    {
+      "var": "entry",
+      "expr": "result",
+      "body": [
+        {
+          "expr": "(String.concat \" \" [string \"Order\"; string (entry.orderId); string \"by\"; string (entry.customerName); string \"- $\"; string (entry.total)])",
+          "line": 0,
+          "raw": ""
+        }
+      ],
+      "line": 0,
+      "raw": ""
+    }
+  ]
+}

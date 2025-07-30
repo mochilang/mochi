@@ -1,0 +1,17 @@
+{
+  "vars": [
+    {
+      "name": "xs",
+      "expr": "[1; 2; 3]",
+      "mutable": false,
+      "type": "int list",
+      "line": 0,
+      "raw": ""
+    }
+  ],
+  "prints": [
+    "(List.contains 2 xs)",
+    "(not (List.contains 5 xs))"
+  ],
+  "stmts": null
+}
