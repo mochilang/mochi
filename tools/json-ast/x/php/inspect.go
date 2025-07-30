@@ -4,14 +4,19 @@ import "encoding/json"
 
 // Program represents a parsed PHP file.
 type Program struct {
-	Root Node `json:"root"`
+	Root *Node `json:"root"`
 }
 
 // Inspect parses PHP source code using tree-sitter and returns its AST.
-func Inspect(src string) (*Program, error) {
+// If opts is nil, default options are used.
+func Inspect(src string, opts *Options) (*Program, error) {
 	parser := newParser()
 	tree := parser.Parse(nil, []byte(src))
-	root := convert(tree.RootNode(), []byte(src))
+	var o Options
+	if opts != nil {
+		o = *opts
+	}
+	root := convert(tree.RootNode(), []byte(src), o)
 	return &Program{Root: root}, nil
 }
 

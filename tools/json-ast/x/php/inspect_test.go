@@ -57,7 +57,7 @@ func TestInspect_Golden(t *testing.T) {
 		if err != nil {
 			t.Fatalf("read src: %v", err)
 		}
-		prog, err := php.Inspect(string(data))
+		prog, err := php.Inspect(string(data), nil)
 		if err != nil {
 			t.Fatalf("inspect: %v", err)
 		}
