@@ -2,28 +2,28 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-28 03:40 UTC
+Last updated: 2025-07-30 14:22 UTC
 
-## Rosetta Golden Test Checklist (469/493)
+## Rosetta Golden Test Checklist (476/493)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 1.088ms | 256.0 KB |
 | 2 | 100-doors-3 | ✓ | 379µs | 128.0 KB |
 | 3 | 100-doors | ✓ | 527µs | 128.0 KB |
-| 4 | 100-prisoners |   | 116.72ms | 10.9 MB |
+| 4 | 100-prisoners | ✓ | 116.72ms | 10.9 MB |
 | 5 | 15-puzzle-game | ✓ | 1.179ms | 640.0 KB |
 | 6 | 15-puzzle-solver | ✓ | 323µs | 128.0 KB |
 | 7 | 2048 | ✓ | 2.036ms | 768.0 KB |
 | 8 | 21-game | ✓ | 1.118ms | 640.0 KB |
-| 9 | 24-game-solve |   | 15.181ms | 5.6 MB |
-| 10 | 24-game |   | 1.847ms | 384.0 KB |
+| 9 | 24-game-solve | ✓ | 15.181ms | 5.6 MB |
+| 10 | 24-game | ✓ | 1.847ms | 384.0 KB |
 | 11 | 4-rings-or-4-squares-puzzle | ✓ | 3.124ms | 3.8 MB |
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 745.253ms | 369.5 MB |
-| 13 | 99-bottles-of-beer-2 |   | 22.414ms | 5.2 MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 22.414ms | 5.2 MB |
 | 14 | 99-bottles-of-beer | ✓ | 4.189ms | 3.8 MB |
-| 15 | DNS-query | ✓ | 333µs | 128.0 KB |
-| 16 | Duffinian-numbers |   | 29.999ms | 11.7 MB |
-| 17 | Find-if-a-point-is-within-a-triangle | ✓ | 679µs | 384.0 KB |
+| 15 | dns-query |   |  |  |
+| 16 | duffinian-numbers |   |  |  |
+| 17 | find-if-a-point-is-within-a-triangle | ✓ | 679µs | 384.0 KB |
 | 18 | a+b | ✓ | 738µs | 512.0 KB |
 | 19 | abbreviations-automatic | ✓ | 5.023ms | 3.9 MB |
 | 20 | abbreviations-easy | ✓ | 953µs | 256.0 KB |
@@ -37,7 +37,7 @@ Last updated: 2025-07-28 03:40 UTC
 | 28 | accumulator-factory | ✓ | 347µs | 128.0 KB |
 | 29 | achilles-numbers | ✓ | 3.45ms | 6.0 MB |
 | 30 | ackermann-function-2 | ✓ | 400µs |  |
-| 31 | ackermann-function-3 |   | 571.223ms | 4.2 MB |
+| 31 | ackermann-function-3 | ✓ | 571.223ms | 4.2 MB |
 | 32 | ackermann-function | ✓ | 771µs | 2.5 MB |
 | 33 | active-directory-connect | ✓ | 370µs | 128.0 KB |
 | 34 | active-directory-search-for-a-user | ✓ | 385µs | 128.0 KB |
@@ -45,11 +45,11 @@ Last updated: 2025-07-28 03:40 UTC
 | 36 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 905µs | 512.0 KB |
 | 37 | additive-primes | ✓ | 802µs | 512.0 KB |
 | 38 | address-of-a-variable | ✓ | 296µs | 128.0 KB |
-| 39 | adfgvx-cipher |   | 3.626ms | 512.0 KB |
-| 40 | aks-test-for-primes |   | 1.443ms |  |
+| 39 | adfgvx-cipher | ✓ | 3.626ms | 512.0 KB |
+| 40 | aks-test-for-primes | ✓ | 1.443ms |  |
 | 41 | algebraic-data-types | ✓ | 590µs | 128.0 KB |
 | 42 | align-columns | ✓ | 873µs | 1.5 MB |
-| 43 | aliquot-sequence-classifications |   | 105.3ms | 8.8 MB |
+| 43 | aliquot-sequence-classifications | ✓ | 105.3ms | 8.8 MB |
 | 44 | almkvist-giullera-formula-for-pi | ✓ | 176.244ms | 11.9 MB |
 | 45 | almost-prime | ✓ | 785µs | 1.1 MB |
 | 46 | amb | ✓ | 498µs | 256.0 KB |
@@ -406,11 +406,11 @@ Last updated: 2025-07-28 03:40 UTC
 | 397 | fairshare-between-two-and-more | ✓ | 37.696ms | 12.0 MB |
 | 398 | farey-sequence | ✓ | 5.168ms | 3.1 MB |
 | 399 | fast-fourier-transform | ✓ | 1.944ms | 256.0 KB |
-| 400 | fasta-format | ✓ | 1.895ms | 128.0 KB |
+| 400 | fasta-format | ✓ | 1.19ms | 128.0 KB |
 | 401 | faulhabers-formula | ✓ | 3.595ms | 512.0 KB |
 | 402 | faulhabers-triangle | ✓ | 1.287ms | 1.9 MB |
 | 403 | feigenbaum-constant-calculation | ✓ | 3.925ms | 6.9 MB |
-| 404 | fermat-numbers | ✓ | 1.208ms | 1.0 MB |
+| 404 | fermat-numbers | ✓ | 2.944ms | 896.0 KB |
 | 405 | fibonacci-n-step-number-sequences | ✓ | 615µs | 128.0 KB |
 | 406 | fibonacci-sequence-1 | ✓ | 3µs |  |
 | 407 | fibonacci-sequence-2 | ✓ | 3µs |  |
@@ -431,7 +431,7 @@ Last updated: 2025-07-28 03:40 UTC
 | 422 | find-chess960-starting-position-identifier | ✓ | 1ms | 672.0 KB |
 | 423 | find-common-directory-path | ✓ | 497µs | 128.0 KB |
 | 424 | find-duplicate-files | ✓ | 416µs |  |
-| 425 | find-if-a-point-is-within-a-triangle | ✓ | 1.176ms | 512.0 KB |
+| 425 | find-if-a-point-is-within-a-triangle | ✓ | 679µs | 384.0 KB |
 | 426 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 1.316ms | 4.2 MB |
 | 427 | find-limit-of-recursion | ✓ | 6.133ms | 9.6 MB |
 | 428 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 1.288927s | 11.1 MB |

@@ -56,7 +56,7 @@ func runRosettaCase(t *testing.T, name string) {
 		t.Fatalf("write code: %v", err)
 	}
 	cmd := exec.Command("deno", "run", "--quiet", "--allow-net", "--allow-read", "--allow-env", codePath)
-	envv := append(os.Environ(), "DENO_TLS_CA_STORE=system")
+	envv := append(os.Environ(), "DENO_TLS_CA_STORE=system", "DENO_INSTALLER=skip", "DENO_NO_UPDATE_CHECK=1")
 	if !bench {
 		envv = append(envv, "MOCHI_NOW_SEED=1")
 	}

@@ -2346,9 +2346,6 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 				t = tt
 			}
 		}
-		if _, ok := t.(types.BigIntType); ok {
-			t = types.IntType{}
-		}
 		typeStr := tsType(t)
 		if transpileEnv != nil {
 			transpileEnv.SetVar(s.Let.Name, t, false)
@@ -2407,9 +2404,6 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 				tt.Elem = st
 				t = tt
 			}
-		}
-		if _, ok := t.(types.BigIntType); ok {
-			t = types.IntType{}
 		}
 		typeStr := tsType(t)
 		if transpileEnv != nil {
@@ -4168,6 +4162,13 @@ func simpleExpr(e Expr) bool {
 			}
 		}
 		return true
+	case *NameRef:
+		return true
+	case *BinaryExpr:
+		if v.Op == "+" || v.Op == "-" || v.Op == "*" || v.Op == "/" || v.Op == "%" {
+			return simpleExpr(v.Left) && simpleExpr(v.Right)
+		}
+		return false
 	default:
 		return false
 	}
