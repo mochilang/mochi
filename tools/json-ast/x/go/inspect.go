@@ -11,7 +11,7 @@ import (
 
 // Program represents a parsed Go source file.
 type Program struct {
-	Root Node `json:"root"`
+	Root *Node `json:"root"`
 }
 
 // Inspect parses Go source code using tree-sitter and returns its Program
