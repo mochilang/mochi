@@ -1,8 +1,8 @@
 package ocaml
 
 import (
-	sitter "github.com/smacker/go-tree-sitter"
-	tsocaml "github.com/smacker/go-tree-sitter/ocaml"
+	sitter "github.com/tree-sitter/go-tree-sitter"
+	tsocaml "github.com/tree-sitter/tree-sitter-ocaml/bindings/go"
 )
 
 // Inspect parses the given OCaml source code using tree-sitter and returns
@@ -10,9 +10,9 @@ import (
 // omitted; pass an Options value with IncludePositions set to true to retain it.
 func Inspect(src string, opts ...Options) (*Program, error) {
 	p := sitter.NewParser()
-	p.SetLanguage(tsocaml.GetLanguage())
+	p.SetLanguage(sitter.NewLanguage(tsocaml.LanguageOCaml()))
 	data := []byte(src)
-	tree := p.Parse(nil, data)
+	tree := p.Parse(data, nil)
 	var includePos bool
 	if len(opts) > 0 {
 		includePos = opts[0].IncludePositions

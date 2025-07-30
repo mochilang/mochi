@@ -288,7 +288,7 @@
                                                                                                             "kind": "parenthesized_expression",
                                                                                                             "children": [
                                                                                                               {
-                                                                                                                "kind": "product_expression",
+                                                                                                                "kind": "tuple_expression",
                                                                                                                 "children": [
                                                                                                                   {
                                                                                                                     "kind": "string",
@@ -316,7 +316,7 @@
                                                                                                             "kind": "parenthesized_expression",
                                                                                                             "children": [
                                                                                                               {
-                                                                                                                "kind": "product_expression",
+                                                                                                                "kind": "tuple_expression",
                                                                                                                 "children": [
                                                                                                                   {
                                                                                                                     "kind": "string",
@@ -344,7 +344,7 @@
                                                                                                             "kind": "parenthesized_expression",
                                                                                                             "children": [
                                                                                                               {
-                                                                                                                "kind": "product_expression",
+                                                                                                                "kind": "tuple_expression",
                                                                                                                 "children": [
                                                                                                                   {
                                                                                                                     "kind": "string",

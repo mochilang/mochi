@@ -39,7 +39,7 @@
                                     "kind": "parenthesized_expression",
                                     "children": [
                                       {
-                                        "kind": "product_expression",
+                                        "kind": "tuple_expression",
                                         "children": [
                                           {
                                             "kind": "string",
@@ -62,7 +62,7 @@
                                     "kind": "parenthesized_expression",
                                     "children": [
                                       {
-                                        "kind": "product_expression",
+                                        "kind": "tuple_expression",
                                         "children": [
                                           {
                                             "kind": "string",
@@ -95,7 +95,7 @@
                                     "kind": "parenthesized_expression",
                                     "children": [
                                       {
-                                        "kind": "product_expression",
+                                        "kind": "tuple_expression",
                                         "children": [
                                           {
                                             "kind": "string",
@@ -118,7 +118,7 @@
                                     "kind": "parenthesized_expression",
                                     "children": [
                                       {
-                                        "kind": "product_expression",
+                                        "kind": "tuple_expression",
                                         "children": [
                                           {
                                             "kind": "string",
@@ -151,7 +151,7 @@
                                     "kind": "parenthesized_expression",
                                     "children": [
                                       {
-                                        "kind": "product_expression",
+                                        "kind": "tuple_expression",
                                         "children": [
                                           {
                                             "kind": "string",
@@ -174,7 +174,7 @@
                                     "kind": "parenthesized_expression",
                                     "children": [
                                       {
-                                        "kind": "product_expression",
+                                        "kind": "tuple_expression",
                                         "children": [
                                           {
                                             "kind": "string",
@@ -229,7 +229,7 @@
                                         "kind": "parenthesized_expression",
                                         "children": [
                                           {
-                                            "kind": "product_expression",
+                                            "kind": "tuple_expression",
                                             "children": [
                                               {
                                                 "kind": "string",
@@ -252,7 +252,7 @@
                                         "kind": "parenthesized_expression",
                                         "children": [
                                           {
-                                            "kind": "product_expression",
+                                            "kind": "tuple_expression",
                                             "children": [
                                               {
                                                 "kind": "string",
@@ -275,7 +275,7 @@
                                         "kind": "parenthesized_expression",
                                         "children": [
                                           {
-                                            "kind": "product_expression",
+                                            "kind": "tuple_expression",
                                             "children": [
                                               {
                                                 "kind": "string",
@@ -303,7 +303,7 @@
                                         "kind": "parenthesized_expression",
                                         "children": [
                                           {
-                                            "kind": "product_expression",
+                                            "kind": "tuple_expression",
                                             "children": [
                                               {
                                                 "kind": "string",
@@ -326,7 +326,7 @@
                                         "kind": "parenthesized_expression",
                                         "children": [
                                           {
-                                            "kind": "product_expression",
+                                            "kind": "tuple_expression",
                                             "children": [
                                               {
                                                 "kind": "string",
@@ -349,7 +349,7 @@
                                         "kind": "parenthesized_expression",
                                         "children": [
                                           {
-                                            "kind": "product_expression",
+                                            "kind": "tuple_expression",
                                             "children": [
                                               {
                                                 "kind": "string",
@@ -377,7 +377,7 @@
                                         "kind": "parenthesized_expression",
                                         "children": [
                                           {
-                                            "kind": "product_expression",
+                                            "kind": "tuple_expression",
                                             "children": [
                                               {
                                                 "kind": "string",
@@ -400,7 +400,7 @@
                                         "kind": "parenthesized_expression",
                                         "children": [
                                           {
-                                            "kind": "product_expression",
+                                            "kind": "tuple_expression",
                                             "children": [
                                               {
                                                 "kind": "string",
@@ -423,7 +423,7 @@
                                         "kind": "parenthesized_expression",
                                         "children": [
                                           {
-                                            "kind": "product_expression",
+                                            "kind": "tuple_expression",
                                             "children": [
                                               {
                                                 "kind": "string",
@@ -572,7 +572,7 @@
                                                                                 "kind": "parenthesized_expression",
                                                                                 "children": [
                                                                                   {
-                                                                                    "kind": "product_expression",
+                                                                                    "kind": "tuple_expression",
                                                                                     "children": [
                                                                                       {
                                                                                         "kind": "string",
@@ -637,7 +637,7 @@
                                                                                 "kind": "parenthesized_expression",
                                                                                 "children": [
                                                                                   {
-                                                                                    "kind": "product_expression",
+                                                                                    "kind": "tuple_expression",
                                                                                     "children": [
                                                                                       {
                                                                                         "kind": "string",
@@ -702,7 +702,7 @@
                                                                                 "kind": "parenthesized_expression",
                                                                                 "children": [
                                                                                   {
-                                                                                    "kind": "product_expression",
+                                                                                    "kind": "tuple_expression",
                                                                                     "children": [
                                                                                       {
                                                                                         "kind": "string",
@@ -767,7 +767,7 @@
                                                                                 "kind": "parenthesized_expression",
                                                                                 "children": [
                                                                                   {
-                                                                                    "kind": "product_expression",
+                                                                                    "kind": "tuple_expression",
                                                                                     "children": [
                                                                                       {
                                                                                         "kind": "string",
@@ -1251,175 +1251,26 @@
                                                                         ]
                                                                       },
                                                                       {
-                                                                        "kind": "sequence_expression",
-                                                                        "children": [
-                                                                          {
-                                                                            "kind": "string",
-                                                                            "children": [
-                                                                              {
-                                                                                "kind": "string_content",
-                                                                                "text": "(customerId:"
-                                                                              }
-                                                                            ]
-                                                                          },
-                                                                          {
-                                                                            "kind": "application_expression",
-                                                                            "children": [
-                                                                              {
-                                                                                "kind": "value_path",
-                                                                                "children": [
-                                                                                  {
-                                                                                    "kind": "value_name",
-                                                                                    "text": "string_of_int"
-                                                                                  }
-                                                                                ]
-                                                                              },
-                                                                              {
-                                                                                "kind": "parenthesized_expression",
-                                                                                "children": [
-                                                                                  {
-                                                                                    "kind": "application_expression",
-                                                                                    "children": [
-                                                                                      {
-                                                                                        "kind": "value_path",
-                                                                                        "children": [
-                                                                                          {
-                                                                                            "kind": "module_path",
-                                                                                            "children": [
-                                                                                              {
-                                                                                                "kind": "module_name",
-                                                                                                "text": "List"
-                                                                                              }
-                                                                                            ]
-                                                                                          },
-                                                                                          {
-                                                                                            "kind": "value_name",
-                                                                                            "text": "assoc"
-                                                                                          }
-                                                                                        ]
-                                                                                      },
-                                                                                      {
-                                                                                        "kind": "string",
-                                                                                        "children": [
-                                                                                          {
-                                                                                            "kind": "string_content",
-                                                                                            "text": "orderCustomerId"
-                                                                                          }
-                                                                                        ]
-                                                                                      },
-                                                                                      {
-                                                                                        "kind": "value_path",
-                                                                                        "children": [
-                                                                                          {
-                                                                                            "kind": "value_name",
-                                                                                            "text": "entry"
-                                                                                          }
-                                                                                        ]
-                                                                                      }
-                                                                                    ]
-                                                                                  }
-                                                                                ]
-                                                                              }
-                                                                            ]
-                                                                          }
-                                                                        ]
-                                                                      }
-                                                                    ]
-                                                                  }
-                                                                ]
-                                                              }
-                                                            ]
-                                                          },
-                                                          {
-                                                            "kind": "sequence_expression",
-                                                            "children": [
-                                                              {
-                                                                "kind": "string",
-                                                                "children": [
-                                                                  {
-                                                                    "kind": "string_content",
-                                                                    "text": ", total: $"
-                                                                  }
-                                                                ]
-                                                              },
-                                                              {
-                                                                "kind": "sequence_expression",
-                                                                "children": [
-                                                                  {
-                                                                    "kind": "application_expression",
-                                                                    "children": [
-                                                                      {
-                                                                        "kind": "value_path",
-                                                                        "children": [
-                                                                          {
-                                                                            "kind": "value_name",
-                                                                            "text": "string_of_int"
-                                                                          }
-                                                                        ]
-                                                                      },
-                                                                      {
-                                                                        "kind": "parenthesized_expression",
-                                                                        "children": [
-                                                                          {
-                                                                            "kind": "application_expression",
-                                                                            "children": [
-                                                                              {
-                                                                                "kind": "value_path",
-                                                                                "children": [
-                                                                                  {
-                                                                                    "kind": "module_path",
-                                                                                    "children": [
-                                                                                      {
-                                                                                        "kind": "module_name",
-                                                                                        "text": "List"
-                                                                                      }
-                                                                                    ]
-                                                                                  },
-                                                                                  {
-                                                                                    "kind": "value_name",
-                                                                                    "text": "assoc"
-                                                                                  }
-                                                                                ]
-                                                                              },
-                                                                              {
-                                                                                "kind": "string",
-                                                                                "children": [
-                                                                                  {
-                                                                                    "kind": "string_content",
-                                                                                    "text": "orderTotal"
-                                                                                  }
-                                                                                ]
-                                                                              },
-                                                                              {
-                                                                                "kind": "value_path",
-                                                                                "children": [
-                                                                                  {
-                                                                                    "kind": "value_name",
-                                                                                    "text": "entry"
-                                                                                  }
-                                                                                ]
-                                                                              }
-                                                                            ]
-                                                                          }
-                                                                        ]
-                                                                      }
-                                                                    ]
-                                                                  },
-                                                                  {
-                                                                    "kind": "sequence_expression",
-                                                                    "children": [
-                                                                      {
                                                                         "kind": "string",
                                                                         "children": [
                                                                           {
                                                                             "kind": "string_content",
-                                                                            "text": ") paired with"
+                                                                            "text": "(customerId:"
                                                                           }
                                                                         ]
                                                                       },
                                                                       {
-                                                                        "kind": "sequence_expression",
+                                                                        "kind": "application_expression",
                                                                         "children": [
+                                                                          {
+                                                                            "kind": "value_path",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "value_name",
+                                                                                "text": "string_of_int"
+                                                                              }
+                                                                            ]
+                                                                          },
                                                                           {
                                                                             "kind": "parenthesized_expression",
                                                                             "children": [
@@ -1449,7 +1300,7 @@
                                                                                     "children": [
                                                                                       {
                                                                                         "kind": "string_content",
-                                                                                        "text": "pairedCustomerName"
+                                                                                        "text": "orderCustomerId"
                                                                                       }
                                                                                     ]
                                                                                   },
@@ -1467,6 +1318,130 @@
                                                                             ]
                                                                           }
                                                                         ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "string",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": ", total: $"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "application_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "value_path",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "value_name",
+                                                                    "text": "string_of_int"
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "parenthesized_expression",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "application_expression",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "value_path",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "module_path",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "module_name",
+                                                                                "text": "List"
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "kind": "value_name",
+                                                                            "text": "assoc"
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "kind": "string",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "string_content",
+                                                                            "text": "orderTotal"
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "kind": "value_path",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "value_name",
+                                                                            "text": "entry"
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "string",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": ") paired with"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "parenthesized_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "application_expression",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "value_path",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "module_path",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "module_name",
+                                                                            "text": "List"
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "kind": "value_name",
+                                                                        "text": "assoc"
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "kind": "string",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "string_content",
+                                                                        "text": "pairedCustomerName"
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "kind": "value_path",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "value_name",
+                                                                        "text": "entry"
                                                                       }
                                                                     ]
                                                                   }
