@@ -22,6 +22,7 @@ require (
 	github.com/tliron/glsp v0.2.2
 	github.com/tree-sitter/go-tree-sitter v0.25.0
 	github.com/tree-sitter/tree-sitter-c v0.23.4
+	github.com/tree-sitter/tree-sitter-c-sharp v0.23.1
 	github.com/tree-sitter/tree-sitter-elixir v0.3.4
 	github.com/tree-sitter/tree-sitter-fsharp v0.1.0
 	github.com/tree-sitter/tree-sitter-go v0.23.4
