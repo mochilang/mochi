@@ -50,6 +50,6 @@ func Inspect(src string) (*Node, error) {
 	if err := json.Unmarshal(out.Bytes(), &prog); err != nil {
 		return nil, err
 	}
-	node := programToNode(&prog)
+	node := programToNode(&prog, []byte(src))
 	return &node, nil
 }
