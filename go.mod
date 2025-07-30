@@ -23,6 +23,7 @@ require (
 	github.com/tliron/glsp v0.2.2
 	github.com/tree-sitter/go-tree-sitter v0.25.0
 	github.com/tree-sitter/tree-sitter-c v0.23.4
+	github.com/tree-sitter/tree-sitter-elixir v0.3.4
 	github.com/tree-sitter/tree-sitter-fsharp v0.1.0
 	github.com/tree-sitter/tree-sitter-haskell v0.23.1
 	github.com/tree-sitter/tree-sitter-python v0.23.6
@@ -104,3 +105,5 @@ replace github.com/tree-sitter/tree-sitter-racket => ./third_party/tree-sitter-r
 replace github.com/tree-sitter/tree-sitter-scheme => github.com/6cdh/tree-sitter-scheme v0.24.7
 
 replace github.com/tree-sitter/tree-sitter-fsharp => github.com/ionide/tree-sitter-fsharp v0.1.0
+
+replace github.com/tree-sitter/tree-sitter-elixir => github.com/elixir-lang/tree-sitter-elixir v0.3.4
