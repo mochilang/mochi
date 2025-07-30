@@ -7,7 +7,8 @@
       {
         "kind": "line_comment",
         "start": 0,
-        "end": 35
+        "end": 35,
+        "text": "// Generated 2025-07-21 18:37 +0700"
       },
       {
         "kind": "type_definition",
@@ -27,7 +28,8 @@
                   {
                     "kind": "identifier",
                     "start": 42,
-                    "end": 47
+                    "end": 47,
+                    "text": "Anon1"
                   }
                 ]
               },
@@ -44,7 +46,8 @@
                       {
                         "kind": "identifier",
                         "start": 64,
-                        "end": 66
+                        "end": 66,
+                        "text": "id"
                       },
                       {
                         "kind": "simple_type",
@@ -59,7 +62,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 68,
-                                "end": 71
+                                "end": 71,
+                                "text": "int"
                               }
                             ]
                           }
@@ -75,7 +79,8 @@
                       {
                         "kind": "identifier",
                         "start": 84,
-                        "end": 88
+                        "end": 88,
+                        "text": "name"
                       },
                       {
                         "kind": "simple_type",
@@ -90,7 +95,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 90,
-                                "end": 96
+                                "end": 96,
+                                "text": "string"
                               }
                             ]
                           }
@@ -122,7 +128,8 @@
                   {
                     "kind": "identifier",
                     "start": 104,
-                    "end": 109
+                    "end": 109,
+                    "text": "Anon2"
                   }
                 ]
               },
@@ -139,7 +146,8 @@
                       {
                         "kind": "identifier",
                         "start": 126,
-                        "end": 128
+                        "end": 128,
+                        "text": "id"
                       },
                       {
                         "kind": "simple_type",
@@ -154,7 +162,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 130,
-                                "end": 133
+                                "end": 133,
+                                "text": "int"
                               }
                             ]
                           }
@@ -170,7 +179,8 @@
                       {
                         "kind": "identifier",
                         "start": 146,
-                        "end": 150
+                        "end": 150,
+                        "text": "name"
                       },
                       {
                         "kind": "simple_type",
@@ -185,7 +195,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 152,
-                                "end": 158
+                                "end": 158,
+                                "text": "string"
                               }
                             ]
                           }
@@ -217,7 +228,8 @@
                   {
                     "kind": "identifier",
                     "start": 166,
-                    "end": 171
+                    "end": 171,
+                    "text": "Anon3"
                   }
                 ]
               },
@@ -234,7 +246,8 @@
                       {
                         "kind": "identifier",
                         "start": 188,
-                        "end": 190
+                        "end": 190,
+                        "text": "id"
                       },
                       {
                         "kind": "simple_type",
@@ -249,7 +262,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 192,
-                                "end": 195
+                                "end": 195,
+                                "text": "int"
                               }
                             ]
                           }
@@ -265,7 +279,8 @@
                       {
                         "kind": "identifier",
                         "start": 208,
-                        "end": 218
+                        "end": 218,
+                        "text": "customerId"
                       },
                       {
                         "kind": "simple_type",
@@ -280,7 +295,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 220,
-                                "end": 223
+                                "end": 223,
+                                "text": "int"
                               }
                             ]
                           }
@@ -296,7 +312,8 @@
                       {
                         "kind": "identifier",
                         "start": 236,
-                        "end": 241
+                        "end": 241,
+                        "text": "total"
                       },
                       {
                         "kind": "simple_type",
@@ -311,7 +328,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 243,
-                                "end": 246
+                                "end": 246,
+                                "text": "int"
                               }
                             ]
                           }
@@ -343,7 +361,8 @@
                   {
                     "kind": "identifier",
                     "start": 254,
-                    "end": 259
+                    "end": 259,
+                    "text": "Anon4"
                   }
                 ]
               },
@@ -360,7 +379,8 @@
                       {
                         "kind": "identifier",
                         "start": 276,
-                        "end": 278
+                        "end": 278,
+                        "text": "id"
                       },
                       {
                         "kind": "simple_type",
@@ -375,7 +395,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 280,
-                                "end": 283
+                                "end": 283,
+                                "text": "int"
                               }
                             ]
                           }
@@ -391,7 +412,8 @@
                       {
                         "kind": "identifier",
                         "start": 296,
-                        "end": 306
+                        "end": 306,
+                        "text": "customerId"
                       },
                       {
                         "kind": "simple_type",
@@ -406,7 +428,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 308,
-                                "end": 311
+                                "end": 311,
+                                "text": "int"
                               }
                             ]
                           }
@@ -422,7 +445,8 @@
                       {
                         "kind": "identifier",
                         "start": 324,
-                        "end": 329
+                        "end": 329,
+                        "text": "total"
                       },
                       {
                         "kind": "simple_type",
@@ -437,7 +461,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 331,
-                                "end": 334
+                                "end": 334,
+                                "text": "int"
                               }
                             ]
                           }
@@ -469,7 +494,8 @@
                   {
                     "kind": "identifier",
                     "start": 342,
-                    "end": 347
+                    "end": 347,
+                    "text": "Anon5"
                   }
                 ]
               },
@@ -486,7 +512,8 @@
                       {
                         "kind": "identifier",
                         "start": 364,
-                        "end": 371
+                        "end": 371,
+                        "text": "orderId"
                       },
                       {
                         "kind": "simple_type",
@@ -501,7 +528,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 373,
-                                "end": 376
+                                "end": 376,
+                                "text": "obj"
                               }
                             ]
                           }
@@ -517,7 +545,8 @@
                       {
                         "kind": "identifier",
                         "start": 389,
-                        "end": 404
+                        "end": 404,
+                        "text": "orderCustomerId"
                       },
                       {
                         "kind": "simple_type",
@@ -532,7 +561,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 406,
-                                "end": 409
+                                "end": 409,
+                                "text": "obj"
                               }
                             ]
                           }
@@ -548,7 +578,8 @@
                       {
                         "kind": "identifier",
                         "start": 422,
-                        "end": 440
+                        "end": 440,
+                        "text": "pairedCustomerName"
                       },
                       {
                         "kind": "simple_type",
@@ -563,7 +594,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 442,
-                                "end": 445
+                                "end": 445,
+                                "text": "obj"
                               }
                             ]
                           }
@@ -579,7 +611,8 @@
                       {
                         "kind": "identifier",
                         "start": 458,
-                        "end": 468
+                        "end": 468,
+                        "text": "orderTotal"
                       },
                       {
                         "kind": "simple_type",
@@ -594,7 +627,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 470,
-                                "end": 473
+                                "end": 473,
+                                "text": "obj"
                               }
                             ]
                           }
@@ -626,7 +660,8 @@
                   {
                     "kind": "identifier",
                     "start": 481,
-                    "end": 486
+                    "end": 486,
+                    "text": "Anon6"
                   }
                 ]
               },
@@ -643,7 +678,8 @@
                       {
                         "kind": "identifier",
                         "start": 503,
-                        "end": 510
+                        "end": 510,
+                        "text": "orderId"
                       },
                       {
                         "kind": "simple_type",
@@ -658,7 +694,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 512,
-                                "end": 515
+                                "end": 515,
+                                "text": "obj"
                               }
                             ]
                           }
@@ -674,7 +711,8 @@
                       {
                         "kind": "identifier",
                         "start": 528,
-                        "end": 543
+                        "end": 543,
+                        "text": "orderCustomerId"
                       },
                       {
                         "kind": "simple_type",
@@ -689,7 +727,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 545,
-                                "end": 548
+                                "end": 548,
+                                "text": "obj"
                               }
                             ]
                           }
@@ -705,7 +744,8 @@
                       {
                         "kind": "identifier",
                         "start": 561,
-                        "end": 579
+                        "end": 579,
+                        "text": "pairedCustomerName"
                       },
                       {
                         "kind": "simple_type",
@@ -720,7 +760,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 581,
-                                "end": 584
+                                "end": 584,
+                                "text": "obj"
                               }
                             ]
                           }
@@ -736,7 +777,8 @@
                       {
                         "kind": "identifier",
                         "start": 597,
-                        "end": 607
+                        "end": 607,
+                        "text": "orderTotal"
                       },
                       {
                         "kind": "simple_type",
@@ -751,7 +793,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 609,
-                                "end": 612
+                                "end": 612,
+                                "text": "obj"
                               }
                             ]
                           }
@@ -793,7 +836,8 @@
                           {
                             "kind": "identifier",
                             "start": 619,
-                            "end": 628
+                            "end": 628,
+                            "text": "customers"
                           }
                         ]
                       }
@@ -819,7 +863,8 @@
                           {
                             "kind": "identifier",
                             "start": 630,
-                            "end": 635
+                            "end": 635,
+                            "text": "Anon2"
                           }
                         ]
                       }
@@ -833,7 +878,8 @@
                       {
                         "kind": "identifier",
                         "start": 636,
-                        "end": 640
+                        "end": 640,
+                        "text": "list"
                       }
                     ]
                   }
@@ -867,7 +913,8 @@
                                   {
                                     "kind": "identifier",
                                     "start": 646,
-                                    "end": 648
+                                    "end": 648,
+                                    "text": "id"
                                   }
                                 ]
                               },
@@ -879,7 +926,8 @@
                                   {
                                     "kind": "int",
                                     "start": 651,
-                                    "end": 652
+                                    "end": 652,
+                                    "text": "1"
                                   }
                                 ]
                               }
@@ -898,7 +946,8 @@
                                   {
                                     "kind": "identifier",
                                     "start": 654,
-                                    "end": 658
+                                    "end": 658,
+                                    "text": "name"
                                   }
                                 ]
                               },
@@ -910,7 +959,8 @@
                                   {
                                     "kind": "string",
                                     "start": 661,
-                                    "end": 668
+                                    "end": 668,
+                                    "text": "\"Alice\""
                                   }
                                 ]
                               }
@@ -943,7 +993,8 @@
                                   {
                                     "kind": "identifier",
                                     "start": 674,
-                                    "end": 676
+                                    "end": 676,
+                                    "text": "id"
                                   }
                                 ]
                               },
@@ -955,7 +1006,8 @@
                                   {
                                     "kind": "int",
                                     "start": 679,
-                                    "end": 680
+                                    "end": 680,
+                                    "text": "2"
                                   }
                                 ]
                               }
@@ -974,7 +1026,8 @@
                                   {
                                     "kind": "identifier",
                                     "start": 682,
-                                    "end": 686
+                                    "end": 686,
+                                    "text": "name"
                                   }
                                 ]
                               },
@@ -986,7 +1039,8 @@
                                   {
                                     "kind": "string",
                                     "start": 689,
-                                    "end": 694
+                                    "end": 694,
+                                    "text": "\"Bob\""
                                   }
                                 ]
                               }
@@ -1019,7 +1073,8 @@
                                   {
                                     "kind": "identifier",
                                     "start": 700,
-                                    "end": 702
+                                    "end": 702,
+                                    "text": "id"
                                   }
                                 ]
                               },
@@ -1031,7 +1086,8 @@
                                   {
                                     "kind": "int",
                                     "start": 705,
-                                    "end": 706
+                                    "end": 706,
+                                    "text": "3"
                                   }
                                 ]
                               }
@@ -1050,7 +1106,8 @@
                                   {
                                     "kind": "identifier",
                                     "start": 708,
-                                    "end": 712
+                                    "end": 712,
+                                    "text": "name"
                                   }
                                 ]
                               },
@@ -1062,7 +1119,8 @@
                                   {
                                     "kind": "string",
                                     "start": 715,
-                                    "end": 724
+                                    "end": 724,
+                                    "text": "\"Charlie\""
                                   }
                                 ]
                               }
@@ -1106,7 +1164,8 @@
                           {
                             "kind": "identifier",
                             "start": 732,
-                            "end": 738
+                            "end": 738,
+                            "text": "orders"
                           }
                         ]
                       }
@@ -1132,7 +1191,8 @@
                           {
                             "kind": "identifier",
                             "start": 740,
-                            "end": 745
+                            "end": 745,
+                            "text": "Anon4"
                           }
                         ]
                       }
@@ -1146,7 +1206,8 @@
                       {
                         "kind": "identifier",
                         "start": 746,
-                        "end": 750
+                        "end": 750,
+                        "text": "list"
                       }
                     ]
                   }
@@ -1180,7 +1241,8 @@
                                   {
                                     "kind": "identifier",
                                     "start": 756,
-                                    "end": 758
+                                    "end": 758,
+                                    "text": "id"
                                   }
                                 ]
                               },
@@ -1192,7 +1254,8 @@
                                   {
                                     "kind": "int",
                                     "start": 761,
-                                    "end": 764
+                                    "end": 764,
+                                    "text": "100"
                                   }
                                 ]
                               }
@@ -1211,7 +1274,8 @@
                                   {
                                     "kind": "identifier",
                                     "start": 766,
-                                    "end": 776
+                                    "end": 776,
+                                    "text": "customerId"
                                   }
                                 ]
                               },
@@ -1223,7 +1287,8 @@
                                   {
                                     "kind": "int",
                                     "start": 779,
-                                    "end": 780
+                                    "end": 780,
+                                    "text": "1"
                                   }
                                 ]
                               }
@@ -1242,7 +1307,8 @@
                                   {
                                     "kind": "identifier",
                                     "start": 782,
-                                    "end": 787
+                                    "end": 787,
+                                    "text": "total"
                                   }
                                 ]
                               },
@@ -1254,7 +1320,8 @@
                                   {
                                     "kind": "int",
                                     "start": 790,
-                                    "end": 793
+                                    "end": 793,
+                                    "text": "250"
                                   }
                                 ]
                               }
@@ -1287,7 +1354,8 @@
                                   {
                                     "kind": "identifier",
                                     "start": 799,
-                                    "end": 801
+                                    "end": 801,
+                                    "text": "id"
                                   }
                                 ]
                               },
@@ -1299,7 +1367,8 @@
                                   {
                                     "kind": "int",
                                     "start": 804,
-                                    "end": 807
+                                    "end": 807,
+                                    "text": "101"
                                   }
                                 ]
                               }
@@ -1318,7 +1387,8 @@
                                   {
                                     "kind": "identifier",
                                     "start": 809,
-                                    "end": 819
+                                    "end": 819,
+                                    "text": "customerId"
                                   }
                                 ]
                               },
@@ -1330,7 +1400,8 @@
                                   {
                                     "kind": "int",
                                     "start": 822,
-                                    "end": 823
+                                    "end": 823,
+                                    "text": "2"
                                   }
                                 ]
                               }
@@ -1349,7 +1420,8 @@
                                   {
                                     "kind": "identifier",
                                     "start": 825,
-                                    "end": 830
+                                    "end": 830,
+                                    "text": "total"
                                   }
                                 ]
                               },
@@ -1361,7 +1433,8 @@
                                   {
                                     "kind": "int",
                                     "start": 833,
-                                    "end": 836
+                                    "end": 836,
+                                    "text": "125"
                                   }
                                 ]
                               }
@@ -1394,7 +1467,8 @@
                                   {
                                     "kind": "identifier",
                                     "start": 842,
-                                    "end": 844
+                                    "end": 844,
+                                    "text": "id"
                                   }
                                 ]
                               },
@@ -1406,7 +1480,8 @@
                                   {
                                     "kind": "int",
                                     "start": 847,
-                                    "end": 850
+                                    "end": 850,
+                                    "text": "102"
                                   }
                                 ]
                               }
@@ -1425,7 +1500,8 @@
                                   {
                                     "kind": "identifier",
                                     "start": 852,
-                                    "end": 862
+                                    "end": 862,
+                                    "text": "customerId"
                                   }
                                 ]
                               },
@@ -1437,7 +1513,8 @@
                                   {
                                     "kind": "int",
                                     "start": 865,
-                                    "end": 866
+                                    "end": 866,
+                                    "text": "1"
                                   }
                                 ]
                               }
@@ -1456,7 +1533,8 @@
                                   {
                                     "kind": "identifier",
                                     "start": 868,
-                                    "end": 873
+                                    "end": 873,
+                                    "text": "total"
                                   }
                                 ]
                               },
@@ -1468,7 +1546,8 @@
                                   {
                                     "kind": "int",
                                     "start": 876,
-                                    "end": 879
+                                    "end": 879,
+                                    "text": "300"
                                   }
                                 ]
                               }
@@ -1512,7 +1591,8 @@
                           {
                             "kind": "identifier",
                             "start": 887,
-                            "end": 893
+                            "end": 893,
+                            "text": "result"
                           }
                         ]
                       }
@@ -1538,7 +1618,8 @@
                           {
                             "kind": "identifier",
                             "start": 895,
-                            "end": 900
+                            "end": 900,
+                            "text": "Anon6"
                           }
                         ]
                       }
@@ -1552,7 +1633,8 @@
                       {
                         "kind": "identifier",
                         "start": 901,
-                        "end": 905
+                        "end": 905,
+                        "text": "list"
                       }
                     ]
                   }
@@ -1581,7 +1663,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 914,
-                                "end": 915
+                                "end": 915,
+                                "text": "o"
                               }
                             ]
                           }
@@ -1595,7 +1678,8 @@
                           {
                             "kind": "identifier",
                             "start": 919,
-                            "end": 925
+                            "end": 925,
+                            "text": "orders"
                           }
                         ]
                       },
@@ -1617,7 +1701,8 @@
                                   {
                                     "kind": "identifier",
                                     "start": 933,
-                                    "end": 934
+                                    "end": 934,
+                                    "text": "c"
                                   }
                                 ]
                               }
@@ -1631,7 +1716,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 938,
-                                "end": 947
+                                "end": 947,
+                                "text": "customers"
                               }
                             ]
                           },
@@ -1663,7 +1749,8 @@
                                               {
                                                 "kind": "identifier",
                                                 "start": 959,
-                                                "end": 966
+                                                "end": 966,
+                                                "text": "orderId"
                                               }
                                             ]
                                           },
@@ -1680,12 +1767,14 @@
                                                   {
                                                     "kind": "identifier",
                                                     "start": 969,
-                                                    "end": 970
+                                                    "end": 970,
+                                                    "text": "o"
                                                   },
                                                   {
                                                     "kind": "identifier",
                                                     "start": 971,
-                                                    "end": 973
+                                                    "end": 973,
+                                                    "text": "id"
                                                   }
                                                 ]
                                               }
@@ -1706,7 +1795,8 @@
                                               {
                                                 "kind": "identifier",
                                                 "start": 975,
-                                                "end": 990
+                                                "end": 990,
+                                                "text": "orderCustomerId"
                                               }
                                             ]
                                           },
@@ -1723,12 +1813,14 @@
                                                   {
                                                     "kind": "identifier",
                                                     "start": 993,
-                                                    "end": 994
+                                                    "end": 994,
+                                                    "text": "o"
                                                   },
                                                   {
                                                     "kind": "identifier",
                                                     "start": 995,
-                                                    "end": 1005
+                                                    "end": 1005,
+                                                    "text": "customerId"
                                                   }
                                                 ]
                                               }
@@ -1749,7 +1841,8 @@
                                               {
                                                 "kind": "identifier",
                                                 "start": 1007,
-                                                "end": 1025
+                                                "end": 1025,
+                                                "text": "pairedCustomerName"
                                               }
                                             ]
                                           },
@@ -1766,12 +1859,14 @@
                                                   {
                                                     "kind": "identifier",
                                                     "start": 1028,
-                                                    "end": 1029
+                                                    "end": 1029,
+                                                    "text": "c"
                                                   },
                                                   {
                                                     "kind": "identifier",
                                                     "start": 1030,
-                                                    "end": 1034
+                                                    "end": 1034,
+                                                    "text": "name"
                                                   }
                                                 ]
                                               }
@@ -1792,7 +1887,8 @@
                                               {
                                                 "kind": "identifier",
                                                 "start": 1036,
-                                                "end": 1046
+                                                "end": 1046,
+                                                "text": "orderTotal"
                                               }
                                             ]
                                           },
@@ -1809,12 +1905,14 @@
                                                   {
                                                     "kind": "identifier",
                                                     "start": 1049,
-                                                    "end": 1050
+                                                    "end": 1050,
+                                                    "text": "o"
                                                   },
                                                   {
                                                     "kind": "identifier",
                                                     "start": 1051,
-                                                    "end": 1056
+                                                    "end": 1056,
+                                                    "text": "total"
                                                   }
                                                 ]
                                               }
@@ -1856,7 +1954,8 @@
                   {
                     "kind": "identifier",
                     "start": 1061,
-                    "end": 1068
+                    "end": 1068,
+                    "text": "printfn"
                   }
                 ]
               },
@@ -1868,7 +1967,8 @@
                   {
                     "kind": "string",
                     "start": 1069,
-                    "end": 1073
+                    "end": 1073,
+                    "text": "\"%s\""
                   }
                 ]
               }
@@ -1892,7 +1992,8 @@
                       {
                         "kind": "identifier",
                         "start": 1075,
-                        "end": 1081
+                        "end": 1081,
+                        "text": "string"
                       }
                     ]
                   },
@@ -1904,7 +2005,8 @@
                       {
                         "kind": "string",
                         "start": 1082,
-                        "end": 1128
+                        "end": 1128,
+                        "text": "\"--- Cross Join: All order-customer pairs ---\""
                       }
                     ]
                   }
@@ -1932,7 +2034,8 @@
                   {
                     "kind": "identifier",
                     "start": 1134,
-                    "end": 1139
+                    "end": 1139,
+                    "text": "entry"
                   }
                 ]
               }
@@ -1946,7 +2049,8 @@
               {
                 "kind": "identifier",
                 "start": 1143,
-                "end": 1149
+                "end": 1149,
+                "text": "result"
               }
             ]
           },
@@ -1963,7 +2067,8 @@
                   {
                     "kind": "identifier",
                     "start": 1153,
-                    "end": 1160
+                    "end": 1160,
+                    "text": "printfn"
                   }
                 ]
               },
@@ -1975,7 +2080,8 @@
                   {
                     "kind": "string",
                     "start": 1161,
-                    "end": 1165
+                    "end": 1165,
+                    "text": "\"%s\""
                   }
                 ]
               }
@@ -2009,12 +2115,14 @@
                               {
                                 "kind": "identifier",
                                 "start": 1167,
-                                "end": 1173
+                                "end": 1173,
+                                "text": "String"
                               },
                               {
                                 "kind": "identifier",
                                 "start": 1174,
-                                "end": 1180
+                                "end": 1180,
+                                "text": "concat"
                               }
                             ]
                           }
@@ -2028,7 +2136,8 @@
                           {
                             "kind": "string",
                             "start": 1181,
-                            "end": 1184
+                            "end": 1184,
+                            "text": "\" \""
                           }
                         ]
                       }
@@ -2052,7 +2161,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 1186,
-                                "end": 1192
+                                "end": 1192,
+                                "text": "string"
                               }
                             ]
                           },
@@ -2064,7 +2174,8 @@
                               {
                                 "kind": "string",
                                 "start": 1193,
-                                "end": 1200
+                                "end": 1200,
+                                "text": "\"Order\""
                               }
                             ]
                           }
@@ -2083,7 +2194,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 1202,
-                                "end": 1208
+                                "end": 1208,
+                                "text": "string"
                               }
                             ]
                           },
@@ -2105,12 +2217,14 @@
                                       {
                                         "kind": "identifier",
                                         "start": 1210,
-                                        "end": 1215
+                                        "end": 1215,
+                                        "text": "entry"
                                       },
                                       {
                                         "kind": "identifier",
                                         "start": 1216,
-                                        "end": 1223
+                                        "end": 1223,
+                                        "text": "orderId"
                                       }
                                     ]
                                   }
@@ -2133,7 +2247,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 1226,
-                                "end": 1232
+                                "end": 1232,
+                                "text": "string"
                               }
                             ]
                           },
@@ -2145,7 +2260,8 @@
                               {
                                 "kind": "string",
                                 "start": 1233,
-                                "end": 1247
+                                "end": 1247,
+                                "text": "\"(customerId:\""
                               }
                             ]
                           }
@@ -2164,7 +2280,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 1249,
-                                "end": 1255
+                                "end": 1255,
+                                "text": "string"
                               }
                             ]
                           },
@@ -2186,12 +2303,14 @@
                                       {
                                         "kind": "identifier",
                                         "start": 1257,
-                                        "end": 1262
+                                        "end": 1262,
+                                        "text": "entry"
                                       },
                                       {
                                         "kind": "identifier",
                                         "start": 1263,
-                                        "end": 1278
+                                        "end": 1278,
+                                        "text": "orderCustomerId"
                                       }
                                     ]
                                   }
@@ -2214,7 +2333,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 1281,
-                                "end": 1287
+                                "end": 1287,
+                                "text": "string"
                               }
                             ]
                           },
@@ -2226,7 +2346,8 @@
                               {
                                 "kind": "string",
                                 "start": 1288,
-                                "end": 1300
+                                "end": 1300,
+                                "text": "\", total: $\""
                               }
                             ]
                           }
@@ -2245,7 +2366,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 1302,
-                                "end": 1308
+                                "end": 1308,
+                                "text": "string"
                               }
                             ]
                           },
@@ -2267,12 +2389,14 @@
                                       {
                                         "kind": "identifier",
                                         "start": 1310,
-                                        "end": 1315
+                                        "end": 1315,
+                                        "text": "entry"
                                       },
                                       {
                                         "kind": "identifier",
                                         "start": 1316,
-                                        "end": 1326
+                                        "end": 1326,
+                                        "text": "orderTotal"
                                       }
                                     ]
                                   }
@@ -2295,7 +2419,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 1329,
-                                "end": 1335
+                                "end": 1335,
+                                "text": "string"
                               }
                             ]
                           },
@@ -2307,7 +2432,8 @@
                               {
                                 "kind": "string",
                                 "start": 1336,
-                                "end": 1351
+                                "end": 1351,
+                                "text": "\") paired with\""
                               }
                             ]
                           }
@@ -2326,7 +2452,8 @@
                               {
                                 "kind": "identifier",
                                 "start": 1353,
-                                "end": 1359
+                                "end": 1359,
+                                "text": "string"
                               }
                             ]
                           },
@@ -2348,12 +2475,14 @@
                                       {
                                         "kind": "identifier",
                                         "start": 1361,
-                                        "end": 1366
+                                        "end": 1366,
+                                        "text": "entry"
                                       },
                                       {
                                         "kind": "identifier",
                                         "start": 1367,
-                                        "end": 1385
+                                        "end": 1385,
+                                        "text": "pairedCustomerName"
                                       }
                                     ]
                                   }
