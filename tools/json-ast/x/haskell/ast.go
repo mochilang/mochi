@@ -20,6 +20,53 @@ type Node struct {
 	Children []Node `json:"children,omitempty"`
 }
 
+// Typed aliases for the node kinds that appear in the generated JSON.  These
+// give a slightly more structured view of the AST while still using Node under
+// the hood.
+type (
+	Haskell           Node
+	Pragma            Node
+	Imports           Node
+	Import            Node
+	Module            Node
+	ModuleID          Node
+	ImportList        Node
+	ImportName        Node
+	Comment           Node
+	Declarations      Node
+	DataType          Node
+	DataConstructors  Node
+	DataConstructor   Node
+	Record            Node
+	Constructor       Node
+	Fields            Node
+	Field             Node
+	FieldName         Node
+	FieldUpdate       Node
+	Name              Node
+	Variable          Node
+	Integer           Node
+	String            Node
+	Operator          Node
+	Unit              Node
+	Literal           Node
+	List              Node
+	ListComprehension Node
+	Match             Node
+	Bind              Node
+	Generator         Node
+	Patterns          Node
+	Apply             Node
+	Projection        Node
+	Exp               Node
+	Infix             Node
+	Lambda            Node
+	Do                Node
+	Signature         Node
+	Parens            Node
+	Qualifiers        Node
+)
+
 // convert transforms a tree-sitter node into the Node structure defined above.
 // Only named children are traversed to keep the result compact.
 func convert(n *sitter.Node, src []byte, pos bool) *Node {
