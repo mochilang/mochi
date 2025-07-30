@@ -2229,7 +2229,8 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				typ = ""
 			}
 			if _, ok := e.(*StringLit); ok {
-				typ = ""
+				typ = "String"
+				e = &StringCastExpr{Expr: e}
 			} else if _, ok := e.(*MapLit); ok {
 				typ = ""
 			}
@@ -2376,7 +2377,8 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				typ = ""
 			}
 			if _, ok := e.(*StringLit); ok {
-				typ = ""
+				typ = "String"
+				e = &StringCastExpr{Expr: e}
 			} else if _, ok := e.(*MapLit); ok {
 				typ = ""
 			}
