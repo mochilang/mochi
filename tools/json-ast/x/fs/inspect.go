@@ -6,8 +6,10 @@ import (
 )
 
 // Program represents a parsed F# source file.
+// Program represents a parsed F# source file. The Root field mirrors the tree
+// sitter "file" node.
 type Program struct {
-	Root Node `json:"root"`
+	Root File `json:"root"`
 }
 
 // Inspect parses F# code using tree-sitter and returns its Program representation.
@@ -16,6 +18,9 @@ func Inspect(src string, withPos bool) (*Program, error) {
 	parser := sitter.NewParser()
 	parser.SetLanguage(sitter.NewLanguage(fsharp.LanguageFSharp()))
 	tree := parser.Parse(nil, []byte(src))
-	root := convertNode(tree.RootNode(), []byte(src), withPos)
-	return &Program{Root: root}, nil
+	root := convert(tree.RootNode(), []byte(src), withPos)
+	if root == nil {
+		return &Program{}, nil
+	}
+	return &Program{Root: File(*root)}, nil
 }
