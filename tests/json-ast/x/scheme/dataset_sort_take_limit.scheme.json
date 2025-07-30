@@ -1,0 +1,562 @@
+{
+  "forms": [
+    {
+      "list": [
+        {
+          "atom": "import"
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "1"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "69"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "chibi"
+            },
+            {
+              "atom": "string"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "products"
+        },
+        {
+          "list": [
+            {
+              "atom": "list"
+            },
+            {
+              "list": [
+                {
+                  "atom": "alist-\u003ehash-table"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "name"
+                        },
+                        {
+                          "atom": "Laptop"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "price"
+                        },
+                        {
+                          "atom": "1500"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "alist-\u003ehash-table"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "name"
+                        },
+                        {
+                          "atom": "Smartphone"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "price"
+                        },
+                        {
+                          "atom": "900"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "alist-\u003ehash-table"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "name"
+                        },
+                        {
+                          "atom": "Tablet"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "price"
+                        },
+                        {
+                          "atom": "600"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "alist-\u003ehash-table"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "name"
+                        },
+                        {
+                          "atom": "Monitor"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "price"
+                        },
+                        {
+                          "atom": "300"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "alist-\u003ehash-table"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "name"
+                        },
+                        {
+                          "atom": "Keyboard"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "price"
+                        },
+                        {
+                          "atom": "100"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "alist-\u003ehash-table"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "name"
+                        },
+                        {
+                          "atom": "Mouse"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "price"
+                        },
+                        {
+                          "atom": "50"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "alist-\u003ehash-table"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "name"
+                        },
+                        {
+                          "atom": "Headphones"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "price"
+                        },
+                        {
+                          "atom": "200"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "expensive"
+        },
+        {
+          "list": [
+            {
+              "atom": "let"
+            },
+            {
+              "list": [
+                {
+                  "list": [
+                    {
+                      "atom": "res4"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "list"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "begin"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "for-each"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "lambda"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "p"
+                            }
+                          ]
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "set!"
+                            },
+                            {
+                              "atom": "res4"
+                            },
+                            {
+                              "list": [
+                                {
+                                  "atom": "append"
+                                },
+                                {
+                                  "atom": "res4"
+                                },
+                                {
+                                  "list": [
+                                    {
+                                      "atom": "list"
+                                    },
+                                    {
+                                      "atom": "p"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "atom": "products"
+                    }
+                  ]
+                },
+                {
+                  "atom": "res4"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "atom": "--- Top products (excluding most expensive)\n   ---"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "for-each"
+        },
+        {
+          "list": [
+            {
+              "atom": "lambda"
+            },
+            {
+              "list": [
+                {
+                  "atom": "item"
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "begin"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "display"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "hash-table-ref"
+                        },
+                        {
+                          "atom": "item"
+                        },
+                        {
+                          "atom": "name"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "display"
+                    },
+                    {
+                      "atom": " "
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "display"
+                    },
+                    {
+                      "atom": "costs $"
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "display"
+                    },
+                    {
+                      "atom": " "
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "display"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "hash-table-ref"
+                        },
+                        {
+                          "atom": "item"
+                        },
+                        {
+                          "atom": "price"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "newline"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "atom": "expensive"
+        }
+      ]
+    }
+  ]
+}

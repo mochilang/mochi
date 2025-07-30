@@ -1,0 +1,1138 @@
+{
+  "forms": [
+    {
+      "list": [
+        {
+          "atom": "import"
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "1"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "69"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "chibi"
+            },
+            {
+              "atom": "string"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "xs"
+        },
+        {
+          "list": [
+            {
+              "atom": "list"
+            },
+            {
+              "atom": "1"
+            },
+            {
+              "atom": "2"
+            },
+            {
+              "atom": "3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "ys"
+        },
+        {
+          "list": [
+            {
+              "atom": "let"
+            },
+            {
+              "list": [
+                {
+                  "list": [
+                    {
+                      "atom": "res35"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "list"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "begin"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "for-each"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "lambda"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "x"
+                            }
+                          ]
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "if"
+                            },
+                            {
+                              "list": [
+                                {
+                                  "atom": "="
+                                },
+                                {
+                                  "list": [
+                                    {
+                                      "atom": "modulo"
+                                    },
+                                    {
+                                      "atom": "x"
+                                    },
+                                    {
+                                      "atom": "2"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "atom": "1"
+                                }
+                              ]
+                            },
+                            {
+                              "list": [
+                                {
+                                  "atom": "set!"
+                                },
+                                {
+                                  "atom": "res35"
+                                },
+                                {
+                                  "list": [
+                                    {
+                                      "atom": "append"
+                                    },
+                                    {
+                                      "atom": "res35"
+                                    },
+                                    {
+                                      "list": [
+                                        {
+                                          "atom": "list"
+                                        },
+                                        {
+                                          "atom": "x"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "list": [
+                                {
+                                  "atom": "quote"
+                                },
+                                {
+                                  "atom": "nil"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "atom": "xs"
+                    }
+                  ]
+                },
+                {
+                  "atom": "res35"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "list": [
+            {
+              "atom": "if"
+            },
+            {
+              "list": [
+                {
+                  "atom": "cond"
+                },
+                {
+                  "list": [
+                    {
+                      "list": [
+                        {
+                          "atom": "string?"
+                        },
+                        {
+                          "atom": "ys"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "if"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "string-contains"
+                            },
+                            {
+                              "atom": "ys"
+                            },
+                            {
+                              "atom": "1"
+                            }
+                          ]
+                        },
+                        {
+                          "atom": "true"
+                        },
+                        {
+                          "atom": "false"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "list": [
+                        {
+                          "atom": "hash-table?"
+                        },
+                        {
+                          "atom": "ys"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "if"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "hash-table-exists?"
+                            },
+                            {
+                              "atom": "ys"
+                            },
+                            {
+                              "atom": "1"
+                            }
+                          ]
+                        },
+                        {
+                          "atom": "true"
+                        },
+                        {
+                          "atom": "false"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "else"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "if"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "member"
+                            },
+                            {
+                              "atom": "1"
+                            },
+                            {
+                              "atom": "ys"
+                            }
+                          ]
+                        },
+                        {
+                          "atom": "true"
+                        },
+                        {
+                          "atom": "false"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "atom": "1"
+            },
+            {
+              "atom": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "list": [
+            {
+              "atom": "if"
+            },
+            {
+              "list": [
+                {
+                  "atom": "cond"
+                },
+                {
+                  "list": [
+                    {
+                      "list": [
+                        {
+                          "atom": "string?"
+                        },
+                        {
+                          "atom": "ys"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "if"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "string-contains"
+                            },
+                            {
+                              "atom": "ys"
+                            },
+                            {
+                              "atom": "2"
+                            }
+                          ]
+                        },
+                        {
+                          "atom": "true"
+                        },
+                        {
+                          "atom": "false"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "list": [
+                        {
+                          "atom": "hash-table?"
+                        },
+                        {
+                          "atom": "ys"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "if"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "hash-table-exists?"
+                            },
+                            {
+                              "atom": "ys"
+                            },
+                            {
+                              "atom": "2"
+                            }
+                          ]
+                        },
+                        {
+                          "atom": "true"
+                        },
+                        {
+                          "atom": "false"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "else"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "if"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "member"
+                            },
+                            {
+                              "atom": "2"
+                            },
+                            {
+                              "atom": "ys"
+                            }
+                          ]
+                        },
+                        {
+                          "atom": "true"
+                        },
+                        {
+                          "atom": "false"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "atom": "1"
+            },
+            {
+              "atom": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "m"
+        },
+        {
+          "list": [
+            {
+              "atom": "alist-\u003ehash-table"
+            },
+            {
+              "list": [
+                {
+                  "atom": "list"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "cons"
+                    },
+                    {
+                      "atom": "a"
+                    },
+                    {
+                      "atom": "1"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "list": [
+            {
+              "atom": "if"
+            },
+            {
+              "list": [
+                {
+                  "atom": "cond"
+                },
+                {
+                  "list": [
+                    {
+                      "list": [
+                        {
+                          "atom": "string?"
+                        },
+                        {
+                          "atom": "m"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "if"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "string-contains"
+                            },
+                            {
+                              "atom": "m"
+                            },
+                            {
+                              "atom": "a"
+                            }
+                          ]
+                        },
+                        {
+                          "atom": "true"
+                        },
+                        {
+                          "atom": "false"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "list": [
+                        {
+                          "atom": "hash-table?"
+                        },
+                        {
+                          "atom": "m"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "if"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "hash-table-exists?"
+                            },
+                            {
+                              "atom": "m"
+                            },
+                            {
+                              "atom": "a"
+                            }
+                          ]
+                        },
+                        {
+                          "atom": "true"
+                        },
+                        {
+                          "atom": "false"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "else"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "if"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "member"
+                            },
+                            {
+                              "atom": "a"
+                            },
+                            {
+                              "atom": "m"
+                            }
+                          ]
+                        },
+                        {
+                          "atom": "true"
+                        },
+                        {
+                          "atom": "false"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "atom": "1"
+            },
+            {
+              "atom": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "list": [
+            {
+              "atom": "if"
+            },
+            {
+              "list": [
+                {
+                  "atom": "cond"
+                },
+                {
+                  "list": [
+                    {
+                      "list": [
+                        {
+                          "atom": "string?"
+                        },
+                        {
+                          "atom": "m"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "if"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "string-contains"
+                            },
+                            {
+                              "atom": "m"
+                            },
+                            {
+                              "atom": "b"
+                            }
+                          ]
+                        },
+                        {
+                          "atom": "true"
+                        },
+                        {
+                          "atom": "false"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "list": [
+                        {
+                          "atom": "hash-table?"
+                        },
+                        {
+                          "atom": "m"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "if"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "hash-table-exists?"
+                            },
+                            {
+                              "atom": "m"
+                            },
+                            {
+                              "atom": "b"
+                            }
+                          ]
+                        },
+                        {
+                          "atom": "true"
+                        },
+                        {
+                          "atom": "false"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "else"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "if"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "member"
+                            },
+                            {
+                              "atom": "b"
+                            },
+                            {
+                              "atom": "m"
+                            }
+                          ]
+                        },
+                        {
+                          "atom": "true"
+                        },
+                        {
+                          "atom": "false"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "atom": "1"
+            },
+            {
+              "atom": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "s"
+        },
+        {
+          "atom": "hello"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "list": [
+            {
+              "atom": "if"
+            },
+            {
+              "list": [
+                {
+                  "atom": "cond"
+                },
+                {
+                  "list": [
+                    {
+                      "list": [
+                        {
+                          "atom": "string?"
+                        },
+                        {
+                          "atom": "s"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "if"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "string-contains"
+                            },
+                            {
+                              "atom": "s"
+                            },
+                            {
+                              "atom": "ell"
+                            }
+                          ]
+                        },
+                        {
+                          "atom": "true"
+                        },
+                        {
+                          "atom": "false"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "list": [
+                        {
+                          "atom": "hash-table?"
+                        },
+                        {
+                          "atom": "s"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "if"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "hash-table-exists?"
+                            },
+                            {
+                              "atom": "s"
+                            },
+                            {
+                              "atom": "ell"
+                            }
+                          ]
+                        },
+                        {
+                          "atom": "true"
+                        },
+                        {
+                          "atom": "false"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "else"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "if"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "member"
+                            },
+                            {
+                              "atom": "ell"
+                            },
+                            {
+                              "atom": "s"
+                            }
+                          ]
+                        },
+                        {
+                          "atom": "true"
+                        },
+                        {
+                          "atom": "false"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "atom": "1"
+            },
+            {
+              "atom": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "list": [
+            {
+              "atom": "if"
+            },
+            {
+              "list": [
+                {
+                  "atom": "cond"
+                },
+                {
+                  "list": [
+                    {
+                      "list": [
+                        {
+                          "atom": "string?"
+                        },
+                        {
+                          "atom": "s"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "if"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "string-contains"
+                            },
+                            {
+                              "atom": "s"
+                            },
+                            {
+                              "atom": "foo"
+                            }
+                          ]
+                        },
+                        {
+                          "atom": "true"
+                        },
+                        {
+                          "atom": "false"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "list": [
+                        {
+                          "atom": "hash-table?"
+                        },
+                        {
+                          "atom": "s"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "if"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "hash-table-exists?"
+                            },
+                            {
+                              "atom": "s"
+                            },
+                            {
+                              "atom": "foo"
+                            }
+                          ]
+                        },
+                        {
+                          "atom": "true"
+                        },
+                        {
+                          "atom": "false"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "else"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "if"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "member"
+                            },
+                            {
+                              "atom": "foo"
+                            },
+                            {
+                              "atom": "s"
+                            }
+                          ]
+                        },
+                        {
+                          "atom": "true"
+                        },
+                        {
+                          "atom": "false"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "atom": "1"
+            },
+            {
+              "atom": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    }
+  ]
+}

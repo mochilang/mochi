@@ -1,0 +1,487 @@
+{
+  "forms": [
+    {
+      "list": [
+        {
+          "atom": "import"
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "1"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "69"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "chibi"
+            },
+            {
+              "atom": "string"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "items"
+        },
+        {
+          "list": [
+            {
+              "atom": "list"
+            },
+            {
+              "list": [
+                {
+                  "atom": "alist-\u003ehash-table"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "cat"
+                        },
+                        {
+                          "atom": "a"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "val"
+                        },
+                        {
+                          "atom": "3"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "alist-\u003ehash-table"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "cat"
+                        },
+                        {
+                          "atom": "a"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "val"
+                        },
+                        {
+                          "atom": "1"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "alist-\u003ehash-table"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "cat"
+                        },
+                        {
+                          "atom": "b"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "val"
+                        },
+                        {
+                          "atom": "5"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "alist-\u003ehash-table"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "cat"
+                        },
+                        {
+                          "atom": "b"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "val"
+                        },
+                        {
+                          "atom": "2"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "grouped"
+        },
+        {
+          "list": [
+            {
+              "atom": "let"
+            },
+            {
+              "list": [
+                {
+                  "list": [
+                    {
+                      "atom": "res29"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "list"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "begin"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "for-each"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "lambda"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "i"
+                            }
+                          ]
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "set!"
+                            },
+                            {
+                              "atom": "res29"
+                            },
+                            {
+                              "list": [
+                                {
+                                  "atom": "append"
+                                },
+                                {
+                                  "atom": "res29"
+                                },
+                                {
+                                  "list": [
+                                    {
+                                      "atom": "list"
+                                    },
+                                    {
+                                      "list": [
+                                        {
+                                          "atom": "alist-\u003ehash-table"
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "atom": "list"
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "atom": "cons"
+                                                },
+                                                {
+                                                  "atom": "cat"
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "hash-table-ref"
+                                                    },
+                                                    {
+                                                      "atom": "g"
+                                                    },
+                                                    {
+                                                      "atom": "key"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "atom": "cons"
+                                                },
+                                                {
+                                                  "atom": "total"
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "apply"
+                                                    },
+                                                    {
+                                                      "atom": "+"
+                                                    },
+                                                    {
+                                                      "list": [
+                                                        {
+                                                          "atom": "let"
+                                                        },
+                                                        {
+                                                          "list": [
+                                                            {
+                                                              "list": [
+                                                                {
+                                                                  "atom": "res28"
+                                                                },
+                                                                {
+                                                                  "list": [
+                                                                    {
+                                                                      "atom": "list"
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        },
+                                                        {
+                                                          "list": [
+                                                            {
+                                                              "atom": "begin"
+                                                            },
+                                                            {
+                                                              "list": [
+                                                                {
+                                                                  "atom": "for-each"
+                                                                },
+                                                                {
+                                                                  "list": [
+                                                                    {
+                                                                      "atom": "lambda"
+                                                                    },
+                                                                    {
+                                                                      "list": [
+                                                                        {
+                                                                          "atom": "x"
+                                                                        }
+                                                                      ]
+                                                                    },
+                                                                    {
+                                                                      "list": [
+                                                                        {
+                                                                          "atom": "set!"
+                                                                        },
+                                                                        {
+                                                                          "atom": "res28"
+                                                                        },
+                                                                        {
+                                                                          "list": [
+                                                                            {
+                                                                              "atom": "append"
+                                                                            },
+                                                                            {
+                                                                              "atom": "res28"
+                                                                            },
+                                                                            {
+                                                                              "list": [
+                                                                                {
+                                                                                  "atom": "list"
+                                                                                },
+                                                                                {
+                                                                                  "list": [
+                                                                                    {
+                                                                                      "atom": "hash-table-ref"
+                                                                                    },
+                                                                                    {
+                                                                                      "atom": "x"
+                                                                                    },
+                                                                                    {
+                                                                                      "atom": "val"
+                                                                                    }
+                                                                                  ]
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          ]
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  ]
+                                                                },
+                                                                {
+                                                                  "atom": "g"
+                                                                }
+                                                              ]
+                                                            },
+                                                            {
+                                                              "atom": "res28"
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "atom": "items"
+                    }
+                  ]
+                },
+                {
+                  "atom": "res29"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "atom": "grouped"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    }
+  ]
+}

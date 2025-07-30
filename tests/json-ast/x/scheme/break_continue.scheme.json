@@ -1,0 +1,721 @@
+{
+  "forms": [
+    {
+      "list": [
+        {
+          "atom": "import"
+        },
+        {
+          "list": [
+            {
+              "atom": "only"
+            },
+            {
+              "list": [
+                {
+                  "atom": "scheme"
+                },
+                {
+                  "atom": "base"
+                }
+              ]
+            },
+            {
+              "atom": "call/cc"
+            },
+            {
+              "atom": "when"
+            },
+            {
+              "atom": "list-ref"
+            },
+            {
+              "atom": "list-set!"
+            },
+            {
+              "atom": "list"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "import"
+        },
+        {
+          "list": [
+            {
+              "atom": "scheme"
+            },
+            {
+              "atom": "time"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "import"
+        },
+        {
+          "list": [
+            {
+              "atom": "chibi"
+            },
+            {
+              "atom": "string"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "import"
+        },
+        {
+          "list": [
+            {
+              "atom": "only"
+            },
+            {
+              "list": [
+                {
+                  "atom": "scheme"
+                },
+                {
+                  "atom": "char"
+                }
+              ]
+            },
+            {
+              "atom": "string-upcase"
+            },
+            {
+              "atom": "string-downcase"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "list": [
+            {
+              "atom": "to-str"
+            },
+            {
+              "atom": "x"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "cond"
+            },
+            {
+              "list": [
+                {
+                  "list": [
+                    {
+                      "atom": "pair?"
+                    },
+                    {
+                      "atom": "x"
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "string-append"
+                    },
+                    {
+                      "atom": "["
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "string-join"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "map"
+                            },
+                            {
+                              "atom": "to-str"
+                            },
+                            {
+                              "atom": "x"
+                            }
+                          ]
+                        },
+                        {
+                          "atom": ", "
+                        }
+                      ]
+                    },
+                    {
+                      "atom": "]"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "list": [
+                    {
+                      "atom": "string?"
+                    },
+                    {
+                      "atom": "x"
+                    }
+                  ]
+                },
+                {
+                  "atom": "x"
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "list": [
+                    {
+                      "atom": "boolean?"
+                    },
+                    {
+                      "atom": "x"
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "if"
+                    },
+                    {
+                      "atom": "x"
+                    },
+                    {
+                      "atom": "1"
+                    },
+                    {
+                      "atom": "0"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "else"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "number-\u003estring"
+                    },
+                    {
+                      "atom": "x"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "list": [
+            {
+              "atom": "upper"
+            },
+            {
+              "atom": "s"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "string-upcase"
+            },
+            {
+              "atom": "s"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "list": [
+            {
+              "atom": "lower"
+            },
+            {
+              "atom": "s"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "string-downcase"
+            },
+            {
+              "atom": "s"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "list": [
+            {
+              "atom": "fmod"
+            },
+            {
+              "atom": "a"
+            },
+            {
+              "atom": "b"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "-"
+            },
+            {
+              "atom": "a"
+            },
+            {
+              "list": [
+                {
+                  "atom": "*"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "floor"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "/"
+                        },
+                        {
+                          "atom": "a"
+                        },
+                        {
+                          "atom": "b"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "atom": "b"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "numbers"
+        },
+        {
+          "list": [
+            {
+              "atom": "list"
+            },
+            {
+              "atom": "1"
+            },
+            {
+              "atom": "2"
+            },
+            {
+              "atom": "3"
+            },
+            {
+              "atom": "4"
+            },
+            {
+              "atom": "5"
+            },
+            {
+              "atom": "6"
+            },
+            {
+              "atom": "7"
+            },
+            {
+              "atom": "8"
+            },
+            {
+              "atom": "9"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "call/cc"
+        },
+        {
+          "list": [
+            {
+              "atom": "lambda"
+            },
+            {
+              "list": [
+                {
+                  "atom": "break11"
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "letrec"
+                },
+                {
+                  "list": [
+                    {
+                      "list": [
+                        {
+                          "atom": "loop10"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "lambda"
+                            },
+                            {
+                              "list": [
+                                {
+                                  "atom": "xs"
+                                }
+                              ]
+                            },
+                            {
+                              "list": [
+                                {
+                                  "atom": "if"
+                                },
+                                {
+                                  "list": [
+                                    {
+                                      "atom": "null?"
+                                    },
+                                    {
+                                      "atom": "xs"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "list": [
+                                    {
+                                      "atom": "quote"
+                                    },
+                                    {
+                                      "atom": "nil"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "list": [
+                                    {
+                                      "atom": "begin"
+                                    },
+                                    {
+                                      "list": [
+                                        {
+                                          "atom": "let"
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "list": [
+                                                {
+                                                  "atom": "n"
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "car"
+                                                    },
+                                                    {
+                                                      "atom": "xs"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "atom": "begin"
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "atom": "if"
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "equal?"
+                                                    },
+                                                    {
+                                                      "list": [
+                                                        {
+                                                          "atom": "modulo"
+                                                        },
+                                                        {
+                                                          "atom": "n"
+                                                        },
+                                                        {
+                                                          "atom": "2"
+                                                        }
+                                                      ]
+                                                    },
+                                                    {
+                                                      "atom": "0"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "begin"
+                                                    },
+                                                    {
+                                                      "list": [
+                                                        {
+                                                          "atom": "loop10"
+                                                        },
+                                                        {
+                                                          "list": [
+                                                            {
+                                                              "atom": "cdr"
+                                                            },
+                                                            {
+                                                              "atom": "xs"
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "quote"
+                                                    },
+                                                    {
+                                                      "atom": "nil"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "atom": "if"
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "\u003e"
+                                                    },
+                                                    {
+                                                      "atom": "n"
+                                                    },
+                                                    {
+                                                      "atom": "7"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "begin"
+                                                    },
+                                                    {
+                                                      "list": [
+                                                        {
+                                                          "atom": "break11"
+                                                        },
+                                                        {
+                                                          "list": [
+                                                            {
+                                                              "atom": "quote"
+                                                            },
+                                                            {
+                                                              "atom": "nil"
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "quote"
+                                                    },
+                                                    {
+                                                      "atom": "nil"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "atom": "display"
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "to-str"
+                                                    },
+                                                    {
+                                                      "atom": "odd number:"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "atom": "display"
+                                                },
+                                                {
+                                                  "atom": " "
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "atom": "display"
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "to-str"
+                                                    },
+                                                    {
+                                                      "atom": "n"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "atom": "newline"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "list": [
+                                        {
+                                          "atom": "loop10"
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "atom": "cdr"
+                                            },
+                                            {
+                                              "atom": "xs"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "loop10"
+                    },
+                    {
+                      "atom": "numbers"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

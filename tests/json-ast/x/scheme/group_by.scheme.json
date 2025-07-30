@@ -1,0 +1,1165 @@
+{
+  "forms": [
+    {
+      "list": [
+        {
+          "atom": "import"
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "1"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "69"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "chibi"
+            },
+            {
+              "atom": "string"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "people"
+        },
+        {
+          "list": [
+            {
+              "atom": "list"
+            },
+            {
+              "list": [
+                {
+                  "atom": "alist-\u003ehash-table"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "name"
+                        },
+                        {
+                          "atom": "Alice"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "age"
+                        },
+                        {
+                          "atom": "30"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "city"
+                        },
+                        {
+                          "atom": "Paris"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "alist-\u003ehash-table"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "name"
+                        },
+                        {
+                          "atom": "Bob"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "age"
+                        },
+                        {
+                          "atom": "15"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "city"
+                        },
+                        {
+                          "atom": "Hanoi"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "alist-\u003ehash-table"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "name"
+                        },
+                        {
+                          "atom": "Charlie"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "age"
+                        },
+                        {
+                          "atom": "65"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "city"
+                        },
+                        {
+                          "atom": "Paris"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "alist-\u003ehash-table"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "name"
+                        },
+                        {
+                          "atom": "Diana"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "age"
+                        },
+                        {
+                          "atom": "45"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "city"
+                        },
+                        {
+                          "atom": "Hanoi"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "alist-\u003ehash-table"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "name"
+                        },
+                        {
+                          "atom": "Eve"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "age"
+                        },
+                        {
+                          "atom": "70"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "city"
+                        },
+                        {
+                          "atom": "Paris"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "alist-\u003ehash-table"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "name"
+                        },
+                        {
+                          "atom": "Frank"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "age"
+                        },
+                        {
+                          "atom": "22"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "cons"
+                        },
+                        {
+                          "atom": "city"
+                        },
+                        {
+                          "atom": "Hanoi"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "atom": "stats"
+        },
+        {
+          "list": [
+            {
+              "atom": "let"
+            },
+            {
+              "list": [
+                {
+                  "list": [
+                    {
+                      "atom": "groups8"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "make-hash-table"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "res11"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "list"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "begin"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "for-each"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "lambda"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "person"
+                            }
+                          ]
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "let*"
+                            },
+                            {
+                              "list": [
+                                {
+                                  "list": [
+                                    {
+                                      "atom": "k10"
+                                    },
+                                    {
+                                      "list": [
+                                        {
+                                          "atom": "hash-table-ref"
+                                        },
+                                        {
+                                          "atom": "person"
+                                        },
+                                        {
+                                          "atom": "city"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "list": [
+                                    {
+                                      "atom": "g9"
+                                    },
+                                    {
+                                      "list": [
+                                        {
+                                          "atom": "hash-table-ref/default"
+                                        },
+                                        {
+                                          "atom": "groups8"
+                                        },
+                                        {
+                                          "atom": "k10"
+                                        },
+                                        {
+                                          "atom": "#f"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "list": [
+                                {
+                                  "atom": "begin"
+                                },
+                                {
+                                  "list": [
+                                    {
+                                      "atom": "if"
+                                    },
+                                    {
+                                      "list": [
+                                        {
+                                          "atom": "not"
+                                        },
+                                        {
+                                          "atom": "g9"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "list": [
+                                        {
+                                          "atom": "begin"
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "atom": "set!"
+                                            },
+                                            {
+                                              "atom": "g9"
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "atom": "alist-\u003ehash-table"
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "list"
+                                                    },
+                                                    {
+                                                      "list": [
+                                                        {
+                                                          "atom": "cons"
+                                                        },
+                                                        {
+                                                          "atom": "key"
+                                                        },
+                                                        {
+                                                          "atom": "k10"
+                                                        }
+                                                      ]
+                                                    },
+                                                    {
+                                                      "list": [
+                                                        {
+                                                          "atom": "cons"
+                                                        },
+                                                        {
+                                                          "atom": "items"
+                                                        },
+                                                        {
+                                                          "list": [
+                                                            {
+                                                              "atom": "list"
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "atom": "hash-table-set!"
+                                            },
+                                            {
+                                              "atom": "groups8"
+                                            },
+                                            {
+                                              "atom": "k10"
+                                            },
+                                            {
+                                              "atom": "g9"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "list": [
+                                        {
+                                          "atom": "quote"
+                                        },
+                                        {
+                                          "atom": "nil"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "list": [
+                                    {
+                                      "atom": "hash-table-set!"
+                                    },
+                                    {
+                                      "atom": "g9"
+                                    },
+                                    {
+                                      "atom": "items"
+                                    },
+                                    {
+                                      "list": [
+                                        {
+                                          "atom": "append"
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "atom": "hash-table-ref"
+                                            },
+                                            {
+                                              "atom": "g9"
+                                            },
+                                            {
+                                              "atom": "items"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "atom": "list"
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "atom": "alist-\u003ehash-table"
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "list"
+                                                    },
+                                                    {
+                                                      "list": [
+                                                        {
+                                                          "atom": "cons"
+                                                        },
+                                                        {
+                                                          "atom": "person"
+                                                        },
+                                                        {
+                                                          "atom": "person"
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "atom": "people"
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "for-each"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "lambda"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "g"
+                            }
+                          ]
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "set!"
+                            },
+                            {
+                              "atom": "res11"
+                            },
+                            {
+                              "list": [
+                                {
+                                  "atom": "append"
+                                },
+                                {
+                                  "atom": "res11"
+                                },
+                                {
+                                  "list": [
+                                    {
+                                      "atom": "list"
+                                    },
+                                    {
+                                      "list": [
+                                        {
+                                          "atom": "alist-\u003ehash-table"
+                                        },
+                                        {
+                                          "list": [
+                                            {
+                                              "atom": "list"
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "atom": "cons"
+                                                },
+                                                {
+                                                  "atom": "city"
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "hash-table-ref"
+                                                    },
+                                                    {
+                                                      "atom": "g"
+                                                    },
+                                                    {
+                                                      "atom": "key"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "atom": "cons"
+                                                },
+                                                {
+                                                  "atom": "count"
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "length"
+                                                    },
+                                                    {
+                                                      "list": [
+                                                        {
+                                                          "atom": "hash-table-ref"
+                                                        },
+                                                        {
+                                                          "atom": "g"
+                                                        },
+                                                        {
+                                                          "atom": "items"
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "list": [
+                                                {
+                                                  "atom": "cons"
+                                                },
+                                                {
+                                                  "atom": "avg_age"
+                                                },
+                                                {
+                                                  "list": [
+                                                    {
+                                                      "atom": "let"
+                                                    },
+                                                    {
+                                                      "list": [
+                                                        {
+                                                          "list": [
+                                                            {
+                                                              "atom": "xs"
+                                                            },
+                                                            {
+                                                              "list": [
+                                                                {
+                                                                  "atom": "let"
+                                                                },
+                                                                {
+                                                                  "list": [
+                                                                    {
+                                                                      "list": [
+                                                                        {
+                                                                          "atom": "res7"
+                                                                        },
+                                                                        {
+                                                                          "list": [
+                                                                            {
+                                                                              "atom": "list"
+                                                                            }
+                                                                          ]
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  ]
+                                                                },
+                                                                {
+                                                                  "list": [
+                                                                    {
+                                                                      "atom": "begin"
+                                                                    },
+                                                                    {
+                                                                      "list": [
+                                                                        {
+                                                                          "atom": "for-each"
+                                                                        },
+                                                                        {
+                                                                          "list": [
+                                                                            {
+                                                                              "atom": "lambda"
+                                                                            },
+                                                                            {
+                                                                              "list": [
+                                                                                {
+                                                                                  "atom": "p"
+                                                                                }
+                                                                              ]
+                                                                            },
+                                                                            {
+                                                                              "list": [
+                                                                                {
+                                                                                  "atom": "set!"
+                                                                                },
+                                                                                {
+                                                                                  "atom": "res7"
+                                                                                },
+                                                                                {
+                                                                                  "list": [
+                                                                                    {
+                                                                                      "atom": "append"
+                                                                                    },
+                                                                                    {
+                                                                                      "atom": "res7"
+                                                                                    },
+                                                                                    {
+                                                                                      "list": [
+                                                                                        {
+                                                                                          "atom": "list"
+                                                                                        },
+                                                                                        {
+                                                                                          "list": [
+                                                                                            {
+                                                                                              "atom": "hash-table-ref"
+                                                                                            },
+                                                                                            {
+                                                                                              "atom": "p"
+                                                                                            },
+                                                                                            {
+                                                                                              "atom": "age"
+                                                                                            }
+                                                                                          ]
+                                                                                        }
+                                                                                      ]
+                                                                                    }
+                                                                                  ]
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          ]
+                                                                        },
+                                                                        {
+                                                                          "list": [
+                                                                            {
+                                                                              "atom": "hash-table-ref"
+                                                                            },
+                                                                            {
+                                                                              "atom": "g"
+                                                                            },
+                                                                            {
+                                                                              "atom": "items"
+                                                                            }
+                                                                          ]
+                                                                        }
+                                                                      ]
+                                                                    },
+                                                                    {
+                                                                      "atom": "res7"
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    },
+                                                    {
+                                                      "list": [
+                                                        {
+                                                          "atom": "exact-\u003einexact"
+                                                        },
+                                                        {
+                                                          "list": [
+                                                            {
+                                                              "atom": "/"
+                                                            },
+                                                            {
+                                                              "list": [
+                                                                {
+                                                                  "atom": "apply"
+                                                                },
+                                                                {
+                                                                  "atom": "+"
+                                                                },
+                                                                {
+                                                                  "atom": "xs"
+                                                                }
+                                                              ]
+                                                            },
+                                                            {
+                                                              "list": [
+                                                                {
+                                                                  "atom": "length"
+                                                                },
+                                                                {
+                                                                  "atom": "xs"
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "hash-table-values"
+                        },
+                        {
+                          "atom": "groups8"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "atom": "res11"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "atom": "--- People grouped by city ---"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "for-each"
+        },
+        {
+          "list": [
+            {
+              "atom": "lambda"
+            },
+            {
+              "list": [
+                {
+                  "atom": "s"
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "begin"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "display"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "hash-table-ref"
+                        },
+                        {
+                          "atom": "s"
+                        },
+                        {
+                          "atom": "city"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "display"
+                    },
+                    {
+                      "atom": " "
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "display"
+                    },
+                    {
+                      "atom": ": count ="
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "display"
+                    },
+                    {
+                      "atom": " "
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "display"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "hash-table-ref"
+                        },
+                        {
+                          "atom": "s"
+                        },
+                        {
+                          "atom": "count"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "display"
+                    },
+                    {
+                      "atom": " "
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "display"
+                    },
+                    {
+                      "atom": ", avg_age ="
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "display"
+                    },
+                    {
+                      "atom": " "
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "display"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "hash-table-ref"
+                        },
+                        {
+                          "atom": "s"
+                        },
+                        {
+                          "atom": "avg_age"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "newline"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "atom": "stats"
+        }
+      ]
+    }
+  ]
+}

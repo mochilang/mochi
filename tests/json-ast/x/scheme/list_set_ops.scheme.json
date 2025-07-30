@@ -1,0 +1,430 @@
+{
+  "forms": [
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "list": [
+            {
+              "atom": "to-str"
+            },
+            {
+              "atom": "x"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "cond"
+            },
+            {
+              "list": [
+                {
+                  "list": [
+                    {
+                      "atom": "pair?"
+                    },
+                    {
+                      "atom": "x"
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "string-append"
+                    },
+                    {
+                      "atom": "["
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "string-join"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "map"
+                            },
+                            {
+                              "atom": "to-str"
+                            },
+                            {
+                              "atom": "x"
+                            }
+                          ]
+                        },
+                        {
+                          "atom": ", "
+                        }
+                      ]
+                    },
+                    {
+                      "atom": "]"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "list": [
+                    {
+                      "atom": "string?"
+                    },
+                    {
+                      "atom": "x"
+                    }
+                  ]
+                },
+                {
+                  "atom": "x"
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "list": [
+                    {
+                      "atom": "boolean?"
+                    },
+                    {
+                      "atom": "x"
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "if"
+                    },
+                    {
+                      "atom": "x"
+                    },
+                    {
+                      "atom": "true"
+                    },
+                    {
+                      "atom": "false"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "else"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "number-\u003estring"
+                    },
+                    {
+                      "atom": "x"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "list": [
+            {
+              "atom": "to-str"
+            },
+            {
+              "list": [
+                {
+                  "atom": "delete-duplicates"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "append"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "list"
+                        },
+                        {
+                          "atom": "1"
+                        },
+                        {
+                          "atom": "2"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "list"
+                        },
+                        {
+                          "atom": "2"
+                        },
+                        {
+                          "atom": "3"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "list": [
+            {
+              "atom": "to-str"
+            },
+            {
+              "list": [
+                {
+                  "atom": "filter"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "lambda"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "x"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "not"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "member"
+                            },
+                            {
+                              "atom": "x"
+                            },
+                            {
+                              "list": [
+                                {
+                                  "atom": "list"
+                                },
+                                {
+                                  "atom": "2"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "atom": "1"
+                    },
+                    {
+                      "atom": "2"
+                    },
+                    {
+                      "atom": "3"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "list": [
+            {
+              "atom": "to-str"
+            },
+            {
+              "list": [
+                {
+                  "atom": "filter"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "lambda"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "x"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "member"
+                        },
+                        {
+                          "atom": "x"
+                        },
+                        {
+                          "list": [
+                            {
+                              "atom": "list"
+                            },
+                            {
+                              "atom": "2"
+                            },
+                            {
+                              "atom": "4"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "list"
+                    },
+                    {
+                      "atom": "1"
+                    },
+                    {
+                      "atom": "2"
+                    },
+                    {
+                      "atom": "3"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "list": [
+            {
+              "atom": "to-str"
+            },
+            {
+              "list": [
+                {
+                  "atom": "length"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "append"
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "list"
+                        },
+                        {
+                          "atom": "1"
+                        },
+                        {
+                          "atom": "2"
+                        }
+                      ]
+                    },
+                    {
+                      "list": [
+                        {
+                          "atom": "list"
+                        },
+                        {
+                          "atom": "2"
+                        },
+                        {
+                          "atom": "3"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,188 @@
+{
+  "forms": [
+    {
+      "list": [
+        {
+          "atom": "import"
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "1"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "69"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "chibi"
+            },
+            {
+              "atom": "string"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "list": [
+            {
+              "atom": "boom"
+            },
+            {
+              "atom": "a"
+            },
+            {
+              "atom": "b"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "begin"
+            },
+            {
+              "list": [
+                {
+                  "atom": "display"
+                },
+                {
+                  "atom": "boom"
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "newline"
+                }
+              ]
+            },
+            {
+              "atom": "true"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "list": [
+            {
+              "atom": "if"
+            },
+            {
+              "list": [
+                {
+                  "atom": "and"
+                },
+                {
+                  "atom": "false"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "boom"
+                    },
+                    {
+                      "atom": "1"
+                    },
+                    {
+                      "atom": "2"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "atom": "1"
+            },
+            {
+              "atom": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "list": [
+            {
+              "atom": "if"
+            },
+            {
+              "list": [
+                {
+                  "atom": "or"
+                },
+                {
+                  "atom": "true"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "boom"
+                    },
+                    {
+                      "atom": "1"
+                    },
+                    {
+                      "atom": "2"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "atom": "1"
+            },
+            {
+              "atom": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    }
+  ]
+}

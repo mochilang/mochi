@@ -1,0 +1,168 @@
+{
+  "forms": [
+    {
+      "list": [
+        {
+          "atom": "import"
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "1"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "srfi"
+            },
+            {
+              "atom": "69"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "chibi"
+            },
+            {
+              "atom": "string"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "define"
+        },
+        {
+          "list": [
+            {
+              "atom": "sum_rec"
+            },
+            {
+              "atom": "n"
+            },
+            {
+              "atom": "acc"
+            }
+          ]
+        },
+        {
+          "list": [
+            {
+              "atom": "begin"
+            },
+            {
+              "list": [
+                {
+                  "atom": "if"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "="
+                    },
+                    {
+                      "atom": "n"
+                    },
+                    {
+                      "atom": "0"
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "begin"
+                    },
+                    {
+                      "atom": "acc"
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "quote"
+                    },
+                    {
+                      "atom": "nil"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "list": [
+                {
+                  "atom": "sum_rec"
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "-"
+                    },
+                    {
+                      "atom": "n"
+                    },
+                    {
+                      "atom": "1"
+                    }
+                  ]
+                },
+                {
+                  "list": [
+                    {
+                      "atom": "+"
+                    },
+                    {
+                      "atom": "acc"
+                    },
+                    {
+                      "atom": "n"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "display"
+        },
+        {
+          "list": [
+            {
+              "atom": "sum_rec"
+            },
+            {
+              "atom": "10"
+            },
+            {
+              "atom": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "list": [
+        {
+          "atom": "newline"
+        }
+      ]
+    }
+  ]
+}
