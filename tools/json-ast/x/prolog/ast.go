@@ -7,6 +7,11 @@ import (
 	"strconv"
 )
 
+// WithPos controls whether source position information is populated when
+// converting nodes. It is disabled by default to keep the resulting JSON
+// compact.
+var WithPos bool
+
 // Term represents a Prolog term.
 type Term struct {
 	Var     string   `json:"var,omitempty"`
@@ -24,10 +29,10 @@ type Term struct {
 type Node struct {
 	Kind     string `json:"kind"`
 	Text     string `json:"text,omitempty"`
-	Start    int    `json:"start"`
-	StartCol int    `json:"startCol"`
-	End      int    `json:"end"`
-	EndCol   int    `json:"endCol"`
+	Start    int    `json:"start,omitempty"`
+	StartCol int    `json:"startCol,omitempty"`
+	End      int    `json:"end,omitempty"`
+	EndCol   int    `json:"endCol,omitempty"`
 	Children []Node `json:"children,omitempty"`
 }
 
@@ -36,8 +41,8 @@ type Clause struct {
 	Name   string `json:"name"`
 	Params []Term `json:"params"`
 	Goal   Term   `json:"goal"`
-	Start  int    `json:"start"`
-	End    int    `json:"end"`
+	Start  int    `json:"start,omitempty"`
+	End    int    `json:"end,omitempty"`
 }
 
 // Program represents a parsed Prolog file.
@@ -127,12 +132,12 @@ func convert(n *sitter.Node, src []byte) Node {
 	}
 	sp := n.StartPoint()
 	ep := n.EndPoint()
-	node := Node{
-		Kind:     n.Type(),
-		Start:    int(sp.Row) + 1,
-		StartCol: int(sp.Column),
-		End:      int(ep.Row) + 1,
-		EndCol:   int(ep.Column),
+	node := Node{Kind: n.Type()}
+	if WithPos {
+		node.Start = int(sp.Row) + 1
+		node.StartCol = int(sp.Column)
+		node.End = int(ep.Row) + 1
+		node.EndCol = int(ep.Column)
 	}
 
 	if n.NamedChildCount() == 0 {
@@ -165,12 +170,14 @@ func programToNode(p *Program, src []byte) Node {
 	root := Node{Kind: "program"}
 	for _, c := range p.Clauses {
 		clause := Node{Kind: "clause"}
-		line, col := pos(src, c.Start)
-		endLine, endCol := pos(src, c.End)
-		clause.Start = line
-		clause.StartCol = col
-		clause.End = endLine
-		clause.EndCol = endCol
+		if WithPos {
+			line, col := pos(src, c.Start)
+			endLine, endCol := pos(src, c.End)
+			clause.Start = line
+			clause.StartCol = col
+			clause.End = endLine
+			clause.EndCol = endCol
+		}
 
 		head := Node{Kind: c.Name}
 		for _, p := range c.Params {
