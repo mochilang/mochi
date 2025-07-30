@@ -1,5 +1,23 @@
 # 📦 CHANGELOG.md
 
+## [0.10.49] – 2025-07-30T09:15:33+07:00
+
+### Added
+
+* JSON AST inspectors for many languages with embedded parsers
+* Ruby inspector decoupled from a2mochi
+* Extensive golden tests verifying AST outputs
+* New builtins and loop handling across compilers
+
+### Changed
+
+* Parsing refinements across C, Pascal, Scheme, Dart and others
+* Documentation progress tables refreshed
+
+### Fixed
+
+* Minor output and parser issues resolved across languages
+
 ## [0.10.48] – 2025-07-29T09:06:36+07:00
 
 ### Added
