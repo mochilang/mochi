@@ -12,7 +12,8 @@
           {
             "kind": "simple_identifier",
             "start": 4,
-            "end": 8
+            "end": 8,
+            "text": "main"
           },
           {
             "kind": "function_value_parameters",
@@ -47,7 +48,8 @@
                           {
                             "kind": "simple_identifier",
                             "start": 21,
-                            "end": 30
+                            "end": 30,
+                            "text": "customers"
                           },
                           {
                             "kind": "user_type",
@@ -57,7 +59,8 @@
                               {
                                 "kind": "type_identifier",
                                 "start": 32,
-                                "end": 43
+                                "end": 43,
+                                "text": "MutableList"
                               },
                               {
                                 "kind": "type_arguments",
@@ -77,7 +80,8 @@
                                           {
                                             "kind": "type_identifier",
                                             "start": 44,
-                                            "end": 54
+                                            "end": 54,
+                                            "text": "MutableMap"
                                           },
                                           {
                                             "kind": "type_arguments",
@@ -97,7 +101,8 @@
                                                       {
                                                         "kind": "type_identifier",
                                                         "start": 55,
-                                                        "end": 61
+                                                        "end": 61,
+                                                        "text": "String"
                                                       }
                                                     ]
                                                   }
@@ -116,7 +121,8 @@
                                                       {
                                                         "kind": "type_identifier",
                                                         "start": 63,
-                                                        "end": 66
+                                                        "end": 66,
+                                                        "text": "Any"
                                                       }
                                                     ]
                                                   }
@@ -142,7 +148,8 @@
                           {
                             "kind": "simple_identifier",
                             "start": 71,
-                            "end": 84
+                            "end": 84,
+                            "text": "mutableListOf"
                           },
                           {
                             "kind": "call_suffix",
@@ -167,7 +174,8 @@
                                           {
                                             "kind": "simple_identifier",
                                             "start": 85,
-                                            "end": 97
+                                            "end": 97,
+                                            "text": "mutableMapOf"
                                           },
                                           {
                                             "kind": "call_suffix",
@@ -197,19 +205,22 @@
                                                               {
                                                                 "kind": "string_content",
                                                                 "start": 99,
-                                                                "end": 101
+                                                                "end": 101,
+                                                                "text": "id"
                                                               }
                                                             ]
                                                           },
                                                           {
                                                             "kind": "simple_identifier",
                                                             "start": 103,
-                                                            "end": 105
+                                                            "end": 105,
+                                                            "text": "to"
                                                           },
                                                           {
                                                             "kind": "integer_literal",
                                                             "start": 106,
-                                                            "end": 107
+                                                            "end": 107,
+                                                            "text": "1"
                                                           }
                                                         ]
                                                       }
@@ -233,14 +244,16 @@
                                                               {
                                                                 "kind": "string_content",
                                                                 "start": 110,
-                                                                "end": 114
+                                                                "end": 114,
+                                                                "text": "name"
                                                               }
                                                             ]
                                                           },
                                                           {
                                                             "kind": "simple_identifier",
                                                             "start": 116,
-                                                            "end": 118
+                                                            "end": 118,
+                                                            "text": "to"
                                                           },
                                                           {
                                                             "kind": "string_literal",
@@ -250,7 +263,8 @@
                                                               {
                                                                 "kind": "string_content",
                                                                 "start": 120,
-                                                                "end": 125
+                                                                "end": 125,
+                                                                "text": "Alice"
                                                               }
                                                             ]
                                                           }
@@ -279,7 +293,8 @@
                                           {
                                             "kind": "simple_identifier",
                                             "start": 129,
-                                            "end": 141
+                                            "end": 141,
+                                            "text": "mutableMapOf"
                                           },
                                           {
                                             "kind": "call_suffix",
@@ -309,19 +324,22 @@
                                                               {
                                                                 "kind": "string_content",
                                                                 "start": 143,
-                                                                "end": 145
+                                                                "end": 145,
+                                                                "text": "id"
                                                               }
                                                             ]
                                                           },
                                                           {
                                                             "kind": "simple_identifier",
                                                             "start": 147,
-                                                            "end": 149
+                                                            "end": 149,
+                                                            "text": "to"
                                                           },
                                                           {
                                                             "kind": "integer_literal",
                                                             "start": 150,
-                                                            "end": 151
+                                                            "end": 151,
+                                                            "text": "2"
                                                           }
                                                         ]
                                                       }
@@ -345,14 +363,16 @@
                                                               {
                                                                 "kind": "string_content",
                                                                 "start": 154,
-                                                                "end": 158
+                                                                "end": 158,
+                                                                "text": "name"
                                                               }
                                                             ]
                                                           },
                                                           {
                                                             "kind": "simple_identifier",
                                                             "start": 160,
-                                                            "end": 162
+                                                            "end": 162,
+                                                            "text": "to"
                                                           },
                                                           {
                                                             "kind": "string_literal",
@@ -362,7 +382,8 @@
                                                               {
                                                                 "kind": "string_content",
                                                                 "start": 164,
-                                                                "end": 167
+                                                                "end": 167,
+                                                                "text": "Bob"
                                                               }
                                                             ]
                                                           }
@@ -391,7 +412,8 @@
                                           {
                                             "kind": "simple_identifier",
                                             "start": 171,
-                                            "end": 183
+                                            "end": 183,
+                                            "text": "mutableMapOf"
                                           },
                                           {
                                             "kind": "call_suffix",
@@ -421,19 +443,22 @@
                                                               {
                                                                 "kind": "string_content",
                                                                 "start": 185,
-                                                                "end": 187
+                                                                "end": 187,
+                                                                "text": "id"
                                                               }
                                                             ]
                                                           },
                                                           {
                                                             "kind": "simple_identifier",
                                                             "start": 189,
-                                                            "end": 191
+                                                            "end": 191,
+                                                            "text": "to"
                                                           },
                                                           {
                                                             "kind": "integer_literal",
                                                             "start": 192,
-                                                            "end": 193
+                                                            "end": 193,
+                                                            "text": "3"
                                                           }
                                                         ]
                                                       }
@@ -457,14 +482,16 @@
                                                               {
                                                                 "kind": "string_content",
                                                                 "start": 196,
-                                                                "end": 200
+                                                                "end": 200,
+                                                                "text": "name"
                                                               }
                                                             ]
                                                           },
                                                           {
                                                             "kind": "simple_identifier",
                                                             "start": 202,
-                                                            "end": 204
+                                                            "end": 204,
+                                                            "text": "to"
                                                           },
                                                           {
                                                             "kind": "string_literal",
@@ -474,7 +501,8 @@
                                                               {
                                                                 "kind": "string_content",
                                                                 "start": 206,
-                                                                "end": 213
+                                                                "end": 213,
+                                                                "text": "Charlie"
                                                               }
                                                             ]
                                                           }
@@ -516,7 +544,8 @@
                           {
                             "kind": "simple_identifier",
                             "start": 225,
-                            "end": 231
+                            "end": 231,
+                            "text": "orders"
                           },
                           {
                             "kind": "user_type",
@@ -526,7 +555,8 @@
                               {
                                 "kind": "type_identifier",
                                 "start": 233,
-                                "end": 244
+                                "end": 244,
+                                "text": "MutableList"
                               },
                               {
                                 "kind": "type_arguments",
@@ -546,7 +576,8 @@
                                           {
                                             "kind": "type_identifier",
                                             "start": 245,
-                                            "end": 255
+                                            "end": 255,
+                                            "text": "MutableMap"
                                           },
                                           {
                                             "kind": "type_arguments",
@@ -566,7 +597,8 @@
                                                       {
                                                         "kind": "type_identifier",
                                                         "start": 256,
-                                                        "end": 262
+                                                        "end": 262,
+                                                        "text": "String"
                                                       }
                                                     ]
                                                   }
@@ -585,7 +617,8 @@
                                                       {
                                                         "kind": "type_identifier",
                                                         "start": 264,
-                                                        "end": 267
+                                                        "end": 267,
+                                                        "text": "Int"
                                                       }
                                                     ]
                                                   }
@@ -611,7 +644,8 @@
                           {
                             "kind": "simple_identifier",
                             "start": 272,
-                            "end": 285
+                            "end": 285,
+                            "text": "mutableListOf"
                           },
                           {
                             "kind": "call_suffix",
@@ -636,7 +670,8 @@
                                           {
                                             "kind": "simple_identifier",
                                             "start": 286,
-                                            "end": 298
+                                            "end": 298,
+                                            "text": "mutableMapOf"
                                           },
                                           {
                                             "kind": "call_suffix",
@@ -666,19 +701,22 @@
                                                               {
                                                                 "kind": "string_content",
                                                                 "start": 300,
-                                                                "end": 302
+                                                                "end": 302,
+                                                                "text": "id"
                                                               }
                                                             ]
                                                           },
                                                           {
                                                             "kind": "simple_identifier",
                                                             "start": 304,
-                                                            "end": 306
+                                                            "end": 306,
+                                                            "text": "to"
                                                           },
                                                           {
                                                             "kind": "integer_literal",
                                                             "start": 307,
-                                                            "end": 310
+                                                            "end": 310,
+                                                            "text": "100"
                                                           }
                                                         ]
                                                       }
@@ -702,19 +740,22 @@
                                                               {
                                                                 "kind": "string_content",
                                                                 "start": 313,
-                                                                "end": 323
+                                                                "end": 323,
+                                                                "text": "customerId"
                                                               }
                                                             ]
                                                           },
                                                           {
                                                             "kind": "simple_identifier",
                                                             "start": 325,
-                                                            "end": 327
+                                                            "end": 327,
+                                                            "text": "to"
                                                           },
                                                           {
                                                             "kind": "integer_literal",
                                                             "start": 328,
-                                                            "end": 329
+                                                            "end": 329,
+                                                            "text": "1"
                                                           }
                                                         ]
                                                       }
@@ -738,19 +779,22 @@
                                                               {
                                                                 "kind": "string_content",
                                                                 "start": 332,
-                                                                "end": 337
+                                                                "end": 337,
+                                                                "text": "total"
                                                               }
                                                             ]
                                                           },
                                                           {
                                                             "kind": "simple_identifier",
                                                             "start": 339,
-                                                            "end": 341
+                                                            "end": 341,
+                                                            "text": "to"
                                                           },
                                                           {
                                                             "kind": "integer_literal",
                                                             "start": 342,
-                                                            "end": 345
+                                                            "end": 345,
+                                                            "text": "250"
                                                           }
                                                         ]
                                                       }
@@ -777,7 +821,8 @@
                                           {
                                             "kind": "simple_identifier",
                                             "start": 348,
-                                            "end": 360
+                                            "end": 360,
+                                            "text": "mutableMapOf"
                                           },
                                           {
                                             "kind": "call_suffix",
@@ -807,19 +852,22 @@
                                                               {
                                                                 "kind": "string_content",
                                                                 "start": 362,
-                                                                "end": 364
+                                                                "end": 364,
+                                                                "text": "id"
                                                               }
                                                             ]
                                                           },
                                                           {
                                                             "kind": "simple_identifier",
                                                             "start": 366,
-                                                            "end": 368
+                                                            "end": 368,
+                                                            "text": "to"
                                                           },
                                                           {
                                                             "kind": "integer_literal",
                                                             "start": 369,
-                                                            "end": 372
+                                                            "end": 372,
+                                                            "text": "101"
                                                           }
                                                         ]
                                                       }
@@ -843,19 +891,22 @@
                                                               {
                                                                 "kind": "string_content",
                                                                 "start": 375,
-                                                                "end": 385
+                                                                "end": 385,
+                                                                "text": "customerId"
                                                               }
                                                             ]
                                                           },
                                                           {
                                                             "kind": "simple_identifier",
                                                             "start": 387,
-                                                            "end": 389
+                                                            "end": 389,
+                                                            "text": "to"
                                                           },
                                                           {
                                                             "kind": "integer_literal",
                                                             "start": 390,
-                                                            "end": 391
+                                                            "end": 391,
+                                                            "text": "2"
                                                           }
                                                         ]
                                                       }
@@ -879,19 +930,22 @@
                                                               {
                                                                 "kind": "string_content",
                                                                 "start": 394,
-                                                                "end": 399
+                                                                "end": 399,
+                                                                "text": "total"
                                                               }
                                                             ]
                                                           },
                                                           {
                                                             "kind": "simple_identifier",
                                                             "start": 401,
-                                                            "end": 403
+                                                            "end": 403,
+                                                            "text": "to"
                                                           },
                                                           {
                                                             "kind": "integer_literal",
                                                             "start": 404,
-                                                            "end": 407
+                                                            "end": 407,
+                                                            "text": "125"
                                                           }
                                                         ]
                                                       }
@@ -918,7 +972,8 @@
                                           {
                                             "kind": "simple_identifier",
                                             "start": 410,
-                                            "end": 422
+                                            "end": 422,
+                                            "text": "mutableMapOf"
                                           },
                                           {
                                             "kind": "call_suffix",
@@ -948,19 +1003,22 @@
                                                               {
                                                                 "kind": "string_content",
                                                                 "start": 424,
-                                                                "end": 426
+                                                                "end": 426,
+                                                                "text": "id"
                                                               }
                                                             ]
                                                           },
                                                           {
                                                             "kind": "simple_identifier",
                                                             "start": 428,
-                                                            "end": 430
+                                                            "end": 430,
+                                                            "text": "to"
                                                           },
                                                           {
                                                             "kind": "integer_literal",
                                                             "start": 431,
-                                                            "end": 434
+                                                            "end": 434,
+                                                            "text": "102"
                                                           }
                                                         ]
                                                       }
@@ -984,19 +1042,22 @@
                                                               {
                                                                 "kind": "string_content",
                                                                 "start": 437,
-                                                                "end": 447
+                                                                "end": 447,
+                                                                "text": "customerId"
                                                               }
                                                             ]
                                                           },
                                                           {
                                                             "kind": "simple_identifier",
                                                             "start": 449,
-                                                            "end": 451
+                                                            "end": 451,
+                                                            "text": "to"
                                                           },
                                                           {
                                                             "kind": "integer_literal",
                                                             "start": 452,
-                                                            "end": 453
+                                                            "end": 453,
+                                                            "text": "1"
                                                           }
                                                         ]
                                                       }
@@ -1020,19 +1081,22 @@
                                                               {
                                                                 "kind": "string_content",
                                                                 "start": 456,
-                                                                "end": 461
+                                                                "end": 461,
+                                                                "text": "total"
                                                               }
                                                             ]
                                                           },
                                                           {
                                                             "kind": "simple_identifier",
                                                             "start": 463,
-                                                            "end": 465
+                                                            "end": 465,
+                                                            "text": "to"
                                                           },
                                                           {
                                                             "kind": "integer_literal",
                                                             "start": 466,
-                                                            "end": 469
+                                                            "end": 469,
+                                                            "text": "300"
                                                           }
                                                         ]
                                                       }
@@ -1072,7 +1136,8 @@
                           {
                             "kind": "simple_identifier",
                             "start": 480,
-                            "end": 486
+                            "end": 486,
+                            "text": "result"
                           },
                           {
                             "kind": "user_type",
@@ -1082,7 +1147,8 @@
                               {
                                 "kind": "type_identifier",
                                 "start": 488,
-                                "end": 499
+                                "end": 499,
+                                "text": "MutableList"
                               },
                               {
                                 "kind": "type_arguments",
@@ -1102,7 +1168,8 @@
                                           {
                                             "kind": "type_identifier",
                                             "start": 500,
-                                            "end": 510
+                                            "end": 510,
+                                            "text": "MutableMap"
                                           },
                                           {
                                             "kind": "type_arguments",
@@ -1122,7 +1189,8 @@
                                                       {
                                                         "kind": "type_identifier",
                                                         "start": 511,
-                                                        "end": 517
+                                                        "end": 517,
+                                                        "text": "String"
                                                       }
                                                     ]
                                                   }
@@ -1141,7 +1209,8 @@
                                                       {
                                                         "kind": "type_identifier",
                                                         "start": 519,
-                                                        "end": 522
+                                                        "end": 522,
+                                                        "text": "Int"
                                                       }
                                                     ]
                                                   }
@@ -1167,7 +1236,8 @@
                           {
                             "kind": "simple_identifier",
                             "start": 527,
-                            "end": 530
+                            "end": 530,
+                            "text": "run"
                           },
                           {
                             "kind": "call_suffix",
@@ -1207,7 +1277,8 @@
                                                   {
                                                     "kind": "simple_identifier",
                                                     "start": 541,
-                                                    "end": 545
+                                                    "end": 545,
+                                                    "text": "_res"
                                                   }
                                                 ]
                                               },
@@ -1219,7 +1290,8 @@
                                                   {
                                                     "kind": "simple_identifier",
                                                     "start": 548,
-                                                    "end": 561
+                                                    "end": 561,
+                                                    "text": "mutableListOf"
                                                   },
                                                   {
                                                     "kind": "call_suffix",
@@ -1244,7 +1316,8 @@
                                                                   {
                                                                     "kind": "type_identifier",
                                                                     "start": 562,
-                                                                    "end": 572
+                                                                    "end": 572,
+                                                                    "text": "MutableMap"
                                                                   },
                                                                   {
                                                                     "kind": "type_arguments",
@@ -1264,7 +1337,8 @@
                                                                               {
                                                                                 "kind": "type_identifier",
                                                                                 "start": 573,
-                                                                                "end": 579
+                                                                                "end": 579,
+                                                                                "text": "String"
                                                                               }
                                                                             ]
                                                                           }
@@ -1283,7 +1357,8 @@
                                                                               {
                                                                                 "kind": "type_identifier",
                                                                                 "start": 581,
-                                                                                "end": 584
+                                                                                "end": 584,
+                                                                                "text": "Any"
                                                                               }
                                                                             ]
                                                                           }
@@ -1321,14 +1396,16 @@
                                                   {
                                                     "kind": "simple_identifier",
                                                     "start": 598,
-                                                    "end": 599
+                                                    "end": 599,
+                                                    "text": "o"
                                                   }
                                                 ]
                                               },
                                               {
                                                 "kind": "simple_identifier",
                                                 "start": 603,
-                                                "end": 609
+                                                "end": 609,
+                                                "text": "orders"
                                               },
                                               {
                                                 "kind": "control_structure_body",
@@ -1353,14 +1430,16 @@
                                                               {
                                                                 "kind": "simple_identifier",
                                                                 "start": 626,
-                                                                "end": 627
+                                                                "end": 627,
+                                                                "text": "c"
                                                               }
                                                             ]
                                                           },
                                                           {
                                                             "kind": "simple_identifier",
                                                             "start": 631,
-                                                            "end": 640
+                                                            "end": 640,
+                                                            "text": "customers"
                                                           },
                                                           {
                                                             "kind": "control_structure_body",
@@ -1385,7 +1464,8 @@
                                                                           {
                                                                             "kind": "simple_identifier",
                                                                             "start": 656,
-                                                                            "end": 660
+                                                                            "end": 660,
+                                                                            "text": "_res"
                                                                           },
                                                                           {
                                                                             "kind": "navigation_suffix",
@@ -1395,7 +1475,8 @@
                                                                               {
                                                                                 "kind": "simple_identifier",
                                                                                 "start": 661,
-                                                                                "end": 664
+                                                                                "end": 664,
+                                                                                "text": "add"
                                                                               }
                                                                             ]
                                                                           }
@@ -1424,7 +1505,8 @@
                                                                                       {
                                                                                         "kind": "simple_identifier",
                                                                                         "start": 665,
-                                                                                        "end": 677
+                                                                                        "end": 677,
+                                                                                        "text": "mutableMapOf"
                                                                                       },
                                                                                       {
                                                                                         "kind": "call_suffix",
@@ -1454,14 +1536,16 @@
                                                                                                           {
                                                                                                             "kind": "string_content",
                                                                                                             "start": 679,
-                                                                                                            "end": 686
+                                                                                                            "end": 686,
+                                                                                                            "text": "orderId"
                                                                                                           }
                                                                                                         ]
                                                                                                       },
                                                                                                       {
                                                                                                         "kind": "simple_identifier",
                                                                                                         "start": 688,
-                                                                                                        "end": 690
+                                                                                                        "end": 690,
+                                                                                                        "text": "to"
                                                                                                       },
                                                                                                       {
                                                                                                         "kind": "indexing_expression",
@@ -1471,7 +1555,8 @@
                                                                                                           {
                                                                                                             "kind": "simple_identifier",
                                                                                                             "start": 691,
-                                                                                                            "end": 692
+                                                                                                            "end": 692,
+                                                                                                            "text": "o"
                                                                                                           },
                                                                                                           {
                                                                                                             "kind": "indexing_suffix",
@@ -1486,7 +1571,8 @@
                                                                                                                   {
                                                                                                                     "kind": "string_content",
                                                                                                                     "start": 694,
-                                                                                                                    "end": 696
+                                                                                                                    "end": 696,
+                                                                                                                    "text": "id"
                                                                                                                   }
                                                                                                                 ]
                                                                                                               }
@@ -1516,14 +1602,16 @@
                                                                                                           {
                                                                                                             "kind": "string_content",
                                                                                                             "start": 701,
-                                                                                                            "end": 716
+                                                                                                            "end": 716,
+                                                                                                            "text": "orderCustomerId"
                                                                                                           }
                                                                                                         ]
                                                                                                       },
                                                                                                       {
                                                                                                         "kind": "simple_identifier",
                                                                                                         "start": 718,
-                                                                                                        "end": 720
+                                                                                                        "end": 720,
+                                                                                                        "text": "to"
                                                                                                       },
                                                                                                       {
                                                                                                         "kind": "indexing_expression",
@@ -1533,7 +1621,8 @@
                                                                                                           {
                                                                                                             "kind": "simple_identifier",
                                                                                                             "start": 721,
-                                                                                                            "end": 722
+                                                                                                            "end": 722,
+                                                                                                            "text": "o"
                                                                                                           },
                                                                                                           {
                                                                                                             "kind": "indexing_suffix",
@@ -1548,7 +1637,8 @@
                                                                                                                   {
                                                                                                                     "kind": "string_content",
                                                                                                                     "start": 724,
-                                                                                                                    "end": 734
+                                                                                                                    "end": 734,
+                                                                                                                    "text": "customerId"
                                                                                                                   }
                                                                                                                 ]
                                                                                                               }
@@ -1578,14 +1668,16 @@
                                                                                                           {
                                                                                                             "kind": "string_content",
                                                                                                             "start": 739,
-                                                                                                            "end": 757
+                                                                                                            "end": 757,
+                                                                                                            "text": "pairedCustomerName"
                                                                                                           }
                                                                                                         ]
                                                                                                       },
                                                                                                       {
                                                                                                         "kind": "simple_identifier",
                                                                                                         "start": 759,
-                                                                                                        "end": 761
+                                                                                                        "end": 761,
+                                                                                                        "text": "to"
                                                                                                       },
                                                                                                       {
                                                                                                         "kind": "indexing_expression",
@@ -1595,7 +1687,8 @@
                                                                                                           {
                                                                                                             "kind": "simple_identifier",
                                                                                                             "start": 762,
-                                                                                                            "end": 763
+                                                                                                            "end": 763,
+                                                                                                            "text": "c"
                                                                                                           },
                                                                                                           {
                                                                                                             "kind": "indexing_suffix",
@@ -1610,7 +1703,8 @@
                                                                                                                   {
                                                                                                                     "kind": "string_content",
                                                                                                                     "start": 765,
-                                                                                                                    "end": 769
+                                                                                                                    "end": 769,
+                                                                                                                    "text": "name"
                                                                                                                   }
                                                                                                                 ]
                                                                                                               }
@@ -1640,14 +1734,16 @@
                                                                                                           {
                                                                                                             "kind": "string_content",
                                                                                                             "start": 774,
-                                                                                                            "end": 784
+                                                                                                            "end": 784,
+                                                                                                            "text": "orderTotal"
                                                                                                           }
                                                                                                         ]
                                                                                                       },
                                                                                                       {
                                                                                                         "kind": "simple_identifier",
                                                                                                         "start": 786,
-                                                                                                        "end": 788
+                                                                                                        "end": 788,
+                                                                                                        "text": "to"
                                                                                                       },
                                                                                                       {
                                                                                                         "kind": "indexing_expression",
@@ -1657,7 +1753,8 @@
                                                                                                           {
                                                                                                             "kind": "simple_identifier",
                                                                                                             "start": 789,
-                                                                                                            "end": 790
+                                                                                                            "end": 790,
+                                                                                                            "text": "o"
                                                                                                           },
                                                                                                           {
                                                                                                             "kind": "indexing_suffix",
@@ -1672,7 +1769,8 @@
                                                                                                                   {
                                                                                                                     "kind": "string_content",
                                                                                                                     "start": 792,
-                                                                                                                    "end": 797
+                                                                                                                    "end": 797,
+                                                                                                                    "text": "total"
                                                                                                                   }
                                                                                                                 ]
                                                                                                               }
@@ -1713,7 +1811,8 @@
                                           {
                                             "kind": "simple_identifier",
                                             "start": 822,
-                                            "end": 826
+                                            "end": 826,
+                                            "text": "_res"
                                           }
                                         ]
                                       }
@@ -1735,7 +1834,8 @@
                       {
                         "kind": "simple_identifier",
                         "start": 833,
-                        "end": 840
+                        "end": 840,
+                        "text": "println"
                       },
                       {
                         "kind": "call_suffix",
@@ -1760,7 +1860,8 @@
                                       {
                                         "kind": "string_content",
                                         "start": 842,
-                                        "end": 886
+                                        "end": 886,
+                                        "text": "--- Cross Join: All order-customer pairs ---"
                                       }
                                     ]
                                   }
@@ -1785,14 +1886,16 @@
                           {
                             "kind": "simple_identifier",
                             "start": 898,
-                            "end": 903
+                            "end": 903,
+                            "text": "entry"
                           }
                         ]
                       },
                       {
                         "kind": "simple_identifier",
                         "start": 907,
-                        "end": 913
+                        "end": 913,
+                        "text": "result"
                       },
                       {
                         "kind": "control_structure_body",
@@ -1812,7 +1915,8 @@
                                   {
                                     "kind": "simple_identifier",
                                     "start": 925,
-                                    "end": 932
+                                    "end": 932,
+                                    "text": "println"
                                   },
                                   {
                                     "kind": "call_suffix",
@@ -1847,7 +1951,8 @@
                                                           {
                                                             "kind": "simple_identifier",
                                                             "start": 933,
-                                                            "end": 939
+                                                            "end": 939,
+                                                            "text": "listOf"
                                                           },
                                                           {
                                                             "kind": "call_suffix",
@@ -1872,7 +1977,8 @@
                                                                           {
                                                                             "kind": "string_content",
                                                                             "start": 941,
-                                                                            "end": 946
+                                                                            "end": 946,
+                                                                            "text": "Order"
                                                                           }
                                                                         ]
                                                                       }
@@ -1891,7 +1997,8 @@
                                                                           {
                                                                             "kind": "simple_identifier",
                                                                             "start": 949,
-                                                                            "end": 954
+                                                                            "end": 954,
+                                                                            "text": "entry"
                                                                           },
                                                                           {
                                                                             "kind": "indexing_suffix",
@@ -1906,7 +2013,8 @@
                                                                                   {
                                                                                     "kind": "string_content",
                                                                                     "start": 956,
-                                                                                    "end": 963
+                                                                                    "end": 963,
+                                                                                    "text": "orderId"
                                                                                   }
                                                                                 ]
                                                                               }
@@ -1929,7 +2037,8 @@
                                                                           {
                                                                             "kind": "string_content",
                                                                             "start": 968,
-                                                                            "end": 980
+                                                                            "end": 980,
+                                                                            "text": "(customerId:"
                                                                           }
                                                                         ]
                                                                       }
@@ -1948,7 +2057,8 @@
                                                                           {
                                                                             "kind": "simple_identifier",
                                                                             "start": 983,
-                                                                            "end": 988
+                                                                            "end": 988,
+                                                                            "text": "entry"
                                                                           },
                                                                           {
                                                                             "kind": "indexing_suffix",
@@ -1963,7 +2073,8 @@
                                                                                   {
                                                                                     "kind": "string_content",
                                                                                     "start": 990,
-                                                                                    "end": 1005
+                                                                                    "end": 1005,
+                                                                                    "text": "orderCustomerId"
                                                                                   }
                                                                                 ]
                                                                               }
@@ -1986,12 +2097,14 @@
                                                                           {
                                                                             "kind": "string_content",
                                                                             "start": 1010,
-                                                                            "end": 1019
+                                                                            "end": 1019,
+                                                                            "text": ", total: "
                                                                           },
                                                                           {
                                                                             "kind": "string_content",
                                                                             "start": 1019,
-                                                                            "end": 1020
+                                                                            "end": 1020,
+                                                                            "text": "$"
                                                                           }
                                                                         ]
                                                                       }
@@ -2010,7 +2123,8 @@
                                                                           {
                                                                             "kind": "simple_identifier",
                                                                             "start": 1023,
-                                                                            "end": 1028
+                                                                            "end": 1028,
+                                                                            "text": "entry"
                                                                           },
                                                                           {
                                                                             "kind": "indexing_suffix",
@@ -2025,7 +2139,8 @@
                                                                                   {
                                                                                     "kind": "string_content",
                                                                                     "start": 1030,
-                                                                                    "end": 1040
+                                                                                    "end": 1040,
+                                                                                    "text": "orderTotal"
                                                                                   }
                                                                                 ]
                                                                               }
@@ -2048,7 +2163,8 @@
                                                                           {
                                                                             "kind": "string_content",
                                                                             "start": 1045,
-                                                                            "end": 1058
+                                                                            "end": 1058,
+                                                                            "text": ") paired with"
                                                                           }
                                                                         ]
                                                                       }
@@ -2067,7 +2183,8 @@
                                                                           {
                                                                             "kind": "simple_identifier",
                                                                             "start": 1061,
-                                                                            "end": 1066
+                                                                            "end": 1066,
+                                                                            "text": "entry"
                                                                           },
                                                                           {
                                                                             "kind": "indexing_suffix",
@@ -2082,7 +2199,8 @@
                                                                                   {
                                                                                     "kind": "string_content",
                                                                                     "start": 1068,
-                                                                                    "end": 1086
+                                                                                    "end": 1086,
+                                                                                    "text": "pairedCustomerName"
                                                                                   }
                                                                                 ]
                                                                               }
@@ -2106,7 +2224,8 @@
                                                           {
                                                             "kind": "simple_identifier",
                                                             "start": 1090,
-                                                            "end": 1102
+                                                            "end": 1102,
+                                                            "text": "joinToString"
                                                           }
                                                         ]
                                                       }
@@ -2135,7 +2254,8 @@
                                                                   {
                                                                     "kind": "string_content",
                                                                     "start": 1104,
-                                                                    "end": 1105
+                                                                    "end": 1105,
+                                                                    "text": " "
                                                                   }
                                                                 ]
                                                               }
