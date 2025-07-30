@@ -44,44 +44,16 @@ end
 
 start_mem = _mem()
 start = _now()
-  def ln(x)
-    k = 0.0
-    v = x
-    while v >= 2.0
-      v = v / 2.0
-      k = _add(k, 1.0)
-    end
-    while v < 1.0
-      v = v * 2.0
-      k = k - 1.0
-    end
-    z = (v - 1.0) / (_add(v, 1.0))
-    zpow = z
-    sum = z
-    i = 3
-    while i <= 9
-      zpow = zpow * z * z
-      sum = _add(sum, zpow / ((i).to_f))
-      i = _add(i, 2)
-    end
-    ln2 = 0.6931471805599453
-    return _add((k * ln2), 2.0 * sum)
+  module GoOS
+  def self.Getenv(name)
+    ENV[name]
   end
-  def harmonic(n)
-    sum = 0.0
-    i = 1
-    while i <= n
-      sum = _add(sum, 1.0 / ((i).to_f))
-      i = _add(i, 1)
-    end
-    return sum
+  def self.Environ
+    ENV.map { |k,v| "#{k}=#{v}" }
   end
-  def main()
-    n = 100000
-    gamma = harmonic(n) - ln((n).to_f)
-    puts((gamma).to_s)
-  end
-  main()
+end
+os = GoOS
+  puts(os.Getenv("SHELL"))
 end_time = _now()
 end_mem = _mem()
 result = {"duration_us" => ((end_time - start) / 1000), "memory_bytes" => (end_mem - start_mem), "name" => "main"}

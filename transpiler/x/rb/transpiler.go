@@ -1478,6 +1478,16 @@ func (i *ImportStmt) emit(e *emitter) {
 		io.WriteString(e.w, "  def self.TrimSpace(s); s.strip; end\n")
 		io.WriteString(e.w, "end\n")
 		io.WriteString(e.w, i.Alias+" = GoStrings")
+	case "go_os":
+		io.WriteString(e.w, "module GoOS\n")
+		io.WriteString(e.w, "  def self.Getenv(name)\n")
+		io.WriteString(e.w, "    ENV[name]\n")
+		io.WriteString(e.w, "  end\n")
+		io.WriteString(e.w, "  def self.Environ\n")
+		io.WriteString(e.w, "    ENV.map { |k,v| \"#{k}=#{v}\" }\n")
+		io.WriteString(e.w, "  end\n")
+		io.WriteString(e.w, "end\n")
+		io.WriteString(e.w, i.Alias+" = GoOS")
 	case "go_net":
 		io.WriteString(e.w, "module GoNet\n")
 		io.WriteString(e.w, "  def self.LookupHost(host)\n")
@@ -3471,6 +3481,16 @@ func convertImport(im *parser.ImportStmt) (Stmt, error) {
 				currentEnv.SetVar(alias, types.StructType{Name: "GoNet", Fields: fields}, false)
 			}
 			return &ImportStmt{Alias: alias, Module: "go_net"}, nil
+		}
+		if im.Auto && path == "os" {
+			if currentEnv != nil {
+				fields := map[string]types.Type{
+					"Getenv":  types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.StringType{}},
+					"Environ": types.FuncType{Params: []types.Type{}, Return: types.ListType{Elem: types.StringType{}}},
+				}
+				currentEnv.SetVar(alias, types.StructType{Name: "GoOS", Fields: fields}, false)
+			}
+			return &ImportStmt{Alias: alias, Module: "go_os"}, nil
 		}
 		if im.Auto && path == "strings" {
 			if currentEnv != nil {
