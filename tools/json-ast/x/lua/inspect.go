@@ -21,6 +21,6 @@ func Inspect(src string) (*Program, error) {
 	if err != nil {
 		return nil, fmt.Errorf("parse: %w", err)
 	}
-	root := convertNode(tree.RootNode(), []byte(src))
+	root, _ := convertNode(tree.RootNode(), []byte(src))
 	return &Program{Root: root}, nil
 }
