@@ -1390,8 +1390,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 								} else if _, ok := t.Elem.(types.BoolType); ok {
 									vd.Type = "array of boolean"
 								} else if _, ok := t.Elem.(types.AnyType); ok {
-									// unknown element type, leave var type empty for now
-									vd.Type = ""
+									// unknown element type, default to Variant array
+									vd.Type = "array of any"
 								} else {
 									vd.Type = "array of integer"
 								}
@@ -1462,7 +1462,14 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				}
 				if call, ok := ex.(*CallExpr); ok && call.Name == "concat" && len(call.Args) == 2 {
 					if list, ok := call.Args[1].(*ListLit); ok && len(list.Elems) == 1 {
-						if et := inferType(list.Elems[0]); et != "" {
+						et := inferType(list.Elems[0])
+						if et == "" {
+							_ = currProg.addArrayAlias("Variant")
+							alias := currProg.addArrayAlias("VariantArray")
+							t := "array of " + alias
+							varTypes[name] = t
+							setVarType(name, t)
+						} else {
 							t := "array of " + et
 							varTypes[name] = t
 							setVarType(name, t)
