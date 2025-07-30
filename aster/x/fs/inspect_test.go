@@ -45,7 +45,7 @@ func TestInspect_Golden(t *testing.T) {
 		t.Fatalf("no files: %s", srcPattern)
 	}
 
-	outDir := filepath.Join(root, "tests/json-ast/x/fs")
+	outDir := filepath.Join(root, "tests/aster/x/fs")
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		t.Fatalf("mkout: %v", err)
 	}
@@ -57,7 +57,7 @@ func TestInspect_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("read src: %v", err)
 			}
-			prog, err := fs.Inspect(string(data), false)
+			prog, err := fs.Inspect(string(data))
 			if err != nil {
 				t.Fatalf("inspect: %v", err)
 			}
