@@ -1,0 +1,66 @@
+{
+  "items": [
+    {
+      "_kind": "func_decl",
+      "name": {
+        "base_name": {
+          "name": "sum3"
+        }
+      },
+      "params": {
+        "params": [
+          {
+            "name": {
+              "base_name": {
+                "name": "a"
+              }
+            },
+            "interface_type": "$sSiD"
+          },
+          {
+            "name": {
+              "base_name": {
+                "name": "b"
+              }
+            },
+            "interface_type": "$sSiD"
+          },
+          {
+            "name": {
+              "base_name": {
+                "name": "c"
+              }
+            },
+            "interface_type": "$sSiD"
+          }
+        ]
+      },
+      "body": {
+        "range": {
+          "start": 118,
+          "end": 145
+        }
+      },
+      "range": {
+        "start": 71,
+        "end": 145
+      },
+      "result": "$sSiD",
+      "interface_type": "$syS2i_S2itcD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 147,
+          "end": 176
+        }
+      },
+      "range": {
+        "start": 147,
+        "end": 176
+      }
+    }
+  ]
+}

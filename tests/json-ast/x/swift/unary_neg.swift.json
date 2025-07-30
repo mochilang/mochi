@@ -1,0 +1,30 @@
+{
+  "items": [
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 71,
+          "end": 79
+        }
+      },
+      "range": {
+        "start": 71,
+        "end": 79
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 81,
+          "end": 88
+        }
+      },
+      "range": {
+        "start": 81,
+        "end": 88
+      }
+    }
+  ]
+}

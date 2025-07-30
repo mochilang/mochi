@@ -1,0 +1,57 @@
+{
+  "items": [
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 71,
+          "end": 95
+        }
+      },
+      "range": {
+        "start": 71,
+        "end": 95
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "scores"
+        }
+      },
+      "range": {
+        "start": 75,
+        "end": 75
+      },
+      "interface_type": "$sSSSiXSDD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 97,
+          "end": 113
+        }
+      },
+      "range": {
+        "start": 97,
+        "end": 113
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 115,
+          "end": 145
+        }
+      },
+      "range": {
+        "start": 115,
+        "end": 145
+      }
+    }
+  ]
+}

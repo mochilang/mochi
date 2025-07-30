@@ -1,0 +1,111 @@
+{
+  "items": [
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 71,
+          "end": 90
+        }
+      },
+      "range": {
+        "start": 71,
+        "end": 90
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "nums"
+        }
+      },
+      "range": {
+        "start": 75,
+        "end": 75
+      },
+      "interface_type": "$sSiXSaD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 92,
+          "end": 115
+        }
+      },
+      "range": {
+        "start": 92,
+        "end": 115
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "letters"
+        }
+      },
+      "range": {
+        "start": 96,
+        "end": 96
+      },
+      "interface_type": "$sSSXSaD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 117,
+          "end": 338
+        }
+      },
+      "range": {
+        "start": 117,
+        "end": 338
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "pairs"
+        }
+      },
+      "range": {
+        "start": 121,
+        "end": 121
+      },
+      "interface_type": "$sSSypXSDXSaD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 340,
+          "end": 366
+        }
+      },
+      "range": {
+        "start": 340,
+        "end": 366
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 368,
+          "end": 413
+        }
+      },
+      "range": {
+        "start": 368,
+        "end": 413
+      }
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "items": [
+    {
+      "_kind": "func_decl",
+      "name": {
+        "base_name": {
+          "name": "twoSum"
+        }
+      },
+      "params": {
+        "params": [
+          {
+            "name": {
+              "base_name": {
+                "name": "nums"
+              }
+            },
+            "interface_type": "$sSiXSaD"
+          },
+          {
+            "name": {
+              "base_name": {
+                "name": "target"
+              }
+            },
+            "interface_type": "$sSiD"
+          }
+        ]
+      },
+      "body": {
+        "range": {
+          "start": 122,
+          "end": 342
+        }
+      },
+      "range": {
+        "start": 71,
+        "end": 342
+      },
+      "result": "$sSiXSaD",
+      "interface_type": "$sySiXSaSiXSa_SitcD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 344,
+          "end": 381
+        }
+      },
+      "range": {
+        "start": 344,
+        "end": 381
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "result"
+        }
+      },
+      "range": {
+        "start": 348,
+        "end": 348
+      },
+      "interface_type": "$sSiXSaD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 383,
+          "end": 408
+        }
+      },
+      "range": {
+        "start": 383,
+        "end": 408
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 410,
+          "end": 435
+        }
+      },
+      "range": {
+        "start": 410,
+        "end": 435
+      }
+    }
+  ]
+}

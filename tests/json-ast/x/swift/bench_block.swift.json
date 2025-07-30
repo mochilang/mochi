@@ -1,0 +1,102 @@
+{
+  "items": [
+    {
+      "_kind": "import_decl",
+      "range": {
+        "start": 71,
+        "end": 78
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 90,
+          "end": 105
+        }
+      },
+      "range": {
+        "start": 90,
+        "end": 105
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "_nowSeed"
+        }
+      },
+      "range": {
+        "start": 94,
+        "end": 94
+      },
+      "interface_type": "$sSiD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 107,
+          "end": 124
+        }
+      },
+      "range": {
+        "start": 107,
+        "end": 124
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "_nowSeeded"
+        }
+      },
+      "range": {
+        "start": 111,
+        "end": 111
+      },
+      "interface_type": "$sSbD",
+      "access": "internal"
+    },
+    {
+      "_kind": "func_decl",
+      "name": {
+        "base_name": {
+          "name": "_now"
+        }
+      },
+      "params": {
+        "params": null
+      },
+      "body": {
+        "range": {
+          "start": 149,
+          "end": 511
+        }
+      },
+      "range": {
+        "start": 130,
+        "end": 511
+      },
+      "result": "$sSiD",
+      "interface_type": "$sSiycD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 513,
+          "end": 888
+        }
+      },
+      "range": {
+        "start": 513,
+        "end": 888
+      }
+    }
+  ]
+}

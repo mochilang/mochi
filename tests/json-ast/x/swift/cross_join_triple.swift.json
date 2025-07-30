@@ -1,0 +1,138 @@
+{
+  "items": [
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 71,
+          "end": 87
+        }
+      },
+      "range": {
+        "start": 71,
+        "end": 87
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "nums"
+        }
+      },
+      "range": {
+        "start": 75,
+        "end": 75
+      },
+      "interface_type": "$sSiXSaD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 89,
+          "end": 112
+        }
+      },
+      "range": {
+        "start": 89,
+        "end": 112
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "letters"
+        }
+      },
+      "range": {
+        "start": 93,
+        "end": 93
+      },
+      "interface_type": "$sSSXSaD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 114,
+          "end": 138
+        }
+      },
+      "range": {
+        "start": 114,
+        "end": 138
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "bools"
+        }
+      },
+      "range": {
+        "start": 118,
+        "end": 118
+      },
+      "interface_type": "$sSbXSaD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 140,
+          "end": 368
+        }
+      },
+      "range": {
+        "start": 140,
+        "end": 368
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "combos"
+        }
+      },
+      "range": {
+        "start": 144,
+        "end": 144
+      },
+      "interface_type": "$sSSypXSDXSaD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 370,
+          "end": 411
+        }
+      },
+      "range": {
+        "start": 370,
+        "end": 411
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 413,
+          "end": 468
+        }
+      },
+      "range": {
+        "start": 413,
+        "end": 468
+      }
+    }
+  ]
+}

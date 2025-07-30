@@ -1,0 +1,57 @@
+{
+  "items": [
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 71,
+          "end": 79
+        }
+      },
+      "range": {
+        "start": 71,
+        "end": 79
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "s"
+        }
+      },
+      "range": {
+        "start": 75,
+        "end": 75
+      },
+      "interface_type": "$sSSD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 87,
+          "end": 112
+        }
+      },
+      "range": {
+        "start": 87,
+        "end": 112
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 114,
+          "end": 139
+        }
+      },
+      "range": {
+        "start": 114,
+        "end": 139
+      }
+    }
+  ]
+}

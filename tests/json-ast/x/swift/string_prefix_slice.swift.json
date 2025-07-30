@@ -1,0 +1,111 @@
+{
+  "items": [
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 71,
+          "end": 84
+        }
+      },
+      "range": {
+        "start": 71,
+        "end": 84
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "prefix"
+        }
+      },
+      "range": {
+        "start": 75,
+        "end": 75
+      },
+      "interface_type": "$sSSD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 91,
+          "end": 100
+        }
+      },
+      "range": {
+        "start": 91,
+        "end": 100
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "s1"
+        }
+      },
+      "range": {
+        "start": 95,
+        "end": 95
+      },
+      "interface_type": "$sSSD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 109,
+          "end": 225
+        }
+      },
+      "range": {
+        "start": 109,
+        "end": 225
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 227,
+          "end": 236
+        }
+      },
+      "range": {
+        "start": 227,
+        "end": 236
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "s2"
+        }
+      },
+      "range": {
+        "start": 231,
+        "end": 231
+      },
+      "interface_type": "$sSSD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 245,
+          "end": 361
+        }
+      },
+      "range": {
+        "start": 245,
+        "end": 361
+      }
+    }
+  ]
+}

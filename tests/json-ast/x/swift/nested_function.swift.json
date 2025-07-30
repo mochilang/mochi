@@ -1,0 +1,50 @@
+{
+  "items": [
+    {
+      "_kind": "func_decl",
+      "name": {
+        "base_name": {
+          "name": "outer"
+        }
+      },
+      "params": {
+        "params": [
+          {
+            "name": {
+              "base_name": {
+                "name": "x"
+              }
+            },
+            "interface_type": "$sSiD"
+          }
+        ]
+      },
+      "body": {
+        "range": {
+          "start": 99,
+          "end": 184
+        }
+      },
+      "range": {
+        "start": 71,
+        "end": 184
+      },
+      "result": "$sSiD",
+      "interface_type": "$syS2icD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 186,
+          "end": 210
+        }
+      },
+      "range": {
+        "start": 186,
+        "end": 210
+      }
+    }
+  ]
+}

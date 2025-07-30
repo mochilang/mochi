@@ -1,0 +1,111 @@
+{
+  "items": [
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 71,
+          "end": 170
+        }
+      },
+      "range": {
+        "start": 71,
+        "end": 170
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "customers"
+        }
+      },
+      "range": {
+        "start": 75,
+        "end": 75
+      },
+      "interface_type": "$sSSypXSDXSaD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 172,
+          "end": 359
+        }
+      },
+      "range": {
+        "start": 172,
+        "end": 359
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "orders"
+        }
+      },
+      "range": {
+        "start": 176,
+        "end": 176
+      },
+      "interface_type": "$sSSSiXSDXSaD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 361,
+          "end": 665
+        }
+      },
+      "range": {
+        "start": 361,
+        "end": 665
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "result"
+        }
+      },
+      "range": {
+        "start": 365,
+        "end": 365
+      },
+      "interface_type": "$sSSypXSDXSaD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 667,
+          "end": 708
+        }
+      },
+      "range": {
+        "start": 667,
+        "end": 708
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 710,
+          "end": 824
+        }
+      },
+      "range": {
+        "start": 710,
+        "end": 824
+      }
+    }
+  ]
+}

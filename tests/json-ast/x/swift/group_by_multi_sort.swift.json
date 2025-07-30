@@ -1,0 +1,78 @@
+{
+  "items": [
+    {
+      "_kind": "import_decl",
+      "range": {
+        "start": 71,
+        "end": 78
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 90,
+          "end": 233
+        }
+      },
+      "range": {
+        "start": 90,
+        "end": 233
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "items"
+        }
+      },
+      "range": {
+        "start": 94,
+        "end": 94
+      },
+      "interface_type": "$sypXSaD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 235,
+          "end": 1638
+        }
+      },
+      "range": {
+        "start": 235,
+        "end": 1638
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "grouped"
+        }
+      },
+      "range": {
+        "start": 239,
+        "end": 239
+      },
+      "interface_type": "$sypXSaD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 1640,
+          "end": 1740
+        }
+      },
+      "range": {
+        "start": 1640,
+        "end": 1740
+      }
+    }
+  ]
+}

@@ -1,0 +1,264 @@
+{
+  "items": [
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 71,
+          "end": 79
+        }
+      },
+      "range": {
+        "start": 71,
+        "end": 79
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "x"
+        }
+      },
+      "range": {
+        "start": 75,
+        "end": 75
+      },
+      "interface_type": "$sSiD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 81,
+          "end": 209
+        }
+      },
+      "range": {
+        "start": 81,
+        "end": 209
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "label"
+        }
+      },
+      "range": {
+        "start": 85,
+        "end": 85
+      },
+      "interface_type": "$sSSD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 211,
+          "end": 235
+        }
+      },
+      "range": {
+        "start": 211,
+        "end": 235
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 237,
+          "end": 247
+        }
+      },
+      "range": {
+        "start": 237,
+        "end": 247
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "day"
+        }
+      },
+      "range": {
+        "start": 241,
+        "end": 241
+      },
+      "interface_type": "$sSSD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 253,
+          "end": 414
+        }
+      },
+      "range": {
+        "start": 253,
+        "end": 414
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "mood"
+        }
+      },
+      "range": {
+        "start": 257,
+        "end": 257
+      },
+      "interface_type": "$sSSD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 416,
+          "end": 439
+        }
+      },
+      "range": {
+        "start": 416,
+        "end": 439
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 441,
+          "end": 450
+        }
+      },
+      "range": {
+        "start": 441,
+        "end": 450
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "ok"
+        }
+      },
+      "range": {
+        "start": 445,
+        "end": 445
+      },
+      "interface_type": "$sSbD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 455,
+          "end": 565
+        }
+      },
+      "range": {
+        "start": 455,
+        "end": 565
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "status"
+        }
+      },
+      "range": {
+        "start": 459,
+        "end": 459
+      },
+      "interface_type": "$sSSD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 567,
+          "end": 592
+        }
+      },
+      "range": {
+        "start": 567,
+        "end": 592
+      }
+    },
+    {
+      "_kind": "func_decl",
+      "name": {
+        "base_name": {
+          "name": "classify"
+        }
+      },
+      "params": {
+        "params": [
+          {
+            "name": {
+              "base_name": {
+                "name": "n"
+              }
+            },
+            "interface_type": "$sSiD"
+          }
+        ]
+      },
+      "body": {
+        "range": {
+          "start": 628,
+          "end": 704
+        }
+      },
+      "range": {
+        "start": 594,
+        "end": 704
+      },
+      "result": "$sSSD",
+      "interface_type": "$sySSSicD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 706,
+          "end": 736
+        }
+      },
+      "range": {
+        "start": 706,
+        "end": 736
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 738,
+          "end": 768
+        }
+      },
+      "range": {
+        "start": 738,
+        "end": 768
+      }
+    }
+  ]
+}

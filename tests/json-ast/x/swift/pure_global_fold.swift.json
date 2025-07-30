@@ -1,0 +1,77 @@
+{
+  "items": [
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 71,
+          "end": 79
+        }
+      },
+      "range": {
+        "start": 71,
+        "end": 79
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "k"
+        }
+      },
+      "range": {
+        "start": 75,
+        "end": 75
+      },
+      "interface_type": "$sSiD",
+      "access": "internal"
+    },
+    {
+      "_kind": "func_decl",
+      "name": {
+        "base_name": {
+          "name": "inc"
+        }
+      },
+      "params": {
+        "params": [
+          {
+            "name": {
+              "base_name": {
+                "name": "x"
+              }
+            },
+            "interface_type": "$sSiD"
+          }
+        ]
+      },
+      "body": {
+        "range": {
+          "start": 107,
+          "end": 138
+        }
+      },
+      "range": {
+        "start": 81,
+        "end": 138
+      },
+      "result": "$sSiD",
+      "interface_type": "$syS2icD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 140,
+          "end": 162
+        }
+      },
+      "range": {
+        "start": 140,
+        "end": 162
+      }
+    }
+  ]
+}

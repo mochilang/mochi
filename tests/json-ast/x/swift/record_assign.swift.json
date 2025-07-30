@@ -1,0 +1,160 @@
+{
+  "items": [
+    {
+      "_kind": "import_decl",
+      "range": {
+        "start": 71,
+        "end": 78
+      }
+    },
+    {
+      "_kind": "struct_decl",
+      "name": {
+        "base_name": {
+          "name": "Counter"
+        }
+      },
+      "range": {
+        "start": 90,
+        "end": 122
+      },
+      "interface_type": "$s4main7CounterVmD",
+      "access": "internal",
+      "members": [
+        {
+          "_kind": "pattern_binding_decl",
+          "range": {
+            "start": 111,
+            "end": 118
+          }
+        },
+        {
+          "_kind": "var_decl",
+          "name": {
+            "base_name": {
+              "name": "n"
+            }
+          },
+          "range": {
+            "start": 115,
+            "end": 115
+          },
+          "interface_type": "$sSiD",
+          "access": "internal"
+        },
+        {
+          "_kind": "constructor_decl",
+          "name": {
+            "base_name": {
+              "name": ""
+            }
+          },
+          "params": {
+            "params": [
+              {
+                "name": {
+                  "base_name": {
+                    "name": "n"
+                  }
+                },
+                "interface_type": "$sSiD"
+              }
+            ]
+          },
+          "range": {
+            "start": 97,
+            "end": 97
+          },
+          "interface_type": "$sy4main7CounterVSi_tcACmcD",
+          "access": "internal"
+        }
+      ]
+    },
+    {
+      "_kind": "func_decl",
+      "name": {
+        "base_name": {
+          "name": "inc"
+        }
+      },
+      "params": {
+        "params": [
+          {
+            "name": {
+              "base_name": {
+                "name": "c"
+              }
+            },
+            "interface_type": "$s4main7CounterVD"
+          }
+        ]
+      },
+      "body": {
+        "range": {
+          "start": 147,
+          "end": 183
+        }
+      },
+      "range": {
+        "start": 124,
+        "end": 183
+      },
+      "result": "$sytD",
+      "interface_type": "$syy4main7CounterVcD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 185,
+          "end": 205
+        }
+      },
+      "range": {
+        "start": 185,
+        "end": 205
+      }
+    },
+    {
+      "_kind": "var_decl",
+      "name": {
+        "base_name": {
+          "name": "c"
+        }
+      },
+      "range": {
+        "start": 189,
+        "end": 189
+      },
+      "interface_type": "$s4main7CounterVD",
+      "access": "internal"
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 207,
+          "end": 212
+        }
+      },
+      "range": {
+        "start": 207,
+        "end": 212
+      }
+    },
+    {
+      "_kind": "top_level_code_decl",
+      "body": {
+        "range": {
+          "start": 214,
+          "end": 223
+        }
+      },
+      "range": {
+        "start": 214,
+        "end": 223
+      }
+    }
+  ]
+}
