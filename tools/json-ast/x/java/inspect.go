@@ -12,7 +12,7 @@ import (
 
 // Program represents a parsed Java source file.
 type Program struct {
-	Root Node `json:"root"`
+	Root *Node `json:"root"`
 }
 
 // Inspect parses the given Java source code using tree-sitter and returns

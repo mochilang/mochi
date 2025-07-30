@@ -2,6 +2,11 @@ package java
 
 import sitter "github.com/smacker/go-tree-sitter"
 
+// IncludePos toggles whether positional information should be populated on
+// nodes produced by this package. When false, the position fields remain zero
+// and are omitted from the resulting JSON due to the `omitempty` tags.
+var IncludePos bool
+
 // Node represents a minimal JSON-serialisable AST node.  Only named
 // tree-sitter nodes are kept to reduce noise.  Leaf nodes store the raw
 // source text in Text.
@@ -10,30 +15,36 @@ import sitter "github.com/smacker/go-tree-sitter"
 // raw source text in Text. Position information is recorded using row
 // and column numbers (1-based rows).
 type Node struct {
-	Kind     string `json:"kind"`
-	Start    int    `json:"start"`
-	StartCol int    `json:"startCol"`
-	End      int    `json:"end"`
-	EndCol   int    `json:"endCol"`
-	Text     string `json:"text,omitempty"`
-	Children []Node `json:"children,omitempty"`
+	Kind     string  `json:"kind"`
+	Text     string  `json:"text,omitempty"`
+	Start    int     `json:"start,omitempty"`
+	StartCol int     `json:"startCol,omitempty"`
+	End      int     `json:"end,omitempty"`
+	EndCol   int     `json:"endCol,omitempty"`
+	Children []*Node `json:"children,omitempty"`
 }
 
 // convert creates a Node from a tree-sitter node.
-func convert(n *sitter.Node, src []byte) Node {
-	start := n.StartPoint()
-	end := n.EndPoint()
-	node := Node{
-		Kind:     n.Type(),
-		Start:    int(start.Row) + 1,
-		StartCol: int(start.Column),
-		End:      int(end.Row) + 1,
-		EndCol:   int(end.Column),
+func convert(n *sitter.Node, src []byte) *Node {
+	if n == nil {
+		return nil
+	}
+	node := &Node{Kind: n.Type()}
+	if IncludePos {
+		sp := n.StartPoint()
+		ep := n.EndPoint()
+		node.Start = int(sp.Row) + 1
+		node.StartCol = int(sp.Column)
+		node.End = int(ep.Row) + 1
+		node.EndCol = int(ep.Column)
 	}
 
 	if n.NamedChildCount() == 0 {
-		node.Text = n.Content(src)
-		return node
+		if isValueNode(node.Kind) {
+			node.Text = n.Content(src)
+		} else {
+			return nil
+		}
 	}
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
@@ -41,7 +52,30 @@ func convert(n *sitter.Node, src []byte) Node {
 		if child == nil {
 			continue
 		}
-		node.Children = append(node.Children, convert(child, src))
+		if c := convert(child, src); c != nil {
+			node.Children = append(node.Children, c)
+		}
 	}
+
+	if len(node.Children) == 0 && node.Text == "" {
+		return nil
+	}
+
 	return node
+}
+
+// isValueNode reports whether the given tree-sitter kind represents a leaf that
+// carries meaningful text in the final JSON output. Pure syntax tokens are
+// ignored to keep the representation compact.
+func isValueNode(kind string) bool {
+	switch kind {
+	case "identifier", "type_identifier", "decimal_integer_literal",
+		"hex_integer_literal", "octal_integer_literal", "binary_integer_literal",
+		"decimal_floating_point_literal", "hex_floating_point_literal",
+		"string_literal", "string_fragment", "character_literal",
+		"true", "false", "null", "this":
+		return true
+	default:
+		return false
+	}
 }
