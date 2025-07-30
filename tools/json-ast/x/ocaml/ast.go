@@ -4,19 +4,26 @@ import (
 	sitter "github.com/smacker/go-tree-sitter"
 )
 
-// Node represents a tree-sitter node in a compact JSON friendly form.
-// Leaf nodes store their source text in the Text field. Only named
-// children are preserved to keep the structure small.
+// Node represents a simplified OCaml AST node. Only nodes that carry
+// meaningful values keep their text to minimise the resulting JSON.
+// Source positions include both line and column information.
+// Options controls how the AST is produced.
+// When IncludePositions is false, all position fields in the resulting JSON
+// will be omitted.
+type Options struct {
+	IncludePositions bool
+}
+
 // Node represents a simplified OCaml AST node. Only nodes that carry
 // meaningful values keep their text to minimise the resulting JSON.
 // Source positions include both line and column information.
 type Node struct {
 	Kind     string `json:"kind"`
 	Text     string `json:"text,omitempty"`
-	Start    int    `json:"start"`
-	StartCol int    `json:"startCol"`
-	End      int    `json:"end"`
-	EndCol   int    `json:"endCol"`
+	Start    int    `json:"start,omitempty"`
+	StartCol int    `json:"startCol,omitempty"`
+	End      int    `json:"end,omitempty"`
+	EndCol   int    `json:"endCol,omitempty"`
 	Children []Node `json:"children,omitempty"`
 }
 
@@ -33,18 +40,18 @@ type Program struct {
 // their named children.
 // convert recursively converts a tree-sitter node into our Node structure.
 // Leaf nodes that don't carry useful values are skipped entirely.
-func convert(n *sitter.Node, src []byte) *Node {
+func convert(n *sitter.Node, src []byte, pos bool) *Node {
 	if n == nil {
 		return nil
 	}
-	sp := n.StartPoint()
-	ep := n.EndPoint()
-	node := &Node{
-		Kind:     n.Type(),
-		Start:    int(sp.Row) + 1,
-		StartCol: int(sp.Column),
-		End:      int(ep.Row) + 1,
-		EndCol:   int(ep.Column),
+	node := &Node{Kind: n.Type()}
+	if pos {
+		sp := n.StartPoint()
+		ep := n.EndPoint()
+		node.Start = int(sp.Row) + 1
+		node.StartCol = int(sp.Column)
+		node.End = int(ep.Row) + 1
+		node.EndCol = int(ep.Column)
 	}
 
 	if n.NamedChildCount() == 0 {
@@ -56,7 +63,7 @@ func convert(n *sitter.Node, src []byte) *Node {
 	}
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
-		child := convert(n.NamedChild(i), src)
+		child := convert(n.NamedChild(i), src, pos)
 		if child != nil {
 			node.Children = append(node.Children, *child)
 		}
