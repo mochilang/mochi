@@ -15,7 +15,6 @@ require (
 	github.com/marcboeker/go-duckdb v1.8.5
 	github.com/mark3labs/mcp-go v0.36.0
 	github.com/mattn/go-sqlite3 v1.14.28
-	github.com/smacker/go-tree-sitter v0.0.0-20240827094217-dd81d9e9be82
 	github.com/spf13/cobra v1.9.1
 	github.com/stretchr/testify v1.10.0
 	github.com/tliron/commonlog v0.2.20
