@@ -15,9 +15,22 @@ function _now() {
     }
     return hrtime(true);
 }
+function repeat($s, $n) {
+    return str_repeat($s, intval($n));
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
-  $records = ['abcdefgh', 'ijklmnop', 'qrstuvwx'];
+  function mochi_repeat($s, $n) {
+  global $records;
+  $out = '';
+  $i = 0;
+  while ($i < $n) {
+  $out = $out . $s;
+  $i = $i + 1;
+};
+  return $out;
+};
+  $records = [repeat('abcdefgh', 10), repeat('ijklmnop', 10), repeat('qrstuvwx', 10)];
   function reverseStr($s) {
   global $records;
   $out = '';

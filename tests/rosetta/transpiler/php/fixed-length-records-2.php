@@ -15,10 +15,71 @@ function _now() {
     }
     return hrtime(true);
 }
+function repeat($s, $n) {
+    return str_repeat($s, intval($n));
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
-  foreach (['alpha', 'beta', 'gamma'] as $s) {
-  echo rtrim($s), PHP_EOL;
+  function mochi_repeat($s, $n) {
+  global $lines, $blocks, $outLines;
+  $out = '';
+  $i = 0;
+  while ($i < $n) {
+  $out = $out . $s;
+  $i = $i + 1;
+};
+  return $out;
+};
+  function trimRightSpace($s) {
+  global $lines, $blocks, $outLines;
+  $i = strlen($s) - 1;
+  while ($i >= 0 && substr($s, $i, $i + 1 - $i) == ' ') {
+  $i = $i - 1;
+};
+  return substr($s, 0, $i + 1 - 0);
+};
+  function block2text($block) {
+  global $lines, $blocks, $outLines;
+  $out = [];
+  foreach ($block as $b) {
+  $out = array_merge($out, [trimRightSpace($b)]);
+};
+  return $out;
+};
+  function text2block($lines) {
+  global $blocks, $outLines;
+  $out = [];
+  $count = 0;
+  foreach ($lines as $line) {
+  $s = $line;
+  $le = strlen($s);
+  if ($le > 64) {
+  $s = substr($s, 0, 64 - 0);
+} else {
+  if ($le < 64) {
+  $s = $s . repeat(' ', 64 - $le);
+};
+}
+  $out = array_merge($out, [$s]);
+  $count = $count + 1;
+};
+  if ($count % 16 != 0) {
+  $pad = 16 - $count % 16;
+  $i = 0;
+  while ($i < $pad) {
+  $out = array_merge($out, [repeat(' ', 64)]);
+  $i = $i + 1;
+};
+}
+  return $out;
+};
+  $lines = ['alpha', 'beta', 'gamma'];
+  $blocks = text2block($lines);
+  $outLines = block2text($blocks);
+  foreach ($outLines as $l) {
+  if ($l != '') {
+  echo rtrim($l), PHP_EOL;
+}
 }
 $__end = _now();
 $__end_mem = memory_get_usage();

@@ -37,7 +37,7 @@ N   Length  Entropy      Word
  36 14930352  0.95941873
  37 24157817  0.95941873
 {
-  "duration_us": 4797223,
+  "duration_us": 3416751,
   "memory_bytes": 2040,
   "name": "main"
 }

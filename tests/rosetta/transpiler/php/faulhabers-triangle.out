@@ -11,7 +11,7 @@ map[num:0 den:1]  map[num:-3 den:20]  map[num:0 den:1]  map[num:1 den:2]  map[nu
 
 map[num:56056972216555580111030077961944183400198333273050000 den:1]
 {
-  "duration_us": 10649,
+  "duration_us": 7680,
   "memory_bytes": 96,
   "name": "main"
 }

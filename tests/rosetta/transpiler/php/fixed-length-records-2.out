@@ -2,7 +2,7 @@ alpha
 beta
 gamma
 {
-  "duration_us": 99,
-  "memory_bytes": 96,
+  "duration_us": 114,
+  "memory_bytes": 2576,
   "name": "main"
 }

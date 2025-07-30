@@ -31,6 +31,9 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
+function parseIntStr($s, $base = 10) {
+    return intval($s, intval($base));
+}
 function _intdiv($a, $b) {
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
@@ -52,6 +55,33 @@ $__start = _now();
   $x = intval((_intdiv($x, $b)));
 };
   return $s;
+  $mochi_parseIntStr = null;
+$mochi_parseIntStr = function($str) use (&$parseIntStr, $n, $b, $s, $x) {
+  $i = 0;
+  $neg = false;
+  if (strlen($str) > 0 && substr($str, 0, 0 + 1 - 0) == '-') {
+  $neg = true;
+  $i = 1;
+}
+  $n = 0;
+  while ($i < strlen($str)) {
+  $n = $n * 10 + (ord(substr($str, $i, $i + 1 - $i))) - (intval('0'));
+  $i = $i + 1;
+};
+  if ($neg) {
+  $n = -$n;
+}
+  return $n;
+};
+};
+  function parseIntBase($s, $b) {
+  $n = 0;
+  $i = 0;
+  while ($i < strlen($s)) {
+  $n = $n * $b + parseIntStr(substr($s, $i, $i + 1 - $i), 10);
+  $i = $i + 1;
+};
+  return $n;
 };
   function reverseStr($s) {
   $out = '';
@@ -62,22 +92,87 @@ $__start = _now();
 };
   return $out;
 };
-  function isPal($s) {
+  function isPalindrome($s) {
   return $s == reverseStr($s);
 };
-  function main() {
-  echo rtrim('Numbers palindromic in both binary and ternary :
-'), PHP_EOL;
-  $count = 0;
-  $n = 0;
-  while ($count < 4) {
-  $b2 = toBase($n, 2);
-  $b3 = toBase($n, 3);
-  if (isPal($b2) && isPal($b3)) {
-  echo rtrim(_str($n)), PHP_EOL;
-  $count = $count + 1;
+  function isPalindromeBin($n) {
+  $b = toBase($n, 2);
+  return isPalindrome($b);
+};
+  function myMin($a, $b) {
+  if ($a < $b) {
+  return $a;
 }
-  $n = $n + 1;
+  return $b;
+};
+  function myMax($a, $b) {
+  if ($a > $b) {
+  return $a;
+}
+  return $b;
+};
+  function reverse3($n) {
+  $x = 0;
+  $y = $n;
+  while ($y != 0) {
+  $x = $x * 3 + ($y % 3);
+  $y = intval((_intdiv($y, 3)));
+};
+  return $x;
+};
+  function show($n) {
+  echo rtrim('Decimal : ' . _str($n)), PHP_EOL;
+  echo rtrim('Binary  : ' . toBase($n, 2)), PHP_EOL;
+  echo rtrim('Ternary : ' . toBase($n, 3)), PHP_EOL;
+  echo rtrim(''), PHP_EOL;
+};
+  function main() {
+  echo rtrim('The first 6 numbers which are palindromic in both binary and ternary are :
+'), PHP_EOL;
+  show(0);
+  $count = 1;
+  $lo = 0;
+  $hi = 1;
+  $pow2 = 1;
+  $pow3 = 1;
+  while (true) {
+  $i = $lo;
+  while ($i < $hi) {
+  $n = ($i * 3 + 1) * $pow3 + reverse3($i);
+  if (isPalindromeBin($n)) {
+  show($n);
+  $count = $count + 1;
+  if ($count >= 6) {
+  return;
+};
+}
+  $i = $i + 1;
+};
+  if ($i == $pow3) {
+  $pow3 = $pow3 * 3;
+} else {
+  $pow2 = $pow2 * 4;
+}
+  while (true) {
+  while ($pow2 <= $pow3) {
+  $pow2 = $pow2 * 4;
+};
+  $lo2 = intval((_intdiv((_intdiv($pow2, $pow3) - 1), 3)));
+  $hi2 = intval((_intdiv((_intdiv($pow2 * 2, $pow3) - 1), 3))) + 1;
+  $lo3 = intval((_intdiv($pow3, 3)));
+  $hi3 = $pow3;
+  if ($lo2 >= $hi3) {
+  $pow3 = $pow3 * 3;
+} else {
+  if ($lo3 >= $hi2) {
+  $pow2 = $pow2 * 4;
+} else {
+  $lo = myMax($lo2, $lo3);
+  $hi = myMin($hi2, $hi3);
+  break;
+};
+}
+};
 };
 };
   main();
