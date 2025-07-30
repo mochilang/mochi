@@ -26,18 +26,36 @@ type Term struct {
 
 // Node is a simplified representation used in the JSON output. Only meaningful
 // tokens are preserved. Text contains the literal token string for leaves.
+// Node represents a simplified AST node used in the JSON output.  Only nodes
+// that carry meaningful values are kept.  Position fields are omitted when zero
+// so callers can choose whether to populate them.
 type Node struct {
-	Kind     string `json:"kind"`
-	Text     string `json:"text,omitempty"`
-	Start    int    `json:"start,omitempty"`
-	StartCol int    `json:"startCol,omitempty"`
-	End      int    `json:"end,omitempty"`
-	EndCol   int    `json:"endCol,omitempty"`
-	Children []Node `json:"children,omitempty"`
+	Kind     string  `json:"kind"`
+	Text     string  `json:"text,omitempty"`
+	Start    int     `json:"start,omitempty"`
+	StartCol int     `json:"startCol,omitempty"`
+	End      int     `json:"end,omitempty"`
+	EndCol   int     `json:"endCol,omitempty"`
+	Children []*Node `json:"children,omitempty"`
 }
 
+// Exported aliases for common node kinds so Program can expose a slightly more
+// structured API.
+type (
+	Program Node
+	Clause  Node
+	Var     Node
+	Atom    Node
+	Number  Node
+	Bool    Node
+	List    Node
+	Dict    Node
+)
+
 // Clause describes a predicate clause.
-type Clause struct {
+// rawClause is used when decoding the JSON output produced by the helper
+// Prolog script. It mirrors the structure generated there.
+type rawClause struct {
 	Name   string `json:"name"`
 	Params []Term `json:"params"`
 	Goal   Term   `json:"goal"`
@@ -45,9 +63,9 @@ type Clause struct {
 	End    int    `json:"end,omitempty"`
 }
 
-// Program represents a parsed Prolog file.
-type Program struct {
-	Clauses []Clause `json:"clauses"`
+// rawProgram is the top-level structure emitted by the helper script.
+type rawProgram struct {
+	Clauses []rawClause `json:"clauses"`
 }
 
 // toTerm converts a tree-sitter node into a Term. The conversion is best effort
@@ -81,30 +99,30 @@ func toTerm(n *sitter.Node, src []byte) Term {
 }
 
 // termToNode converts a parsed Term into the simplified Node representation.
-func termToNode(t Term) Node {
+func termToNode(t Term) *Node {
 	switch {
 	case t.Var != "":
-		return Node{Kind: "var", Text: t.Var}
+		return &Node{Kind: "var", Text: t.Var}
 	case t.Number != nil:
-		return Node{Kind: "number", Text: t.Text}
+		return &Node{Kind: "number", Text: t.Text}
 	case t.Bool != nil:
-		return Node{Kind: "bool", Text: t.Text}
+		return &Node{Kind: "bool", Text: t.Text}
 	case t.Atom != "":
-		return Node{Kind: "atom", Text: t.Atom}
+		return &Node{Kind: "atom", Text: t.Atom}
 	case t.List != nil:
-		n := Node{Kind: "list"}
+		n := &Node{Kind: "list"}
 		for _, el := range t.List {
 			n.Children = append(n.Children, termToNode(el))
 		}
 		return n
 	case t.Functor != "":
-		n := Node{Kind: t.Functor}
+		n := &Node{Kind: t.Functor}
 		for _, a := range t.Args {
 			n.Children = append(n.Children, termToNode(a))
 		}
 		return n
 	default:
-		return Node{Kind: "unknown"}
+		return &Node{Kind: "unknown"}
 	}
 }
 
@@ -126,13 +144,13 @@ func pos(src []byte, off int) (int, int) {
 }
 
 // convert transforms a tree-sitter node into our Node structure.
-func convert(n *sitter.Node, src []byte) Node {
+func convert(n *sitter.Node, src []byte) *Node {
 	if n == nil {
-		return Node{}
+		return nil
 	}
 	sp := n.StartPoint()
 	ep := n.EndPoint()
-	node := Node{Kind: n.Type()}
+	node := &Node{Kind: n.Type()}
 	if WithPos {
 		node.Start = int(sp.Row) + 1
 		node.StartCol = int(sp.Column)
@@ -146,30 +164,29 @@ func convert(n *sitter.Node, src []byte) Node {
 			node.Text = n.Content(src)
 		default:
 			// skip non-value leaf nodes
-			return Node{}
+			return nil
 		}
 	}
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
 		child := n.NamedChild(i)
 		c := convert(child, src)
-		if c.Kind == "" {
+		if c == nil {
 			continue
 		}
 		node.Children = append(node.Children, c)
 	}
-
 	if node.Text == "" && len(node.Children) == 0 {
-		return Node{}
+		return nil
 	}
 	return node
 }
 
 // programToNode converts a Program parsed by SWI-Prolog into a Node tree.
-func programToNode(p *Program, src []byte) Node {
-	root := Node{Kind: "program"}
+func programToNode(p *rawProgram, src []byte) *Program {
+	root := &Node{Kind: "program"}
 	for _, c := range p.Clauses {
-		clause := Node{Kind: "clause"}
+		clause := &Node{Kind: "clause"}
 		if WithPos {
 			line, col := pos(src, c.Start)
 			endLine, endCol := pos(src, c.End)
@@ -179,7 +196,7 @@ func programToNode(p *Program, src []byte) Node {
 			clause.EndCol = endCol
 		}
 
-		head := Node{Kind: c.Name}
+		head := &Node{Kind: c.Name}
 		for _, p := range c.Params {
 			head.Children = append(head.Children, termToNode(p))
 		}
@@ -187,7 +204,7 @@ func programToNode(p *Program, src []byte) Node {
 		clause.Children = append(clause.Children, termToNode(c.Goal))
 		root.Children = append(root.Children, clause)
 	}
-	return root
+	return (*Program)(root)
 }
 
 // UnmarshalJSON decodes a term from the JSON form produced by the inspector script.
