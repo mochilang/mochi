@@ -21,7 +21,10 @@ require (
 	github.com/stretchr/testify v1.10.0
 	github.com/tliron/commonlog v0.2.20
 	github.com/tliron/glsp v0.2.2
+	github.com/tree-sitter/tree-sitter-fsharp v0.1.0
+	github.com/tree-sitter/tree-sitter-haskell v0.23.1
 	github.com/tree-sitter/tree-sitter-racket v0.24.7
+	github.com/tree-sitter/tree-sitter-scheme v0.24.7
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	github.com/yuin/gopher-lua v1.1.1
 	github.com/z7zmey/php-parser v0.7.2
@@ -76,8 +79,6 @@ require (
 	github.com/spf13/cast v1.9.2 // indirect
 	github.com/spf13/pflag v1.0.7 // indirect
 	github.com/tliron/kutil v0.3.27 // indirect
-	github.com/tree-sitter/tree-sitter-fsharp v0.1.0 // indirect
-	github.com/tree-sitter/tree-sitter-haskell v0.23.1 // indirect
 	github.com/wk8/go-ordered-map/v2 v2.1.8 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
@@ -95,5 +96,7 @@ require (
 replace mochi/tools/any2mochi => ./archived/tools/any2mochi
 
 replace github.com/tree-sitter/tree-sitter-racket => ./third_party/tree-sitter-racket
+
+replace github.com/tree-sitter/tree-sitter-scheme => github.com/6cdh/tree-sitter-scheme v0.24.7
 
 replace github.com/tree-sitter/tree-sitter-fsharp => github.com/ionide/tree-sitter-fsharp v0.1.0

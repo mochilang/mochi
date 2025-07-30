@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"flag"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -36,14 +35,7 @@ func repoRoot(t *testing.T) string {
 	return ""
 }
 
-func ensureScheme(t *testing.T) {
-	if _, err := exec.LookPath("chibi-scheme"); err != nil {
-		t.Skip("chibi-scheme not installed")
-	}
-}
-
 func TestInspect_Golden(t *testing.T) {
-	ensureScheme(t)
 	root := repoRoot(t)
 	srcDir := filepath.Join(root, "tests", "transpiler", "x", "scheme")
 	outDir := filepath.Join(root, "tests", "json-ast", "x", "scheme")
