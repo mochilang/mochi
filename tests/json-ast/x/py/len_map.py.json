@@ -1,101 +1,138 @@
 {
-  "module": {
-    "_type": "Module",
-    "body": [
+  "file": {
+    "kind": "module",
+    "start": 0,
+    "end": 122,
+    "children": [
       {
-        "_type": "Expr",
-        "value": {
-          "_type": "Call",
-          "func": {
-            "_type": "Name",
-            "id": "print",
-            "ctx": {
-              "_type": "Load"
-            },
-            "lineno": 3,
-            "end_lineno": 3,
-            "col_offset": 0,
-            "end_col_offset": 5
-          },
-          "args": [
-            {
-              "_type": "Call",
-              "func": {
-                "_type": "Name",
-                "id": "len",
-                "ctx": {
-                  "_type": "Load"
-                },
-                "lineno": 3,
-                "end_lineno": 3,
-                "col_offset": 6,
-                "end_col_offset": 9
+        "kind": "comment",
+        "start": 0,
+        "end": 37
+      },
+      {
+        "kind": "comment",
+        "start": 38,
+        "end": 92
+      },
+      {
+        "kind": "expression_statement",
+        "start": 93,
+        "end": 121,
+        "children": [
+          {
+            "kind": "call",
+            "start": 93,
+            "end": 121,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 93,
+                "end": 98
               },
-              "args": [
-                {
-                  "_type": "Dict",
-                  "keys": [
-                    {
-                      "_type": "Constant",
-                      "value": "a",
-                      "kind": null,
-                      "lineno": 3,
-                      "end_lineno": 3,
-                      "col_offset": 11,
-                      "end_col_offset": 14
-                    },
-                    {
-                      "_type": "Constant",
-                      "value": "b",
-                      "kind": null,
-                      "lineno": 3,
-                      "end_lineno": 3,
-                      "col_offset": 19,
-                      "end_col_offset": 22
-                    }
-                  ],
-                  "values": [
-                    {
-                      "_type": "Constant",
-                      "value": 1,
-                      "kind": null,
-                      "lineno": 3,
-                      "end_lineno": 3,
-                      "col_offset": 16,
-                      "end_col_offset": 17
-                    },
-                    {
-                      "_type": "Constant",
-                      "value": 2,
-                      "kind": null,
-                      "lineno": 3,
-                      "end_lineno": 3,
-                      "col_offset": 24,
-                      "end_col_offset": 25
-                    }
-                  ],
-                  "lineno": 3,
-                  "end_lineno": 3,
-                  "col_offset": 10,
-                  "end_col_offset": 26
-                }
-              ],
-              "keywords": [],
-              "lineno": 3,
-              "end_lineno": 3,
-              "col_offset": 6,
-              "end_col_offset": 27
-            }
-          ],
-          "keywords": [],
-          "lineno": 3,
-          "end_lineno": 3,
-          "col_offset": 0,
-          "end_col_offset": 28
-        },
-        "lineno": 3,
-        "end_lineno": 3,
-        "end_col_offset": 28
+              {
+                "kind": "argument_list",
+                "start": 98,
+                "end": 121,
+                "children": [
+                  {
+                    "kind": "call",
+                    "start": 99,
+                    "end": 120,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 99,
+                        "end": 102
+                      },
+                      {
+                        "kind": "argument_list",
+                        "start": 102,
+                        "end": 120,
+                        "children": [
+                          {
+                            "kind": "dictionary",
+                            "start": 103,
+                            "end": 119,
+                            "children": [
+                              {
+                                "kind": "pair",
+                                "start": 104,
+                                "end": 110,
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "start": 104,
+                                    "end": 107,
+                                    "children": [
+                                      {
+                                        "kind": "string_start",
+                                        "start": 104,
+                                        "end": 105
+                                      },
+                                      {
+                                        "kind": "string_content",
+                                        "start": 105,
+                                        "end": 106
+                                      },
+                                      {
+                                        "kind": "string_end",
+                                        "start": 106,
+                                        "end": 107
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "integer",
+                                    "start": 109,
+                                    "end": 110
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "pair",
+                                "start": 112,
+                                "end": 118,
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "start": 112,
+                                    "end": 115,
+                                    "children": [
+                                      {
+                                        "kind": "string_start",
+                                        "start": 112,
+                                        "end": 113
+                                      },
+                                      {
+                                        "kind": "string_content",
+                                        "start": 113,
+                                        "end": 114
+                                      },
+                                      {
+                                        "kind": "string_end",
+                                        "start": 114,
+                                        "end": 115
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "integer",
+                                    "start": 117,
+                                    "end": 118
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     ]
   }

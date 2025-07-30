@@ -1,1279 +1,1466 @@
 {
-  "module": {
-    "_type": "Module",
-    "body": [
+  "file": {
+    "kind": "module",
+    "start": 0,
+    "end": 942,
+    "children": [
       {
-        "_type": "ImportFrom",
-        "lineno": 3,
-        "end_lineno": 3,
-        "end_col_offset": 34
+        "kind": "comment",
+        "start": 0,
+        "end": 37
       },
       {
-        "_type": "ImportFrom",
-        "lineno": 4,
-        "end_lineno": 4,
-        "end_col_offset": 33
+        "kind": "comment",
+        "start": 38,
+        "end": 92
       },
       {
-        "_type": "ImportFrom",
-        "lineno": 5,
-        "end_lineno": 5,
-        "end_col_offset": 29
-      },
-      {
-        "_type": "ClassDef",
-        "name": "Customer",
-        "body": [
+        "kind": "future_import_statement",
+        "start": 93,
+        "end": 127,
+        "children": [
           {
-            "_type": "AnnAssign",
-            "value": null,
-            "annotation": {
-              "_type": "Name",
-              "id": "int",
-              "lineno": 9,
-              "end_lineno": 9,
-              "col_offset": 8,
-              "end_col_offset": 11
-            },
-            "target": {
-              "_type": "Name",
-              "id": "id",
-              "lineno": 9,
-              "end_lineno": 9,
-              "col_offset": 4,
-              "end_col_offset": 6
-            },
-            "lineno": 9,
-            "end_lineno": 9,
-            "col_offset": 4,
-            "end_col_offset": 11
-          },
-          {
-            "_type": "AnnAssign",
-            "value": null,
-            "annotation": {
-              "_type": "Name",
-              "id": "str",
-              "lineno": 10,
-              "end_lineno": 10,
-              "col_offset": 10,
-              "end_col_offset": 13
-            },
-            "target": {
-              "_type": "Name",
-              "id": "name",
-              "lineno": 10,
-              "end_lineno": 10,
-              "col_offset": 4,
-              "end_col_offset": 8
-            },
-            "lineno": 10,
-            "end_lineno": 10,
-            "col_offset": 4,
-            "end_col_offset": 13
-          }
-        ],
-        "decorator_list": [
-          {
-            "_type": "Name",
-            "id": "dataclass",
-            "lineno": 7,
-            "end_lineno": 7,
-            "col_offset": 1,
-            "end_col_offset": 10
-          }
-        ],
-        "lineno": 8,
-        "end_lineno": 10,
-        "end_col_offset": 13
-      },
-      {
-        "_type": "Assign",
-        "targets": [
-          {
-            "_type": "Name",
-            "id": "customers",
-            "lineno": 12,
-            "end_lineno": 12,
-            "end_col_offset": 9
-          }
-        ],
-        "value": {
-          "_type": "List",
-          "elts": [
-            {
-              "_type": "Call",
-              "func": {
-                "_type": "Name",
-                "id": "Customer",
-                "ctx": {
-                  "_type": "Load"
-                },
-                "lineno": 12,
-                "end_lineno": 12,
-                "col_offset": 13,
-                "end_col_offset": 21
-              },
-              "args": [
-                {
-                  "_type": "Constant",
-                  "value": 1,
-                  "kind": null,
-                  "lineno": 12,
-                  "end_lineno": 12,
-                  "col_offset": 22,
-                  "end_col_offset": 23
-                },
-                {
-                  "_type": "Constant",
-                  "value": "Alice",
-                  "kind": null,
-                  "lineno": 12,
-                  "end_lineno": 12,
-                  "col_offset": 25,
-                  "end_col_offset": 32
-                }
-              ],
-              "keywords": [],
-              "lineno": 12,
-              "end_lineno": 12,
-              "col_offset": 13,
-              "end_col_offset": 33
-            },
-            {
-              "_type": "Call",
-              "func": {
-                "_type": "Name",
-                "id": "Customer",
-                "ctx": {
-                  "_type": "Load"
-                },
-                "lineno": 12,
-                "end_lineno": 12,
-                "col_offset": 35,
-                "end_col_offset": 43
-              },
-              "args": [
-                {
-                  "_type": "Constant",
-                  "value": 2,
-                  "kind": null,
-                  "lineno": 12,
-                  "end_lineno": 12,
-                  "col_offset": 44,
-                  "end_col_offset": 45
-                },
-                {
-                  "_type": "Constant",
-                  "value": "Bob",
-                  "kind": null,
-                  "lineno": 12,
-                  "end_lineno": 12,
-                  "col_offset": 47,
-                  "end_col_offset": 52
-                }
-              ],
-              "keywords": [],
-              "lineno": 12,
-              "end_lineno": 12,
-              "col_offset": 35,
-              "end_col_offset": 53
-            }
-          ],
-          "ctx": {
-            "_type": "Load"
-          },
-          "lineno": 12,
-          "end_lineno": 12,
-          "col_offset": 12,
-          "end_col_offset": 54
-        },
-        "lineno": 12,
-        "end_lineno": 12,
-        "end_col_offset": 54
-      },
-      {
-        "_type": "ClassDef",
-        "name": "Order",
-        "body": [
-          {
-            "_type": "AnnAssign",
-            "value": null,
-            "annotation": {
-              "_type": "Name",
-              "id": "int",
-              "lineno": 15,
-              "end_lineno": 15,
-              "col_offset": 8,
-              "end_col_offset": 11
-            },
-            "target": {
-              "_type": "Name",
-              "id": "id",
-              "lineno": 15,
-              "end_lineno": 15,
-              "col_offset": 4,
-              "end_col_offset": 6
-            },
-            "lineno": 15,
-            "end_lineno": 15,
-            "col_offset": 4,
-            "end_col_offset": 11
-          },
-          {
-            "_type": "AnnAssign",
-            "value": null,
-            "annotation": {
-              "_type": "Name",
-              "id": "int",
-              "lineno": 16,
-              "end_lineno": 16,
-              "col_offset": 16,
-              "end_col_offset": 19
-            },
-            "target": {
-              "_type": "Name",
-              "id": "customerId",
-              "lineno": 16,
-              "end_lineno": 16,
-              "col_offset": 4,
-              "end_col_offset": 14
-            },
-            "lineno": 16,
-            "end_lineno": 16,
-            "col_offset": 4,
-            "end_col_offset": 19
-          }
-        ],
-        "decorator_list": [
-          {
-            "_type": "Name",
-            "id": "dataclass",
-            "lineno": 13,
-            "end_lineno": 13,
-            "col_offset": 1,
-            "end_col_offset": 10
-          }
-        ],
-        "lineno": 14,
-        "end_lineno": 16,
-        "end_col_offset": 19
-      },
-      {
-        "_type": "Assign",
-        "targets": [
-          {
-            "_type": "Name",
-            "id": "orders",
-            "lineno": 18,
-            "end_lineno": 18,
-            "end_col_offset": 6
-          }
-        ],
-        "value": {
-          "_type": "List",
-          "elts": [
-            {
-              "_type": "Call",
-              "func": {
-                "_type": "Name",
-                "id": "Order",
-                "ctx": {
-                  "_type": "Load"
-                },
-                "lineno": 18,
-                "end_lineno": 18,
-                "col_offset": 10,
-                "end_col_offset": 15
-              },
-              "args": [
-                {
-                  "_type": "Constant",
-                  "value": 100,
-                  "kind": null,
-                  "lineno": 18,
-                  "end_lineno": 18,
-                  "col_offset": 16,
-                  "end_col_offset": 19
-                },
-                {
-                  "_type": "Constant",
-                  "value": 1,
-                  "kind": null,
-                  "lineno": 18,
-                  "end_lineno": 18,
-                  "col_offset": 21,
-                  "end_col_offset": 22
-                }
-              ],
-              "keywords": [],
-              "lineno": 18,
-              "end_lineno": 18,
-              "col_offset": 10,
-              "end_col_offset": 23
-            },
-            {
-              "_type": "Call",
-              "func": {
-                "_type": "Name",
-                "id": "Order",
-                "ctx": {
-                  "_type": "Load"
-                },
-                "lineno": 18,
-                "end_lineno": 18,
-                "col_offset": 25,
-                "end_col_offset": 30
-              },
-              "args": [
-                {
-                  "_type": "Constant",
-                  "value": 101,
-                  "kind": null,
-                  "lineno": 18,
-                  "end_lineno": 18,
-                  "col_offset": 31,
-                  "end_col_offset": 34
-                },
-                {
-                  "_type": "Constant",
-                  "value": 1,
-                  "kind": null,
-                  "lineno": 18,
-                  "end_lineno": 18,
-                  "col_offset": 36,
-                  "end_col_offset": 37
-                }
-              ],
-              "keywords": [],
-              "lineno": 18,
-              "end_lineno": 18,
-              "col_offset": 25,
-              "end_col_offset": 38
-            },
-            {
-              "_type": "Call",
-              "func": {
-                "_type": "Name",
-                "id": "Order",
-                "ctx": {
-                  "_type": "Load"
-                },
-                "lineno": 18,
-                "end_lineno": 18,
-                "col_offset": 40,
-                "end_col_offset": 45
-              },
-              "args": [
-                {
-                  "_type": "Constant",
-                  "value": 102,
-                  "kind": null,
-                  "lineno": 18,
-                  "end_lineno": 18,
-                  "col_offset": 46,
-                  "end_col_offset": 49
-                },
-                {
-                  "_type": "Constant",
-                  "value": 2,
-                  "kind": null,
-                  "lineno": 18,
-                  "end_lineno": 18,
-                  "col_offset": 51,
-                  "end_col_offset": 52
-                }
-              ],
-              "keywords": [],
-              "lineno": 18,
-              "end_lineno": 18,
-              "col_offset": 40,
-              "end_col_offset": 53
-            }
-          ],
-          "ctx": {
-            "_type": "Load"
-          },
-          "lineno": 18,
-          "end_lineno": 18,
-          "col_offset": 9,
-          "end_col_offset": 54
-        },
-        "lineno": 18,
-        "end_lineno": 18,
-        "end_col_offset": 54
-      },
-      {
-        "_type": "ClassDef",
-        "name": "StatsGroup",
-        "body": [
-          {
-            "_type": "AnnAssign",
-            "value": null,
-            "annotation": {
-              "_type": "Name",
-              "id": "str",
-              "lineno": 21,
-              "end_lineno": 21,
-              "col_offset": 9,
-              "end_col_offset": 12
-            },
-            "target": {
-              "_type": "Name",
-              "id": "key",
-              "lineno": 21,
-              "end_lineno": 21,
-              "col_offset": 4,
-              "end_col_offset": 7
-            },
-            "lineno": 21,
-            "end_lineno": 21,
-            "col_offset": 4,
-            "end_col_offset": 12
-          },
-          {
-            "_type": "AnnAssign",
-            "value": null,
-            "annotation": {
-              "_type": "Name",
-              "id": "list",
-              "lineno": 22,
-              "end_lineno": 22,
-              "col_offset": 11,
-              "end_col_offset": 15
-            },
-            "target": {
-              "_type": "Name",
-              "id": "items",
-              "lineno": 22,
-              "end_lineno": 22,
-              "col_offset": 4,
-              "end_col_offset": 9
-            },
-            "lineno": 22,
-            "end_lineno": 22,
-            "col_offset": 4,
-            "end_col_offset": 15
-          }
-        ],
-        "decorator_list": [
-          {
-            "_type": "Name",
-            "id": "dataclass",
-            "lineno": 19,
-            "end_lineno": 19,
-            "col_offset": 1,
-            "end_col_offset": 10
-          }
-        ],
-        "lineno": 20,
-        "end_lineno": 22,
-        "end_col_offset": 15
-      },
-      {
-        "_type": "ClassDef",
-        "name": "StatsRow",
-        "body": [
-          {
-            "_type": "AnnAssign",
-            "value": null,
-            "annotation": {
-              "_type": "Name",
-              "id": "any",
-              "lineno": 26,
-              "end_lineno": 26,
-              "col_offset": 7,
-              "end_col_offset": 10
-            },
-            "target": {
-              "_type": "Name",
-              "id": "o",
-              "lineno": 26,
-              "end_lineno": 26,
-              "col_offset": 4,
-              "end_col_offset": 5
-            },
-            "lineno": 26,
-            "end_lineno": 26,
-            "col_offset": 4,
-            "end_col_offset": 10
-          },
-          {
-            "_type": "AnnAssign",
-            "value": null,
-            "annotation": {
-              "_type": "Name",
-              "id": "any",
-              "lineno": 27,
-              "end_lineno": 27,
-              "col_offset": 7,
-              "end_col_offset": 10
-            },
-            "target": {
-              "_type": "Name",
-              "id": "c",
-              "lineno": 27,
-              "end_lineno": 27,
-              "col_offset": 4,
-              "end_col_offset": 5
-            },
-            "lineno": 27,
-            "end_lineno": 27,
-            "col_offset": 4,
-            "end_col_offset": 10
-          }
-        ],
-        "decorator_list": [
-          {
-            "_type": "Name",
-            "id": "dataclass",
-            "lineno": 24,
-            "end_lineno": 24,
-            "col_offset": 1,
-            "end_col_offset": 10
-          }
-        ],
-        "lineno": 25,
-        "end_lineno": 27,
-        "end_col_offset": 10
-      },
-      {
-        "_type": "Assign",
-        "targets": [
-          {
-            "_type": "Name",
-            "id": "_stats_groups",
-            "lineno": 29,
-            "end_lineno": 29,
-            "end_col_offset": 13
-          }
-        ],
-        "value": {
-          "_type": "Dict",
-          "keys": [],
-          "values": [],
-          "lineno": 29,
-          "end_lineno": 29,
-          "col_offset": 16,
-          "end_col_offset": 18
-        },
-        "lineno": 29,
-        "end_lineno": 29,
-        "end_col_offset": 18
-      },
-      {
-        "_type": "For",
-        "body": [
-          {
-            "_type": "For",
-            "body": [
+            "kind": "dotted_name",
+            "start": 116,
+            "end": 127,
+            "children": [
               {
-                "_type": "Assign",
-                "targets": [
-                  {
-                    "_type": "Name",
-                    "id": "_g",
-                    "lineno": 32,
-                    "end_lineno": 32,
-                    "col_offset": 8,
-                    "end_col_offset": 10
-                  }
-                ],
-                "value": {
-                  "_type": "Call",
-                  "func": {
-                    "_type": "Attribute",
-                    "value": {
-                      "_type": "Name",
-                      "id": "_stats_groups",
-                      "ctx": {
-                        "_type": "Load"
-                      },
-                      "lineno": 32,
-                      "end_lineno": 32,
-                      "col_offset": 13,
-                      "end_col_offset": 26
-                    },
-                    "attr": "setdefault",
-                    "ctx": {
-                      "_type": "Load"
-                    },
-                    "lineno": 32,
-                    "end_lineno": 32,
-                    "col_offset": 13,
-                    "end_col_offset": 37
-                  },
-                  "args": [
-                    {
-                      "_type": "Attribute",
-                      "value": {
-                        "_type": "Name",
-                        "id": "c",
-                        "ctx": {
-                          "_type": "Load"
-                        },
-                        "lineno": 32,
-                        "end_lineno": 32,
-                        "col_offset": 38,
-                        "end_col_offset": 39
-                      },
-                      "attr": "name",
-                      "ctx": {
-                        "_type": "Load"
-                      },
-                      "lineno": 32,
-                      "end_lineno": 32,
-                      "col_offset": 38,
-                      "end_col_offset": 44
-                    },
-                    {
-                      "_type": "Call",
-                      "func": {
-                        "_type": "Name",
-                        "id": "StatsGroup",
-                        "ctx": {
-                          "_type": "Load"
-                        },
-                        "lineno": 32,
-                        "end_lineno": 32,
-                        "col_offset": 46,
-                        "end_col_offset": 56
-                      },
-                      "args": [
-                        {
-                          "_type": "Attribute",
-                          "value": {
-                            "_type": "Name",
-                            "id": "c",
-                            "ctx": {
-                              "_type": "Load"
-                            },
-                            "lineno": 32,
-                            "end_lineno": 32,
-                            "col_offset": 57,
-                            "end_col_offset": 58
-                          },
-                          "attr": "name",
-                          "ctx": {
-                            "_type": "Load"
-                          },
-                          "lineno": 32,
-                          "end_lineno": 32,
-                          "col_offset": 57,
-                          "end_col_offset": 63
-                        },
-                        {
-                          "_type": "List",
-                          "elts": [],
-                          "ctx": {
-                            "_type": "Load"
-                          },
-                          "lineno": 32,
-                          "end_lineno": 32,
-                          "col_offset": 65,
-                          "end_col_offset": 67
-                        }
-                      ],
-                      "keywords": [],
-                      "lineno": 32,
-                      "end_lineno": 32,
-                      "col_offset": 46,
-                      "end_col_offset": 68
-                    }
-                  ],
-                  "keywords": [],
-                  "lineno": 32,
-                  "end_lineno": 32,
-                  "col_offset": 13,
-                  "end_col_offset": 69
-                },
-                "lineno": 32,
-                "end_lineno": 32,
-                "col_offset": 8,
-                "end_col_offset": 69
-              },
-              {
-                "_type": "Expr",
-                "value": {
-                  "_type": "Call",
-                  "func": {
-                    "_type": "Attribute",
-                    "value": {
-                      "_type": "Attribute",
-                      "value": {
-                        "_type": "Name",
-                        "id": "_g",
-                        "ctx": {
-                          "_type": "Load"
-                        },
-                        "lineno": 33,
-                        "end_lineno": 33,
-                        "col_offset": 8,
-                        "end_col_offset": 10
-                      },
-                      "attr": "items",
-                      "ctx": {
-                        "_type": "Load"
-                      },
-                      "lineno": 33,
-                      "end_lineno": 33,
-                      "col_offset": 8,
-                      "end_col_offset": 16
-                    },
-                    "attr": "append",
-                    "ctx": {
-                      "_type": "Load"
-                    },
-                    "lineno": 33,
-                    "end_lineno": 33,
-                    "col_offset": 8,
-                    "end_col_offset": 23
-                  },
-                  "args": [
-                    {
-                      "_type": "Call",
-                      "func": {
-                        "_type": "Name",
-                        "id": "StatsRow",
-                        "ctx": {
-                          "_type": "Load"
-                        },
-                        "lineno": 33,
-                        "end_lineno": 33,
-                        "col_offset": 24,
-                        "end_col_offset": 32
-                      },
-                      "args": [
-                        {
-                          "_type": "Name",
-                          "id": "o",
-                          "ctx": {
-                            "_type": "Load"
-                          },
-                          "lineno": 33,
-                          "end_lineno": 33,
-                          "col_offset": 33,
-                          "end_col_offset": 34
-                        },
-                        {
-                          "_type": "Name",
-                          "id": "c",
-                          "ctx": {
-                            "_type": "Load"
-                          },
-                          "lineno": 33,
-                          "end_lineno": 33,
-                          "col_offset": 36,
-                          "end_col_offset": 37
-                        }
-                      ],
-                      "keywords": [],
-                      "lineno": 33,
-                      "end_lineno": 33,
-                      "col_offset": 24,
-                      "end_col_offset": 38
-                    }
-                  ],
-                  "keywords": [],
-                  "lineno": 33,
-                  "end_lineno": 33,
-                  "col_offset": 8,
-                  "end_col_offset": 39
-                },
-                "lineno": 33,
-                "end_lineno": 33,
-                "col_offset": 8,
-                "end_col_offset": 39
+                "kind": "identifier",
+                "start": 116,
+                "end": 127
               }
-            ],
-            "target": {
-              "_type": "Name",
-              "id": "c",
-              "lineno": 31,
-              "end_lineno": 31,
-              "col_offset": 8,
-              "end_col_offset": 9
-            },
-            "iter": {
-              "_type": "ListComp",
-              "generators": [
-                {
-                  "_type": "comprehension",
-                  "target": {
-                    "_type": "Name",
-                    "id": "c",
-                    "lineno": 31,
-                    "end_lineno": 31,
-                    "col_offset": 20,
-                    "end_col_offset": 21
-                  },
-                  "iter": {
-                    "_type": "Name",
-                    "id": "customers",
-                    "lineno": 31,
-                    "end_lineno": 31,
-                    "col_offset": 25,
-                    "end_col_offset": 34
-                  },
-                  "ifs": [
-                    {
-                      "_type": "Compare",
-                      "left": {
-                        "_type": "Attribute",
-                        "value": {
-                          "_type": "Name",
-                          "id": "o",
-                          "ctx": {
-                            "_type": "Load"
-                          },
-                          "lineno": 31,
-                          "end_lineno": 31,
-                          "col_offset": 38,
-                          "end_col_offset": 39
-                        },
-                        "attr": "customerId",
-                        "lineno": 31,
-                        "end_lineno": 31,
-                        "col_offset": 38,
-                        "end_col_offset": 50
-                      },
-                      "ops": [
-                        {
-                          "_type": "Eq"
-                        }
-                      ],
-                      "comparators": [
-                        {
-                          "_type": "Attribute",
-                          "value": {
-                            "_type": "Name",
-                            "id": "c",
-                            "ctx": {
-                              "_type": "Load"
-                            },
-                            "lineno": 31,
-                            "end_lineno": 31,
-                            "col_offset": 54,
-                            "end_col_offset": 55
-                          },
-                          "attr": "id",
-                          "lineno": 31,
-                          "end_lineno": 31,
-                          "col_offset": 54,
-                          "end_col_offset": 58
-                        }
-                      ],
-                      "lineno": 31,
-                      "end_lineno": 31,
-                      "col_offset": 38,
-                      "end_col_offset": 58
-                    }
-                  ]
-                }
-              ],
-              "elt": {
-                "_type": "Name",
-                "id": "c",
-                "lineno": 31,
-                "end_lineno": 31,
-                "col_offset": 14,
-                "end_col_offset": 15
-              },
-              "lineno": 31,
-              "end_lineno": 31,
-              "col_offset": 13,
-              "end_col_offset": 59
-            },
-            "lineno": 31,
-            "end_lineno": 33,
-            "col_offset": 4,
-            "end_col_offset": 39
+            ]
           }
-        ],
-        "target": {
-          "_type": "Name",
-          "id": "o",
-          "lineno": 30,
-          "end_lineno": 30,
-          "col_offset": 4,
-          "end_col_offset": 5
-        },
-        "iter": {
-          "_type": "Name",
-          "id": "orders",
-          "lineno": 30,
-          "end_lineno": 30,
-          "col_offset": 9,
-          "end_col_offset": 15
-        },
-        "lineno": 30,
-        "end_lineno": 33,
-        "end_col_offset": 39
+        ]
       },
       {
-        "_type": "ClassDef",
-        "name": "Stat",
-        "body": [
+        "kind": "import_from_statement",
+        "start": 128,
+        "end": 161,
+        "children": [
           {
-            "_type": "AnnAssign",
-            "value": null,
-            "annotation": {
-              "_type": "Name",
-              "id": "str",
-              "lineno": 36,
-              "end_lineno": 36,
-              "col_offset": 10,
-              "end_col_offset": 13
-            },
-            "target": {
-              "_type": "Name",
-              "id": "name",
-              "lineno": 36,
-              "end_lineno": 36,
-              "col_offset": 4,
-              "end_col_offset": 8
-            },
-            "lineno": 36,
-            "end_lineno": 36,
-            "col_offset": 4,
-            "end_col_offset": 13
-          },
-          {
-            "_type": "AnnAssign",
-            "value": null,
-            "annotation": {
-              "_type": "Name",
-              "id": "int",
-              "lineno": 37,
-              "end_lineno": 37,
-              "col_offset": 11,
-              "end_col_offset": 14
-            },
-            "target": {
-              "_type": "Name",
-              "id": "count",
-              "lineno": 37,
-              "end_lineno": 37,
-              "col_offset": 4,
-              "end_col_offset": 9
-            },
-            "lineno": 37,
-            "end_lineno": 37,
-            "col_offset": 4,
-            "end_col_offset": 14
-          }
-        ],
-        "decorator_list": [
-          {
-            "_type": "Name",
-            "id": "dataclass",
-            "lineno": 34,
-            "end_lineno": 34,
-            "col_offset": 1,
-            "end_col_offset": 10
-          }
-        ],
-        "lineno": 35,
-        "end_lineno": 37,
-        "end_col_offset": 14
-      },
-      {
-        "_type": "Assign",
-        "targets": [
-          {
-            "_type": "Name",
-            "id": "stats",
-            "lineno": 39,
-            "end_lineno": 39,
-            "end_col_offset": 5
-          }
-        ],
-        "value": {
-          "_type": "ListComp",
-          "elt": {
-            "_type": "Call",
-            "func": {
-              "_type": "Name",
-              "id": "Stat",
-              "ctx": {
-                "_type": "Load"
-              },
-              "lineno": 39,
-              "end_lineno": 39,
-              "col_offset": 9,
-              "end_col_offset": 13
-            },
-            "args": [
+            "kind": "dotted_name",
+            "start": 133,
+            "end": 144,
+            "children": [
               {
-                "_type": "Attribute",
-                "value": {
-                  "_type": "Name",
-                  "id": "g",
-                  "ctx": {
-                    "_type": "Load"
-                  },
-                  "lineno": 39,
-                  "end_lineno": 39,
-                  "col_offset": 14,
-                  "end_col_offset": 15
-                },
-                "attr": "key",
-                "ctx": {
-                  "_type": "Load"
-                },
-                "lineno": 39,
-                "end_lineno": 39,
-                "col_offset": 14,
-                "end_col_offset": 19
-              },
-              {
-                "_type": "Call",
-                "func": {
-                  "_type": "Name",
-                  "id": "len",
-                  "ctx": {
-                    "_type": "Load"
-                  },
-                  "lineno": 39,
-                  "end_lineno": 39,
-                  "col_offset": 21,
-                  "end_col_offset": 24
-                },
-                "args": [
-                  {
-                    "_type": "Attribute",
-                    "value": {
-                      "_type": "Name",
-                      "id": "g",
-                      "ctx": {
-                        "_type": "Load"
-                      },
-                      "lineno": 39,
-                      "end_lineno": 39,
-                      "col_offset": 25,
-                      "end_col_offset": 26
-                    },
-                    "attr": "items",
-                    "ctx": {
-                      "_type": "Load"
-                    },
-                    "lineno": 39,
-                    "end_lineno": 39,
-                    "col_offset": 25,
-                    "end_col_offset": 32
-                  }
-                ],
-                "keywords": [],
-                "lineno": 39,
-                "end_lineno": 39,
-                "col_offset": 21,
-                "end_col_offset": 33
+                "kind": "identifier",
+                "start": 133,
+                "end": 144
               }
-            ],
-            "keywords": [],
-            "lineno": 39,
-            "end_lineno": 39,
-            "col_offset": 9,
-            "end_col_offset": 34
+            ]
           },
-          "generators": [
-            {
-              "_type": "comprehension",
-              "target": {
-                "_type": "Name",
-                "id": "g",
-                "ctx": {
-                  "_type": "Store"
-                },
-                "lineno": 39,
-                "end_lineno": 39,
-                "col_offset": 39,
-                "end_col_offset": 40
-              },
-              "iter": {
-                "_type": "Call",
-                "func": {
-                  "_type": "Attribute",
-                  "value": {
-                    "_type": "Name",
-                    "id": "_stats_groups",
-                    "ctx": {
-                      "_type": "Load"
-                    },
-                    "lineno": 39,
-                    "end_lineno": 39,
-                    "col_offset": 44,
-                    "end_col_offset": 57
-                  },
-                  "attr": "values",
-                  "ctx": {
-                    "_type": "Load"
-                  },
-                  "lineno": 39,
-                  "end_lineno": 39,
-                  "col_offset": 44,
-                  "end_col_offset": 64
-                },
-                "args": [],
-                "keywords": [],
-                "lineno": 39,
-                "end_lineno": 39,
-                "col_offset": 44,
-                "end_col_offset": 66
-              },
-              "ifs": [],
-              "is_async": 0
-            }
-          ],
-          "lineno": 39,
-          "end_lineno": 39,
-          "col_offset": 8,
-          "end_col_offset": 67
-        },
-        "lineno": 39,
-        "end_lineno": 39,
-        "end_col_offset": 67
-      },
-      {
-        "_type": "Expr",
-        "value": {
-          "_type": "Call",
-          "func": {
-            "_type": "Name",
-            "id": "print",
-            "ctx": {
-              "_type": "Load"
-            },
-            "lineno": 40,
-            "end_lineno": 40,
-            "col_offset": 0,
-            "end_col_offset": 5
-          },
-          "args": [
-            {
-              "_type": "Constant",
-              "value": "--- Orders per customer ---",
-              "kind": null,
-              "lineno": 40,
-              "end_lineno": 40,
-              "col_offset": 6,
-              "end_col_offset": 35
-            }
-          ],
-          "keywords": [],
-          "lineno": 40,
-          "end_lineno": 40,
-          "col_offset": 0,
-          "end_col_offset": 36
-        },
-        "lineno": 40,
-        "end_lineno": 40,
-        "end_col_offset": 36
-      },
-      {
-        "_type": "For",
-        "body": [
           {
-            "_type": "Expr",
-            "value": {
-              "_type": "Call",
-              "func": {
-                "_type": "Name",
-                "id": "print",
-                "ctx": {
-                  "_type": "Load"
-                },
-                "lineno": 42,
-                "end_lineno": 42,
-                "col_offset": 4,
-                "end_col_offset": 9
-              },
-              "args": [
-                {
-                  "_type": "Attribute",
-                  "value": {
-                    "_type": "Name",
-                    "id": "s",
-                    "ctx": {
-                      "_type": "Load"
-                    },
-                    "lineno": 42,
-                    "end_lineno": 42,
-                    "col_offset": 10,
-                    "end_col_offset": 11
-                  },
-                  "attr": "name",
-                  "ctx": {
-                    "_type": "Load"
-                  },
-                  "lineno": 42,
-                  "end_lineno": 42,
-                  "col_offset": 10,
-                  "end_col_offset": 16
-                },
-                {
-                  "_type": "Constant",
-                  "value": "orders:",
-                  "kind": null,
-                  "lineno": 42,
-                  "end_lineno": 42,
-                  "col_offset": 18,
-                  "end_col_offset": 27
-                },
-                {
-                  "_type": "Attribute",
-                  "value": {
-                    "_type": "Name",
-                    "id": "s",
-                    "ctx": {
-                      "_type": "Load"
-                    },
-                    "lineno": 42,
-                    "end_lineno": 42,
-                    "col_offset": 29,
-                    "end_col_offset": 30
-                  },
-                  "attr": "count",
-                  "ctx": {
-                    "_type": "Load"
-                  },
-                  "lineno": 42,
-                  "end_lineno": 42,
-                  "col_offset": 29,
-                  "end_col_offset": 36
-                }
-              ],
-              "keywords": [],
-              "lineno": 42,
-              "end_lineno": 42,
-              "col_offset": 4,
-              "end_col_offset": 37
-            },
-            "lineno": 42,
-            "end_lineno": 42,
-            "col_offset": 4,
-            "end_col_offset": 37
+            "kind": "dotted_name",
+            "start": 152,
+            "end": 161,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 152,
+                "end": 161
+              }
+            ]
           }
-        ],
-        "target": {
-          "_type": "Name",
-          "id": "s",
-          "lineno": 41,
-          "end_lineno": 41,
-          "col_offset": 4,
-          "end_col_offset": 5
-        },
-        "iter": {
-          "_type": "Name",
-          "id": "stats",
-          "lineno": 41,
-          "end_lineno": 41,
-          "col_offset": 9,
-          "end_col_offset": 14
-        },
-        "lineno": 41,
-        "end_lineno": 42,
-        "end_col_offset": 37
+        ]
+      },
+      {
+        "kind": "import_from_statement",
+        "start": 162,
+        "end": 191,
+        "children": [
+          {
+            "kind": "dotted_name",
+            "start": 167,
+            "end": 173,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 167,
+                "end": 173
+              }
+            ]
+          },
+          {
+            "kind": "dotted_name",
+            "start": 181,
+            "end": 185,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 181,
+                "end": 185
+              }
+            ]
+          },
+          {
+            "kind": "dotted_name",
+            "start": 187,
+            "end": 191,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 187,
+                "end": 191
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "decorated_definition",
+        "start": 193,
+        "end": 245,
+        "children": [
+          {
+            "kind": "decorator",
+            "start": 193,
+            "end": 203,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 194,
+                "end": 203
+              }
+            ]
+          },
+          {
+            "kind": "class_definition",
+            "start": 204,
+            "end": 245,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 210,
+                "end": 218
+              },
+              {
+                "kind": "block",
+                "start": 224,
+                "end": 245,
+                "children": [
+                  {
+                    "kind": "expression_statement",
+                    "start": 224,
+                    "end": 231,
+                    "children": [
+                      {
+                        "kind": "assignment",
+                        "start": 224,
+                        "end": 231,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 224,
+                            "end": 226
+                          },
+                          {
+                            "kind": "type",
+                            "start": 228,
+                            "end": 231,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 228,
+                                "end": 231
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "expression_statement",
+                    "start": 236,
+                    "end": 245,
+                    "children": [
+                      {
+                        "kind": "assignment",
+                        "start": 236,
+                        "end": 245,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 236,
+                            "end": 240
+                          },
+                          {
+                            "kind": "type",
+                            "start": 242,
+                            "end": 245,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 242,
+                                "end": 245
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "start": 247,
+        "end": 301,
+        "children": [
+          {
+            "kind": "assignment",
+            "start": 247,
+            "end": 301,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 247,
+                "end": 256
+              },
+              {
+                "kind": "list",
+                "start": 259,
+                "end": 301,
+                "children": [
+                  {
+                    "kind": "call",
+                    "start": 260,
+                    "end": 280,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 260,
+                        "end": 268
+                      },
+                      {
+                        "kind": "argument_list",
+                        "start": 268,
+                        "end": 280,
+                        "children": [
+                          {
+                            "kind": "integer",
+                            "start": 269,
+                            "end": 270
+                          },
+                          {
+                            "kind": "string",
+                            "start": 272,
+                            "end": 279,
+                            "children": [
+                              {
+                                "kind": "string_start",
+                                "start": 272,
+                                "end": 273
+                              },
+                              {
+                                "kind": "string_content",
+                                "start": 273,
+                                "end": 278
+                              },
+                              {
+                                "kind": "string_end",
+                                "start": 278,
+                                "end": 279
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "call",
+                    "start": 282,
+                    "end": 300,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 282,
+                        "end": 290
+                      },
+                      {
+                        "kind": "argument_list",
+                        "start": 290,
+                        "end": 300,
+                        "children": [
+                          {
+                            "kind": "integer",
+                            "start": 291,
+                            "end": 292
+                          },
+                          {
+                            "kind": "string",
+                            "start": 294,
+                            "end": 299,
+                            "children": [
+                              {
+                                "kind": "string_start",
+                                "start": 294,
+                                "end": 295
+                              },
+                              {
+                                "kind": "string_content",
+                                "start": 295,
+                                "end": 298
+                              },
+                              {
+                                "kind": "string_end",
+                                "start": 298,
+                                "end": 299
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "decorated_definition",
+        "start": 302,
+        "end": 357,
+        "children": [
+          {
+            "kind": "decorator",
+            "start": 302,
+            "end": 312,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 303,
+                "end": 312
+              }
+            ]
+          },
+          {
+            "kind": "class_definition",
+            "start": 313,
+            "end": 357,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 319,
+                "end": 324
+              },
+              {
+                "kind": "block",
+                "start": 330,
+                "end": 357,
+                "children": [
+                  {
+                    "kind": "expression_statement",
+                    "start": 330,
+                    "end": 337,
+                    "children": [
+                      {
+                        "kind": "assignment",
+                        "start": 330,
+                        "end": 337,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 330,
+                            "end": 332
+                          },
+                          {
+                            "kind": "type",
+                            "start": 334,
+                            "end": 337,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 334,
+                                "end": 337
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "expression_statement",
+                    "start": 342,
+                    "end": 357,
+                    "children": [
+                      {
+                        "kind": "assignment",
+                        "start": 342,
+                        "end": 357,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 342,
+                            "end": 352
+                          },
+                          {
+                            "kind": "type",
+                            "start": 354,
+                            "end": 357,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 354,
+                                "end": 357
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "start": 359,
+        "end": 413,
+        "children": [
+          {
+            "kind": "assignment",
+            "start": 359,
+            "end": 413,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 359,
+                "end": 365
+              },
+              {
+                "kind": "list",
+                "start": 368,
+                "end": 413,
+                "children": [
+                  {
+                    "kind": "call",
+                    "start": 369,
+                    "end": 382,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 369,
+                        "end": 374
+                      },
+                      {
+                        "kind": "argument_list",
+                        "start": 374,
+                        "end": 382,
+                        "children": [
+                          {
+                            "kind": "integer",
+                            "start": 375,
+                            "end": 378
+                          },
+                          {
+                            "kind": "integer",
+                            "start": 380,
+                            "end": 381
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "call",
+                    "start": 384,
+                    "end": 397,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 384,
+                        "end": 389
+                      },
+                      {
+                        "kind": "argument_list",
+                        "start": 389,
+                        "end": 397,
+                        "children": [
+                          {
+                            "kind": "integer",
+                            "start": 390,
+                            "end": 393
+                          },
+                          {
+                            "kind": "integer",
+                            "start": 395,
+                            "end": 396
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "call",
+                    "start": 399,
+                    "end": 412,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 399,
+                        "end": 404
+                      },
+                      {
+                        "kind": "argument_list",
+                        "start": 404,
+                        "end": 412,
+                        "children": [
+                          {
+                            "kind": "integer",
+                            "start": 405,
+                            "end": 408
+                          },
+                          {
+                            "kind": "integer",
+                            "start": 410,
+                            "end": 411
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "decorated_definition",
+        "start": 414,
+        "end": 471,
+        "children": [
+          {
+            "kind": "decorator",
+            "start": 414,
+            "end": 424,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 415,
+                "end": 424
+              }
+            ]
+          },
+          {
+            "kind": "class_definition",
+            "start": 425,
+            "end": 471,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 431,
+                "end": 441
+              },
+              {
+                "kind": "block",
+                "start": 447,
+                "end": 471,
+                "children": [
+                  {
+                    "kind": "expression_statement",
+                    "start": 447,
+                    "end": 455,
+                    "children": [
+                      {
+                        "kind": "assignment",
+                        "start": 447,
+                        "end": 455,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 447,
+                            "end": 450
+                          },
+                          {
+                            "kind": "type",
+                            "start": 452,
+                            "end": 455,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 452,
+                                "end": 455
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "expression_statement",
+                    "start": 460,
+                    "end": 471,
+                    "children": [
+                      {
+                        "kind": "assignment",
+                        "start": 460,
+                        "end": 471,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 460,
+                            "end": 465
+                          },
+                          {
+                            "kind": "type",
+                            "start": 467,
+                            "end": 471,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 467,
+                                "end": 471
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "decorated_definition",
+        "start": 473,
+        "end": 521,
+        "children": [
+          {
+            "kind": "decorator",
+            "start": 473,
+            "end": 483,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 474,
+                "end": 483
+              }
+            ]
+          },
+          {
+            "kind": "class_definition",
+            "start": 484,
+            "end": 521,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 490,
+                "end": 498
+              },
+              {
+                "kind": "block",
+                "start": 504,
+                "end": 521,
+                "children": [
+                  {
+                    "kind": "expression_statement",
+                    "start": 504,
+                    "end": 510,
+                    "children": [
+                      {
+                        "kind": "assignment",
+                        "start": 504,
+                        "end": 510,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 504,
+                            "end": 505
+                          },
+                          {
+                            "kind": "type",
+                            "start": 507,
+                            "end": 510,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 507,
+                                "end": 510
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "expression_statement",
+                    "start": 515,
+                    "end": 521,
+                    "children": [
+                      {
+                        "kind": "assignment",
+                        "start": 515,
+                        "end": 521,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 515,
+                            "end": 516
+                          },
+                          {
+                            "kind": "type",
+                            "start": 518,
+                            "end": 521,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 518,
+                                "end": 521
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "start": 523,
+        "end": 541,
+        "children": [
+          {
+            "kind": "assignment",
+            "start": 523,
+            "end": 541,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 523,
+                "end": 536
+              },
+              {
+                "kind": "dictionary",
+                "start": 539,
+                "end": 541
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "for_statement",
+        "start": 542,
+        "end": 729,
+        "children": [
+          {
+            "kind": "identifier",
+            "start": 546,
+            "end": 547
+          },
+          {
+            "kind": "identifier",
+            "start": 551,
+            "end": 557
+          },
+          {
+            "kind": "block",
+            "start": 563,
+            "end": 729,
+            "children": [
+              {
+                "kind": "for_statement",
+                "start": 563,
+                "end": 729,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "start": 567,
+                    "end": 568
+                  },
+                  {
+                    "kind": "list_comprehension",
+                    "start": 572,
+                    "end": 618,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 573,
+                        "end": 574
+                      },
+                      {
+                        "kind": "for_in_clause",
+                        "start": 575,
+                        "end": 593,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 579,
+                            "end": 580
+                          },
+                          {
+                            "kind": "identifier",
+                            "start": 584,
+                            "end": 593
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "if_clause",
+                        "start": 594,
+                        "end": 617,
+                        "children": [
+                          {
+                            "kind": "comparison_operator",
+                            "start": 597,
+                            "end": 617,
+                            "children": [
+                              {
+                                "kind": "attribute",
+                                "start": 597,
+                                "end": 609,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 597,
+                                    "end": 598
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "start": 599,
+                                    "end": 609
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "attribute",
+                                "start": 613,
+                                "end": 617,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "start": 613,
+                                    "end": 614
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "start": 615,
+                                    "end": 617
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "block",
+                    "start": 628,
+                    "end": 729,
+                    "children": [
+                      {
+                        "kind": "expression_statement",
+                        "start": 628,
+                        "end": 689,
+                        "children": [
+                          {
+                            "kind": "assignment",
+                            "start": 628,
+                            "end": 689,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 628,
+                                "end": 630
+                              },
+                              {
+                                "kind": "call",
+                                "start": 633,
+                                "end": 689,
+                                "children": [
+                                  {
+                                    "kind": "attribute",
+                                    "start": 633,
+                                    "end": 657,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 633,
+                                        "end": 646
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "start": 647,
+                                        "end": 657
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "argument_list",
+                                    "start": 657,
+                                    "end": 689,
+                                    "children": [
+                                      {
+                                        "kind": "attribute",
+                                        "start": 658,
+                                        "end": 664,
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "start": 658,
+                                            "end": 659
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "start": 660,
+                                            "end": 664
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "call",
+                                        "start": 666,
+                                        "end": 688,
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "start": 666,
+                                            "end": 676
+                                          },
+                                          {
+                                            "kind": "argument_list",
+                                            "start": 676,
+                                            "end": 688,
+                                            "children": [
+                                              {
+                                                "kind": "attribute",
+                                                "start": 677,
+                                                "end": 683,
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "start": 677,
+                                                    "end": 678
+                                                  },
+                                                  {
+                                                    "kind": "identifier",
+                                                    "start": 679,
+                                                    "end": 683
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "list",
+                                                "start": 685,
+                                                "end": 687
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "expression_statement",
+                        "start": 698,
+                        "end": 729,
+                        "children": [
+                          {
+                            "kind": "call",
+                            "start": 698,
+                            "end": 729,
+                            "children": [
+                              {
+                                "kind": "attribute",
+                                "start": 698,
+                                "end": 713,
+                                "children": [
+                                  {
+                                    "kind": "attribute",
+                                    "start": 698,
+                                    "end": 706,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 698,
+                                        "end": 700
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "start": 701,
+                                        "end": 706
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "start": 707,
+                                    "end": 713
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "argument_list",
+                                "start": 713,
+                                "end": 729,
+                                "children": [
+                                  {
+                                    "kind": "call",
+                                    "start": 714,
+                                    "end": 728,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 714,
+                                        "end": 722
+                                      },
+                                      {
+                                        "kind": "argument_list",
+                                        "start": 722,
+                                        "end": 728,
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "start": 723,
+                                            "end": 724
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "start": 726,
+                                            "end": 727
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "decorated_definition",
+        "start": 730,
+        "end": 781,
+        "children": [
+          {
+            "kind": "decorator",
+            "start": 730,
+            "end": 740,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 731,
+                "end": 740
+              }
+            ]
+          },
+          {
+            "kind": "class_definition",
+            "start": 741,
+            "end": 781,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 747,
+                "end": 751
+              },
+              {
+                "kind": "block",
+                "start": 757,
+                "end": 781,
+                "children": [
+                  {
+                    "kind": "expression_statement",
+                    "start": 757,
+                    "end": 766,
+                    "children": [
+                      {
+                        "kind": "assignment",
+                        "start": 757,
+                        "end": 766,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 757,
+                            "end": 761
+                          },
+                          {
+                            "kind": "type",
+                            "start": 763,
+                            "end": 766,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 763,
+                                "end": 766
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "expression_statement",
+                    "start": 771,
+                    "end": 781,
+                    "children": [
+                      {
+                        "kind": "assignment",
+                        "start": 771,
+                        "end": 781,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 771,
+                            "end": 776
+                          },
+                          {
+                            "kind": "type",
+                            "start": 778,
+                            "end": 781,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 778,
+                                "end": 781
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "start": 783,
+        "end": 850,
+        "children": [
+          {
+            "kind": "assignment",
+            "start": 783,
+            "end": 850,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 783,
+                "end": 788
+              },
+              {
+                "kind": "list_comprehension",
+                "start": 791,
+                "end": 850,
+                "children": [
+                  {
+                    "kind": "call",
+                    "start": 792,
+                    "end": 817,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 792,
+                        "end": 796
+                      },
+                      {
+                        "kind": "argument_list",
+                        "start": 796,
+                        "end": 817,
+                        "children": [
+                          {
+                            "kind": "attribute",
+                            "start": 797,
+                            "end": 802,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 797,
+                                "end": 798
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 799,
+                                "end": 802
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "call",
+                            "start": 804,
+                            "end": 816,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 804,
+                                "end": 807
+                              },
+                              {
+                                "kind": "argument_list",
+                                "start": 807,
+                                "end": 816,
+                                "children": [
+                                  {
+                                    "kind": "attribute",
+                                    "start": 808,
+                                    "end": 815,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "start": 808,
+                                        "end": 809
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "start": 810,
+                                        "end": 815
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "for_in_clause",
+                    "start": 818,
+                    "end": 849,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 822,
+                        "end": 823
+                      },
+                      {
+                        "kind": "call",
+                        "start": 827,
+                        "end": 849,
+                        "children": [
+                          {
+                            "kind": "attribute",
+                            "start": 827,
+                            "end": 847,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 827,
+                                "end": 840
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 841,
+                                "end": 847
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "argument_list",
+                            "start": 847,
+                            "end": 849
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "start": 851,
+        "end": 887,
+        "children": [
+          {
+            "kind": "call",
+            "start": 851,
+            "end": 887,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 851,
+                "end": 856
+              },
+              {
+                "kind": "argument_list",
+                "start": 856,
+                "end": 887,
+                "children": [
+                  {
+                    "kind": "string",
+                    "start": 857,
+                    "end": 886,
+                    "children": [
+                      {
+                        "kind": "string_start",
+                        "start": 857,
+                        "end": 858
+                      },
+                      {
+                        "kind": "string_content",
+                        "start": 858,
+                        "end": 885
+                      },
+                      {
+                        "kind": "string_end",
+                        "start": 885,
+                        "end": 886
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "for_statement",
+        "start": 888,
+        "end": 941,
+        "children": [
+          {
+            "kind": "identifier",
+            "start": 892,
+            "end": 893
+          },
+          {
+            "kind": "identifier",
+            "start": 897,
+            "end": 902
+          },
+          {
+            "kind": "block",
+            "start": 908,
+            "end": 941,
+            "children": [
+              {
+                "kind": "expression_statement",
+                "start": 908,
+                "end": 941,
+                "children": [
+                  {
+                    "kind": "call",
+                    "start": 908,
+                    "end": 941,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 908,
+                        "end": 913
+                      },
+                      {
+                        "kind": "argument_list",
+                        "start": 913,
+                        "end": 941,
+                        "children": [
+                          {
+                            "kind": "attribute",
+                            "start": 914,
+                            "end": 920,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 914,
+                                "end": 915
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 916,
+                                "end": 920
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string",
+                            "start": 922,
+                            "end": 931,
+                            "children": [
+                              {
+                                "kind": "string_start",
+                                "start": 922,
+                                "end": 923
+                              },
+                              {
+                                "kind": "string_content",
+                                "start": 923,
+                                "end": 930
+                              },
+                              {
+                                "kind": "string_end",
+                                "start": 930,
+                                "end": 931
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "attribute",
+                            "start": 933,
+                            "end": 940,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "start": 933,
+                                "end": 934
+                              },
+                              {
+                                "kind": "identifier",
+                                "start": 935,
+                                "end": 940
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     ]
   }

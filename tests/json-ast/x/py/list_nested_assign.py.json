@@ -1,230 +1,181 @@
 {
-  "module": {
-    "_type": "Module",
-    "body": [
+  "file": {
+    "kind": "module",
+    "start": 0,
+    "end": 156,
+    "children": [
       {
-        "_type": "Assign",
-        "targets": [
-          {
-            "_type": "Name",
-            "id": "matrix",
-            "lineno": 3,
-            "end_lineno": 3,
-            "end_col_offset": 6
-          }
-        ],
-        "value": {
-          "_type": "List",
-          "elts": [
-            {
-              "_type": "List",
-              "elts": [
-                {
-                  "_type": "Constant",
-                  "value": 1,
-                  "kind": null,
-                  "lineno": 3,
-                  "end_lineno": 3,
-                  "col_offset": 11,
-                  "end_col_offset": 12
-                },
-                {
-                  "_type": "Constant",
-                  "value": 2,
-                  "kind": null,
-                  "lineno": 3,
-                  "end_lineno": 3,
-                  "col_offset": 14,
-                  "end_col_offset": 15
-                }
-              ],
-              "ctx": {
-                "_type": "Load"
-              },
-              "lineno": 3,
-              "end_lineno": 3,
-              "col_offset": 10,
-              "end_col_offset": 16
-            },
-            {
-              "_type": "List",
-              "elts": [
-                {
-                  "_type": "Constant",
-                  "value": 3,
-                  "kind": null,
-                  "lineno": 3,
-                  "end_lineno": 3,
-                  "col_offset": 19,
-                  "end_col_offset": 20
-                },
-                {
-                  "_type": "Constant",
-                  "value": 4,
-                  "kind": null,
-                  "lineno": 3,
-                  "end_lineno": 3,
-                  "col_offset": 22,
-                  "end_col_offset": 23
-                }
-              ],
-              "ctx": {
-                "_type": "Load"
-              },
-              "lineno": 3,
-              "end_lineno": 3,
-              "col_offset": 18,
-              "end_col_offset": 24
-            }
-          ],
-          "ctx": {
-            "_type": "Load"
-          },
-          "lineno": 3,
-          "end_lineno": 3,
-          "col_offset": 9,
-          "end_col_offset": 25
-        },
-        "lineno": 3,
-        "end_lineno": 3,
-        "end_col_offset": 25
+        "kind": "comment",
+        "start": 0,
+        "end": 37
       },
       {
-        "_type": "Assign",
-        "targets": [
-          {
-            "_type": "Subscript",
-            "value": {
-              "_type": "Subscript",
-              "value": {
-                "_type": "Name",
-                "id": "matrix",
-                "ctx": {
-                  "_type": "Load"
-                },
-                "lineno": 4,
-                "end_lineno": 4,
-                "col_offset": 0,
-                "end_col_offset": 6
-              },
-              "slice": {
-                "_type": "Constant",
-                "value": 1,
-                "kind": null,
-                "lineno": 4,
-                "end_lineno": 4,
-                "col_offset": 7,
-                "end_col_offset": 8
-              },
-              "ctx": {
-                "_type": "Load"
-              },
-              "lineno": 4,
-              "end_lineno": 4,
-              "col_offset": 0,
-              "end_col_offset": 9
-            },
-            "slice": {
-              "_type": "Constant",
-              "value": 0,
-              "lineno": 4,
-              "end_lineno": 4,
-              "col_offset": 10,
-              "end_col_offset": 11
-            },
-            "lineno": 4,
-            "end_lineno": 4,
-            "end_col_offset": 12
-          }
-        ],
-        "value": {
-          "_type": "Constant",
-          "value": 5,
-          "kind": null,
-          "lineno": 4,
-          "end_lineno": 4,
-          "col_offset": 15,
-          "end_col_offset": 16
-        },
-        "lineno": 4,
-        "end_lineno": 4,
-        "end_col_offset": 16
+        "kind": "comment",
+        "start": 38,
+        "end": 92
       },
       {
-        "_type": "Expr",
-        "value": {
-          "_type": "Call",
-          "func": {
-            "_type": "Name",
-            "id": "print",
-            "ctx": {
-              "_type": "Load"
-            },
-            "lineno": 5,
-            "end_lineno": 5,
-            "col_offset": 0,
-            "end_col_offset": 5
-          },
-          "args": [
-            {
-              "_type": "Subscript",
-              "value": {
-                "_type": "Subscript",
-                "value": {
-                  "_type": "Name",
-                  "id": "matrix",
-                  "ctx": {
-                    "_type": "Load"
+        "kind": "expression_statement",
+        "start": 93,
+        "end": 118,
+        "children": [
+          {
+            "kind": "assignment",
+            "start": 93,
+            "end": 118,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 93,
+                "end": 99
+              },
+              {
+                "kind": "list",
+                "start": 102,
+                "end": 118,
+                "children": [
+                  {
+                    "kind": "list",
+                    "start": 103,
+                    "end": 109,
+                    "children": [
+                      {
+                        "kind": "integer",
+                        "start": 104,
+                        "end": 105
+                      },
+                      {
+                        "kind": "integer",
+                        "start": 107,
+                        "end": 108
+                      }
+                    ]
                   },
-                  "lineno": 5,
-                  "end_lineno": 5,
-                  "col_offset": 6,
-                  "end_col_offset": 12
-                },
-                "slice": {
-                  "_type": "Constant",
-                  "value": 1,
-                  "kind": null,
-                  "lineno": 5,
-                  "end_lineno": 5,
-                  "col_offset": 13,
-                  "end_col_offset": 14
-                },
-                "ctx": {
-                  "_type": "Load"
-                },
-                "lineno": 5,
-                "end_lineno": 5,
-                "col_offset": 6,
-                "end_col_offset": 15
+                  {
+                    "kind": "list",
+                    "start": 111,
+                    "end": 117,
+                    "children": [
+                      {
+                        "kind": "integer",
+                        "start": 112,
+                        "end": 113
+                      },
+                      {
+                        "kind": "integer",
+                        "start": 115,
+                        "end": 116
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "start": 119,
+        "end": 135,
+        "children": [
+          {
+            "kind": "assignment",
+            "start": 119,
+            "end": 135,
+            "children": [
+              {
+                "kind": "subscript",
+                "start": 119,
+                "end": 131,
+                "children": [
+                  {
+                    "kind": "subscript",
+                    "start": 119,
+                    "end": 128,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 119,
+                        "end": 125
+                      },
+                      {
+                        "kind": "integer",
+                        "start": 126,
+                        "end": 127
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "integer",
+                    "start": 129,
+                    "end": 130
+                  }
+                ]
               },
-              "slice": {
-                "_type": "Constant",
-                "value": 0,
-                "kind": null,
-                "lineno": 5,
-                "end_lineno": 5,
-                "col_offset": 16,
-                "end_col_offset": 17
+              {
+                "kind": "integer",
+                "start": 134,
+                "end": 135
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "start": 136,
+        "end": 155,
+        "children": [
+          {
+            "kind": "call",
+            "start": 136,
+            "end": 155,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 136,
+                "end": 141
               },
-              "ctx": {
-                "_type": "Load"
-              },
-              "lineno": 5,
-              "end_lineno": 5,
-              "col_offset": 6,
-              "end_col_offset": 18
-            }
-          ],
-          "keywords": [],
-          "lineno": 5,
-          "end_lineno": 5,
-          "col_offset": 0,
-          "end_col_offset": 19
-        },
-        "lineno": 5,
-        "end_lineno": 5,
-        "end_col_offset": 19
+              {
+                "kind": "argument_list",
+                "start": 141,
+                "end": 155,
+                "children": [
+                  {
+                    "kind": "subscript",
+                    "start": 142,
+                    "end": 154,
+                    "children": [
+                      {
+                        "kind": "subscript",
+                        "start": 142,
+                        "end": 151,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 142,
+                            "end": 148
+                          },
+                          {
+                            "kind": "integer",
+                            "start": 149,
+                            "end": 150
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "integer",
+                        "start": 152,
+                        "end": 153
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     ]
   }

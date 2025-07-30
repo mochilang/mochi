@@ -1,117 +1,106 @@
 {
-  "module": {
-    "_type": "Module",
-    "body": [
+  "file": {
+    "kind": "module",
+    "start": 0,
+    "end": 117,
+    "children": [
       {
-        "_type": "Expr",
-        "value": {
-          "_type": "Call",
-          "func": {
-            "_type": "Name",
-            "id": "print",
-            "ctx": {
-              "_type": "Load"
-            },
-            "lineno": 3,
-            "end_lineno": 3,
-            "col_offset": 0,
-            "end_col_offset": 5
-          },
-          "args": [
-            {
-              "_type": "UnaryOp",
-              "op": {
-                "_type": "USub"
-              },
-              "operand": {
-                "_type": "Constant",
-                "value": 3,
-                "kind": null,
-                "lineno": 3,
-                "end_lineno": 3,
-                "col_offset": 7,
-                "end_col_offset": 8
-              },
-              "lineno": 3,
-              "end_lineno": 3,
-              "col_offset": 6,
-              "end_col_offset": 8
-            }
-          ],
-          "keywords": [],
-          "lineno": 3,
-          "end_lineno": 3,
-          "col_offset": 0,
-          "end_col_offset": 9
-        },
-        "lineno": 3,
-        "end_lineno": 3,
-        "end_col_offset": 9
+        "kind": "comment",
+        "start": 0,
+        "end": 37
       },
       {
-        "_type": "Expr",
-        "value": {
-          "_type": "Call",
-          "func": {
-            "_type": "Name",
-            "id": "print",
-            "ctx": {
-              "_type": "Load"
-            },
-            "lineno": 4,
-            "end_lineno": 4,
-            "col_offset": 0,
-            "end_col_offset": 5
-          },
-          "args": [
-            {
-              "_type": "BinOp",
-              "left": {
-                "_type": "Constant",
-                "value": 5,
-                "kind": null,
-                "lineno": 4,
-                "end_lineno": 4,
-                "col_offset": 6,
-                "end_col_offset": 7
+        "kind": "comment",
+        "start": 38,
+        "end": 92
+      },
+      {
+        "kind": "expression_statement",
+        "start": 93,
+        "end": 102,
+        "children": [
+          {
+            "kind": "call",
+            "start": 93,
+            "end": 102,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 93,
+                "end": 98
               },
-              "op": {
-                "_type": "Add"
+              {
+                "kind": "argument_list",
+                "start": 98,
+                "end": 102,
+                "children": [
+                  {
+                    "kind": "unary_operator",
+                    "start": 99,
+                    "end": 101,
+                    "children": [
+                      {
+                        "kind": "integer",
+                        "start": 100,
+                        "end": 101
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "start": 103,
+        "end": 116,
+        "children": [
+          {
+            "kind": "call",
+            "start": 103,
+            "end": 116,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 103,
+                "end": 108
               },
-              "right": {
-                "_type": "UnaryOp",
-                "op": {
-                  "_type": "USub"
-                },
-                "operand": {
-                  "_type": "Constant",
-                  "value": 2,
-                  "kind": null,
-                  "lineno": 4,
-                  "end_lineno": 4,
-                  "col_offset": 11,
-                  "end_col_offset": 12
-                },
-                "lineno": 4,
-                "end_lineno": 4,
-                "col_offset": 10,
-                "end_col_offset": 12
-              },
-              "lineno": 4,
-              "end_lineno": 4,
-              "col_offset": 6,
-              "end_col_offset": 12
-            }
-          ],
-          "keywords": [],
-          "lineno": 4,
-          "end_lineno": 4,
-          "col_offset": 0,
-          "end_col_offset": 13
-        },
-        "lineno": 4,
-        "end_lineno": 4,
-        "end_col_offset": 13
+              {
+                "kind": "argument_list",
+                "start": 108,
+                "end": 116,
+                "children": [
+                  {
+                    "kind": "binary_operator",
+                    "start": 109,
+                    "end": 115,
+                    "children": [
+                      {
+                        "kind": "integer",
+                        "start": 109,
+                        "end": 110
+                      },
+                      {
+                        "kind": "unary_operator",
+                        "start": 113,
+                        "end": 115,
+                        "children": [
+                          {
+                            "kind": "integer",
+                            "start": 114,
+                            "end": 115
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     ]
   }

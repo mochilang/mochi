@@ -1,63 +1,85 @@
 {
-  "module": {
-    "_type": "Module",
-    "body": [
+  "file": {
+    "kind": "module",
+    "start": 0,
+    "end": 112,
+    "children": [
       {
-        "_type": "Expr",
-        "value": {
-          "_type": "Call",
-          "func": {
-            "_type": "Name",
-            "id": "print",
-            "ctx": {
-              "_type": "Load"
-            },
-            "lineno": 3,
-            "end_lineno": 3,
-            "col_offset": 0,
-            "end_col_offset": 5
-          },
-          "args": [
-            {
-              "_type": "Call",
-              "func": {
-                "_type": "Name",
-                "id": "int",
-                "ctx": {
-                  "_type": "Load"
-                },
-                "lineno": 3,
-                "end_lineno": 3,
-                "col_offset": 6,
-                "end_col_offset": 9
+        "kind": "comment",
+        "start": 0,
+        "end": 37
+      },
+      {
+        "kind": "comment",
+        "start": 38,
+        "end": 92
+      },
+      {
+        "kind": "expression_statement",
+        "start": 93,
+        "end": 111,
+        "children": [
+          {
+            "kind": "call",
+            "start": 93,
+            "end": 111,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 93,
+                "end": 98
               },
-              "args": [
-                {
-                  "_type": "Constant",
-                  "value": "1995",
-                  "kind": null,
-                  "lineno": 3,
-                  "end_lineno": 3,
-                  "col_offset": 10,
-                  "end_col_offset": 16
-                }
-              ],
-              "keywords": [],
-              "lineno": 3,
-              "end_lineno": 3,
-              "col_offset": 6,
-              "end_col_offset": 17
-            }
-          ],
-          "keywords": [],
-          "lineno": 3,
-          "end_lineno": 3,
-          "col_offset": 0,
-          "end_col_offset": 18
-        },
-        "lineno": 3,
-        "end_lineno": 3,
-        "end_col_offset": 18
+              {
+                "kind": "argument_list",
+                "start": 98,
+                "end": 111,
+                "children": [
+                  {
+                    "kind": "call",
+                    "start": 99,
+                    "end": 110,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 99,
+                        "end": 102
+                      },
+                      {
+                        "kind": "argument_list",
+                        "start": 102,
+                        "end": 110,
+                        "children": [
+                          {
+                            "kind": "string",
+                            "start": 103,
+                            "end": 109,
+                            "children": [
+                              {
+                                "kind": "string_start",
+                                "start": 103,
+                                "end": 104
+                              },
+                              {
+                                "kind": "string_content",
+                                "start": 104,
+                                "end": 108
+                              },
+                              {
+                                "kind": "string_end",
+                                "start": 108,
+                                "end": 109
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     ]
   }

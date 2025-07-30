@@ -1,205 +1,185 @@
 {
-  "module": {
-    "_type": "Module",
-    "body": [
+  "file": {
+    "kind": "module",
+    "start": 0,
+    "end": 176,
+    "children": [
       {
-        "_type": "FunctionDef",
-        "name": "makeAdder",
-        "body": [
+        "kind": "comment",
+        "start": 0,
+        "end": 37
+      },
+      {
+        "kind": "comment",
+        "start": 38,
+        "end": 92
+      },
+      {
+        "kind": "function_definition",
+        "start": 93,
+        "end": 137,
+        "children": [
           {
-            "_type": "Return",
-            "value": {
-              "_type": "Lambda",
-              "args": {
-                "_type": "arguments",
-                "posonlyargs": [],
-                "args": [
+            "kind": "identifier",
+            "start": 97,
+            "end": 106
+          },
+          {
+            "kind": "parameters",
+            "start": 106,
+            "end": 109,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 107,
+                "end": 108
+              }
+            ]
+          },
+          {
+            "kind": "block",
+            "start": 115,
+            "end": 137,
+            "children": [
+              {
+                "kind": "return_statement",
+                "start": 115,
+                "end": 137,
+                "children": [
                   {
-                    "_type": "arg",
-                    "arg": "x",
-                    "annotation": null,
-                    "type_comment": null,
-                    "lineno": 4,
-                    "end_lineno": 4,
-                    "col_offset": 18,
-                    "end_col_offset": 19
+                    "kind": "lambda",
+                    "start": 122,
+                    "end": 137,
+                    "children": [
+                      {
+                        "kind": "lambda_parameters",
+                        "start": 129,
+                        "end": 130,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 129,
+                            "end": 130
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "binary_operator",
+                        "start": 132,
+                        "end": 137,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "start": 132,
+                            "end": 133
+                          },
+                          {
+                            "kind": "identifier",
+                            "start": 136,
+                            "end": 137
+                          }
+                        ]
+                      }
+                    ]
                   }
-                ],
-                "vararg": null,
-                "kwonlyargs": [],
-                "kw_defaults": [],
-                "kwarg": null,
-                "defaults": []
-              },
-              "body": {
-                "_type": "BinOp",
-                "left": {
-                  "_type": "Name",
-                  "id": "x",
-                  "ctx": {
-                    "_type": "Load"
-                  },
-                  "lineno": 4,
-                  "end_lineno": 4,
-                  "col_offset": 21,
-                  "end_col_offset": 22
-                },
-                "op": {
-                  "_type": "Add"
-                },
-                "right": {
-                  "_type": "Name",
-                  "id": "n",
-                  "ctx": {
-                    "_type": "Load"
-                  },
-                  "lineno": 4,
-                  "end_lineno": 4,
-                  "col_offset": 25,
-                  "end_col_offset": 26
-                },
-                "lineno": 4,
-                "end_lineno": 4,
-                "col_offset": 21,
-                "end_col_offset": 26
-              },
-              "lineno": 4,
-              "end_lineno": 4,
-              "col_offset": 11,
-              "end_col_offset": 26
-            },
-            "lineno": 4,
-            "end_lineno": 4,
-            "col_offset": 4,
-            "end_col_offset": 26
+                ]
+              }
+            ]
           }
-        ],
-        "args": {
-          "_type": "arguments",
-          "posonlyargs": [],
-          "args": [
-            {
-              "_type": "arg",
-              "arg": "n",
-              "annotation": null,
-              "type_comment": null,
-              "lineno": 3,
-              "end_lineno": 3,
-              "col_offset": 14,
-              "end_col_offset": 15
-            }
-          ],
-          "vararg": null,
-          "kwonlyargs": [],
-          "kw_defaults": [],
-          "kwarg": null,
-          "defaults": []
-        },
-        "lineno": 3,
-        "end_lineno": 4,
-        "end_col_offset": 26
+        ]
       },
       {
-        "_type": "Assign",
-        "targets": [
+        "kind": "expression_statement",
+        "start": 138,
+        "end": 159,
+        "children": [
           {
-            "_type": "Name",
-            "id": "add10",
-            "lineno": 5,
-            "end_lineno": 5,
-            "end_col_offset": 5
+            "kind": "assignment",
+            "start": 138,
+            "end": 159,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 138,
+                "end": 143
+              },
+              {
+                "kind": "call",
+                "start": 146,
+                "end": 159,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "start": 146,
+                    "end": 155
+                  },
+                  {
+                    "kind": "argument_list",
+                    "start": 155,
+                    "end": 159,
+                    "children": [
+                      {
+                        "kind": "integer",
+                        "start": 156,
+                        "end": 158
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
           }
-        ],
-        "value": {
-          "_type": "Call",
-          "func": {
-            "_type": "Name",
-            "id": "makeAdder",
-            "ctx": {
-              "_type": "Load"
-            },
-            "lineno": 5,
-            "end_lineno": 5,
-            "col_offset": 8,
-            "end_col_offset": 17
-          },
-          "args": [
-            {
-              "_type": "Constant",
-              "value": 10,
-              "kind": null,
-              "lineno": 5,
-              "end_lineno": 5,
-              "col_offset": 18,
-              "end_col_offset": 20
-            }
-          ],
-          "keywords": [],
-          "lineno": 5,
-          "end_lineno": 5,
-          "col_offset": 8,
-          "end_col_offset": 21
-        },
-        "lineno": 5,
-        "end_lineno": 5,
-        "end_col_offset": 21
+        ]
       },
       {
-        "_type": "Expr",
-        "value": {
-          "_type": "Call",
-          "func": {
-            "_type": "Name",
-            "id": "print",
-            "ctx": {
-              "_type": "Load"
-            },
-            "lineno": 6,
-            "end_lineno": 6,
-            "col_offset": 0,
-            "end_col_offset": 5
-          },
-          "args": [
-            {
-              "_type": "Call",
-              "func": {
-                "_type": "Name",
-                "id": "add10",
-                "ctx": {
-                  "_type": "Load"
-                },
-                "lineno": 6,
-                "end_lineno": 6,
-                "col_offset": 6,
-                "end_col_offset": 11
+        "kind": "expression_statement",
+        "start": 160,
+        "end": 175,
+        "children": [
+          {
+            "kind": "call",
+            "start": 160,
+            "end": 175,
+            "children": [
+              {
+                "kind": "identifier",
+                "start": 160,
+                "end": 165
               },
-              "args": [
-                {
-                  "_type": "Constant",
-                  "value": 7,
-                  "kind": null,
-                  "lineno": 6,
-                  "end_lineno": 6,
-                  "col_offset": 12,
-                  "end_col_offset": 13
-                }
-              ],
-              "keywords": [],
-              "lineno": 6,
-              "end_lineno": 6,
-              "col_offset": 6,
-              "end_col_offset": 14
-            }
-          ],
-          "keywords": [],
-          "lineno": 6,
-          "end_lineno": 6,
-          "col_offset": 0,
-          "end_col_offset": 15
-        },
-        "lineno": 6,
-        "end_lineno": 6,
-        "end_col_offset": 15
+              {
+                "kind": "argument_list",
+                "start": 165,
+                "end": 175,
+                "children": [
+                  {
+                    "kind": "call",
+                    "start": 166,
+                    "end": 174,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "start": 166,
+                        "end": 171
+                      },
+                      {
+                        "kind": "argument_list",
+                        "start": 171,
+                        "end": 174,
+                        "children": [
+                          {
+                            "kind": "integer",
+                            "start": 172,
+                            "end": 173
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     ]
   }
