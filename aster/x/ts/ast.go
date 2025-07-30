@@ -4,10 +4,13 @@ import (
 	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
-// IncludePositions controls whether Start/End position fields are populated.
-// When false (the default) these fields remain zero and are omitted from the
-// marshalled JSON due to the `omitempty` tags on the struct fields.
-var IncludePositions bool
+// Option controls how the AST is generated.
+// When Positions is true the Start/End fields are populated, otherwise they
+// remain zero and are omitted from the marshalled JSON due to the omitempty
+// tags on the struct fields.
+type Option struct {
+	Positions bool
+}
 
 // Node represents a node in the TypeScript AST.  Leaf nodes that carry a value
 // populate the Text field.  Position fields are omitted from the marshalled
@@ -68,13 +71,13 @@ type Program struct {
 }
 
 // convert transforms a tree-sitter node into a *Node. Non-value leaves are
-// omitted. When pos is true positional information is recorded.
-func convert(n *sitter.Node, src []byte, pos bool) *Node {
+// omitted. When opt.Positions is true positional information is recorded.
+func convert(n *sitter.Node, src []byte, opt Option) *Node {
 	if n == nil {
 		return nil
 	}
 	node := &Node{Kind: n.Kind()}
-	if pos {
+	if opt.Positions {
 		start := n.StartPosition()
 		end := n.EndPosition()
 		node.Start = int(start.Row) + 1
@@ -93,7 +96,7 @@ func convert(n *sitter.Node, src []byte, pos bool) *Node {
 
 	for i := uint(0); i < n.NamedChildCount(); i++ {
 		child := n.NamedChild(i)
-		if c := convert(child, src, pos); c != nil {
+		if c := convert(child, src, opt); c != nil {
 			node.Children = append(node.Children, c)
 		}
 	}
