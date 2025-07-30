@@ -113,7 +113,7 @@ $__start = _now();
   while ($i < strlen($str)) {
   $ch = substr($str, $i, $i + 1 - $i);
   $d = intval($ch);
-  $n = _imul($n, (10)) + ($d);
+  $n = _iadd(_imul($n, (10)), ($d));
   $i = $i + 1;
 };
   if ($neg) {

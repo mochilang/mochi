@@ -1,13 +1,15 @@
 Warning: Undefined array key 0 in /workspace/mochi/tests/rosetta/transpiler/php/fivenum-2.php on line 77
 
 Deprecated: Implicit conversion from float 1.5 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/fivenum-2.php on line 90
-[36 null 7 15 39]
+[36 36 15 null 41]
+
+Warning: Undefined array key 0 in /workspace/mochi/tests/rosetta/transpiler/php/fivenum-2.php on line 77
 
 Deprecated: Implicit conversion from float 2.25 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/fivenum-2.php on line 90
-[6 7 39 36 43]
-[-1.95059594 -0.03035726 0.0974879 0.32566578 0.32566578]
+[6 null 36 36 47]
+[-1.95059594 0.73438555 -0.10305385 -0.10305385 1.04312009]
 {
-  "duration_us": 281,
+  "duration_us": 237,
   "memory_bytes": 288,
   "name": "main"
 }

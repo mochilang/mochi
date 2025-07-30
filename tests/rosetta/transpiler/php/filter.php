@@ -15,8 +15,41 @@ function _now() {
     }
     return hrtime(true);
 }
+function _str($x) {
+    if (is_array($x)) {
+        $isList = array_keys($x) === range(0, count($x) - 1);
+        if ($isList) {
+            $parts = [];
+            foreach ($x as $v) { $parts[] = _str($v); }
+            return '[' . implode(' ', $parts) . ']';
+        }
+        $parts = [];
+        foreach ($x as $k => $v) { $parts[] = _str($k) . ':' . _str($v); }
+        return 'map[' . implode(' ', $parts) . ']';
+    }
+    if (is_bool($x)) return $x ? 'true' : 'false';
+    if ($x === null) return 'null';
+    return strval($x);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
+  function randPerm($n) {
+  $arr = [];
+  $i = 0;
+  while ($i < $n) {
+  $arr = array_merge($arr, [$i]);
+  $i = $i + 1;
+};
+  $idx = $n - 1;
+  while ($idx > 0) {
+  $j = fmod(_now(), ($idx + 1));
+  $tmp = $arr[$idx];
+  $arr[$idx] = $arr[$j];
+  $arr[$j] = $tmp;
+  $idx = $idx - 1;
+};
+  return $arr;
+};
   function even($xs) {
   $r = [];
   foreach ($xs as $x) {
@@ -26,12 +59,42 @@ $__start = _now();
 };
   return $r;
 };
+  function reduceToEven($xs) {
+  $arr = $xs;
+  $last = 0;
+  $i = 0;
+  while ($i < count($arr)) {
+  $e = $arr[$i];
+  if ($e % 2 == 0) {
+  $arr[$last] = $e;
+  $last = $last + 1;
+}
+  $i = $i + 1;
+};
+  return array_slice($arr, 0, $last - 0);
+};
+  function listStr($xs) {
+  $s = '[';
+  $i = 0;
+  while ($i < count($xs)) {
+  $s = $s . _str($xs[$i]);
+  if ($i + 1 < count($xs)) {
+  $s = $s . ' ';
+}
+  $i = $i + 1;
+};
+  $s = $s . ']';
+  return $s;
+};
   function main() {
-  $a = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-  echo rtrim(str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode($a, 1344))))))), PHP_EOL;
-  $b = even($a);
-  echo rtrim(str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode($b, 1344))))))), PHP_EOL;
-  echo rtrim(str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode($a, 1344))))))), PHP_EOL;
+  $a = randPerm(20);
+  $cap_a = 20;
+  echo rtrim(listStr($a)), PHP_EOL;
+  echo rtrim(listStr(even($a))), PHP_EOL;
+  echo rtrim(listStr($a)), PHP_EOL;
+  $a = reduceToEven($a);
+  echo rtrim(listStr($a)), PHP_EOL;
+  echo rtrim('a len: ' . _str(count($a)) . ' cap: ' . _str($cap_a)), PHP_EOL;
 };
   main();
 $__end = _now();

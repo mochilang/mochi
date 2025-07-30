@@ -1,6 +1,6 @@
 The ray intersects the plane at (0, -5, 5)
 {
-  "duration_us": 77,
+  "duration_us": 107,
   "memory_bytes": 96,
   "name": "main"
 }

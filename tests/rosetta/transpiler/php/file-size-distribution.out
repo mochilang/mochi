@@ -15,7 +15,7 @@ File size distribution:
 = Total number of files         : 10
   Total size of files           : 8,981,453 bytes
 {
-  "duration_us": 136,
+  "duration_us": 109,
   "memory_bytes": 96,
   "name": "main"
 }

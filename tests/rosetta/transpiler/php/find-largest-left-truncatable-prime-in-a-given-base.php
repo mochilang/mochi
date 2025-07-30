@@ -46,29 +46,29 @@ $__start = _now();
 };
   return true;
 };
-  function search($base, $prefix, $depth, $limit, $max) {
-  $best = $max;
+  function search($base, $prefix, $depth, $limit, $best) {
+  $b = $best;
   $d = 1;
   while ($d < $base) {
   $val = $prefix * $base + $d;
   if (isPrime($val)) {
-  if ($val > $best) {
-  $best = $val;
+  if ($val > $b) {
+  $b = $val;
 };
   if ($depth + 1 < $limit) {
-  $best = search($base, $val, $depth + 1, $limit, $best);
+  $b = search($base, $val, $depth + 1, $limit, $b);
 };
 }
   $d = $d + 1;
 };
-  return $best;
+  return $b;
 };
   function largest($base) {
   return search($base, 0, 0, 6, 0);
 };
   function main() {
   $b = 3;
-  while ($b <= 10) {
+  while ($b <= 17) {
   echo rtrim(_str($b) . ': ' . _str(largest($b))), PHP_EOL;
   $b = $b + 1;
 };

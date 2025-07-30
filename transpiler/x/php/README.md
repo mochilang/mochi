@@ -2,9 +2,9 @@
 
 Generated PHP code from programs in `tests/vm/valid` lives in `tests/transpiler/x/php`.
 
-Last updated: 2025-07-28 11:14 +0700
+Last updated: 2025-07-30 21:14 +0700
 
-## VM Golden Test Checklist (103/104)
+## VM Golden Test Checklist (103/105)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -75,6 +75,7 @@ Last updated: 2025-07-28 11:14 +0700
 - [x] nested_function
 - [x] order_by_map
 - [x] outer_join
+- [ ] pairs_loop
 - [x] partial_application
 - [x] print_hello
 - [x] pure_fold
