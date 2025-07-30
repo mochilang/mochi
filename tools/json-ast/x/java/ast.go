@@ -2,7 +2,9 @@ package java
 
 import sitter "github.com/smacker/go-tree-sitter"
 
-// Node models a tree-sitter node for Java source.
+// Node represents a minimal JSON-serialisable AST node.  Only named
+// tree-sitter nodes are kept to reduce noise.  Leaf nodes store the raw
+// source text in Text.
 type Node struct {
 	Kind     string `json:"kind"`
 	Start    int    `json:"start"`
@@ -18,11 +20,14 @@ func convert(n *sitter.Node, src []byte) Node {
 		Start: int(n.StartByte()),
 		End:   int(n.EndByte()),
 	}
-	if n.ChildCount() == 0 {
+
+	if n.NamedChildCount() == 0 {
 		node.Text = n.Content(src)
+		return node
 	}
-	for i := 0; i < int(n.ChildCount()); i++ {
-		child := n.Child(i)
+
+	for i := 0; i < int(n.NamedChildCount()); i++ {
+		child := n.NamedChild(i)
 		if child == nil {
 			continue
 		}
