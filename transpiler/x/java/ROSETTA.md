@@ -3,7 +3,7 @@
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 Last updated: 2025-07-30 21:56 GMT+7
 
-## Rosetta Checklist (289/493)
+## Rosetta Checklist (290/493)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -337,7 +337,7 @@ Last updated: 2025-07-30 21:56 GMT+7
 | 329 | earliest-difference-between-prime-gaps | ✓ | 71.0ms | 112.08KB |
 | 330 | eban-numbers | ✓ | 79.0ms | 102.79KB |
 | 331 | ecdsa-example | ✓ |  |  |
-| 332 | echo-server |   |  |  |
+| 332 | echo-server | ✓ | 18.9ms | 37.62KB |
 | 333 | eertree |   |  |  |
 | 334 | egyptian-division |   |  |  |
 | 335 | ekg-sequence-convergence |   |  |  |
