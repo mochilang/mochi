@@ -7,9 +7,16 @@ import (
 	sitter "github.com/smacker/go-tree-sitter"
 )
 
-// Node is a generic representation of a Clojure form.  Only leaves that carry
-// a textual value populate the Text field.  Position information can be
-// optionally included via the includePos parameter of convert.
+// Node is a generic representation of a Clojure form. Only leaves that carry a
+// textual value populate the Text field.
+// IncludePositions controls whether positional information is recorded in the
+// AST nodes. When false the Start/End fields remain zero so they are omitted
+// from the marshalled JSON via the `omitempty` tags.
+var IncludePositions bool
+
+// Node models a portion of a Clojure syntax tree. Only leaves that carry a
+// textual value populate the Text field. Position fields follow tree-sitter's
+// 1-indexed rows and 0-indexed columns.
 type Node struct {
 	Kind     string  `json:"kind"`
 	Text     string  `json:"text,omitempty"`
@@ -20,18 +27,31 @@ type Node struct {
 	Children []*Node `json:"children,omitempty"`
 }
 
-// convert transforms a tree-sitter node into our Node representation.
-// Non-value leaves are omitted entirely to keep the result minimal.  When
-// includePos is false, position fields are left at their zero values so they
-// can be omitted from the JSON output.
-func convert(n *sitter.Node, src []byte, includePos bool) *Node {
+// A handful of typed aliases provide a more structured view for callers.
+type (
+	Form    Node
+	List    Node
+	Vector  Node
+	Map     Node
+	Entry   Node
+	Symbol  Node
+	Keyword Node
+	String  Node
+	Number  Node
+	Boolean Node
+	Nil     Node
+)
+
+// convert transforms a tree-sitter node into our Node representation. Non-value
+// leaves are omitted entirely to keep the result minimal.
+func convert(n *sitter.Node, src []byte) *Node {
 	if n == nil {
 		return nil
 	}
 
 	node := &Node{Kind: n.Type()}
 
-	if includePos {
+	if IncludePositions {
 		start := n.StartPoint()
 		end := n.EndPoint()
 		node.Start = int(start.Row) + 1
@@ -60,7 +80,7 @@ func convert(n *sitter.Node, src []byte, includePos bool) *Node {
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
 		child := n.NamedChild(i)
-		if c := convert(child, src, includePos); c != nil {
+		if c := convert(child, src); c != nil {
 			node.Children = append(node.Children, c)
 		}
 	}
