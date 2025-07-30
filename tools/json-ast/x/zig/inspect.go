@@ -23,6 +23,9 @@ func Inspect(src string) (*Program, error) {
 	if err != nil {
 		return nil, fmt.Errorf("parse: %w", err)
 	}
-	root := convertNode(tree.RootNode(), []byte(src))
+	root, ok := convertNode(tree.RootNode(), []byte(src))
+	if !ok {
+		return &Program{Root: Node{}}, nil
+	}
 	return &Program{Root: root}, nil
 }
