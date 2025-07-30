@@ -1,4 +1,5 @@
-File "/workspace/mochi/tests/rosetta/transpiler/Python/execute-brain-.py", line 72
-    else:
-    ^
-IndentationError: expected an indented block after 'if' statement on line 71
+{
+  "duration_us": 228,
+  "memory_bytes": 14131200,
+  "name": "main"
+}

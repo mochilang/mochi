@@ -1,5 +1,5 @@
 Traceback (most recent call last):
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/exponentiation-with-infix-operators-in-or-operating-on-the-base.py", line 45, in <module>
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/exponentiation-with-infix-operators-in-or-operating-on-the-base.py", line 48, in <module>
     print("x = " + (("" if x < 0 else " ")) + str((int(x))) + " e = " + str((int(e))) + " | " + ops[0] + " = " + padInt(a) + " | " + ops[1] + " = " + padInt(b) + " | " + ops[2] + " = " + padInt(c) + " | " + ops[3] + " = " + padInt(d))
                                                                                                                  ^^^^^^
 NameError: name 'padInt' is not defined

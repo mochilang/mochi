@@ -1,6 +1,5 @@
-main: start
-foo: start
-bar: start
-baz: start
-baz: raising U0
-U0
+{
+  "duration_us": 13,
+  "memory_bytes": 13754368,
+  "name": "main"
+}

@@ -1,1 +1,5 @@
-[3, 6]
+{
+  "duration_us": 131577,
+  "memory_bytes": 13869056,
+  "name": "main"
+}
