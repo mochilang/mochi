@@ -1,0 +1,14 @@
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/rosetta/transpiler/Pascal/faulhabers-triangle.pas
+faulhabers-triangle.pas(4,29) Error: Identifier not found "BigRat"
+faulhabers-triangle.pas(4,35) Error: Error in type definition
+faulhabers-triangle.pas(160,8) Error: Incompatible types: got "{Dynamic} Array Of BigRat" expected "BigRatArray"
+faulhabers-triangle.pas(168,8) Error: Identifier not found "substr"
+faulhabers-triangle.pas(198,28) Error: Identifier not found "padStart"
+faulhabers-triangle.pas(198,62) Error: Incompatible type for arg no. 1: Got "<erroneous type>", expected "BigRat"
+faulhabers-triangle.pas(216,54) Error: Incompatible type for arg no. 1: Got "<erroneous type>", expected "BigRat"
+faulhabers-triangle.pas(235) Fatal: There were 7 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
