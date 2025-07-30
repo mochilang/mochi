@@ -46,7 +46,7 @@ func TestInspect_Golden(t *testing.T) {
 	ensureRuby(t)
 	root := repoRoot(t)
 	srcDir := filepath.Join(root, "tests", "transpiler", "x", "ruby")
-	outDir := filepath.Join(root, "tests", "json-ast", "x", "ruby")
+	outDir := filepath.Join(root, "tests", "aster", "x", "ruby")
 	os.MkdirAll(outDir, 0o755)
 
 	files, err := filepath.Glob(filepath.Join(srcDir, "*.rb"))
