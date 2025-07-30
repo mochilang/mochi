@@ -1,0 +1,2015 @@
+{
+  "root": {
+    "kind": "source_file",
+    "children": [
+      {
+        "kind": "function_declaration",
+        "children": [
+          {
+            "kind": "simple_identifier",
+            "text": "main"
+          },
+          {
+            "kind": "function_body",
+            "children": [
+              {
+                "kind": "statements",
+                "children": [
+                  {
+                    "kind": "property_declaration",
+                    "children": [
+                      {
+                        "kind": "variable_declaration",
+                        "children": [
+                          {
+                            "kind": "simple_identifier",
+                            "text": "customers"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "call_expression",
+                        "children": [
+                          {
+                            "kind": "simple_identifier",
+                            "text": "mutableListOf"
+                          },
+                          {
+                            "kind": "call_suffix",
+                            "children": [
+                              {
+                                "kind": "value_arguments",
+                                "children": [
+                                  {
+                                    "kind": "value_argument",
+                                    "children": [
+                                      {
+                                        "kind": "call_expression",
+                                        "children": [
+                                          {
+                                            "kind": "simple_identifier",
+                                            "text": "mutableMapOf"
+                                          },
+                                          {
+                                            "kind": "call_suffix",
+                                            "children": [
+                                              {
+                                                "kind": "value_arguments",
+                                                "children": [
+                                                  {
+                                                    "kind": "value_argument",
+                                                    "children": [
+                                                      {
+                                                        "kind": "infix_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "string_literal",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": "id"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "simple_identifier",
+                                                            "text": "to"
+                                                          },
+                                                          {
+                                                            "kind": "integer_literal",
+                                                            "text": "1"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "value_argument",
+                                                    "children": [
+                                                      {
+                                                        "kind": "infix_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "string_literal",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": "name"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "simple_identifier",
+                                                            "text": "to"
+                                                          },
+                                                          {
+                                                            "kind": "string_literal",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": "Alice"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "value_argument",
+                                    "children": [
+                                      {
+                                        "kind": "call_expression",
+                                        "children": [
+                                          {
+                                            "kind": "simple_identifier",
+                                            "text": "mutableMapOf"
+                                          },
+                                          {
+                                            "kind": "call_suffix",
+                                            "children": [
+                                              {
+                                                "kind": "value_arguments",
+                                                "children": [
+                                                  {
+                                                    "kind": "value_argument",
+                                                    "children": [
+                                                      {
+                                                        "kind": "infix_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "string_literal",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": "id"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "simple_identifier",
+                                                            "text": "to"
+                                                          },
+                                                          {
+                                                            "kind": "integer_literal",
+                                                            "text": "2"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "value_argument",
+                                                    "children": [
+                                                      {
+                                                        "kind": "infix_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "string_literal",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": "name"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "simple_identifier",
+                                                            "text": "to"
+                                                          },
+                                                          {
+                                                            "kind": "string_literal",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": "Bob"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "value_argument",
+                                    "children": [
+                                      {
+                                        "kind": "call_expression",
+                                        "children": [
+                                          {
+                                            "kind": "simple_identifier",
+                                            "text": "mutableMapOf"
+                                          },
+                                          {
+                                            "kind": "call_suffix",
+                                            "children": [
+                                              {
+                                                "kind": "value_arguments",
+                                                "children": [
+                                                  {
+                                                    "kind": "value_argument",
+                                                    "children": [
+                                                      {
+                                                        "kind": "infix_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "string_literal",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": "id"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "simple_identifier",
+                                                            "text": "to"
+                                                          },
+                                                          {
+                                                            "kind": "integer_literal",
+                                                            "text": "3"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "value_argument",
+                                                    "children": [
+                                                      {
+                                                        "kind": "infix_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "string_literal",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": "name"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "simple_identifier",
+                                                            "text": "to"
+                                                          },
+                                                          {
+                                                            "kind": "string_literal",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": "Charlie"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "value_argument",
+                                    "children": [
+                                      {
+                                        "kind": "call_expression",
+                                        "children": [
+                                          {
+                                            "kind": "simple_identifier",
+                                            "text": "mutableMapOf"
+                                          },
+                                          {
+                                            "kind": "call_suffix",
+                                            "children": [
+                                              {
+                                                "kind": "value_arguments",
+                                                "children": [
+                                                  {
+                                                    "kind": "value_argument",
+                                                    "children": [
+                                                      {
+                                                        "kind": "infix_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "string_literal",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": "id"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "simple_identifier",
+                                                            "text": "to"
+                                                          },
+                                                          {
+                                                            "kind": "integer_literal",
+                                                            "text": "4"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "value_argument",
+                                                    "children": [
+                                                      {
+                                                        "kind": "infix_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "string_literal",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": "name"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "simple_identifier",
+                                                            "text": "to"
+                                                          },
+                                                          {
+                                                            "kind": "string_literal",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": "Diana"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "property_declaration",
+                    "children": [
+                      {
+                        "kind": "variable_declaration",
+                        "children": [
+                          {
+                            "kind": "simple_identifier",
+                            "text": "orders"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "call_expression",
+                        "children": [
+                          {
+                            "kind": "simple_identifier",
+                            "text": "mutableListOf"
+                          },
+                          {
+                            "kind": "call_suffix",
+                            "children": [
+                              {
+                                "kind": "value_arguments",
+                                "children": [
+                                  {
+                                    "kind": "value_argument",
+                                    "children": [
+                                      {
+                                        "kind": "call_expression",
+                                        "children": [
+                                          {
+                                            "kind": "simple_identifier",
+                                            "text": "mutableMapOf"
+                                          },
+                                          {
+                                            "kind": "call_suffix",
+                                            "children": [
+                                              {
+                                                "kind": "value_arguments",
+                                                "children": [
+                                                  {
+                                                    "kind": "value_argument",
+                                                    "children": [
+                                                      {
+                                                        "kind": "infix_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "string_literal",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": "id"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "simple_identifier",
+                                                            "text": "to"
+                                                          },
+                                                          {
+                                                            "kind": "integer_literal",
+                                                            "text": "100"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "value_argument",
+                                                    "children": [
+                                                      {
+                                                        "kind": "infix_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "string_literal",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": "customerId"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "simple_identifier",
+                                                            "text": "to"
+                                                          },
+                                                          {
+                                                            "kind": "integer_literal",
+                                                            "text": "1"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "value_argument",
+                                                    "children": [
+                                                      {
+                                                        "kind": "infix_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "string_literal",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": "total"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "simple_identifier",
+                                                            "text": "to"
+                                                          },
+                                                          {
+                                                            "kind": "integer_literal",
+                                                            "text": "250"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "value_argument",
+                                    "children": [
+                                      {
+                                        "kind": "call_expression",
+                                        "children": [
+                                          {
+                                            "kind": "simple_identifier",
+                                            "text": "mutableMapOf"
+                                          },
+                                          {
+                                            "kind": "call_suffix",
+                                            "children": [
+                                              {
+                                                "kind": "value_arguments",
+                                                "children": [
+                                                  {
+                                                    "kind": "value_argument",
+                                                    "children": [
+                                                      {
+                                                        "kind": "infix_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "string_literal",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": "id"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "simple_identifier",
+                                                            "text": "to"
+                                                          },
+                                                          {
+                                                            "kind": "integer_literal",
+                                                            "text": "101"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "value_argument",
+                                                    "children": [
+                                                      {
+                                                        "kind": "infix_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "string_literal",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": "customerId"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "simple_identifier",
+                                                            "text": "to"
+                                                          },
+                                                          {
+                                                            "kind": "integer_literal",
+                                                            "text": "2"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "value_argument",
+                                                    "children": [
+                                                      {
+                                                        "kind": "infix_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "string_literal",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": "total"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "simple_identifier",
+                                                            "text": "to"
+                                                          },
+                                                          {
+                                                            "kind": "integer_literal",
+                                                            "text": "125"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "value_argument",
+                                    "children": [
+                                      {
+                                        "kind": "call_expression",
+                                        "children": [
+                                          {
+                                            "kind": "simple_identifier",
+                                            "text": "mutableMapOf"
+                                          },
+                                          {
+                                            "kind": "call_suffix",
+                                            "children": [
+                                              {
+                                                "kind": "value_arguments",
+                                                "children": [
+                                                  {
+                                                    "kind": "value_argument",
+                                                    "children": [
+                                                      {
+                                                        "kind": "infix_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "string_literal",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": "id"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "simple_identifier",
+                                                            "text": "to"
+                                                          },
+                                                          {
+                                                            "kind": "integer_literal",
+                                                            "text": "102"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "value_argument",
+                                                    "children": [
+                                                      {
+                                                        "kind": "infix_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "string_literal",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": "customerId"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "simple_identifier",
+                                                            "text": "to"
+                                                          },
+                                                          {
+                                                            "kind": "integer_literal",
+                                                            "text": "1"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "value_argument",
+                                                    "children": [
+                                                      {
+                                                        "kind": "infix_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "string_literal",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": "total"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "simple_identifier",
+                                                            "text": "to"
+                                                          },
+                                                          {
+                                                            "kind": "integer_literal",
+                                                            "text": "300"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "value_argument",
+                                    "children": [
+                                      {
+                                        "kind": "call_expression",
+                                        "children": [
+                                          {
+                                            "kind": "simple_identifier",
+                                            "text": "mutableMapOf"
+                                          },
+                                          {
+                                            "kind": "call_suffix",
+                                            "children": [
+                                              {
+                                                "kind": "value_arguments",
+                                                "children": [
+                                                  {
+                                                    "kind": "value_argument",
+                                                    "children": [
+                                                      {
+                                                        "kind": "infix_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "string_literal",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": "id"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "simple_identifier",
+                                                            "text": "to"
+                                                          },
+                                                          {
+                                                            "kind": "integer_literal",
+                                                            "text": "103"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "value_argument",
+                                                    "children": [
+                                                      {
+                                                        "kind": "infix_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "string_literal",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": "customerId"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "simple_identifier",
+                                                            "text": "to"
+                                                          },
+                                                          {
+                                                            "kind": "integer_literal",
+                                                            "text": "5"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "value_argument",
+                                                    "children": [
+                                                      {
+                                                        "kind": "infix_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "string_literal",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": "total"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "simple_identifier",
+                                                            "text": "to"
+                                                          },
+                                                          {
+                                                            "kind": "integer_literal",
+                                                            "text": "80"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "property_declaration",
+                    "children": [
+                      {
+                        "kind": "variable_declaration",
+                        "children": [
+                          {
+                            "kind": "simple_identifier",
+                            "text": "result"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "call_expression",
+                        "children": [
+                          {
+                            "kind": "simple_identifier",
+                            "text": "run"
+                          },
+                          {
+                            "kind": "call_suffix",
+                            "children": [
+                              {
+                                "kind": "annotated_lambda",
+                                "children": [
+                                  {
+                                    "kind": "lambda_literal",
+                                    "children": [
+                                      {
+                                        "kind": "statements",
+                                        "children": [
+                                          {
+                                            "kind": "property_declaration",
+                                            "children": [
+                                              {
+                                                "kind": "variable_declaration",
+                                                "children": [
+                                                  {
+                                                    "kind": "simple_identifier",
+                                                    "text": "_res"
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "call_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "simple_identifier",
+                                                    "text": "mutableListOf"
+                                                  },
+                                                  {
+                                                    "kind": "call_suffix",
+                                                    "children": [
+                                                      {
+                                                        "kind": "type_arguments",
+                                                        "children": [
+                                                          {
+                                                            "kind": "type_projection",
+                                                            "children": [
+                                                              {
+                                                                "kind": "user_type",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "type_identifier",
+                                                                    "text": "MutableMap"
+                                                                  },
+                                                                  {
+                                                                    "kind": "type_arguments",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "type_projection",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "user_type",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "type_identifier",
+                                                                                "text": "String"
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "kind": "type_projection",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "user_type",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "type_identifier",
+                                                                                "text": "Any"
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "for_statement",
+                                            "children": [
+                                              {
+                                                "kind": "variable_declaration",
+                                                "children": [
+                                                  {
+                                                    "kind": "simple_identifier",
+                                                    "text": "o"
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "simple_identifier",
+                                                "text": "orders"
+                                              },
+                                              {
+                                                "kind": "control_structure_body",
+                                                "children": [
+                                                  {
+                                                    "kind": "statements",
+                                                    "children": [
+                                                      {
+                                                        "kind": "for_statement",
+                                                        "children": [
+                                                          {
+                                                            "kind": "variable_declaration",
+                                                            "children": [
+                                                              {
+                                                                "kind": "simple_identifier",
+                                                                "text": "c"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "simple_identifier",
+                                                            "text": "customers"
+                                                          },
+                                                          {
+                                                            "kind": "control_structure_body",
+                                                            "children": [
+                                                              {
+                                                                "kind": "statements",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "if_expression",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "equality_expression",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "indexing_expression",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "simple_identifier",
+                                                                                "text": "o"
+                                                                              },
+                                                                              {
+                                                                                "kind": "indexing_suffix",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "string_literal",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "string_content",
+                                                                                        "text": "customerId"
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "kind": "indexing_expression",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "simple_identifier",
+                                                                                "text": "c"
+                                                                              },
+                                                                              {
+                                                                                "kind": "indexing_suffix",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "string_literal",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "string_content",
+                                                                                        "text": "id"
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "kind": "control_structure_body",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "statements",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "call_expression",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "navigation_expression",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "simple_identifier",
+                                                                                        "text": "_res"
+                                                                                      },
+                                                                                      {
+                                                                                        "kind": "navigation_suffix",
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "simple_identifier",
+                                                                                            "text": "add"
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  },
+                                                                                  {
+                                                                                    "kind": "call_suffix",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "value_arguments",
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "value_argument",
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "kind": "call_expression",
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "simple_identifier",
+                                                                                                    "text": "mutableMapOf"
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "kind": "call_suffix",
+                                                                                                    "children": [
+                                                                                                      {
+                                                                                                        "kind": "value_arguments",
+                                                                                                        "children": [
+                                                                                                          {
+                                                                                                            "kind": "value_argument",
+                                                                                                            "children": [
+                                                                                                              {
+                                                                                                                "kind": "infix_expression",
+                                                                                                                "children": [
+                                                                                                                  {
+                                                                                                                    "kind": "string_literal",
+                                                                                                                    "children": [
+                                                                                                                      {
+                                                                                                                        "kind": "string_content",
+                                                                                                                        "text": "order"
+                                                                                                                      }
+                                                                                                                    ]
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                    "kind": "simple_identifier",
+                                                                                                                    "text": "to"
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                    "kind": "simple_identifier",
+                                                                                                                    "text": "o"
+                                                                                                                  }
+                                                                                                                ]
+                                                                                                              }
+                                                                                                            ]
+                                                                                                          },
+                                                                                                          {
+                                                                                                            "kind": "value_argument",
+                                                                                                            "children": [
+                                                                                                              {
+                                                                                                                "kind": "infix_expression",
+                                                                                                                "children": [
+                                                                                                                  {
+                                                                                                                    "kind": "string_literal",
+                                                                                                                    "children": [
+                                                                                                                      {
+                                                                                                                        "kind": "string_content",
+                                                                                                                        "text": "customer"
+                                                                                                                      }
+                                                                                                                    ]
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                    "kind": "simple_identifier",
+                                                                                                                    "text": "to"
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                    "kind": "simple_identifier",
+                                                                                                                    "text": "c"
+                                                                                                                  }
+                                                                                                                ]
+                                                                                                              }
+                                                                                                            ]
+                                                                                                          }
+                                                                                                        ]
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  }
+                                                                                                ]
+                                                                                              }
+                                                                                            ]
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "simple_identifier",
+                                            "text": "_res"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "call_expression",
+                    "children": [
+                      {
+                        "kind": "simple_identifier",
+                        "text": "println"
+                      },
+                      {
+                        "kind": "call_suffix",
+                        "children": [
+                          {
+                            "kind": "value_arguments",
+                            "children": [
+                              {
+                                "kind": "value_argument",
+                                "children": [
+                                  {
+                                    "kind": "string_literal",
+                                    "children": [
+                                      {
+                                        "kind": "string_content",
+                                        "text": "--- Outer Join using syntax ---"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "for_statement",
+                    "children": [
+                      {
+                        "kind": "variable_declaration",
+                        "children": [
+                          {
+                            "kind": "simple_identifier",
+                            "text": "row"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "simple_identifier",
+                        "text": "result"
+                      },
+                      {
+                        "kind": "control_structure_body",
+                        "children": [
+                          {
+                            "kind": "statements",
+                            "children": [
+                              {
+                                "kind": "if_expression",
+                                "children": [
+                                  {
+                                    "kind": "equality_expression",
+                                    "children": [
+                                      {
+                                        "kind": "indexing_expression",
+                                        "children": [
+                                          {
+                                            "kind": "simple_identifier",
+                                            "text": "row"
+                                          },
+                                          {
+                                            "kind": "indexing_suffix",
+                                            "children": [
+                                              {
+                                                "kind": "string_literal",
+                                                "children": [
+                                                  {
+                                                    "kind": "string_content",
+                                                    "text": "order"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "control_structure_body",
+                                    "children": [
+                                      {
+                                        "kind": "statements",
+                                        "children": [
+                                          {
+                                            "kind": "if_expression",
+                                            "children": [
+                                              {
+                                                "kind": "equality_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "indexing_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "simple_identifier",
+                                                        "text": "row"
+                                                      },
+                                                      {
+                                                        "kind": "indexing_suffix",
+                                                        "children": [
+                                                          {
+                                                            "kind": "string_literal",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string_content",
+                                                                "text": "customer"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "control_structure_body",
+                                                "children": [
+                                                  {
+                                                    "kind": "statements",
+                                                    "children": [
+                                                      {
+                                                        "kind": "call_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "simple_identifier",
+                                                            "text": "println"
+                                                          },
+                                                          {
+                                                            "kind": "call_suffix",
+                                                            "children": [
+                                                              {
+                                                                "kind": "value_arguments",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "value_argument",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "call_expression",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "navigation_expression",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "call_expression",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "simple_identifier",
+                                                                                    "text": "listOf"
+                                                                                  },
+                                                                                  {
+                                                                                    "kind": "call_suffix",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "value_arguments",
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "value_argument",
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "kind": "string_literal",
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "string_content",
+                                                                                                    "text": "Order"
+                                                                                                  }
+                                                                                                ]
+                                                                                              }
+                                                                                            ]
+                                                                                          },
+                                                                                          {
+                                                                                            "kind": "value_argument",
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "kind": "navigation_expression",
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "indexing_expression",
+                                                                                                    "children": [
+                                                                                                      {
+                                                                                                        "kind": "simple_identifier",
+                                                                                                        "text": "row"
+                                                                                                      },
+                                                                                                      {
+                                                                                                        "kind": "indexing_suffix",
+                                                                                                        "children": [
+                                                                                                          {
+                                                                                                            "kind": "string_literal",
+                                                                                                            "children": [
+                                                                                                              {
+                                                                                                                "kind": "string_content",
+                                                                                                                "text": "order"
+                                                                                                              }
+                                                                                                            ]
+                                                                                                          }
+                                                                                                        ]
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "kind": "navigation_suffix",
+                                                                                                    "children": [
+                                                                                                      {
+                                                                                                        "kind": "simple_identifier",
+                                                                                                        "text": "id"
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  }
+                                                                                                ]
+                                                                                              }
+                                                                                            ]
+                                                                                          },
+                                                                                          {
+                                                                                            "kind": "value_argument",
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "kind": "string_literal",
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "string_content",
+                                                                                                    "text": "by"
+                                                                                                  }
+                                                                                                ]
+                                                                                              }
+                                                                                            ]
+                                                                                          },
+                                                                                          {
+                                                                                            "kind": "value_argument",
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "kind": "navigation_expression",
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "indexing_expression",
+                                                                                                    "children": [
+                                                                                                      {
+                                                                                                        "kind": "simple_identifier",
+                                                                                                        "text": "row"
+                                                                                                      },
+                                                                                                      {
+                                                                                                        "kind": "indexing_suffix",
+                                                                                                        "children": [
+                                                                                                          {
+                                                                                                            "kind": "string_literal",
+                                                                                                            "children": [
+                                                                                                              {
+                                                                                                                "kind": "string_content",
+                                                                                                                "text": "customer"
+                                                                                                              }
+                                                                                                            ]
+                                                                                                          }
+                                                                                                        ]
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "kind": "navigation_suffix",
+                                                                                                    "children": [
+                                                                                                      {
+                                                                                                        "kind": "simple_identifier",
+                                                                                                        "text": "name"
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  }
+                                                                                                ]
+                                                                                              }
+                                                                                            ]
+                                                                                          },
+                                                                                          {
+                                                                                            "kind": "value_argument",
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "kind": "string_literal",
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "string_content",
+                                                                                                    "text": "- "
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "kind": "string_content",
+                                                                                                    "text": "$"
+                                                                                                  }
+                                                                                                ]
+                                                                                              }
+                                                                                            ]
+                                                                                          },
+                                                                                          {
+                                                                                            "kind": "value_argument",
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "kind": "navigation_expression",
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "indexing_expression",
+                                                                                                    "children": [
+                                                                                                      {
+                                                                                                        "kind": "simple_identifier",
+                                                                                                        "text": "row"
+                                                                                                      },
+                                                                                                      {
+                                                                                                        "kind": "indexing_suffix",
+                                                                                                        "children": [
+                                                                                                          {
+                                                                                                            "kind": "string_literal",
+                                                                                                            "children": [
+                                                                                                              {
+                                                                                                                "kind": "string_content",
+                                                                                                                "text": "order"
+                                                                                                              }
+                                                                                                            ]
+                                                                                                          }
+                                                                                                        ]
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "kind": "navigation_suffix",
+                                                                                                    "children": [
+                                                                                                      {
+                                                                                                        "kind": "simple_identifier",
+                                                                                                        "text": "total"
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  }
+                                                                                                ]
+                                                                                              }
+                                                                                            ]
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "navigation_suffix",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "simple_identifier",
+                                                                                    "text": "joinToString"
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "kind": "call_suffix",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "value_arguments",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "value_argument",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "string_literal",
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "string_content",
+                                                                                            "text": " "
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "control_structure_body",
+                                                "children": [
+                                                  {
+                                                    "kind": "statements",
+                                                    "children": [
+                                                      {
+                                                        "kind": "call_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "simple_identifier",
+                                                            "text": "println"
+                                                          },
+                                                          {
+                                                            "kind": "call_suffix",
+                                                            "children": [
+                                                              {
+                                                                "kind": "value_arguments",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "value_argument",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "call_expression",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "navigation_expression",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "call_expression",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "simple_identifier",
+                                                                                    "text": "listOf"
+                                                                                  },
+                                                                                  {
+                                                                                    "kind": "call_suffix",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "value_arguments",
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "value_argument",
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "kind": "string_literal",
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "string_content",
+                                                                                                    "text": "Order"
+                                                                                                  }
+                                                                                                ]
+                                                                                              }
+                                                                                            ]
+                                                                                          },
+                                                                                          {
+                                                                                            "kind": "value_argument",
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "kind": "navigation_expression",
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "indexing_expression",
+                                                                                                    "children": [
+                                                                                                      {
+                                                                                                        "kind": "simple_identifier",
+                                                                                                        "text": "row"
+                                                                                                      },
+                                                                                                      {
+                                                                                                        "kind": "indexing_suffix",
+                                                                                                        "children": [
+                                                                                                          {
+                                                                                                            "kind": "string_literal",
+                                                                                                            "children": [
+                                                                                                              {
+                                                                                                                "kind": "string_content",
+                                                                                                                "text": "order"
+                                                                                                              }
+                                                                                                            ]
+                                                                                                          }
+                                                                                                        ]
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "kind": "navigation_suffix",
+                                                                                                    "children": [
+                                                                                                      {
+                                                                                                        "kind": "simple_identifier",
+                                                                                                        "text": "id"
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  }
+                                                                                                ]
+                                                                                              }
+                                                                                            ]
+                                                                                          },
+                                                                                          {
+                                                                                            "kind": "value_argument",
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "kind": "string_literal",
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "string_content",
+                                                                                                    "text": "by"
+                                                                                                  }
+                                                                                                ]
+                                                                                              }
+                                                                                            ]
+                                                                                          },
+                                                                                          {
+                                                                                            "kind": "value_argument",
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "kind": "string_literal",
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "string_content",
+                                                                                                    "text": "Unknown"
+                                                                                                  }
+                                                                                                ]
+                                                                                              }
+                                                                                            ]
+                                                                                          },
+                                                                                          {
+                                                                                            "kind": "value_argument",
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "kind": "string_literal",
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "string_content",
+                                                                                                    "text": "- "
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "kind": "string_content",
+                                                                                                    "text": "$"
+                                                                                                  }
+                                                                                                ]
+                                                                                              }
+                                                                                            ]
+                                                                                          },
+                                                                                          {
+                                                                                            "kind": "value_argument",
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "kind": "navigation_expression",
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "indexing_expression",
+                                                                                                    "children": [
+                                                                                                      {
+                                                                                                        "kind": "simple_identifier",
+                                                                                                        "text": "row"
+                                                                                                      },
+                                                                                                      {
+                                                                                                        "kind": "indexing_suffix",
+                                                                                                        "children": [
+                                                                                                          {
+                                                                                                            "kind": "string_literal",
+                                                                                                            "children": [
+                                                                                                              {
+                                                                                                                "kind": "string_content",
+                                                                                                                "text": "order"
+                                                                                                              }
+                                                                                                            ]
+                                                                                                          }
+                                                                                                        ]
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "kind": "navigation_suffix",
+                                                                                                    "children": [
+                                                                                                      {
+                                                                                                        "kind": "simple_identifier",
+                                                                                                        "text": "total"
+                                                                                                      }
+                                                                                                    ]
+                                                                                                  }
+                                                                                                ]
+                                                                                              }
+                                                                                            ]
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "navigation_suffix",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "simple_identifier",
+                                                                                    "text": "joinToString"
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "kind": "call_suffix",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "value_arguments",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "value_argument",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "string_literal",
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "string_content",
+                                                                                            "text": " "
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "control_structure_body",
+                                    "children": [
+                                      {
+                                        "kind": "statements",
+                                        "children": [
+                                          {
+                                            "kind": "call_expression",
+                                            "children": [
+                                              {
+                                                "kind": "simple_identifier",
+                                                "text": "println"
+                                              },
+                                              {
+                                                "kind": "call_suffix",
+                                                "children": [
+                                                  {
+                                                    "kind": "value_arguments",
+                                                    "children": [
+                                                      {
+                                                        "kind": "value_argument",
+                                                        "children": [
+                                                          {
+                                                            "kind": "call_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "navigation_expression",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "call_expression",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "simple_identifier",
+                                                                        "text": "listOf"
+                                                                      },
+                                                                      {
+                                                                        "kind": "call_suffix",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "value_arguments",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "value_argument",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "string_literal",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "string_content",
+                                                                                        "text": "Customer"
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "value_argument",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "navigation_expression",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "indexing_expression",
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "simple_identifier",
+                                                                                            "text": "row"
+                                                                                          },
+                                                                                          {
+                                                                                            "kind": "indexing_suffix",
+                                                                                            "children": [
+                                                                                              {
+                                                                                                "kind": "string_literal",
+                                                                                                "children": [
+                                                                                                  {
+                                                                                                    "kind": "string_content",
+                                                                                                    "text": "customer"
+                                                                                                  }
+                                                                                                ]
+                                                                                              }
+                                                                                            ]
+                                                                                          }
+                                                                                        ]
+                                                                                      },
+                                                                                      {
+                                                                                        "kind": "navigation_suffix",
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "simple_identifier",
+                                                                                            "text": "name"
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "value_argument",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "string_literal",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "string_content",
+                                                                                        "text": "has no orders"
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "kind": "navigation_suffix",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "simple_identifier",
+                                                                        "text": "joinToString"
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "call_suffix",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "value_arguments",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "value_argument",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "string_literal",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "string_content",
+                                                                                "text": " "
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

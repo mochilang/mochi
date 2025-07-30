@@ -1,0 +1,174 @@
+{
+  "root": {
+    "kind": "source_file",
+    "children": [
+      {
+        "kind": "function_declaration",
+        "children": [
+          {
+            "kind": "simple_identifier",
+            "text": "inc"
+          },
+          {
+            "kind": "function_value_parameters",
+            "children": [
+              {
+                "kind": "parameter",
+                "children": [
+                  {
+                    "kind": "simple_identifier",
+                    "text": "x"
+                  },
+                  {
+                    "kind": "user_type",
+                    "children": [
+                      {
+                        "kind": "type_identifier",
+                        "text": "Int"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "user_type",
+            "children": [
+              {
+                "kind": "type_identifier",
+                "text": "Int"
+              }
+            ]
+          },
+          {
+            "kind": "function_body",
+            "children": [
+              {
+                "kind": "statements",
+                "children": [
+                  {
+                    "kind": "jump_expression",
+                    "children": [
+                      {
+                        "kind": "additive_expression",
+                        "children": [
+                          {
+                            "kind": "simple_identifier",
+                            "text": "x"
+                          },
+                          {
+                            "kind": "simple_identifier",
+                            "text": "k"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_declaration",
+        "children": [
+          {
+            "kind": "simple_identifier",
+            "text": "main"
+          },
+          {
+            "kind": "function_body",
+            "children": [
+              {
+                "kind": "statements",
+                "children": [
+                  {
+                    "kind": "property_declaration",
+                    "children": [
+                      {
+                        "kind": "variable_declaration",
+                        "children": [
+                          {
+                            "kind": "simple_identifier",
+                            "text": "k"
+                          },
+                          {
+                            "kind": "user_type",
+                            "children": [
+                              {
+                                "kind": "type_identifier",
+                                "text": "Int"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "integer_literal",
+                        "text": "2"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "call_expression",
+                    "children": [
+                      {
+                        "kind": "simple_identifier",
+                        "text": "println"
+                      },
+                      {
+                        "kind": "call_suffix",
+                        "children": [
+                          {
+                            "kind": "value_arguments",
+                            "children": [
+                              {
+                                "kind": "value_argument",
+                                "children": [
+                                  {
+                                    "kind": "call_expression",
+                                    "children": [
+                                      {
+                                        "kind": "simple_identifier",
+                                        "text": "inc"
+                                      },
+                                      {
+                                        "kind": "call_suffix",
+                                        "children": [
+                                          {
+                                            "kind": "value_arguments",
+                                            "children": [
+                                              {
+                                                "kind": "value_argument",
+                                                "children": [
+                                                  {
+                                                    "kind": "integer_literal",
+                                                    "text": "3"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

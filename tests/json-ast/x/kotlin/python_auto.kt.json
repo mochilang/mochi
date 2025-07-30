@@ -1,0 +1,162 @@
+{
+  "root": {
+    "kind": "source_file",
+    "children": [
+      {
+        "kind": "function_declaration",
+        "children": [
+          {
+            "kind": "simple_identifier",
+            "text": "main"
+          },
+          {
+            "kind": "function_body",
+            "children": [
+              {
+                "kind": "statements",
+                "children": [
+                  {
+                    "kind": "call_expression",
+                    "children": [
+                      {
+                        "kind": "simple_identifier",
+                        "text": "println"
+                      },
+                      {
+                        "kind": "call_suffix",
+                        "children": [
+                          {
+                            "kind": "value_arguments",
+                            "children": [
+                              {
+                                "kind": "value_argument",
+                                "children": [
+                                  {
+                                    "kind": "call_expression",
+                                    "children": [
+                                      {
+                                        "kind": "navigation_expression",
+                                        "children": [
+                                          {
+                                            "kind": "navigation_expression",
+                                            "children": [
+                                              {
+                                                "kind": "simple_identifier",
+                                                "text": "kotlin"
+                                              },
+                                              {
+                                                "kind": "navigation_suffix",
+                                                "children": [
+                                                  {
+                                                    "kind": "simple_identifier",
+                                                    "text": "math"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "navigation_suffix",
+                                            "children": [
+                                              {
+                                                "kind": "simple_identifier",
+                                                "text": "sqrt"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "call_suffix",
+                                        "children": [
+                                          {
+                                            "kind": "value_arguments",
+                                            "children": [
+                                              {
+                                                "kind": "value_argument",
+                                                "children": [
+                                                  {
+                                                    "kind": "real_literal",
+                                                    "text": "16.0"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "call_expression",
+                    "children": [
+                      {
+                        "kind": "simple_identifier",
+                        "text": "println"
+                      },
+                      {
+                        "kind": "call_suffix",
+                        "children": [
+                          {
+                            "kind": "value_arguments",
+                            "children": [
+                              {
+                                "kind": "value_argument",
+                                "children": [
+                                  {
+                                    "kind": "navigation_expression",
+                                    "children": [
+                                      {
+                                        "kind": "navigation_expression",
+                                        "children": [
+                                          {
+                                            "kind": "simple_identifier",
+                                            "text": "kotlin"
+                                          },
+                                          {
+                                            "kind": "navigation_suffix",
+                                            "children": [
+                                              {
+                                                "kind": "simple_identifier",
+                                                "text": "math"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "navigation_suffix",
+                                        "children": [
+                                          {
+                                            "kind": "simple_identifier",
+                                            "text": "PI"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

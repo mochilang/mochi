@@ -30,7 +30,10 @@ func Inspect(src string, opts ...Option) (*Program, error) {
 	data := []byte(src)
 	tree := p.Parse(nil, data)
 	root := convert(tree.RootNode(), data, withPos)
-	return &Program{Root: SourceFile{Node: root}}, nil
+	if root == nil {
+		return &Program{}, nil
+	}
+	return &Program{Root: SourceFile{Node: *root}}, nil
 }
 
 // MarshalJSON ensures stable output for Program.
