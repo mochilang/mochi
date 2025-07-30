@@ -23,28 +23,56 @@ type Node struct {
 // Only nodes that may hold textual values are represented to keep the
 // structure compact.
 type (
-	SourceFile          Node
-	ClassDeclaration    Node
-	MethodDeclaration   Node
-	FormalParameters    Node
-	FormalParameter     Node
-	ArrayType           Node
-	TypeIdentifier      Node
-	Identifier          Node
-	ClassBody           Node
-	Block               Node
-	ExpressionStatement Node
-	MethodInvocation    Node
-	FieldAccess         Node
-	ArgumentList        Node
-	StringLiteral       Node
-	StringFragment      Node
+	SourceFile               struct{ Node }
+	ClassDeclaration         struct{ Node }
+	ConstructorDeclaration   struct{ Node }
+	ConstructorBody          struct{ Node }
+	MethodDeclaration        struct{ Node }
+	FormalParameters         struct{ Node }
+	FormalParameter          struct{ Node }
+	ArrayType                struct{ Node }
+	ArrayCreationExpression  struct{ Node }
+	ArrayInitializer         struct{ Node }
+	VariableDeclarator       struct{ Node }
+	AssignmentExpression     struct{ Node }
+	UpdateExpression         struct{ Node }
+	UnaryExpression          struct{ Node }
+	BinaryExpression         struct{ Node }
+	CastExpression           struct{ Node }
+	ObjectCreationExpression struct{ Node }
+	ScopedTypeIdentifier     struct{ Node }
+	TypeArguments            struct{ Node }
+	GenericType              struct{ Node }
+	TypeIdentifier           struct{ Node }
+	Identifier               struct{ Node }
+	ClassBody                struct{ Node }
+	Block                    struct{ Node }
+	IfStatement              struct{ Node }
+	ForStatement             struct{ Node }
+	EnhancedForStatement     struct{ Node }
+	ExpressionStatement      struct{ Node }
+	ReturnStatement          struct{ Node }
+	MethodInvocation         struct{ Node }
+	FieldAccess              struct{ Node }
+	ArgumentList             struct{ Node }
+	StringLiteral            struct{ Node }
+	StringFragment           struct{ Node }
+	DecimalIntegerLiteral    struct{ Node }
+	True                     struct{ Node }
+	False                    struct{ Node }
+	This                     struct{ Node }
 )
 
-// toNode converts a tree-sitter node into our Node representation. When withPos
-// is true positional information is recorded, otherwise the fields remain zero
-// and are omitted from the JSON output.
-func toNode(n *sitter.Node, src []byte, withPos bool) *Node {
+// Option configures AST conversion behaviour.
+type Option struct {
+	// WithPositions includes source position information when true.
+	WithPositions bool
+}
+
+// convert transforms a tree-sitter node into our Node representation. When
+// withPos is true positional information is recorded, otherwise the fields
+// remain zero and are omitted from the JSON output.
+func convert(n *sitter.Node, src []byte, withPos bool) *Node {
 	if n == nil {
 		return nil
 	}
@@ -71,7 +99,7 @@ func toNode(n *sitter.Node, src []byte, withPos bool) *Node {
 		if child == nil {
 			continue
 		}
-		if c := toNode(child, src, withPos); c != nil {
+		if c := convert(child, src, withPos); c != nil {
 			node.Children = append(node.Children, c)
 		}
 	}
