@@ -1,17 +1,116 @@
 {
-  "items": [
-    {
-      "_kind": "top_level_code_decl",
-      "body": {
-        "range": {
-          "start": 71,
-          "end": 101
-        }
+  "file": {
+    "kind": "source_file",
+    "start": 0,
+    "end": 103,
+    "children": [
+      {
+        "kind": "comment",
+        "start": 0,
+        "end": 70
       },
-      "range": {
+      {
+        "kind": "call_expression",
         "start": 71,
-        "end": 101
+        "end": 102,
+        "children": [
+          {
+            "kind": "simple_identifier",
+            "start": 71,
+            "end": 76
+          },
+          {
+            "kind": "call_suffix",
+            "start": 76,
+            "end": 102,
+            "children": [
+              {
+                "kind": "value_arguments",
+                "start": 76,
+                "end": 102,
+                "children": [
+                  {
+                    "kind": "value_argument",
+                    "start": 77,
+                    "end": 101,
+                    "children": [
+                      {
+                        "kind": "tuple_expression",
+                        "start": 77,
+                        "end": 101,
+                        "children": [
+                          {
+                            "kind": "as_expression",
+                            "start": 78,
+                            "end": 100,
+                            "children": [
+                              {
+                                "kind": "call_expression",
+                                "start": 78,
+                                "end": 89,
+                                "children": [
+                                  {
+                                    "kind": "simple_identifier",
+                                    "start": 78,
+                                    "end": 84
+                                  },
+                                  {
+                                    "kind": "call_suffix",
+                                    "start": 84,
+                                    "end": 89,
+                                    "children": [
+                                      {
+                                        "kind": "value_arguments",
+                                        "start": 84,
+                                        "end": 89,
+                                        "children": [
+                                          {
+                                            "kind": "value_argument",
+                                            "start": 85,
+                                            "end": 88,
+                                            "children": [
+                                              {
+                                                "kind": "integer_literal",
+                                                "start": 85,
+                                                "end": 88
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "as_operator",
+                                "start": 90,
+                                "end": 93
+                              },
+                              {
+                                "kind": "user_type",
+                                "start": 94,
+                                "end": 100,
+                                "children": [
+                                  {
+                                    "kind": "type_identifier",
+                                    "start": 94,
+                                    "end": 100
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
-    }
-  ]
+    ]
+  }
 }

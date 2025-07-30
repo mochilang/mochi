@@ -1,17 +1,52 @@
 {
-  "items": [
-    {
-      "_kind": "top_level_code_decl",
-      "body": {
-        "range": {
-          "start": 71,
-          "end": 81
-        }
+  "file": {
+    "kind": "source_file",
+    "start": 0,
+    "end": 83,
+    "children": [
+      {
+        "kind": "comment",
+        "start": 0,
+        "end": 70
       },
-      "range": {
+      {
+        "kind": "call_expression",
         "start": 71,
-        "end": 81
+        "end": 82,
+        "children": [
+          {
+            "kind": "simple_identifier",
+            "start": 71,
+            "end": 76
+          },
+          {
+            "kind": "call_suffix",
+            "start": 76,
+            "end": 82,
+            "children": [
+              {
+                "kind": "value_arguments",
+                "start": 76,
+                "end": 82,
+                "children": [
+                  {
+                    "kind": "value_argument",
+                    "start": 77,
+                    "end": 81,
+                    "children": [
+                      {
+                        "kind": "integer_literal",
+                        "start": 77,
+                        "end": 81
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
-    }
-  ]
+    ]
+  }
 }

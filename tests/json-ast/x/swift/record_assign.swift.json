@@ -1,160 +1,429 @@
 {
-  "items": [
-    {
-      "_kind": "import_decl",
-      "range": {
+  "file": {
+    "kind": "source_file",
+    "start": 0,
+    "end": 225,
+    "children": [
+      {
+        "kind": "comment",
+        "start": 0,
+        "end": 70
+      },
+      {
+        "kind": "import_declaration",
         "start": 71,
-        "end": 78
-      }
-    },
-    {
-      "_kind": "struct_decl",
-      "name": {
-        "base_name": {
-          "name": "Counter"
-        }
-      },
-      "range": {
-        "start": 90,
-        "end": 122
-      },
-      "interface_type": "$s4main7CounterVmD",
-      "access": "internal",
-      "members": [
-        {
-          "_kind": "pattern_binding_decl",
-          "range": {
-            "start": 111,
-            "end": 118
-          }
-        },
-        {
-          "_kind": "var_decl",
-          "name": {
-            "base_name": {
-              "name": "n"
-            }
-          },
-          "range": {
-            "start": 115,
-            "end": 115
-          },
-          "interface_type": "$sSiD",
-          "access": "internal"
-        },
-        {
-          "_kind": "constructor_decl",
-          "name": {
-            "base_name": {
-              "name": ""
-            }
-          },
-          "params": {
-            "params": [
+        "end": 88,
+        "children": [
+          {
+            "kind": "identifier",
+            "start": 78,
+            "end": 88,
+            "children": [
               {
-                "name": {
-                  "base_name": {
-                    "name": "n"
-                  }
-                },
-                "interface_type": "$sSiD"
+                "kind": "simple_identifier",
+                "start": 78,
+                "end": 88
               }
             ]
-          },
-          "range": {
-            "start": 97,
-            "end": 97
-          },
-          "interface_type": "$sy4main7CounterVSi_tcACmcD",
-          "access": "internal"
-        }
-      ]
-    },
-    {
-      "_kind": "func_decl",
-      "name": {
-        "base_name": {
-          "name": "inc"
-        }
-      },
-      "params": {
-        "params": [
-          {
-            "name": {
-              "base_name": {
-                "name": "c"
-              }
-            },
-            "interface_type": "$s4main7CounterVD"
           }
         ]
       },
-      "body": {
-        "range": {
-          "start": 147,
-          "end": 183
-        }
+      {
+        "kind": "class_declaration",
+        "start": 90,
+        "end": 123,
+        "children": [
+          {
+            "kind": "type_identifier",
+            "start": 97,
+            "end": 104
+          },
+          {
+            "kind": "class_body",
+            "start": 105,
+            "end": 123,
+            "children": [
+              {
+                "kind": "property_declaration",
+                "start": 111,
+                "end": 121,
+                "children": [
+                  {
+                    "kind": "value_binding_pattern",
+                    "start": 111,
+                    "end": 114
+                  },
+                  {
+                    "kind": "pattern",
+                    "start": 115,
+                    "end": 116,
+                    "children": [
+                      {
+                        "kind": "simple_identifier",
+                        "start": 115,
+                        "end": 116
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "type_annotation",
+                    "start": 116,
+                    "end": 121,
+                    "children": [
+                      {
+                        "kind": "user_type",
+                        "start": 118,
+                        "end": 121,
+                        "children": [
+                          {
+                            "kind": "type_identifier",
+                            "start": 118,
+                            "end": 121
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       },
-      "range": {
+      {
+        "kind": "function_declaration",
         "start": 124,
-        "end": 183
+        "end": 184,
+        "children": [
+          {
+            "kind": "simple_identifier",
+            "start": 129,
+            "end": 132
+          },
+          {
+            "kind": "parameter",
+            "start": 133,
+            "end": 145,
+            "children": [
+              {
+                "kind": "simple_identifier",
+                "start": 133,
+                "end": 134
+              },
+              {
+                "kind": "simple_identifier",
+                "start": 135,
+                "end": 136
+              },
+              {
+                "kind": "user_type",
+                "start": 138,
+                "end": 145,
+                "children": [
+                  {
+                    "kind": "type_identifier",
+                    "start": 138,
+                    "end": 145
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "function_body",
+            "start": 147,
+            "end": 184,
+            "children": [
+              {
+                "kind": "statements",
+                "start": 153,
+                "end": 183,
+                "children": [
+                  {
+                    "kind": "property_declaration",
+                    "start": 153,
+                    "end": 162,
+                    "children": [
+                      {
+                        "kind": "value_binding_pattern",
+                        "start": 153,
+                        "end": 156
+                      },
+                      {
+                        "kind": "pattern",
+                        "start": 157,
+                        "end": 158,
+                        "children": [
+                          {
+                            "kind": "simple_identifier",
+                            "start": 157,
+                            "end": 158
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "simple_identifier",
+                        "start": 161,
+                        "end": 162
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "assignment",
+                    "start": 167,
+                    "end": 182,
+                    "children": [
+                      {
+                        "kind": "directly_assignable_expression",
+                        "start": 167,
+                        "end": 170,
+                        "children": [
+                          {
+                            "kind": "navigation_expression",
+                            "start": 167,
+                            "end": 170,
+                            "children": [
+                              {
+                                "kind": "simple_identifier",
+                                "start": 167,
+                                "end": 168
+                              },
+                              {
+                                "kind": "navigation_suffix",
+                                "start": 168,
+                                "end": 170,
+                                "children": [
+                                  {
+                                    "kind": "simple_identifier",
+                                    "start": 169,
+                                    "end": 170
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "tuple_expression",
+                        "start": 173,
+                        "end": 182,
+                        "children": [
+                          {
+                            "kind": "additive_expression",
+                            "start": 174,
+                            "end": 181,
+                            "children": [
+                              {
+                                "kind": "navigation_expression",
+                                "start": 174,
+                                "end": 177,
+                                "children": [
+                                  {
+                                    "kind": "simple_identifier",
+                                    "start": 174,
+                                    "end": 175
+                                  },
+                                  {
+                                    "kind": "navigation_suffix",
+                                    "start": 175,
+                                    "end": 177,
+                                    "children": [
+                                      {
+                                        "kind": "simple_identifier",
+                                        "start": 176,
+                                        "end": 177
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "integer_literal",
+                                "start": 180,
+                                "end": 181
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       },
-      "result": "$sytD",
-      "interface_type": "$syy4main7CounterVcD",
-      "access": "internal"
-    },
-    {
-      "_kind": "top_level_code_decl",
-      "body": {
-        "range": {
-          "start": 185,
-          "end": 205
-        }
-      },
-      "range": {
+      {
+        "kind": "property_declaration",
         "start": 185,
-        "end": 205
-      }
-    },
-    {
-      "_kind": "var_decl",
-      "name": {
-        "base_name": {
-          "name": "c"
-        }
+        "end": 206,
+        "children": [
+          {
+            "kind": "value_binding_pattern",
+            "start": 185,
+            "end": 188
+          },
+          {
+            "kind": "pattern",
+            "start": 189,
+            "end": 190,
+            "children": [
+              {
+                "kind": "simple_identifier",
+                "start": 189,
+                "end": 190
+              }
+            ]
+          },
+          {
+            "kind": "call_expression",
+            "start": 193,
+            "end": 206,
+            "children": [
+              {
+                "kind": "simple_identifier",
+                "start": 193,
+                "end": 200
+              },
+              {
+                "kind": "call_suffix",
+                "start": 200,
+                "end": 206,
+                "children": [
+                  {
+                    "kind": "value_arguments",
+                    "start": 200,
+                    "end": 206,
+                    "children": [
+                      {
+                        "kind": "value_argument",
+                        "start": 201,
+                        "end": 205,
+                        "children": [
+                          {
+                            "kind": "value_argument_label",
+                            "start": 201,
+                            "end": 202,
+                            "children": [
+                              {
+                                "kind": "simple_identifier",
+                                "start": 201,
+                                "end": 202
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "integer_literal",
+                            "start": 204,
+                            "end": 205
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       },
-      "range": {
-        "start": 189,
-        "end": 189
-      },
-      "interface_type": "$s4main7CounterVD",
-      "access": "internal"
-    },
-    {
-      "_kind": "top_level_code_decl",
-      "body": {
-        "range": {
-          "start": 207,
-          "end": 212
-        }
-      },
-      "range": {
+      {
+        "kind": "call_expression",
         "start": 207,
-        "end": 212
-      }
-    },
-    {
-      "_kind": "top_level_code_decl",
-      "body": {
-        "range": {
-          "start": 214,
-          "end": 223
-        }
+        "end": 213,
+        "children": [
+          {
+            "kind": "simple_identifier",
+            "start": 207,
+            "end": 210
+          },
+          {
+            "kind": "call_suffix",
+            "start": 210,
+            "end": 213,
+            "children": [
+              {
+                "kind": "value_arguments",
+                "start": 210,
+                "end": 213,
+                "children": [
+                  {
+                    "kind": "value_argument",
+                    "start": 211,
+                    "end": 212,
+                    "children": [
+                      {
+                        "kind": "simple_identifier",
+                        "start": 211,
+                        "end": 212
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       },
-      "range": {
+      {
+        "kind": "call_expression",
         "start": 214,
-        "end": 223
+        "end": 224,
+        "children": [
+          {
+            "kind": "simple_identifier",
+            "start": 214,
+            "end": 219
+          },
+          {
+            "kind": "call_suffix",
+            "start": 219,
+            "end": 224,
+            "children": [
+              {
+                "kind": "value_arguments",
+                "start": 219,
+                "end": 224,
+                "children": [
+                  {
+                    "kind": "value_argument",
+                    "start": 220,
+                    "end": 223,
+                    "children": [
+                      {
+                        "kind": "navigation_expression",
+                        "start": 220,
+                        "end": 223,
+                        "children": [
+                          {
+                            "kind": "simple_identifier",
+                            "start": 220,
+                            "end": 221
+                          },
+                          {
+                            "kind": "navigation_suffix",
+                            "start": 221,
+                            "end": 223,
+                            "children": [
+                              {
+                                "kind": "simple_identifier",
+                                "start": 222,
+                                "end": 223
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
-    }
-  ]
+    ]
+  }
 }

@@ -1,114 +1,233 @@
 {
-  "items": [
-    {
-      "_kind": "import_decl",
-      "range": {
+  "file": {
+    "kind": "source_file",
+    "start": 0,
+    "end": 175,
+    "children": [
+      {
+        "kind": "comment",
+        "start": 0,
+        "end": 70
+      },
+      {
+        "kind": "import_declaration",
         "start": 71,
-        "end": 78
-      }
-    },
-    {
-      "_kind": "struct_decl",
-      "name": {
-        "base_name": {
-          "name": "Todo"
-        }
-      },
-      "range": {
-        "start": 90,
-        "end": 126
-      },
-      "interface_type": "$s4main4TodoVmD",
-      "access": "internal",
-      "members": [
-        {
-          "_kind": "pattern_binding_decl",
-          "range": {
-            "start": 108,
-            "end": 119
-          }
-        },
-        {
-          "_kind": "var_decl",
-          "name": {
-            "base_name": {
-              "name": "title"
-            }
-          },
-          "range": {
-            "start": 112,
-            "end": 112
-          },
-          "interface_type": "$sSSD",
-          "access": "internal"
-        },
-        {
-          "_kind": "constructor_decl",
-          "name": {
-            "base_name": {
-              "name": ""
-            }
-          },
-          "params": {
-            "params": [
+        "end": 88,
+        "children": [
+          {
+            "kind": "identifier",
+            "start": 78,
+            "end": 88,
+            "children": [
               {
-                "name": {
-                  "base_name": {
-                    "name": "title"
+                "kind": "simple_identifier",
+                "start": 78,
+                "end": 88
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "class_declaration",
+        "start": 90,
+        "end": 127,
+        "children": [
+          {
+            "kind": "type_identifier",
+            "start": 97,
+            "end": 101
+          },
+          {
+            "kind": "class_body",
+            "start": 102,
+            "end": 127,
+            "children": [
+              {
+                "kind": "property_declaration",
+                "start": 108,
+                "end": 125,
+                "children": [
+                  {
+                    "kind": "value_binding_pattern",
+                    "start": 108,
+                    "end": 111
+                  },
+                  {
+                    "kind": "pattern",
+                    "start": 112,
+                    "end": 117,
+                    "children": [
+                      {
+                        "kind": "simple_identifier",
+                        "start": 112,
+                        "end": 117
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "type_annotation",
+                    "start": 117,
+                    "end": 125,
+                    "children": [
+                      {
+                        "kind": "user_type",
+                        "start": 119,
+                        "end": 125,
+                        "children": [
+                          {
+                            "kind": "type_identifier",
+                            "start": 119,
+                            "end": 125
+                          }
+                        ]
+                      }
+                    ]
                   }
-                },
-                "interface_type": "$sSSD"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "property_declaration",
+        "start": 128,
+        "end": 156,
+        "children": [
+          {
+            "kind": "value_binding_pattern",
+            "start": 128,
+            "end": 131
+          },
+          {
+            "kind": "pattern",
+            "start": 132,
+            "end": 136,
+            "children": [
+              {
+                "kind": "simple_identifier",
+                "start": 132,
+                "end": 136
               }
             ]
           },
-          "range": {
-            "start": 97,
-            "end": 97
-          },
-          "interface_type": "$sy4main4TodoVSS_tcACmcD",
-          "access": "internal"
-        }
-      ]
-    },
-    {
-      "_kind": "top_level_code_decl",
-      "body": {
-        "range": {
-          "start": 128,
-          "end": 155
-        }
+          {
+            "kind": "call_expression",
+            "start": 139,
+            "end": 156,
+            "children": [
+              {
+                "kind": "simple_identifier",
+                "start": 139,
+                "end": 143
+              },
+              {
+                "kind": "call_suffix",
+                "start": 143,
+                "end": 156,
+                "children": [
+                  {
+                    "kind": "value_arguments",
+                    "start": 143,
+                    "end": 156,
+                    "children": [
+                      {
+                        "kind": "value_argument",
+                        "start": 144,
+                        "end": 155,
+                        "children": [
+                          {
+                            "kind": "value_argument_label",
+                            "start": 144,
+                            "end": 149,
+                            "children": [
+                              {
+                                "kind": "simple_identifier",
+                                "start": 144,
+                                "end": 149
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "line_string_literal",
+                            "start": 151,
+                            "end": 155,
+                            "children": [
+                              {
+                                "kind": "line_str_text",
+                                "start": 152,
+                                "end": 154
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       },
-      "range": {
-        "start": 128,
-        "end": 155
-      }
-    },
-    {
-      "_kind": "var_decl",
-      "name": {
-        "base_name": {
-          "name": "todo"
-        }
-      },
-      "range": {
-        "start": 132,
-        "end": 132
-      },
-      "interface_type": "$s4main4TodoVD",
-      "access": "internal"
-    },
-    {
-      "_kind": "top_level_code_decl",
-      "body": {
-        "range": {
-          "start": 157,
-          "end": 173
-        }
-      },
-      "range": {
+      {
+        "kind": "call_expression",
         "start": 157,
-        "end": 173
+        "end": 174,
+        "children": [
+          {
+            "kind": "simple_identifier",
+            "start": 157,
+            "end": 162
+          },
+          {
+            "kind": "call_suffix",
+            "start": 162,
+            "end": 174,
+            "children": [
+              {
+                "kind": "value_arguments",
+                "start": 162,
+                "end": 174,
+                "children": [
+                  {
+                    "kind": "value_argument",
+                    "start": 163,
+                    "end": 173,
+                    "children": [
+                      {
+                        "kind": "navigation_expression",
+                        "start": 163,
+                        "end": 173,
+                        "children": [
+                          {
+                            "kind": "simple_identifier",
+                            "start": 163,
+                            "end": 167
+                          },
+                          {
+                            "kind": "navigation_suffix",
+                            "start": 167,
+                            "end": 173,
+                            "children": [
+                              {
+                                "kind": "simple_identifier",
+                                "start": 168,
+                                "end": 173
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
-    }
-  ]
+    ]
+  }
 }
