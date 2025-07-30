@@ -5,8 +5,8 @@ package kotlin
 import (
 	"encoding/json"
 
-	sitter "github.com/tree-sitter/go-tree-sitter"
-	ts "github.com/tree-sitter/go-tree-sitter/kotlin"
+       sitter "github.com/tree-sitter/go-tree-sitter"
+       ts "github.com/smacker/go-tree-sitter/kotlin"
 )
 
 // Program represents a parsed Kotlin source file.

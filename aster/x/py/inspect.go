@@ -5,8 +5,8 @@ package py
 import (
 	"encoding/json"
 
-	sitter "github.com/tree-sitter/go-tree-sitter"
-	tspython "github.com/tree-sitter/go-tree-sitter/python"
+       sitter "github.com/tree-sitter/go-tree-sitter"
+       tspython "github.com/tree-sitter/tree-sitter-python/bindings/go"
 )
 
 // Program represents a parsed Python source file.
