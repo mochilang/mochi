@@ -614,7 +614,7 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, ")")
 	case "MD5Hex":
-		io.WriteString(w, "(function(bs) local res=_md5(bs) local t={} for i=1,#res do t[#t+1]=string.format('%02x',res[i]) end return table.concat(t) end)(")
+		io.WriteString(w, "(function(bs) if type(bs)=='string' then local t={} for i=1,#bs do t[#t+1]=string.byte(bs,i) end bs=t end local res=_md5(bs) local t2={} for i=1,#res do t2[#t2+1]=string.format('%02x',res[i]) end return table.concat(t2) end)(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
@@ -3145,7 +3145,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 		}
 		switch p.Call.Func {
-		case "append", "avg", "sum", "contains", "len", "count", "now", "sha256", "indexOf", "parseIntStr", "repeat", "_environ":
+		case "append", "avg", "sum", "contains", "len", "count", "now", "sha256", "indexOf", "parseIntStr", "repeat", "_environ", "int", "float", "str":
 			// handled during emission
 			return ce, nil
 		case "substr":
@@ -3783,8 +3783,16 @@ func convertImportStmt(im *parser.ImportStmt) (Stmt, error) {
 					&StringLit{Value: "Answer"},
 					&StringLit{Value: "FifteenPuzzleExample"},
 					&StringLit{Value: "ECDSAExample"},
+					&StringLit{Value: "MD5Hex"},
 				},
-				Values: []Expr{fn, &FloatLit{Value: 3.14}, &IntLit{Value: 42}, fp, ecdsa},
+				Values: []Expr{
+					fn,
+					&FloatLit{Value: 3.14},
+					&IntLit{Value: 42},
+					fp,
+					ecdsa,
+					&FunExpr{Params: []string{"bs"}, Expr: &CallExpr{Func: "MD5Hex", Args: []Expr{&Ident{Name: "bs"}}}},
+				},
 			}
 			return &AssignStmt{Name: alias, Value: pkg}, nil
 		}

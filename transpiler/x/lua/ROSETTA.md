@@ -2,25 +2,25 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 474/493
+Transpiled programs: 485/493
 
-Last updated: 2025-07-30 21:05 GMT+7
+Last updated: 2025-07-30 21:21 GMT+7
 
 Checklist:
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 219µs | 2.7 KB |
-| 2 | 100-doors-3 | ✓ | 102µs | 2.2 KB |
-| 3 | 100-doors | ✓ | 427µs | 6.0 KB |
+| 1 | 100-doors-2 | ✓ | 307µs | 2.7 KB |
+| 2 | 100-doors-3 | ✓ | 99µs | 2.2 KB |
+| 3 | 100-doors | ✓ | 422µs | 6.0 KB |
 | 4 | 100-prisoners | ✓ | 244.151ms | 2.2 KB |
 | 5 | 15-puzzle-game | ✓ | 119.487ms | 1.9 KB |
 | 6 | 15-puzzle-solver | ✓ | 568.6ms | 224 B |
-| 7 | 2048 | ✓ | 884.042ms | 2.6 KB |
-| 8 | 21-game | ✓ | 726.918ms | 944 B |
-| 9 | 24-game-solve | ✓ | 245.103ms | 2.5 KB |
-| 10 | 24-game | ✓ | 1.704ms | 936 B |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ | 568.6ms | 615.9 KB |
+| 7 | 2048 | ✓ | 667µs | 2.6 KB |
+| 8 | 21-game | ✓ | 123µs | 944 B |
+| 9 | 24-game-solve | ✓ | 167.107ms | 2.5 KB |
+| 10 | 24-game | ✓ | 118µs | 1000 B |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 63.18ms | 615.9 KB |
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 568.6ms | 138.9 KB |
 | 13 | 99-bottles-of-beer-2 | ✓ | 568.6ms | 1.2 KB |
 | 14 | 99-bottles-of-beer | ✓ | 568.6ms | 2.8 KB |
@@ -459,47 +459,47 @@ Checklist:
 | 447 | flipping-bits-game | ✓ | 219µs | 1.3 KB |
 | 448 | flow-control-structures-1 | ✓ | 38µs | 64 B |
 | 449 | flow-control-structures-2 | ✓ | 21µs | 96 B |
-| 450 | flow-control-structures-3 | ✓ | 36µs | 64 B |
-| 451 | flow-control-structures-4 | ✓ | 17µs | 64 B |
-| 452 | floyd-warshall-algorithm | ✓ | 145µs | 872 B |
-| 453 | floyd-warshall-algorithm2 | ✓ | 201µs | 2.8 KB |
-| 454 | floyds-triangle | ✓ | 252µs | 2.9 KB |
-| 455 | forest-fire | ✓ | 1.685ms | 12.7 KB |
-| 456 | fork-2 | ✓ | 39µs | 808 B |
-| 457 | fork | ✓ | 38µs | 808 B |
-| 458 | formal-power-series | ✓ | 105µs | 1.9 KB |
-| 459 | formatted-numeric-output | ✓ | 48µs | 2.9 KB |
-| 460 | forward-difference | ✓ | 92µs | 1.0 KB |
-| 461 | four-bit-adder-1 | ✓ | 26µs | 1.1 KB |
-| 462 | four-is-magic | ✓ | 80µs | 1.8 KB |
-| 463 | four-is-the-number-of-letters-in-the-... |   |  |  |
-| 464 | fractal-tree |   |  |  |
-| 465 | fractran |   |  |  |
-| 466 | french-republican-calendar |   |  |  |
-| 467 | ftp | ✓ | 46µs | 1.8 KB |
-| 468 | function-frequency |   |  |  |
-| 469 | function-prototype |   |  |  |
-| 470 | functional-coverage-tree |   |  |  |
-| 471 | fusc-sequence |   |  |  |
-| 472 | gamma-function | ✓ | 93µs | 3.1 KB |
-| 473 | general-fizzbuzz | ✓ | 52µs | 960 B |
-| 474 | generic-swap | ✓ | 29µs | 776 B |
-| 475 | get-system-command-output | ✓ | 22µs | 64 B |
-| 476 | giuga-numbers | ✓ | 57µs | 1016 B |
-| 477 | globally-replace-text-in-several-files | ✓ | 32µs | 64 B |
-| 478 | goldbachs-comet | ✓ | 4.599ms | 19.8 KB |
-| 479 | golden-ratio-convergence | ✓ | 40µs | 808 B |
-| 480 | graph-colouring | ✓ | 27µs | 64 B |
-| 481 | gray-code | ✓ | 350µs | 3.0 KB |
-| 482 | gui-component-interaction |   |  |  |
-| 483 | gui-enabling-disabling-of-controls |   |  |  |
-| 484 | gui-maximum-window-dimensions |   |  |  |
-| 485 | http | ✓ | 881µs | 904 B |
-| 486 | image-noise | ✓ | 37.789ms | 3.1 KB |
-| 487 | loops-increment-loop-index-within-loop-body | ✓ | 187.014ms | 3.0 KB |
-| 488 | md5 | ✓ | 1.386ms | 1.5 KB |
-| 489 | nim-game | ✓ | 52µs | 936 B |
-| 490 | plasma-effect | ✓ | 20.626ms | 272 B |
-| 491 | sorting-algorithms-bubble-sort | ✓ | 50µs | 1.0 KB |
-| 492 | window-management | ✓ | 84µs | 1.0 KB |
-| 493 | zumkeller-numbers | ✓ | 16.138863s | 39.9 KB |
+| 450 | flow-control-structures-3 | ✓ | 38µs | 64 B |
+| 451 | flow-control-structures-4 | ✓ | 38µs | 64 B |
+| 452 | floyd-warshall-algorithm | ✓ | 310µs | 872 B |
+| 453 | floyd-warshall-algorithm2 | ✓ | 309µs | 2.8 KB |
+| 454 | floyds-triangle | ✓ | 399µs | 2.9 KB |
+| 455 | forest-fire | ✓ | 2.845ms | 12.7 KB |
+| 456 | fork-2 | ✓ | 99µs | 808 B |
+| 457 | fork | ✓ | 93µs | 808 B |
+| 458 | formal-power-series | ✓ | 243µs | 1.9 KB |
+| 459 | formatted-numeric-output | ✓ | 102µs | 2.9 KB |
+| 460 | forward-difference | ✓ | 131µs | 1.0 KB |
+| 461 | four-bit-adder-1 | ✓ | 92µs | 1.1 KB |
+| 462 | four-is-magic | ✓ | 183µs | 1.8 KB |
+| 463 | four-is-the-number-of-letters-in-the-... | ✓ |  |  |
+| 464 | fractal-tree | ✓ | 5.154ms | 2.9 KB |
+| 465 | fractran | ✓ | 7.381963s | 2.9 KB |
+| 466 | french-republican-calendar | ✓ | 144µs | 2.1 KB |
+| 467 | ftp | ✓ | 166µs | 1.8 KB |
+| 468 | function-frequency | ✓ | 9.306ms | 1.0 KB |
+| 469 | function-prototype | ✓ | 3µs | 160 B |
+| 470 | functional-coverage-tree | ✓ | 1.04ms | 22.0 KB |
+| 471 | fusc-sequence | ✓ | 360µs | 2.3 KB |
+| 472 | gamma-function | ✓ | 208µs | 3.1 KB |
+| 473 | general-fizzbuzz | ✓ | 170µs | 960 B |
+| 474 | generic-swap | ✓ | 135µs | 776 B |
+| 475 | get-system-command-output | ✓ | 27µs | 64 B |
+| 476 | giuga-numbers | ✓ | 130µs | 1016 B |
+| 477 | globally-replace-text-in-several-files | ✓ | 36µs | 64 B |
+| 478 | goldbachs-comet | ✓ | 6.778ms | 19.8 KB |
+| 479 | golden-ratio-convergence | ✓ | 70µs | 808 B |
+| 480 | graph-colouring | ✓ | 38µs | 64 B |
+| 481 | gray-code | ✓ | 566µs | 3.0 KB |
+| 482 | gui-component-interaction | ✓ | 186µs | 888 B |
+| 483 | gui-enabling-disabling-of-controls | ✓ | 236µs | 2.9 KB |
+| 484 | gui-maximum-window-dimensions | ✓ | 93µs | 840 B |
+| 485 | http | ✓ | 396µs | 904 B |
+| 486 | image-noise | ✓ | 54.018ms | 3.1 KB |
+| 487 | loops-increment-loop-index-within-loop-body | ✓ | 313.694ms | 3.0 KB |
+| 488 | md5 | ✓ | 3.416ms | 1.4 KB |
+| 489 | nim-game | ✓ | 193µs | 936 B |
+| 490 | plasma-effect | ✓ | 23.616ms | 272 B |
+| 491 | sorting-algorithms-bubble-sort | ✓ | 113µs | 1.0 KB |
+| 492 | window-management | ✓ | 163µs | 1.0 KB |
+| 493 | zumkeller-numbers | ✓ | 23.492379s | 39.9 KB |
