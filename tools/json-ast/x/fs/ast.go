@@ -8,22 +8,37 @@ import (
 // Node mirrors a tree-sitter node in a JSON-friendly form.
 type Node struct {
 	Kind     string `json:"kind"`
-	Start    int    `json:"start"`
-	End      int    `json:"end"`
+	Name     string `json:"name,omitempty"`
 	Text     string `json:"text,omitempty"`
+	Start    int    `json:"start"`
+	StartCol int    `json:"startCol"`
+	End      int    `json:"end"`
+	EndCol   int    `json:"endCol"`
 	Children []Node `json:"children,omitempty"`
 }
 
 // convertNode recursively converts a tree-sitter Node into our Node structure.
 func convertNode(n *sitter.Node, src []byte) Node {
+	start := n.StartPoint()
+	end := n.EndPoint()
 	node := Node{
-		Kind:  n.Type(),
-		Start: int(n.StartByte()),
-		End:   int(n.EndByte()),
+		Kind:     n.Type(),
+		Start:    int(start.Row) + 1,
+		StartCol: int(start.Column),
+		End:      int(end.Row) + 1,
+		EndCol:   int(end.Column),
 	}
 
 	if n.NamedChildCount() == 0 {
-		node.Text = n.Content(src)
+		text := n.Content(src)
+		if n.Type() == "identifier" {
+			node.Name = text
+		} else {
+			node.Text = text
+		}
+		if node.Name == "" && node.Text == "" {
+			return Node{}
+		}
 		return node
 	}
 
@@ -32,7 +47,11 @@ func convertNode(n *sitter.Node, src []byte) Node {
 		if child == nil {
 			continue
 		}
-		node.Children = append(node.Children, convertNode(child, src))
+		c := convertNode(child, src)
+		if c.Name == "" && c.Text == "" && len(c.Children) == 0 {
+			continue
+		}
+		node.Children = append(node.Children, c)
 	}
 	return node
 }
