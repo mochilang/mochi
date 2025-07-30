@@ -4,12 +4,11 @@ import (
 	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
-// Node represents a simplified Go AST node converted from tree-sitter.
-// IncludePositions controls whether position information is populated when
-// converting tree-sitter nodes.  When false (the default) the position fields
-// remain zero and are omitted from the marshalled JSON due to the `omitempty`
+// IncludePos controls whether positional information should be populated when
+// converting tree-sitter nodes. When false (the default) the position fields
+// remain zero and are omitted from the marshalled JSON due to the omitempty
 // struct tags.
-var IncludePositions bool
+var IncludePos bool
 
 // Node represents a simplified Go AST node converted from tree-sitter.
 // Position fields are optional and omitted from the JSON when zero.
@@ -23,6 +22,75 @@ type Node struct {
 	Children []*Node `json:"children,omitempty"`
 }
 
+// Enumerate the node kinds that appear in the tests so Program can expose a
+// more structured API while still using Node internally.
+type (
+	ArgumentList             Node
+	AssignmentStatement      Node
+	BinaryExpression         Node
+	Block                    Node
+	CallExpression           Node
+	Comment                  Node
+	CompositeLiteral         Node
+	DefaultCase              Node
+	ExpressionList           Node
+	ExpressionStatement      Node
+	False                    Node
+	FieldDeclaration         Node
+	FieldDeclarationList     Node
+	FieldIdentifier          Node
+	FloatLiteral             Node
+	ForClause                Node
+	ForStatement             Node
+	FuncLiteral              Node
+	FunctionDeclaration      Node
+	FunctionType             Node
+	Identifier               Node
+	IfStatement              Node
+	ImportDeclaration        Node
+	ImportSpec               Node
+	ImportSpecList           Node
+	IncStatement             Node
+	IndexExpression          Node
+	IntLiteral               Node
+	InterfaceType            Node
+	InterpretedStringLiteral Node
+	KeyedElement             Node
+	LiteralElement           Node
+	LiteralValue             Node
+	MapType                  Node
+	MethodDeclaration        Node
+	MethodElem               Node
+	Nil                      Node
+	PackageClause            Node
+	PackageIdentifier        Node
+	ParameterDeclaration     Node
+	ParameterList            Node
+	ParenthesizedExpression  Node
+	PointerType              Node
+	QualifiedType            Node
+	RangeClause              Node
+	ReturnStatement          Node
+	SelectorExpression       Node
+	ShortVarDeclaration      Node
+	SliceExpression          Node
+	SliceType                Node
+	SourceFile               Node
+	StructType               Node
+	True                     Node
+	TypeAssertionExpression  Node
+	TypeCase                 Node
+	TypeConversionExpression Node
+	TypeDeclaration          Node
+	TypeIdentifier           Node
+	TypeSpec                 Node
+	TypeSwitchStatement      Node
+	UnaryExpression          Node
+	VarDeclaration           Node
+	VarSpec                  Node
+	VariadicArgument         Node
+)
+
 func isValueNode(kind string) bool {
 	switch kind {
 	case "identifier", "field_identifier", "package_identifier",
@@ -35,8 +103,12 @@ func isValueNode(kind string) bool {
 	}
 }
 
-// convertNode converts a tree-sitter node into our Node representation.
-func convertNode(n *sitter.Node, src []byte) *Node {
+// toNode converts a tree-sitter node into our Node representation.
+// toNode converts a tree-sitter node into our Node representation. When pos is
+// true the positional fields are populated, otherwise they remain zero and are
+// omitted from the resulting JSON output. Non-value leaf nodes are removed to
+// keep the tree small.
+func toNode(n *sitter.Node, src []byte, pos bool) *Node {
 	if n == nil {
 		return nil
 	}
@@ -44,7 +116,7 @@ func convertNode(n *sitter.Node, src []byte) *Node {
 	start := n.StartPosition()
 	end := n.EndPosition()
 	node := &Node{Kind: n.Kind()}
-	if IncludePositions {
+	if pos {
 		node.Start = int(start.Row) + 1
 		node.StartCol = int(start.Column)
 		node.End = int(end.Row) + 1
@@ -64,7 +136,7 @@ func convertNode(n *sitter.Node, src []byte) *Node {
 		if child == nil {
 			continue
 		}
-		if c := convertNode(child, src); c != nil {
+		if c := toNode(child, src, pos); c != nil {
 			node.Children = append(node.Children, c)
 		}
 	}
