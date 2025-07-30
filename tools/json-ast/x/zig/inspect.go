@@ -29,7 +29,7 @@ func Inspect(src string, opts ...Options) (*Program, error) {
 	if err != nil {
 		return nil, fmt.Errorf("parse: %w", err)
 	}
-	node, ok := convertNode(tree.RootNode(), []byte(src), opt.Positions)
+	node, ok := convert(tree.RootNode(), []byte(src), opt.Positions)
 	if !ok {
 		return &Program{Root: SourceFile{}}, nil
 	}

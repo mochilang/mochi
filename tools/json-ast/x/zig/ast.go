@@ -20,6 +20,47 @@ type Node struct {
 // SourceFile is the root of a Zig program.
 type SourceFile struct{ Node }
 
+// Additional concrete node types mirroring the Zig grammar. They simply embed
+// Node so the JSON structure remains unchanged while giving Go callers richer
+// types to work with.
+type (
+	LineComment         struct{ Node }
+	ArrayTypeStart      struct{ Node }
+	AssignExpr          struct{ Node }
+	BuiltinIdentifier   struct{ Node }
+	BinaryExpr          struct{ Node }
+	Block               struct{ Node }
+	BlockExpr           struct{ Node }
+	BlockLabel          struct{ Node }
+	BreakLabel          struct{ Node }
+	BuildinTypeExpr     struct{ Node }
+	ContainerDecl       struct{ Node }
+	ContainerField      struct{ Node }
+	ErrorUnionExpr      struct{ Node }
+	EscapeSequence      struct{ Node }
+	FieldInit           struct{ Node }
+	FieldOrFnCall       struct{ Node }
+	FnCallArguments     struct{ Node }
+	FnProto             struct{ Node }
+	ForPrefix           struct{ Node }
+	ForStatement        struct{ Node }
+	FormatSequence      struct{ Node }
+	Identifier          struct{ Node }
+	Integer             struct{ Node }
+	InitList            struct{ Node }
+	LabeledStatement    struct{ Node }
+	LabeledTypeExpr     struct{ Node }
+	LoopStatement       struct{ Node }
+	PrefixTypeOp        struct{ Node }
+	PtrIndexPayload     struct{ Node }
+	StringLiteralSingle struct{ Node }
+	Statement           struct{ Node }
+	SuffixExpr          struct{ Node }
+	TopLevelDecl        struct{ Node }
+	UnaryExpr           struct{ Node }
+	VarDecl             struct{ Node }
+)
+
 // Options control how the AST is produced.
 type Options struct {
 	// Positions includes line/column information when true.
@@ -39,9 +80,10 @@ var valueKinds = map[string]struct{}{
 	"line_comment":        {},
 }
 
-// convertNode converts a tree-sitter node into a Node. It returns ok=false if
-// the node does not contain any semantic information and should be omitted.
-func convertNode(n *sitter.Node, src []byte, withPos bool) (node Node, ok bool) {
+// convert transforms a tree-sitter node into our Node representation. It
+// returns ok=false when the node holds no semantic value and should be skipped
+// from the final JSON.
+func convert(n *sitter.Node, src []byte, withPos bool) (node Node, ok bool) {
 	node = Node{Kind: n.Type()}
 	if withPos {
 		start := n.StartPoint()
@@ -66,7 +108,7 @@ func convertNode(n *sitter.Node, src []byte, withPos bool) (node Node, ok bool) 
 		if child == nil {
 			continue
 		}
-		if c, ok := convertNode(child, src, withPos); ok {
+		if c, ok := convert(child, src, withPos); ok {
 			node.Children = append(node.Children, c)
 		}
 	}
