@@ -9,7 +9,12 @@ This directory contains utilities for inspecting Prolog programs using SWI-Prolo
 3. basic_compare.pl
 4. cross_join.pl
 5. two-sum.pl
+6. factorial.pl
+7. division_mod.pl
+8. gcd.pl
+9. fib.pl
+10. print_hello.pl
 
-Checked: 5/5
+Checked: 10/10
 
-_Last updated: 2025-07-31 19:02 GMT+7_
+_Last updated: 2025-07-31 19:22 GMT+7_
