@@ -25,19 +25,19 @@ struct ResultItem {
     std::string name;
     std::optional<ItemsItem> item;
 };
-std::ostream &() function_declarator {
+std::ostream &operator<<(std::ostream &os, const CustomersItem &v) {
     os << '{' << "'id': " << v.id << ", " << "'name': '" << v.name << "'" + '}';
     return os;
 }
-std::ostream &() function_declarator {
+std::ostream &operator<<(std::ostream &os, const OrdersItem &v) {
     os << '{' << "'id': " << v.id << ", " << "'customerId': " << v.customerId + '}';
     return os;
 }
-std::ostream &() function_declarator {
+std::ostream &operator<<(std::ostream &os, const ItemsItem &v) {
     os << '{' << "'orderId': " << v.orderId << ", " << "'sku': '" << v.sku << "'" + '}';
     return os;
 }
-std::ostream &() function_declarator {
+std::ostream &operator<<(std::ostream &os, const ResultItem &v) {
     os << '{' << "'orderId': " << v.orderId << ", " << "'name': '" << v.name << "'" << ", " << "'item': " << v.item + '}';
     return os;
 }
