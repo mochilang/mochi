@@ -39,6 +39,13 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 		b.WriteString(ind)
 		writeValueDefinition(b, n.Children[0], indent)
 		b.WriteByte('\n')
+	case "exception_definition":
+		b.WriteString(ind)
+		b.WriteString("exception ")
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+		}
+		b.WriteByte('\n')
 	default:
 		b.WriteString(ind)
 		writeExpr(b, n, indent)
@@ -258,8 +265,39 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		}
 	case "constructor_name":
 		b.WriteString(n.Text)
+	case "constructor_declaration":
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteByte(' ')
+			}
+			writeExpr(b, c, indent)
+		}
+	case "open_module":
+		b.WriteString("open ")
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteByte('.')
+			}
+			writeExpr(b, c, indent)
+		}
+	case "let_open_expression":
+		if len(n.Children) >= 2 {
+			b.WriteString("let open ")
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" in ")
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "typed_expression":
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+		}
 	default:
-		b.WriteString(n.Kind)
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteByte(' ')
+			}
+			writeExpr(b, c, indent)
+		}
 	}
 }
 
