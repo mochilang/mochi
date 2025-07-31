@@ -59,6 +59,7 @@
                     "children": [
                       {
                         "kind": "range",
+                        "text": "...",
                         "children": [
                           {
                             "kind": "integer",
@@ -99,9 +100,11 @@
                                 "children": [
                                   {
                                     "kind": "range",
+                                    "text": "...",
                                     "children": [
                                       {
                                         "kind": "binary",
+                                        "text": "+",
                                         "children": [
                                           {
                                             "kind": "identifier",
@@ -145,9 +148,11 @@
                                         "children": [
                                           {
                                             "kind": "binary",
+                                            "text": "==",
                                             "children": [
                                               {
                                                 "kind": "binary",
+                                                "text": "+",
                                                 "children": [
                                                   {
                                                     "kind": "element_reference",
@@ -236,6 +241,7 @@
                         "children": [
                           {
                             "kind": "unary",
+                            "text": "-",
                             "children": [
                               {
                                 "kind": "integer",
@@ -245,6 +251,7 @@
                           },
                           {
                             "kind": "unary",
+                            "text": "-",
                             "children": [
                               {
                                 "kind": "integer",

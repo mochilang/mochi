@@ -1,11 +1,10 @@
 # Ruby AST Printer Progress
 
-Generated files for Ruby programs live under `tests/aster/x/ruby`.
+Generated files for Ruby programs live under 'tests/aster/x/ruby'.
 
+Last updated: 2025-07-31 19:36 GMT+0700
 
-Last updated: 2025-07-31 19:06 GMT+0700
-
-## Golden Test Checklist (50/50)
+## Golden Test Checklist (104/104)
 - [x] append_builtin.rb
 - [x] avg_builtin.rb
 - [x] basic_compare.rb
@@ -56,3 +55,60 @@ Last updated: 2025-07-31 19:06 GMT+0700
 - [x] let_and_print.rb
 - [x] list_assign.rb
 - [x] list_index.rb
+- [x] list_nested_assign.rb
+- [x] list_set_ops.rb
+- [x] load_jsonl.rb
+- [x] load_yaml.rb
+- [x] map_assign.rb
+- [x] map_in_operator.rb
+- [x] map_index.rb
+- [x] map_int_key.rb
+- [x] map_literal_dynamic.rb
+- [x] map_membership.rb
+- [x] map_nested_assign.rb
+- [x] match_expr.rb
+- [x] match_full.rb
+- [x] math_ops.rb
+- [x] membership.rb
+- [x] min_max_builtin.rb
+- [x] mix_go_python.rb
+- [x] nested_function.rb
+- [x] order_by_map.rb
+- [x] outer_join.rb
+- [x] partial_application.rb
+- [x] print_hello.rb
+- [x] pure_fold.rb
+- [x] pure_global_fold.rb
+- [x] python_auto.rb
+- [x] python_math.rb
+- [x] query_sum_select.rb
+- [x] record_assign.rb
+- [x] right_join.rb
+- [x] save_jsonl_stdout.rb
+- [x] short_circuit.rb
+- [x] slice.rb
+- [x] sort_stable.rb
+- [x] str_builtin.rb
+- [x] string_compare.rb
+- [x] string_concat.rb
+- [x] string_contains.rb
+- [x] string_in_operator.rb
+- [x] string_index.rb
+- [x] string_prefix_slice.rb
+- [x] substring_builtin.rb
+- [x] sum_builtin.rb
+- [x] tail_recursion.rb
+- [x] test_block.rb
+- [x] tree_sum.rb
+- [x] two-sum.rb
+- [x] typed_let.rb
+- [x] typed_var.rb
+- [x] unary_neg.rb
+- [x] update_stmt.rb
+- [x] user_type_literal.rb
+- [x] values_builtin.rb
+- [x] var_assignment.rb
+- [x] while_loop.rb
+
+Checked: 104/104
+

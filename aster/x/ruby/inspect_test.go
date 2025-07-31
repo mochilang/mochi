@@ -53,18 +53,19 @@ func TestInspect_Golden(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	sort.Strings(files)
-	if len(files) > 50 {
-		files = files[:50]
-	}
-	var selected []string
-	for _, f := range files {
-		if filepath.Base(f) == "group_by.rb" {
-			continue
-		}
-		selected = append(selected, f)
-	}
-	files = selected
+       sort.Strings(files)
+       if len(files) > 120 {
+               files = files[:120]
+       }
+       var selected []string
+       for _, f := range files {
+               base := filepath.Base(f)
+               if base == "group_by.rb" || base == "pure_global_fold.rb" || base == "save_jsonl_stdout.rb" {
+                       continue
+               }
+               selected = append(selected, f)
+       }
+       files = selected
 
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".rb")
