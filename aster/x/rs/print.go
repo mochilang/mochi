@@ -211,6 +211,8 @@ func writeParameter(b *bytes.Buffer, n *Node) {
 			writeExpr(b, n.Children[0], 0)
 			b.WriteString(": ")
 			writeExpr(b, n.Children[1], 0)
+		} else {
+			writeExpr(b, n, 0)
 		}
 	}
 }
@@ -219,6 +221,8 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	switch n.Kind {
 	case "identifier", "field_identifier", "type_identifier", "primitive_type", "integer_literal", "string_content", "mutable_specifier", "escape_sequence":
 		b.WriteString(n.Text)
+	case "wildcard_pattern":
+		b.WriteByte('_')
 	case "string_literal":
 		b.WriteByte('"')
 		for _, c := range n.Children {
@@ -260,6 +264,29 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, c, indent)
 		}
 		b.WriteByte(')')
+	case "tuple_type":
+		b.WriteByte('(')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeExpr(b, c, indent)
+		}
+		b.WriteByte(')')
+	case "tuple_pattern":
+		b.WriteByte('(')
+		if len(n.Children) == 1 {
+			b.WriteString("_, ")
+			writeExpr(b, n.Children[0], indent)
+		} else {
+			for i, c := range n.Children {
+				if i > 0 {
+					b.WriteString(", ")
+				}
+				writeExpr(b, c, indent)
+			}
+		}
+		b.WriteByte(')')
 	case "abstract_type":
 		if len(n.Children) == 1 {
 			b.WriteString("impl ")
@@ -288,14 +315,18 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString("||")
 		}
 		idx := 1
-		if idx < len(n.Children) && n.Children[idx].Kind != "block" {
+		if idx < len(n.Children) && n.Children[idx].Kind == "type" {
 			b.WriteString(" -> ")
 			writeExpr(b, n.Children[idx], indent)
 			idx++
 		}
 		if idx < len(n.Children) {
 			b.WriteByte(' ')
-			writeBlock(b, n.Children[idx], indent)
+			if n.Children[idx].Kind == "block" {
+				writeBlock(b, n.Children[idx], indent)
+			} else {
+				writeExpr(b, n.Children[idx], indent)
+			}
 		}
 	case "closure_parameters":
 		b.WriteByte('|')
@@ -324,7 +355,17 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	case "type_arguments":
 		writeTypeArguments(b, n)
 	case "range_expression":
-		if len(n.Children) == 2 {
+		switch len(n.Children) {
+		case 1:
+			c := n.Children[0]
+			if c.StartCol == n.StartCol {
+				writeExpr(b, c, indent)
+				b.WriteString("..")
+			} else {
+				b.WriteString("..")
+				writeExpr(b, c, indent)
+			}
+		case 2:
 			writeExpr(b, n.Children[0], indent)
 			b.WriteString("..")
 			writeExpr(b, n.Children[1], indent)
