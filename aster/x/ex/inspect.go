@@ -1,39 +1,22 @@
 package ex
 
 import (
-	"bytes"
-	_ "embed"
-	"encoding/json"
-	"fmt"
-	"os/exec"
-	"strings"
+	"context"
+
+	sitter "github.com/tree-sitter/go-tree-sitter"
+	ts "github.com/tree-sitter/tree-sitter-elixir/bindings/go"
 )
 
-//go:embed parse.exs
-var elixirParser string
-
-// Program represents a parsed Elixir file.
-type Program struct {
-	AST interface{} `json:"ast"`
-}
-
-// Inspect parses Elixir source code and returns its AST.
+// Inspect parses Elixir source code using tree-sitter and returns its Program
+// representation. Position fields are only populated when IncludePos is true.
 func Inspect(src string) (*Program, error) {
-	if _, err := exec.LookPath("elixir"); err != nil {
-		return nil, fmt.Errorf("elixir not installed")
+	parser := sitter.NewParser()
+	parser.SetLanguage(sitter.NewLanguage(ts.Language()))
+	tree := parser.ParseCtx(context.Background(), []byte(src), nil)
+	n := convert(tree.RootNode(), []byte(src))
+	if n == nil {
+		return &Program{}, nil
 	}
-	cmd := exec.Command("elixir", "-e", elixirParser)
-	cmd.Stdin = strings.NewReader(src)
-	var out bytes.Buffer
-	var errBuf bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &errBuf
-	if err := cmd.Run(); err != nil {
-		return nil, fmt.Errorf("elixir parse error: %v: %s", err, errBuf.String())
-	}
-	var ast interface{}
-	if err := json.Unmarshal(out.Bytes(), &ast); err != nil {
-		return nil, err
-	}
-	return &Program{AST: ast}, nil
+	root := &Source{Node: *n}
+	return &Program{Root: root}, nil
 }
