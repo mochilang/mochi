@@ -107,6 +107,10 @@
                           {
                             "kind": "identifier",
                             "text": "Pi"
+                          },
+                          {
+                            "kind": "decimal_floating_point_literal",
+                            "text": "3.14"
                           }
                         ]
                       }

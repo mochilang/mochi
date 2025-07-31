@@ -79,5 +79,33 @@ This folder contains golden test data for printing Dart ASTs back into source co
 - [x] 73. python_auto.dart
 - [x] 74. python_math.dart
 - [x] 75. query_sum_select.dart
+- [x] 76. record_assign.dart
+- [x] 77. right_join.dart
+- [x] 78. save_jsonl_stdout.dart
+- [x] 79. short_circuit.dart
+- [x] 80. simple_loop.dart
+- [x] 81. slice.dart
+- [x] 82. sort_stable.dart
+- [x] 83. str_builtin.dart
+- [x] 84. string_compare.dart
+- [x] 85. string_concat.dart
+- [x] 86. string_contains.dart
+- [x] 87. string_in_operator.dart
+- [x] 88. string_index.dart
+- [x] 89. string_prefix_slice.dart
+- [x] 90. substring_builtin.dart
+- [x] 91. sum_builtin.dart
+- [x] 92. tail_recursion.dart
+- [x] 93. test_block.dart
+- [x] 94. tree_sum.dart
+- [x] 95. two-sum.dart
+- [x] 96. typed_let.dart
+- [x] 97. typed_var.dart
+- [x] 98. unary_neg.dart
+- [x] 99. update_stmt.dart
+- [x] 100. user_type_literal.dart
+- [x] 101. values_builtin.dart
+- [x] 102. var_assignment.dart
+- [x] 103. while_loop.dart
 
-Completed 75/75 at 2025-07-31 19:11 GMT+7
+Completed 103/103 at 2025-07-31 19:35 GMT+7

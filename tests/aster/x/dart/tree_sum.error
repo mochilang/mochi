@@ -1,0 +1,34 @@
+run: exit status 254
+../../../tests/transpiler/x/dart/tree_sum.dart:17:15: Error: Undefined name 'Leaf'.
+  return t == Leaf ? 0 : t == Node(left, value, right) ? sum_tree(left) + value + sum_tree(right) : null;
+              ^^^^
+../../../tests/transpiler/x/dart/tree_sum.dart:17:36: Error: Undefined name 'left'.
+  return t == Leaf ? 0 : t == Node(left, value, right) ? sum_tree(left) + value + sum_tree(right) : null;
+                                   ^^^^
+../../../tests/transpiler/x/dart/tree_sum.dart:17:42: Error: Undefined name 'value'.
+  return t == Leaf ? 0 : t == Node(left, value, right) ? sum_tree(left) + value + sum_tree(right) : null;
+                                         ^^^^^
+../../../tests/transpiler/x/dart/tree_sum.dart:17:49: Error: Undefined name 'right'.
+  return t == Leaf ? 0 : t == Node(left, value, right) ? sum_tree(left) + value + sum_tree(right) : null;
+                                                ^^^^^
+../../../tests/transpiler/x/dart/tree_sum.dart:17:31: Error: Method not found: 'Node'.
+  return t == Leaf ? 0 : t == Node(left, value, right) ? sum_tree(left) + value + sum_tree(right) : null;
+                              ^^^^
+../../../tests/transpiler/x/dart/tree_sum.dart:17:67: Error: Undefined name 'left'.
+  return t == Leaf ? 0 : t == Node(left, value, right) ? sum_tree(left) + value + sum_tree(right) : null;
+                                                                  ^^^^
+../../../tests/transpiler/x/dart/tree_sum.dart:17:75: Error: Undefined name 'value'.
+  return t == Leaf ? 0 : t == Node(left, value, right) ? sum_tree(left) + value + sum_tree(right) : null;
+                                                                          ^^^^^
+../../../tests/transpiler/x/dart/tree_sum.dart:17:92: Error: Undefined name 'right'.
+  return t == Leaf ? 0 : t == Node(left, value, right) ? sum_tree(left) + value + sum_tree(right) : null;
+                                                                                           ^^^^^
+../../../tests/transpiler/x/dart/tree_sum.dart:21:25: Error: Undefined name 'Leaf'.
+  final S1 t = S1(left: Leaf, value: 1, right: T(left: Leaf, value: 2, right: Leaf));
+                        ^^^^
+../../../tests/transpiler/x/dart/tree_sum.dart:21:56: Error: Undefined name 'Leaf'.
+  final S1 t = S1(left: Leaf, value: 1, right: T(left: Leaf, value: 2, right: Leaf));
+                                                       ^^^^
+../../../tests/transpiler/x/dart/tree_sum.dart:21:79: Error: Undefined name 'Leaf'.
+  final S1 t = S1(left: Leaf, value: 1, right: T(left: Leaf, value: 2, right: Leaf));
+                                                                              ^^^^
