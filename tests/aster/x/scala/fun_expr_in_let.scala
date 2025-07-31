@@ -2,7 +2,7 @@
 import scala.collection.mutable.{ArrayBuffer, Map}
 object Main {
   def main(args: Array[String]): Unit = {
-    val square: (Int) => Int = ((x: Int) => x * x)
+    val square = function_type
     println(square(6))
   }
 }

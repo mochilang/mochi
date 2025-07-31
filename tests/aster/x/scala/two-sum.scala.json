@@ -211,6 +211,10 @@
                                                     "text": "i"
                                                   },
                                                   {
+                                                    "kind": "operator_identifier",
+                                                    "text": "+"
+                                                  },
+                                                  {
                                                     "kind": "integer_literal",
                                                     "text": "1"
                                                   }
@@ -264,6 +268,10 @@
                                                         ]
                                                       },
                                                       {
+                                                        "kind": "operator_identifier",
+                                                        "text": "+"
+                                                      },
+                                                      {
                                                         "kind": "call_expression",
                                                         "children": [
                                                           {
@@ -282,6 +290,10 @@
                                                         ]
                                                       }
                                                     ]
+                                                  },
+                                                  {
+                                                    "kind": "operator_identifier",
+                                                    "text": "=="
                                                   },
                                                   {
                                                     "kind": "identifier",
@@ -354,6 +366,10 @@
                                         "text": "0"
                                       },
                                       {
+                                        "kind": "operator_identifier",
+                                        "text": "-"
+                                      },
+                                      {
                                         "kind": "integer_literal",
                                         "text": "1"
                                       }
@@ -365,6 +381,10 @@
                                       {
                                         "kind": "integer_literal",
                                         "text": "0"
+                                      },
+                                      {
+                                        "kind": "operator_identifier",
+                                        "text": "-"
                                       },
                                       {
                                         "kind": "integer_literal",

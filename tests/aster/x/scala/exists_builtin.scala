@@ -3,7 +3,15 @@ import scala.collection.mutable.{ArrayBuffer, Map}
 object Main {
   def main(args: Array[String]): Unit = {
     val data: ArrayBuffer[Int] = ArrayBuffer(1, 2)
-    val flag = ({ var _res = ArrayBuffer[Any]() ; for (x <- data) { if (x == 1) { _res.append(x) } }; _res }).nonEmpty
+    val flag = ({
+      var _res = ArrayBuffer[Any]()
+      for (x <- data) {
+        if (x == 1) {
+          _res.append(x)
+        }
+      }
+      _res
+    }).nonEmpty
     println(flag)
   }
 }

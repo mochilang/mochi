@@ -60,10 +60,6 @@ func TestPrint_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
-    if len(files) > 50 {
-            files = files[:50]
-    }
-       }
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".scala")
 		t.Run(name, func(t *testing.T) {

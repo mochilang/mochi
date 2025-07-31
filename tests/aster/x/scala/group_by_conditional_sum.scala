@@ -2,10 +2,8 @@
 import scala.collection.mutable.{ArrayBuffer, Map}
 object Main {
   case class Item(cat: String, `val`: Int, flag: Boolean)
-  
   def main(args: Array[String]): Unit = {
     val items: ArrayBuffer[Item] = ArrayBuffer(Item("a", 10, true), Item("a", 5, false), Item("b", 20, true))
-    val result: ArrayBuffer[Any] = ArrayBuffer.from((for (i <- items) yield (i.cat, Map("i" -> i)))).groupBy(_._1).map{ case (k, arr) => Map("key" -> k, "items" -> ArrayBuffer(arr.map(_._2).toSeq: _*)) }.toSeq.sortBy(g => g("key")).map(_._2).map(g => Map("cat" -> g("key"), "share" -> (for (x <- g) yield if (x.flag) x.`val` else 0).sum / (for (x <- g) yield x.`val`).sum)))
-    println(result)
+    val result: ArrayBuffer[Any] = ERROR
   }
 }

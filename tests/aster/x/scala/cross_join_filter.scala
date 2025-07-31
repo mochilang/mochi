@@ -5,10 +5,20 @@ object Main {
     case class QueryItem(n: Any, l: Any)
     val nums: ArrayBuffer[Int] = ArrayBuffer(1, 2, 3)
     val letters: ArrayBuffer[String] = ArrayBuffer("A", "B")
-    val pairs: ArrayBuffer[QueryItem] = ({ var _res = ArrayBuffer[QueryItem]() ; for (n <- nums) { for (l <- letters) { if (n % 2 == 0) { _res.append(QueryItem(n, l)) } } }; _res })
+    val pairs: ArrayBuffer[QueryItem] = ({
+      var _res = ArrayBuffer[QueryItem]()
+      for (n <- nums) {
+        for (l <- letters) {
+          if (n % 2 == 0) {
+            _res.append(QueryItem(n, l))
+          }
+        }
+      }
+      _res
+    })
     println("--- Even pairs ---")
     for (p <- pairs) {
-    println(List(p.n, p.l).mkString(" "))
-  }
+      println(List(p.n, p.l).mkString(" "))
+    }
   }
 }

@@ -5,10 +5,18 @@ object Main {
     case class Item(name: String, age: Int)
     case class QueryItem(name: Any, age: Any, is_senior: Boolean)
     val people: ArrayBuffer[Item] = ArrayBuffer(Item("Alice", 30), Item("Bob", 15), Item("Charlie", 65), Item("Diana", 45))
-    val adults: ArrayBuffer[QueryItem] = ({ var _res = ArrayBuffer[QueryItem]() ; for (person <- people) { if (person.age >= 18) { _res.append(QueryItem(person.name, person.age, person.age >= 60)) } }; _res })
+    val adults: ArrayBuffer[QueryItem] = ({
+      var _res = ArrayBuffer[QueryItem]()
+      for (person <- people) {
+        if (person.age >= 18) {
+          _res.append(QueryItem(person.name, person.age, person.age >= 60))
+        }
+      }
+      _res
+    })
     println("--- Adults ---")
     for (person <- adults) {
-    println(List(person.name, "is", person.age, if (person.is_senior) " (senior)" else "").mkString(" "))
-  }
+      println(List(person.name, "is", person.age, if_expression).mkString(" "))
+    }
   }
 }

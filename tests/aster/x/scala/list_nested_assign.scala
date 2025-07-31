@@ -3,7 +3,7 @@ import scala.collection.mutable.{ArrayBuffer, Map}
 object Main {
   def main(args: Array[String]): Unit = {
     var matrix = ArrayBuffer[ArrayBuffer[Int]]
-    assignment_expression
+    matrix(1)(0) = 5
     println(matrix(1)(0))
   }
 }
