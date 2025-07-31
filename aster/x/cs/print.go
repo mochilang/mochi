@@ -526,6 +526,11 @@ func writeExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 			b.WriteString("select ")
 			writeExpr(b, n.Children[0], indentLevel)
 		}
+	case "where_clause":
+		if len(n.Children) == 1 {
+			b.WriteString("where ")
+			writeExpr(b, n.Children[0], indentLevel)
+		}
 	default:
 		for _, c := range n.Children {
 			writeExpr(b, c, indentLevel)
