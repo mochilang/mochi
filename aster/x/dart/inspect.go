@@ -25,6 +25,9 @@ func InspectWithOptions(src string, opts Options) (*Program, error) {
 	parser.SetLanguage(sitter.NewLanguage(ts.Language()))
 	tree := parser.Parse([]byte(src), nil)
 	root := (*ProgramNode)(toNode(tree.RootNode(), []byte(src), opts.IncludePos))
+	if root == nil {
+		root = &ProgramNode{}
+	}
 	return &Program{Root: root}, nil
 }
 

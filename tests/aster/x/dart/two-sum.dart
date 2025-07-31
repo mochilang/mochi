@@ -10,7 +10,7 @@ List<int> twoSum(nums, target) {
   }
   return [-1, -1];
 }
-main() {
+void main() {
   List<int> result = twoSum([2, 7, 11, 15], 9);
   print(result[0]);
   print(result[1]);

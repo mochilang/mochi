@@ -38,13 +38,6 @@ func TestPrint_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
-	var selected []string
-	for _, f := range files {
-		if filepath.Base(f) == "two-sum.dart" {
-			selected = append(selected, f)
-		}
-	}
-	files = selected
 
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".dart")

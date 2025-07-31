@@ -346,6 +346,10 @@
         "kind": "function_signature",
         "children": [
           {
+            "kind": "void_type",
+            "text": "void"
+          },
+          {
             "kind": "identifier",
             "text": "main"
           }
