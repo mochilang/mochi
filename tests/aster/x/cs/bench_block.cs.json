@@ -164,6 +164,7 @@
                         "children": [
                           {
                             "kind": "prefix_unary_expression",
+                            "text": "!",
                             "children": [
                               {
                                 "kind": "identifier",
@@ -267,6 +268,7 @@
                                           },
                                           {
                                             "kind": "argument",
+                                            "text": "out",
                                             "children": [
                                               {
                                                 "kind": "declaration_expression",
@@ -730,6 +732,7 @@
                               },
                               {
                                 "kind": "postfix_unary_expression",
+                                "text": "++",
                                 "children": [
                                   {
                                     "kind": "identifier",

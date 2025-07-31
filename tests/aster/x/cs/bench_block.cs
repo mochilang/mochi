@@ -6,9 +6,9 @@ class Program {
     static bool seededNow = false;
     static long nowSeed = 0;
     static int _now() {
-        if (-seededNow) {
+        if (!seededNow) {
             var s = Environment.GetEnvironmentVariable("MOCHI_NOW_SEED");
-            if (long.TryParse(s, varv)) {
+            if (long.TryParse(s, out var v)) {
                 nowSeed = v;
                 seededNow = true;
             }
