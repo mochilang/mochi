@@ -5,6 +5,7 @@ package php
 import (
 	"bytes"
 	"fmt"
+	"strings"
 )
 
 // Print reconstructs PHP source code from the AST contained in Program.
@@ -14,7 +15,17 @@ func Print(p *Program) (string, error) {
 		return "", fmt.Errorf("nil program")
 	}
 	var b bytes.Buffer
-	b.WriteString("<?php\n")
+	header := "<?php\n"
+	if strings.HasPrefix(p.Source, "<?php") {
+		// preserve shebang or additional whitespace after the opening tag
+		if i := strings.Index(p.Source, "<?php"); i == 0 {
+			// use exactly as in source until newline after opening tag
+			if idx := strings.IndexByte(p.Source, '\n'); idx != -1 {
+				header = p.Source[:idx+1]
+			}
+		}
+	}
+	b.WriteString(header)
 	writeBlock(&b, (*Node)(p.Root), 0, false)
 	out := b.String()
 	if len(out) > 0 && out[len(out)-1] != '\n' {
