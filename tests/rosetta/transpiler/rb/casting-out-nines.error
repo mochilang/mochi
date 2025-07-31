@@ -1,9 +1,0 @@
-run: exit status 1
-/workspace/mochi/tests/rosetta/transpiler/rb/casting-out-nines.rb:102:in `[]': no member 'begin' in struct (NameError)
-
-    puts(_add(_add(_add(_add(_add(_add("\nTest case base = ", (tc["base"]).to_s), ", begin = "), tc["begin"]), ", end = "), tc["end"]), ":"))
-                                                                                                   ^^^^^^^^^
-Did you mean?  begin_
-               begin_=
-               BEGIN
-	from /workspace/mochi/tests/rosetta/transpiler/rb/casting-out-nines.rb:102:in `<main>'

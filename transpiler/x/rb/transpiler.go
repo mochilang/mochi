@@ -1698,7 +1698,16 @@ type CallExpr struct {
 }
 
 func (c *CallExpr) emit(e *emitter) {
-	name := identName(c.Func)
+	// For function calls we want to preserve the original
+	// identifier case. Using identName here would lowercase
+	// the first character which breaks calls to functions
+	// like `New` defined with an uppercase name.  We only
+	// apply global variable rewriting if the name is a
+	// top-level variable outside the current scope.
+	name := c.Func
+	if topVars != nil && topVars[c.Func] && !inScope(c.Func) {
+		name = "$" + c.Func
+	}
 	io.WriteString(e.w, name)
 	if inScope(c.Func) {
 		io.WriteString(e.w, ".call(")
@@ -1814,11 +1823,9 @@ type ForInStmt struct {
 func (f *ForInStmt) emit(e *emitter) {
 	// convertFor already rewrites map iterations to call `.keys` when
 	// necessary, so simply emit the iterable here. If type information was
-	// unavailable and we are iterating over an index expression, default to
-	// iterating over characters.
-	_, isIndex := f.Iterable.(*IndexExpr)
+	// unavailable the caller is expected to set CharEach accordingly.
 	f.Iterable.emit(e)
-	if f.CharEach || isIndex {
+	if f.CharEach {
 		io.WriteString(e.w, ".each_char do |")
 	} else {
 		io.WriteString(e.w, ".each do |")
@@ -2449,8 +2456,10 @@ func fieldAccess(expr Expr, t types.Type, name string) (Expr, types.Type) {
 			}
 		}
 	}
-	// default to struct-style access when type information is unknown
-	return &FieldExpr{Target: expr, Name: fieldName(name)}, nil
+	// When type information is unavailable assume map style access
+	// using the raw field name. This avoids issues with reserved
+	// words when the value is actually a map encoded as a struct.
+	return &IndexExpr{Target: expr, Index: &StringLit{Value: fieldName(name)}}, nil
 }
 
 func isSimpleIdent(e *parser.Expr) (string, bool) {
@@ -3686,6 +3695,19 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			idx, err := convertExpr(op.Index.Start)
 			if err != nil {
 				return nil, err
+			}
+			// Sanitize string literals used as keys so reserved
+			// words like "begin" work with Structs that use the
+			// sanitized field names.
+			if sl, ok := idx.(*StringLit); ok {
+				idx = &StringLit{Value: fieldName(sl.Value)}
+				if st, ok := curType.(types.StructType); ok {
+					if ft, ok := st.Fields[sl.Value]; ok {
+						expr = &FieldExpr{Target: expr, Name: fieldName(sl.Value)}
+						curType = ft
+						continue
+					}
+				}
 			}
 			expr = &IndexExpr{Target: expr, Index: idx}
 			if lt, ok := curType.(types.ListType); ok {
