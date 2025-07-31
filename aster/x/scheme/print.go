@@ -19,7 +19,7 @@ func Print(p *Program) (string, error) {
 				b.WriteByte('\n')
 			}
 		}
-		writeNode(&b, (*Node)(f))
+		writeNode(&b, (*Node)(f), 0)
 		if b.Len() == 0 || b.Bytes()[b.Len()-1] != '\n' {
 			b.WriteByte('\n')
 		}
@@ -31,33 +31,40 @@ func Print(p *Program) (string, error) {
 	return out, nil
 }
 
-func writeNode(b *bytes.Buffer, n *Node) {
+func writeNode(b *bytes.Buffer, n *Node, indent int) {
 	if n == nil {
 		return
 	}
 	switch n.Kind {
 	case "comment":
+		indentWrite(b, indent)
 		b.WriteString(n.Text)
 	default:
-		writeExpr(b, n)
+		indentWrite(b, indent)
+		writeExpr(b, n, indent)
 	}
 }
 
-func writeExpr(b *bytes.Buffer, n *Node) {
+func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	switch n.Kind {
 	case "list":
 		b.WriteByte('(')
 		for i, c := range n.Children {
 			if i > 0 {
-				b.WriteByte(' ')
+				if c.Kind == "list" {
+					b.WriteByte('\n')
+					indentWrite(b, indent+1)
+				} else {
+					b.WriteByte(' ')
+				}
 			}
-			writeExpr(b, c)
+			writeExpr(b, c, indent+1)
 		}
 		b.WriteByte(')')
 	case "quote":
 		b.WriteByte('\'')
 		if len(n.Children) > 0 {
-			writeExpr(b, n.Children[0])
+			writeExpr(b, n.Children[0], indent)
 		}
 	case "symbol", "string", "number":
 		b.WriteString(n.Text)
@@ -67,5 +74,11 @@ func writeExpr(b *bytes.Buffer, n *Node) {
 		} else {
 			b.WriteString(n.Kind)
 		}
+	}
+}
+
+func indentWrite(b *bytes.Buffer, indent int) {
+	for i := 0; i < indent; i++ {
+		b.WriteString("  ")
 	}
 }
