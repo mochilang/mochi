@@ -30,9 +30,15 @@ func indent(b *bytes.Buffer, n int) {
 func writeProgram(b *bytes.Buffer, n *ProgramNode, indentLevel int) {
 	for i := 0; i < len(n.Children); i++ {
 		c := n.Children[i]
-		if c.Kind == "function_signature" && i+1 < len(n.Children) && n.Children[i+1].Kind == "function_body" {
-			writeFunction(b, c, n.Children[i+1], indentLevel)
-			i++
+		switch c.Kind {
+		case "function_signature":
+			if i+1 < len(n.Children) && n.Children[i+1].Kind == "function_body" {
+				writeFunction(b, c, n.Children[i+1], indentLevel)
+				i++
+				continue
+			}
+		case "class_definition":
+			writeClass(b, c, indentLevel)
 			continue
 		}
 		writeStmt(b, c, indentLevel)
@@ -71,6 +77,85 @@ func writeFuncSig(b *bytes.Buffer, n *Node) {
 		writeParameters(b, n.Children[idx])
 	} else {
 		b.WriteString("()")
+	}
+}
+
+func writeClass(b *bytes.Buffer, n *Node, indentLevel int) {
+	if len(n.Children) < 2 {
+		return
+	}
+	indent(b, indentLevel)
+	b.WriteString("class ")
+	writeExpr(b, n.Children[0])
+	b.WriteString(" {")
+	b.WriteByte('\n')
+	if body := n.Children[1]; body != nil {
+		for _, m := range body.Children {
+			writeClassMember(b, m, indentLevel+1)
+		}
+	}
+	indent(b, indentLevel)
+	b.WriteString("}")
+	b.WriteByte('\n')
+}
+
+func writeClassMember(b *bytes.Buffer, n *Node, indentLevel int) {
+	if len(n.Children) == 0 {
+		return
+	}
+	switch n.Children[0].Kind {
+	case "constant_constructor_signature":
+		indent(b, indentLevel)
+		writeConstructor(b, n.Children[0])
+		b.WriteString(";")
+		b.WriteByte('\n')
+	default:
+		indent(b, indentLevel)
+		writeFieldDecl(b, n)
+		b.WriteString(";")
+		b.WriteByte('\n')
+	}
+}
+
+func writeConstructor(b *bytes.Buffer, n *Node) {
+	b.WriteString("const ")
+	idx := 0
+	if idx < len(n.Children) && n.Children[idx].Kind == "const_builtin" {
+		idx++
+	}
+	if idx < len(n.Children) {
+		writeExpr(b, n.Children[idx])
+		idx++
+	}
+	if idx < len(n.Children) {
+		writeParameters(b, n.Children[idx])
+	} else {
+		b.WriteString("()")
+	}
+}
+
+func writeFieldDecl(b *bytes.Buffer, n *Node) {
+	idx := 0
+	if idx < len(n.Children) && (n.Children[idx].Kind == "final_builtin" || n.Children[idx].Kind == "const_builtin") {
+		b.WriteString(n.Children[idx].Text)
+		b.WriteByte(' ')
+		idx++
+	}
+	if idx < len(n.Children) && n.Children[idx].Kind == "type_identifier" {
+		writeExpr(b, n.Children[idx])
+		idx++
+		b.WriteByte(' ')
+	}
+	if idx < len(n.Children) {
+		list := n.Children[idx]
+		for i, id := range list.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			if len(id.Children) > 0 {
+				writeExpr(b, id.Children[0])
+			}
+		}
 	}
 }
 
@@ -185,7 +270,16 @@ func writeVarDef(b *bytes.Buffer, n *Node) {
 }
 
 func writeForParts(b *bytes.Buffer, n *Node) {
-	// expecting init, condition, update
+	// for-in loop: var x in xs
+	if len(n.Children) >= 3 && n.Children[0].Kind == "inferred_type" {
+		b.WriteString(n.Children[0].Text)
+		b.WriteByte(' ')
+		writeExpr(b, n.Children[1])
+		b.WriteString(" in ")
+		writeExpr(b, n.Children[2])
+		return
+	}
+	// classic for(init; cond; update)
 	if len(n.Children) >= 1 {
 		switch n.Children[0].Kind {
 		case "local_variable_declaration":
@@ -205,21 +299,56 @@ func writeForParts(b *bytes.Buffer, n *Node) {
 }
 
 func writeParameters(b *bytes.Buffer, n *Node) {
+	if len(n.Children) == 1 && n.Children[0].Kind == "optional_formal_parameters" {
+		b.WriteString("({")
+		for i, p := range n.Children[0].Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeParam(b, p)
+		}
+		b.WriteString("})")
+		return
+	}
 	b.WriteByte('(')
 	for i, c := range n.Children {
 		if i > 0 {
 			b.WriteString(", ")
 		}
-		if len(c.Children) > 0 {
-			writeExpr(b, c.Children[0])
-		}
+		writeParam(b, c)
 	}
 	b.WriteByte(')')
 }
 
+func writeParam(b *bytes.Buffer, n *Node) {
+	if n.Kind == "formal_parameter" && len(n.Children) > 0 {
+		n = n.Children[0]
+	}
+	if n.Kind == "constructor_param" {
+		if len(n.Children) == 2 && n.Children[0].Kind == "this" && n.Children[1].Kind == "identifier" {
+			b.WriteString("this.")
+			b.WriteString(n.Children[1].Text)
+			return
+		}
+	}
+	writeExpr(b, n)
+}
+
 func writeExpr(b *bytes.Buffer, n *Node) {
 	switch n.Kind {
-	case "identifier", "decimal_integer_literal", "string_literal", "comment", "type_identifier", "void_type", "true", "false", "null":
+	case "identifier", "decimal_integer_literal", "comment", "type_identifier", "void_type", "true", "false", "null", "const_builtin", "final_builtin", "inferred_type", "this":
+		b.WriteString(n.Text)
+	case "string_literal":
+		if n.Text != "" {
+			b.WriteString(n.Text)
+		} else {
+			b.WriteByte('"')
+			for _, c := range n.Children {
+				writeExpr(b, c)
+			}
+			b.WriteByte('"')
+		}
+	case "escape_sequence":
 		b.WriteString(n.Text)
 	case "type_arguments":
 		b.WriteByte('<')
@@ -232,13 +361,37 @@ func writeExpr(b *bytes.Buffer, n *Node) {
 		b.WriteByte('>')
 	case "list_literal":
 		b.WriteByte('[')
-		for i, c := range n.Children {
+		for i := 0; i < len(n.Children); i++ {
+			c := n.Children[i]
 			if i > 0 {
-				b.WriteString(", ")
+				prev := n.Children[i-1]
+				if c.Kind == "for_element" || prev.Kind == "for_element" {
+					b.WriteByte(' ')
+				} else {
+					b.WriteString(", ")
+				}
+			}
+			if c.Kind == "identifier" && i+1 < len(n.Children) && n.Children[i+1].Kind == "selector" {
+				writeExpr(b, c)
+				writeExpr(b, n.Children[i+1])
+				i++
+				continue
 			}
 			writeExpr(b, c)
 		}
 		b.WriteByte(']')
+	case "for_element":
+		if len(n.Children) >= 2 {
+			b.WriteString("for (")
+			writeForParts(b, n.Children[0])
+			b.WriteString(") ")
+			for i := 1; i < len(n.Children); i++ {
+				if i > 1 && !(n.Children[i-1].Kind == "identifier" && n.Children[i].Kind == "selector") {
+					b.WriteString(" ")
+				}
+				writeExpr(b, n.Children[i])
+			}
+		}
 	case "additive_expression":
 		if len(n.Children) >= 2 {
 			for i := 0; i < len(n.Children)-1; i++ {
@@ -307,6 +460,18 @@ func writeExpr(b *bytes.Buffer, n *Node) {
 	case "argument":
 		for _, c := range n.Children {
 			writeExpr(b, c)
+		}
+	case "named_argument":
+		if len(n.Children) >= 2 {
+			writeExpr(b, n.Children[0])
+			b.WriteString(": ")
+			for i := 1; i < len(n.Children); i++ {
+				writeExpr(b, n.Children[i])
+			}
+		}
+	case "label":
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0])
 		}
 	case "unconditional_assignable_selector":
 		if len(n.Children) > 0 {
