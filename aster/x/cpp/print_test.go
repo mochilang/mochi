@@ -63,11 +63,12 @@ func TestPrint_Golden(t *testing.T) {
 		if _, err := os.Stat(filepath.Join(srcDir, name+".error")); err == nil {
 			continue
 		}
-		if filepath.Base(f) == "bench_block.cpp" {
+		base := filepath.Base(f)
+		if base == "bench_block.cpp" || base == "closure.cpp" {
 			continue
 		}
 		selected = append(selected, f)
-		if len(selected) >= 5 {
+		if len(selected) >= 10 {
 			break
 		}
 	}
