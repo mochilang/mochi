@@ -248,8 +248,22 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, n.Children[0], indent)
 			b.WriteString(" then ")
 			writeExpr(b, n.Children[1], indent)
+			if len(n.Children) >= 3 {
+				b.WriteString(" else ")
+				writeExpr(b, n.Children[2], indent)
+			}
 		}
 	case "then_clause":
+		for _, c := range n.Children {
+			if c.Kind == "sequence_expression" {
+				b.WriteByte('(')
+				writeExpr(b, c, indent)
+				b.WriteByte(')')
+			} else {
+				writeExpr(b, c, indent)
+			}
+		}
+	case "else_clause":
 		for _, c := range n.Children {
 			if c.Kind == "sequence_expression" {
 				b.WriteByte('(')
@@ -285,6 +299,30 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString("let open ")
 			writeExpr(b, n.Children[0], indent)
 			b.WriteString(" in ")
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "match_expression":
+		if len(n.Children) >= 2 {
+			b.WriteString("match ")
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" with ")
+			for i, c := range n.Children[1:] {
+				if i > 0 {
+					b.WriteString(" | ")
+				}
+				writeMatchCase(b, c, indent)
+			}
+		}
+	case "cons_expression":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" :: ")
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "cons_pattern":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" :: ")
 			writeExpr(b, n.Children[1], indent)
 		}
 	case "typed_expression":
