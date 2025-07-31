@@ -86,6 +86,8 @@ func writeStmt(b *bytes.Buffer, n *Node, indentLevel int) {
 		indent(b, indentLevel)
 		b.WriteString(n.Text)
 		b.WriteByte('\n')
+	case "class_definition":
+		writeClass(b, n, indentLevel)
 	case "expression_statement":
 		if len(n.Children) > 0 {
 			indent(b, indentLevel)
@@ -184,8 +186,96 @@ func writeVarDef(b *bytes.Buffer, n *Node) {
 	}
 }
 
+func writeClass(b *bytes.Buffer, n *Node, indentLevel int) {
+	if len(n.Children) < 2 {
+		return
+	}
+	indent(b, indentLevel)
+	b.WriteString("class ")
+	writeExpr(b, n.Children[0])
+	b.WriteString(" {")
+	b.WriteByte('\n')
+	if len(n.Children) > 1 {
+		for _, m := range n.Children[1].Children {
+			writeClassMember(b, m, indentLevel+1)
+		}
+	}
+	indent(b, indentLevel)
+	b.WriteString("}")
+	b.WriteByte('\n')
+}
+
+func writeClassMember(b *bytes.Buffer, n *Node, indentLevel int) {
+	if len(n.Children) == 0 {
+		return
+	}
+	switch n.Children[0].Kind {
+	case "final_builtin", "const_builtin", "type_identifier":
+		indent(b, indentLevel)
+		writeField(b, n)
+	case "constant_constructor_signature":
+		writeConstConstructor(b, n.Children[0], indentLevel)
+	}
+}
+
+func writeField(b *bytes.Buffer, n *Node) {
+	idx := 0
+	if idx < len(n.Children) && (n.Children[idx].Kind == "final_builtin" || n.Children[idx].Kind == "const_builtin") {
+		b.WriteString(n.Children[idx].Text)
+		b.WriteByte(' ')
+		idx++
+	} else {
+		b.WriteString("final ")
+	}
+	if idx < len(n.Children) && n.Children[idx].Kind == "type_identifier" {
+		writeExpr(b, n.Children[idx])
+		idx++
+		if idx < len(n.Children) && n.Children[idx].Kind == "type_arguments" {
+			writeExpr(b, n.Children[idx])
+			idx++
+		}
+		b.WriteByte(' ')
+	}
+	if idx < len(n.Children) && n.Children[idx].Kind == "initialized_identifier_list" {
+		list := n.Children[idx]
+		if len(list.Children) > 0 && len(list.Children[0].Children) > 0 {
+			writeExpr(b, list.Children[0].Children[0])
+		}
+	}
+	b.WriteString(";")
+	b.WriteByte('\n')
+}
+
+func writeConstConstructor(b *bytes.Buffer, n *Node, indentLevel int) {
+	indent(b, indentLevel)
+	b.WriteString("const ")
+	idx := 0
+	if idx < len(n.Children) && n.Children[idx].Kind == "const_builtin" {
+		idx++
+	}
+	if idx < len(n.Children) {
+		writeExpr(b, n.Children[idx])
+		idx++
+	}
+	if idx < len(n.Children) {
+		writeParameters(b, n.Children[idx])
+	} else {
+		b.WriteString("()")
+	}
+	b.WriteString(";")
+	b.WriteByte('\n')
+}
+
 func writeForParts(b *bytes.Buffer, n *Node) {
-	// expecting init, condition, update
+	// regular for(init; cond; update) or for-in(var x in y)
+	if len(n.Children) == 3 && n.Children[0].Kind == "inferred_type" {
+		b.WriteString(n.Children[0].Text)
+		b.WriteByte(' ')
+		writeExpr(b, n.Children[1])
+		b.WriteString(" in ")
+		writeExpr(b, n.Children[2])
+		return
+	}
 	if len(n.Children) >= 1 {
 		switch n.Children[0].Kind {
 		case "local_variable_declaration":
@@ -206,15 +296,39 @@ func writeForParts(b *bytes.Buffer, n *Node) {
 
 func writeParameters(b *bytes.Buffer, n *Node) {
 	b.WriteByte('(')
-	for i, c := range n.Children {
-		if i > 0 {
-			b.WriteString(", ")
+	if len(n.Children) == 1 && n.Children[0].Kind == "optional_formal_parameters" {
+		b.WriteByte('{')
+		for i, p := range n.Children[0].Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			if len(p.Children) > 0 {
+				writeParameter(b, p.Children[0])
+			}
 		}
-		if len(c.Children) > 0 {
-			writeExpr(b, c.Children[0])
+		b.WriteByte('}')
+	} else {
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			if len(c.Children) > 0 {
+				writeParameter(b, c.Children[0])
+			}
 		}
 	}
 	b.WriteByte(')')
+}
+
+func writeParameter(b *bytes.Buffer, n *Node) {
+	if n.Kind == "constructor_param" {
+		if len(n.Children) == 2 && n.Children[0].Kind == "this" && n.Children[1].Kind == "identifier" {
+			b.WriteString("this.")
+			writeExpr(b, n.Children[1])
+			return
+		}
+	}
+	writeExpr(b, n)
 }
 
 func writeExpr(b *bytes.Buffer, n *Node) {
@@ -232,9 +346,16 @@ func writeExpr(b *bytes.Buffer, n *Node) {
 		b.WriteByte('>')
 	case "list_literal":
 		b.WriteByte('[')
-		for i, c := range n.Children {
+		for i := 0; i < len(n.Children); i++ {
 			if i > 0 {
 				b.WriteString(", ")
+			}
+			c := n.Children[i]
+			if c.Kind == "identifier" && i+1 < len(n.Children) && n.Children[i+1].Kind == "selector" {
+				writeExpr(b, c)
+				writeExpr(b, n.Children[i+1])
+				i++
+				continue
 			}
 			writeExpr(b, c)
 		}
@@ -308,6 +429,18 @@ func writeExpr(b *bytes.Buffer, n *Node) {
 		for _, c := range n.Children {
 			writeExpr(b, c)
 		}
+	case "named_argument":
+		if len(n.Children) >= 2 {
+			writeExpr(b, n.Children[0])
+			b.WriteString(": ")
+			for i := 1; i < len(n.Children); i++ {
+				writeExpr(b, n.Children[i])
+			}
+		}
+	case "label":
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0])
+		}
 	case "unconditional_assignable_selector":
 		if len(n.Children) > 0 {
 			switch n.Children[0].Kind {
@@ -326,8 +459,35 @@ func writeExpr(b *bytes.Buffer, n *Node) {
 			writeExpr(b, c)
 		}
 		b.WriteByte(']')
+	case "for_element":
+		if len(n.Children) >= 2 {
+			b.WriteString("for (")
+			writeForInParts(b, n.Children[0])
+			b.WriteString(") ")
+			for i := 1; i < len(n.Children); i++ {
+				writeExpr(b, n.Children[i])
+			}
+		}
+	case "this":
+		b.WriteString("this")
 	default:
 		// fallback: print kind
 		b.WriteString(n.Kind)
+	}
+}
+
+func writeForInParts(b *bytes.Buffer, n *Node) {
+	if len(n.Children) >= 3 {
+		if n.Children[0].Kind == "inferred_type" {
+			b.WriteString(n.Children[0].Text)
+			b.WriteByte(' ')
+			writeExpr(b, n.Children[1])
+			b.WriteString(" in ")
+			writeExpr(b, n.Children[2])
+		} else {
+			writeExpr(b, n.Children[0])
+			b.WriteString(" in ")
+			writeExpr(b, n.Children[1])
+		}
 	}
 }
