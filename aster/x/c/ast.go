@@ -65,6 +65,8 @@ type (
 	StringContent        Node
 	EscapeSequence       Node
 	Comment              Node
+	BreakStatement       Node
+	ContinueStatement    Node
 )
 
 // convert transforms a tree-sitter node into a *Node. When pos is true the
@@ -94,7 +96,7 @@ func convert(n *sitter.Node, src []byte, pos bool) *Node {
 	}
 
 	if n.NamedChildCount() == 0 {
-		if isValueNode(n.Kind()) {
+		if isValueNode(n.Kind()) || n.Kind() == "break_statement" || n.Kind() == "continue_statement" {
 			node.Text = n.Utf8Text(src)
 		} else if node.Kind == "comment" {
 			node.Text = n.Utf8Text(src)
