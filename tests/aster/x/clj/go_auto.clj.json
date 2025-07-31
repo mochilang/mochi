@@ -1,0 +1,232 @@
+{
+  "forms": [
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "ns"
+        },
+        {
+          "kind": "symbol",
+          "text": "main"
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "require"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "quote"
+            },
+            {
+              "kind": "symbol",
+              "text": "clojure.set"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "testpkg"
+        },
+        {
+          "kind": "map",
+          "children": [
+            {
+              "kind": "entry",
+              "children": [
+                {
+                  "kind": "keyword",
+                  "text": ":Add"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "fn"
+                    },
+                    {
+                      "kind": "vector",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "a"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "b"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "+"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "a"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "b"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "entry",
+              "children": [
+                {
+                  "kind": "keyword",
+                  "text": ":Pi"
+                },
+                {
+                  "kind": "number",
+                  "text": "3.14"
+                }
+              ]
+            },
+            {
+              "kind": "entry",
+              "children": [
+                {
+                  "kind": "keyword",
+                  "text": ":Answer"
+                },
+                {
+                  "kind": "number",
+                  "text": "42"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "defn"
+        },
+        {
+          "kind": "symbol",
+          "text": "-main"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "println"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":Add"
+                    },
+                    {
+                      "kind": "symbol",
+                      "text": "testpkg"
+                    }
+                  ]
+                },
+                {
+                  "kind": "number",
+                  "text": "2"
+                },
+                {
+                  "kind": "number",
+                  "text": "3"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "println"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "keyword",
+                  "text": ":Pi"
+                },
+                {
+                  "kind": "symbol",
+                  "text": "testpkg"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "println"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "keyword",
+                  "text": ":Answer"
+                },
+                {
+                  "kind": "symbol",
+                  "text": "testpkg"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "-main"
+        }
+      ]
+    }
+  ]
+}

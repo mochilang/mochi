@@ -1,0 +1,874 @@
+{
+  "forms": [
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "ns"
+        },
+        {
+          "kind": "symbol",
+          "text": "main"
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "require"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "quote"
+            },
+            {
+              "kind": "symbol",
+              "text": "clojure.set"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "defrecord"
+        },
+        {
+          "kind": "symbol",
+          "text": "People"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "name"
+            },
+            {
+              "kind": "symbol",
+              "text": "age"
+            },
+            {
+              "kind": "symbol",
+              "text": "city"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "people"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":name"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "Alice"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":age"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "30"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":city"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "Paris"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":name"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "Bob"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":age"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "15"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":city"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "Hanoi"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":name"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "Charlie"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":age"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "65"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":city"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "Paris"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":name"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "Diana"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":age"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "45"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":city"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "Hanoi"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":name"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "Eve"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":age"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "70"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":city"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "Paris"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":name"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "Frank"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":age"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "22"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":city"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "Hanoi"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "stats"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "for"
+            },
+            {
+              "kind": "vector",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "g"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "for"
+                    },
+                    {
+                      "kind": "vector",
+                      "children": [
+                        {
+                          "kind": "vector",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "k"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "rows"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "group-by"
+                            },
+                            {
+                              "kind": "keyword",
+                              "text": ":key"
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "for"
+                                },
+                                {
+                                  "kind": "vector",
+                                  "children": [
+                                    {
+                                      "kind": "symbol",
+                                      "text": "person"
+                                    },
+                                    {
+                                      "kind": "symbol",
+                                      "text": "people"
+                                    },
+                                    {
+                                      "kind": "keyword",
+                                      "text": ":let"
+                                    },
+                                    {
+                                      "kind": "vector",
+                                      "children": [
+                                        {
+                                          "kind": "symbol",
+                                          "text": "k"
+                                        },
+                                        {
+                                          "kind": "list",
+                                          "children": [
+                                            {
+                                              "kind": "keyword",
+                                              "text": ":city"
+                                            },
+                                            {
+                                              "kind": "symbol",
+                                              "text": "person"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "map",
+                                  "children": [
+                                    {
+                                      "kind": "entry",
+                                      "children": [
+                                        {
+                                          "kind": "keyword",
+                                          "text": ":key"
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "k"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": "entry",
+                                      "children": [
+                                        {
+                                          "kind": "keyword",
+                                          "text": ":item"
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "person"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "keyword",
+                          "text": ":let"
+                        },
+                        {
+                          "kind": "vector",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "g"
+                            },
+                            {
+                              "kind": "map",
+                              "children": [
+                                {
+                                  "kind": "entry",
+                                  "children": [
+                                    {
+                                      "kind": "keyword",
+                                      "text": ":key"
+                                    },
+                                    {
+                                      "kind": "symbol",
+                                      "text": "k"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "entry",
+                                  "children": [
+                                    {
+                                      "kind": "keyword",
+                                      "text": ":items"
+                                    },
+                                    {
+                                      "kind": "list",
+                                      "children": [
+                                        {
+                                          "kind": "symbol",
+                                          "text": "map"
+                                        },
+                                        {
+                                          "kind": "keyword",
+                                          "text": ":item"
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "rows"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "symbol",
+                      "text": "g"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":city"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "keyword",
+                          "text": ":key"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "g"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":count"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "count"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "keyword",
+                              "text": ":items"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "g"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":avg_age"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "double"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "/"
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "reduce"
+                                },
+                                {
+                                  "kind": "symbol",
+                                  "text": "+"
+                                },
+                                {
+                                  "kind": "number",
+                                  "text": "0"
+                                },
+                                {
+                                  "kind": "list",
+                                  "children": [
+                                    {
+                                      "kind": "symbol",
+                                      "text": "for"
+                                    },
+                                    {
+                                      "kind": "vector",
+                                      "children": [
+                                        {
+                                          "kind": "symbol",
+                                          "text": "p"
+                                        },
+                                        {
+                                          "kind": "list",
+                                          "children": [
+                                            {
+                                              "kind": "keyword",
+                                              "text": ":items"
+                                            },
+                                            {
+                                              "kind": "symbol",
+                                              "text": "g"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": "list",
+                                      "children": [
+                                        {
+                                          "kind": "keyword",
+                                          "text": ":age"
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "p"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "count"
+                                },
+                                {
+                                  "kind": "list",
+                                  "children": [
+                                    {
+                                      "kind": "symbol",
+                                      "text": "for"
+                                    },
+                                    {
+                                      "kind": "vector",
+                                      "children": [
+                                        {
+                                          "kind": "symbol",
+                                          "text": "p"
+                                        },
+                                        {
+                                          "kind": "list",
+                                          "children": [
+                                            {
+                                              "kind": "keyword",
+                                              "text": ":items"
+                                            },
+                                            {
+                                              "kind": "symbol",
+                                              "text": "g"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": "list",
+                                      "children": [
+                                        {
+                                          "kind": "keyword",
+                                          "text": ":age"
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "p"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "defn"
+        },
+        {
+          "kind": "symbol",
+          "text": "-main"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "println"
+            },
+            {
+              "kind": "string",
+              "text": "--- People grouped by city ---"
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "doseq"
+            },
+            {
+              "kind": "vector",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "s"
+                },
+                {
+                  "kind": "symbol",
+                  "text": "stats"
+                }
+              ]
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "println"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":city"
+                    },
+                    {
+                      "kind": "symbol",
+                      "text": "s"
+                    }
+                  ]
+                },
+                {
+                  "kind": "string",
+                  "text": ": count ="
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":count"
+                    },
+                    {
+                      "kind": "symbol",
+                      "text": "s"
+                    }
+                  ]
+                },
+                {
+                  "kind": "string",
+                  "text": ", avg_age ="
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":avg_age"
+                    },
+                    {
+                      "kind": "symbol",
+                      "text": "s"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "-main"
+        }
+      ]
+    }
+  ]
+}

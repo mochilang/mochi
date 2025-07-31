@@ -1,0 +1,5 @@
+(ns main)
+(require 'clojure.set)
+(def numbers [1 2 3 4 5 6 7 8 9])
+(defn -main [] (loop [n_seq numbers] (when (seq n_seq) (let [n (first n_seq)] (cond (= (mod n 2) 0) (recur (rest n_seq)) (> n 7) (recur nil) :else (do (println "odd number:" n) (recur (rest n_seq))))))))
+(-main)
