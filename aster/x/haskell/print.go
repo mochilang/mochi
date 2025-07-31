@@ -171,6 +171,107 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 		if len(n.Children) > 0 {
 			writeNode(b, &n.Children[0], indent)
 		}
+	case "data_type":
+		if len(n.Children) >= 2 {
+			b.WriteString("data ")
+			writeNode(b, &n.Children[0], indent)
+			b.WriteString(" = ")
+			writeNode(b, &n.Children[1], indent)
+		}
+		if len(n.Children) >= 3 {
+			b.WriteByte(' ')
+			writeNode(b, &n.Children[2], indent)
+		}
+	case "data_constructors":
+		for i := range n.Children {
+			if i > 0 {
+				b.WriteString(" | ")
+			}
+			writeNode(b, &n.Children[i], indent)
+		}
+	case "data_constructor":
+		for i := range n.Children {
+			if i > 0 {
+				b.WriteByte(' ')
+			}
+			writeNode(b, &n.Children[i], indent)
+		}
+	case "record":
+		if len(n.Children) >= 1 {
+			writeNode(b, &n.Children[0], indent)
+		}
+		if len(n.Children) >= 2 {
+			b.WriteString(" {")
+			writeNode(b, &n.Children[1], indent)
+			b.WriteString("}")
+		}
+	case "fields":
+		for i := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeNode(b, &n.Children[i], indent)
+		}
+	case "field":
+		if len(n.Children) == 2 {
+			writeNode(b, &n.Children[0], indent)
+			b.WriteString(" :: ")
+			writeNode(b, &n.Children[1], indent)
+		}
+	case "field_name":
+		for i := range n.Children {
+			writeNode(b, &n.Children[i], indent)
+		}
+	case "field_update":
+		if len(n.Children) == 2 {
+			writeNode(b, &n.Children[0], indent)
+			b.WriteString(" = ")
+			writeNode(b, &n.Children[1], indent)
+		}
+	case "list_comprehension":
+		b.WriteByte('[')
+		for i, c := range n.Children {
+			if i == 0 {
+				writeNode(b, &c, indent)
+				if len(n.Children) > 1 {
+					b.WriteString(" | ")
+				}
+			} else {
+				writeNode(b, &c, indent)
+			}
+		}
+		b.WriteByte(']')
+	case "qualifiers":
+		for i := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeNode(b, &n.Children[i], indent)
+		}
+	case "generator":
+		if len(n.Children) == 2 {
+			writeNode(b, &n.Children[0], indent)
+			b.WriteString(" <- ")
+			writeNode(b, &n.Children[1], indent)
+		}
+	case "projection":
+		if len(n.Children) == 2 {
+			writeNode(b, &n.Children[0], indent)
+			b.WriteByte('.')
+			writeNode(b, &n.Children[1], indent)
+		}
+	case "literal":
+		for i := range n.Children {
+			writeNode(b, &n.Children[i], indent)
+		}
+	case "deriving":
+		b.WriteString("deriving ")
+		for i := range n.Children {
+			if i > 0 {
+				b.WriteByte(' ')
+			}
+			writeNode(b, &n.Children[i], indent)
+		}
 	default:
 		for i := range n.Children {
 			if i > 0 {

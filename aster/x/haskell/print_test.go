@@ -31,11 +31,23 @@ func TestPrint_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
+	// When not updating, only run tests for which golden files exist
 	var selected []string
 	for _, f := range files {
-		if filepath.Base(f) == "two-sum.hs" {
+		name := strings.TrimSuffix(filepath.Base(f), ".hs")
+		jsonPath := filepath.Join(outDir, name+".hs.json")
+		outPath := filepath.Join(outDir, name+".hs")
+		if shouldUpdate() {
 			selected = append(selected, f)
+			continue
 		}
+		if _, err := os.Stat(jsonPath); err != nil {
+			continue
+		}
+		if _, err := os.Stat(outPath); err != nil {
+			continue
+		}
+		selected = append(selected, f)
 	}
 	files = selected
 
