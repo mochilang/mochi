@@ -996,6 +996,21 @@ func (c *CastExpr) emit(w io.Writer) {
 				return
 			}
 		}
+		if t == "Double" {
+			if inner, ok := c.Expr.(*CastExpr); ok && (inner.Type == "Any" || strings.Contains(inner.Type, "Any")) {
+				fmt.Fprint(w, "(")
+				inner.Expr.emit(w)
+				fmt.Fprint(w, " as! Double)")
+				return
+			}
+			switch c.Expr.(type) {
+			case *NameExpr, *IndexExpr, *FieldExpr:
+				fmt.Fprint(w, "(")
+				c.Expr.emit(w)
+				fmt.Fprint(w, " as! Double)")
+				return
+			}
+		}
 		if ce, ok := c.Expr.(*CallExpr); ok && t == "String" && ce.Func == "str" {
 			c.Expr.emit(w)
 			return

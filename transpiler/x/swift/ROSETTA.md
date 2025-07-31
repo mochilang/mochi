@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 295/491
-Last updated: 2025-07-31 00:47 +0700
+Completed: 264/491
+Last updated: 2025-07-31 07:37 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -154,51 +154,51 @@ Last updated: 2025-07-31 00:47 +0700
 | 145 | calendar---for-real-programmers-2 | ✓ | 1.906ms | 3.0 MB |
 | 146 | calendar | ✓ | 1.951ms | 3.0 MB |
 | 147 | calkin-wilf-sequence |   |  |  |
-| 148 | call-a-foreign-language-function | ✓ | 262µs | 3.2 MB |
-| 149 | call-a-function-1 | ✓ | 108µs | 2.6 MB |
-| 150 | call-a-function-10 | ✓ | 93µs | 2.9 MB |
-| 151 | call-a-function-11 | ✓ | 391µs | 3.0 MB |
-| 152 | call-a-function-12 | ✓ | 375µs | 3.1 MB |
+| 148 | call-a-foreign-language-function |   |  |  |
+| 149 | call-a-function-1 |   |  |  |
+| 150 | call-a-function-10 |   |  |  |
+| 151 | call-a-function-11 |   |  |  |
+| 152 | call-a-function-12 |   |  |  |
 | 153 | call-a-function-2 |   |  |  |
-| 154 | call-a-function-3 | ✓ | 123µs | 2.9 MB |
-| 155 | call-a-function-4 | ✓ | 164µs | 2.9 MB |
-| 156 | call-a-function-5 | ✓ | 402µs | 3.2 MB |
-| 157 | call-a-function-6 | ✓ | 374µs | 3.2 MB |
-| 158 | call-a-function-7 | ✓ | 106µs | 2.8 MB |
-| 159 | call-a-function-8 | ✓ | 361µs | 3.2 MB |
+| 154 | call-a-function-3 |   |  |  |
+| 155 | call-a-function-4 |   |  |  |
+| 156 | call-a-function-5 |   |  |  |
+| 157 | call-a-function-6 |   |  |  |
+| 158 | call-a-function-7 |   |  |  |
+| 159 | call-a-function-8 |   |  |  |
 | 160 | call-a-function-9 |   |  |  |
 | 161 | call-an-object-method-1 |   |  |  |
 | 162 | call-an-object-method-2 |   |  |  |
 | 163 | call-an-object-method-3 |   |  |  |
 | 164 | call-an-object-method |   |  |  |
-| 165 | camel-case-and-snake-case | ✓ | 1.172ms | 3.3 MB |
-| 166 | canny-edge-detector | ✓ | 745µs | 3.0 MB |
+| 165 | camel-case-and-snake-case |   |  |  |
+| 166 | canny-edge-detector |   |  |  |
 | 167 | canonicalize-cidr |   |  |  |
-| 168 | cantor-set | ✓ | 3.954ms | 3.3 MB |
-| 169 | carmichael-3-strong-pseudoprimes | ✓ | 1.814ms | 3.0 MB |
-| 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 577µs | 3.2 MB |
-| 171 | cartesian-product-of-two-or-more-lists-2 | ✓ | 1.049ms | 2.8 MB |
+| 168 | cantor-set |   |  |  |
+| 169 | carmichael-3-strong-pseudoprimes |   |  |  |
+| 170 | cartesian-product-of-two-or-more-lists-1 |   |  |  |
+| 171 | cartesian-product-of-two-or-more-lists-2 |   |  |  |
 | 172 | cartesian-product-of-two-or-more-lists-3 | ✓ | 863µs | 3.2 MB |
-| 173 | cartesian-product-of-two-or-more-lists-4 | ✓ | 1.576ms | 3.1 MB |
-| 174 | case-sensitivity-of-identifiers | ✓ | 1.176ms | 3.1 MB |
+| 173 | cartesian-product-of-two-or-more-lists-4 | ✓ |  |  |
+| 174 | case-sensitivity-of-identifiers | ✓ |  |  |
 | 175 | casting-out-nines |   |  |  |
-| 176 | catalan-numbers-1 | ✓ | 632µs | 3.0 MB |
-| 177 | catalan-numbers-2 | ✓ | 396µs | 3.0 MB |
-| 178 | catalan-numbers-pascals-triangle | ✓ | 421µs | 2.9 MB |
-| 179 | catamorphism | ✓ | 411µs | 3.1 MB |
-| 180 | catmull-clark-subdivision-surface | ✓ | 1.597ms | 3.3 MB |
-| 181 | chaocipher | ✓ | 2.569ms | 3.0 MB |
+| 176 | catalan-numbers-1 |   |  |  |
+| 177 | catalan-numbers-2 |   |  |  |
+| 178 | catalan-numbers-pascals-triangle |   |  |  |
+| 179 | catamorphism |   |  |  |
+| 180 | catmull-clark-subdivision-surface |   |  |  |
+| 181 | chaocipher |   |  |  |
 | 182 | chaos-game |   |  |  |
-| 183 | character-codes-1 | ✓ | 464µs | 2.8 MB |
-| 184 | character-codes-2 | ✓ | 717µs | 2.8 MB |
-| 185 | character-codes-3 | ✓ | 376µs | 2.8 MB |
-| 186 | character-codes-4 | ✓ | 363µs | 2.9 MB |
-| 187 | character-codes-5 | ✓ | 776µs | 3.0 MB |
-| 188 | chat-server | ✓ | 389µs | 2.9 MB |
-| 189 | check-machin-like-formulas | ✓ | 1.491ms | 3.5 MB |
-| 190 | check-that-file-exists | ✓ | 315µs | 3.0 MB |
-| 191 | checkpoint-synchronization-1 | ✓ | 429µs | 3.0 MB |
-| 192 | checkpoint-synchronization-2 |   |  |  |
+| 183 | character-codes-1 |   |  |  |
+| 184 | character-codes-2 |   |  |  |
+| 185 | character-codes-3 |   |  |  |
+| 186 | character-codes-4 |   |  |  |
+| 187 | character-codes-5 |   |  |  |
+| 188 | chat-server |   |  |  |
+| 189 | check-machin-like-formulas |   |  |  |
+| 190 | check-that-file-exists |   |  |  |
+| 191 | checkpoint-synchronization-1 |   |  |  |
+| 192 | checkpoint-synchronization-2 | ✓ |  |  |
 | 193 | checkpoint-synchronization-3 |   |  |  |
 | 194 | checkpoint-synchronization-4 |   |  |  |
 | 195 | chernicks-carmichael-numbers |   |  |  |
