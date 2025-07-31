@@ -197,6 +197,24 @@ func writeStmt(b *bytes.Buffer, n *Node, indentLevel int) {
 			writeBlock(b, n.Children[1], indentLevel+1)
 			indent(b, indentLevel)
 			b.WriteString("}")
+			if len(n.Children) >= 3 {
+				b.WriteString(" else ")
+				if n.Children[2].Kind == "if_statement" {
+					b.WriteByte('\n')
+					writeStmt(b, n.Children[2], indentLevel)
+					return
+				}
+				if n.Children[2].Kind == "block" {
+					b.WriteString("{")
+					b.WriteByte('\n')
+					writeBlock(b, n.Children[2], indentLevel+1)
+					indent(b, indentLevel)
+					b.WriteString("}")
+				} else {
+					b.WriteByte('\n')
+					writeStmt(b, n.Children[2], indentLevel)
+				}
+			}
 			b.WriteByte('\n')
 		}
 	default:
