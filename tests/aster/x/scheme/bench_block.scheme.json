@@ -1220,6 +1220,10 @@
                                   "text": "string-append"
                                 },
                                 {
+                                  "kind": "string",
+                                  "text": "\"{\\n  \\\"duration_us\\\": \""
+                                },
+                                {
                                   "kind": "list",
                                   "children": [
                                     {
@@ -1231,6 +1235,10 @@
                                       "text": "dur8"
                                     }
                                   ]
+                                },
+                                {
+                                  "kind": "string",
+                                  "text": "\",\\n  \\\"memory_bytes\\\": 0,\\n  \\\"name\\\": \\\"simple\\\"\\n}\""
                                 }
                               ]
                             }

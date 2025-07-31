@@ -74,12 +74,10 @@ func convertNode(n *sitter.Node, src []byte, withComments bool) *Node {
 		node.EndCol = int(ep.Column)
 	}
 
-	if n.NamedChildCount() == 0 {
-		if isValueNode(n.Kind()) {
-			node.Text = n.Utf8Text(src)
-		} else {
-			return nil
-		}
+	if isValueNode(n.Kind()) {
+		node.Text = n.Utf8Text(src)
+	} else if n.NamedChildCount() == 0 {
+		return nil
 	}
 
 	for i := uint(0); i < n.NamedChildCount(); i++ {
