@@ -1,4 +1,4 @@
-func main (regs=20)
+func __main (regs=20)
   // let n = 10
   Const        r4, 10
   Move         r0, r4
@@ -8,8 +8,7 @@ func main (regs=20)
   Move         r1, r5
   SetGlobal    1,1,0,0
   // let result = fib(n)
-  Const        r4, 10
-  Move         r6, r4
+  Move         r6, r0
   Call         r7, fib, r6
   Move         r2, r7
   SetGlobal    2,2,0,0
