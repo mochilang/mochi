@@ -29,7 +29,32 @@ This directory holds utilities for inspecting OCaml source code and printing it 
 23. fun_three_args.ml
 24. go_auto.ml
 25. group_by.ml
+26. group_by_conditional_sum.ml
+27. group_by_having.ml
+28. group_by_join.ml
+29. group_by_left_join.ml
+30. group_by_multi_join.ml
+31. group_by_multi_sort.ml
+32. group_by_sort.ml
+33. group_items_iteration.ml
+34. if_else.ml
+35. if_then_else.ml
+36. if_then_else_nested.ml
+37. in_operator.ml
+38. in_operator_extended.ml
+39. inner_join.ml
+40. join_multi.ml
+41. json_builtin.ml
+42. left_join.ml
+43. left_join_multi.ml
+44. len_builtin.ml
+45. len_map.ml
+46. len_string.ml
+47. let_and_print.ml
+48. list_assign.ml
+49. list_index.ml
+50. list_nested_assign.ml
 
-Checked: 25/25
+Checked: 50/50
 
-_Last updated: 2025-07-31 11:21 GMT+7_
+_Last updated: 2025-07-31 18:53 GMT+7_

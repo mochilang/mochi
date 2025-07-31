@@ -81,7 +81,7 @@ type File = CompilationUnit
 
 // Program wraps a parsed OCaml source file.
 type Program struct {
-	File CompilationUnit `json:"file"`
+	File *CompilationUnit `json:"file"`
 }
 
 // convert recursively converts a tree-sitter node into a Node.
