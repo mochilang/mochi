@@ -246,6 +246,12 @@ func writeStmt(b *bytes.Buffer, n *Node, indentLevel int) {
 		writeIfStatement(b, n, indentLevel)
 	case "block":
 		writeBlock(b, n, indentLevel)
+	case "break_statement":
+		b.WriteString(indent(indentLevel))
+		b.WriteString("break;\n")
+	case "continue_statement":
+		b.WriteString(indent(indentLevel))
+		b.WriteString("continue;\n")
 	default:
 		b.WriteString(indent(indentLevel))
 		writeExpr(b, n, indentLevel)
@@ -368,6 +374,35 @@ func writeExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 			writeExpr(b, c, indentLevel)
 		}
 		b.WriteByte('}')
+	case "generic_name":
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indentLevel)
+		}
+		if len(n.Children) > 1 {
+			writeExpr(b, n.Children[1], indentLevel)
+		}
+	case "type_argument_list":
+		b.WriteByte('<')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeExpr(b, c, indentLevel)
+		}
+		b.WriteByte('>')
+	case "parameter_list":
+		writeParameterList(b, n)
+	case "parameter":
+		writeParameter(b, n)
+	case "cast_expression":
+		b.WriteByte('(')
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indentLevel)
+		}
+		b.WriteByte(')')
+		if len(n.Children) > 1 {
+			writeExpr(b, n.Children[1], indentLevel)
+		}
 	case "variable_declarator":
 		writeVarDeclarator(b, n, indentLevel)
 	case "parenthesized_expression":
@@ -379,6 +414,24 @@ func writeExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 			writeExpr(b, c, indentLevel)
 		}
 		b.WriteByte(')')
+	case "lambda_expression":
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indentLevel)
+		} else {
+			b.WriteString("()")
+		}
+		b.WriteString(" => ")
+		if len(n.Children) > 1 {
+			writeExpr(b, n.Children[1], indentLevel)
+		}
+	case "conditional_expression":
+		if len(n.Children) == 3 {
+			writeExpr(b, n.Children[0], indentLevel)
+			b.WriteString(" ? ")
+			writeExpr(b, n.Children[1], indentLevel)
+			b.WriteString(" : ")
+			writeExpr(b, n.Children[2], indentLevel)
+		}
 	case "binary_expression":
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indentLevel)

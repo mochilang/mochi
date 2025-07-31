@@ -1,0 +1,2 @@
+/tmp/TestPrint_Goldencast_struct3077704136/001/Program.cs(5,19): warning CS0649: Field 'Todo.title' is never assigned to, and will always have its default value null [/tmp/TestPrint_Goldencast_struct3077704136/001/app.csproj]
+hi

@@ -15,9 +15,9 @@ class Program {
         }
         if (seededNow) {
             nowSeed = (nowSeed * 1664525 + 1013904223) % 2147483647;
-            return intnowSeed;
+            return (int)nowSeed;
         }
-        return int(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() % int.MaxValue);
+        return (int)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() % int.MaxValue);
     }
     static long _mem() {
         return GC.GetTotalMemory(false);
@@ -34,6 +34,6 @@ class Program {
         var __memEnd = _mem();
         var __dur = (__end - __start) / 1000;
         var __memDiff = __memEnd - __memStart;
-        Console.WriteLine(JsonSerializer.Serialize(new SortedDictionarystringobject{{"name", "simple"}, {"duration_us", __dur}, {"memory_bytes", __memDiff}}, new JsonSerializerOptions{WriteIndented = true}));
+        Console.WriteLine(JsonSerializer.Serialize(new SortedDictionary<string, object>{{"name", "simple"}, {"duration_us", __dur}, {"memory_bytes", __memDiff}}, new JsonSerializerOptions{WriteIndented = true}));
     }
 }
