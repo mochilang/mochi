@@ -102,9 +102,9 @@ type (
 	WhileStatement               Node
 )
 
-// convertNode transforms a tree-sitter node into the Go AST representation.
+// convert transforms a tree-sitter node into the Go AST representation.
 // The conversion is recursive and ignores anonymous children.
-func convertNode(n *sitter.Node, src []byte, withPos bool) *Node {
+func convert(n *sitter.Node, src []byte, withPos bool) *Node {
 	if n == nil {
 		return nil
 	}
@@ -128,7 +128,7 @@ func convertNode(n *sitter.Node, src []byte, withPos bool) *Node {
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
 		child := n.NamedChild(uint(i))
-		if c := convertNode(child, src, withPos); c != nil {
+		if c := convert(child, src, withPos); c != nil {
 			out.Children = append(out.Children, c)
 		}
 	}
@@ -157,7 +157,7 @@ func ConvertFile(n *sitter.Node, src []byte, withPos bool) *SourceFile {
 	if n == nil {
 		return nil
 	}
-	root := convertNode(n, src, withPos)
+	root := convert(n, src, withPos)
 	if root == nil {
 		return nil
 	}
