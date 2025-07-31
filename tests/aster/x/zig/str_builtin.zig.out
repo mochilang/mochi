@@ -1,0 +1,2 @@
+str_builtin.zig:4:5: error: expected type 'void', found 'error{AccessDenied,Unexpected,DiskQuota,FileTooBig,InputOutput,NoSpaceLeft,DeviceBusy,InvalidArgument,BrokenPipe,SystemResources,OperationAborted,NotOpenForWriting,LockViolation,WouldBlock,ConnectionResetByPeer}'
+str_builtin.zig:3:15: note: function cannot return an error
