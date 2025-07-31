@@ -1,0 +1,290 @@
+{
+  "root": {
+    "kind": "chunk",
+    "start": 1,
+    "end": 11,
+    "children": [
+      {
+        "kind": "assignment_statement",
+        "start": 2,
+        "end": 2,
+        "endCol": 12,
+        "children": [
+          {
+            "kind": "variable_list",
+            "start": 2,
+            "end": 2,
+            "endCol": 1,
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "a",
+                "start": 2,
+                "end": 2,
+                "endCol": 1
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "start": 2,
+            "startCol": 4,
+            "end": 2,
+            "endCol": 12,
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "start": 2,
+                "startCol": 4,
+                "end": 2,
+                "endCol": 12,
+                "children": [
+                  {
+                    "kind": "binary_expression",
+                    "start": 2,
+                    "startCol": 5,
+                    "end": 2,
+                    "endCol": 11,
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "10",
+                        "start": 2,
+                        "startCol": 5,
+                        "end": 2,
+                        "endCol": 7
+                      },
+                      {
+                        "kind": "number",
+                        "text": "3",
+                        "start": 2,
+                        "startCol": 10,
+                        "end": 2,
+                        "endCol": 11
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assignment_statement",
+        "start": 4,
+        "end": 4,
+        "endCol": 11,
+        "children": [
+          {
+            "kind": "variable_list",
+            "start": 4,
+            "end": 4,
+            "endCol": 1,
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "b",
+                "start": 4,
+                "end": 4,
+                "endCol": 1
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "start": 4,
+            "startCol": 4,
+            "end": 4,
+            "endCol": 11,
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "start": 4,
+                "startCol": 4,
+                "end": 4,
+                "endCol": 11,
+                "children": [
+                  {
+                    "kind": "binary_expression",
+                    "start": 4,
+                    "startCol": 5,
+                    "end": 4,
+                    "endCol": 10,
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "2",
+                        "start": 4,
+                        "startCol": 5,
+                        "end": 4,
+                        "endCol": 6
+                      },
+                      {
+                        "kind": "number",
+                        "text": "2",
+                        "start": 4,
+                        "startCol": 9,
+                        "end": 4,
+                        "endCol": 10
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "start": 6,
+        "end": 6,
+        "endCol": 8,
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print",
+            "start": 6,
+            "end": 6,
+            "endCol": 5
+          },
+          {
+            "kind": "arguments",
+            "start": 6,
+            "startCol": 5,
+            "end": 6,
+            "endCol": 8,
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "a",
+                "start": 6,
+                "startCol": 6,
+                "end": 6,
+                "endCol": 7
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "start": 8,
+        "end": 8,
+        "endCol": 15,
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print",
+            "start": 8,
+            "end": 8,
+            "endCol": 5
+          },
+          {
+            "kind": "arguments",
+            "start": 8,
+            "startCol": 5,
+            "end": 8,
+            "endCol": 15,
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "start": 8,
+                "startCol": 6,
+                "end": 8,
+                "endCol": 14,
+                "children": [
+                  {
+                    "kind": "binary_expression",
+                    "start": 8,
+                    "startCol": 7,
+                    "end": 8,
+                    "endCol": 13,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "a",
+                        "start": 8,
+                        "startCol": 7,
+                        "end": 8,
+                        "endCol": 8
+                      },
+                      {
+                        "kind": "number",
+                        "text": "7",
+                        "start": 8,
+                        "startCol": 12,
+                        "end": 8,
+                        "endCol": 13
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "start": 10,
+        "end": 10,
+        "endCol": 14,
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print",
+            "start": 10,
+            "end": 10,
+            "endCol": 5
+          },
+          {
+            "kind": "arguments",
+            "start": 10,
+            "startCol": 5,
+            "end": 10,
+            "endCol": 14,
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "start": 10,
+                "startCol": 6,
+                "end": 10,
+                "endCol": 13,
+                "children": [
+                  {
+                    "kind": "binary_expression",
+                    "start": 10,
+                    "startCol": 7,
+                    "end": 10,
+                    "endCol": 12,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "b",
+                        "start": 10,
+                        "startCol": 7,
+                        "end": 10,
+                        "endCol": 8
+                      },
+                      {
+                        "kind": "number",
+                        "text": "5",
+                        "start": 10,
+                        "startCol": 11,
+                        "end": 10,
+                        "endCol": 12
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "source": "-- Generated by Mochi v0.10.33 on 2025-07-21 16:57 GMT+7\na = (10 - 3)\n\nb = (2 + 2)\n\nprint(a)\n\nprint((a == 7))\n\nprint((b \u003c 5))\n"
+}
