@@ -1,0 +1,5 @@
+exit status 2
+File "/workspace/mochi/tests/transpiler/x/ocaml/nested_function.ml", line 9, characters 0-3:
+9 | let () =
+    ^^^
+Error: Syntax error

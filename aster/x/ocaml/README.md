@@ -54,7 +54,32 @@ This directory holds utilities for inspecting OCaml source code and printing it 
 48. list_assign.ml
 49. list_index.ml
 50. list_nested_assign.ml
+51. list_set_ops.ml
+52. load_jsonl.ml
+53. load_yaml.ml
+54. map_assign.ml
+55. map_in_operator.ml
+56. map_index.ml
+57. map_int_key.ml
+58. map_literal_dynamic.ml
+59. map_membership.ml
+60. map_nested_assign.ml
+61. match_expr.ml
+62. match_full.ml
+63. math_ops.ml
+64. membership.ml
+65. min_max_builtin.ml
+66. mix_go_python.ml
+67. nested_function.ml
+68. order_by_map.ml
+69. outer_join.ml
+70. partial_application.ml
+71. print_hello.ml
+72. pure_fold.ml
+73. pure_global_fold.ml
+74. python_auto.ml
+75. python_math.ml
 
-Checked: 50/50
+Checked: 75/75
 
-_Last updated: 2025-07-31 18:53 GMT+7_
+_Last updated: 2025-07-31 19:47 GMT+7_

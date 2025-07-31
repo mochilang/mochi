@@ -1,0 +1,5 @@
+exit status 2
+File "/workspace/mochi/tests/transpiler/x/ocaml/pure_global_fold.ml", line 4, characters 7-8:
+4 |   (x + k)
+           ^
+Error: Unbound value k

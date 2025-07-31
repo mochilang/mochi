@@ -1,0 +1,6 @@
+exit status 2
+File "/workspace/mochi/tests/transpiler/x/ocaml/order_by_map.ml", line 8, characters 68-74:
+8 |   print_endline (String.concat " " (List.filter (fun s -> s <> "") [sorted]));
+                                                                        ^^^^^^
+Error: This expression has type (string * int) list list
+       but an expression was expected of type string
