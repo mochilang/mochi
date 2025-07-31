@@ -231,13 +231,23 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	case "assignment_expression":
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indent)
-			b.WriteString(" = ")
+			op := n.Text
+			if op == "" {
+				op = "="
+			}
+			b.WriteByte(' ')
+			b.WriteString(op)
+			b.WriteByte(' ')
 			writeExpr(b, n.Children[1], indent)
 		}
 	case "update_expression":
 		if len(n.Children) == 1 {
 			writeExpr(b, n.Children[0], indent)
-			b.WriteString("++")
+			op := n.Text
+			if op == "" {
+				op = "++"
+			}
+			b.WriteString(op)
 		}
 	case "initializer_list":
 		b.WriteByte('{')
@@ -275,16 +285,8 @@ func writeBinaryExpr(b *bytes.Buffer, n *Node, indent int) {
 		return
 	}
 	left, right := n.Children[0], n.Children[1]
-	op := "+"
-	if right.Kind == "identifier" && left.Kind == "identifier" {
-		op = "<"
-	} else if right.Kind == "number_literal" && right.Text == "9" {
-		op = "=="
-	} else if right.Kind == "number_literal" && right.Text == "1" {
-		op = "+"
-	} else if left.Kind == "subscript_expression" && right.Kind == "subscript_expression" {
-		op = "+"
-	} else {
+	op := n.Text
+	if op == "" {
 		op = "+"
 	}
 	writeExpr(b, left, indent)
