@@ -1,91 +1,48 @@
 {
   "root": {
     "kind": "chunk",
-    "start": 1,
-    "end": 7,
     "children": [
       {
         "kind": "assignment_statement",
-        "start": 2,
-        "end": 2,
-        "endCol": 18,
         "children": [
           {
             "kind": "variable_list",
-            "start": 2,
-            "end": 2,
-            "endCol": 1,
             "children": [
               {
                 "kind": "identifier",
-                "text": "m",
-                "start": 2,
-                "end": 2,
-                "endCol": 1
+                "text": "m"
               }
             ]
           },
           {
             "kind": "expression_list",
-            "start": 2,
-            "startCol": 4,
-            "end": 2,
-            "endCol": 18,
             "children": [
               {
                 "kind": "table_constructor",
-                "start": 2,
-                "startCol": 4,
-                "end": 2,
-                "endCol": 18,
                 "children": [
                   {
                     "kind": "field",
-                    "start": 2,
-                    "startCol": 5,
-                    "end": 2,
-                    "endCol": 10,
                     "children": [
                       {
                         "kind": "identifier",
-                        "text": "a",
-                        "start": 2,
-                        "startCol": 5,
-                        "end": 2,
-                        "endCol": 6
+                        "text": "a"
                       },
                       {
                         "kind": "number",
-                        "text": "1",
-                        "start": 2,
-                        "startCol": 9,
-                        "end": 2,
-                        "endCol": 10
+                        "text": "1"
                       }
                     ]
                   },
                   {
                     "kind": "field",
-                    "start": 2,
-                    "startCol": 12,
-                    "end": 2,
-                    "endCol": 17,
                     "children": [
                       {
                         "kind": "identifier",
-                        "text": "b",
-                        "start": 2,
-                        "startCol": 12,
-                        "end": 2,
-                        "endCol": 13
+                        "text": "b"
                       },
                       {
                         "kind": "number",
-                        "text": "2",
-                        "start": 2,
-                        "startCol": 16,
-                        "end": 2,
-                        "endCol": 17
+                        "text": "2"
                       }
                     ]
                   }
@@ -97,70 +54,35 @@
       },
       {
         "kind": "for_statement",
-        "start": 4,
-        "end": 6,
-        "endCol": 3,
         "children": [
           {
             "kind": "for_generic_clause",
-            "start": 4,
-            "startCol": 4,
-            "end": 4,
-            "endCol": 17,
             "children": [
               {
                 "kind": "variable_list",
-                "start": 4,
-                "startCol": 4,
-                "end": 4,
-                "endCol": 5,
                 "children": [
                   {
                     "kind": "identifier",
-                    "text": "k",
-                    "start": 4,
-                    "startCol": 4,
-                    "end": 4,
-                    "endCol": 5
+                    "text": "k"
                   }
                 ]
               },
               {
                 "kind": "expression_list",
-                "start": 4,
-                "startCol": 9,
-                "end": 4,
-                "endCol": 17,
                 "children": [
                   {
                     "kind": "function_call",
-                    "start": 4,
-                    "startCol": 9,
-                    "end": 4,
-                    "endCol": 17,
                     "children": [
                       {
                         "kind": "identifier",
-                        "text": "pairs",
-                        "start": 4,
-                        "startCol": 9,
-                        "end": 4,
-                        "endCol": 14
+                        "text": "pairs"
                       },
                       {
                         "kind": "arguments",
-                        "start": 4,
-                        "startCol": 14,
-                        "end": 4,
-                        "endCol": 17,
                         "children": [
                           {
                             "kind": "identifier",
-                            "text": "m",
-                            "start": 4,
-                            "startCol": 15,
-                            "end": 4,
-                            "endCol": 16
+                            "text": "m"
                           }
                         ]
                       }
@@ -172,40 +94,20 @@
           },
           {
             "kind": "block",
-            "start": 5,
-            "startCol": 2,
-            "end": 5,
-            "endCol": 10,
             "children": [
               {
                 "kind": "function_call",
-                "start": 5,
-                "startCol": 2,
-                "end": 5,
-                "endCol": 10,
                 "children": [
                   {
                     "kind": "identifier",
-                    "text": "print",
-                    "start": 5,
-                    "startCol": 2,
-                    "end": 5,
-                    "endCol": 7
+                    "text": "print"
                   },
                   {
                     "kind": "arguments",
-                    "start": 5,
-                    "startCol": 7,
-                    "end": 5,
-                    "endCol": 10,
                     "children": [
                       {
                         "kind": "identifier",
-                        "text": "k",
-                        "start": 5,
-                        "startCol": 8,
-                        "end": 5,
-                        "endCol": 9
+                        "text": "k"
                       }
                     ]
                   }

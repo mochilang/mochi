@@ -1,36 +1,20 @@
 {
   "root": {
     "kind": "chunk",
-    "start": 1,
-    "end": 3,
     "children": [
       {
         "kind": "function_call",
-        "start": 2,
-        "end": 2,
-        "endCol": 13,
         "children": [
           {
             "kind": "identifier",
-            "text": "print",
-            "start": 2,
-            "end": 2,
-            "endCol": 5
+            "text": "print"
           },
           {
             "kind": "arguments",
-            "start": 2,
-            "startCol": 5,
-            "end": 2,
-            "endCol": 13,
             "children": [
               {
                 "kind": "string",
-                "text": "\"1995\"",
-                "start": 2,
-                "startCol": 6,
-                "end": 2,
-                "endCol": 12
+                "text": "\"1995\""
               }
             ]
           }

@@ -1,66 +1,35 @@
 {
   "root": {
     "kind": "chunk",
-    "start": 1,
-    "end": 5,
     "children": [
       {
         "kind": "assignment_statement",
-        "start": 2,
-        "end": 2,
-        "endCol": 21,
         "children": [
           {
             "kind": "variable_list",
-            "start": 2,
-            "end": 2,
-            "endCol": 4,
             "children": [
               {
                 "kind": "identifier",
-                "text": "todo",
-                "start": 2,
-                "end": 2,
-                "endCol": 4
+                "text": "todo"
               }
             ]
           },
           {
             "kind": "expression_list",
-            "start": 2,
-            "startCol": 7,
-            "end": 2,
-            "endCol": 21,
             "children": [
               {
                 "kind": "table_constructor",
-                "start": 2,
-                "startCol": 7,
-                "end": 2,
-                "endCol": 21,
                 "children": [
                   {
                     "kind": "field",
-                    "start": 2,
-                    "startCol": 8,
-                    "end": 2,
-                    "endCol": 20,
                     "children": [
                       {
                         "kind": "identifier",
-                        "text": "title",
-                        "start": 2,
-                        "startCol": 8,
-                        "end": 2,
-                        "endCol": 13
+                        "text": "title"
                       },
                       {
                         "kind": "string",
-                        "text": "\"hi\"",
-                        "start": 2,
-                        "startCol": 16,
-                        "end": 2,
-                        "endCol": 20
+                        "text": "\"hi\""
                       }
                     ]
                   }
@@ -72,46 +41,24 @@
       },
       {
         "kind": "function_call",
-        "start": 4,
-        "end": 4,
-        "endCol": 17,
         "children": [
           {
             "kind": "identifier",
-            "text": "print",
-            "start": 4,
-            "end": 4,
-            "endCol": 5
+            "text": "print"
           },
           {
             "kind": "arguments",
-            "start": 4,
-            "startCol": 5,
-            "end": 4,
-            "endCol": 17,
             "children": [
               {
                 "kind": "dot_index_expression",
-                "start": 4,
-                "startCol": 6,
-                "end": 4,
-                "endCol": 16,
                 "children": [
                   {
                     "kind": "identifier",
-                    "text": "todo",
-                    "start": 4,
-                    "startCol": 6,
-                    "end": 4,
-                    "endCol": 10
+                    "text": "todo"
                   },
                   {
                     "kind": "identifier",
-                    "text": "title",
-                    "start": 4,
-                    "startCol": 11,
-                    "end": 4,
-                    "endCol": 16
+                    "text": "title"
                   }
                 ]
               }

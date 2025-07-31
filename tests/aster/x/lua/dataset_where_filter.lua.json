@@ -1,105 +1,54 @@
 {
   "root": {
     "kind": "chunk",
-    "start": 1,
-    "end": 17,
     "children": [
       {
         "kind": "assignment_statement",
-        "start": 2,
-        "end": 2,
-        "endCol": 121,
         "children": [
           {
             "kind": "variable_list",
-            "start": 2,
-            "end": 2,
-            "endCol": 6,
             "children": [
               {
                 "kind": "identifier",
-                "text": "people",
-                "start": 2,
-                "end": 2,
-                "endCol": 6
+                "text": "people"
               }
             ]
           },
           {
             "kind": "expression_list",
-            "start": 2,
-            "startCol": 9,
-            "end": 2,
-            "endCol": 121,
             "children": [
               {
                 "kind": "table_constructor",
-                "start": 2,
-                "startCol": 9,
-                "end": 2,
-                "endCol": 121,
                 "children": [
                   {
                     "kind": "field",
-                    "start": 2,
-                    "startCol": 10,
-                    "end": 2,
-                    "endCol": 36,
                     "children": [
                       {
                         "kind": "table_constructor",
-                        "start": 2,
-                        "startCol": 10,
-                        "end": 2,
-                        "endCol": 36,
                         "children": [
                           {
                             "kind": "field",
-                            "start": 2,
-                            "startCol": 11,
-                            "end": 2,
-                            "endCol": 25,
                             "children": [
                               {
                                 "kind": "identifier",
-                                "text": "name",
-                                "start": 2,
-                                "startCol": 11,
-                                "end": 2,
-                                "endCol": 15
+                                "text": "name"
                               },
                               {
                                 "kind": "string",
-                                "text": "\"Alice\"",
-                                "start": 2,
-                                "startCol": 18,
-                                "end": 2,
-                                "endCol": 25
+                                "text": "\"Alice\""
                               }
                             ]
                           },
                           {
                             "kind": "field",
-                            "start": 2,
-                            "startCol": 27,
-                            "end": 2,
-                            "endCol": 35,
                             "children": [
                               {
                                 "kind": "identifier",
-                                "text": "age",
-                                "start": 2,
-                                "startCol": 27,
-                                "end": 2,
-                                "endCol": 30
+                                "text": "age"
                               },
                               {
                                 "kind": "number",
-                                "text": "30",
-                                "start": 2,
-                                "startCol": 33,
-                                "end": 2,
-                                "endCol": 35
+                                "text": "30"
                               }
                             ]
                           }
@@ -109,65 +58,33 @@
                   },
                   {
                     "kind": "field",
-                    "start": 2,
-                    "startCol": 38,
-                    "end": 2,
-                    "endCol": 62,
                     "children": [
                       {
                         "kind": "table_constructor",
-                        "start": 2,
-                        "startCol": 38,
-                        "end": 2,
-                        "endCol": 62,
                         "children": [
                           {
                             "kind": "field",
-                            "start": 2,
-                            "startCol": 39,
-                            "end": 2,
-                            "endCol": 51,
                             "children": [
                               {
                                 "kind": "identifier",
-                                "text": "name",
-                                "start": 2,
-                                "startCol": 39,
-                                "end": 2,
-                                "endCol": 43
+                                "text": "name"
                               },
                               {
                                 "kind": "string",
-                                "text": "\"Bob\"",
-                                "start": 2,
-                                "startCol": 46,
-                                "end": 2,
-                                "endCol": 51
+                                "text": "\"Bob\""
                               }
                             ]
                           },
                           {
                             "kind": "field",
-                            "start": 2,
-                            "startCol": 53,
-                            "end": 2,
-                            "endCol": 61,
                             "children": [
                               {
                                 "kind": "identifier",
-                                "text": "age",
-                                "start": 2,
-                                "startCol": 53,
-                                "end": 2,
-                                "endCol": 56
+                                "text": "age"
                               },
                               {
                                 "kind": "number",
-                                "text": "15",
-                                "start": 2,
-                                "startCol": 59,
-                                "end": 2,
-                                "endCol": 61
+                                "text": "15"
                               }
                             ]
                           }
@@ -177,65 +94,33 @@
                   },
                   {
                     "kind": "field",
-                    "start": 2,
-                    "startCol": 64,
-                    "end": 2,
-                    "endCol": 92,
                     "children": [
                       {
                         "kind": "table_constructor",
-                        "start": 2,
-                        "startCol": 64,
-                        "end": 2,
-                        "endCol": 92,
                         "children": [
                           {
                             "kind": "field",
-                            "start": 2,
-                            "startCol": 65,
-                            "end": 2,
-                            "endCol": 81,
                             "children": [
                               {
                                 "kind": "identifier",
-                                "text": "name",
-                                "start": 2,
-                                "startCol": 65,
-                                "end": 2,
-                                "endCol": 69
+                                "text": "name"
                               },
                               {
                                 "kind": "string",
-                                "text": "\"Charlie\"",
-                                "start": 2,
-                                "startCol": 72,
-                                "end": 2,
-                                "endCol": 81
+                                "text": "\"Charlie\""
                               }
                             ]
                           },
                           {
                             "kind": "field",
-                            "start": 2,
-                            "startCol": 83,
-                            "end": 2,
-                            "endCol": 91,
                             "children": [
                               {
                                 "kind": "identifier",
-                                "text": "age",
-                                "start": 2,
-                                "startCol": 83,
-                                "end": 2,
-                                "endCol": 86
+                                "text": "age"
                               },
                               {
                                 "kind": "number",
-                                "text": "65",
-                                "start": 2,
-                                "startCol": 89,
-                                "end": 2,
-                                "endCol": 91
+                                "text": "65"
                               }
                             ]
                           }
@@ -245,65 +130,33 @@
                   },
                   {
                     "kind": "field",
-                    "start": 2,
-                    "startCol": 94,
-                    "end": 2,
-                    "endCol": 120,
                     "children": [
                       {
                         "kind": "table_constructor",
-                        "start": 2,
-                        "startCol": 94,
-                        "end": 2,
-                        "endCol": 120,
                         "children": [
                           {
                             "kind": "field",
-                            "start": 2,
-                            "startCol": 95,
-                            "end": 2,
-                            "endCol": 109,
                             "children": [
                               {
                                 "kind": "identifier",
-                                "text": "name",
-                                "start": 2,
-                                "startCol": 95,
-                                "end": 2,
-                                "endCol": 99
+                                "text": "name"
                               },
                               {
                                 "kind": "string",
-                                "text": "\"Diana\"",
-                                "start": 2,
-                                "startCol": 102,
-                                "end": 2,
-                                "endCol": 109
+                                "text": "\"Diana\""
                               }
                             ]
                           },
                           {
                             "kind": "field",
-                            "start": 2,
-                            "startCol": 111,
-                            "end": 2,
-                            "endCol": 119,
                             "children": [
                               {
                                 "kind": "identifier",
-                                "text": "age",
-                                "start": 2,
-                                "startCol": 111,
-                                "end": 2,
-                                "endCol": 114
+                                "text": "age"
                               },
                               {
                                 "kind": "number",
-                                "text": "45",
-                                "start": 2,
-                                "startCol": 117,
-                                "end": 2,
-                                "endCol": 119
+                                "text": "45"
                               }
                             ]
                           }
@@ -319,39 +172,22 @@
       },
       {
         "kind": "assignment_statement",
-        "start": 4,
-        "end": 4,
-        "endCol": 11,
         "children": [
           {
             "kind": "variable_list",
-            "start": 4,
-            "end": 4,
-            "endCol": 6,
             "children": [
               {
                 "kind": "identifier",
-                "text": "adults",
-                "start": 4,
-                "end": 4,
-                "endCol": 6
+                "text": "adults"
               }
             ]
           },
           {
             "kind": "expression_list",
-            "start": 4,
-            "startCol": 9,
-            "end": 4,
-            "endCol": 11,
             "children": [
               {
                 "kind": "table_constructor",
-                "text": "{}",
-                "start": 4,
-                "startCol": 9,
-                "end": 4,
-                "endCol": 11
+                "text": "{}"
               }
             ]
           }
@@ -359,78 +195,39 @@
       },
       {
         "kind": "for_statement",
-        "start": 5,
-        "end": 9,
-        "endCol": 3,
         "children": [
           {
             "kind": "for_generic_clause",
-            "start": 5,
-            "startCol": 4,
-            "end": 5,
-            "endCol": 31,
             "children": [
               {
                 "kind": "variable_list",
-                "start": 5,
-                "startCol": 4,
-                "end": 5,
-                "endCol": 13,
                 "children": [
                   {
                     "kind": "identifier",
-                    "text": "_",
-                    "start": 5,
-                    "startCol": 4,
-                    "end": 5,
-                    "endCol": 5
+                    "text": "_"
                   },
                   {
                     "kind": "identifier",
-                    "text": "person",
-                    "start": 5,
-                    "startCol": 7,
-                    "end": 5,
-                    "endCol": 13
+                    "text": "person"
                   }
                 ]
               },
               {
                 "kind": "expression_list",
-                "start": 5,
-                "startCol": 17,
-                "end": 5,
-                "endCol": 31,
                 "children": [
                   {
                     "kind": "function_call",
-                    "start": 5,
-                    "startCol": 17,
-                    "end": 5,
-                    "endCol": 31,
                     "children": [
                       {
                         "kind": "identifier",
-                        "text": "ipairs",
-                        "start": 5,
-                        "startCol": 17,
-                        "end": 5,
-                        "endCol": 23
+                        "text": "ipairs"
                       },
                       {
                         "kind": "arguments",
-                        "start": 5,
-                        "startCol": 23,
-                        "end": 5,
-                        "endCol": 31,
                         "children": [
                           {
                             "kind": "identifier",
-                            "text": "people",
-                            "start": 5,
-                            "startCol": 24,
-                            "end": 5,
-                            "endCol": 30
+                            "text": "people"
                           }
                         ]
                       }
@@ -442,65 +239,33 @@
           },
           {
             "kind": "block",
-            "start": 6,
-            "startCol": 2,
-            "end": 8,
-            "endCol": 5,
             "children": [
               {
                 "kind": "if_statement",
-                "start": 6,
-                "startCol": 2,
-                "end": 8,
-                "endCol": 5,
                 "children": [
                   {
                     "kind": "parenthesized_expression",
-                    "start": 6,
-                    "startCol": 5,
-                    "end": 6,
-                    "endCol": 23,
                     "children": [
                       {
                         "kind": "binary_expression",
                         "text": "\u003e=",
-                        "start": 6,
-                        "startCol": 6,
-                        "end": 6,
-                        "endCol": 22,
                         "children": [
                           {
                             "kind": "dot_index_expression",
-                            "start": 6,
-                            "startCol": 6,
-                            "end": 6,
-                            "endCol": 16,
                             "children": [
                               {
                                 "kind": "identifier",
-                                "text": "person",
-                                "start": 6,
-                                "startCol": 6,
-                                "end": 6,
-                                "endCol": 12
+                                "text": "person"
                               },
                               {
                                 "kind": "identifier",
-                                "text": "age",
-                                "start": 6,
-                                "startCol": 13,
-                                "end": 6,
-                                "endCol": 16
+                                "text": "age"
                               }
                             ]
                           },
                           {
                             "kind": "number",
-                            "text": "18",
-                            "start": 6,
-                            "startCol": 20,
-                            "end": 6,
-                            "endCol": 22
+                            "text": "18"
                           }
                         ]
                       }
@@ -508,102 +273,50 @@
                   },
                   {
                     "kind": "block",
-                    "start": 7,
-                    "startCol": 4,
-                    "end": 7,
-                    "endCol": 96,
                     "children": [
                       {
                         "kind": "function_call",
-                        "start": 7,
-                        "startCol": 4,
-                        "end": 7,
-                        "endCol": 96,
                         "children": [
                           {
                             "kind": "dot_index_expression",
-                            "start": 7,
-                            "startCol": 4,
-                            "end": 7,
-                            "endCol": 16,
                             "children": [
                               {
                                 "kind": "identifier",
-                                "text": "table",
-                                "start": 7,
-                                "startCol": 4,
-                                "end": 7,
-                                "endCol": 9
+                                "text": "table"
                               },
                               {
                                 "kind": "identifier",
-                                "text": "insert",
-                                "start": 7,
-                                "startCol": 10,
-                                "end": 7,
-                                "endCol": 16
+                                "text": "insert"
                               }
                             ]
                           },
                           {
                             "kind": "arguments",
-                            "start": 7,
-                            "startCol": 16,
-                            "end": 7,
-                            "endCol": 96,
                             "children": [
                               {
                                 "kind": "identifier",
-                                "text": "adults",
-                                "start": 7,
-                                "startCol": 17,
-                                "end": 7,
-                                "endCol": 23
+                                "text": "adults"
                               },
                               {
                                 "kind": "table_constructor",
-                                "start": 7,
-                                "startCol": 25,
-                                "end": 7,
-                                "endCol": 95,
                                 "children": [
                                   {
                                     "kind": "field",
-                                    "start": 7,
-                                    "startCol": 26,
-                                    "end": 7,
-                                    "endCol": 44,
                                     "children": [
                                       {
                                         "kind": "identifier",
-                                        "text": "name",
-                                        "start": 7,
-                                        "startCol": 26,
-                                        "end": 7,
-                                        "endCol": 30
+                                        "text": "name"
                                       },
                                       {
                                         "kind": "dot_index_expression",
-                                        "start": 7,
-                                        "startCol": 33,
-                                        "end": 7,
-                                        "endCol": 44,
                                         "children": [
                                           {
                                             "kind": "identifier",
-                                            "text": "person",
-                                            "start": 7,
-                                            "startCol": 33,
-                                            "end": 7,
-                                            "endCol": 39
+                                            "text": "person"
                                           },
                                           {
                                             "kind": "identifier",
-                                            "text": "name",
-                                            "start": 7,
-                                            "startCol": 40,
-                                            "end": 7,
-                                            "endCol": 44
+                                            "text": "name"
                                           }
                                         ]
                                       }
@@ -611,41 +324,21 @@
                                   },
                                   {
                                     "kind": "field",
-                                    "start": 7,
-                                    "startCol": 46,
-                                    "end": 7,
-                                    "endCol": 62,
                                     "children": [
                                       {
                                         "kind": "identifier",
-                                        "text": "age",
-                                        "start": 7,
-                                        "startCol": 46,
-                                        "end": 7,
-                                        "endCol": 49
+                                        "text": "age"
                                       },
                                       {
                                         "kind": "dot_index_expression",
-                                        "start": 7,
-                                        "startCol": 52,
-                                        "end": 7,
-                                        "endCol": 62,
                                         "children": [
                                           {
                                             "kind": "identifier",
-                                            "text": "person",
-                                            "start": 7,
-                                            "startCol": 52,
-                                            "end": 7,
-                                            "endCol": 58
+                                            "text": "person"
                                           },
                                           {
                                             "kind": "identifier",
-                                            "text": "age",
-                                            "start": 7,
-                                            "startCol": 59,
-                                            "end": 7,
-                                            "endCol": 62
+                                            "text": "age"
                                           }
                                         ]
                                       }
@@ -653,66 +346,34 @@
                                   },
                                   {
                                     "kind": "field",
-                                    "start": 7,
-                                    "startCol": 64,
-                                    "end": 7,
-                                    "endCol": 94,
                                     "children": [
                                       {
                                         "kind": "identifier",
-                                        "text": "is_senior",
-                                        "start": 7,
-                                        "startCol": 64,
-                                        "end": 7,
-                                        "endCol": 73
+                                        "text": "is_senior"
                                       },
                                       {
                                         "kind": "parenthesized_expression",
-                                        "start": 7,
-                                        "startCol": 76,
-                                        "end": 7,
-                                        "endCol": 94,
                                         "children": [
                                           {
                                             "kind": "binary_expression",
                                             "text": "\u003e=",
-                                            "start": 7,
-                                            "startCol": 77,
-                                            "end": 7,
-                                            "endCol": 93,
                                             "children": [
                                               {
                                                 "kind": "dot_index_expression",
-                                                "start": 7,
-                                                "startCol": 77,
-                                                "end": 7,
-                                                "endCol": 87,
                                                 "children": [
                                                   {
                                                     "kind": "identifier",
-                                                    "text": "person",
-                                                    "start": 7,
-                                                    "startCol": 77,
-                                                    "end": 7,
-                                                    "endCol": 83
+                                                    "text": "person"
                                                   },
                                                   {
                                                     "kind": "identifier",
-                                                    "text": "age",
-                                                    "start": 7,
-                                                    "startCol": 84,
-                                                    "end": 7,
-                                                    "endCol": 87
+                                                    "text": "age"
                                                   }
                                                 ]
                                               },
                                               {
                                                 "kind": "number",
-                                                "text": "60",
-                                                "start": 7,
-                                                "startCol": 91,
-                                                "end": 7,
-                                                "endCol": 93
+                                                "text": "60"
                                               }
                                             ]
                                           }
@@ -736,31 +397,17 @@
       },
       {
         "kind": "function_call",
-        "start": 12,
-        "end": 12,
-        "endCol": 23,
         "children": [
           {
             "kind": "identifier",
-            "text": "print",
-            "start": 12,
-            "end": 12,
-            "endCol": 5
+            "text": "print"
           },
           {
             "kind": "arguments",
-            "start": 12,
-            "startCol": 5,
-            "end": 12,
-            "endCol": 23,
             "children": [
               {
                 "kind": "string",
-                "text": "\"--- Adults ---\"",
-                "start": 12,
-                "startCol": 6,
-                "end": 12,
-                "endCol": 22
+                "text": "\"--- Adults ---\""
               }
             ]
           }
@@ -768,78 +415,39 @@
       },
       {
         "kind": "for_statement",
-        "start": 14,
-        "end": 16,
-        "endCol": 3,
         "children": [
           {
             "kind": "for_generic_clause",
-            "start": 14,
-            "startCol": 4,
-            "end": 14,
-            "endCol": 31,
             "children": [
               {
                 "kind": "variable_list",
-                "start": 14,
-                "startCol": 4,
-                "end": 14,
-                "endCol": 13,
                 "children": [
                   {
                     "kind": "identifier",
-                    "text": "_",
-                    "start": 14,
-                    "startCol": 4,
-                    "end": 14,
-                    "endCol": 5
+                    "text": "_"
                   },
                   {
                     "kind": "identifier",
-                    "text": "person",
-                    "start": 14,
-                    "startCol": 7,
-                    "end": 14,
-                    "endCol": 13
+                    "text": "person"
                   }
                 ]
               },
               {
                 "kind": "expression_list",
-                "start": 14,
-                "startCol": 17,
-                "end": 14,
-                "endCol": 31,
                 "children": [
                   {
                     "kind": "function_call",
-                    "start": 14,
-                    "startCol": 17,
-                    "end": 14,
-                    "endCol": 31,
                     "children": [
                       {
                         "kind": "identifier",
-                        "text": "ipairs",
-                        "start": 14,
-                        "startCol": 17,
-                        "end": 14,
-                        "endCol": 23
+                        "text": "ipairs"
                       },
                       {
                         "kind": "arguments",
-                        "start": 14,
-                        "startCol": 23,
-                        "end": 14,
-                        "endCol": 31,
                         "children": [
                           {
                             "kind": "identifier",
-                            "text": "adults",
-                            "start": 14,
-                            "startCol": 24,
-                            "end": 14,
-                            "endCol": 30
+                            "text": "adults"
                           }
                         ]
                       }
@@ -851,182 +459,90 @@
           },
           {
             "kind": "block",
-            "start": 15,
-            "startCol": 2,
-            "end": 15,
-            "endCol": 110,
             "children": [
               {
                 "kind": "function_call",
-                "start": 15,
-                "startCol": 2,
-                "end": 15,
-                "endCol": 110,
                 "children": [
                   {
                     "kind": "identifier",
-                    "text": "print",
-                    "start": 15,
-                    "startCol": 2,
-                    "end": 15,
-                    "endCol": 7
+                    "text": "print"
                   },
                   {
                     "kind": "arguments",
-                    "start": 15,
-                    "startCol": 7,
-                    "end": 15,
-                    "endCol": 110,
                     "children": [
                       {
                         "kind": "function_call",
-                        "start": 15,
-                        "startCol": 8,
-                        "end": 15,
-                        "endCol": 109,
                         "children": [
                           {
                             "kind": "dot_index_expression",
-                            "start": 15,
-                            "startCol": 8,
-                            "end": 15,
-                            "endCol": 21,
                             "children": [
                               {
                                 "kind": "identifier",
-                                "text": "string",
-                                "start": 15,
-                                "startCol": 8,
-                                "end": 15,
-                                "endCol": 14
+                                "text": "string"
                               },
                               {
                                 "kind": "identifier",
-                                "text": "format",
-                                "start": 15,
-                                "startCol": 15,
-                                "end": 15,
-                                "endCol": 21
+                                "text": "format"
                               }
                             ]
                           },
                           {
                             "kind": "arguments",
-                            "start": 15,
-                            "startCol": 21,
-                            "end": 15,
-                            "endCol": 109,
                             "children": [
                               {
                                 "kind": "string",
-                                "text": "\"%s is %s %s\"",
-                                "start": 15,
-                                "startCol": 22,
-                                "end": 15,
-                                "endCol": 35
+                                "text": "\"%s is %s %s\""
                               },
                               {
                                 "kind": "dot_index_expression",
-                                "start": 15,
-                                "startCol": 37,
-                                "end": 15,
-                                "endCol": 48,
                                 "children": [
                                   {
                                     "kind": "identifier",
-                                    "text": "person",
-                                    "start": 15,
-                                    "startCol": 37,
-                                    "end": 15,
-                                    "endCol": 43
+                                    "text": "person"
                                   },
                                   {
                                     "kind": "identifier",
-                                    "text": "name",
-                                    "start": 15,
-                                    "startCol": 44,
-                                    "end": 15,
-                                    "endCol": 48
+                                    "text": "name"
                                   }
                                 ]
                               },
                               {
                                 "kind": "dot_index_expression",
-                                "start": 15,
-                                "startCol": 50,
-                                "end": 15,
-                                "endCol": 60,
                                 "children": [
                                   {
                                     "kind": "identifier",
-                                    "text": "person",
-                                    "start": 15,
-                                    "startCol": 50,
-                                    "end": 15,
-                                    "endCol": 56
+                                    "text": "person"
                                   },
                                   {
                                     "kind": "identifier",
-                                    "text": "age",
-                                    "start": 15,
-                                    "startCol": 57,
-                                    "end": 15,
-                                    "endCol": 60
+                                    "text": "age"
                                   }
                                 ]
                               },
                               {
                                 "kind": "parenthesized_expression",
-                                "start": 15,
-                                "startCol": 62,
-                                "end": 15,
-                                "endCol": 108,
                                 "children": [
                                   {
                                     "kind": "binary_expression",
                                     "text": "or",
-                                    "start": 15,
-                                    "startCol": 63,
-                                    "end": 15,
-                                    "endCol": 107,
                                     "children": [
                                       {
                                         "kind": "binary_expression",
                                         "text": "and",
-                                        "start": 15,
-                                        "startCol": 63,
-                                        "end": 15,
-                                        "endCol": 99,
                                         "children": [
                                           {
                                             "kind": "parenthesized_expression",
-                                            "start": 15,
-                                            "startCol": 63,
-                                            "end": 15,
-                                            "endCol": 81,
                                             "children": [
                                               {
                                                 "kind": "dot_index_expression",
-                                                "start": 15,
-                                                "startCol": 64,
-                                                "end": 15,
-                                                "endCol": 80,
                                                 "children": [
                                                   {
                                                     "kind": "identifier",
-                                                    "text": "person",
-                                                    "start": 15,
-                                                    "startCol": 64,
-                                                    "end": 15,
-                                                    "endCol": 70
+                                                    "text": "person"
                                                   },
                                                   {
                                                     "kind": "identifier",
-                                                    "text": "is_senior",
-                                                    "start": 15,
-                                                    "startCol": 71,
-                                                    "end": 15,
-                                                    "endCol": 80
+                                                    "text": "is_senior"
                                                   }
                                                 ]
                                               }
@@ -1034,18 +550,10 @@
                                           },
                                           {
                                             "kind": "parenthesized_expression",
-                                            "start": 15,
-                                            "startCol": 86,
-                                            "end": 15,
-                                            "endCol": 99,
                                             "children": [
                                               {
                                                 "kind": "string",
-                                                "text": "\" (senior)\"",
-                                                "start": 15,
-                                                "startCol": 87,
-                                                "end": 15,
-                                                "endCol": 98
+                                                "text": "\" (senior)\""
                                               }
                                             ]
                                           }
@@ -1053,18 +561,10 @@
                                       },
                                       {
                                         "kind": "parenthesized_expression",
-                                        "start": 15,
-                                        "startCol": 103,
-                                        "end": 15,
-                                        "endCol": 107,
                                         "children": [
                                           {
                                             "kind": "string",
-                                            "text": "\"\"",
-                                            "start": 15,
-                                            "startCol": 104,
-                                            "end": 15,
-                                            "endCol": 106
+                                            "text": "\"\""
                                           }
                                         ]
                                       }
