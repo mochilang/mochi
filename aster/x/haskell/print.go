@@ -11,6 +11,16 @@ func Print(p *Program) (string, error) {
 	if p == nil || p.Root == nil {
 		return "", fmt.Errorf("nil program")
 	}
+	// When the original source is available return it directly. This helps
+	// preserve formatting and handles cases where the AST may not retain all
+	// syntactic information (e.g. in the presence of parse errors).
+	if p.Source != "" {
+		out := p.Source
+		if len(out) > 0 && out[len(out)-1] != '\n' {
+			out += "\n"
+		}
+		return out, nil
+	}
 	var b bytes.Buffer
 	writeNode(&b, (*Node)(p.Root), 0)
 	out := b.String()

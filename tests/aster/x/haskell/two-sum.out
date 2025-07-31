@@ -1,6 +1,9 @@
 
-/workspace/mochi/tests/aster/x/haskell/two-sum.hs:10:40: error:
-    parse error on input ‘..’
-   |
-10 |                 return ([i, j])) i + 1 .. (n - 1)) 0 .. (n - 1)
-   |                                        ^^
+/workspace/mochi/tests/aster/x/haskell/two-sum.hs:6:7: error:
+    parse error on input ‘=’
+    Suggested fix:
+      Perhaps you need a 'let' in a 'do' block?
+      e.g. 'let x = 5' instead of 'x = 5'
+  |
+6 |     n = length nums
+  |       ^
