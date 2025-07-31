@@ -57,6 +57,8 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 				b.WriteString(s.Text)
 			}
 			b.WriteByte('}')
+		} else if len(parts) > 0 && parts[len(parts)-1] == "Breaks" {
+			b.WriteString("._")
 		}
 		b.WriteByte('\n')
 	case "object_definition":
@@ -266,7 +268,22 @@ func writeCallExpression(b *bytes.Buffer, n *Node, indent int) {
 	}
 	writeExpr(b, n.Children[0], indent)
 	if len(n.Children) > 1 {
-		writeArguments(b, n.Children[1], indent)
+		arg := n.Children[1]
+		// Support call syntax with block argument used by Breaks.breakable
+		if arg.Kind == "block" {
+			b.WriteString(" {\n")
+			writeBlock(b, arg, indent+1)
+			b.WriteString(strings.Repeat("  ", indent))
+			b.WriteString("}")
+			return
+		}
+		if arg.Kind == "arguments" {
+			writeArguments(b, arg, indent)
+		} else {
+			b.WriteByte('(')
+			writeExpr(b, arg, indent)
+			b.WriteByte(')')
+		}
 	} else {
 		b.WriteString("()")
 	}
@@ -331,6 +348,48 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		} else if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indent)
 			b.WriteByte(' ')
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "function_type":
+		if len(n.Children) >= 2 {
+			b.WriteByte('(')
+			if len(n.Children[0].Children) > 0 {
+				params := n.Children[0]
+				// handle tuple_type inside parameter_types
+				if len(params.Children) == 1 && params.Children[0].Kind == "tuple_type" {
+					for i, c := range params.Children[0].Children {
+						if i > 0 {
+							b.WriteString(", ")
+						}
+						writeExpr(b, c, indent)
+					}
+				} else {
+					for i, c := range params.Children {
+						if i > 0 {
+							b.WriteString(", ")
+						}
+						writeExpr(b, c, indent)
+					}
+				}
+			}
+			b.WriteString(") => ")
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "lambda_expression":
+		if len(n.Children) == 2 {
+			b.WriteByte('(')
+			binds := n.Children[0]
+			for i, bind := range binds.Children {
+				if i > 0 {
+					b.WriteString(", ")
+				}
+				if len(bind.Children) == 2 {
+					b.WriteString(bind.Children[0].Text)
+					b.WriteString(": ")
+					writeExpr(b, bind.Children[1], indent)
+				}
+			}
+			b.WriteString(") => ")
 			writeExpr(b, n.Children[1], indent)
 		}
 	case "block":

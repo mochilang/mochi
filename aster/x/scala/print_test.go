@@ -60,8 +60,8 @@ func TestPrint_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
-	if len(files) > 5 {
-		files = files[:5]
+	if len(files) > 10 {
+		files = files[:10]
 	}
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".scala")
@@ -112,7 +112,11 @@ func TestPrint_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("run printed: %v\n%s", err, got)
 			}
-			want, err := exec.Command("scala", src).CombinedOutput()
+			tmpOrig := t.TempDir()
+			if compOut, err := exec.Command("scalac", "-d", tmpOrig, src).CombinedOutput(); err != nil {
+				t.Fatalf("compile original: %v\n%s", err, compOut)
+			}
+			want, err := exec.Command("scala", "-cp", tmpOrig, "Main").CombinedOutput()
 			if err != nil {
 				t.Fatalf("run original: %v\n%s", err, want)
 			}
