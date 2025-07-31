@@ -129,10 +129,11 @@ func writeParameterList(b *bytes.Buffer, n *Node) {
 }
 
 func writeParameterDecl(b *bytes.Buffer, n *Node) {
-	if len(n.Children) >= 2 {
-		writeExpr(b, n.Children[0], 0)
-		b.WriteByte(' ')
-		writeExpr(b, n.Children[1], 0)
+	for i, c := range n.Children {
+		if i > 0 {
+			b.WriteByte(' ')
+		}
+		writeExpr(b, c, 0)
 	}
 }
 
@@ -182,15 +183,20 @@ func writeIfStatement(b *bytes.Buffer, n *Node, indent int) {
 	}
 	ind := strings.Repeat("    ", indent)
 	b.WriteString(ind)
-	b.WriteString("if ")
+	b.WriteString("if (")
 	cond := n.Children[0]
 	if cond.Kind == "condition_clause" && len(cond.Children) > 0 {
 		writeExpr(b, cond.Children[0], indent)
 	} else {
 		writeExpr(b, cond, indent)
 	}
-	b.WriteString(" {\n")
-	writeBlock(b, n.Children[1], indent+1)
+	b.WriteString(") {\n")
+	body := n.Children[1]
+	if body.Kind == "compound_statement" {
+		writeBlock(b, body, indent+1)
+	} else {
+		writeStmt(b, body, indent+1)
+	}
 	b.WriteString(ind)
 	b.WriteString("}\n")
 }
@@ -229,19 +235,24 @@ func writeFieldDeclaration(b *bytes.Buffer, n *Node, indent int) {
 }
 
 func writeForRangeLoop(b *bytes.Buffer, n *Node, indent int) {
-	if len(n.Children) < 4 {
+	if len(n.Children) < 3 {
 		return
 	}
+	iter := n.Children[len(n.Children)-2]
+	body := n.Children[len(n.Children)-1]
 	ind := strings.Repeat("    ", indent)
 	b.WriteString(ind)
 	b.WriteString("for (")
-	writeExpr(b, n.Children[0], indent)
-	b.WriteByte(' ')
-	writeExpr(b, n.Children[1], indent)
+	for i := 0; i < len(n.Children)-2; i++ {
+		if i > 0 {
+			b.WriteByte(' ')
+		}
+		writeExpr(b, n.Children[i], indent)
+	}
 	b.WriteString(" : ")
-	writeExpr(b, n.Children[2], indent)
+	writeExpr(b, iter, indent)
 	b.WriteString(") {\n")
-	writeBlock(b, n.Children[3], indent+1)
+	writeBlock(b, body, indent+1)
 	b.WriteString(ind)
 	b.WriteString("}\n")
 }
@@ -286,6 +297,31 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, c, indent)
 		}
 		b.WriteByte(')')
+	case "parameter_declaration":
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteByte(' ')
+			}
+			writeExpr(b, c, indent)
+		}
+	case "reference_declarator":
+		if n.Text != "" {
+			b.WriteString(n.Text)
+		} else {
+			b.WriteString("&")
+		}
+		for _, c := range n.Children {
+			writeExpr(b, c, indent)
+		}
+	case "type_qualifier":
+		b.WriteString(n.Text)
+	case "template_function":
+		if len(n.Children) >= 1 {
+			writeExpr(b, n.Children[0], indent)
+		}
+		if len(n.Children) > 1 {
+			writeExpr(b, n.Children[1], indent)
+		}
 	case "subscript_expression":
 		if len(n.Children) >= 2 {
 			writeExpr(b, n.Children[0], indent)
@@ -373,6 +409,11 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 				b.WriteString(op)
 			}
 		}
+	case "unary_expression":
+		if len(n.Children) == 1 {
+			b.WriteString(n.Text)
+			writeExpr(b, n.Children[0], indent)
+		}
 	case "conditional_expression":
 		if len(n.Children) == 3 {
 			writeExpr(b, n.Children[0], indent)
@@ -399,8 +440,26 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString("()")
 		}
 	case "lambda_expression":
-		if len(n.Children) >= 2 {
-			writeExpr(b, n.Children[0], indent)
+		if len(n.Children) == 0 {
+			b.WriteString("[](){}")
+			return
+		}
+		writeExpr(b, n.Children[0], indent)
+		if len(n.Children) > 1 && n.Children[1].Kind == "abstract_function_declarator" {
+			b.WriteByte(' ')
+			writeExpr(b, n.Children[1], indent)
+			if len(n.Children) > 2 {
+				b.WriteByte(' ')
+				if n.Children[2].Kind == "compound_statement" {
+					b.WriteString("{\n")
+					writeBlock(b, n.Children[2], indent+1)
+					b.WriteString(strings.Repeat("    ", indent))
+					b.WriteByte('}')
+				} else {
+					writeExpr(b, n.Children[2], indent)
+				}
+			}
+		} else if len(n.Children) > 1 {
 			b.WriteByte(' ')
 			if n.Children[1].Kind == "compound_statement" {
 				b.WriteString("{\n")
@@ -409,16 +468,6 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 				b.WriteByte('}')
 			} else {
 				writeExpr(b, n.Children[1], indent)
-			}
-		} else if len(n.Children) == 1 {
-			b.WriteString("[&] ")
-			if n.Children[0].Kind == "compound_statement" {
-				b.WriteString("{\n")
-				writeBlock(b, n.Children[0], indent+1)
-				b.WriteString(strings.Repeat("    ", indent))
-				b.WriteByte('}')
-			} else {
-				writeExpr(b, n.Children[0], indent)
 			}
 		}
 	case "lambda_capture_specifier":

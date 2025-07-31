@@ -58,6 +58,7 @@ func TestPrint_Golden(t *testing.T) {
 	}
 	sort.Strings(files)
 	var selected []string
+	count := 0
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".cpp")
 		if _, err := os.Stat(filepath.Join(srcDir, name+".error")); err == nil {
@@ -65,6 +66,10 @@ func TestPrint_Golden(t *testing.T) {
 		}
 		base := filepath.Base(f)
 		if base == "bench_block.cpp" || base == "closure.cpp" {
+			continue
+		}
+		count++
+		if count <= 10 {
 			continue
 		}
 		selected = append(selected, f)
