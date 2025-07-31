@@ -47,6 +47,10 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 			if i > 0 {
 				b.WriteByte(' ')
 			}
+			if c.Kind == "hiding" {
+				b.WriteString("hiding ")
+				continue
+			}
 			writeNode(b, &c, indent)
 		}
 	case "module":
@@ -202,7 +206,12 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 		}
 		if len(n.Children) >= 2 {
 			b.WriteString(" {")
-			writeNode(b, &n.Children[1], indent)
+			for i, c := range n.Children[1:] {
+				if i > 0 {
+					b.WriteString(", ")
+				}
+				writeNode(b, &c, indent)
+			}
 			b.WriteString("}")
 		}
 	case "fields":
