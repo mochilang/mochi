@@ -43,6 +43,25 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, n.Children[0], indent)
 		}
 		b.WriteByte('\n')
+	case "type_definition":
+		if len(n.Children) >= 2 {
+			b.WriteString(ind)
+			b.WriteString("typedef ")
+			writeExpr(b, n.Children[0], indent)
+			b.WriteByte(' ')
+			writeExpr(b, n.Children[1], indent)
+			b.WriteString(";\n")
+		}
+	case "struct_specifier":
+		if len(n.Children) >= 2 {
+			b.WriteString(ind)
+			b.WriteString("struct ")
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" {\n")
+			writeFieldDeclList(b, n.Children[1], indent+1)
+			b.WriteString(ind)
+			b.WriteString("};\n")
+		}
 	case "function_definition":
 		if len(n.Children) >= 3 {
 			b.WriteString(ind)
@@ -120,6 +139,26 @@ func writeBlock(b *bytes.Buffer, n *Node, indent int) {
 	}
 }
 
+func writeFieldDeclList(b *bytes.Buffer, n *Node, indent int) {
+	for _, c := range n.Children {
+		writeFieldDecl(b, c, indent)
+	}
+}
+
+func writeFieldDecl(b *bytes.Buffer, n *Node, indent int) {
+	ind := strings.Repeat("    ", indent)
+	if len(n.Children) == 0 {
+		return
+	}
+	b.WriteString(ind)
+	writeExpr(b, n.Children[0], indent)
+	if len(n.Children) > 1 {
+		b.WriteByte(' ')
+		writeDeclarator(b, n.Children[1])
+	}
+	b.WriteString(";\n")
+}
+
 func writeFunctionDeclarator(b *bytes.Buffer, n *Node) {
 	if len(n.Children) >= 2 {
 		writeExpr(b, n.Children[0], 0)
@@ -176,6 +215,11 @@ func writeDeclarator(b *bytes.Buffer, n *Node) {
 			writeExpr(b, n.Children[0], 0)
 		}
 		b.WriteString("[]")
+	case "pointer_declarator":
+		b.WriteByte('*')
+		if len(n.Children) > 0 {
+			writeDeclarator(b, n.Children[0])
+		}
 	default:
 		writeExpr(b, n, 0)
 	}
@@ -183,7 +227,7 @@ func writeDeclarator(b *bytes.Buffer, n *Node) {
 
 func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	switch n.Kind {
-	case "identifier", "number_literal", "primitive_type", "system_lib_string", "string_content", "escape_sequence":
+	case "identifier", "field_identifier", "type_identifier", "number_literal", "primitive_type", "system_lib_string", "string_content", "escape_sequence":
 		b.WriteString(n.Text)
 	case "string_literal":
 		b.WriteByte('"')
@@ -215,6 +259,12 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteByte('[')
 			writeExpr(b, n.Children[1], indent)
 			b.WriteByte(']')
+		}
+	case "field_expression":
+		if len(n.Children) >= 2 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteByte('.')
+			writeExpr(b, n.Children[1], indent)
 		}
 	case "parenthesized_expression":
 		b.WriteByte('(')
@@ -258,6 +308,49 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, c, indent)
 		}
 		b.WriteByte('}')
+	case "initializer_pair":
+		if len(n.Children) == 2 {
+			if n.Children[0].Kind == "field_designator" && len(n.Children[0].Children) > 0 {
+				b.WriteByte('.')
+				writeExpr(b, n.Children[0].Children[0], indent)
+			} else {
+				writeExpr(b, n.Children[0], indent)
+			}
+			b.WriteString(" = ")
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "compound_literal_expression":
+		if len(n.Children) >= 1 {
+			b.WriteByte('(')
+			writeExpr(b, n.Children[0], indent)
+			b.WriteByte(')')
+		}
+		if len(n.Children) > 1 {
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "sizeof_expression":
+		b.WriteString("sizeof(")
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+		}
+		b.WriteByte(')')
+	case "type_descriptor":
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteByte(' ')
+			}
+			writeExpr(b, c, indent)
+		}
+	case "struct_specifier":
+		if len(n.Children) >= 1 {
+			b.WriteString("struct ")
+			writeExpr(b, n.Children[0], indent)
+		}
+	case "pointer_declarator":
+		b.WriteByte('*')
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+		}
 	default:
 		b.WriteString(n.Kind)
 	}
