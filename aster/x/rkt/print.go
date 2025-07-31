@@ -45,7 +45,7 @@ func writeTop(b *bytes.Buffer, n *Node, indent int) {
 
 func writeNode(b *bytes.Buffer, n *Node, indent int) {
 	switch n.Kind {
-	case "comment", "number", "string", "symbol":
+	case "comment", "number", "string", "symbol", "boolean", "keyword":
 		b.WriteString(n.Text)
 	case "extension":
 		b.WriteString("#lang ")

@@ -1,0 +1,7 @@
+<: contract violation
+  expected: real?
+  given: "b"
+  context...:
+   /usr/share/racket/collects/racket/private/sort.rkt:: loop
+   /usr/share/racket/collects/racket/private/sort.rkt:
+   body of ""
