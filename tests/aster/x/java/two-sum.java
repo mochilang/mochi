@@ -1,6 +1,5 @@
-public class Main {
+class Main {
     static int[] result = twoSum(new int[]{2, 7, 11, 15}, 9);
-
     static int[] twoSum(int[] nums, int target) {
         int n = nums.length;
         for (int i = 0; i < n; i++) {

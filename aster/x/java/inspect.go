@@ -4,6 +4,7 @@ package java
 
 import (
 	"context"
+	"encoding/json"
 
 	sitter "github.com/tree-sitter/go-tree-sitter"
 	javats "github.com/tree-sitter/tree-sitter-java/bindings/go"
@@ -29,4 +30,10 @@ func Inspect(src string, opt Options) (*Program, error) {
 	tree := parser.ParseCtx(context.Background(), []byte(src), nil)
 	root := convert(tree.RootNode(), []byte(src), opt.Positions)
 	return &Program{File: (*ProgramNode)(root)}, nil
+}
+
+// MarshalJSON implements json.Marshaler to ensure stable output order.
+func (p *Program) MarshalJSON() ([]byte, error) {
+	type Alias Program
+	return json.Marshal(&struct{ *Alias }{Alias: (*Alias)(p)})
 }

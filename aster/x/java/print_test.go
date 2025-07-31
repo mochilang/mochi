@@ -13,7 +13,6 @@ import (
 	"testing"
 
 	javaast "mochi/aster/x/java"
-	javacode "mochi/compiler/x/java"
 )
 
 func shouldUpdate() bool {
@@ -82,7 +81,11 @@ func TestPrint_Golden(t *testing.T) {
 				}
 			}
 			tmp := t.TempDir()
-			if outc, err := exec.Command("javac", "-d", tmp, outPath).CombinedOutput(); err != nil {
+			file := filepath.Join(tmp, "Main.java")
+			if err := os.WriteFile(file, []byte(out), 0644); err != nil {
+				t.Fatalf("write temp: %v", err)
+			}
+			if outc, err := exec.Command("javac", "-d", tmp, file).CombinedOutput(); err != nil {
 				t.Fatalf("javac printed: %v\n%s", err, outc)
 			}
 			got, err := exec.Command("java", "-cp", tmp, "Main").CombinedOutput()
@@ -90,7 +93,15 @@ func TestPrint_Golden(t *testing.T) {
 				t.Fatalf("run printed: %v\n%s", err, got)
 			}
 			tmp2 := t.TempDir()
-			if outc, err := exec.Command("javac", "-d", tmp2, src).CombinedOutput(); err != nil {
+			orig := filepath.Join(tmp2, "Main.java")
+			data2, err := os.ReadFile(src)
+			if err != nil {
+				t.Fatalf("read src: %v", err)
+			}
+			if err := os.WriteFile(orig, data2, 0644); err != nil {
+				t.Fatalf("write temp src: %v", err)
+			}
+			if outc, err := exec.Command("javac", "-d", tmp2, orig).CombinedOutput(); err != nil {
 				t.Fatalf("javac original: %v\n%s", err, outc)
 			}
 			want, err := exec.Command("java", "-cp", tmp2, "Main").CombinedOutput()
