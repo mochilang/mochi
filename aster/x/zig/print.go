@@ -304,6 +304,16 @@ func writeExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 		}
 	case "binary_expression":
 		writeBinaryExpr(b, n, indentLevel)
+	case "pointer_type":
+		b.WriteByte('*')
+		for i := range n.Children {
+			writeExpr(b, &n.Children[i], indentLevel)
+		}
+	case "nullable_type":
+		b.WriteByte('?')
+		for i := range n.Children {
+			writeExpr(b, &n.Children[i], indentLevel)
+		}
 	case "slice_type":
 		b.WriteString("[]")
 		if len(n.Children) > 0 {
@@ -431,6 +441,17 @@ func writeExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 					b.WriteByte(' ')
 				}
 				writeExpr(b, &n.Children[i], indentLevel)
+			}
+		}
+	case "if_expression":
+		if len(n.Children) >= 2 {
+			b.WriteString("if ")
+			writeExpr(b, &n.Children[0], indentLevel)
+			b.WriteByte(' ')
+			writeExpr(b, &n.Children[1], indentLevel)
+			if len(n.Children) > 2 {
+				b.WriteString(" else ")
+				writeExpr(b, &n.Children[2], indentLevel)
 			}
 		}
 	case "for_statement":

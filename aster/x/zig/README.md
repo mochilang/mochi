@@ -2,9 +2,9 @@
 
 This directory holds golden test inputs and outputs for the Zig aster package.
 
-Updated: 2025-07-31 20:33 +07
+Updated: 2025-07-31 20:44 +07
 
-## Program checklist (80/80)
+## Program checklist (98/98)
 
 1. append_builtin
 2. avg_builtin
@@ -86,3 +86,21 @@ Updated: 2025-07-31 20:33 +07
 78. str_builtin
 79. string_compare
 80. string_concat
+81. string_contains
+82. string_in_operator
+83. string_index
+84. string_prefix_slice
+85. substring_builtin
+86. sum_builtin
+87. tail_recursion
+88. test_block
+89. tree_sum
+90. two-sum
+91. typed_let
+92. typed_var
+93. unary_neg
+94. update_stmt
+95. user_type_literal
+96. values_builtin
+97. var_assignment
+98. while_loop
