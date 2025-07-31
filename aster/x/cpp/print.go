@@ -42,6 +42,16 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString(n.Children[0].Text)
 		}
 		b.WriteByte('\n')
+	case "template_declaration":
+		b.WriteString(ind)
+		b.WriteString("template")
+		if len(n.Children) > 0 && n.Children[0].Kind == "template_parameter_list" {
+			writeExpr(b, n.Children[0], indent)
+		}
+		b.WriteByte('\n')
+		if len(n.Children) > 1 {
+			writeStmt(b, n.Children[1], indent)
+		}
 	case "function_definition":
 		if skipFunctionDefinition(n) {
 			return
@@ -410,6 +420,21 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, c, indent)
 		}
 		b.WriteByte('>')
+	case "template_parameter_list":
+		b.WriteByte('<')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeExpr(b, c, indent)
+		}
+		b.WriteByte('>')
+	case "type_parameter_declaration":
+		b.WriteString("typename")
+		if len(n.Children) > 0 {
+			b.WriteByte(' ')
+			writeExpr(b, n.Children[0], indent)
+		}
 	case "type_descriptor":
 		if len(n.Children) > 0 {
 			writeExpr(b, n.Children[0], indent)
