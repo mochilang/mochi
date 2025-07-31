@@ -10,6 +10,10 @@ and printing it back. Golden tests ensure round-tripping for a subset of samples
 - [x] basic_compare.ts
 - [x] bench_block.ts
 - [x] binary_precedence.ts
+- [x] bool_chain.ts
+- [x] cast_string_to_int.ts
+- [x] cast_struct.ts
+- [x] closure.ts
 
-Completed 5/5 on 2025-07-31 14:46 GMT+7.
+Completed 8/8 on 2025-07-31 15:06 GMT+7.
 

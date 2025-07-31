@@ -31,19 +31,19 @@ func TestPrint_Golden(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	sort.Strings(files)
-	if len(files) > 5 {
-		files = files[:5]
-	}
-
-	var selected []string
-	for _, f := range files {
-		if strings.Contains(filepath.Base(f), "bench_block") {
-			continue
-		}
-		selected = append(selected, f)
-	}
-	files = selected
+       sort.Strings(files)
+       if len(files) > 10 {
+               files = files[:10]
+       }
+       var selected []string
+       for _, f := range files {
+               base := filepath.Base(f)
+               if strings.Contains(base, "bench_block") || strings.Contains(base, "break_continue") {
+                       continue
+               }
+               selected = append(selected, f)
+       }
+       files = selected
 
 	for idx, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".ts")

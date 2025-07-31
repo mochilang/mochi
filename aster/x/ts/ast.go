@@ -91,6 +91,8 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 		if kw := n.ChildByFieldName("kind"); kw != nil {
 			node.Text = kw.Utf8Text(src)
 		}
+	case "variable_declaration":
+		node.Text = "var"
 	}
 
 	if opt.Positions {

@@ -48,6 +48,21 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			writeVarDeclarator(b, c, indent)
 		}
 		b.WriteString(";\n")
+	case "variable_declaration":
+		kw := n.Text
+		if kw == "" {
+			kw = "var"
+		}
+		b.WriteString(ind)
+		b.WriteString(kw)
+		b.WriteByte(' ')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeVarDeclarator(b, c, indent)
+		}
+		b.WriteString(";\n")
 	case "expression_statement":
 		if len(n.Children) > 0 {
 			b.WriteString(ind)
@@ -66,6 +81,109 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 		b.WriteString(ind)
 		writeBlock(b, n, indent)
 		b.WriteByte('\n')
+	case "for_statement":
+		if len(n.Children) >= 4 {
+			b.WriteString(ind)
+			b.WriteString("for (")
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString("; ")
+			writeExpr(b, n.Children[1], indent)
+			b.WriteString("; ")
+			writeExpr(b, n.Children[2], indent)
+			b.WriteString(")")
+			body := n.Children[3]
+			if body.Kind == "statement_block" {
+				b.WriteByte(' ')
+				writeBlock(b, body, indent)
+				b.WriteByte('\n')
+			} else {
+				b.WriteByte('\n')
+				writeStmt(b, body, indent+1)
+			}
+		}
+	case "for_in_statement":
+		if len(n.Children) >= 3 {
+			b.WriteString(ind)
+			b.WriteString("for (const ")
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" of ")
+			writeExpr(b, n.Children[1], indent)
+			b.WriteString(")")
+			body := n.Children[2]
+			if body.Kind == "statement_block" {
+				b.WriteByte(' ')
+				writeBlock(b, body, indent)
+				b.WriteByte('\n')
+			} else {
+				b.WriteByte('\n')
+				writeStmt(b, body, indent+1)
+			}
+		}
+	case "if_statement":
+		if len(n.Children) >= 2 {
+			b.WriteString(ind)
+			b.WriteString("if (")
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(")")
+			body := n.Children[1]
+			if body.Kind == "statement_block" {
+				b.WriteByte(' ')
+				writeBlock(b, body, indent)
+				b.WriteByte('\n')
+			} else {
+				b.WriteByte('\n')
+				writeStmt(b, body, indent+1)
+			}
+		}
+	case "break_statement":
+		b.WriteString(ind)
+		b.WriteString("break\n")
+	case "continue_statement":
+		b.WriteString(ind)
+		b.WriteString("continue\n")
+	case "export_statement":
+		if len(n.Children) > 0 {
+			b.WriteString(ind)
+			b.WriteString("export ")
+			child := n.Children[0]
+			switch child.Kind {
+			case "interface_declaration":
+				writeInterfaceDecl(b, child, indent)
+				b.WriteByte('\n')
+			default:
+				writeStmt(b, child, indent)
+			}
+		}
+	case "interface_declaration":
+		b.WriteString(ind)
+		writeInterfaceDecl(b, n, indent)
+		b.WriteByte('\n')
+	case "function_declaration":
+		if len(n.Children) >= 2 {
+			b.WriteString(ind)
+			b.WriteString("function ")
+			writeExpr(b, n.Children[0], indent)
+			idx := 1
+			if idx < len(n.Children) && n.Children[idx].Kind == "formal_parameters" {
+				writeParameters(b, n.Children[idx], indent)
+				idx++
+			} else {
+				b.WriteString("()")
+			}
+			if idx < len(n.Children) && n.Children[idx].Kind == "type_annotation" {
+				writeTypeAnnotation(b, n.Children[idx], indent)
+				idx++
+			}
+			b.WriteByte(' ')
+			if idx < len(n.Children) {
+				if n.Children[idx].Kind == "statement_block" {
+					writeBlock(b, n.Children[idx], indent)
+				} else {
+					writeExpr(b, n.Children[idx], indent)
+				}
+			}
+			b.WriteByte('\n')
+		}
 	default:
 		b.WriteString(ind)
 		writeExpr(b, n, indent)
@@ -127,7 +245,15 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		if len(n.Children) > 0 {
 			writeExpr(b, n.Children[0], indent)
 			if len(n.Children) > 1 {
-				writeExpr(b, n.Children[1], indent)
+				if isJSONStringify(n.Children[0]) && len(n.Children[1].Children) == 2 && n.Children[1].Children[1].Kind == "string" {
+					b.WriteByte('(')
+					writeExpr(b, n.Children[1].Children[0], indent)
+					b.WriteString(", null, ")
+					writeExpr(b, n.Children[1].Children[1], indent)
+					b.WriteByte(')')
+				} else {
+					writeExpr(b, n.Children[1], indent)
+				}
 			} else {
 				b.WriteString("()")
 			}
@@ -166,6 +292,9 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 				op = "+"
 			}
 			b.WriteString(op)
+			if len(op) > 0 && ((op[0] >= 'a' && op[0] <= 'z') || (op[0] >= 'A' && op[0] <= 'Z')) {
+				b.WriteByte(' ')
+			}
 			writeExpr(b, n.Children[0], indent)
 		}
 	case "parenthesized_expression":
@@ -196,12 +325,74 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, n.Children[0], indent)
 		}
 		b.WriteString("[]")
+	case "object":
+		b.WriteByte('{')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeExpr(b, c, indent)
+		}
+		b.WriteByte('}')
+	case "pair":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(": ")
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "lexical_declaration":
+		kw := n.Text
+		if kw == "" {
+			kw = "const"
+		}
+		b.WriteString(kw)
+		b.WriteByte(' ')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeVarDeclarator(b, c, indent)
+		}
+	case "variable_declaration":
+		kw := n.Text
+		if kw == "" {
+			kw = "var"
+		}
+		b.WriteString(kw)
+		b.WriteByte(' ')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeVarDeclarator(b, c, indent)
+		}
 	case "subscript_expression":
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indent)
 			b.WriteByte('[')
 			writeExpr(b, n.Children[1], indent)
 			b.WriteByte(']')
+		}
+	case "assignment_expression":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			op := n.Text
+			if op == "" {
+				op = "="
+			}
+			b.WriteByte(' ')
+			b.WriteString(op)
+			b.WriteByte(' ')
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "update_expression":
+		if len(n.Children) == 1 {
+			op := n.Text
+			if op == "" {
+				op = "++"
+			}
+			b.WriteString(op)
+			writeExpr(b, n.Children[0], indent)
 		}
 	case "arrow_function":
 		var params *Node
@@ -253,4 +444,38 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 
 func writeParameters(b *bytes.Buffer, n *Node, indent int) {
 	writeExpr(b, n, indent)
+}
+
+func writeInterfaceDecl(b *bytes.Buffer, n *Node, indent int) {
+	if len(n.Children) < 2 {
+		return
+	}
+	b.WriteString("interface ")
+	writeExpr(b, n.Children[0], indent)
+	b.WriteByte(' ')
+	writeInterfaceBody(b, n.Children[1], indent)
+}
+
+func writeInterfaceBody(b *bytes.Buffer, n *Node, indent int) {
+	b.WriteByte('{')
+	for i, c := range n.Children {
+		if i > 0 {
+			b.WriteString("; ")
+		} else if len(n.Children) > 0 {
+			b.WriteByte(' ')
+		}
+		writeExpr(b, c, indent)
+	}
+	if len(n.Children) > 0 {
+		b.WriteByte(' ')
+	}
+	b.WriteByte('}')
+}
+
+func isJSONStringify(n *Node) bool {
+	if n == nil || n.Kind != "member_expression" || len(n.Children) != 2 {
+		return false
+	}
+	return n.Children[0].Kind == "identifier" && n.Children[0].Text == "JSON" &&
+		n.Children[1].Kind == "property_identifier" && n.Children[1].Text == "stringify"
 }
