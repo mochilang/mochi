@@ -351,6 +351,7 @@
                                     "children": [
                                       {
                                         "kind": "string_literal",
+                                        "text": "\"{\"",
                                         "children": [
                                           {
                                             "kind": "string_fragment",
@@ -400,6 +401,7 @@
                                             "children": [
                                               {
                                                 "kind": "string_literal",
+                                                "text": "\"  \\\"duration_us\\\": \"",
                                                 "children": [
                                                   {
                                                     "kind": "string_fragment",
@@ -423,6 +425,7 @@
                                           },
                                           {
                                             "kind": "string_literal",
+                                            "text": "\",\"",
                                             "children": [
                                               {
                                                 "kind": "string_fragment",
@@ -474,6 +477,7 @@
                                             "children": [
                                               {
                                                 "kind": "string_literal",
+                                                "text": "\"  \\\"memory_bytes\\\": \"",
                                                 "children": [
                                                   {
                                                     "kind": "string_fragment",
@@ -497,6 +501,7 @@
                                           },
                                           {
                                             "kind": "string_literal",
+                                            "text": "\",\"",
                                             "children": [
                                               {
                                                 "kind": "string_fragment",
@@ -540,6 +545,7 @@
                                     "children": [
                                       {
                                         "kind": "string_literal",
+                                        "text": "\"  \\\"name\\\": \\\"simple\\\"\"",
                                         "children": [
                                           {
                                             "kind": "string_fragment",
@@ -593,6 +599,7 @@
                                     "children": [
                                       {
                                         "kind": "string_literal",
+                                        "text": "\"}\"",
                                         "children": [
                                           {
                                             "kind": "string_fragment",
@@ -717,6 +724,7 @@
                                             "children": [
                                               {
                                                 "kind": "string_literal",
+                                                "text": "\"MOCHI_NOW_SEED\"",
                                                 "children": [
                                                   {
                                                     "kind": "string_fragment",

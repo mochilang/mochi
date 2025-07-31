@@ -116,6 +116,10 @@ func convert(n *sitter.Node, src []byte, withPos bool) *Node {
 		}
 	}
 
+	if n.Kind() == "string_literal" {
+		node.Text = n.Utf8Text(src)
+	}
+
 	if n.NamedChildCount() == 0 {
 		if isValueNode(node.Kind) {
 			node.Text = n.Utf8Text(src)

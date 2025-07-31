@@ -30,7 +30,7 @@ func writeProgram(b *bytes.Buffer, n *Node, indent int) {
 
 func isTypeKind(kind string) bool {
 	switch kind {
-	case "integral_type", "floating_point_type", "void_type", "array_type", "type_identifier", "boolean_type", "primitive_type":
+	case "integral_type", "floating_point_type", "void_type", "array_type", "type_identifier", "boolean_type", "primitive_type", "generic_type", "scoped_type_identifier":
 		return true
 	default:
 		return false
@@ -47,6 +47,23 @@ func writeType(b *bytes.Buffer, n *Node) {
 			writeType(b, n.Children[0])
 		}
 		b.WriteString("[]")
+	case "generic_type":
+		for _, c := range n.Children {
+			if c.Kind == "type_arguments" {
+				writeTypeArguments(b, c)
+			} else {
+				writeType(b, c)
+			}
+		}
+	case "type_arguments":
+		writeTypeArguments(b, n)
+	case "scoped_type_identifier":
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteByte('.')
+			}
+			writeType(b, c)
+		}
 	case "integral_type", "floating_point_type", "void_type", "type_identifier", "boolean_type", "primitive_type":
 		b.WriteString(n.Text)
 	default:
@@ -361,6 +378,17 @@ func writeArgumentList(b *bytes.Buffer, n *Node, indent int) {
 	b.WriteByte(')')
 }
 
+func writeTypeArguments(b *bytes.Buffer, n *Node) {
+	b.WriteByte('<')
+	for i, c := range n.Children {
+		if i > 0 {
+			b.WriteString(", ")
+		}
+		writeType(b, c)
+	}
+	b.WriteByte('>')
+}
+
 func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	switch n.Kind {
 	case "identifier", "decimal_integer_literal", "true", "false",
@@ -370,12 +398,14 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		if n.Text != "" {
 			b.WriteString(n.Text)
 		} else if len(n.Children) > 0 {
-			b.WriteByte('"')
+			var sb strings.Builder
 			for _, c := range n.Children {
 				if c.Kind == "string_fragment" {
-					b.WriteString(c.Text)
+					sb.WriteString(c.Text)
 				}
 			}
+			b.WriteByte('"')
+			b.WriteString(sb.String())
 			b.WriteByte('"')
 		}
 	case "method_invocation":
@@ -409,6 +439,16 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			}
 			writeExpr(b, c, indent)
 		}
+	case "generic_type":
+		for _, c := range n.Children {
+			if c.Kind == "type_arguments" {
+				writeTypeArguments(b, c)
+			} else {
+				writeExpr(b, c, indent)
+			}
+		}
+	case "type_arguments":
+		writeTypeArguments(b, n)
 	case "array_creation_expression":
 		if len(n.Children) > 0 {
 			b.WriteString("new ")
@@ -439,10 +479,23 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		if len(n.Children) >= 1 {
 			b.WriteString("new ")
 			writeType(b, n.Children[0])
-			if len(n.Children) > 1 {
-				writeArgumentList(b, n.Children[1], indent)
+			idx := 1
+			if idx < len(n.Children) && n.Children[idx].Kind == "argument_list" {
+				writeArgumentList(b, n.Children[idx], indent)
+				idx++
 			} else {
 				b.WriteString("()")
+			}
+			if idx < len(n.Children) && n.Children[idx].Kind == "class_body" {
+				b.WriteString(" {")
+				if len(n.Children[idx].Children) > 0 {
+					b.WriteByte('{')
+					b.WriteByte('\n')
+					writeProgram(b, n.Children[idx].Children[0], indent+1)
+					b.WriteString(strings.Repeat("    ", indent))
+					b.WriteString("}")
+				}
+				b.WriteString("}")
 			}
 		}
 	case "assignment_expression":

@@ -78,6 +78,7 @@
                                     "children": [
                                       {
                                         "kind": "string_literal",
+                                        "text": "\"'\"",
                                         "children": [
                                           {
                                             "kind": "string_fragment",
@@ -102,6 +103,7 @@
                                   },
                                   {
                                     "kind": "string_literal",
+                                    "text": "\"'\"",
                                     "children": [
                                       {
                                         "kind": "string_fragment",
