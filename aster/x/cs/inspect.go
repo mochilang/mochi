@@ -17,7 +17,9 @@ func Inspect(src string) (*Program, error) {
 	p.SetLanguage(sitter.NewLanguage(csharp.Language()))
 	data := []byte(src)
 	tree := p.Parse(data, nil)
-	return &Program{File: (*CompilationUnit)(convert(tree.RootNode(), data))}, nil
+	return &Program{
+		File: (*CompilationUnit)(convert(tree.RootNode(), data)),
+	}, nil
 }
 
 // MarshalJSON implements json.Marshaler for Program to ensure stable output.
