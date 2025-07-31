@@ -1,0 +1,26 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "cast",
+            "children": [
+              {
+                "kind": "string",
+                "text": "1995"
+              },
+              {
+                "kind": "type",
+                "text": "int"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

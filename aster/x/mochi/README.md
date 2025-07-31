@@ -19,8 +19,18 @@ This directory stores golden files for the Mochi language AST printer.
 13. cross_join_triple.mochi
 14. dataset_where_filter.mochi
 15. exists_builtin.mochi
+16. append_builtin.mochi
+17. avg_builtin.mochi
+18. basic_compare.mochi
+19. bool_chain.mochi
+20. cast_string_to_int.mochi
+21. for_loop.mochi
+22. fun_call.mochi
+23. if_else.mochi
+24. json_builtin.mochi
+25. fun_three_args.mochi
 
-Completed **15/15** examples.
+Completed **25/25** examples.
 
-_Last updated: 2025-07-31 19:30 GMT+7_
+_Last updated: 2025-07-31 19:43 GMT+7_
 

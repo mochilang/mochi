@@ -1,0 +1,41 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "for",
+        "text": "i",
+        "children": [
+          {
+            "kind": "range",
+            "children": [
+              {
+                "kind": "int",
+                "text": "1"
+              },
+              {
+                "kind": "int",
+                "text": "4"
+              }
+            ]
+          },
+          {
+            "kind": "block",
+            "children": [
+              {
+                "kind": "call",
+                "text": "print",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "i"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

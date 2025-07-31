@@ -1,0 +1,54 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "let",
+        "text": "m",
+        "children": [
+          {
+            "kind": "map",
+            "children": [
+              {
+                "kind": "entry",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "a"
+                  },
+                  {
+                    "kind": "int",
+                    "text": "1"
+                  }
+                ]
+              },
+              {
+                "kind": "entry",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "b"
+                  },
+                  {
+                    "kind": "int",
+                    "text": "2"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "json",
+        "children": [
+          {
+            "kind": "selector",
+            "text": "m"
+          }
+        ]
+      }
+    ]
+  }
+}
