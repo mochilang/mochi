@@ -1,4 +1,4 @@
-# Elixir AST Print Progress (50/50 completed)
+# Elixir AST Print Progress (60/60 completed)
 
 This file tracks golden tests for the Elixir AST printer.
 
@@ -53,4 +53,14 @@ This file tracks golden tests for the Elixir AST printer.
 48. [x] string_contains
 49. [x] substring_builtin
 50. [x] sum_builtin
-Updated: 2025-07-31 19:26 GMT+7
+51. [x] tail_recursion
+52. [x] test_block
+53. [x] tree_sum
+54. [x] two-sum
+55. [x] typed_let
+56. [x] typed_var
+57. [x] unary_neg
+58. [x] update_stmt
+59. [x] user_type_literal
+60. [x] values_builtin
+Updated: 2025-07-31 20:17 GMT+7
