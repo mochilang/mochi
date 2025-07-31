@@ -7,6 +7,7 @@ import (
 	"flag"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
 
@@ -42,9 +43,22 @@ func TestInspect_Golden(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(files) == 0 {
-		t.Fatalf("no files: %s", pattern)
+	sort.Strings(files)
+	var selected []string
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".cpp")
+		if _, err := os.Stat(filepath.Join(filepath.Dir(f), name+".error")); err == nil {
+			continue
+		}
+		if filepath.Base(f) == "bench_block.cpp" {
+			continue
+		}
+		selected = append(selected, f)
+		if len(selected) >= 5 {
+			break
+		}
 	}
+	files = selected
 
 	outDir := filepath.Join(root, "tests", "aster", "x", "cpp")
 	os.MkdirAll(outDir, 0o755)

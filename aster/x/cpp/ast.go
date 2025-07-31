@@ -139,7 +139,7 @@ func isValueNode(kind string) bool {
 		"system_lib_string", "primitive_type", "type_identifier",
 		"string_content", "escape_sequence", "field_identifier",
 		"namespace_identifier", "auto", "character", "lambda_capture_specifier",
-		"true", "false":
+		"true", "false", "break_statement", "continue_statement":
 		return true
 	default:
 		return false

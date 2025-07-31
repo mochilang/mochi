@@ -2,17 +2,17 @@
 
 Golden files for the C++ inspector and printer live in this directory.
 
-Completed programs: 6/103
-Date: 2025-07-31 14:28 GMT+7
+Completed programs: 11/103
+Date: 2025-07-31 14:52 GMT+7
 
 ## Checklist
 - [ ] append_builtin
-- [ ] avg_builtin
+- [x] avg_builtin
 - [x] basic_compare
 - [ ] bench_block
 - [x] binary_precedence
-- [ ] bool_chain
-- [ ] break_continue
+- [x] bool_chain
+- [x] break_continue
 - [ ] cast_string_to_int
 - [ ] cast_struct
 - [ ] closure
