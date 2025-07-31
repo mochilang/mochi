@@ -96,6 +96,17 @@ func convert(n *sitter.Node, src []byte, opts Options) *Node {
 			opBytes := src[left.EndByte():right.StartByte()]
 			node.Text = strings.TrimSpace(string(opBytes))
 		}
+	} else if n.Kind() == "update_expression" && n.NamedChildCount() == 1 {
+		child := n.NamedChild(0)
+		if child != nil {
+			before := strings.TrimSpace(string(src[n.StartByte():child.StartByte()]))
+			after := strings.TrimSpace(string(src[child.EndByte():n.EndByte()]))
+			if before != "" {
+				node.Text = "pre" + before
+			} else {
+				node.Text = "post" + after
+			}
+		}
 	}
 
 	for i := uint(0); i < n.NamedChildCount(); i++ {

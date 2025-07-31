@@ -274,10 +274,26 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		}
 		writeBinaryOp(b, n, indent, op)
 	case "update_expression":
-		if len(n.Children) > 0 {
-			writeExpr(b, n.Children[0], indent)
+		op := strings.TrimSpace(n.Text)
+		prefix := false
+		if strings.HasPrefix(op, "pre") {
+			prefix = true
+			op = strings.TrimPrefix(op, "pre")
+		} else if strings.HasPrefix(op, "post") {
+			op = strings.TrimPrefix(op, "post")
 		}
-		b.WriteString("++")
+		if op == "" {
+			op = "++"
+		}
+		if len(n.Children) > 0 {
+			if prefix {
+				b.WriteString(op)
+				writeExpr(b, n.Children[0], indent)
+			} else {
+				writeExpr(b, n.Children[0], indent)
+				b.WriteString(op)
+			}
+		}
 	default:
 		b.WriteString(n.Kind)
 	}
