@@ -116,6 +116,7 @@
                                 "children": [
                                   {
                                     "kind": "binary_operator",
+                                    "text": "+",
                                     "children": [
                                       {
                                         "kind": "identifier",
@@ -143,9 +144,11 @@
                                 "children": [
                                   {
                                     "kind": "comparison_operator",
+                                    "text": "==",
                                     "children": [
                                       {
                                         "kind": "binary_operator",
+                                        "text": "+",
                                         "children": [
                                           {
                                             "kind": "subscript",

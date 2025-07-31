@@ -32,14 +32,9 @@ func TestPrint_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
-	var selected []string
-	for _, f := range files {
-		base := filepath.Base(f)
-		if base == "two-sum.py" || base == "cross_join.py" {
-			selected = append(selected, f)
-		}
+	if len(files) > 5 {
+		files = files[:5]
 	}
-	files = selected
 
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".py")
@@ -82,11 +77,14 @@ func TestPrint_Golden(t *testing.T) {
 				}
 			}
 			cmd := exec.Command("python3", outPath)
+			cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
 			got, err := cmd.CombinedOutput()
 			if err != nil {
 				t.Fatalf("run printed: %v\n%s", err, got)
 			}
-			want, err := exec.Command("python3", src).CombinedOutput()
+			cmd2 := exec.Command("python3", src)
+			cmd2.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+			want, err := cmd2.CombinedOutput()
 			if err != nil {
 				t.Fatalf("run original: %v\n%s", err, want)
 			}

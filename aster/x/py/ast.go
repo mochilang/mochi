@@ -81,7 +81,18 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 		if isValueNode(node.Kind) {
 			node.Text = n.Utf8Text(src)
 		} else {
-			return nil
+			if node.Kind != "block" {
+				return nil
+			}
+		}
+	}
+
+	if n.ChildCount() > n.NamedChildCount() {
+		if node.Kind == "binary_operator" || node.Kind == "comparison_operator" || node.Kind == "boolean_operator" {
+			if n.ChildCount() >= 3 {
+				op := n.Child(1)
+				node.Text = op.Utf8Text(src)
+			}
 		}
 	}
 
@@ -95,7 +106,7 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 		}
 	}
 
-	if len(node.Children) == 0 && node.Text == "" {
+	if len(node.Children) == 0 && node.Text == "" && !isValueNode(node.Kind) && node.Kind != "block" {
 		return nil
 	}
 
