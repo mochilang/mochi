@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-31 01:17 GMT+7
+Last updated: 2025-07-31 07:54 GMT+7
 
 ## Rosetta Golden Test Checklist (486/491)
 | Index | Name | Status | Duration | Memory |
@@ -341,21 +341,21 @@ Last updated: 2025-07-31 01:17 GMT+7
 | 332 | eertree | ✓ | 92.0µs | 13.57MB |
 | 333 | egyptian-division | ✓ | 21.0µs | 12.48MB |
 | 334 | ekg-sequence-convergence | ✓ | 15.0ms | 13.47MB |
-| 335 | element-wise-operations | ✓ | 489.0µs | 14.07MB |
-| 336 | elementary-cellular-automaton-infinite-length | ✓ | 2.0ms | 13.35MB |
-| 337 | elementary-cellular-automaton-random-number-generator | ✓ | 6.0ms | 12.50MB |
-| 338 | elementary-cellular-automaton | ✓ | 677.0µs | 13.57MB |
-| 339 | elliptic-curve-arithmetic | ✓ | 181.0µs | 13.18MB |
-| 340 | elliptic-curve-digital-signature-algorithm | ✓ | 17.0µs | 12.29MB |
-| 341 | emirp-primes | ✓ | 4.78s | 12.50MB |
-| 342 | empty-directory | ✓ | 24.0µs | 12.72MB |
-| 343 | empty-program | ✓ | 1.0µs | 12.25MB |
-| 344 | empty-string-1 | ✓ | 14.0µs | 12.34MB |
-| 345 | empty-string-2 | ✓ | 13.0µs | 12.69MB |
-| 346 | enforced-immutability | ✓ | 15.0µs | 12.32MB |
-| 347 | entropy-1 | ✓ | 37.0µs | 13.13MB |
-| 348 | entropy-2 | ✓ | 39.0µs | 12.18MB |
-| 349 | entropy-narcissist | ✓ | 649.0µs | 12.98MB |
+| 335 | element-wise-operations | ✓ | 250.0µs | 14.03MB |
+| 336 | elementary-cellular-automaton-infinite-length | ✓ | 2.0ms | 13.14MB |
+| 337 | elementary-cellular-automaton-random-number-generator | ✓ | 3.0ms | 12.62MB |
+| 338 | elementary-cellular-automaton | ✓ | 556.0µs | 13.43MB |
+| 339 | elliptic-curve-arithmetic | ✓ | 108.0µs | 13.43MB |
+| 340 | elliptic-curve-digital-signature-algorithm | ✓ | 14.0µs | 12.71MB |
+| 341 | emirp-primes | ✓ | 3.35s | 13.25MB |
+| 342 | empty-directory | ✓ | 11.0µs | 12.62MB |
+| 343 | empty-program | ✓ | 1.0µs | 12.43MB |
+| 344 | empty-string-1 | ✓ | 14.0µs | 12.68MB |
+| 345 | empty-string-2 | ✓ | 11.0µs | 12.20MB |
+| 346 | enforced-immutability | ✓ | 13.0µs | 12.42MB |
+| 347 | entropy-1 | ✓ | 33.0µs | 12.63MB |
+| 348 | entropy-2 | ✓ | 37.0µs | 12.75MB |
+| 349 | entropy-narcissist | ✓ | 476.0µs | 13.05MB |
 | 350 | enumerations-1 | ✓ | 2.0µs | 12.66MB |
 | 351 | enumerations-2 | ✓ | 1.0µs | 12.36MB |
 | 352 | enumerations-3 | ✓ | 2.0µs | 12.93MB |
@@ -456,7 +456,7 @@ Last updated: 2025-07-31 01:17 GMT+7
 | 447 | flow-control-structures-2 | ✓ | 9.0µs | 12.12MB |
 | 448 | flow-control-structures-3 | ✓ | 12.0µs | 12.62MB |
 | 449 | flow-control-structures-4 | ✓ | 9.0µs | 12.75MB |
-| 450 | floyd-warshall-algorithm | ✓ | 144.0µs | 13.88MB |
+| 450 | floyd-warshall-algorithm | ✓ | 73.0µs | 13.50MB |
 | 451 | floyd-warshall-algorithm2 | ✓ | 1.0ms | 13.87MB |
 | 452 | floyds-triangle | ✓ | 155.0µs | 13.03MB |
 | 453 | forest-fire | ✓ | 2.0ms | 13.53MB |
