@@ -1,0 +1,74 @@
+compile failed: exit status 1: /tmp/ctranspile1828836365/brilliant-numbers.mochi.c: In function ‘_mem’:
+/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:65:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
+   65 |     struct mallinfo mi = mallinfo();
+      |            ^~~~~~~~
+In file included from /tmp/ctranspile1828836365/brilliant-numbers.mochi.c:5:
+/usr/include/malloc.h:114:24: note: declared here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                        ^~~~~~~~
+/tmp/ctranspile1828836365/brilliant-numbers.mochi.c: In function ‘getBrilliant’:
+/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:187:16: warning: overflow in conversion from ‘long long int’ to ‘int’ changes value from ‘999999999999999’ to ‘-1530494977’ [-Woverflow]
+  187 |     int next = 999999999999999LL;
+      |                ^~~~~~~~~~~~~~~~~
+/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:192:36: error: ‘primes_len’ undeclared (first use in this function)
+  192 |         for (size_t __i = 0; __i < primes_len; __i++) {
+      |                                    ^~~~~~~~~~
+/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:192:36: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:193:21: error: ‘primes’ undeclared (first use in this function)
+  193 |             int p = primes[__i];
+      |                     ^~~~~~
+/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:226:30: warning: initialization of ‘int *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+  226 |         return (Anon1){.bc = count, .bc_len = count_len, .next = next};
+      |                              ^~~~~
+/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:226:30: note: (near initialization for ‘(anonymous).bc’)
+/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:226:47: error: ‘count_len’ undeclared (first use in this function)
+  226 |         return (Anon1){.bc = count, .bc_len = count_len, .next = next};
+      |                                               ^~~~~~~~~
+/tmp/ctranspile1828836365/brilliant-numbers.mochi.c: In function ‘user_main’:
+/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:239:21: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘long long int’ [-Wformat=]
+  239 |         printf("%s %d\n", str_concat(str_int(br[(int)(i)]), " "), 0LL);
+      |                    ~^                                             ~~~
+      |                     |                                             |
+      |                     int                                           long long int
+      |                    %lld
+/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:241:25: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘long long int’ [-Wformat=]
+  241 |             printf("%s %d\n", "", 1LL);
+      |                        ~^         ~~~
+      |                         |         |
+      |                         int       long long int
+      |                        %lld
+/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:245:17: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘long long int’ [-Wformat=]
+  245 |     printf("%s %d\n", "", 1LL);
+      |                ~^         ~~~
+      |                 |         |
+      |                 int       long long int
+      |                %lld
+/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:248:21: warning: implicit declaration of function ‘pow’ [-Wimplicit-function-declaration]
+  248 |         int limit = pow(10LL, k);
+      |                     ^~~
+/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:44:1: note: include ‘<math.h>’ or provide a declaration of ‘pow’
+   43 | #include <time.h>
+  +++ |+#include <math.h>
+   44 | #include <stdlib.h>
+/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:248:21: warning: incompatible implicit declaration of built-in function ‘pow’ [-Wbuiltin-declaration-mismatch]
+  248 |         int limit = pow(10LL, k);
+      |                     ^~~
+/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:248:21: note: include ‘<math.h>’ or provide a declaration of ‘pow’
+/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:254:46: warning: passing argument 1 of ‘commatize’ makes integer from pointer without a cast [-Wint-conversion]
+  254 |         const char* ctotal = commatize(total + 1LL);
+      |                                        ~~~~~~^~~~~
+      |                                              |
+      |                                              int *
+/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:172:27: note: expected ‘int’ but argument is of type ‘int *’
+  172 | const char* commatize(int n) {
+      |                       ~~~~^
+/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:256:88: error: request for member ‘padStart’ in something not a structure or union
+  256 |         puts(str_concat(str_concat(str_concat(str_concat(str_concat("First >= ", climit.padStart), " is "), ctotal.padStart), " in the series: "), cnext.padStart));
+      |                                                                                        ^
+/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:256:115: error: request for member ‘padStart’ in something not a structure or union
+  256 |         puts(str_concat(str_concat(str_concat(str_concat(str_concat("First >= ", climit.padStart), " is "), ctotal.padStart), " in the series: "), cnext.padStart));
+      |                                                                                                                   ^
+/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:256:153: error: request for member ‘padStart’ in something not a structure or union
+  256 |         puts(str_concat(str_concat(str_concat(str_concat(str_concat("First >= ", climit.padStart), " is "), ctotal.padStart), " in the series: "), cnext.padStart));
+      |                                                                                                                                                         ^
+

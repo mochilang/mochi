@@ -1,0 +1,26 @@
+compile failed: exit status 1: /tmp/ctranspile528359014/bulls-and-cows.mochi.c: In function ‘_mem’:
+/tmp/ctranspile528359014/bulls-and-cows.mochi.c:47:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
+   47 |     struct mallinfo mi = mallinfo();
+      |            ^~~~~~~~
+In file included from /tmp/ctranspile528359014/bulls-and-cows.mochi.c:5:
+/usr/include/malloc.h:114:24: note: declared here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                        ^~~~~~~~
+/tmp/ctranspile528359014/bulls-and-cows.mochi.c: In function ‘user_main’:
+/tmp/ctranspile528359014/bulls-and-cows.mochi.c:107:12: error: assignment to expression with array type
+  107 |     digits = shuffle(digits, digits_len);
+      |            ^
+/tmp/ctranspile528359014/bulls-and-cows.mochi.c:109:36: error: invalid operands to binary + (have ‘const char *’ and ‘const char *’)
+  109 |     int pat = ((digits[(int)(0LL)] + digits[(int)(1LL)]) + digits[(int)(2LL)]) + digits[(int)(3LL)];
+      |                 ~~~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~
+      |                       |                    |
+      |                       const char *         const char *
+/tmp/ctranspile528359014/bulls-and-cows.mochi.c:131:31: warning: passing argument 1 of ‘indexOf’ makes pointer from integer without a cast [-Wint-conversion]
+  131 |             int pos = indexOf(pat, cg);
+      |                               ^~~
+      |                               |
+      |                               int
+/tmp/ctranspile528359014/bulls-and-cows.mochi.c:75:25: note: expected ‘const char *’ but argument is of type ‘int’
+   75 | int indexOf(const char* s, const char* ch) {
+      |             ~~~~~~~~~~~~^
+
