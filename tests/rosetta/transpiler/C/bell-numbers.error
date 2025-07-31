@@ -1,0 +1,70 @@
+compile failed: exit status 1: /tmp/ctranspile3910527203/bell-numbers.mochi.c: In function ‘_mem’:
+/tmp/ctranspile3910527203/bell-numbers.mochi.c:135:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
+  135 |     struct mallinfo mi = mallinfo();
+      |            ^~~~~~~~
+In file included from /tmp/ctranspile3910527203/bell-numbers.mochi.c:5:
+/usr/include/malloc.h:114:24: note: declared here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                        ^~~~~~~~
+/tmp/ctranspile3910527203/bell-numbers.mochi.c: In function ‘bellTriangle’:
+/tmp/ctranspile3910527203/bell-numbers.mochi.c:154:51: warning: passing argument 1 of ‘list_append_int_new’ from incompatible pointer type [-Wincompatible-pointer-types]
+  154 |                         row = list_append_int_new(row, row_len, 0LL);
+      |                                                   ^~~
+      |                                                   |
+      |                                                   __mpz_struct (**)[1]
+/tmp/ctranspile3910527203/bell-numbers.mochi.c:85:44: note: expected ‘const int *’ but argument is of type ‘__mpz_struct (**)[1]’
+   85 | static int* list_append_int_new(const int *arr, size_t len, int val) {
+      |                                 ~~~~~~~~~~~^~~
+/tmp/ctranspile3910527203/bell-numbers.mochi.c:154:29: warning: assignment to ‘__mpz_struct (**)[1]’ from incompatible pointer type ‘int *’ [-Wincompatible-pointer-types]
+  154 |                         row = list_append_int_new(row, row_len, 0LL);
+      |                             ^
+/tmp/ctranspile3910527203/bell-numbers.mochi.c:157:34: warning: passing argument 1 of ‘list_append_strptr’ from incompatible pointer type [-Wincompatible-pointer-types]
+  157 |         tri = list_append_strptr(tri, &tri_len, row);
+      |                                  ^~~
+      |                                  |
+      |                                  __mpz_struct (***)[1]
+/tmp/ctranspile3910527203/bell-numbers.mochi.c:99:55: note: expected ‘const char ***’ but argument is of type ‘__mpz_struct (***)[1]’
+   99 | static const char*** list_append_strptr(const char ***arr, size_t *len, const char **val) {
+      |                                         ~~~~~~~~~~~~~~^~~
+/tmp/ctranspile3910527203/bell-numbers.mochi.c:157:49: warning: passing argument 3 of ‘list_append_strptr’ from incompatible pointer type [-Wincompatible-pointer-types]
+  157 |         tri = list_append_strptr(tri, &tri_len, row);
+      |                                                 ^~~
+      |                                                 |
+      |                                                 __mpz_struct (**)[1]
+/tmp/ctranspile3910527203/bell-numbers.mochi.c:99:86: note: expected ‘const char **’ but argument is of type ‘__mpz_struct (**)[1]’
+   99 | static const char*** list_append_strptr(const char ***arr, size_t *len, const char **val) {
+      |                                                                         ~~~~~~~~~~~~~^~~
+/tmp/ctranspile3910527203/bell-numbers.mochi.c:157:13: warning: assignment to ‘__mpz_struct (***)[1]’ from incompatible pointer type ‘const char ***’ [-Wincompatible-pointer-types]
+  157 |         tri = list_append_strptr(tri, &tri_len, row);
+      |             ^
+/tmp/ctranspile3910527203/bell-numbers.mochi.c:161:33: warning: assignment to ‘bigint’ {aka ‘__mpz_struct (*)[1]’} from ‘long long int’ makes pointer from integer without a cast [-Wint-conversion]
+  161 |     tri[(int)(1LL)][(int)(0LL)] = 1LL;
+      |                                 ^
+/tmp/ctranspile3910527203/bell-numbers.mochi.c:167:69: error: invalid operands to binary + (have ‘bigint’ {aka ‘__mpz_struct (*)[1]’} and ‘bigint’ {aka ‘__mpz_struct (*)[1]’})
+  167 |             tri[(int)(i)][(int)(j)] = tri[(int)(i)][(int)(j - 1LL)] + tri[(int)(i - 1LL)][(int)(j - 1LL)];
+      |                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                    |                                     |
+      |                                                    bigint {aka __mpz_struct (*)[1]}      bigint {aka __mpz_struct (*)[1]}
+/tmp/ctranspile3910527203/bell-numbers.mochi.c: In function ‘user_main’:
+/tmp/ctranspile3910527203/bell-numbers.mochi.c:182:115: warning: passing argument 1 of ‘str_bigint’ from incompatible pointer type [-Wincompatible-pointer-types]
+  182 |         puts(str_concat(str_concat(str_concat("", _padStart(str_int(i), 2LL, " ")), ": "), str_bigint(bt[(int)(i)][(int)(0LL)])));
+      |                                                                                                       ~~~~~~~~~~~~^~~~~~~~~~~~
+      |                                                                                                                   |
+      |                                                                                                                   bigint {aka __mpz_struct (*)[1]}
+/tmp/ctranspile3910527203/bell-numbers.mochi.c:29:37: note: expected ‘const __mpz_struct *’ but argument is of type ‘bigint’ {aka ‘__mpz_struct (*)[1]’}
+   29 | static char* str_bigint(const mpz_t v) {
+      |                         ~~~~~~~~~~~~^
+/tmp/ctranspile3910527203/bell-numbers.mochi.c:184:55: warning: passing argument 1 of ‘str_bigint’ from incompatible pointer type [-Wincompatible-pointer-types]
+  184 |     puts(str_concat("50: ", str_bigint(bt[(int)(50LL)][(int)(0LL)])));
+      |                                        ~~~~~~~~~~~~~~~^~~~~~~~~~~~
+      |                                                       |
+      |                                                       bigint {aka __mpz_struct (*)[1]}
+/tmp/ctranspile3910527203/bell-numbers.mochi.c:29:37: note: expected ‘const __mpz_struct *’ but argument is of type ‘bigint’ {aka ‘__mpz_struct (*)[1]’}
+   29 | static char* str_bigint(const mpz_t v) {
+      |                         ~~~~~~~~~~~~^
+/tmp/ctranspile3910527203/bell-numbers.mochi.c:188:18: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘__mpz_struct (**)[1]’ [-Wformat=]
+  188 |         printf("%d\n", bt[(int)(i)]);
+      |                 ~^     ~~~~~~~~~~~~
+      |                  |       |
+      |                  int     __mpz_struct (**)[1]
+
