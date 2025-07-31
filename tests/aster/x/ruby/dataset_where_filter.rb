@@ -13,5 +13,5 @@ adults = (begin
 end)
 puts("--- Adults ---")
 adults.each do |person|
-  puts(([person.name, "is", person.age, (person.is_senior ? " (senior)" : "")]).map{ |x| if x.nil? then "None" elsif x == true then "True" elsif x == false then "False" elsif x.respond_to?(:to_h) then "{" + x.to_h.map{ |k, v| "'" }.join(", ") + "}" else x end }.join(" ").rstrip())
+  puts(([person.name, "is", person.age, (person.is_senior ? " (senior)" : "")]).map{ |x| if x.nil? then "None" elsif x == true then "True" elsif x == false then "False" elsif x.respond_to?(:to_h) then "{" + x.to_h.map{ |k, v| "'#{k}': #{v.is_a?(String) ? "\'" + v + "\'" : v.to_s}" }.join(", ") + "}" else x end }.join(" ").rstrip())
 end
