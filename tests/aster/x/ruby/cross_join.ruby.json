@@ -588,6 +588,7 @@
                                         "children": [
                                           {
                                             "kind": "binary",
+                                            "text": "\u003c\u003c",
                                             "children": [
                                               {
                                                 "kind": "identifier",
