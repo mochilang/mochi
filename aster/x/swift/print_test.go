@@ -87,14 +87,9 @@ func TestPrint_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
-	var selected []string
-	for _, f := range files {
-		base := filepath.Base(f)
-		if base == "two-sum.swift" {
-			selected = append(selected, f)
-		}
+	if len(files) > 10 {
+		files = files[:10]
 	}
-	files = selected
 
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".swift")
@@ -107,7 +102,7 @@ func TestPrint_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("read src: %v", err)
 			}
-                       prog, err := swift.Inspect(string(data), swift.Option{Comments: true})
+			prog, err := swift.Inspect(string(data), swift.Option{Comments: true})
 			if err != nil {
 				t.Fatalf("inspect: %v", err)
 			}
