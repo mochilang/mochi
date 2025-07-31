@@ -122,7 +122,7 @@ func convert(n *sitter.Node, src []byte, pos bool) *Node {
 
 func isValueNode(kind string) bool {
 	switch kind {
-	case "identifier", "number_literal", "char_literal", "string_literal",
+	case "identifier", "field_identifier", "number_literal", "char_literal", "string_literal",
 		"system_lib_string", "primitive_type", "type_identifier",
 		"string_content", "escape_sequence", "comment":
 		return true
