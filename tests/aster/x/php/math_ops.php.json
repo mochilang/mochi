@@ -1,0 +1,349 @@
+{
+  "root": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "echo_statement",
+        "children": [
+          {
+            "kind": "sequence_expression",
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "children": [
+                  {
+                    "kind": "conditional_expression",
+                    "text": "? :",
+                    "children": [
+                      {
+                        "kind": "function_call_expression",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "is_float"
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "binary_expression",
+                                    "text": "*",
+                                    "children": [
+                                      {
+                                        "kind": "integer",
+                                        "text": "6"
+                                      },
+                                      {
+                                        "kind": "integer",
+                                        "text": "7"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "function_call_expression",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "json_encode"
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "binary_expression",
+                                    "text": "*",
+                                    "children": [
+                                      {
+                                        "kind": "integer",
+                                        "text": "6"
+                                      },
+                                      {
+                                        "kind": "integer",
+                                        "text": "7"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "integer",
+                                    "text": "1344"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "binary_expression",
+                        "text": "*",
+                        "children": [
+                          {
+                            "kind": "integer",
+                            "text": "6"
+                          },
+                          {
+                            "kind": "integer",
+                            "text": "7"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "name",
+                "text": "PHP_EOL"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "echo_statement",
+        "children": [
+          {
+            "kind": "sequence_expression",
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "children": [
+                  {
+                    "kind": "conditional_expression",
+                    "text": "? :",
+                    "children": [
+                      {
+                        "kind": "function_call_expression",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "is_float"
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "binary_expression",
+                                    "text": "/",
+                                    "children": [
+                                      {
+                                        "kind": "integer",
+                                        "text": "7"
+                                      },
+                                      {
+                                        "kind": "integer",
+                                        "text": "2"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "function_call_expression",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "json_encode"
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "binary_expression",
+                                    "text": "/",
+                                    "children": [
+                                      {
+                                        "kind": "integer",
+                                        "text": "7"
+                                      },
+                                      {
+                                        "kind": "integer",
+                                        "text": "2"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "integer",
+                                    "text": "1344"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "binary_expression",
+                        "text": "/",
+                        "children": [
+                          {
+                            "kind": "integer",
+                            "text": "7"
+                          },
+                          {
+                            "kind": "integer",
+                            "text": "2"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "name",
+                "text": "PHP_EOL"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "echo_statement",
+        "children": [
+          {
+            "kind": "sequence_expression",
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "children": [
+                  {
+                    "kind": "conditional_expression",
+                    "text": "? :",
+                    "children": [
+                      {
+                        "kind": "function_call_expression",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "is_float"
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "binary_expression",
+                                    "text": "%",
+                                    "children": [
+                                      {
+                                        "kind": "integer",
+                                        "text": "7"
+                                      },
+                                      {
+                                        "kind": "integer",
+                                        "text": "2"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "function_call_expression",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "json_encode"
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "binary_expression",
+                                    "text": "%",
+                                    "children": [
+                                      {
+                                        "kind": "integer",
+                                        "text": "7"
+                                      },
+                                      {
+                                        "kind": "integer",
+                                        "text": "2"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "integer",
+                                    "text": "1344"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "binary_expression",
+                        "text": "%",
+                        "children": [
+                          {
+                            "kind": "integer",
+                            "text": "7"
+                          },
+                          {
+                            "kind": "integer",
+                            "text": "2"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "name",
+                "text": "PHP_EOL"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

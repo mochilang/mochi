@@ -1,0 +1,907 @@
+{
+  "root": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "x"
+                  }
+                ]
+              },
+              {
+                "kind": "integer",
+                "text": "2"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "label"
+                  }
+                ]
+              },
+              {
+                "kind": "match_expression",
+                "children": [
+                  {
+                    "kind": "parenthesized_expression",
+                    "children": [
+                      {
+                        "kind": "variable_name",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "x"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "match_block",
+                    "children": [
+                      {
+                        "kind": "match_conditional_expression",
+                        "text": "=\u003e",
+                        "children": [
+                          {
+                            "kind": "match_condition_list",
+                            "children": [
+                              {
+                                "kind": "integer",
+                                "text": "1"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "encapsed_string",
+                            "children": [
+                              {
+                                "kind": "string_content",
+                                "text": "one"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "match_conditional_expression",
+                        "text": "=\u003e",
+                        "children": [
+                          {
+                            "kind": "match_condition_list",
+                            "children": [
+                              {
+                                "kind": "integer",
+                                "text": "2"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "encapsed_string",
+                            "children": [
+                              {
+                                "kind": "string_content",
+                                "text": "two"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "match_conditional_expression",
+                        "text": "=\u003e",
+                        "children": [
+                          {
+                            "kind": "match_condition_list",
+                            "children": [
+                              {
+                                "kind": "integer",
+                                "text": "3"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "encapsed_string",
+                            "children": [
+                              {
+                                "kind": "string_content",
+                                "text": "three"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "match_default_expression",
+                        "text": "default =\u003e",
+                        "children": [
+                          {
+                            "kind": "encapsed_string",
+                            "children": [
+                              {
+                                "kind": "string_content",
+                                "text": "unknown"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "echo_statement",
+        "children": [
+          {
+            "kind": "sequence_expression",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "label"
+                  }
+                ]
+              },
+              {
+                "kind": "name",
+                "text": "PHP_EOL"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "day"
+                  }
+                ]
+              },
+              {
+                "kind": "encapsed_string",
+                "children": [
+                  {
+                    "kind": "string_content",
+                    "text": "sun"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "mood"
+                  }
+                ]
+              },
+              {
+                "kind": "match_expression",
+                "children": [
+                  {
+                    "kind": "parenthesized_expression",
+                    "children": [
+                      {
+                        "kind": "variable_name",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "day"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "match_block",
+                    "children": [
+                      {
+                        "kind": "match_conditional_expression",
+                        "text": "=\u003e",
+                        "children": [
+                          {
+                            "kind": "match_condition_list",
+                            "children": [
+                              {
+                                "kind": "encapsed_string",
+                                "children": [
+                                  {
+                                    "kind": "string_content",
+                                    "text": "mon"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "encapsed_string",
+                            "children": [
+                              {
+                                "kind": "string_content",
+                                "text": "tired"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "match_conditional_expression",
+                        "text": "=\u003e",
+                        "children": [
+                          {
+                            "kind": "match_condition_list",
+                            "children": [
+                              {
+                                "kind": "encapsed_string",
+                                "children": [
+                                  {
+                                    "kind": "string_content",
+                                    "text": "fri"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "encapsed_string",
+                            "children": [
+                              {
+                                "kind": "string_content",
+                                "text": "excited"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "match_conditional_expression",
+                        "text": "=\u003e",
+                        "children": [
+                          {
+                            "kind": "match_condition_list",
+                            "children": [
+                              {
+                                "kind": "encapsed_string",
+                                "children": [
+                                  {
+                                    "kind": "string_content",
+                                    "text": "sun"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "encapsed_string",
+                            "children": [
+                              {
+                                "kind": "string_content",
+                                "text": "relaxed"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "match_default_expression",
+                        "text": "default =\u003e",
+                        "children": [
+                          {
+                            "kind": "encapsed_string",
+                            "children": [
+                              {
+                                "kind": "string_content",
+                                "text": "normal"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "echo_statement",
+        "children": [
+          {
+            "kind": "sequence_expression",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "mood"
+                  }
+                ]
+              },
+              {
+                "kind": "name",
+                "text": "PHP_EOL"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "ok"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "status"
+                  }
+                ]
+              },
+              {
+                "kind": "match_expression",
+                "children": [
+                  {
+                    "kind": "parenthesized_expression",
+                    "children": [
+                      {
+                        "kind": "variable_name",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "ok"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "match_block",
+                    "children": [
+                      {
+                        "kind": "match_conditional_expression",
+                        "text": "=\u003e",
+                        "children": [
+                          {
+                            "kind": "encapsed_string",
+                            "children": [
+                              {
+                                "kind": "string_content",
+                                "text": "confirmed"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "match_conditional_expression",
+                        "text": "=\u003e",
+                        "children": [
+                          {
+                            "kind": "encapsed_string",
+                            "children": [
+                              {
+                                "kind": "string_content",
+                                "text": "denied"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "echo_statement",
+        "children": [
+          {
+            "kind": "sequence_expression",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "status"
+                  }
+                ]
+              },
+              {
+                "kind": "name",
+                "text": "PHP_EOL"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_definition",
+        "children": [
+          {
+            "kind": "name",
+            "text": "classify"
+          },
+          {
+            "kind": "formal_parameters",
+            "children": [
+              {
+                "kind": "simple_parameter",
+                "children": [
+                  {
+                    "kind": "variable_name",
+                    "children": [
+                      {
+                        "kind": "name",
+                        "text": "n"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "compound_statement",
+            "children": [
+              {
+                "kind": "return_statement",
+                "children": [
+                  {
+                    "kind": "match_expression",
+                    "children": [
+                      {
+                        "kind": "parenthesized_expression",
+                        "children": [
+                          {
+                            "kind": "variable_name",
+                            "children": [
+                              {
+                                "kind": "name",
+                                "text": "n"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "match_block",
+                        "children": [
+                          {
+                            "kind": "match_conditional_expression",
+                            "text": "=\u003e",
+                            "children": [
+                              {
+                                "kind": "match_condition_list",
+                                "children": [
+                                  {
+                                    "kind": "integer",
+                                    "text": "0"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "encapsed_string",
+                                "children": [
+                                  {
+                                    "kind": "string_content",
+                                    "text": "zero"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "match_conditional_expression",
+                            "text": "=\u003e",
+                            "children": [
+                              {
+                                "kind": "match_condition_list",
+                                "children": [
+                                  {
+                                    "kind": "integer",
+                                    "text": "1"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "encapsed_string",
+                                "children": [
+                                  {
+                                    "kind": "string_content",
+                                    "text": "one"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "match_default_expression",
+                            "text": "default =\u003e",
+                            "children": [
+                              {
+                                "kind": "encapsed_string",
+                                "children": [
+                                  {
+                                    "kind": "string_content",
+                                    "text": "many"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "echo_statement",
+        "children": [
+          {
+            "kind": "sequence_expression",
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "children": [
+                  {
+                    "kind": "conditional_expression",
+                    "text": "? :",
+                    "children": [
+                      {
+                        "kind": "function_call_expression",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "is_float"
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "function_call_expression",
+                                    "children": [
+                                      {
+                                        "kind": "name",
+                                        "text": "classify"
+                                      },
+                                      {
+                                        "kind": "arguments",
+                                        "children": [
+                                          {
+                                            "kind": "argument",
+                                            "children": [
+                                              {
+                                                "kind": "integer",
+                                                "text": "0"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "function_call_expression",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "json_encode"
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "function_call_expression",
+                                    "children": [
+                                      {
+                                        "kind": "name",
+                                        "text": "classify"
+                                      },
+                                      {
+                                        "kind": "arguments",
+                                        "children": [
+                                          {
+                                            "kind": "argument",
+                                            "children": [
+                                              {
+                                                "kind": "integer",
+                                                "text": "0"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "integer",
+                                    "text": "1344"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "function_call_expression",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "classify"
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "integer",
+                                    "text": "0"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "name",
+                "text": "PHP_EOL"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "echo_statement",
+        "children": [
+          {
+            "kind": "sequence_expression",
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "children": [
+                  {
+                    "kind": "conditional_expression",
+                    "text": "? :",
+                    "children": [
+                      {
+                        "kind": "function_call_expression",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "is_float"
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "function_call_expression",
+                                    "children": [
+                                      {
+                                        "kind": "name",
+                                        "text": "classify"
+                                      },
+                                      {
+                                        "kind": "arguments",
+                                        "children": [
+                                          {
+                                            "kind": "argument",
+                                            "children": [
+                                              {
+                                                "kind": "integer",
+                                                "text": "5"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "function_call_expression",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "json_encode"
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "function_call_expression",
+                                    "children": [
+                                      {
+                                        "kind": "name",
+                                        "text": "classify"
+                                      },
+                                      {
+                                        "kind": "arguments",
+                                        "children": [
+                                          {
+                                            "kind": "argument",
+                                            "children": [
+                                              {
+                                                "kind": "integer",
+                                                "text": "5"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "integer",
+                                    "text": "1344"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "function_call_expression",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "classify"
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "integer",
+                                    "text": "5"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "name",
+                "text": "PHP_EOL"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

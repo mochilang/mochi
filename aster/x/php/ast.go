@@ -124,7 +124,8 @@ func convert(n *sitter.Node, src []byte, opts Options) *Node {
 	// capture operator tokens for certain node kinds
 	switch n.Kind() {
 	case "binary_expression", "assignment_expression", "augmented_assignment_expression",
-		"unary_op_expression", "update_expression", "conditional_expression", "array_element_initializer":
+		"unary_op_expression", "update_expression", "conditional_expression", "array_element_initializer",
+		"match_conditional_expression", "match_default_expression":
 		for i := uint(0); i < n.ChildCount(); i++ {
 			c := n.Child(i)
 			if c != nil && !c.IsNamed() {
