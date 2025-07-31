@@ -42,5 +42,5 @@ s = 0
 end
 end_time = _now()
 end_mem = _mem()
-result = {"duration_us": ((end_time - start) / 1000), "memory_bytes": (end_mem - start_mem), "name": "simple"}
+result = {"duration_us" => ((end_time - start) / 1000), "memory_bytes" => (end_mem - start_mem), "name" => "simple"}
 puts(JSON.pretty_generate(result))

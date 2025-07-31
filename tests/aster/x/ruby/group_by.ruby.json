@@ -761,6 +761,10 @@
                       {
                         "kind": "identifier",
                         "text": "groups"
+                      },
+                      {
+                        "kind": "hash",
+                        "text": "{}"
                       }
                     ]
                   },

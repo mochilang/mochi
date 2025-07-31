@@ -170,12 +170,25 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		b.WriteString(n.Text)
 	case "string":
 		b.WriteByte('"')
-		if len(n.Children) > 0 {
-			b.WriteString(n.Children[0].Text)
+		for _, c := range n.Children {
+			switch c.Kind {
+			case "string_content":
+				b.WriteString(c.Text)
+			case "interpolation":
+				writeExpr(b, c, indent)
+			default:
+				writeExpr(b, c, indent)
+			}
 		}
 		b.WriteByte('"')
 	case "string_content":
 		b.WriteString(n.Text)
+	case "interpolation":
+		b.WriteString("#{")
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+		}
+		b.WriteByte('}')
 	case "call":
 		if len(n.Children) == 0 {
 			return
@@ -244,7 +257,12 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	case "pair":
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indent)
-			b.WriteString(": ")
+			sep := ": "
+			switch n.Children[0].Kind {
+			case "string", "integer", "float":
+				sep = " => "
+			}
+			b.WriteString(sep)
 			writeExpr(b, n.Children[1], indent)
 		}
 	case "binary":
@@ -285,6 +303,15 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			}
 		}
 	case "lambda_parameters":
+		b.WriteByte('(')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeExpr(b, c, indent)
+		}
+		b.WriteByte(')')
+	case "destructured_parameter":
 		b.WriteByte('(')
 		for i, c := range n.Children {
 			if i > 0 {
@@ -414,6 +441,16 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			}
 			b.WriteByte('\n')
 			writeBody(b, n.Children[2], indent+1)
+			b.WriteString(strings.Repeat("  ", indent))
+			b.WriteString("end")
+		}
+	case "unless":
+		if len(n.Children) >= 2 {
+			b.WriteString(strings.Repeat("  ", indent))
+			b.WriteString("unless ")
+			writeExpr(b, n.Children[0], indent)
+			b.WriteByte('\n')
+			writeBody(b, n.Children[1], indent+1)
 			b.WriteString(strings.Repeat("  ", indent))
 			b.WriteString("end")
 		}

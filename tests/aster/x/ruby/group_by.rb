@@ -14,7 +14,7 @@ People = Struct.new(:name, :age, :city, keyword_init: true)
 people = [People.new(name: "Alice", age: 30, city: "Paris"), People.new(name: "Bob", age: 15, city: "Hanoi"), People.new(name: "Charlie", age: 65, city: "Paris"), People.new(name: "Diana", age: 45, city: "Hanoi"), People.new(name: "Eve", age: 70, city: "Paris"), People.new(name: "Frank", age: 22, city: "Hanoi")]
 StatsItem = Struct.new(:city, :count, :avg_age, keyword_init: true)
 stats = (begin
-  
+  groups = {}
   for person in people
     k = person["city"]
     groups[k] ||= []

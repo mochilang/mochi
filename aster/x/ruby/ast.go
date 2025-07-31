@@ -147,7 +147,7 @@ func convert(n *sitter.Node, src []byte, pos bool) *Node {
 func isValueNode(kind string) bool {
 	switch kind {
 	case "identifier", "constant", "integer", "float", "string", "string_content",
-		"hash_key_symbol", "simple_symbol", "true", "false", "comment",
+		"hash_key_symbol", "simple_symbol", "true", "false", "nil", "comment",
 		"next", "break", "global_variable":
 		return true
 	default:
@@ -161,7 +161,7 @@ func isValueNode(kind string) bool {
 // source code.
 func keepEmptyNode(kind string) bool {
 	switch kind {
-	case "array", "argument_list", "method_parameters", "block_parameters",
+	case "array", "argument_list", "method_parameters", "block_parameters", "hash",
 		"next", "break":
 		return true
 	default:
