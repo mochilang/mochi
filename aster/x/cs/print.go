@@ -312,13 +312,21 @@ func writeExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 	case "binary_expression":
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indentLevel)
+			op := n.Text
+			if op == "" {
+				op = "+"
+			}
 			b.WriteByte(' ')
-			b.WriteString(detectOperator(n))
+			b.WriteString(op)
 			b.WriteByte(' ')
 			writeExpr(b, n.Children[1], indentLevel)
 		}
 	case "prefix_unary_expression":
-		b.WriteByte('-')
+		op := n.Text
+		if op == "" {
+			op = "-"
+		}
+		b.WriteString(op)
 		if len(n.Children) > 0 {
 			writeExpr(b, n.Children[0], indentLevel)
 		}
@@ -326,7 +334,11 @@ func writeExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 		if len(n.Children) > 0 {
 			writeExpr(b, n.Children[0], indentLevel)
 		}
-		b.WriteString("++")
+		op := n.Text
+		if op == "" {
+			op = "++"
+		}
+		b.WriteString(op)
 	case "element_access_expression":
 		if len(n.Children) >= 2 {
 			writeExpr(b, n.Children[0], indentLevel)
@@ -348,18 +360,4 @@ func writeExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 			writeExpr(b, c, indentLevel)
 		}
 	}
-}
-
-func detectOperator(n *Node) string {
-	if len(n.Children) != 2 {
-		return "+"
-	}
-	r := n.Children[1]
-	if r.Kind == "identifier" && r.Text == "n" {
-		return "<"
-	}
-	if r.Kind == "identifier" && r.Text == "target" {
-		return "=="
-	}
-	return "+"
 }

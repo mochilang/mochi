@@ -242,6 +242,7 @@
                           },
                           {
                             "kind": "binary_expression",
+                            "text": "\u003c",
                             "children": [
                               {
                                 "kind": "identifier",
@@ -287,6 +288,7 @@
                                             "children": [
                                               {
                                                 "kind": "binary_expression",
+                                                "text": "+",
                                                 "children": [
                                                   {
                                                     "kind": "identifier",
@@ -306,6 +308,7 @@
                                   },
                                   {
                                     "kind": "binary_expression",
+                                    "text": "\u003c",
                                     "children": [
                                       {
                                         "kind": "identifier",
@@ -337,12 +340,14 @@
                                             "children": [
                                               {
                                                 "kind": "binary_expression",
+                                                "text": "==",
                                                 "children": [
                                                   {
                                                     "kind": "parenthesized_expression",
                                                     "children": [
                                                       {
                                                         "kind": "binary_expression",
+                                                        "text": "+",
                                                         "children": [
                                                           {
                                                             "kind": "element_access_expression",

@@ -54,6 +54,17 @@ func convert(n *sitter.Node, src []byte) *Node {
 		return nil
 	}
 	node := &Node{Kind: n.Kind()}
+
+	// Capture operator tokens for expressions where tree-sitter stores the
+	// symbol in a separate field. This allows the printer to faithfully
+	// reconstruct the original source code.
+	switch n.Kind() {
+	case "binary_expression", "assignment_expression", "prefix_unary_expression",
+		"postfix_unary_expression":
+		if op := n.ChildByFieldName("operator"); op != nil {
+			node.Text = op.Utf8Text(src)
+		}
+	}
 	if IncludePositions {
 		sp := n.StartPosition()
 		ep := n.EndPosition()
