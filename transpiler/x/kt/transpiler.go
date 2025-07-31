@@ -263,7 +263,11 @@ type IndexAssignStmt struct {
 
 func (s *IndexAssignStmt) emit(w io.Writer, indentLevel int) {
 	indent(w, indentLevel)
-	s.Target.emit(w)
+	if ix, ok := s.Target.(*IndexExpr); ok {
+		ix.emitTarget(w)
+	} else {
+		s.Target.emit(w)
+	}
 	io.WriteString(w, " = ")
 	s.Value.emit(w)
 }
@@ -543,7 +547,11 @@ type IndexExpr struct {
 	ForceBang bool
 }
 
-func (ix *IndexExpr) emit(w io.Writer) {
+func (ix *IndexExpr) emit(w io.Writer) { ix.emitWithCast(w, false) }
+
+func (ix *IndexExpr) emitTarget(w io.Writer) { ix.emitWithCast(w, true) }
+
+func (ix *IndexExpr) emitWithCast(w io.Writer, asTarget bool) {
 	baseType := guessType(ix.Target)
 	if baseType == "" || baseType == "Any" || baseType == "Any?" {
 		if vr, ok := ix.Target.(*VarRef); ok && vr.Type != "" {
@@ -600,14 +608,16 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		ix.Index.emit(w)
 	}
 	io.WriteString(w, "]")
-	if isMap || dynamicCast != "" {
-		if ix.Type != "" {
-			io.WriteString(w, " as "+ix.Type)
-		} else if ix.ForceBang {
-			io.WriteString(w, "!!")
+	if !asTarget {
+		if isMap || dynamicCast != "" {
+			if ix.Type != "" {
+				io.WriteString(w, " as "+ix.Type)
+			} else if ix.ForceBang {
+				io.WriteString(w, "!!")
+			}
+		} else if isString {
+			io.WriteString(w, ".toString()")
 		}
-	} else if isString {
-		io.WriteString(w, ".toString()")
 	}
 }
 
@@ -836,7 +846,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	rightType := guessType(b.Right)
 	listOp := b.Op == "+" && (strings.HasPrefix(leftType, "MutableList<") || strings.HasPrefix(rightType, "MutableList<"))
 	numOp := (b.Op == "+" || b.Op == "-" || b.Op == "*" || b.Op == "/" || b.Op == "%") && !listOp
-	cmpOp := b.Op == ">" || b.Op == "<" || b.Op == ">=" || b.Op == "<="
+	cmpOp := b.Op == ">" || b.Op == "<" || b.Op == ">=" || b.Op == "<=" || b.Op == "in"
 	boolOp := b.Op == "&&" || b.Op == "||"
 	strOp := b.Op == "+" && (leftType == "String" || rightType == "String")
 	bigOp := leftType == "BigInteger" || rightType == "BigInteger"
@@ -1129,6 +1139,24 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		if useLong && guessType(b) == "Int" {
 			io.WriteString(w, ".toInt()")
+		}
+		return
+	}
+	if b.Op == "in" {
+		if _, ok := b.Left.(*BinaryExpr); ok {
+			io.WriteString(w, "(")
+			emitOperand(b.Left, b.Right)
+			io.WriteString(w, ")")
+		} else {
+			emitOperand(b.Left, b.Right)
+		}
+		io.WriteString(w, " in ")
+		if _, ok := b.Right.(*BinaryExpr); ok {
+			io.WriteString(w, "(")
+			emitOperand(b.Right, b.Left)
+			io.WriteString(w, ")")
+		} else {
+			emitOperand(b.Right, b.Left)
 		}
 		return
 	}
@@ -2498,7 +2526,7 @@ func guessType(e Expr) string {
 			}
 			return "Double"
 		}
-		if v.Op == "==" || v.Op == "!=" || v.Op == ">" || v.Op == "<" || v.Op == ">=" || v.Op == "<=" {
+		if v.Op == "==" || v.Op == "!=" || v.Op == ">" || v.Op == "<" || v.Op == ">=" || v.Op == "<=" || v.Op == "in" {
 			return "Boolean"
 		}
 		return ""
