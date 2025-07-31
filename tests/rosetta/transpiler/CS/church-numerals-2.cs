@@ -58,38 +58,73 @@ class Program {
         }
         return _fmt(v);
     }
-    static long ord(string ch_0) {
-        if ((ch_0 == "a")) {
-            return 97;
-        };
-        if ((ch_0 == "π")) {
-            return 960;
-        };
-        if ((ch_0 == "A")) {
-            return 65;
-        };
-        return 0;
+    static object id(object x_0) {
+        return x_0;
     }
 
-    static string chr(long n_1) {
-        if ((n_1 == 97)) {
-            return "a";
-        };
-        if ((n_1 == 960)) {
-            return "π";
-        };
-        if ((n_1 == 65)) {
-            return "A";
-        };
-        return "?";
+    static Func<object, object> compose(Func<object, object> f_1, Func<object, object> g_2) {
+        return (object x) => {return f_1(g_2(x));};
+    }
+
+    static Func<object, object> zero() {
+        return (Func<object, object>)((Func<object, object> f) => {return (Func<object, object>)id;});
+    }
+
+    static Func<object, object> one() {
+        return (Func<object, object>)id;
+    }
+
+    static Func<object, object> succ(Func<object, object> n_3) {
+        return (Func<object, object>)((Func<object, object> f) => {return compose(f, n_3(f));});
+    }
+
+    static Func<object, object> plus(Func<object, object> m_4, Func<object, object> n_5) {
+        return (Func<object, object>)((Func<object, object> f) => {return compose(m_4(f), n_5(f));});
+    }
+
+    static Func<object, object> mult(Func<object, object> m_6, Func<object, object> n_7) {
+        return compose(m_6, n_7);
+    }
+
+    static Func<object, object> exp(Func<object, object> m_8, Func<object, object> n_9) {
+        return n_9(m_8);
+    }
+
+    static long toInt(Func<object, object> x_10) {
+        long counter_11 = 0;
+        Func<Func<object, object>, Func<object, object>> fCounter = null;
+        fCounter = (Func<object, object> f_12) => {counter_11 = (counter_11 + 1); return f_12;};
+        x_10(fCounter)(id);
+        return counter_11;
+    }
+
+    static string toStr(Func<object, object> x_13) {
+        string s_14 = "";
+        Func<Func<object, object>, Func<object, object>> fCounter = null;
+        fCounter = (Func<object, object> f_15) => {s_14 = (s_14 + "|"); return f_15;};
+        x_13(fCounter)(id);
+        return s_14;
+    }
+
+    static void main() {
+        Console.WriteLine(_fmtTop(("zero = " + _fmt(toInt(zero())))));
+        Func<object, object> onev_16 = one();
+        Console.WriteLine(_fmtTop(("one = " + _fmt(toInt(onev_16)))));
+        Func<object, object> two_17 = succ(succ(zero()));
+        Console.WriteLine(_fmtTop(("two = " + _fmt(toInt(two_17)))));
+        Func<object, object> three_18 = plus(onev_16, two_17);
+        Console.WriteLine(_fmtTop(("three = " + _fmt(toInt(three_18)))));
+        Func<object, object> four_19 = mult(two_17, two_17);
+        Console.WriteLine(_fmtTop(("four = " + _fmt(toInt(four_19)))));
+        Func<object, object> eight_20 = exp(two_17, three_18);
+        Console.WriteLine(_fmtTop(("eight = " + _fmt(toInt(eight_20)))));
+        Console.WriteLine(_fmtTop(("toStr(four) = " + toStr(four_19))));
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Console.WriteLine(_fmtTop(_fmt(ord("A"))));
-            Console.WriteLine(_fmtTop(chr(65)));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

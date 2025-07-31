@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 466/491
-Last updated: 2025-07-31 14:19 +0700
+Completed programs: 468/491
+Last updated: 2025-07-31 08:37 UTC
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -165,57 +165,57 @@ Last updated: 2025-07-31 14:19 +0700
 | 157 | call-a-function-6 | ✓ | 2.684ms | 16.0KB |
 | 158 | call-a-function-7 | ✓ | 19µs |  |
 | 159 | call-a-function-8 | ✓ | 16.063ms | 1.9MB |
-| 160 | call-a-function-9 |   | 6.581ms | 1.7MB |
+| 160 | call-a-function-9 | ✓ | 6.581ms | 1.7MB |
 | 161 | call-an-object-method-1 | ✓ | 11µs |  |
-| 162 | call-an-object-method-2 | ✓ | 1µs |  |
-| 163 | call-an-object-method-3 | ✓ | 7µs |  |
-| 164 | call-an-object-method |   |  |  |
-| 165 | camel-case-and-snake-case | ✓ | 469566h32m48.600175s | 1.2MB |
-| 166 | canny-edge-detector | ✓ | 469566h32m48.600175s | 1.2MB |
-| 167 | canonicalize-cidr | ✓ | 17.947ms | 2.4MB |
-| 168 | cantor-set |   |  |  |
-| 169 | carmichael-3-strong-pseudoprimes | ✓ | 4.03ms | 36.8KB |
-| 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 12.934ms | 1.1MB |
-| 171 | cartesian-product-of-two-or-more-lists-2 |   |  |  |
-| 172 | cartesian-product-of-two-or-more-lists-3 | ✓ | 13.743ms | 1.2MB |
-| 173 | cartesian-product-of-two-or-more-lists-4 | ✓ | 15.589ms | 1.2MB |
-| 174 | case-sensitivity-of-identifiers | ✓ | 3.104ms | 16.0KB |
-| 175 | casting-out-nines | ✓ | 15.831ms | 2.8MB |
-| 176 | catalan-numbers-1 | ✓ | 2.989ms | 16.0KB |
-| 177 | catalan-numbers-2 | ✓ | 2.421ms | 16.0KB |
-| 178 | catalan-numbers-pascals-triangle | ✓ | 2.83ms | 24.1KB |
-| 179 | catamorphism | ✓ | 2.748ms | 16.0KB |
-| 180 | catmull-clark-subdivision-surface | ✓ | 20.23ms | 2.1MB |
-| 181 | chaocipher | ✓ | 3.982ms | 69.0KB |
-| 182 | chaos-game | ✓ | 5.799ms | 5.8MB |
-| 183 | character-codes-1 | ✓ | 3.075ms | 16.0KB |
-| 184 | character-codes-2 | ✓ | 3.088ms | 16.0KB |
-| 185 | character-codes-3 | ✓ | 3.119ms | 16.0KB |
-| 186 | character-codes-4 | ✓ | 2.713ms | 16.0KB |
-| 187 | character-codes-5 | ✓ | 2.624ms | 16.0KB |
-| 188 | chat-server | ✓ | 3.081ms | 16.0KB |
-| 189 | check-machin-like-formulas | ✓ | 6.599ms | 1.5MB |
-| 190 | check-that-file-exists | ✓ | 2.705ms | 16.0KB |
-| 191 | checkpoint-synchronization-1 | ✓ | 2.933ms | 16.0KB |
-| 192 | checkpoint-synchronization-2 | ✓ | 4.191ms | 24.1KB |
-| 193 | checkpoint-synchronization-3 | ✓ | 4.543ms | 24.1KB |
-| 194 | checkpoint-synchronization-4 | ✓ | 2.493ms | 24.1KB |
-| 195 | chernicks-carmichael-numbers | ✓ | 55.103ms | 16.9MB |
-| 196 | cheryls-birthday | ✓ | 2.623ms | 16.0KB |
-| 197 | chinese-remainder-theorem | ✓ | 2.531ms | 16.0KB |
-| 198 | chinese-zodiac | ✓ | 2.452ms | 16.0KB |
-| 199 | cholesky-decomposition-1 | ✓ | 20.535ms | 2.3MB |
-| 200 | cholesky-decomposition | ✓ | 12.64ms | 1.2MB |
-| 201 | chowla-numbers | ✓ | 2.539ms | 16.0KB |
-| 202 | church-numerals-1 | ✓ | 11.814ms | 1.1MB |
+| 162 | call-an-object-method-2 | ✓ |  |  |
+| 163 | call-an-object-method-3 | ✓ | 9µs |  |
+| 164 | call-an-object-method | ✓ | 9µs |  |
+| 165 | camel-case-and-snake-case | ✓ | 17.133ms | 1.2MB |
+| 166 | canny-edge-detector | ✓ | 15.567ms | 1.2MB |
+| 167 | canonicalize-cidr | ✓ | 19.786ms | 2.7MB |
+| 168 | cantor-set | ✓ | 14.6ms | 1.2MB |
+| 169 | carmichael-3-strong-pseudoprimes | ✓ | 3.128ms | 44.9KB |
+| 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 12.956ms | 1.1MB |
+| 171 | cartesian-product-of-two-or-more-lists-2 | ✓ | 15.338ms | 1.3MB |
+| 172 | cartesian-product-of-two-or-more-lists-3 | ✓ | 14.442ms | 1.2MB |
+| 173 | cartesian-product-of-two-or-more-lists-4 | ✓ | 15.979ms | 1.2MB |
+| 174 | case-sensitivity-of-identifiers | ✓ | 2.829ms | 16.0KB |
+| 175 | casting-out-nines |   | 15.831ms | 2.8MB |
+| 176 | catalan-numbers-1 | ✓ | 2.816ms | 16.0KB |
+| 177 | catalan-numbers-2 | ✓ | 2.737ms | 16.0KB |
+| 178 | catalan-numbers-pascals-triangle | ✓ | 2.768ms | 24.1KB |
+| 179 | catamorphism | ✓ | 2.81ms | 16.0KB |
+| 180 | catmull-clark-subdivision-surface | ✓ | 18.43ms | 1.5MB |
+| 181 | chaocipher | ✓ | 2.851ms | 85.0KB |
+| 182 | chaos-game | ✓ | 3.508ms | 1.5MB |
+| 183 | character-codes-1 | ✓ | 2.618ms | 16.0KB |
+| 184 | character-codes-2 | ✓ | 2.667ms | 16.0KB |
+| 185 | character-codes-3 | ✓ | 2.644ms | 16.0KB |
+| 186 | character-codes-4 | ✓ | 2.394ms | 16.0KB |
+| 187 | character-codes-5 | ✓ | 2.618ms | 16.0KB |
+| 188 | chat-server | ✓ | 2.797ms | 16.0KB |
+| 189 | check-machin-like-formulas | ✓ | 15.579ms | 1.8MB |
+| 190 | check-that-file-exists | ✓ | 3.046ms | 16.0KB |
+| 191 | checkpoint-synchronization-1 | ✓ | 2.97ms | 16.0KB |
+| 192 | checkpoint-synchronization-2 | ✓ | 2.568ms | 24.1KB |
+| 193 | checkpoint-synchronization-3 | ✓ | 2.805ms | 24.1KB |
+| 194 | checkpoint-synchronization-4 | ✓ | 2.61ms | 24.1KB |
+| 195 | chernicks-carmichael-numbers | ✓ | 53.391ms | 16.9MB |
+| 196 | cheryls-birthday | ✓ | 2.962ms | 16.0KB |
+| 197 | chinese-remainder-theorem | ✓ | 2.419ms | 16.0KB |
+| 198 | chinese-zodiac | ✓ | 2.547ms | 16.0KB |
+| 199 | cholesky-decomposition-1 |   | 20.535ms | 2.3MB |
+| 200 | cholesky-decomposition | ✓ | 13.793ms | 1.2MB |
+| 201 | chowla-numbers | ✓ | 2.61ms | 16.0KB |
+| 202 | church-numerals-1 | ✓ | 2.781ms | 44.9KB |
 | 203 | church-numerals-2 |   |  |  |
-| 204 | circles-of-given-radius-through-two-points | ✓ | 26.488ms | 3.0MB |
-| 205 | circular-primes | ✓ | 17.44ms | 1.4MB |
-| 206 | cistercian-numerals | ✓ | 5.646ms | 333.0KB |
-| 207 | comma-quibbling | ✓ | 18.153ms | 1.1MB |
-| 208 | compiler-virtual-machine-interpreter | ✓ | 31.964ms | 3.2MB |
-| 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 6.886461s | 10.3MB |
-| 210 | compound-data-type | ✓ |  |  |
+| 204 | circles-of-given-radius-through-two-points | ✓ | 18.499ms | 2.7MB |
+| 205 | circular-primes | ✓ | 12.568ms | 1.4MB |
+| 206 | cistercian-numerals | ✓ | 4.573ms | 333.0KB |
+| 207 | comma-quibbling | ✓ | 13.607ms | 1.1MB |
+| 208 | compiler-virtual-machine-interpreter | ✓ | 28.603ms | 3.9MB |
+| 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 5.883437s | 12.8MB |
+| 210 | compound-data-type | ✓ | 1µs |  |
 | 211 | concurrent-computing-1 | ✓ | 16.101ms | 1.0MB |
 | 212 | concurrent-computing-2 | ✓ | 14.86ms | 1.0MB |
 | 213 | concurrent-computing-3 | ✓ | 13.992ms | 1.0MB |
