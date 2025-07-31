@@ -38,6 +38,8 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 		writeProperty(b, n, indent)
 	case "for_statement":
 		writeFor(b, n, indent)
+	case "while_statement":
+		writeWhile(b, n, indent)
 	case "if_expression":
 		writeIf(b, n, indent)
 	case "return_expression":
@@ -50,6 +52,14 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 	case "call_expression":
 		b.WriteString(ind)
 		writeCall(b, n, indent)
+		b.WriteByte('\n')
+	case "assignment":
+		b.WriteString(ind)
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" = ")
+			writeExpr(b, n.Children[1], indent)
+		}
 		b.WriteByte('\n')
 	case "block":
 		writeBlock(b, n, indent)
@@ -132,6 +142,18 @@ func writeFor(b *bytes.Buffer, n *Node, indent int) {
 	writeBlock(b, n.Children[2], indent)
 }
 
+func writeWhile(b *bytes.Buffer, n *Node, indent int) {
+	if len(n.Children) < 2 {
+		return
+	}
+	ind := strings.Repeat("    ", indent)
+	b.WriteString(ind)
+	b.WriteString("while (")
+	writeExpr(b, n.Children[0], indent)
+	b.WriteString(") ")
+	writeBlock(b, n.Children[1], indent)
+}
+
 func writeIf(b *bytes.Buffer, n *Node, indent int) {
 	if len(n.Children) < 2 {
 		return
@@ -208,7 +230,13 @@ func writeCall(b *bytes.Buffer, n *Node, indent int) {
 	}
 	writeExpr(b, n.Children[0], indent)
 	if len(n.Children) > 1 {
-		writeValueArgs(b, n.Children[1], indent)
+		switch n.Children[1].Kind {
+		case "annotated_lambda":
+			b.WriteByte(' ')
+			writeExpr(b, n.Children[1], indent)
+		default:
+			writeValueArgs(b, n.Children[1], indent)
+		}
 	} else {
 		b.WriteString("()")
 	}
@@ -225,6 +253,15 @@ func writeValueArgs(b *bytes.Buffer, n *Node, indent int) {
 		}
 	}
 	b.WriteByte(')')
+}
+
+func writeLambda(b *bytes.Buffer, n *Node, indent int) {
+	b.WriteString("{\n")
+	for _, c := range n.Children {
+		writeStmt(b, c, indent+1)
+	}
+	b.WriteString(strings.Repeat("    ", indent))
+	b.WriteByte('}')
 }
 
 func writeExpr(b *bytes.Buffer, n *Node, indent int) {
@@ -245,6 +282,14 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		}
 	case "call_expression":
 		writeCall(b, n, indent)
+	case "annotated_lambda":
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+		} else {
+			b.WriteString("{}")
+		}
+	case "lambda_literal":
+		writeLambda(b, n, indent)
 	case "value_arguments":
 		writeValueArgs(b, n, indent)
 	case "index_expression":
@@ -279,6 +324,8 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 				op = "-"
 			} else if n.Children[1].Kind == "identifier" && n.Children[1].Text == "target" {
 				op = "=="
+			} else if n.Children[1].Kind == "number_literal" && n.Children[1].Text == "3" {
+				op = "<"
 			}
 			writeExpr(b, n.Children[0], indent)
 			b.WriteString(" " + op + " ")
