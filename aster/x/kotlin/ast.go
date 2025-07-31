@@ -13,13 +13,13 @@ import (
 // textual value populate the Text field. Position information can be omitted to
 // keep the output compact.
 type Node struct {
-	Kind     string `json:"kind"`
-	Text     string `json:"text,omitempty"`
-	Start    int    `json:"start,omitempty"`
-	StartCol int    `json:"startCol,omitempty"`
-	End      int    `json:"end,omitempty"`
-	EndCol   int    `json:"endCol,omitempty"`
-	Children []Node `json:"children,omitempty"`
+	Kind     string  `json:"kind"`
+	Text     string  `json:"text,omitempty"`
+	Start    int     `json:"start,omitempty"`
+	StartCol int     `json:"startCol,omitempty"`
+	End      int     `json:"end,omitempty"`
+	EndCol   int     `json:"endCol,omitempty"`
+	Children []*Node `json:"children,omitempty"`
 }
 
 // Typed node aliases mirroring the Kotlin grammar. Only the node kinds that
@@ -105,7 +105,7 @@ func convert(n *sitter.Node, src []byte, withPos bool) *Node {
 	for i := 0; i < int(n.NamedChildCount()); i++ {
 		child := convert(n.NamedChild(uint(i)), src, withPos)
 		if child != nil {
-			node.Children = append(node.Children, *child)
+			node.Children = append(node.Children, child)
 		}
 	}
 
