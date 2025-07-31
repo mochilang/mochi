@@ -136,6 +136,13 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, n.Children[0], indent)
 			b.WriteString(":\n")
 			writeBlock(b, n.Children[1], indent+1)
+			for _, c := range n.Children[2:] {
+				if c.Kind == "else_clause" && len(c.Children) > 0 {
+					b.WriteString(ind)
+					b.WriteString("else:\n")
+					writeBlock(b, c.Children[0], indent+1)
+				}
+			}
 		}
 	case "global_statement":
 		if len(n.Children) > 0 {
@@ -333,16 +340,16 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteByte(' ')
 			writeExpr(b, n.Children[1], indent)
 		}
-       case "unary_operator":
-               if len(n.Children) == 1 {
-                       b.WriteByte('-')
-                       writeExpr(b, n.Children[0], indent)
-               }
-       case "not_operator":
-               if len(n.Children) == 1 {
-                       b.WriteString("not ")
-                       writeExpr(b, n.Children[0], indent)
-               }
+	case "unary_operator":
+		if len(n.Children) == 1 {
+			b.WriteByte('-')
+			writeExpr(b, n.Children[0], indent)
+		}
+	case "not_operator":
+		if len(n.Children) == 1 {
+			b.WriteString("not ")
+			writeExpr(b, n.Children[0], indent)
+		}
 	case "comparison_operator":
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indent)

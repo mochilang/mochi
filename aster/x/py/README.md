@@ -54,7 +54,32 @@ Python ASTs. The golden tests exercise a small set of example programs.
 48. let_and_print.py
 49. list_assign.py
 50. list_index.py
+51. list_nested_assign.py
+52. list_set_ops.py
+53. load_jsonl.py
+54. load_yaml.py
+55. map_assign.py
+56. map_in_operator.py
+57. map_index.py
+58. map_int_key.py
+59. map_literal_dynamic.py
+60. map_membership.py
+61. map_nested_assign.py
+62. match_expr.py
+63. match_full.py
+64. math_ops.py
+65. membership.py
+66. min_max_builtin.py
+67. mix_go_python.py
+68. nested_function.py
+69. order_by_map.py
+70. outer_join.py
+71. partial_application.py
+72. print_hello.py
+73. pure_fold.py
+74. pure_global_fold.py
+75. python_auto.py
 
-Checked: 50/50
+Checked: 75/75
 
-_Last updated: 2025-07-31 15:43 GMT+0700_
+_Last updated: 2025-07-31 18:23 GMT+7_
