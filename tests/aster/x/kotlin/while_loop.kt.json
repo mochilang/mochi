@@ -1,0 +1,121 @@
+{
+  "root": {
+    "kind": "source_file",
+    "children": [
+      {
+        "kind": "function_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "main"
+          },
+          {
+            "kind": "function_body",
+            "children": [
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "property_declaration",
+                    "children": [
+                      {
+                        "kind": "variable_declaration",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "i"
+                          },
+                          {
+                            "kind": "user_type",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "Int"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "number_literal",
+                        "text": "0"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "while_statement",
+                    "children": [
+                      {
+                        "kind": "binary_expression",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "i"
+                          },
+                          {
+                            "kind": "number_literal",
+                            "text": "3"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "block",
+                        "children": [
+                          {
+                            "kind": "call_expression",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "println"
+                              },
+                              {
+                                "kind": "value_arguments",
+                                "children": [
+                                  {
+                                    "kind": "value_argument",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "i"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "assignment",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "i"
+                              },
+                              {
+                                "kind": "binary_expression",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "i"
+                                  },
+                                  {
+                                    "kind": "number_literal",
+                                    "text": "1"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
