@@ -2561,6 +2561,48 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 							expr = &CallExpr{Func: "hash-ref", Args: []Expr{n.Target, key, def}}
 							break
 						}
+					} else if pf.Target != nil && pf.Target.Selector != nil && env != nil {
+						if rt, err := env.GetVar(pf.Target.Selector.Root); err == nil {
+							if st, ok := rt.(types.StructType); ok {
+								var margs []Expr
+								margs = append(margs, n.Target)
+								for _, a := range op.Call.Args {
+									arg, err := convertExpr(a, env)
+									if err != nil {
+										return nil, err
+									}
+									margs = append(margs, arg)
+								}
+								expr = &CallExpr{Func: lit.Value, Args: margs}
+								if m, ok := st.Methods[lit.Value]; ok {
+									t = m.Type.Return
+								} else {
+									t = types.AnyType{}
+								}
+								break
+							}
+						}
+					} else if types.IsStructType(types.TypeOfPrimaryBasic(pf.Target, env)) {
+						var margs []Expr
+						margs = append(margs, n.Target)
+						for _, a := range op.Call.Args {
+							arg, err := convertExpr(a, env)
+							if err != nil {
+								return nil, err
+							}
+							margs = append(margs, arg)
+						}
+						expr = &CallExpr{Func: lit.Value, Args: margs}
+						if st, ok := types.TypeOfPrimaryBasic(pf.Target, env).(types.StructType); ok {
+							if m, ok := st.Methods[lit.Value]; ok {
+								t = m.Type.Return
+							} else {
+								t = types.AnyType{}
+							}
+						} else {
+							t = types.AnyType{}
+						}
+						break
 					}
 					// call the function stored in the field
 					var args []Expr
@@ -2760,6 +2802,13 @@ func convertStruct(s *parser.StructLiteral, env *types.Env) (Expr, error) {
 			return nil, err
 		}
 		args = append(args, &StringLit{Value: f.Name}, val)
+	}
+	if env != nil {
+		if st, ok := env.GetStruct(s.Name); ok {
+			for name := range st.Methods {
+				args = append(args, &StringLit{Value: name}, &Name{Name: name})
+			}
+		}
 	}
 	return &CallExpr{Func: "hash", Args: args}, nil
 }
