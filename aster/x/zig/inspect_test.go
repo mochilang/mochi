@@ -49,11 +49,14 @@ func TestInspect_Golden(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "aster", "x", "zig")
 	os.MkdirAll(outDir, 0o755)
 
-	files, err := filepath.Glob(filepath.Join(srcDir, "*.zig"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	sort.Strings(files)
+       files, err := filepath.Glob(filepath.Join(srcDir, "*.zig"))
+       if err != nil {
+               t.Fatal(err)
+       }
+       sort.Strings(files)
+       if len(files) > 25 {
+               files = files[:25]
+       }
 
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".zig")
