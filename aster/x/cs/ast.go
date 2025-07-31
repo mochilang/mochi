@@ -10,11 +10,6 @@ var IncludePositions bool
 
 // Node models a portion of the C# syntax tree as returned by tree-sitter.
 // Only leaves carrying a textual value populate the Text field. Position
-// information is stored using 1-indexed line numbers and zero-indexed
-// columns similar to tree-sitter's Point type.
-
-// Node models a portion of the C# syntax tree as returned by tree-sitter.
-// Only leaves carrying a textual value populate the Text field. Position
 // information can optionally be included when requested by the caller.
 type Node struct {
 	Kind     string  `json:"kind"`
@@ -50,15 +45,11 @@ type Program struct {
 	File *CompilationUnit `json:"file"`
 }
 
-// convert builds a Node tree starting from the given tree-sitter node.
-// convert builds a Node tree starting from the given tree-sitter node. Pure
-// syntax leaf nodes without textual value are omitted from the resulting tree
-// so the JSON output remains compact.
-// toNode converts a tree-sitter node into our Node structure. When
-// IncludePositions is true the resulting Node records line and column
-// information. Pure syntax leaves without textual value are skipped so the
-// resulting JSON remains compact.
-func toNode(n *sitter.Node, src []byte) *Node {
+// convert builds a Node tree starting at the given tree-sitter node. Pure
+// syntax leaf nodes without textual value are omitted so the JSON output
+// remains compact. When IncludePositions is true the resulting Node records
+// line and column information.
+func convert(n *sitter.Node, src []byte) *Node {
 	if n == nil {
 		return nil
 	}
@@ -82,7 +73,7 @@ func toNode(n *sitter.Node, src []byte) *Node {
 
 	for i := uint(0); i < n.NamedChildCount(); i++ {
 		c := n.NamedChild(i)
-		if child := toNode(c, src); child != nil {
+		if child := convert(c, src); child != nil {
 			node.Children = append(node.Children, child)
 		}
 	}
