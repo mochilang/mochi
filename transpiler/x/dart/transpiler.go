@@ -550,20 +550,6 @@ type AssignStmt struct {
 }
 
 func (s *AssignStmt) emit(w io.Writer) error {
-	if se, ok := s.Target.(*SelectorExpr); ok {
-		if n, ok := se.Receiver.(*Name); ok && currentEnv != nil {
-			if t, err := currentEnv.GetVar(n.Name); err == nil {
-				if _, ok := t.(types.StructType); ok {
-					fmt.Fprintf(w, "%s = {...%s, %q: ", n.Name, n.Name, se.Field)
-					if err := s.Value.emit(w); err != nil {
-						return err
-					}
-					_, err := io.WriteString(w, "}")
-					return err
-				}
-			}
-		}
-	}
 	targetType := strings.TrimSuffix(inferType(s.Target), "?")
 	if n, ok := s.Value.(*Name); ok && n.Name == "null" && !strings.HasSuffix(targetType, "?") {
 		// assigning null to a non-null variable is a no-op
@@ -1654,9 +1640,10 @@ func (m *MapLit) emit(w io.Writer) error {
 
 // IndexExpr represents target[index].
 type IndexExpr struct {
-	Target Expr
-	Index  Expr
-	NoBang bool
+	Target   Expr
+	Index    Expr
+	NoBang   bool
+	NoSuffix bool
 }
 
 // SliceExpr represents target[start:end].
@@ -1856,7 +1843,11 @@ func (i *IndexExpr) emit(w io.Writer) error {
 				case "String":
 					val = "\"\""
 				default:
-					val = "null"
+					if strings.HasPrefix(vt, "Map<") {
+						val = "{}"
+					} else {
+						val = "null"
+					}
 				}
 			}
 			_, err := io.WriteString(w, " ?? "+val)
@@ -1870,6 +1861,9 @@ func (i *IndexExpr) emit(w io.Writer) error {
 				}
 			}
 			return nil
+		} else if !i.NoSuffix {
+			_, err := io.WriteString(w, "!")
+			return err
 		}
 	}
 	if needDefault {
@@ -4137,8 +4131,7 @@ func convertForStmt(fst *parser.ForStmt) (Stmt, error) {
 	}
 	if iex, ok := iter.(*IndexExpr); ok {
 		if strings.HasPrefix(strings.TrimSuffix(inferType(iex.Target), "?"), "Map<") {
-			// Preserve nil result for absent keys.
-			iter = iex
+			iex.NoBang = true
 		}
 	}
 	elem := "dynamic"
@@ -4307,7 +4300,8 @@ func convertTypeDecl(td *parser.TypeDecl) error {
 			// substitute field references with self indexing
 			if fd, ok := conv.(*FuncDecl); ok {
 				for i, st := range fd.Body {
-					fd.Body[i] = substituteStmtFields(st, selfName, fieldSet)
+					st = substituteStmtFields(st, selfName, fieldSet)
+					fd.Body[i] = substituteStmtMethods(st, td.Name, selfName)
 				}
 			}
 			methodDefs = append(methodDefs, conv)
@@ -4575,7 +4569,12 @@ func convertAssignTarget(as *parser.AssignStmt) (Expr, error) {
 			iexpr.NoBang = true
 			expr = &NotNilExpr{X: iexpr}
 		} else {
-			iexpr.NoBang = true
+			if strings.HasPrefix(strings.TrimSuffix(inferType(expr), "?"), "Map<") {
+				iexpr.NoBang = true
+				iexpr.NoSuffix = true
+			} else {
+				iexpr.NoBang = true
+			}
 			expr = iexpr
 		}
 	}
@@ -4749,13 +4748,9 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				}
 				iex := &IndexExpr{Target: expr, Index: idx}
 				if strings.HasPrefix(strings.TrimSuffix(inferType(expr), "?"), "Map<") {
-					// Map indexing returns null when the key is absent.
-					// Do not assert non-nil so that the caller can
-					// handle the default value emitted by IndexExpr.
-					expr = iex
-				} else {
-					expr = iex
+					iex.NoBang = true
 				}
+				expr = iex
 			}
 		case op.Field != nil:
 			// method call if next op is call
@@ -5384,27 +5379,66 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return convertQueryExpr(p.Query)
 	case p.FunExpr != nil && p.FunExpr.ExprBody != nil:
 		var params []string
+		saved := map[string]string{}
 		for _, pa := range p.FunExpr.Params {
-			params = append(params, sanitize(pa.Name))
+			name := sanitize(pa.Name)
+			params = append(params, name)
+			if pa.Type != nil {
+				t := typeRefString(pa.Type)
+				if t != "" {
+					saved[name] = localVarTypes[name]
+					localVarTypes[name] = t
+				}
+			}
 		}
 		body, err := convertExpr(p.FunExpr.ExprBody)
+		for n, v := range saved {
+			if v != "" {
+				localVarTypes[n] = v
+			} else {
+				delete(localVarTypes, n)
+			}
+		}
 		if err != nil {
 			return nil, err
 		}
 		return &LambdaExpr{Params: params, Body: body}, nil
 	case p.FunExpr != nil && p.FunExpr.BlockBody != nil:
 		var params []string
+		saved := map[string]string{}
 		for _, pa := range p.FunExpr.Params {
-			params = append(params, sanitize(pa.Name))
+			name := sanitize(pa.Name)
+			params = append(params, name)
+			if pa.Type != nil {
+				t := typeRefString(pa.Type)
+				if t != "" {
+					saved[name] = localVarTypes[name]
+					localVarTypes[name] = t
+				}
+			}
 		}
 		if len(p.FunExpr.BlockBody) == 1 && p.FunExpr.BlockBody[0].Return != nil {
 			body, err := convertExpr(p.FunExpr.BlockBody[0].Return.Value)
+			for n, v := range saved {
+				if v != "" {
+					localVarTypes[n] = v
+				} else {
+					delete(localVarTypes, n)
+				}
+			}
 			if err != nil {
 				return nil, err
 			}
 			return &LambdaExpr{Params: params, Body: body}, nil
 		}
 		body, err := convertStmtList(p.FunExpr.BlockBody)
+		for n, v := range saved {
+			if v != "" {
+				localVarTypes[n] = v
+			} else {
+				delete(localVarTypes, n)
+			}
+		}
 		if err != nil {
 			return nil, err
 		}
@@ -5934,6 +5968,80 @@ func substituteStmtFields(s Stmt, varName string, fields map[string]bool) Stmt {
 		return st
 	case *AssignStmt:
 		st.Value = substituteFields(st.Value, varName, fields)
+		return st
+	default:
+		return st
+	}
+}
+
+func substituteMethodCalls(e Expr, structName, selfName string) Expr {
+	switch ex := e.(type) {
+	case *CallExpr:
+		if n, ok := ex.Func.(*Name); ok {
+			if mset, ok2 := structMethods[structName]; ok2 && mset[n.Name] {
+				ex.Func = &Name{Name: structName + "_" + n.Name}
+				ex.Args = append([]Expr{&Name{Name: selfName}}, ex.Args...)
+			}
+		} else {
+			ex.Func = substituteMethodCalls(ex.Func, structName, selfName).(Expr)
+		}
+		for i := range ex.Args {
+			ex.Args[i] = substituteMethodCalls(ex.Args[i], structName, selfName)
+		}
+		return ex
+	case *BinaryExpr:
+		ex.Left = substituteMethodCalls(ex.Left, structName, selfName)
+		ex.Right = substituteMethodCalls(ex.Right, structName, selfName)
+		return ex
+	case *UnaryExpr:
+		ex.X = substituteMethodCalls(ex.X, structName, selfName)
+		return ex
+	case *IndexExpr:
+		ex.Target = substituteMethodCalls(ex.Target, structName, selfName)
+		ex.Index = substituteMethodCalls(ex.Index, structName, selfName)
+		return ex
+	case *SliceExpr:
+		ex.Target = substituteMethodCalls(ex.Target, structName, selfName)
+		if ex.Start != nil {
+			ex.Start = substituteMethodCalls(ex.Start, structName, selfName)
+		}
+		if ex.End != nil {
+			ex.End = substituteMethodCalls(ex.End, structName, selfName)
+		}
+		return ex
+	case *ListLit:
+		for i := range ex.Elems {
+			ex.Elems[i] = substituteMethodCalls(ex.Elems[i], structName, selfName)
+		}
+		return ex
+	case *MapLit:
+		for i := range ex.Entries {
+			ex.Entries[i].Key = substituteMethodCalls(ex.Entries[i].Key, structName, selfName)
+			ex.Entries[i].Value = substituteMethodCalls(ex.Entries[i].Value, structName, selfName)
+		}
+		return ex
+	case *CondExpr:
+		ex.Cond = substituteMethodCalls(ex.Cond, structName, selfName)
+		ex.Then = substituteMethodCalls(ex.Then, structName, selfName)
+		ex.Else = substituteMethodCalls(ex.Else, structName, selfName)
+		return ex
+	default:
+		return ex
+	}
+}
+
+func substituteStmtMethods(s Stmt, structName, selfName string) Stmt {
+	switch st := s.(type) {
+	case *ExprStmt:
+		st.Expr = substituteMethodCalls(st.Expr, structName, selfName)
+		return st
+	case *ReturnStmt:
+		if st.Value != nil {
+			st.Value = substituteMethodCalls(st.Value, structName, selfName)
+		}
+		return st
+	case *AssignStmt:
+		st.Value = substituteMethodCalls(st.Value, structName, selfName)
 		return st
 	default:
 		return st

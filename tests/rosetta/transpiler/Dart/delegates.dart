@@ -61,9 +61,9 @@ void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
   print(operation(a));
-  a = {...a, "delegate": {}};
+  a.delegate = <String, dynamic>{};
   print(operation(a));
-  a = {...a, "delegate": newDelegate()};
+  a.delegate = newDelegate();
   print(operation(a));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;

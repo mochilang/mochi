@@ -60,11 +60,11 @@ TinyInt TinyInt_Rem(TinyInt self, TinyInt t2) {
 }
 
 TinyInt TinyInt_Inc(TinyInt self) {
-  return Add(NewTinyInt(1));
+  return TinyInt_Add(self, NewTinyInt(1));
 }
 
 TinyInt TinyInt_Dec(TinyInt self) {
-  return Sub(NewTinyInt(1));
+  return TinyInt_Sub(self, NewTinyInt(1));
 }
 
 TinyInt NewTinyInt(int i) {

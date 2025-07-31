@@ -1,0 +1,10 @@
+run: exit status 254
+../../../tests/rosetta/transpiler/Dart/dijkstras-algorithm.dart:43:11: Error: Expected ';' after this.
+  graph[u]!![v] = w;
+          ^
+../../../tests/rosetta/transpiler/Dart/dijkstras-algorithm.dart:43:17: Error: Can't assign to this.
+  graph[u]!![v] = w;
+                ^
+../../../tests/rosetta/transpiler/Dart/dijkstras-algorithm.dart:89:15: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    dist[v] = alt;
+              ^
