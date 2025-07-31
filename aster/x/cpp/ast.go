@@ -107,6 +107,14 @@ func convert(n *sitter.Node, src []byte, opts Options) *Node {
 				node.Text = "post" + after
 			}
 		}
+	} else if n.Kind() == "lambda_expression" && n.NamedChildCount() >= 1 {
+		first := n.NamedChild(0)
+		if first != nil {
+			cap := strings.TrimSpace(string(src[n.StartByte():first.StartByte()]))
+			if cap != "" {
+				node.Children = append(node.Children, &Node{Kind: "lambda_capture_specifier", Text: cap})
+			}
+		}
 	}
 
 	for i := uint(0); i < n.NamedChildCount(); i++ {

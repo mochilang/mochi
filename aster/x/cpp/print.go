@@ -390,6 +390,16 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			} else {
 				writeExpr(b, n.Children[1], indent)
 			}
+		} else if len(n.Children) == 1 {
+			b.WriteString("[&] ")
+			if n.Children[0].Kind == "compound_statement" {
+				b.WriteString("{\n")
+				writeBlock(b, n.Children[0], indent+1)
+				b.WriteString(strings.Repeat("    ", indent))
+				b.WriteByte('}')
+			} else {
+				writeExpr(b, n.Children[0], indent)
+			}
 		}
 	case "lambda_capture_specifier":
 		b.WriteString(n.Text)
