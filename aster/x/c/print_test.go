@@ -35,7 +35,7 @@ func TestPrint_Golden(t *testing.T) {
 	var selected []string
 	for _, f := range files {
 		base := filepath.Base(f)
-		if base == "two-sum.c" || base == "cross_join.c" {
+		if base == "two-sum.c" || base == "cross_join.c" || base == "while_loop.c" {
 			selected = append(selected, f)
 		}
 	}
