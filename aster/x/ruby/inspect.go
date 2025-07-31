@@ -8,8 +8,11 @@ type Program struct {
 
 // Inspect parses the given Ruby source code and returns a Program describing
 // its AST using the bundled tree-sitter parser.
-func Inspect(src string) (*Program, error) {
-	node, err := Parse(src)
+// Inspect parses the given Ruby source code and returns a Program describing
+// its AST using the bundled tree-sitter parser. Positional information is
+// omitted unless opts specifies IncludePositions.
+func Inspect(src string, opts ...Options) (*Program, error) {
+	node, err := Parse(src, opts...)
 	if err != nil {
 		return nil, err
 	}
