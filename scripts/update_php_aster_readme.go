@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 )
@@ -14,7 +15,16 @@ import (
 func main() {
 	root := "."
 	outDir := filepath.Join(root, "tests", "aster", "x", "php")
-	names := []string{"cross_join", "print_hello", "two-sum"}
+	srcDir := filepath.Join(root, "tests", "transpiler", "x", "php")
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.php"))
+	sort.Strings(files)
+	if len(files) > 10 {
+		files = files[:10]
+	}
+	var names []string
+	for _, f := range files {
+		names = append(names, strings.TrimSuffix(filepath.Base(f), ".php"))
+	}
 	total := len(names)
 	processed := 0
 	var lines []string

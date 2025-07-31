@@ -109,6 +109,22 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString(") ")
 			writeBlock(b, n.Children[2], indent+1, true)
 		}
+	case "break_statement":
+		writeIndent(b, indent)
+		b.WriteString("break;\n")
+	case "continue_statement":
+		writeIndent(b, indent)
+		b.WriteString("continue;\n")
+	case "global_declaration":
+		writeIndent(b, indent)
+		b.WriteString("global ")
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeExpr(b, c, indent)
+		}
+		b.WriteString(";\n")
 	case "compound_statement":
 		writeIndent(b, indent)
 		writeBlock(b, n, indent+1, true)
