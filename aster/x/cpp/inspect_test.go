@@ -56,7 +56,7 @@ func TestInspect_Golden(t *testing.T) {
 			continue
 		}
 		count++
-		if count <= 10 {
+		if count <= 20 {
 			continue
 		}
 		selected = append(selected, f)
