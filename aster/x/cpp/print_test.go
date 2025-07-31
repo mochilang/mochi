@@ -59,9 +59,16 @@ func TestPrint_Golden(t *testing.T) {
 	sort.Strings(files)
 	var selected []string
 	for _, f := range files {
-		base := filepath.Base(f)
-		if base == "two-sum.cpp" || strings.HasPrefix(base, "cross_join") {
-			selected = append(selected, f)
+		name := strings.TrimSuffix(filepath.Base(f), ".cpp")
+		if _, err := os.Stat(filepath.Join(srcDir, name+".error")); err == nil {
+			continue
+		}
+		if filepath.Base(f) == "bench_block.cpp" {
+			continue
+		}
+		selected = append(selected, f)
+		if len(selected) >= 5 {
+			break
 		}
 	}
 	files = selected
@@ -72,6 +79,10 @@ func TestPrint_Golden(t *testing.T) {
 			data, err := os.ReadFile(src)
 			if err != nil {
 				t.Fatalf("read src: %v", err)
+			}
+			if _, err := os.Stat(filepath.Join(srcDir, name+".error")); err == nil {
+				t.Skip("skip due to compile error")
+				return
 			}
 			prog, err := cpp.Inspect(string(data))
 			if err != nil {

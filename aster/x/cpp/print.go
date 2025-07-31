@@ -71,6 +71,12 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, n.Children[0], indent)
 		}
 		b.WriteString(";\n")
+	case "break_statement":
+		b.WriteString(ind)
+		b.WriteString("break;\n")
+	case "continue_statement":
+		b.WriteString(ind)
+		b.WriteString("continue;\n")
 	case "for_statement":
 		writeForStatement(b, n, indent)
 	case "for_range_loop":
@@ -366,6 +372,14 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 				writeExpr(b, n.Children[0], indent)
 				b.WriteString(op)
 			}
+		}
+	case "conditional_expression":
+		if len(n.Children) == 3 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" ? ")
+			writeExpr(b, n.Children[1], indent)
+			b.WriteString(" : ")
+			writeExpr(b, n.Children[2], indent)
 		}
 	case "initializer_pair":
 		if len(n.Children) == 2 {
