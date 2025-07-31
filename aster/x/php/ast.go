@@ -105,7 +105,7 @@ func convert(n *sitter.Node, src []byte, opts Options) *Node {
 	}
 
 	if n.NamedChildCount() == 0 {
-		if isValueNode(n.Kind()) {
+		if isValueNode(n.Kind()) || keepEmptyNode(n.Kind()) {
 			text := n.Utf8Text(src)
 			if strings.TrimSpace(text) == "" {
 				return nil
@@ -150,7 +150,7 @@ func convert(n *sitter.Node, src []byte, opts Options) *Node {
 		}
 	}
 
-	if len(node.Children) == 0 && node.Text == "" && node.Kind != "break_statement" && node.Kind != "continue_statement" {
+	if len(node.Children) == 0 && node.Text == "" && node.Kind != "break_statement" && node.Kind != "continue_statement" && !keepEmptyNode(node.Kind) {
 		return nil
 	}
 	return node
@@ -159,6 +159,15 @@ func convert(n *sitter.Node, src []byte, opts Options) *Node {
 func isValueNode(kind string) bool {
 	switch kind {
 	case "name", "variable_name", "integer", "float", "string", "string_content", "comment", "encapsed_string":
+		return true
+	default:
+		return false
+	}
+}
+
+func keepEmptyNode(kind string) bool {
+	switch kind {
+	case "arguments", "formal_parameters":
 		return true
 	default:
 		return false

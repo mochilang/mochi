@@ -58,9 +58,9 @@ func TestInspect_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
-       if len(files) > 25 {
-               files = files[:25]
-       }
+	if len(files) > 30 {
+		files = files[:30]
+	}
 
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".php")
