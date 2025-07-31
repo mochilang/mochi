@@ -38,6 +38,14 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 		writeProperty(b, n, indent)
 	case "for_statement":
 		writeFor(b, n, indent)
+	case "assignment":
+		b.WriteString(ind)
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" = ")
+			writeExpr(b, n.Children[1], indent)
+		}
+		b.WriteByte('\n')
 	case "if_expression":
 		writeIf(b, n, indent)
 	case "return_expression":
@@ -176,7 +184,18 @@ func writeFor(b *bytes.Buffer, n *Node, indent int) {
 	b.WriteString(ind)
 	b.WriteString("for (")
 	if len(n.Children[0].Children) > 0 {
-		writeExpr(b, n.Children[0].Children[0], indent)
+		if n.Children[0].Kind == "multi_variable_declaration" {
+			for i, c := range n.Children[0].Children {
+				if i > 0 {
+					b.WriteString(", ")
+				}
+				if len(c.Children) > 0 {
+					writeExpr(b, c.Children[0], indent)
+				}
+			}
+		} else {
+			writeExpr(b, n.Children[0].Children[0], indent)
+		}
 	}
 	b.WriteString(" in ")
 	writeExpr(b, n.Children[1], indent)
@@ -293,19 +312,43 @@ func writeLambdaParams(b *bytes.Buffer, n *Node) {
 }
 
 func writeLambdaLiteral(b *bytes.Buffer, n *Node, indent int) {
-	b.WriteByte('{')
 	i := 0
+	singleLine := true
 	if len(n.Children) > 0 && n.Children[0].Kind == "lambda_parameters" {
-		writeLambdaParams(b, n.Children[0])
 		i = 1
-		b.WriteString(" -> ")
+	}
+	if len(n.Children)-i > 1 {
+		singleLine = false
+	} else if len(n.Children) > i {
+		switch n.Children[i].Kind {
+		case "property_declaration", "for_statement", "assignment", "block":
+			singleLine = false
+		}
+	}
+	if singleLine {
+		b.WriteByte('{')
+		if i == 1 {
+			writeLambdaParams(b, n.Children[0])
+			b.WriteString(" -> ")
+		}
+		for ; i < len(n.Children); i++ {
+			if i > 1 {
+				b.WriteByte(' ')
+			}
+			writeExpr(b, n.Children[i], indent)
+		}
+		b.WriteByte('}')
+		return
+	}
+	b.WriteString("{\n")
+	if i == 1 {
+		writeLambdaParams(b, n.Children[0])
+		b.WriteString(" ->\n")
 	}
 	for ; i < len(n.Children); i++ {
-		if i > 1 {
-			b.WriteByte(' ')
-		}
-		writeExpr(b, n.Children[i], indent)
+		writeStmt(b, n.Children[i], indent+1)
 	}
+	b.WriteString(strings.Repeat("    ", indent))
 	b.WriteByte('}')
 }
 
@@ -400,6 +443,21 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		writeLambdaLiteral(b, n, indent)
 	case "function_type":
 		writeFunctionType(b, n)
+	case "in_expression":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" in ")
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "unary_expression":
+		if len(n.Children) == 1 {
+			if n.Text != "" {
+				b.WriteString(n.Text)
+			} else {
+				b.WriteByte('!')
+			}
+			writeExpr(b, n.Children[0], indent)
+		}
 	case "binary_expression":
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indent)

@@ -106,6 +106,8 @@ func convert(n *sitter.Node, src []byte, withPos bool) *Node {
 			if op := n.ChildByFieldName("operator"); op != nil {
 				node.Text = op.Utf8Text(src)
 			}
+		case "assignment":
+			node.Text = "="
 		}
 	}
 
