@@ -179,12 +179,18 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		}
 	case "encapsed_string", "string":
 		if len(n.Children) > 0 {
-			fmt.Fprintf(b, "%q", n.Children[0].Text)
+			b.WriteByte('"')
+			b.WriteString(n.Children[0].Text)
+			b.WriteByte('"')
 		} else {
-			fmt.Fprintf(b, "%q", n.Text)
+			b.WriteByte('"')
+			b.WriteString(n.Text)
+			b.WriteByte('"')
 		}
 	case "string_content":
-		fmt.Fprintf(b, "%q", n.Text)
+		b.WriteByte('"')
+		b.WriteString(n.Text)
+		b.WriteByte('"')
 	case "simple_parameter":
 		if len(n.Children) > 0 {
 			writeExpr(b, n.Children[0], indent)
@@ -238,16 +244,21 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, n.Children[0], indent)
 		}
 	case "binary_expression":
-		if len(n.Children) == 2 {
-			writeExpr(b, n.Children[0], indent)
-			b.WriteByte(' ')
+		if len(n.Children) >= 2 {
 			op := n.Text
 			if op == "" {
 				op = "+"
 			}
-			b.WriteString(op)
-			b.WriteByte(' ')
-			writeExpr(b, n.Children[1], indent)
+			for i, c := range n.Children {
+				if i > 0 {
+					b.WriteByte(' ')
+					b.WriteString(op)
+					b.WriteByte(' ')
+				}
+				writeExpr(b, c, indent)
+			}
+		} else if len(n.Children) == 1 {
+			writeExpr(b, n.Children[0], indent)
 		}
 	case "assignment_expression", "augmented_assignment_expression":
 		if len(n.Children) == 2 {
