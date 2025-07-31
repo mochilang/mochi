@@ -14,9 +14,10 @@ type Program struct {
 	File *SourceFile `json:"file"`
 }
 
-// Option controls how Inspect behaves.
+// Option controls how Inspect behaves. When Positions is true the
+// returned AST includes positional information.
 type Option struct {
-	WithPositions bool
+	Positions bool
 }
 
 // Inspect parses the given Swift source code using tree-sitter and returns
@@ -24,7 +25,7 @@ type Option struct {
 func Inspect(src string, opts ...Option) (*Program, error) {
 	var withPos bool
 	if len(opts) > 0 {
-		withPos = opts[0].WithPositions
+		withPos = opts[0].Positions
 	}
 	p := sitter.NewParser()
 	p.SetLanguage(sitter.NewLanguage(tsswift.Language()))
