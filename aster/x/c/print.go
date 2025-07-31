@@ -95,6 +95,12 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, n.Children[0], indent)
 		}
 		b.WriteString(";\n")
+	case "break_statement":
+		b.WriteString(ind)
+		b.WriteString("break;\n")
+	case "continue_statement":
+		b.WriteString(ind)
+		b.WriteString("continue;\n")
 	case "for_statement":
 		if len(n.Children) >= 4 {
 			b.WriteString(ind)
@@ -174,7 +180,11 @@ func writeFieldDecl(b *bytes.Buffer, n *Node, indent int) {
 }
 
 func writeFunctionDeclarator(b *bytes.Buffer, n *Node) {
-	if len(n.Children) >= 2 {
+	switch len(n.Children) {
+	case 1:
+		writeExpr(b, n.Children[0], 0)
+		b.WriteString("()")
+	case 2:
 		writeExpr(b, n.Children[0], 0)
 		writeParameterList(b, n.Children[1])
 	}
@@ -196,6 +206,10 @@ func writeParameter(b *bytes.Buffer, n *Node) {
 		return
 	}
 	writeExpr(b, n.Children[0], 0)
+	if len(n.Children) > 1 {
+		b.WriteByte(' ')
+		writeExpr(b, n.Children[1], 0)
+	}
 }
 
 func writeDeclaration(b *bytes.Buffer, n *Node) {
