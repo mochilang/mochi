@@ -12,13 +12,6 @@ func Print(p *Program) (string, error) {
 	if p == nil || p.Root == nil {
 		return "", fmt.Errorf("nil program")
 	}
-	if p.Root.Text != "" {
-		out := p.Root.Text
-		if len(out) > 0 && out[len(out)-1] != '\n' {
-			out += "\n"
-		}
-		return out, nil
-	}
 	var b bytes.Buffer
 	writeNode(&b, (*Node)(p.Root), 0)
 	out := b.String()
@@ -44,6 +37,9 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 			}
 			writeNode(b, c, indent)
 		}
+	case "shebang":
+		b.WriteString(n.Text)
+		b.WriteByte('\n')
 	case "module_attribute":
 		b.WriteString("-module(")
 		if len(n.Children) > 0 {
@@ -53,8 +49,10 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 		b.WriteByte('\n')
 	case "export_attribute":
 		b.WriteString("-export([")
-		if len(n.Children) > 0 {
-			fa := n.Children[0]
+		for i, fa := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
 			if len(fa.Children) >= 2 {
 				writeNode(b, fa.Children[0], indent)
 				b.WriteByte('/')
@@ -67,6 +65,13 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 		for _, c := range n.Children {
 			writeNode(b, c, indent)
 		}
+	case "fun_clause":
+		if len(n.Children) < 2 {
+			return
+		}
+		writeNode(b, n.Children[0], indent)
+		b.WriteString(" ->\n")
+		writeNode(b, n.Children[1], indent+1)
 	case "function_clause":
 		if len(n.Children) < 3 {
 			return
@@ -101,6 +106,13 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 			writeNode(b, n.Children[0], indent)
 			writeNode(b, n.Children[1], indent)
 		}
+	case "anonymous_fun":
+		b.WriteString("fun")
+		for _, c := range n.Children {
+			writeNode(b, c, indent)
+		}
+		writeIndent(b, indent)
+		b.WriteString("end")
 	case "remote":
 		if len(n.Children) == 2 {
 			writeNode(b, n.Children[0], indent)
@@ -120,6 +132,57 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 			writeNode(b, c, indent)
 		}
 		b.WriteByte(']')
+	case "list_comprehension":
+		b.WriteByte('[')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteByte(' ')
+			}
+			writeNode(b, c, indent)
+		}
+		b.WriteByte(']')
+	case "lc_exprs":
+		b.WriteString("|| ")
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeNode(b, c, indent)
+		}
+	case "lc_or_zc_expr":
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteByte(' ')
+			}
+			writeNode(b, c, indent)
+		}
+	case "generator":
+		if len(n.Children) == 2 {
+			writeNode(b, n.Children[0], indent)
+			b.WriteString(" <- ")
+			writeNode(b, n.Children[1], indent)
+		}
+	case "map_expr":
+		b.WriteString("#{")
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeNode(b, c, indent)
+		}
+		b.WriteByte('}')
+	case "map_field":
+		if len(n.Children) == 2 {
+			writeNode(b, n.Children[0], indent)
+			b.WriteString(" => ")
+			writeNode(b, n.Children[1], indent)
+		}
+	case "match_expr":
+		if len(n.Children) == 2 {
+			writeNode(b, n.Children[0], indent)
+			b.WriteString(" = ")
+			writeNode(b, n.Children[1], indent)
+		}
 	case "comment":
 		writeIndent(b, indent)
 		b.WriteString(n.Text)
@@ -127,6 +190,10 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 	case "atom", "integer", "string", "var":
 		b.WriteString(n.Text)
 	default:
+		if n.Text != "" {
+			b.WriteString(n.Text)
+			return
+		}
 		for i, c := range n.Children {
 			if i > 0 {
 				b.WriteByte(' ')

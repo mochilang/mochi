@@ -11,8 +11,7 @@ import (
 	tserlang "github.com/tree-sitter/tree-sitter-erlang/bindings/go"
 )
 
-// Program represents a parsed Erlang file composed of Node structs.
-// Program represents a parsed Erlang source file.
+// Program represents a parsed Erlang source file built from Node structs.
 type Program struct {
 	Root *SourceFile `json:"root"`
 }
@@ -38,9 +37,8 @@ func InspectWithOption(src string, opt Option) (*Program, error) {
 }
 
 // Inspect parses Erlang source code using tree-sitter and returns a Program.
-// Inspect parses Erlang source code using tree-sitter and returns a Program.
-// The resulting AST includes all syntactic nodes so that it can be converted
-// back to source code using Print.
+// The resulting AST includes all nodes and positional information so that it
+// can be converted back to source code using Print.
 func Inspect(src string) (*Program, error) {
 	return InspectWithOption(src, Option{AllNodes: true, Positions: true})
 }
