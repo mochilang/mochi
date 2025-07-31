@@ -792,6 +792,18 @@ func (c *CmpExpr) emit(w io.Writer) {
 	}
 	if (c.Op == "<" || c.Op == "<=" || c.Op == ">" || c.Op == ">=") &&
 		(isDynamicExpr(c.Left) || isDynamicExpr(c.Right)) {
+		lt := typeOfExpr(c.Left)
+		rt := typeOfExpr(c.Right)
+		numeric := func(t string) bool { return t == "int" || t == "long" || t == "double" }
+		if numeric(lt) || numeric(rt) {
+			fmt.Fprint(w, "Convert.ToDouble(")
+			c.Left.emit(w)
+			fmt.Fprintf(w, ") %s Convert.ToDouble(", c.Op)
+			c.Right.emit(w)
+			fmt.Fprint(w, ")")
+			fmt.Fprint(w, ")")
+			return
+		}
 		fmt.Fprint(w, "string.Compare(Convert.ToString(")
 		c.Left.emit(w)
 		fmt.Fprint(w, "), Convert.ToString(")
@@ -2153,9 +2165,9 @@ func (s *StrExpr) emit(w io.Writer) {
 	if isStringExpr(s.Arg) {
 		s.Arg.emit(w)
 	} else {
-		fmt.Fprint(w, "(")
+		fmt.Fprint(w, "_fmt(")
 		s.Arg.emit(w)
-		fmt.Fprint(w, ").ToString()")
+		fmt.Fprint(w, ")")
 	}
 }
 
@@ -4630,7 +4642,7 @@ var parts = new List<string>();
 foreach (var x in e) parts.Add(_fmt(x));
 return string.Join(" ", parts);
 }
-if (v is bool b) return b ? "1" : "0";
+if (v is bool b) return b ? "true" : "false";
 return Convert.ToString(v);
 }
 `)
