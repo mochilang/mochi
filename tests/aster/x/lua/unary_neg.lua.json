@@ -1,0 +1,88 @@
+{
+  "root": {
+    "kind": "chunk",
+    "children": [
+      {
+        "kind": "function_call",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print"
+          },
+          {
+            "kind": "arguments",
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "children": [
+                  {
+                    "kind": "binary_expression",
+                    "text": "-",
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "0"
+                      },
+                      {
+                        "kind": "number",
+                        "text": "3"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print"
+          },
+          {
+            "kind": "arguments",
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "children": [
+                  {
+                    "kind": "binary_expression",
+                    "text": "+",
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "5"
+                      },
+                      {
+                        "kind": "parenthesized_expression",
+                        "children": [
+                          {
+                            "kind": "binary_expression",
+                            "text": "-",
+                            "children": [
+                              {
+                                "kind": "number",
+                                "text": "0"
+                              },
+                              {
+                                "kind": "number",
+                                "text": "2"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

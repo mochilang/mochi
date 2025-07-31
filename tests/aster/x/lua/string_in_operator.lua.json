@@ -1,0 +1,166 @@
+{
+  "root": {
+    "kind": "chunk",
+    "children": [
+      {
+        "kind": "assignment_statement",
+        "children": [
+          {
+            "kind": "variable_list",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "s"
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "children": [
+              {
+                "kind": "string",
+                "text": "\"catch\""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print"
+          },
+          {
+            "kind": "arguments",
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "children": [
+                  {
+                    "kind": "binary_expression",
+                    "text": "~=",
+                    "children": [
+                      {
+                        "kind": "function_call",
+                        "children": [
+                          {
+                            "kind": "dot_index_expression",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "string"
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "find"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "s"
+                              },
+                              {
+                                "kind": "string",
+                                "text": "\"cat\""
+                              },
+                              {
+                                "kind": "number",
+                                "text": "1"
+                              },
+                              {
+                                "kind": "true",
+                                "text": "true"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "nil",
+                        "text": "nil"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print"
+          },
+          {
+            "kind": "arguments",
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "children": [
+                  {
+                    "kind": "binary_expression",
+                    "text": "~=",
+                    "children": [
+                      {
+                        "kind": "function_call",
+                        "children": [
+                          {
+                            "kind": "dot_index_expression",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "string"
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "find"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "s"
+                              },
+                              {
+                                "kind": "string",
+                                "text": "\"dog\""
+                              },
+                              {
+                                "kind": "number",
+                                "text": "1"
+                              },
+                              {
+                                "kind": "true",
+                                "text": "true"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "nil",
+                        "text": "nil"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -44,8 +44,8 @@ func TestPrint_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
-	if len(files) > 75 {
-		files = files[:75]
+	if len(files) > 105 {
+		files = files[:105]
 	}
 
 	for _, src := range files {
@@ -55,7 +55,7 @@ func TestPrint_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("read src: %v", err)
 			}
-			prog, err := lua.InspectWithOption(string(data), lua.Option{Positions: true})
+			prog, err := lua.Inspect(string(data))
 			if err != nil {
 				t.Fatalf("inspect: %v", err)
 			}

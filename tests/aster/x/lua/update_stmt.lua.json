@@ -1,0 +1,473 @@
+{
+  "root": {
+    "kind": "chunk",
+    "children": [
+      {
+        "kind": "assignment_statement",
+        "children": [
+          {
+            "kind": "variable_list",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "people"
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "children": [
+              {
+                "kind": "table_constructor",
+                "children": [
+                  {
+                    "kind": "field",
+                    "children": [
+                      {
+                        "kind": "table_constructor",
+                        "children": [
+                          {
+                            "kind": "field",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "name"
+                              },
+                              {
+                                "kind": "string",
+                                "text": "\"Alice\""
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "age"
+                              },
+                              {
+                                "kind": "number",
+                                "text": "17"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "status"
+                              },
+                              {
+                                "kind": "string",
+                                "text": "\"minor\""
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "children": [
+                      {
+                        "kind": "table_constructor",
+                        "children": [
+                          {
+                            "kind": "field",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "name"
+                              },
+                              {
+                                "kind": "string",
+                                "text": "\"Bob\""
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "age"
+                              },
+                              {
+                                "kind": "number",
+                                "text": "25"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "status"
+                              },
+                              {
+                                "kind": "string",
+                                "text": "\"unknown\""
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "children": [
+                      {
+                        "kind": "table_constructor",
+                        "children": [
+                          {
+                            "kind": "field",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "name"
+                              },
+                              {
+                                "kind": "string",
+                                "text": "\"Charlie\""
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "age"
+                              },
+                              {
+                                "kind": "number",
+                                "text": "18"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "status"
+                              },
+                              {
+                                "kind": "string",
+                                "text": "\"unknown\""
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "children": [
+                      {
+                        "kind": "table_constructor",
+                        "children": [
+                          {
+                            "kind": "field",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "name"
+                              },
+                              {
+                                "kind": "string",
+                                "text": "\"Diana\""
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "age"
+                              },
+                              {
+                                "kind": "number",
+                                "text": "16"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "status"
+                              },
+                              {
+                                "kind": "string",
+                                "text": "\"minor\""
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "for_statement",
+        "children": [
+          {
+            "kind": "for_numeric_clause",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "_i0"
+              },
+              {
+                "kind": "number",
+                "text": "1"
+              },
+              {
+                "kind": "unary_expression",
+                "text": "#",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "people"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "block",
+            "children": [
+              {
+                "kind": "variable_declaration",
+                "children": [
+                  {
+                    "kind": "assignment_statement",
+                    "children": [
+                      {
+                        "kind": "variable_list",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "item"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "expression_list",
+                        "children": [
+                          {
+                            "kind": "bracket_index_expression",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "people"
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "_i0"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "if_statement",
+                "children": [
+                  {
+                    "kind": "parenthesized_expression",
+                    "children": [
+                      {
+                        "kind": "binary_expression",
+                        "text": "\u003e=",
+                        "children": [
+                          {
+                            "kind": "dot_index_expression",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "item"
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "age"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "number",
+                            "text": "18"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "block",
+                    "children": [
+                      {
+                        "kind": "assignment_statement",
+                        "children": [
+                          {
+                            "kind": "variable_list",
+                            "children": [
+                              {
+                                "kind": "bracket_index_expression",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "item"
+                                  },
+                                  {
+                                    "kind": "string",
+                                    "text": "\"status\""
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "expression_list",
+                            "children": [
+                              {
+                                "kind": "string",
+                                "text": "\"adult\""
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "assignment_statement",
+                        "children": [
+                          {
+                            "kind": "variable_list",
+                            "children": [
+                              {
+                                "kind": "bracket_index_expression",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "item"
+                                  },
+                                  {
+                                    "kind": "string",
+                                    "text": "\"age\""
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "expression_list",
+                            "children": [
+                              {
+                                "kind": "parenthesized_expression",
+                                "children": [
+                                  {
+                                    "kind": "binary_expression",
+                                    "text": "+",
+                                    "children": [
+                                      {
+                                        "kind": "dot_index_expression",
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "text": "item"
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "age"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "number",
+                                        "text": "1"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "assignment_statement",
+                "children": [
+                  {
+                    "kind": "variable_list",
+                    "children": [
+                      {
+                        "kind": "bracket_index_expression",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "people"
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "_i0"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "expression_list",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "item"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print"
+          },
+          {
+            "kind": "arguments",
+            "children": [
+              {
+                "kind": "string",
+                "text": "\"ok\""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

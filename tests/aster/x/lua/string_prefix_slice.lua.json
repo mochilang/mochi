@@ -1,0 +1,942 @@
+{
+  "root": {
+    "kind": "chunk",
+    "children": [
+      {
+        "kind": "assignment_statement",
+        "children": [
+          {
+            "kind": "variable_list",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "prefix"
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "children": [
+              {
+                "kind": "string",
+                "text": "\"fore\""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assignment_statement",
+        "children": [
+          {
+            "kind": "variable_list",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "s1"
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "children": [
+              {
+                "kind": "string",
+                "text": "\"forest\""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print"
+          },
+          {
+            "kind": "arguments",
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "children": [
+                  {
+                    "kind": "binary_expression",
+                    "text": "==",
+                    "children": [
+                      {
+                        "kind": "function_call",
+                        "children": [
+                          {
+                            "kind": "dot_index_expression",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "string"
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "sub"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "s1"
+                              },
+                              {
+                                "kind": "parenthesized_expression",
+                                "children": [
+                                  {
+                                    "kind": "binary_expression",
+                                    "text": "+",
+                                    "children": [
+                                      {
+                                        "kind": "number",
+                                        "text": "0"
+                                      },
+                                      {
+                                        "kind": "number",
+                                        "text": "1"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "function_call",
+                                "children": [
+                                  {
+                                    "kind": "parenthesized_expression",
+                                    "children": [
+                                      {
+                                        "kind": "function_definition",
+                                        "children": [
+                                          {
+                                            "kind": "parameters",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "v"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "block",
+                                            "children": [
+                                              {
+                                                "kind": "if_statement",
+                                                "children": [
+                                                  {
+                                                    "kind": "binary_expression",
+                                                    "text": "and",
+                                                    "children": [
+                                                      {
+                                                        "kind": "binary_expression",
+                                                        "text": "==",
+                                                        "children": [
+                                                          {
+                                                            "kind": "function_call",
+                                                            "children": [
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "type"
+                                                              },
+                                                              {
+                                                                "kind": "arguments",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "text": "v"
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "string",
+                                                            "text": "'table'"
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "binary_expression",
+                                                        "text": "~=",
+                                                        "children": [
+                                                          {
+                                                            "kind": "dot_index_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "v"
+                                                              },
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "items"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "nil",
+                                                            "text": "nil"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "block",
+                                                    "children": [
+                                                      {
+                                                        "kind": "return_statement",
+                                                        "children": [
+                                                          {
+                                                            "kind": "expression_list",
+                                                            "children": [
+                                                              {
+                                                                "kind": "unary_expression",
+                                                                "text": "#",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "dot_index_expression",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "v"
+                                                                      },
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "items"
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "elseif_statement",
+                                                    "children": [
+                                                      {
+                                                        "kind": "binary_expression",
+                                                        "text": "and",
+                                                        "children": [
+                                                          {
+                                                            "kind": "binary_expression",
+                                                            "text": "==",
+                                                            "children": [
+                                                              {
+                                                                "kind": "function_call",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "text": "type"
+                                                                  },
+                                                                  {
+                                                                    "kind": "arguments",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "v"
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "string",
+                                                                "text": "'table'"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "parenthesized_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "binary_expression",
+                                                                "text": "==",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "bracket_index_expression",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "v"
+                                                                      },
+                                                                      {
+                                                                        "kind": "number",
+                                                                        "text": "1"
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "kind": "nil",
+                                                                    "text": "nil"
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "block",
+                                                        "children": [
+                                                          {
+                                                            "kind": "variable_declaration",
+                                                            "children": [
+                                                              {
+                                                                "kind": "assignment_statement",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "variable_list",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "c"
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "kind": "expression_list",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "number",
+                                                                        "text": "0"
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "for_statement",
+                                                            "children": [
+                                                              {
+                                                                "kind": "for_generic_clause",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "variable_list",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "_"
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "kind": "expression_list",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "function_call",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "identifier",
+                                                                            "text": "pairs"
+                                                                          },
+                                                                          {
+                                                                            "kind": "arguments",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "identifier",
+                                                                                "text": "v"
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "block",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "assignment_statement",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "variable_list",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "identifier",
+                                                                            "text": "c"
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "kind": "expression_list",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "binary_expression",
+                                                                            "text": "+",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "identifier",
+                                                                                "text": "c"
+                                                                              },
+                                                                              {
+                                                                                "kind": "number",
+                                                                                "text": "1"
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "return_statement",
+                                                            "children": [
+                                                              {
+                                                                "kind": "expression_list",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "text": "c"
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "else_statement",
+                                                    "children": [
+                                                      {
+                                                        "kind": "block",
+                                                        "children": [
+                                                          {
+                                                            "kind": "return_statement",
+                                                            "children": [
+                                                              {
+                                                                "kind": "expression_list",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "unary_expression",
+                                                                    "text": "#",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "v"
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "arguments",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "prefix"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "identifier",
+                        "text": "prefix"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assignment_statement",
+        "children": [
+          {
+            "kind": "variable_list",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "s2"
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "children": [
+              {
+                "kind": "string",
+                "text": "\"desert\""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print"
+          },
+          {
+            "kind": "arguments",
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "children": [
+                  {
+                    "kind": "binary_expression",
+                    "text": "==",
+                    "children": [
+                      {
+                        "kind": "function_call",
+                        "children": [
+                          {
+                            "kind": "dot_index_expression",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "string"
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "sub"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "s2"
+                              },
+                              {
+                                "kind": "parenthesized_expression",
+                                "children": [
+                                  {
+                                    "kind": "binary_expression",
+                                    "text": "+",
+                                    "children": [
+                                      {
+                                        "kind": "number",
+                                        "text": "0"
+                                      },
+                                      {
+                                        "kind": "number",
+                                        "text": "1"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "function_call",
+                                "children": [
+                                  {
+                                    "kind": "parenthesized_expression",
+                                    "children": [
+                                      {
+                                        "kind": "function_definition",
+                                        "children": [
+                                          {
+                                            "kind": "parameters",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "v"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "block",
+                                            "children": [
+                                              {
+                                                "kind": "if_statement",
+                                                "children": [
+                                                  {
+                                                    "kind": "binary_expression",
+                                                    "text": "and",
+                                                    "children": [
+                                                      {
+                                                        "kind": "binary_expression",
+                                                        "text": "==",
+                                                        "children": [
+                                                          {
+                                                            "kind": "function_call",
+                                                            "children": [
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "type"
+                                                              },
+                                                              {
+                                                                "kind": "arguments",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "text": "v"
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "string",
+                                                            "text": "'table'"
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "binary_expression",
+                                                        "text": "~=",
+                                                        "children": [
+                                                          {
+                                                            "kind": "dot_index_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "v"
+                                                              },
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "items"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "nil",
+                                                            "text": "nil"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "block",
+                                                    "children": [
+                                                      {
+                                                        "kind": "return_statement",
+                                                        "children": [
+                                                          {
+                                                            "kind": "expression_list",
+                                                            "children": [
+                                                              {
+                                                                "kind": "unary_expression",
+                                                                "text": "#",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "dot_index_expression",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "v"
+                                                                      },
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "items"
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "elseif_statement",
+                                                    "children": [
+                                                      {
+                                                        "kind": "binary_expression",
+                                                        "text": "and",
+                                                        "children": [
+                                                          {
+                                                            "kind": "binary_expression",
+                                                            "text": "==",
+                                                            "children": [
+                                                              {
+                                                                "kind": "function_call",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "text": "type"
+                                                                  },
+                                                                  {
+                                                                    "kind": "arguments",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "v"
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "string",
+                                                                "text": "'table'"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "parenthesized_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "binary_expression",
+                                                                "text": "==",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "bracket_index_expression",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "v"
+                                                                      },
+                                                                      {
+                                                                        "kind": "number",
+                                                                        "text": "1"
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "kind": "nil",
+                                                                    "text": "nil"
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "block",
+                                                        "children": [
+                                                          {
+                                                            "kind": "variable_declaration",
+                                                            "children": [
+                                                              {
+                                                                "kind": "assignment_statement",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "variable_list",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "c"
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "kind": "expression_list",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "number",
+                                                                        "text": "0"
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "for_statement",
+                                                            "children": [
+                                                              {
+                                                                "kind": "for_generic_clause",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "variable_list",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "_"
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "kind": "expression_list",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "function_call",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "identifier",
+                                                                            "text": "pairs"
+                                                                          },
+                                                                          {
+                                                                            "kind": "arguments",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "identifier",
+                                                                                "text": "v"
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "block",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "assignment_statement",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "variable_list",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "identifier",
+                                                                            "text": "c"
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "kind": "expression_list",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "binary_expression",
+                                                                            "text": "+",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "identifier",
+                                                                                "text": "c"
+                                                                              },
+                                                                              {
+                                                                                "kind": "number",
+                                                                                "text": "1"
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "return_statement",
+                                                            "children": [
+                                                              {
+                                                                "kind": "expression_list",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "text": "c"
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "else_statement",
+                                                    "children": [
+                                                      {
+                                                        "kind": "block",
+                                                        "children": [
+                                                          {
+                                                            "kind": "return_statement",
+                                                            "children": [
+                                                              {
+                                                                "kind": "expression_list",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "unary_expression",
+                                                                    "text": "#",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "v"
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "arguments",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "prefix"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "identifier",
+                        "text": "prefix"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

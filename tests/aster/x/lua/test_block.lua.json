@@ -1,0 +1,25 @@
+{
+  "root": {
+    "kind": "chunk",
+    "children": [
+      {
+        "kind": "function_call",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print"
+          },
+          {
+            "kind": "arguments",
+            "children": [
+              {
+                "kind": "string",
+                "text": "\"ok\""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

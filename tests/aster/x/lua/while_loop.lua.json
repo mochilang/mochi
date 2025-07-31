@@ -1,0 +1,115 @@
+{
+  "root": {
+    "kind": "chunk",
+    "children": [
+      {
+        "kind": "assignment_statement",
+        "children": [
+          {
+            "kind": "variable_list",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "i"
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "children": [
+              {
+                "kind": "number",
+                "text": "0"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "while_statement",
+        "children": [
+          {
+            "kind": "parenthesized_expression",
+            "children": [
+              {
+                "kind": "binary_expression",
+                "text": "\u003c",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "i"
+                  },
+                  {
+                    "kind": "number",
+                    "text": "3"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "block",
+            "children": [
+              {
+                "kind": "function_call",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "print"
+                  },
+                  {
+                    "kind": "arguments",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "i"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "assignment_statement",
+                "children": [
+                  {
+                    "kind": "variable_list",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "i"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "expression_list",
+                    "children": [
+                      {
+                        "kind": "parenthesized_expression",
+                        "children": [
+                          {
+                            "kind": "binary_expression",
+                            "text": "+",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "i"
+                              },
+                              {
+                                "kind": "number",
+                                "text": "1"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
