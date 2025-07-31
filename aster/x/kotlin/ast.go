@@ -49,6 +49,8 @@ type (
 	TypeIdentifier       Node
 	TypeProjection       Node
 	UserType             Node
+	AsExpression         Node
+	WhileStatement       Node
 	ValueArgument        Node
 	ValueArguments       Node
 	VariableDeclaration  Node
@@ -105,6 +107,11 @@ func convert(n *sitter.Node, src []byte, withPos bool) *Node {
 		case "binary_expression":
 			if op := n.ChildByFieldName("operator"); op != nil {
 				node.Text = op.Utf8Text(src)
+			}
+		case "as_expression":
+			if n.ChildCount() >= 3 {
+				op := n.Child(1)
+				node.Text = strings.TrimSpace(op.Utf8Text(src))
 			}
 		case "assignment":
 			node.Text = "="

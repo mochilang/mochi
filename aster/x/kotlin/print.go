@@ -38,6 +38,8 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 		writeProperty(b, n, indent)
 	case "for_statement":
 		writeFor(b, n, indent)
+	case "while_statement":
+		writeWhile(b, n, indent)
 	case "assignment":
 		b.WriteString(ind)
 		if len(n.Children) == 2 {
@@ -201,6 +203,25 @@ func writeFor(b *bytes.Buffer, n *Node, indent int) {
 	writeExpr(b, n.Children[1], indent)
 	b.WriteString(") ")
 	writeBlock(b, n.Children[2], indent)
+}
+
+func writeWhile(b *bytes.Buffer, n *Node, indent int) {
+	if len(n.Children) < 2 {
+		return
+	}
+	ind := strings.Repeat("    ", indent)
+	b.WriteString(ind)
+	b.WriteString("while (")
+	writeExpr(b, n.Children[0], indent)
+	b.WriteString(") ")
+	if n.Children[1].Kind == "block" {
+		writeBlock(b, n.Children[1], indent)
+	} else {
+		b.WriteString("{\n")
+		writeStmt(b, n.Children[1], indent+1)
+		b.WriteString(ind)
+		b.WriteString("}\n")
+	}
 }
 
 func writeIf(b *bytes.Buffer, n *Node, indent int) {
@@ -499,7 +520,30 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			}
 			writeExpr(b, n.Children[1], indent)
 		}
+	case "as_expression":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			op := n.Text
+			if op == "" {
+				op = "as"
+			}
+			b.WriteString(" ")
+			b.WriteString(op)
+			b.WriteString(" ")
+			writeExpr(b, n.Children[1], indent)
+		}
 	default:
-		b.WriteString(n.Kind)
+		if n.Text != "" && len(n.Children) == 0 {
+			b.WriteString(n.Text)
+		} else if len(n.Children) > 0 {
+			for i, c := range n.Children {
+				if i > 0 {
+					b.WriteByte(' ')
+				}
+				writeExpr(b, c, indent)
+			}
+		} else {
+			b.WriteString(n.Kind)
+		}
 	}
 }

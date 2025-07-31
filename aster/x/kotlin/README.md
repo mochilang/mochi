@@ -2,9 +2,9 @@
 
 Generated files for Kotlin programs live under `tests/aster/x/kotlin`.
 
-Last updated: 2025-07-31 19:47 GMT+7
+Last updated: 2025-07-31 20:07 GMT+7
 
-## Golden Test Checklist (75/75)
+## Golden Test Checklist (102/102)
 - [x] append_builtin.kt
 - [x] avg_builtin.kt
 - [x] basic_compare.kt
@@ -81,3 +81,30 @@ Last updated: 2025-07-31 19:47 GMT+7
 - [x] python_math.kt
 - [x] query_sum_select.kt
 
+- [x] record_assign.kt
+- [x] right_join.kt
+- [x] save_jsonl_stdout.kt
+- [x] short_circuit.kt
+- [x] slice.kt
+- [x] sort_stable.kt
+- [x] str_builtin.kt
+- [x] string_compare.kt
+- [x] string_concat.kt
+- [x] string_contains.kt
+- [x] string_in_operator.kt
+- [x] string_index.kt
+- [x] string_prefix_slice.kt
+- [x] substring_builtin.kt
+- [x] sum_builtin.kt
+- [x] tail_recursion.kt
+- [x] test_block.kt
+- [x] tree_sum.kt
+- [x] two-sum.kt
+- [x] typed_let.kt
+- [x] typed_var.kt
+- [x] unary_neg.kt
+- [x] update_stmt.kt
+- [x] user_type_literal.kt
+- [x] values_builtin.kt
+- [x] var_assignment.kt
+- [x] while_loop.kt
