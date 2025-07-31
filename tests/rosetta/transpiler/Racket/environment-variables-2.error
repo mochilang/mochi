@@ -1,6 +1,0 @@
-run error: exit status 1
-/workspace/mochi/tests/rosetta/transpiler/Racket/environment-variables-2.rkt:58:0: read-syntax: expected a `)` to close `(`
-  context...:
-   /usr/share/racket/collects/syntax/module-reader.rkt:214:17: body
-   /usr/share/racket/collects/syntax/module-reader.rkt:211:2: wrap-internal
-   /usr/share/racket/collects/racket/../syntax/module-reader.rkt:76:9: wrap-internal/wrapper

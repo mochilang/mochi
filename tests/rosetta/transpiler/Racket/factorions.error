@@ -1,0 +1,11 @@
+run error: exit status 1
+modulo: contract violation
+  expected: integer?
+  given: 1/9
+  context...:
+   /workspace/mochi/tests/rosetta/transpiler/Racket/factorions.rkt:77:4
+   /workspace/mochi/tests/rosetta/transpiler/Racket/factorions.rkt:73:0
+   /workspace/mochi/tests/rosetta/transpiler/Racket/factorions.rkt:67:0
+   /workspace/mochi/tests/rosetta/transpiler/Racket/factorions.rkt:58:0
+   body of "/workspace/mochi/tests/rosetta/transpiler/Racket/factorions.rkt"
+The factorions for base 9 are:
