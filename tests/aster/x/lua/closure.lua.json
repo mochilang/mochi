@@ -1,136 +1,67 @@
 {
   "root": {
     "kind": "chunk",
-    "start": 1,
-    "end": 11,
     "children": [
       {
         "kind": "function_declaration",
-        "start": 2,
-        "end": 6,
-        "endCol": 3,
         "children": [
           {
             "kind": "identifier",
-            "text": "makeAdder",
-            "start": 2,
-            "startCol": 9,
-            "end": 2,
-            "endCol": 18
+            "text": "makeAdder"
           },
           {
             "kind": "parameters",
-            "start": 2,
-            "startCol": 18,
-            "end": 2,
-            "endCol": 21,
             "children": [
               {
                 "kind": "identifier",
-                "text": "n",
-                "start": 2,
-                "startCol": 19,
-                "end": 2,
-                "endCol": 20
+                "text": "n"
               }
             ]
           },
           {
             "kind": "block",
-            "start": 3,
-            "startCol": 2,
-            "end": 5,
-            "endCol": 3,
             "children": [
               {
                 "kind": "return_statement",
-                "start": 3,
-                "startCol": 2,
-                "end": 5,
-                "endCol": 3,
                 "children": [
                   {
                     "kind": "expression_list",
-                    "start": 3,
-                    "startCol": 9,
-                    "end": 5,
-                    "endCol": 3,
                     "children": [
                       {
                         "kind": "function_definition",
-                        "start": 3,
-                        "startCol": 9,
-                        "end": 5,
-                        "endCol": 3,
                         "children": [
                           {
                             "kind": "parameters",
-                            "start": 3,
-                            "startCol": 17,
-                            "end": 3,
-                            "endCol": 20,
                             "children": [
                               {
                                 "kind": "identifier",
-                                "text": "x",
-                                "start": 3,
-                                "startCol": 18,
-                                "end": 3,
-                                "endCol": 19
+                                "text": "x"
                               }
                             ]
                           },
                           {
                             "kind": "block",
-                            "start": 4,
-                            "startCol": 2,
-                            "end": 4,
-                            "endCol": 16,
                             "children": [
                               {
                                 "kind": "return_statement",
-                                "start": 4,
-                                "startCol": 2,
-                                "end": 4,
-                                "endCol": 16,
                                 "children": [
                                   {
                                     "kind": "expression_list",
-                                    "start": 4,
-                                    "startCol": 9,
-                                    "end": 4,
-                                    "endCol": 16,
                                     "children": [
                                       {
                                         "kind": "parenthesized_expression",
-                                        "start": 4,
-                                        "startCol": 9,
-                                        "end": 4,
-                                        "endCol": 16,
                                         "children": [
                                           {
                                             "kind": "binary_expression",
                                             "text": "+",
-                                            "start": 4,
-                                            "startCol": 10,
-                                            "end": 4,
-                                            "endCol": 15,
                                             "children": [
                                               {
                                                 "kind": "identifier",
-                                                "text": "x",
-                                                "start": 4,
-                                                "startCol": 10,
-                                                "end": 4,
-                                                "endCol": 11
+                                                "text": "x"
                                               },
                                               {
                                                 "kind": "identifier",
-                                                "text": "n",
-                                                "start": 4,
-                                                "startCol": 14,
-                                                "end": 4,
-                                                "endCol": 15
+                                                "text": "n"
                                               }
                                             ]
                                           }
@@ -154,61 +85,32 @@
       },
       {
         "kind": "assignment_statement",
-        "start": 8,
-        "end": 8,
-        "endCol": 21,
         "children": [
           {
             "kind": "variable_list",
-            "start": 8,
-            "end": 8,
-            "endCol": 5,
             "children": [
               {
                 "kind": "identifier",
-                "text": "add10",
-                "start": 8,
-                "end": 8,
-                "endCol": 5
+                "text": "add10"
               }
             ]
           },
           {
             "kind": "expression_list",
-            "start": 8,
-            "startCol": 8,
-            "end": 8,
-            "endCol": 21,
             "children": [
               {
                 "kind": "function_call",
-                "start": 8,
-                "startCol": 8,
-                "end": 8,
-                "endCol": 21,
                 "children": [
                   {
                     "kind": "identifier",
-                    "text": "makeAdder",
-                    "start": 8,
-                    "startCol": 8,
-                    "end": 8,
-                    "endCol": 17
+                    "text": "makeAdder"
                   },
                   {
                     "kind": "arguments",
-                    "start": 8,
-                    "startCol": 17,
-                    "end": 8,
-                    "endCol": 21,
                     "children": [
                       {
                         "kind": "number",
-                        "text": "10",
-                        "start": 8,
-                        "startCol": 18,
-                        "end": 8,
-                        "endCol": 20
+                        "text": "10"
                       }
                     ]
                   }
@@ -220,53 +122,27 @@
       },
       {
         "kind": "function_call",
-        "start": 10,
-        "end": 10,
-        "endCol": 15,
         "children": [
           {
             "kind": "identifier",
-            "text": "print",
-            "start": 10,
-            "end": 10,
-            "endCol": 5
+            "text": "print"
           },
           {
             "kind": "arguments",
-            "start": 10,
-            "startCol": 5,
-            "end": 10,
-            "endCol": 15,
             "children": [
               {
                 "kind": "function_call",
-                "start": 10,
-                "startCol": 6,
-                "end": 10,
-                "endCol": 14,
                 "children": [
                   {
                     "kind": "identifier",
-                    "text": "add10",
-                    "start": 10,
-                    "startCol": 6,
-                    "end": 10,
-                    "endCol": 11
+                    "text": "add10"
                   },
                   {
                     "kind": "arguments",
-                    "start": 10,
-                    "startCol": 11,
-                    "end": 10,
-                    "endCol": 14,
                     "children": [
                       {
                         "kind": "number",
-                        "text": "7",
-                        "start": 10,
-                        "startCol": 12,
-                        "end": 10,
-                        "endCol": 13
+                        "text": "7"
                       }
                     ]
                   }

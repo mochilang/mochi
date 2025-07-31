@@ -1,0 +1,217 @@
+{
+  "root": {
+    "kind": "chunk",
+    "children": [
+      {
+        "kind": "assignment_statement",
+        "children": [
+          {
+            "kind": "variable_list",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "testpkg"
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "children": [
+              {
+                "kind": "table_constructor",
+                "children": [
+                  {
+                    "kind": "field",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "Add"
+                      },
+                      {
+                        "kind": "function_definition",
+                        "children": [
+                          {
+                            "kind": "parameters",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "a"
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "b"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "block",
+                            "children": [
+                              {
+                                "kind": "return_statement",
+                                "children": [
+                                  {
+                                    "kind": "expression_list",
+                                    "children": [
+                                      {
+                                        "kind": "parenthesized_expression",
+                                        "children": [
+                                          {
+                                            "kind": "binary_expression",
+                                            "text": "+",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "a"
+                                              },
+                                              {
+                                                "kind": "identifier",
+                                                "text": "b"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "Pi"
+                      },
+                      {
+                        "kind": "number",
+                        "text": "3.14"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "Answer"
+                      },
+                      {
+                        "kind": "number",
+                        "text": "42"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print"
+          },
+          {
+            "kind": "arguments",
+            "children": [
+              {
+                "kind": "function_call",
+                "children": [
+                  {
+                    "kind": "dot_index_expression",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "testpkg"
+                      },
+                      {
+                        "kind": "identifier",
+                        "text": "Add"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "arguments",
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "2"
+                      },
+                      {
+                        "kind": "number",
+                        "text": "3"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print"
+          },
+          {
+            "kind": "arguments",
+            "children": [
+              {
+                "kind": "dot_index_expression",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "testpkg"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "Pi"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print"
+          },
+          {
+            "kind": "arguments",
+            "children": [
+              {
+                "kind": "dot_index_expression",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "testpkg"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "Answer"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

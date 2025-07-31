@@ -1,82 +1,42 @@
 {
   "root": {
     "kind": "chunk",
-    "start": 1,
-    "end": 9,
     "children": [
       {
         "kind": "function_call",
-        "start": 2,
-        "end": 2,
-        "endCol": 20,
         "children": [
           {
             "kind": "identifier",
-            "text": "print",
-            "start": 2,
-            "end": 2,
-            "endCol": 5
+            "text": "print"
           },
           {
             "kind": "arguments",
-            "start": 2,
-            "startCol": 5,
-            "end": 2,
-            "endCol": 20,
             "children": [
               {
                 "kind": "parenthesized_expression",
-                "start": 2,
-                "startCol": 6,
-                "end": 2,
-                "endCol": 19,
                 "children": [
                   {
                     "kind": "binary_expression",
                     "text": "+",
-                    "start": 2,
-                    "startCol": 7,
-                    "end": 2,
-                    "endCol": 18,
                     "children": [
                       {
                         "kind": "number",
-                        "text": "1",
-                        "start": 2,
-                        "startCol": 7,
-                        "end": 2,
-                        "endCol": 8
+                        "text": "1"
                       },
                       {
                         "kind": "parenthesized_expression",
-                        "start": 2,
-                        "startCol": 11,
-                        "end": 2,
-                        "endCol": 18,
                         "children": [
                           {
                             "kind": "binary_expression",
                             "text": "*",
-                            "start": 2,
-                            "startCol": 12,
-                            "end": 2,
-                            "endCol": 17,
                             "children": [
                               {
                                 "kind": "number",
-                                "text": "2",
-                                "start": 2,
-                                "startCol": 12,
-                                "end": 2,
-                                "endCol": 13
+                                "text": "2"
                               },
                               {
                                 "kind": "number",
-                                "text": "3",
-                                "start": 2,
-                                "startCol": 16,
-                                "end": 2,
-                                "endCol": 17
+                                "text": "3"
                               }
                             ]
                           }
@@ -92,69 +52,35 @@
       },
       {
         "kind": "function_call",
-        "start": 4,
-        "end": 4,
-        "endCol": 20,
         "children": [
           {
             "kind": "identifier",
-            "text": "print",
-            "start": 4,
-            "end": 4,
-            "endCol": 5
+            "text": "print"
           },
           {
             "kind": "arguments",
-            "start": 4,
-            "startCol": 5,
-            "end": 4,
-            "endCol": 20,
             "children": [
               {
                 "kind": "parenthesized_expression",
-                "start": 4,
-                "startCol": 6,
-                "end": 4,
-                "endCol": 19,
                 "children": [
                   {
                     "kind": "binary_expression",
                     "text": "*",
-                    "start": 4,
-                    "startCol": 7,
-                    "end": 4,
-                    "endCol": 18,
                     "children": [
                       {
                         "kind": "parenthesized_expression",
-                        "start": 4,
-                        "startCol": 7,
-                        "end": 4,
-                        "endCol": 14,
                         "children": [
                           {
                             "kind": "binary_expression",
                             "text": "+",
-                            "start": 4,
-                            "startCol": 8,
-                            "end": 4,
-                            "endCol": 13,
                             "children": [
                               {
                                 "kind": "number",
-                                "text": "1",
-                                "start": 4,
-                                "startCol": 8,
-                                "end": 4,
-                                "endCol": 9
+                                "text": "1"
                               },
                               {
                                 "kind": "number",
-                                "text": "2",
-                                "start": 4,
-                                "startCol": 12,
-                                "end": 4,
-                                "endCol": 13
+                                "text": "2"
                               }
                             ]
                           }
@@ -162,11 +88,7 @@
                       },
                       {
                         "kind": "number",
-                        "text": "3",
-                        "start": 4,
-                        "startCol": 17,
-                        "end": 4,
-                        "endCol": 18
+                        "text": "3"
                       }
                     ]
                   }
@@ -178,69 +100,35 @@
       },
       {
         "kind": "function_call",
-        "start": 6,
-        "end": 6,
-        "endCol": 20,
         "children": [
           {
             "kind": "identifier",
-            "text": "print",
-            "start": 6,
-            "end": 6,
-            "endCol": 5
+            "text": "print"
           },
           {
             "kind": "arguments",
-            "start": 6,
-            "startCol": 5,
-            "end": 6,
-            "endCol": 20,
             "children": [
               {
                 "kind": "parenthesized_expression",
-                "start": 6,
-                "startCol": 6,
-                "end": 6,
-                "endCol": 19,
                 "children": [
                   {
                     "kind": "binary_expression",
                     "text": "+",
-                    "start": 6,
-                    "startCol": 7,
-                    "end": 6,
-                    "endCol": 18,
                     "children": [
                       {
                         "kind": "parenthesized_expression",
-                        "start": 6,
-                        "startCol": 7,
-                        "end": 6,
-                        "endCol": 14,
                         "children": [
                           {
                             "kind": "binary_expression",
                             "text": "*",
-                            "start": 6,
-                            "startCol": 8,
-                            "end": 6,
-                            "endCol": 13,
                             "children": [
                               {
                                 "kind": "number",
-                                "text": "2",
-                                "start": 6,
-                                "startCol": 8,
-                                "end": 6,
-                                "endCol": 9
+                                "text": "2"
                               },
                               {
                                 "kind": "number",
-                                "text": "3",
-                                "start": 6,
-                                "startCol": 12,
-                                "end": 6,
-                                "endCol": 13
+                                "text": "3"
                               }
                             ]
                           }
@@ -248,11 +136,7 @@
                       },
                       {
                         "kind": "number",
-                        "text": "1",
-                        "start": 6,
-                        "startCol": 17,
-                        "end": 6,
-                        "endCol": 18
+                        "text": "1"
                       }
                     ]
                   }
@@ -264,77 +148,39 @@
       },
       {
         "kind": "function_call",
-        "start": 8,
-        "end": 8,
-        "endCol": 20,
         "children": [
           {
             "kind": "identifier",
-            "text": "print",
-            "start": 8,
-            "end": 8,
-            "endCol": 5
+            "text": "print"
           },
           {
             "kind": "arguments",
-            "start": 8,
-            "startCol": 5,
-            "end": 8,
-            "endCol": 20,
             "children": [
               {
                 "kind": "parenthesized_expression",
-                "start": 8,
-                "startCol": 6,
-                "end": 8,
-                "endCol": 19,
                 "children": [
                   {
                     "kind": "binary_expression",
                     "text": "*",
-                    "start": 8,
-                    "startCol": 7,
-                    "end": 8,
-                    "endCol": 18,
                     "children": [
                       {
                         "kind": "number",
-                        "text": "2",
-                        "start": 8,
-                        "startCol": 7,
-                        "end": 8,
-                        "endCol": 8
+                        "text": "2"
                       },
                       {
                         "kind": "parenthesized_expression",
-                        "start": 8,
-                        "startCol": 11,
-                        "end": 8,
-                        "endCol": 18,
                         "children": [
                           {
                             "kind": "binary_expression",
                             "text": "+",
-                            "start": 8,
-                            "startCol": 12,
-                            "end": 8,
-                            "endCol": 17,
                             "children": [
                               {
                                 "kind": "number",
-                                "text": "3",
-                                "start": 8,
-                                "startCol": 12,
-                                "end": 8,
-                                "endCol": 13
+                                "text": "3"
                               },
                               {
                                 "kind": "number",
-                                "text": "1",
-                                "start": 8,
-                                "startCol": 16,
-                                "end": 8,
-                                "endCol": 17
+                                "text": "1"
                               }
                             ]
                           }

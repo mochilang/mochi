@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 	"testing"
@@ -18,6 +19,11 @@ import (
 func shouldUpdate() bool {
 	f := flag.Lookup("update")
 	return f != nil && f.Value.String() == "true"
+}
+
+func sanitizeTables(b []byte) []byte {
+	re := regexp.MustCompile(`table: 0x[0-9a-fA-F]+`)
+	return re.ReplaceAll(b, []byte("table"))
 }
 
 func ensureLua(t *testing.T) {
@@ -38,8 +44,8 @@ func TestPrint_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
-	if len(files) > 20 {
-		files = files[:20]
+	if len(files) > 50 {
+		files = files[:50]
 	}
 
 	for _, src := range files {
@@ -105,6 +111,8 @@ func TestPrint_Golden(t *testing.T) {
 				got = []byte(strings.Join(gLines, "\n"))
 				want = []byte(strings.Join(wLines, "\n"))
 			}
+			got = sanitizeTables(got)
+			want = sanitizeTables(want)
 			if string(got) != string(want) {
 				if strings.HasPrefix(string(got), "table:") && strings.HasPrefix(string(want), "table:") {
 					// table addresses differ; ignore

@@ -20,6 +20,10 @@ func Print(p *Program) (string, error) {
 	return out, nil
 }
 
+func endStmt(b *bytes.Buffer) {
+	b.WriteString(";\n")
+}
+
 func writeChunk(b *bytes.Buffer, n *ProgramNode, indent int) {
 	for _, c := range n.Children {
 		writeStmt(b, c, indent)
@@ -41,24 +45,25 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			} else {
 				b.WriteString("()")
 			}
-			b.WriteByte('\n')
+			endStmt(b)
 			if idx < len(n.Children) {
 				writeBlock(b, n.Children[idx], indent+1)
 			}
 			b.WriteString(ind)
-			b.WriteString("end\n")
+			b.WriteString("end")
+			endStmt(b)
 		}
 	case "assignment_statement":
 		b.WriteString(ind)
 		writeAssignment(b, n)
-		b.WriteByte('\n')
+		endStmt(b)
 	case "variable_declaration":
 		b.WriteString(ind)
 		b.WriteString("local ")
 		if len(n.Children) > 0 {
 			writeAssignment(b, n.Children[0])
 		}
-		b.WriteByte('\n')
+		endStmt(b)
 	case "return_statement":
 		b.WriteString(ind)
 		b.WriteString("return")
@@ -66,7 +71,7 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteByte(' ')
 			writeExprList(b, n.Children[0], indent)
 		}
-		b.WriteByte('\n')
+		endStmt(b)
 	case "for_statement":
 		if len(n.Children) >= 2 {
 			b.WriteString(ind)
@@ -75,7 +80,8 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString(" do\n")
 			writeBlock(b, n.Children[1], indent+1)
 			b.WriteString(ind)
-			b.WriteString("end\n")
+			b.WriteString("end")
+			endStmt(b)
 		}
 	case "if_statement":
 		writeIfStatement(b, n, indent)
@@ -85,7 +91,8 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString("do\n")
 			writeBlock(b, n.Children[0], indent+1)
 			b.WriteString(ind)
-			b.WriteString("end\n")
+			b.WriteString("end")
+			endStmt(b)
 		}
 	case "while_statement":
 		if len(n.Children) >= 2 {
@@ -95,29 +102,32 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString(" do\n")
 			writeBlock(b, n.Children[1], indent+1)
 			b.WriteString(ind)
-			b.WriteString("end\n")
+			b.WriteString("end")
+			endStmt(b)
 		}
 	case "break_statement":
 		b.WriteString(ind)
-		b.WriteString("break\n")
+		b.WriteString("break")
+		endStmt(b)
 	case "goto_statement":
 		b.WriteString(ind)
 		b.WriteString("goto ")
 		if len(n.Children) > 0 {
 			writeExpr(b, n.Children[0], indent)
 		}
-		b.WriteByte('\n')
+		endStmt(b)
 	case "label_statement":
 		b.WriteString(ind)
 		b.WriteString("::")
 		if len(n.Children) > 0 {
 			writeExpr(b, n.Children[0], indent)
 		}
-		b.WriteString("::\n")
+		b.WriteString("::")
+		endStmt(b)
 	case "function_call":
 		b.WriteString(ind)
 		writeExpr(b, n, indent)
-		b.WriteByte('\n')
+		endStmt(b)
 	case "block":
 		writeBlock(b, n, indent)
 	default:
@@ -163,7 +173,8 @@ func writeIfStatement(b *bytes.Buffer, n *Node, indent int) {
 		}
 	}
 	b.WriteString(ind)
-	b.WriteString("end\n")
+	b.WriteString("end")
+	endStmt(b)
 }
 
 func writeAssignment(b *bytes.Buffer, n *Node) {

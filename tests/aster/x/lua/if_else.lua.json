@@ -1,0 +1,105 @@
+{
+  "root": {
+    "kind": "chunk",
+    "children": [
+      {
+        "kind": "assignment_statement",
+        "children": [
+          {
+            "kind": "variable_list",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "x"
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "children": [
+              {
+                "kind": "number",
+                "text": "5"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "if_statement",
+        "children": [
+          {
+            "kind": "parenthesized_expression",
+            "children": [
+              {
+                "kind": "binary_expression",
+                "text": "\u003e",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "x"
+                  },
+                  {
+                    "kind": "number",
+                    "text": "3"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "block",
+            "children": [
+              {
+                "kind": "function_call",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "print"
+                  },
+                  {
+                    "kind": "arguments",
+                    "children": [
+                      {
+                        "kind": "string",
+                        "text": "\"big\""
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "else_statement",
+            "children": [
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "function_call",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "print"
+                      },
+                      {
+                        "kind": "arguments",
+                        "children": [
+                          {
+                            "kind": "string",
+                            "text": "\"small\""
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

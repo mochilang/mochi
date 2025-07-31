@@ -1,2 +1,2 @@
-todo = {title = "hi"}
-print(todo.title)
+todo = {title = "hi"};
+print(todo.title);
