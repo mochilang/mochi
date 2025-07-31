@@ -34,7 +34,8 @@ func TestPrint_Golden(t *testing.T) {
 	sort.Strings(files)
 	var selected []string
 	for _, f := range files {
-		if filepath.Base(f) == "two-sum.rs" {
+		base := filepath.Base(f)
+		if base == "two-sum.rs" || base == "cross_join.rs" {
 			selected = append(selected, f)
 		}
 	}
@@ -47,7 +48,7 @@ func TestPrint_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("read src: %v", err)
 			}
-			prog, err := rs.Inspect(string(data), rs.Option{})
+			prog, err := rs.Inspect(string(data), rs.Option{Positions: true})
 			if err != nil {
 				t.Fatalf("inspect: %v", err)
 			}

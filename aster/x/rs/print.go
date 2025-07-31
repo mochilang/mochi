@@ -29,6 +29,47 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 		b.WriteString(ind)
 		b.WriteString(n.Text)
 		b.WriteByte('\n')
+	case "attribute_item":
+		b.WriteString(ind)
+		b.WriteString("#[")
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+		}
+		b.WriteString("]\n")
+	case "struct_item":
+		b.WriteString(ind)
+		b.WriteString("struct ")
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+		}
+		b.WriteString(" {\n")
+		if len(n.Children) > 1 {
+			for _, f := range n.Children[1].Children {
+				b.WriteString(strings.Repeat("    ", indent+1))
+				writeFieldDecl(b, f)
+				b.WriteByte('\n')
+			}
+		}
+		b.WriteString(ind)
+		b.WriteString("}\n")
+	case "impl_item":
+		b.WriteString(ind)
+		b.WriteString("impl ")
+		if len(n.Children) >= 1 {
+			writeExpr(b, n.Children[0], indent)
+		}
+		if len(n.Children) >= 2 {
+			b.WriteString(" for ")
+			writeExpr(b, n.Children[1], indent)
+		}
+		b.WriteString(" {\n")
+		if len(n.Children) > 2 {
+			for _, d := range n.Children[2].Children {
+				writeStmt(b, d, indent+1)
+			}
+		}
+		b.WriteString(ind)
+		b.WriteString("}\n")
 	case "function_item":
 		b.WriteString(ind)
 		b.WriteString("fn ")
@@ -50,10 +91,25 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 	case "let_declaration":
 		b.WriteString(ind)
 		b.WriteString("let ")
-		if len(n.Children) >= 2 {
-			writeExpr(b, n.Children[0], 0)
+		idx := 0
+		if idx < len(n.Children) && n.Children[idx].Kind == "mutable_specifier" {
+			writeExpr(b, n.Children[idx], indent)
+			b.WriteByte(' ')
+			idx++
+		}
+		if idx < len(n.Children) {
+			writeExpr(b, n.Children[idx], indent)
+			idx++
+		}
+		if len(n.Children)-idx == 1 {
 			b.WriteString(" = ")
-			writeExpr(b, n.Children[1], indent)
+			writeExpr(b, n.Children[idx], indent)
+		} else if len(n.Children)-idx >= 2 {
+			b.WriteString(": ")
+			writeExpr(b, n.Children[idx], indent)
+			idx++
+			b.WriteString(" = ")
+			writeExpr(b, n.Children[idx], indent)
 		}
 		b.WriteString(";\n")
 	case "expression_statement":
@@ -90,6 +146,23 @@ func writeBlock(b *bytes.Buffer, n *Node, indent int) {
 	b.WriteString("}")
 }
 
+func writeFieldDecl(b *bytes.Buffer, n *Node) {
+	if len(n.Children) == 2 {
+		writeExpr(b, n.Children[0], 0)
+		b.WriteString(": ")
+		writeExpr(b, n.Children[1], 0)
+		b.WriteByte(',')
+	}
+}
+
+func writeFieldInit(b *bytes.Buffer, n *Node, indent int) {
+	if len(n.Children) == 2 {
+		writeExpr(b, n.Children[0], indent)
+		b.WriteString(": ")
+		writeExpr(b, n.Children[1], indent)
+	}
+}
+
 func writeParameters(b *bytes.Buffer, n *Node) {
 	b.WriteByte('(')
 	for i, c := range n.Children {
@@ -105,16 +178,21 @@ func writeParameters(b *bytes.Buffer, n *Node) {
 }
 
 func writeParameter(b *bytes.Buffer, n *Node) {
-	if len(n.Children) == 2 {
-		writeExpr(b, n.Children[0], 0)
-		b.WriteString(": ")
-		writeExpr(b, n.Children[1], 0)
+	switch n.Kind {
+	case "self_parameter":
+		writeExpr(b, n, 0)
+	default:
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], 0)
+			b.WriteString(": ")
+			writeExpr(b, n.Children[1], 0)
+		}
 	}
 }
 
 func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	switch n.Kind {
-	case "identifier", "field_identifier", "type_identifier", "primitive_type", "integer_literal", "string_content", "mutable_specifier":
+	case "identifier", "field_identifier", "type_identifier", "primitive_type", "integer_literal", "string_content", "mutable_specifier", "escape_sequence":
 		b.WriteString(n.Text)
 	case "string_literal":
 		b.WriteByte('"')
@@ -183,6 +261,79 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, n.Children[1], indent)
 			b.WriteByte(']')
 		}
+	case "reference_expression":
+		if len(n.Children) == 1 {
+			b.WriteByte('&')
+			writeExpr(b, n.Children[0], indent)
+		}
+	case "reference_type":
+		b.WriteByte('&')
+		if len(n.Children) > 0 && n.Children[0].Kind == "mutable_specifier" {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteByte(' ')
+			if len(n.Children) > 1 {
+				writeExpr(b, n.Children[1], indent)
+			}
+		} else if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+		}
+	case "self_parameter":
+		b.WriteString("&self")
+	case "lifetime":
+		b.WriteByte('\'')
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+		} else {
+			b.WriteString(n.Text)
+		}
+	case "scoped_identifier":
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString("::")
+			}
+			writeExpr(b, c, indent)
+		}
+	case "scoped_type_identifier":
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString("::")
+			}
+			writeExpr(b, c, indent)
+		}
+	case "struct_expression":
+		if len(n.Children) >= 1 {
+			writeExpr(b, n.Children[0], indent)
+		}
+		b.WriteString(" {")
+		if len(n.Children) > 1 {
+			for i, f := range n.Children[1].Children {
+				if i > 0 {
+					b.WriteString(", ")
+				}
+				writeFieldInit(b, f, indent)
+			}
+		}
+		b.WriteString("}")
+	case "field_initializer_list":
+		b.WriteString("{")
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeFieldInit(b, c, indent)
+		}
+		b.WriteString("}")
+	case "field_initializer":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(": ")
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "try_expression":
+		if len(n.Children) == 1 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteByte('?')
+		}
 	case "for_expression":
 		if len(n.Children) == 3 {
 			b.WriteString("for ")
@@ -199,71 +350,26 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteByte(' ')
 			writeBlock(b, n.Children[1], indent)
 		}
+	case "block":
+		writeBlock(b, n, indent)
 	case "macro_invocation":
 		if len(n.Children) == 0 {
 			return
 		}
-		name := ""
-		if n.Children[0].Kind == "identifier" {
-			name = n.Children[0].Text
-		}
 		writeExpr(b, n.Children[0], indent)
 		b.WriteByte('!')
 		if len(n.Children) > 1 {
-			open, close := '(', ')'
-			if name == "vec" {
-				open, close = '[', ']'
-			}
-			b.WriteByte(byte(open))
-			children := n.Children[1].Children
-			for i := 0; i < len(children); i++ {
-				if name == "vec" && i+1 < len(children) && children[i].Kind == "identifier" && children[i+1].Kind == "primitive_type" {
-					if i > 0 {
-						b.WriteString(", ")
-					}
-					writeExpr(b, children[i], indent)
-					b.WriteString(" as ")
-					writeExpr(b, children[i+1], indent)
-					i++
-					continue
-				}
-				if i+1 < len(children) && children[i].Kind == "identifier" && children[i+1].Kind == "token_tree" && len(children[i+1].Children) == 1 && children[i+1].Children[0].Kind == "integer_literal" {
-					if i > 0 {
-						b.WriteString(", ")
-					}
-					writeExpr(b, children[i], indent)
-					writeExpr(b, children[i+1], indent)
-					i++
-					continue
-				}
-				if i > 0 {
-					b.WriteString(", ")
-				}
-				writeExpr(b, children[i], indent)
-			}
-			b.WriteByte(byte(close))
-		} else {
-			if name == "vec" {
-				b.WriteString("[]")
-			} else {
-				b.WriteString("()")
-			}
+			writeExpr(b, n.Children[1], indent)
 		}
 	case "token_tree":
-		if len(n.Children) == 1 && n.Children[0].Kind == "integer_literal" {
-			b.WriteByte('[')
-			writeExpr(b, n.Children[0], indent)
-			b.WriteByte(']')
-			return
-		}
-		b.WriteByte('(')
+		b.WriteString(n.Text)
+	case "attribute":
 		for i, c := range n.Children {
 			if i > 0 {
-				b.WriteString(", ")
+				// no separator
 			}
 			writeExpr(b, c, indent)
 		}
-		b.WriteByte(')')
 	default:
 		b.WriteString(n.Kind)
 	}
