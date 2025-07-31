@@ -18,13 +18,13 @@ type Options struct {
 // meaningful values keep their text to minimise the resulting JSON.
 // Source positions include both line and column information.
 type Node struct {
-	Kind     string `json:"kind"`
-	Text     string `json:"text,omitempty"`
-	Start    int    `json:"start,omitempty"`
-	StartCol int    `json:"startCol,omitempty"`
-	End      int    `json:"end,omitempty"`
-	EndCol   int    `json:"endCol,omitempty"`
-	Children []Node `json:"children,omitempty"`
+	Kind     string  `json:"kind"`
+	Text     string  `json:"text,omitempty"`
+	Start    int     `json:"start,omitempty"`
+	StartCol int     `json:"startCol,omitempty"`
+	End      int     `json:"end,omitempty"`
+	EndCol   int     `json:"endCol,omitempty"`
+	Children []*Node `json:"children,omitempty"`
 }
 
 // File is the root syntactic element of an OCaml source file.
@@ -114,7 +114,7 @@ func convert(n *sitter.Node, src []byte, pos bool) *Node {
 	for i := 0; i < int(n.NamedChildCount()); i++ {
 		child := convert(n.NamedChild(uint(i)), src, pos)
 		if child != nil {
-			node.Children = append(node.Children, *child)
+			node.Children = append(node.Children, child)
 		}
 	}
 
