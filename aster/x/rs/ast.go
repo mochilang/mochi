@@ -106,7 +106,8 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 	// reconstruct the original source when important tokens are not part of
 	// the named children (for example the minus sign of a negative integer
 	// inside a token tree).
-	if n.Kind() == "token_tree" {
+	switch n.Kind() {
+	case "token_tree", "unary_expression", "binary_expression", "call_expression":
 		node.Text = n.Utf8Text(src)
 	}
 	if opt.Positions {
@@ -156,7 +157,8 @@ func isValueNode(kind string) bool {
 	switch kind {
 	case "identifier", "field_identifier", "type_identifier", "primitive_type",
 		"integer_literal", "string_content", "escape_sequence", "mutable_specifier",
-		"arguments", "parameters", "self", "token_tree", "line_comment":
+		"arguments", "parameters", "self", "token_tree", "line_comment",
+		"true", "false":
 		return true
 	default:
 		return false
