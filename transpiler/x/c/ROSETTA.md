@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (111/491) - Last updated 2025-07-31 18:07 +0700:
+Checklist of programs that currently transpile and run (115/491) - Last updated 2025-07-31 18:33 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 65us | 17.2 KB |
@@ -165,15 +165,15 @@ Checklist of programs that currently transpile and run (111/491) - Last updated 
 | 158 | call-a-function-7 | ✓ | 12us | 0 B |
 | 159 | call-a-function-8 |  |  |  |
 | 160 | call-a-function-9 | ✓ | 60us | 688 B |
-| 161 | call-an-object-method-1 | ✓ | 14us | 0 B |
-| 162 | call-an-object-method-2 |  |  |  |
-| 163 | call-an-object-method-3 |  |  |  |
-| 164 | call-an-object-method |  |  |  |
-| 165 | camel-case-and-snake-case |  |  |  |
+| 161 | call-an-object-method-1 |  |  |  |
+| 162 | call-an-object-method-2 | ✓ | 43us | 0 B |
+| 163 | call-an-object-method-3 | ✓ | 23us | 0 B |
+| 164 | call-an-object-method | ✓ | 35us | 0 B |
+| 165 | camel-case-and-snake-case | ✓ | 594us | 62.7 KB |
 | 166 | canny-edge-detector |  |  |  |
 | 167 | canonicalize-cidr |  |  |  |
 | 168 | cantor-set |  |  |  |
-| 169 | carmichael-3-strong-pseudoprimes |  |  |  |
+| 169 | carmichael-3-strong-pseudoprimes | ✓ | 1.26ms | 34.0 KB |
 | 170 | cartesian-product-of-two-or-more-lists-1 |  |  |  |
 | 171 | cartesian-product-of-two-or-more-lists-2 |  |  |  |
 | 172 | cartesian-product-of-two-or-more-lists-3 |  |  |  |
