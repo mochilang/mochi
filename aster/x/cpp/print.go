@@ -70,7 +70,8 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString(ind)
 			c := n.Children[0]
 			if c.Kind == "binary_expression" {
-				writeBinaryOp(b, c, indent, detectOperator(c))
+				op := strings.TrimSpace(c.Text)
+				writeBinaryOp(b, c, indent, op)
 			} else {
 				writeExpr(b, c, indent)
 			}
@@ -353,6 +354,11 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		for _, c := range n.Children {
 			writeExpr(b, c, indent)
 		}
+	case "pointer_expression":
+		b.WriteByte('*')
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+		}
 	case "function_declarator":
 		writeFunctionDeclarator(b, n, indent)
 	case "type_qualifier":
@@ -556,6 +562,9 @@ func writeBinaryOp(b *bytes.Buffer, n *Node, indent int, op string) {
 	if len(n.Children) != 2 {
 		b.WriteString(n.Kind)
 		return
+	}
+	if strings.TrimSpace(op) == "" {
+		op = detectOperator(n)
 	}
 	writeExpr(b, n.Children[0], indent)
 	b.WriteString(" " + op + " ")

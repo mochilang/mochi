@@ -68,14 +68,11 @@ func TestPrint_Golden(t *testing.T) {
 		if base == "bench_block.cpp" || base == "closure.cpp" {
 			continue
 		}
-               count++
-               if count <= 30 {
-                       continue
-               }
-		selected = append(selected, f)
-		if len(selected) >= 10 {
-			break
+		count++
+		if count < 26 || count > 50 {
+			continue
 		}
+		selected = append(selected, f)
 	}
 	files = selected
 
