@@ -1277,6 +1277,10 @@
                                                 "text": "cost"
                                               }
                                             ]
+                                          },
+                                          {
+                                            "kind": "decimal_floating_point_literal",
+                                            "text": "10.0"
                                           }
                                         ]
                                       },
@@ -1364,6 +1368,10 @@
                                                 "text": "cost"
                                               }
                                             ]
+                                          },
+                                          {
+                                            "kind": "decimal_floating_point_literal",
+                                            "text": "20.0"
                                           }
                                         ]
                                       },
@@ -1451,6 +1459,10 @@
                                                 "text": "cost"
                                               }
                                             ]
+                                          },
+                                          {
+                                            "kind": "decimal_floating_point_literal",
+                                            "text": "5.0"
                                           }
                                         ]
                                       },
