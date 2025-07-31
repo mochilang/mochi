@@ -11,6 +11,8 @@ import (
 // Program is the root of a parsed C++ translation unit.
 // Program represents the root of a parsed translation unit. It mirrors the
 // tree-sitter structure using the minimal Node defined in ast.go.
+// Program mirrors the tree-sitter syntax tree using our lightweight Node type.
+// The Root field is the translation unit for the parsed source.
 type Program struct {
 	Root *TranslationUnit `json:"root"`
 }
