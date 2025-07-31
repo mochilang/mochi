@@ -333,6 +333,26 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteByte(' ')
 			writeExpr(b, n.Children[1], indent)
 		}
+	case "lambda_expression":
+		if len(n.Children) >= 2 {
+			b.WriteByte('(')
+			if len(n.Children[0].Children) > 0 {
+				for i, bind := range n.Children[0].Children {
+					if i > 0 {
+						b.WriteString(", ")
+					}
+					if len(bind.Children) >= 1 {
+						b.WriteString(bind.Children[0].Text)
+					}
+					if len(bind.Children) >= 2 {
+						b.WriteString(": ")
+						writeExpr(b, bind.Children[1], indent)
+					}
+				}
+			}
+			b.WriteString(") => ")
+			writeExpr(b, n.Children[1], indent)
+		}
 	case "block":
 		b.WriteString("{\n")
 		writeBlock(b, n, indent+1)
