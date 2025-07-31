@@ -1,0 +1,16 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden1858743662/001/main.swift:45:17: error: cannot find 'secret' in scope
+43 |     }
+44 |     func Box_TellSecret(_ self: Box) -> Int {
+45 |         return (secret as! Int)
+   |                 `- error: cannot find 'secret' in scope
+46 |     }
+47 |     func New() -> Box {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1858743662/001/main.swift:49:19: warning: forced cast of 'Box' to same type has no effect
+47 |     func New() -> Box {
+48 |         var b: Box = Box(Contents: "rabbit", secret: 1)
+49 |         return (b as! Box)
+   |                   `- warning: forced cast of 'Box' to same type has no effect
+50 |     }
+51 |     var box: Box = New()

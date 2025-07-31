@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 264/491
-Last updated: 2025-07-31 07:37 +0700
+Completed: 300/491
+Last updated: 2025-07-31 08:02 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -155,56 +155,56 @@ Last updated: 2025-07-31 07:37 +0700
 | 146 | calendar | ✓ | 1.951ms | 3.0 MB |
 | 147 | calkin-wilf-sequence |   |  |  |
 | 148 | call-a-foreign-language-function |   |  |  |
-| 149 | call-a-function-1 |   |  |  |
-| 150 | call-a-function-10 |   |  |  |
-| 151 | call-a-function-11 |   |  |  |
-| 152 | call-a-function-12 |   |  |  |
-| 153 | call-a-function-2 |   |  |  |
-| 154 | call-a-function-3 |   |  |  |
-| 155 | call-a-function-4 |   |  |  |
-| 156 | call-a-function-5 |   |  |  |
-| 157 | call-a-function-6 |   |  |  |
-| 158 | call-a-function-7 |   |  |  |
-| 159 | call-a-function-8 |   |  |  |
-| 160 | call-a-function-9 |   |  |  |
-| 161 | call-an-object-method-1 |   |  |  |
+| 149 | call-a-function-1 | ✓ | 72µs | 3.1 MB |
+| 150 | call-a-function-10 | ✓ | 118µs | 3.0 MB |
+| 151 | call-a-function-11 | ✓ | 231µs | 3.1 MB |
+| 152 | call-a-function-12 | ✓ | 224µs | 3.3 MB |
+| 153 | call-a-function-2 | ✓ | 125µs | 3.0 MB |
+| 154 | call-a-function-3 | ✓ | 123µs | 3.1 MB |
+| 155 | call-a-function-4 | ✓ | 96µs | 3.0 MB |
+| 156 | call-a-function-5 | ✓ | 266µs | 3.1 MB |
+| 157 | call-a-function-6 | ✓ | 259µs | 3.0 MB |
+| 158 | call-a-function-7 | ✓ | 70µs | 3.0 MB |
+| 159 | call-a-function-8 | ✓ | 169µs | 2.9 MB |
+| 160 | call-a-function-9 | ✓ | 138µs | 3.1 MB |
+| 161 | call-an-object-method-1 | ✓ | 73µs | 3.0 MB |
 | 162 | call-an-object-method-2 |   |  |  |
 | 163 | call-an-object-method-3 |   |  |  |
 | 164 | call-an-object-method |   |  |  |
-| 165 | camel-case-and-snake-case |   |  |  |
-| 166 | canny-edge-detector |   |  |  |
+| 165 | camel-case-and-snake-case | ✓ | 823µs | 3.2 MB |
+| 166 | canny-edge-detector | ✓ | 389µs | 3.1 MB |
 | 167 | canonicalize-cidr |   |  |  |
-| 168 | cantor-set |   |  |  |
-| 169 | carmichael-3-strong-pseudoprimes |   |  |  |
-| 170 | cartesian-product-of-two-or-more-lists-1 |   |  |  |
-| 171 | cartesian-product-of-two-or-more-lists-2 |   |  |  |
-| 172 | cartesian-product-of-two-or-more-lists-3 | ✓ | 863µs | 3.2 MB |
-| 173 | cartesian-product-of-two-or-more-lists-4 | ✓ |  |  |
-| 174 | case-sensitivity-of-identifiers | ✓ |  |  |
+| 168 | cantor-set | ✓ | 2.372ms | 3.2 MB |
+| 169 | carmichael-3-strong-pseudoprimes | ✓ | 826µs | 3.1 MB |
+| 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 385µs | 3.0 MB |
+| 171 | cartesian-product-of-two-or-more-lists-2 | ✓ | 684µs | 3.3 MB |
+| 172 | cartesian-product-of-two-or-more-lists-3 | ✓ | 806µs | 3.3 MB |
+| 173 | cartesian-product-of-two-or-more-lists-4 | ✓ | 789µs | 3.4 MB |
+| 174 | case-sensitivity-of-identifiers | ✓ | 313µs | 3.2 MB |
 | 175 | casting-out-nines |   |  |  |
-| 176 | catalan-numbers-1 |   |  |  |
-| 177 | catalan-numbers-2 |   |  |  |
-| 178 | catalan-numbers-pascals-triangle |   |  |  |
-| 179 | catamorphism |   |  |  |
+| 176 | catalan-numbers-1 | ✓ | 276µs | 3.0 MB |
+| 177 | catalan-numbers-2 | ✓ | 263µs | 3.0 MB |
+| 178 | catalan-numbers-pascals-triangle | ✓ | 292µs | 3.1 MB |
+| 179 | catamorphism | ✓ | 280µs | 3.2 MB |
 | 180 | catmull-clark-subdivision-surface |   |  |  |
-| 181 | chaocipher |   |  |  |
+| 181 | chaocipher | ✓ | 1.492ms | 3.2 MB |
 | 182 | chaos-game |   |  |  |
-| 183 | character-codes-1 |   |  |  |
-| 184 | character-codes-2 |   |  |  |
-| 185 | character-codes-3 |   |  |  |
-| 186 | character-codes-4 |   |  |  |
-| 187 | character-codes-5 |   |  |  |
-| 188 | chat-server |   |  |  |
+| 183 | character-codes-1 | ✓ | 254µs | 3.2 MB |
+| 184 | character-codes-2 | ✓ | 276µs | 3.3 MB |
+| 185 | character-codes-3 | ✓ | 256µs | 3.1 MB |
+| 186 | character-codes-4 | ✓ | 158µs | 3.0 MB |
+| 187 | character-codes-5 | ✓ | 200µs | 3.0 MB |
+| 188 | chat-server | ✓ | 209µs | 3.2 MB |
 | 189 | check-machin-like-formulas |   |  |  |
-| 190 | check-that-file-exists |   |  |  |
-| 191 | checkpoint-synchronization-1 |   |  |  |
-| 192 | checkpoint-synchronization-2 | ✓ |  |  |
-| 193 | checkpoint-synchronization-3 |   |  |  |
-| 194 | checkpoint-synchronization-4 |   |  |  |
-| 195 | chernicks-carmichael-numbers |   |  |  |
-| 196 | cheryls-birthday |   |  |  |
-| 197 | chinese-remainder-theorem | ✓ | 173µs | 3.3 MB |
-| 198 | chinese-zodiac | ✓ | 220µs | 3.2 MB |
+| 190 | check-that-file-exists | ✓ | 230µs | 3.1 MB |
+| 191 | checkpoint-synchronization-1 | ✓ | 300µs | 3.1 MB |
+| 192 | checkpoint-synchronization-2 | ✓ | 321µs | 3.0 MB |
+| 193 | checkpoint-synchronization-3 | ✓ | 349µs | 3.2 MB |
+| 194 | checkpoint-synchronization-4 | ✓ | 291µs | 3.2 MB |
+| 195 | chernicks-carmichael-numbers | ✓ | 220.34ms | 3.1 MB |
+| 196 | cheryls-birthday | ✓ | 333µs | 3.3 MB |
+| 197 | chinese-remainder-theorem | ✓ | 251µs | 3.0 MB |
+| 198 | chinese-zodiac | ✓ | 343µs | 3.4 MB |
 | 199 | cholesky-decomposition-1 | ✓ | 288µs | 3.1 MB |
 | 200 | cholesky-decomposition |   |  |  |
 | 201 | chowla-numbers |   |  |  |

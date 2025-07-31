@@ -1,0 +1,48 @@
+signal: illegal instruction
+
+*** Signal 4: Backtracing from 0x55d6094e2aa8... done ***
+
+*** Program crashed: Illegal instruction at 0x000055d6094e2aa8 ***
+
+Thread 0 "main" crashed:
+
+0      0x000055d6094e2aa8 getAvgFacePoints #1 (_:_:_:) in  + 2264 in main
+1 [ra] 0x000055d6094e4066 cmcSubdiv #1 (_:_:) in  + 885 in main
+2 [ra] 0x000055d6094dc9fc main #1 () in  + 3691 in main
+3 [ra] 0x000055d6094de2f1 main + 128 in main
+4 [ra] 0x00007fe7cdbe01ca <unknown> in libc.so.6
+5 [ra] 0x00007fe7cdbe028b <unknown> in libc.so.6
+
+
+Registers:
+
+rax 0x0000000000000001  1
+rdx 0x00007ffdc5df81c8  7c 95 df c5 fd 7f 00 00 00 00 00 00 00 00 00 00  |·ßÅý···········
+rcx 0x0000000000000003  3
+rbx 0x000055d6094e8c18  00 02 00 00 00 00 00 00 20 66 4e 09 d6 55 00 00  ········ fN·ÖU··
+rsi 0x00007ffdc5df70c0  00 00 00 00 00 00 f0 bf 00 00 00 00 00 00 f0 3f  ······ð¿······ð?
+rdi 0x000055d61c57d440  00 00 00 00 00 00 f0 bf 00 00 00 00 00 00 f0 3f  ······ð¿······ð?
+rbp 0x00007ffdc5df7130  30 79 df c5 fd 7f 00 00 66 40 4e 09 d6 55 00 00  0yßÅý···f@N·ÖU··
+rsp 0x00007ffdc5df6d80  c0 6d df c5 fd 7f 00 00 70 3a 58 cf e7 7f 00 00  ÀmßÅý···p:XÏç···
+ r8 0x000055d6094de040  55 48 89 e5 48 89 f8 48 8b 0e 48 89 08 48 8b 4e  UH·åH·øH··H··H·N
+ r9 0x0000000000000027  39
+r10 0x000055d61c5770d0  67 ba 36 41 d3 55 00 00 0b f7 69 21 bf 74 2c e3  gº6AÓU···÷i!¿t,ã
+r11 0xe32c74bf2169f70b  16369587109833078539
+r12 0x0000000000000001  1
+r13 0x00007ffdc5df6ff8  50 c3 57 1c d6 55 00 00 04 00 00 00 00 00 00 00  PÃW·ÖU··········
+r14 0x000055d6094e8a98  90 db 4d 09 d6 55 00 00 b0 db 4d 09 d6 55 00 00  ·ÛM·ÖU··°ÛM·ÖU··
+r15 0x00007fe7cf71e000  e0 f2 71 cf e7 7f 00 00 15 00 00 00 00 00 00 00  àòqÏç···········
+rip 0x000055d6094e2aa8  0f 0b 0f 0b 0f 0b 0f 0b 55 48 89 e5 41 55 48 81  ········UH·åAUH·
+
+rflags 0x0000000000010202  
+
+cs 0x0033  fs 0x0000  gs 0x0000
+
+
+Images (18 omitted):
+
+0x000055d6094d8000–0x000055d6094e7240 696f1a6e88c08c26cf697fe7c83f15863559f442 main      /tmp/TestSwiftTranspiler_Rosetta_Golden1508061388/001/main
+0x00007fe7cdbb6000–0x00007fe7cdd65cb9 282c2c16e7b6600b0b22ea0c99010d2795752b5f libc.so.6 /usr/lib/x86_64-linux-gnu/libc.so.6
+
+Backtrace took 0.00s
+
