@@ -138,7 +138,14 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString(") {\n")
 			writeBlock(b, n.Children[1], indent+1)
 			b.WriteString(ind)
-			b.WriteString("}\n")
+			b.WriteString("}")
+			if len(n.Children) >= 3 {
+				b.WriteString(" else {\n")
+				writeBlock(b, n.Children[2], indent+1)
+				b.WriteString(ind)
+				b.WriteString("}")
+			}
+			b.WriteByte('\n')
 		}
 	case "compound_statement":
 		b.WriteString(ind)
@@ -226,7 +233,11 @@ func writeDeclaration(b *bytes.Buffer, n *Node) {
 	writeExpr(b, n.Children[0], 0)
 	if len(n.Children) > 1 {
 		b.WriteByte(' ')
-		writeInitDeclarator(b, n.Children[1])
+		if n.Children[1].Kind == "init_declarator" {
+			writeInitDeclarator(b, n.Children[1])
+		} else {
+			writeDeclarator(b, n.Children[1])
+		}
 	}
 }
 
@@ -249,7 +260,11 @@ func writeDeclarator(b *bytes.Buffer, n *Node) {
 		if len(n.Children) > 0 {
 			writeExpr(b, n.Children[0], 0)
 		}
-		b.WriteString("[]")
+		b.WriteByte('[')
+		if len(n.Children) > 1 {
+			writeExpr(b, n.Children[1], 0)
+		}
+		b.WriteByte(']')
 	case "pointer_declarator":
 		b.WriteByte('*')
 		if len(n.Children) > 0 {
