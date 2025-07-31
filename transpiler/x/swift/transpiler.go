@@ -956,7 +956,7 @@ func (c *CastExpr) emit(w io.Writer) {
 	// avoid noisy casts when the expression is already a literal
 	if lit, ok := c.Expr.(*LitExpr); ok {
 		typ := strings.TrimSuffix(c.Type, "!")
-		if typ != "BigInt" {
+		if typ != "BigInt" && typ != "Any" && typ != "Any?" {
 			lit.emit(w)
 			return
 		}
@@ -2038,14 +2038,11 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			}
 			return &PrintStmt{Exprs: args}, nil
 		}
-		if call != nil {
-			ex, err := convertExpr(env, st.Expr.Expr)
-			if err != nil {
-				return nil, err
-			}
-			return &ExprStmt{Expr: ex}, nil
+		ex, err := convertExpr(env, st.Expr.Expr)
+		if err != nil {
+			return nil, err
 		}
-		return nil, fmt.Errorf("unsupported expression")
+		return &ExprStmt{Expr: ex}, nil
 	case st.Let != nil:
 		var ex Expr
 		var err error
@@ -2621,14 +2618,27 @@ func convertTypeDecl(env *types.Env, td *parser.TypeDecl) (Stmt, error) {
 		return &BlockStmt{}, nil
 	}
 	var fields []StructField
+	var methods []Stmt
 	for _, m := range td.Members {
-		if m.Field == nil {
-			continue
+		if m.Field != nil {
+			t := types.ResolveTypeRef(m.Field.Type, env)
+			fields = append(fields, StructField{Name: m.Field.Name, Type: swiftTypeOf(t)})
+		} else if m.Method != nil {
+			child := types.NewEnv(env)
+			child.SetVar("self", types.StructType{Name: td.Name}, true)
+			fn := *m.Method
+			fn.Params = append([]*parser.Param{{Name: "self", Type: &parser.TypeRef{Simple: &td.Name}}}, fn.Params...)
+			fn.Name = fmt.Sprintf("%s_%s", td.Name, fn.Name)
+			md, err := convertFunDecl(child, &fn)
+			if err != nil {
+				return nil, err
+			}
+			methods = append(methods, md)
 		}
-		t := types.ResolveTypeRef(m.Field.Type, env)
-		fields = append(fields, StructField{Name: m.Field.Name, Type: swiftTypeOf(t)})
 	}
-	return &StructDef{Name: td.Name, Fields: fields}, nil
+	stmts := []Stmt{&StructDef{Name: td.Name, Fields: fields}}
+	stmts = append(stmts, methods...)
+	return &BlockStmt{Stmts: stmts}, nil
 }
 
 func evalPrintArg(arg *parser.Expr) (val string, isString bool, ok bool) {
@@ -3387,7 +3397,22 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			continue
 		}
 		if op.Call != nil {
-			ce := &CallExpr{Func: exprString(expr)}
+			var ce *CallExpr
+			var fnName string
+			if fe, ok := expr.(*FieldExpr); ok {
+				if n, ok2 := fe.Target.(*NameExpr); ok2 && env != nil {
+					if vt, err := env.GetVar(n.Name); err == nil {
+						if st, ok3 := vt.(types.StructType); ok3 {
+							fnName = fmt.Sprintf("%s_%s", st.Name, fe.Name)
+							ce = &CallExpr{Func: fnName, Args: []Expr{&NameExpr{Name: n.Name}}}
+						}
+					}
+				}
+			}
+			if ce == nil {
+				fnName = exprString(expr)
+				ce = &CallExpr{Func: fnName}
+			}
 			if ce.Func == "now" && len(op.Call.Args) == 0 {
 				usesNow = true
 				ce.Func = "_now"
@@ -3395,13 +3420,13 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			var paramTypes []types.Type
 			var mutInfo []bool
 			if env != nil {
-				if t, err := env.GetVar(exprString(expr)); err == nil {
+				if t, err := env.GetVar(fnName); err == nil {
 					if ft, ok := t.(types.FuncType); ok {
 						paramTypes = ft.Params
 					}
 				}
 			}
-			if flags, ok := funcMutParams[exprString(expr)]; ok {
+			if flags, ok := funcMutParams[fnName]; ok {
 				mutInfo = flags
 			}
 			for j, a := range op.Call.Args {
@@ -3877,10 +3902,21 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 		return nil, fmt.Errorf("unsupported literal")
 	case pr.List != nil:
 		var elems []Expr
+		wrapAny := false
+		if env != nil {
+			if lt, ok := types.TypeOfPrimaryBasic(pr, env).(types.ListType); ok {
+				if isAnyType(lt.Elem) {
+					wrapAny = true
+				}
+			}
+		}
 		for _, e := range pr.List.Elems {
 			ce, err := convertExpr(env, e)
 			if err != nil {
 				return nil, err
+			}
+			if wrapAny {
+				ce = &CastExpr{Expr: ce, Type: "Any"}
 			}
 			elems = append(elems, ce)
 		}
