@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-31 00:50 GMT+7
+Last updated: 2025-07-31 01:17 GMT+7
 
-## Rosetta Golden Test Checklist (476/491)
+## Rosetta Golden Test Checklist (486/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 105.0µs | 12.55MB |
@@ -338,24 +338,24 @@ Last updated: 2025-07-31 00:50 GMT+7
 | 329 | eban-numbers | ✓ | 38.0ms | 12.89MB |
 | 330 | ecdsa-example | ✓ | 49.0µs | 12.50MB |
 | 331 | echo-server | ✓ | 14.0µs | 12.42MB |
-| 332 | eertree |   |  |  |
+| 332 | eertree | ✓ | 92.0µs | 13.57MB |
 | 333 | egyptian-division | ✓ | 21.0µs | 12.48MB |
 | 334 | ekg-sequence-convergence | ✓ | 15.0ms | 13.47MB |
-| 335 | element-wise-operations | ✓ | 250.0µs | 14.03MB |
-| 336 | elementary-cellular-automaton-infinite-length | ✓ | 2.0ms | 13.14MB |
-| 337 | elementary-cellular-automaton-random-number-generator | ✓ | 3.0ms | 12.62MB |
-| 338 | elementary-cellular-automaton | ✓ | 556.0µs | 13.43MB |
-| 339 | elliptic-curve-arithmetic | ✓ | 108.0µs | 13.43MB |
-| 340 | elliptic-curve-digital-signature-algorithm | ✓ | 14.0µs | 12.71MB |
-| 341 | emirp-primes | ✓ | 3.35s | 13.25MB |
-| 342 | empty-directory | ✓ | 11.0µs | 12.62MB |
-| 343 | empty-program | ✓ | 1.0µs | 12.43MB |
-| 344 | empty-string-1 | ✓ | 14.0µs | 12.68MB |
-| 345 | empty-string-2 | ✓ | 11.0µs | 12.20MB |
-| 346 | enforced-immutability | ✓ | 13.0µs | 12.42MB |
-| 347 | entropy-1 | ✓ | 33.0µs | 12.63MB |
-| 348 | entropy-2 | ✓ | 37.0µs | 12.75MB |
-| 349 | entropy-narcissist | ✓ | 476.0µs | 13.05MB |
+| 335 | element-wise-operations | ✓ | 489.0µs | 14.07MB |
+| 336 | elementary-cellular-automaton-infinite-length | ✓ | 2.0ms | 13.35MB |
+| 337 | elementary-cellular-automaton-random-number-generator | ✓ | 6.0ms | 12.50MB |
+| 338 | elementary-cellular-automaton | ✓ | 677.0µs | 13.57MB |
+| 339 | elliptic-curve-arithmetic | ✓ | 181.0µs | 13.18MB |
+| 340 | elliptic-curve-digital-signature-algorithm | ✓ | 17.0µs | 12.29MB |
+| 341 | emirp-primes | ✓ | 4.78s | 12.50MB |
+| 342 | empty-directory | ✓ | 24.0µs | 12.72MB |
+| 343 | empty-program | ✓ | 1.0µs | 12.25MB |
+| 344 | empty-string-1 | ✓ | 14.0µs | 12.34MB |
+| 345 | empty-string-2 | ✓ | 13.0µs | 12.69MB |
+| 346 | enforced-immutability | ✓ | 15.0µs | 12.32MB |
+| 347 | entropy-1 | ✓ | 37.0µs | 13.13MB |
+| 348 | entropy-2 | ✓ | 39.0µs | 12.18MB |
+| 349 | entropy-narcissist | ✓ | 649.0µs | 12.98MB |
 | 350 | enumerations-1 | ✓ | 2.0µs | 12.66MB |
 | 351 | enumerations-2 | ✓ | 1.0µs | 12.36MB |
 | 352 | enumerations-3 | ✓ | 2.0µs | 12.93MB |
@@ -415,18 +415,18 @@ Last updated: 2025-07-31 00:50 GMT+7
 | 406 | fibonacci-sequence-2 | ✓ | 1.0µs | 13.06MB |
 | 407 | fibonacci-sequence-3 | ✓ | 3.0µs | 12.95MB |
 | 408 | fibonacci-sequence-4 | ✓ | 25.0µs | 12.67MB |
-| 409 | fibonacci-sequence-5 |   |  |  |
+| 409 | fibonacci-sequence-5 | ✓ | 101.0µs | 12.44MB |
 | 410 | fibonacci-word-fractal | ✓ | 417.0µs | 12.68MB |
 | 411 | fibonacci-word | ✓ | 17.21s | 131.93MB |
 | 412 | file-extension-is-in-extensions-list | ✓ | 110.0µs | 13.36MB |
 | 413 | file-input-output-1 | ✓ | 10.0µs | 12.62MB |
 | 414 | file-input-output-2 | ✓ | 10.0µs | 12.81MB |
-| 415 | file-input-output-3 |   |  |  |
+| 415 | file-input-output-3 | ✓ | 13.0µs | 12.49MB |
 | 416 | file-modification-time | ✓ | 15.0µs | 12.69MB |
 | 417 | file-size-distribution | ✓ | 78.0µs | 13.12MB |
 | 418 | file-size | ✓ | 13.0µs | 12.75MB |
 | 419 | filter | ✓ | 24.0µs | 12.93MB |
-| 420 | find-chess960-starting-position-identifier-2 |   |  |  |
+| 420 | find-chess960-starting-position-identifier-2 | ✓ | 149.0µs | 13.18MB |
 | 421 | find-chess960-starting-position-identifier | ✓ | 208.0µs | 13.93MB |
 | 422 | find-common-directory-path | ✓ | 244.0µs | 13.37MB |
 | 423 | find-duplicate-files | ✓ | 11.0µs | 13.09MB |
@@ -437,18 +437,18 @@ Last updated: 2025-07-31 00:50 GMT+7
 | 428 | find-the-intersection-of-two-lines | ✓ | 32.0µs | 12.78MB |
 | 429 | find-the-last-sunday-of-each-month | ✓ | 141.0µs | 12.66MB |
 | 430 | find-the-missing-permutation | ✓ | 44.0µs | 13.12MB |
-| 431 | first-class-environments |   |  |  |
-| 432 | first-class-functions-use-numbers-analogously |   |  |  |
-| 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 |   |  |  |
-| 434 | five-weekends |   |  |  |
+| 431 | first-class-environments | ✓ | 519.0µs | 13.15MB |
+| 432 | first-class-functions-use-numbers-analogously | ✓ | 25.0µs | 13.12MB |
+| 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 | ✓ | 3.0ms | 12.52MB |
+| 434 | five-weekends | ✓ | 1.0ms | 12.87MB |
 | 435 | fivenum-1 | ✓ | 140.0µs | 12.98MB |
 | 436 | fivenum-2 | ✓ | 122.0µs | 13.68MB |
-| 437 | fivenum-3 |   |  |  |
+| 437 | fivenum-3 | ✓ | 159.0µs | 12.48MB |
 | 438 | fixed-length-records-1 | ✓ | 29.0µs | 12.88MB |
 | 439 | fixed-length-records-2 | ✓ | 12.0µs | 12.51MB |
 | 440 | fizzbuzz-1 | ✓ | 113.0µs | 12.64MB |
 | 441 | fizzbuzz-2 | ✓ | 171.0µs | 12.79MB |
-| 442 | fizzbuzz |   |  |  |
+| 442 | fizzbuzz | ✓ | 125.0µs | 12.45MB |
 | 443 | flatten-a-list-1 | ✓ | 20.0µs | 13.00MB |
 | 444 | flatten-a-list-2 | ✓ | 13.0µs | 12.59MB |
 | 445 | flipping-bits-game | ✓ | 31.0µs | 13.05MB |
