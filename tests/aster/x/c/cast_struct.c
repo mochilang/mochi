@@ -3,7 +3,7 @@
 #include <string.h>
 typedef struct Todo Todo;
 struct Todo {
-    char *title;
+    const char *title;
 };
 Todo todo = (Todo){.title = "hi"};
 int main(void) {

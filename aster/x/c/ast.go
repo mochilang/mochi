@@ -118,13 +118,11 @@ func convert(n *sitter.Node, src []byte, pos bool) *Node {
 
 	switch node.Kind {
 	case "declaration":
-		if len(node.Children) == 1 && node.Children[0].Kind == "init_declarator" {
-			node.Text = n.Utf8Text(src)
-		}
+		// All pieces of a declaration are kept as children so the source
+		// can be reconstructed without relying on the original text.
 	case "function_definition":
-		if len(node.Children) < 3 {
-			node.Text = n.Utf8Text(src)
-		}
+		// Function definitions are printed from their children, so we no
+		// longer fall back to storing the original text.
 	}
 
 	if len(node.Children) == 0 && node.Text == "" {
@@ -137,6 +135,7 @@ func isValueNode(kind string) bool {
 	switch kind {
 	case "identifier", "field_identifier", "number_literal", "char_literal", "string_literal",
 		"system_lib_string", "primitive_type", "type_identifier",
+		"storage_class_specifier", "type_qualifier", "sized_type_specifier",
 		"string_content", "escape_sequence", "comment":
 		return true
 	default:

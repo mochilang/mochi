@@ -2,7 +2,7 @@
 
 Generated files for C programs live under `tests/aster/x/c`.
 
-Last updated: 2025-07-31 15:31 GMT+7
+Last updated: 2025-07-31 20:46 GMT+7
 
 ## Golden Test Checklist (25/25)
 - [x] append_builtin.c

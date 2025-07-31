@@ -64,6 +64,10 @@
         "kind": "declaration",
         "children": [
           {
+            "kind": "storage_class_specifier",
+            "text": "static"
+          },
+          {
             "kind": "primitive_type",
             "text": "int"
           },
@@ -84,8 +88,15 @@
       },
       {
         "kind": "declaration",
-        "text": "static long long now_seed = 0;",
         "children": [
+          {
+            "kind": "storage_class_specifier",
+            "text": "static"
+          },
+          {
+            "kind": "sized_type_specifier",
+            "text": "long long"
+          },
           {
             "kind": "init_declarator",
             "children": [
@@ -103,8 +114,15 @@
       },
       {
         "kind": "function_definition",
-        "text": "static long long _now(void) {\n    if (!seeded_now) {\n        const char *s = getenv(\"MOCHI_NOW_SEED\");\n        if (s \u0026\u0026 *s) {\n            now_seed = atoll(s);\n            seeded_now = 1;\n        }\n    }\n    if (seeded_now) {\n        now_seed = (now_seed * 1664525 + 1013904223) % 2147483647;\n        return now_seed;\n    }\n    struct timespec ts;\n    clock_gettime(CLOCK_REALTIME, \u0026ts);\n    return (long long)(ts.tv_sec * 1000000000LL + ts.tv_nsec);\n}",
         "children": [
+          {
+            "kind": "storage_class_specifier",
+            "text": "static"
+          },
+          {
+            "kind": "sized_type_specifier",
+            "text": "long long"
+          },
           {
             "kind": "function_declarator",
             "children": [
@@ -155,6 +173,10 @@
                       {
                         "kind": "declaration",
                         "children": [
+                          {
+                            "kind": "type_qualifier",
+                            "text": "const"
+                          },
                           {
                             "kind": "primitive_type",
                             "text": "char"
@@ -429,6 +451,15 @@
                     "kind": "cast_expression",
                     "children": [
                       {
+                        "kind": "type_descriptor",
+                        "children": [
+                          {
+                            "kind": "sized_type_specifier",
+                            "text": "long long"
+                          }
+                        ]
+                      },
+                      {
                         "kind": "parenthesized_expression",
                         "children": [
                           {
@@ -485,8 +516,15 @@
       },
       {
         "kind": "function_definition",
-        "text": "static long long _mem(void) {\n    struct mallinfo mi = mallinfo();\n    return (long long)mi.uordblks;\n}",
         "children": [
+          {
+            "kind": "storage_class_specifier",
+            "text": "static"
+          },
+          {
+            "kind": "sized_type_specifier",
+            "text": "long long"
+          },
           {
             "kind": "function_declarator",
             "children": [
@@ -552,6 +590,15 @@
                     "kind": "cast_expression",
                     "children": [
                       {
+                        "kind": "type_descriptor",
+                        "children": [
+                          {
+                            "kind": "sized_type_specifier",
+                            "text": "long long"
+                          }
+                        ]
+                      },
+                      {
                         "kind": "field_expression",
                         "children": [
                           {
@@ -610,8 +657,11 @@
                 "children": [
                   {
                     "kind": "declaration",
-                    "text": "long long __start = _now();",
                     "children": [
+                      {
+                        "kind": "sized_type_specifier",
+                        "text": "long long"
+                      },
                       {
                         "kind": "init_declarator",
                         "children": [
@@ -634,8 +684,11 @@
                   },
                   {
                     "kind": "declaration",
-                    "text": "long long __mem_start = _mem();",
                     "children": [
+                      {
+                        "kind": "sized_type_specifier",
+                        "text": "long long"
+                      },
                       {
                         "kind": "init_declarator",
                         "children": [
@@ -787,8 +840,11 @@
                   },
                   {
                     "kind": "declaration",
-                    "text": "long long __end = _now();",
                     "children": [
+                      {
+                        "kind": "sized_type_specifier",
+                        "text": "long long"
+                      },
                       {
                         "kind": "init_declarator",
                         "children": [
@@ -811,8 +867,11 @@
                   },
                   {
                     "kind": "declaration",
-                    "text": "long long __mem_end = _mem();",
                     "children": [
+                      {
+                        "kind": "sized_type_specifier",
+                        "text": "long long"
+                      },
                       {
                         "kind": "init_declarator",
                         "children": [
@@ -835,8 +894,11 @@
                   },
                   {
                     "kind": "declaration",
-                    "text": "long long __dur_us = (__end - __start) / 1000;",
                     "children": [
+                      {
+                        "kind": "sized_type_specifier",
+                        "text": "long long"
+                      },
                       {
                         "kind": "init_declarator",
                         "children": [
@@ -879,8 +941,11 @@
                   },
                   {
                     "kind": "declaration",
-                    "text": "long long __mem_bytes = __mem_end - __mem_start;",
                     "children": [
+                      {
+                        "kind": "sized_type_specifier",
+                        "text": "long long"
+                      },
                       {
                         "kind": "init_declarator",
                         "children": [

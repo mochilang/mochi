@@ -5,17 +5,17 @@
 #include <malloc.h>
 #include <time.h>
 #include <stdlib.h>
-int seeded_now = 0;
-static long long now_seed = 0;;
+static int seeded_now = 0;
+static long long now_seed = 0;
 static long long _now(void) {
-    if (!seeded_now) {
+    if ((!seeded_now)) {
         const char *s = getenv("MOCHI_NOW_SEED");
-        if (s && *s) {
+        if ((s && *s)) {
             now_seed = atoll(s);
             seeded_now = 1;
         }
     }
-    if (seeded_now) {
+    if ((seeded_now)) {
         now_seed = (now_seed * 1664525 + 1013904223) % 2147483647;
         return now_seed;
     }
@@ -29,17 +29,17 @@ static long long _mem(void) {
 }
 int main(void) {
     {
-        long long __start = _now();;
-        long long __mem_start = _mem();;
+        long long __start = _now();
+        long long __mem_start = _mem();
         int n = 1000;
         int s = 0;
         for (int i = 1; i < n; i++) {
             s = s + i;
         }
-        long long __end = _now();;
-        long long __mem_end = _mem();;
-        long long __dur_us = (__end - __start) / 1000;;
-        long long __mem_bytes = __mem_end - __mem_start;;
+        long long __end = _now();
+        long long __mem_end = _mem();
+        long long __dur_us = (__end - __start) / 1000;
+        long long __mem_bytes = __mem_end - __mem_start;
         printf("{\n  \"duration_us\": %-lld,\n  \"memory_bytes\": %-lld,\n  \"name\": \"simple\"\n}\n", __dur_us, __mem_bytes);
     }
     return 0;
