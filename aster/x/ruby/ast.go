@@ -109,6 +109,8 @@ func convert(n *sitter.Node, src []byte, pos bool) *Node {
 	if n.NamedChildCount() == 0 {
 		if isValueNode(n.Kind()) {
 			node.Text = string(src[n.StartByte():n.EndByte()])
+		} else if keepEmptyNode(n.Kind()) {
+			node.Text = string(src[n.StartByte():n.EndByte()])
 		} else {
 			return nil
 		}
@@ -131,6 +133,19 @@ func isValueNode(kind string) bool {
 	switch kind {
 	case "identifier", "constant", "integer", "string", "string_content",
 		"hash_key_symbol", "simple_symbol", "true", "false", "comment":
+		return true
+	default:
+		return false
+	}
+}
+
+// keepEmptyNode reports whether nodes with the given kind should be retained
+// even when they have no children and no textual content. This is required for
+// constructs like empty arrays so the printer can faithfully reconstruct the
+// source code.
+func keepEmptyNode(kind string) bool {
+	switch kind {
+	case "array", "argument_list", "method_parameters", "block_parameters":
 		return true
 	default:
 		return false
