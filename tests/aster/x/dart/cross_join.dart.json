@@ -20,6 +20,10 @@
                 "kind": "declaration",
                 "children": [
                   {
+                    "kind": "final_builtin",
+                    "text": "final"
+                  },
+                  {
                     "kind": "type_identifier",
                     "text": "int"
                   },
@@ -42,6 +46,10 @@
               {
                 "kind": "declaration",
                 "children": [
+                  {
+                    "kind": "final_builtin",
+                    "text": "final"
+                  },
                   {
                     "kind": "type_identifier",
                     "text": "String"
@@ -69,6 +77,10 @@
                     "kind": "constant_constructor_signature",
                     "children": [
                       {
+                        "kind": "const_builtin",
+                        "text": "const"
+                      },
+                      {
                         "kind": "identifier",
                         "text": "Customer"
                       },
@@ -85,6 +97,10 @@
                                     "kind": "constructor_param",
                                     "children": [
                                       {
+                                        "kind": "this",
+                                        "text": "this"
+                                      },
+                                      {
                                         "kind": "identifier",
                                         "text": "id"
                                       }
@@ -98,6 +114,10 @@
                                   {
                                     "kind": "constructor_param",
                                     "children": [
+                                      {
+                                        "kind": "this",
+                                        "text": "this"
+                                      },
                                       {
                                         "kind": "identifier",
                                         "text": "name"
@@ -132,6 +152,10 @@
                 "kind": "declaration",
                 "children": [
                   {
+                    "kind": "final_builtin",
+                    "text": "final"
+                  },
+                  {
                     "kind": "type_identifier",
                     "text": "int"
                   },
@@ -155,6 +179,10 @@
                 "kind": "declaration",
                 "children": [
                   {
+                    "kind": "final_builtin",
+                    "text": "final"
+                  },
+                  {
                     "kind": "type_identifier",
                     "text": "int"
                   },
@@ -177,6 +205,10 @@
               {
                 "kind": "declaration",
                 "children": [
+                  {
+                    "kind": "final_builtin",
+                    "text": "final"
+                  },
                   {
                     "kind": "type_identifier",
                     "text": "int"
@@ -204,6 +236,10 @@
                     "kind": "constant_constructor_signature",
                     "children": [
                       {
+                        "kind": "const_builtin",
+                        "text": "const"
+                      },
+                      {
                         "kind": "identifier",
                         "text": "Order"
                       },
@@ -220,6 +256,10 @@
                                     "kind": "constructor_param",
                                     "children": [
                                       {
+                                        "kind": "this",
+                                        "text": "this"
+                                      },
+                                      {
                                         "kind": "identifier",
                                         "text": "id"
                                       }
@@ -234,6 +274,10 @@
                                     "kind": "constructor_param",
                                     "children": [
                                       {
+                                        "kind": "this",
+                                        "text": "this"
+                                      },
+                                      {
                                         "kind": "identifier",
                                         "text": "customerId"
                                       }
@@ -247,6 +291,10 @@
                                   {
                                     "kind": "constructor_param",
                                     "children": [
+                                      {
+                                        "kind": "this",
+                                        "text": "this"
+                                      },
                                       {
                                         "kind": "identifier",
                                         "text": "total"
@@ -281,6 +329,10 @@
                 "kind": "declaration",
                 "children": [
                   {
+                    "kind": "final_builtin",
+                    "text": "final"
+                  },
+                  {
                     "kind": "type_identifier",
                     "text": "int"
                   },
@@ -303,6 +355,10 @@
               {
                 "kind": "declaration",
                 "children": [
+                  {
+                    "kind": "final_builtin",
+                    "text": "final"
+                  },
                   {
                     "kind": "type_identifier",
                     "text": "int"
@@ -327,6 +383,10 @@
                 "kind": "declaration",
                 "children": [
                   {
+                    "kind": "final_builtin",
+                    "text": "final"
+                  },
+                  {
                     "kind": "type_identifier",
                     "text": "String"
                   },
@@ -349,6 +409,10 @@
               {
                 "kind": "declaration",
                 "children": [
+                  {
+                    "kind": "final_builtin",
+                    "text": "final"
+                  },
                   {
                     "kind": "type_identifier",
                     "text": "int"
@@ -376,6 +440,10 @@
                     "kind": "constant_constructor_signature",
                     "children": [
                       {
+                        "kind": "const_builtin",
+                        "text": "const"
+                      },
+                      {
                         "kind": "identifier",
                         "text": "Result"
                       },
@@ -392,6 +460,10 @@
                                     "kind": "constructor_param",
                                     "children": [
                                       {
+                                        "kind": "this",
+                                        "text": "this"
+                                      },
+                                      {
                                         "kind": "identifier",
                                         "text": "orderId"
                                       }
@@ -405,6 +477,10 @@
                                   {
                                     "kind": "constructor_param",
                                     "children": [
+                                      {
+                                        "kind": "this",
+                                        "text": "this"
+                                      },
                                       {
                                         "kind": "identifier",
                                         "text": "orderCustomerId"
@@ -420,6 +496,10 @@
                                     "kind": "constructor_param",
                                     "children": [
                                       {
+                                        "kind": "this",
+                                        "text": "this"
+                                      },
+                                      {
                                         "kind": "identifier",
                                         "text": "pairedCustomerName"
                                       }
@@ -433,6 +513,10 @@
                                   {
                                     "kind": "constructor_param",
                                     "children": [
+                                      {
+                                        "kind": "this",
+                                        "text": "this"
+                                      },
                                       {
                                         "kind": "identifier",
                                         "text": "orderTotal"
@@ -457,6 +541,10 @@
         "kind": "function_signature",
         "children": [
           {
+            "kind": "void_type",
+            "text": "void"
+          },
+          {
             "kind": "identifier",
             "text": "main"
           }
@@ -474,6 +562,10 @@
                   {
                     "kind": "initialized_variable_definition",
                     "children": [
+                      {
+                        "kind": "final_builtin",
+                        "text": "final"
+                      },
                       {
                         "kind": "type_identifier",
                         "text": "List"
@@ -671,6 +763,10 @@
                   {
                     "kind": "initialized_variable_definition",
                     "children": [
+                      {
+                        "kind": "final_builtin",
+                        "text": "final"
+                      },
                       {
                         "kind": "type_identifier",
                         "text": "List"
@@ -923,6 +1019,10 @@
                     "kind": "initialized_variable_definition",
                     "children": [
                       {
+                        "kind": "final_builtin",
+                        "text": "final"
+                      },
+                      {
                         "kind": "type_identifier",
                         "text": "List"
                       },
@@ -949,6 +1049,10 @@
                                 "kind": "for_loop_parts",
                                 "children": [
                                   {
+                                    "kind": "inferred_type",
+                                    "text": "var"
+                                  },
+                                  {
                                     "kind": "identifier",
                                     "text": "o"
                                   },
@@ -964,6 +1068,10 @@
                                   {
                                     "kind": "for_loop_parts",
                                     "children": [
+                                      {
+                                        "kind": "inferred_type",
+                                        "text": "var"
+                                      },
                                       {
                                         "kind": "identifier",
                                         "text": "c"
@@ -1170,6 +1278,10 @@
                   {
                     "kind": "for_loop_parts",
                     "children": [
+                      {
+                        "kind": "inferred_type",
+                        "text": "var"
+                      },
                       {
                         "kind": "identifier",
                         "text": "entry"
