@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (304/491)
-_Last updated: 2025-07-31 01:08 +0700_
+## Golden Test Checklist (311/491)
+_Last updated: 2025-07-31 08:01 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -490,11 +490,11 @@ _Last updated: 2025-07-31 01:08 +0700_
 | 481 | gui-enabling-disabling-of-controls | ✓ | 5µs | 8.7 MB |
 | 482 | gui-maximum-window-dimensions | ✓ | 4µs | 8.7 MB |
 | 483 | http |   |  |  |
-| 484 | image-noise |   |  |  |
-| 485 | loops-increment-loop-index-within-loop-body |   |  |  |
-| 486 | md5 |   |  |  |
-| 487 | nim-game |   |  |  |
-| 488 | plasma-effect |   |  |  |
-| 489 | sorting-algorithms-bubble-sort |   |  |  |
-| 490 | window-management |   |  |  |
-| 491 | zumkeller-numbers |   |  |  |
+| 484 | image-noise | ✓ | 364µs | 8.7 MB |
+| 485 | loops-increment-loop-index-within-loop-body | ✓ | 1.532ms | 8.7 MB |
+| 486 | md5 | ✓ | 52µs | 8.9 MB |
+| 487 | nim-game | ✓ | 9µs | 8.7 MB |
+| 488 | plasma-effect | error |  |  |
+| 489 | sorting-algorithms-bubble-sort | ✓ | 6µs | 8.7 MB |
+| 490 | window-management | ✓ | 5µs | 8.7 MB |
+| 491 | zumkeller-numbers | ✓ | 38.459ms | 8.8 MB |
