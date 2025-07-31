@@ -100,8 +100,10 @@ func TestPrint_Golden(t *testing.T) {
 				t.Fatalf("print: %v", err)
 			}
 			outPath := filepath.Join(outDir, name+".cpp")
-			if err := os.WriteFile(outPath, []byte(out), 0o644); err != nil {
-				t.Fatalf("write out: %v", err)
+			if shouldUpdate() {
+				if err := os.WriteFile(outPath, []byte(out), 0o644); err != nil {
+					t.Fatalf("write out: %v", err)
+				}
 			}
 			bin := filepath.Join(outDir, name)
 			if outb, err := exec.Command("g++", outPath, "-std=c++20", "-o", bin).CombinedOutput(); err != nil {
@@ -122,8 +124,10 @@ func TestPrint_Golden(t *testing.T) {
 				t.Fatalf("run original: %v\n%s", err, want)
 			}
 			outFile := filepath.Join(outDir, name+".out")
-			if err := os.WriteFile(outFile, got, 0o644); err != nil {
-				t.Fatalf("write out file: %v", err)
+			if shouldUpdate() {
+				if err := os.WriteFile(outFile, got, 0o644); err != nil {
+					t.Fatalf("write out file: %v", err)
+				}
 			}
 			if string(got) != string(want) {
 				t.Fatalf("output mismatch\n--- got ---\n%s\n--- want ---\n%s", got, want)

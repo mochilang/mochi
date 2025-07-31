@@ -188,6 +188,7 @@
                   },
                   {
                     "kind": "update_expression",
+                    "text": "post++",
                     "children": [
                       {
                         "kind": "identifier",
@@ -254,6 +255,7 @@
                           },
                           {
                             "kind": "update_expression",
+                            "text": "post++",
                             "children": [
                               {
                                 "kind": "identifier",
