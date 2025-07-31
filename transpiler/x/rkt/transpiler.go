@@ -1072,6 +1072,25 @@ func exprIsInt(e Expr, env *types.Env) bool {
 	return false
 }
 
+// heuristicInt returns true if the expression appears to represent an
+// integer value based purely on its syntax. It does not consult the
+// type environment so it can make a best-effort guess for local
+// variables that are not present in env.
+func heuristicInt(e Expr) bool {
+	switch v := e.(type) {
+	case *IntLit:
+		return true
+	case *Name:
+		return true
+	case *BinaryExpr:
+		switch v.Op {
+		case "quotient", "modulo", "+", "-", "*":
+			return heuristicInt(v.Left) && heuristicInt(v.Right)
+		}
+	}
+	return false
+}
+
 // plusOne checks if e represents start + 1 where start is the same expression
 // as the provided start parameter. It handles simple cases produced by the
 // parser for slice boundaries.
@@ -2282,10 +2301,14 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 			op = "or"
 		}
 		if op == "/" {
-			ltInt := exprIsInt(currLeft, env)
+			ltInt := exprIsInt(currLeft, env) || heuristicInt(currLeft)
 			rt := types.TypeOfPostfix(part.Right, env)
 			rtInt := types.IsIntType(rt) || types.IsInt64Type(rt) || types.IsBigIntType(rt)
-			if ltInt && rtInt {
+			if types.IsFloatType(leftType) || types.IsFloatType(rt) {
+				op = "/"
+			} else if lt := leftType; (types.IsIntType(lt) || types.IsInt64Type(lt) || types.IsBigIntType(lt)) && rtInt {
+				op = "quotient"
+			} else if ltInt && (rtInt || heuristicInt(right)) {
 				op = "quotient"
 			} else {
 				lt := leftType
