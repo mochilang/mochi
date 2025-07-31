@@ -2,7 +2,7 @@
 
 This directory holds golden files for the Rust AST printer used in tests.
 
-## Generated Samples (20/20)
+## Generated Samples (25/25)
 
 1. [x] append_builtin.rs
 2. [x] avg_builtin.rs
@@ -23,6 +23,11 @@ This directory holds golden files for the Rust AST printer used in tests.
 17. [x] exists_builtin.rs
 18. [x] for_list_collection.rs
 19. [x] for_loop.rs
-20. [x] two-sum.rs
+20. [x] for_map_collection.rs
+21. [x] fun_call.rs
+22. [x] fun_expr_in_let.rs
+23. [x] fun_three_args.rs
+24. [x] go_auto.rs
+25. [x] group_by.rs
 
-Updated: 2025-07-31 15:49 GMT+7
+Updated: 2025-07-31 18:17 GMT+7
