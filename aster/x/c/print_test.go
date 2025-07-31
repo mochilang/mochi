@@ -32,14 +32,9 @@ func TestPrint_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
-	var selected []string
-	for _, f := range files {
-		base := filepath.Base(f)
-		if base == "two-sum.c" || base == "cross_join.c" || base == "while_loop.c" {
-			selected = append(selected, f)
-		}
+	if len(files) > 5 {
+		files = files[:5]
 	}
-	files = selected
 
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".c")
@@ -87,7 +82,9 @@ func TestPrint_Golden(t *testing.T) {
 			if outc, err := exec.Command("gcc", outPath, "-o", bin).CombinedOutput(); err != nil {
 				t.Fatalf("compile printed: %v\n%s", err, outc)
 			}
-			got, err := exec.Command(bin).CombinedOutput()
+			cmd := exec.Command(bin)
+			cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+			got, err := cmd.CombinedOutput()
 			if err != nil {
 				t.Fatalf("run printed: %v\n%s", err, got)
 			}
@@ -96,7 +93,9 @@ func TestPrint_Golden(t *testing.T) {
 			if outc, err := exec.Command("gcc", src, "-o", bin2).CombinedOutput(); err != nil {
 				t.Fatalf("compile original: %v\n%s", err, outc)
 			}
-			want, err := exec.Command(bin2).CombinedOutput()
+			cmd2 := exec.Command(bin2)
+			cmd2.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+			want, err := cmd2.CombinedOutput()
 			if err != nil {
 				t.Fatalf("run original: %v\n%s", err, want)
 			}

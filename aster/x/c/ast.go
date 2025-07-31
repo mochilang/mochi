@@ -114,6 +114,17 @@ func convert(n *sitter.Node, src []byte, pos bool) *Node {
 		}
 	}
 
+	switch node.Kind {
+	case "declaration":
+		if len(node.Children) == 1 && node.Children[0].Kind == "init_declarator" {
+			node.Text = n.Utf8Text(src)
+		}
+	case "function_definition":
+		if len(node.Children) < 3 {
+			node.Text = n.Utf8Text(src)
+		}
+	}
+
 	if len(node.Children) == 0 && node.Text == "" {
 		return nil
 	}

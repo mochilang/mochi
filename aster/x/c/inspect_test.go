@@ -54,14 +54,9 @@ func TestInspectGolden(t *testing.T) {
 	}
 	sort.Strings(files)
 
-	var selected []string
-	for _, f := range files {
-		base := filepath.Base(f)
-		if base == "two-sum.c" || base == "print_hello.c" {
-			selected = append(selected, f)
-		}
+	if len(files) > 5 {
+		files = files[:5]
 	}
-	files = selected
 
 	for _, path := range files {
 		name := strings.TrimSuffix(filepath.Base(path), ".c")
