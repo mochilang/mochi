@@ -99,8 +99,17 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 		return node
 	}
 
-	for i := uint(0); i < n.NamedChildCount(); i++ {
-		child := convert(n.NamedChild(i), src, opt)
+	for i := uint(0); i < n.ChildCount(); i++ {
+		c := n.Child(i)
+		if !c.IsNamed() {
+			kind := c.Kind()
+			if kind == "hiding" {
+				node.Children = append(node.Children, Node{Kind: kind, Text: c.Utf8Text(src)})
+				continue
+			}
+			continue
+		}
+		child := convert(c, src, opt)
 		if child != nil {
 			node.Children = append(node.Children, *child)
 		}
