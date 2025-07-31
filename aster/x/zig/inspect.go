@@ -13,6 +13,7 @@ import (
 
 // Program describes a parsed Zig source file.
 type Program struct {
+	Path string      `json:"path,omitempty"`
 	Root *SourceFile `json:"root"`
 }
 
@@ -47,5 +48,10 @@ func InspectFile(path string, opts ...Options) (*Program, error) {
 	if err != nil {
 		return nil, err
 	}
-	return Inspect(string(data), opts...)
+	prog, err := Inspect(string(data), opts...)
+	if err != nil {
+		return nil, err
+	}
+	prog.Path = path
+	return prog, nil
 }
