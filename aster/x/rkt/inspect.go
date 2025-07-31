@@ -13,6 +13,7 @@ import (
 type Program struct {
 	Root   *ProgramNode `json:"root"`
 	Source string       `json:"source,omitempty"`
+	Lang   string       `json:"lang,omitempty"`
 }
 
 // MarshalJSON implements json.Marshaler for Program to ensure stable output order.
@@ -47,6 +48,14 @@ func Inspect(src string, opts ...Options) (*Program, error) {
 	}
 	if opt.Source {
 		prog.Source = src
+	}
+	if prog.Root != nil {
+		for _, c := range prog.Root.Children {
+			if c.Kind == "extension" && len(c.Children) > 0 {
+				prog.Lang = c.Children[0].Text
+				break
+			}
+		}
 	}
 	return prog, nil
 }

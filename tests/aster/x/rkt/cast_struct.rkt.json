@@ -63,7 +63,7 @@
         "kind": "list",
         "start": 5,
         "end": 5,
-        "endCol": 21,
+        "endCol": 33,
         "children": [
           {
             "kind": "symbol",
@@ -75,42 +75,42 @@
           },
           {
             "kind": "symbol",
-            "text": "a",
+            "text": "todo",
             "start": 5,
             "end": 5,
             "startCol": 8,
-            "endCol": 9
+            "endCol": 12
           },
           {
             "kind": "list",
             "start": 5,
             "end": 5,
-            "startCol": 10,
-            "endCol": 20,
+            "startCol": 13,
+            "endCol": 32,
             "children": [
               {
                 "kind": "symbol",
-                "text": "list",
+                "text": "hash",
                 "start": 5,
                 "end": 5,
-                "startCol": 11,
-                "endCol": 15
+                "startCol": 14,
+                "endCol": 18
               },
               {
-                "kind": "number",
-                "text": "1",
+                "kind": "string",
+                "text": "\"title\"",
                 "start": 5,
                 "end": 5,
-                "startCol": 16,
-                "endCol": 17
+                "startCol": 19,
+                "endCol": 26
               },
               {
-                "kind": "number",
-                "text": "2",
+                "kind": "string",
+                "text": "\"hi\"",
                 "start": 5,
                 "end": 5,
-                "startCol": 18,
-                "endCol": 19
+                "startCol": 27,
+                "endCol": 31
               }
             ]
           }
@@ -120,7 +120,7 @@
         "kind": "list",
         "start": 6,
         "end": 6,
-        "endCol": 31,
+        "endCol": 35,
         "children": [
           {
             "kind": "symbol",
@@ -135,48 +135,31 @@
             "start": 6,
             "end": 6,
             "startCol": 11,
-            "endCol": 30,
+            "endCol": 34,
             "children": [
               {
                 "kind": "symbol",
-                "text": "append",
+                "text": "hash-ref",
                 "start": 6,
                 "end": 6,
                 "startCol": 12,
-                "endCol": 18
-              },
-              {
-                "kind": "symbol",
-                "text": "a",
-                "start": 6,
-                "end": 6,
-                "startCol": 19,
                 "endCol": 20
               },
               {
-                "kind": "list",
+                "kind": "symbol",
+                "text": "todo",
                 "start": 6,
                 "end": 6,
                 "startCol": 21,
-                "endCol": 29,
-                "children": [
-                  {
-                    "kind": "symbol",
-                    "text": "list",
-                    "start": 6,
-                    "end": 6,
-                    "startCol": 22,
-                    "endCol": 26
-                  },
-                  {
-                    "kind": "number",
-                    "text": "3",
-                    "start": 6,
-                    "end": 6,
-                    "startCol": 27,
-                    "endCol": 28
-                  }
-                ]
+                "endCol": 25
+              },
+              {
+                "kind": "string",
+                "text": "\"title\"",
+                "start": 6,
+                "end": 6,
+                "startCol": 26,
+                "endCol": 33
               }
             ]
           }
