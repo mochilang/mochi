@@ -49,12 +49,18 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 	case "struct_item":
 		b.WriteString(ind)
 		b.WriteString("struct ")
-		if len(n.Children) > 0 {
-			writeExpr(b, n.Children[0], indent)
+		idx := 0
+		if len(n.Children) > idx {
+			writeExpr(b, n.Children[idx], indent)
+			idx++
+		}
+		if idx < len(n.Children) && n.Children[idx].Kind == "type_parameters" {
+			writeExpr(b, n.Children[idx], indent)
+			idx++
 		}
 		b.WriteString(" {\n")
-		if len(n.Children) > 1 {
-			for _, f := range n.Children[1].Children {
+		if idx < len(n.Children) {
+			for _, f := range n.Children[idx].Children {
 				b.WriteString(strings.Repeat("    ", indent+1))
 				writeFieldDecl(b, f)
 				b.WriteByte('\n')
@@ -309,13 +315,14 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			}
 		}
 	case "closure_expression":
-		if len(n.Children) >= 1 {
+		idx := 0
+		if len(n.Children) > 0 && n.Children[0].Kind == "closure_parameters" {
 			writeExpr(b, n.Children[0], indent)
+			idx = 1
 		} else {
 			b.WriteString("||")
 		}
-		idx := 1
-		if idx < len(n.Children) && n.Children[idx].Kind == "type" {
+		if len(n.Children)-idx >= 2 {
 			b.WriteString(" -> ")
 			writeExpr(b, n.Children[idx], indent)
 			idx++
@@ -352,8 +359,28 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 				writeTypeArguments(b, n.Children[1])
 			}
 		}
+	case "generic_type_with_turbofish":
+		if len(n.Children) >= 1 {
+			writeExpr(b, n.Children[0], indent)
+			if len(n.Children) > 1 {
+				b.WriteString("::<")
+				for i, c := range n.Children[1].Children {
+					if i > 0 {
+						b.WriteString(", ")
+					}
+					writeExpr(b, c, indent)
+				}
+				b.WriteByte('>')
+			}
+		}
 	case "type_arguments":
 		writeTypeArguments(b, n)
+	case "type_parameters":
+		writeTypeParameters(b, n)
+	case "type_parameter":
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+		}
 	case "range_expression":
 		switch len(n.Children) {
 		case 1:
@@ -606,6 +633,17 @@ func writeArguments(b *bytes.Buffer, n *Node, indent int) {
 }
 
 func writeTypeArguments(b *bytes.Buffer, n *Node) {
+	b.WriteByte('<')
+	for i, c := range n.Children {
+		if i > 0 {
+			b.WriteString(", ")
+		}
+		writeExpr(b, c, 0)
+	}
+	b.WriteByte('>')
+}
+
+func writeTypeParameters(b *bytes.Buffer, n *Node) {
 	b.WriteByte('<')
 	for i, c := range n.Children {
 		if i > 0 {
