@@ -18,8 +18,23 @@ The printer is validated against selected programs under `tests/transpiler/x/sca
 - [x] 8. cast_struct.scala
 - [x] 9. closure.scala
 - [x] 10. count_builtin.scala
+- [x] 11. cross_join.scala
+- [x] 12. cross_join_filter.scala
+- [x] 13. cross_join_triple.scala
+- [x] 14. dataset_sort_take_limit.scala
+- [x] 15. dataset_where_filter.scala
+- [x] 16. exists_builtin.scala
+- [x] 17. for_list_collection.scala
+- [x] 18. for_loop.scala
+- [x] 19. for_map_collection.scala
+- [x] 20. fun_call.scala
+- [x] 21. fun_expr_in_let.scala
+- [x] 22. fun_three_args.scala
+- [x] 23. go_auto.scala
+- [x] 24. group_by.scala
+- [x] 25. group_by_conditional_sum.scala
 
-Completed 10 / 100 examples.
+Completed 25 / 100 examples.
 
-_Last updated: 2025-07-31 15:33_ GMT+7
+_Last updated: 2025-07-31 18:19_ GMT+7
 
