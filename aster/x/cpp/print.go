@@ -268,7 +268,10 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, n.Children[0], indent)
 		}
 	case "binary_expression":
-		op := detectOperator(n)
+		op := strings.TrimSpace(n.Text)
+		if op == "" {
+			op = detectOperator(n)
+		}
 		writeBinaryOp(b, n, indent, op)
 	case "update_expression":
 		if len(n.Children) > 0 {
