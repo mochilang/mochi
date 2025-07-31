@@ -38,6 +38,8 @@ func repoRoot(t *testing.T) string {
 func TestInspect_Golden(t *testing.T) {
 	root := repoRoot(t)
 	srcDir := filepath.Join(root, "tests", "transpiler", "x", "scala")
+	// Golden files are stored under tests/aster/x/scala rather than
+	// tests/json-ast/x/scala.
 	outDir := filepath.Join(root, "tests", "aster", "x", "scala")
 	os.MkdirAll(outDir, 0o755)
 

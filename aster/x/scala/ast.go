@@ -1,6 +1,8 @@
 package scala
 
 import (
+	"encoding/json"
+
 	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
@@ -21,35 +23,52 @@ type Node struct {
 // that appear in the golden tests are declared here so the resulting Program
 // exposes a more structured API without embedding the full grammar.
 type (
-	CompilationUnit    struct{ Node }
-	Comment            struct{ Node }
-	ImportDeclaration  struct{ Node }
-	NamespaceSelectors struct{ Node }
-	ObjectDefinition   struct{ Node }
-	TemplateBody       struct{ Node }
-	FunctionDefinition struct{ Node }
-	Parameters         struct{ Node }
-	Parameter          struct{ Node }
-	GenericType        struct{ Node }
-	TypeArguments      struct{ Node }
-	TypeIdentifier     struct{ Node }
-	Identifier         struct{ Node }
-	CallExpression     struct{ Node }
-	Arguments          struct{ Node }
-	Block              struct{ Node }
-	String             struct{ Node }
-	IntegerLiteral     struct{ Node }
+	CompilationUnit         struct{ Node }
+	Comment                 struct{ Node }
+	ImportDeclaration       struct{ Node }
+	NamespaceSelectors      struct{ Node }
+	ObjectDefinition        struct{ Node }
+	TemplateBody            struct{ Node }
+	FunctionDefinition      struct{ Node }
+	Parameters              struct{ Node }
+	Parameter               struct{ Node }
+	GenericType             struct{ Node }
+	TypeArguments           struct{ Node }
+	TypeIdentifier          struct{ Node }
+	Identifier              struct{ Node }
+	CallExpression          struct{ Node }
+	Arguments               struct{ Node }
+	Block                   struct{ Node }
+	String                  struct{ Node }
+	IntegerLiteral          struct{ Node }
+	Enumerator              struct{ Node }
+	Enumerators             struct{ Node }
+	FieldExpression         struct{ Node }
+	ForExpression           struct{ Node }
+	IfExpression            struct{ Node }
+	InfixExpression         struct{ Node }
+	ParenthesizedExpression struct{ Node }
+	ReturnExpression        struct{ Node }
+	ValDefinition           struct{ Node }
 )
 
 // Option controls how the AST is generated.
-type Option struct {
-	// WithPositions requests inclusion of positional information when true.
-	WithPositions bool
+// Options configure how the AST is generated.
+type Options struct {
+	// Positions controls whether location information should be populated.
+	Positions bool
 }
 
 // Program wraps a parsed Scala file for JSON serialization.
+// Program represents a parsed Scala source file.
 type Program struct {
-	Root CompilationUnit `json:"root"`
+	Root *CompilationUnit `json:"root"`
+}
+
+// MarshalJSON implements json.Marshaler for Program to ensure stable output.
+func (p *Program) MarshalJSON() ([]byte, error) {
+	type Alias Program
+	return json.Marshal(&struct{ *Alias }{Alias: (*Alias)(p)})
 }
 
 // convert transforms a tree-sitter node into our Node representation.  Non-value
