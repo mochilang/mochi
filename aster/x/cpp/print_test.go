@@ -59,7 +59,8 @@ func TestPrint_Golden(t *testing.T) {
 	sort.Strings(files)
 	var selected []string
 	for _, f := range files {
-		if filepath.Base(f) == "two-sum.cpp" {
+		base := filepath.Base(f)
+		if base == "two-sum.cpp" || strings.HasPrefix(base, "cross_join") {
 			selected = append(selected, f)
 		}
 	}
