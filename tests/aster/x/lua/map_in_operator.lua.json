@@ -1,0 +1,252 @@
+{
+  "root": {
+    "kind": "chunk",
+    "start": 1,
+    "end": 7,
+    "children": [
+      {
+        "kind": "assignment_statement",
+        "start": 2,
+        "end": 2,
+        "endCol": 26,
+        "children": [
+          {
+            "kind": "variable_list",
+            "start": 2,
+            "end": 2,
+            "endCol": 1,
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "m",
+                "start": 2,
+                "end": 2,
+                "endCol": 1
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "start": 2,
+            "startCol": 4,
+            "end": 2,
+            "endCol": 26,
+            "children": [
+              {
+                "kind": "table_constructor",
+                "start": 2,
+                "startCol": 4,
+                "end": 2,
+                "endCol": 26,
+                "children": [
+                  {
+                    "kind": "field",
+                    "start": 2,
+                    "startCol": 5,
+                    "end": 2,
+                    "endCol": 14,
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "1",
+                        "start": 2,
+                        "startCol": 6,
+                        "end": 2,
+                        "endCol": 7
+                      },
+                      {
+                        "kind": "string",
+                        "text": "\"a\"",
+                        "start": 2,
+                        "startCol": 11,
+                        "end": 2,
+                        "endCol": 14
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "start": 2,
+                    "startCol": 16,
+                    "end": 2,
+                    "endCol": 25,
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "2",
+                        "start": 2,
+                        "startCol": 17,
+                        "end": 2,
+                        "endCol": 18
+                      },
+                      {
+                        "kind": "string",
+                        "text": "\"b\"",
+                        "start": 2,
+                        "startCol": 22,
+                        "end": 2,
+                        "endCol": 25
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "start": 4,
+        "end": 4,
+        "endCol": 20,
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print",
+            "start": 4,
+            "end": 4,
+            "endCol": 5
+          },
+          {
+            "kind": "arguments",
+            "start": 4,
+            "startCol": 5,
+            "end": 4,
+            "endCol": 20,
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "start": 4,
+                "startCol": 6,
+                "end": 4,
+                "endCol": 19,
+                "children": [
+                  {
+                    "kind": "binary_expression",
+                    "text": "~=",
+                    "start": 4,
+                    "startCol": 7,
+                    "end": 4,
+                    "endCol": 18,
+                    "children": [
+                      {
+                        "kind": "bracket_index_expression",
+                        "start": 4,
+                        "startCol": 7,
+                        "end": 4,
+                        "endCol": 11,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "m",
+                            "start": 4,
+                            "startCol": 7,
+                            "end": 4,
+                            "endCol": 8
+                          },
+                          {
+                            "kind": "number",
+                            "text": "1",
+                            "start": 4,
+                            "startCol": 9,
+                            "end": 4,
+                            "endCol": 10
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "nil",
+                        "text": "nil",
+                        "start": 4,
+                        "startCol": 15,
+                        "end": 4,
+                        "endCol": 18
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "start": 6,
+        "end": 6,
+        "endCol": 20,
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print",
+            "start": 6,
+            "end": 6,
+            "endCol": 5
+          },
+          {
+            "kind": "arguments",
+            "start": 6,
+            "startCol": 5,
+            "end": 6,
+            "endCol": 20,
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "start": 6,
+                "startCol": 6,
+                "end": 6,
+                "endCol": 19,
+                "children": [
+                  {
+                    "kind": "binary_expression",
+                    "text": "~=",
+                    "start": 6,
+                    "startCol": 7,
+                    "end": 6,
+                    "endCol": 18,
+                    "children": [
+                      {
+                        "kind": "bracket_index_expression",
+                        "start": 6,
+                        "startCol": 7,
+                        "end": 6,
+                        "endCol": 11,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "m",
+                            "start": 6,
+                            "startCol": 7,
+                            "end": 6,
+                            "endCol": 8
+                          },
+                          {
+                            "kind": "number",
+                            "text": "3",
+                            "start": 6,
+                            "startCol": 9,
+                            "end": 6,
+                            "endCol": 10
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "nil",
+                        "text": "nil",
+                        "start": 6,
+                        "startCol": 15,
+                        "end": 6,
+                        "endCol": 18
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

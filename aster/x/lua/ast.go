@@ -110,6 +110,14 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 			}
 			return node
 		}
+	case "function_declaration":
+		if n.NamedChildCount() > 0 {
+			first := n.NamedChild(0)
+			prefix := strings.TrimSpace(string(src[n.StartByte():first.StartByte()]))
+			if strings.HasPrefix(prefix, "local") {
+				node.Text = "local"
+			}
+		}
 	default:
 		if n.NamedChildCount() == 0 {
 			if !isValueNode(n.Kind()) {

@@ -36,7 +36,11 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 	case "function_declaration":
 		if len(n.Children) >= 1 {
 			b.WriteString(ind)
-			b.WriteString("function ")
+			if n.Text == "local" {
+				b.WriteString("local function ")
+			} else {
+				b.WriteString("function ")
+			}
 			writeExpr(b, n.Children[0], indent)
 			idx := 1
 			if idx < len(n.Children) && n.Children[idx].Kind == "parameters" {

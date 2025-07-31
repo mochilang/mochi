@@ -1,0 +1,305 @@
+{
+  "root": {
+    "kind": "chunk",
+    "start": 1,
+    "end": 9,
+    "children": [
+      {
+        "kind": "assignment_statement",
+        "start": 2,
+        "end": 2,
+        "endCol": 5,
+        "children": [
+          {
+            "kind": "variable_list",
+            "start": 2,
+            "end": 2,
+            "endCol": 1,
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "x",
+                "start": 2,
+                "end": 2,
+                "endCol": 1
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "start": 2,
+            "startCol": 4,
+            "end": 2,
+            "endCol": 5,
+            "children": [
+              {
+                "kind": "number",
+                "text": "3",
+                "start": 2,
+                "startCol": 4,
+                "end": 2,
+                "endCol": 5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assignment_statement",
+        "start": 4,
+        "end": 4,
+        "endCol": 5,
+        "children": [
+          {
+            "kind": "variable_list",
+            "start": 4,
+            "end": 4,
+            "endCol": 1,
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "y",
+                "start": 4,
+                "end": 4,
+                "endCol": 1
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "start": 4,
+            "startCol": 4,
+            "end": 4,
+            "endCol": 5,
+            "children": [
+              {
+                "kind": "number",
+                "text": "4",
+                "start": 4,
+                "startCol": 4,
+                "end": 4,
+                "endCol": 5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assignment_statement",
+        "start": 6,
+        "end": 6,
+        "endCol": 18,
+        "children": [
+          {
+            "kind": "variable_list",
+            "start": 6,
+            "end": 6,
+            "endCol": 1,
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "m",
+                "start": 6,
+                "end": 6,
+                "endCol": 1
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "start": 6,
+            "startCol": 4,
+            "end": 6,
+            "endCol": 18,
+            "children": [
+              {
+                "kind": "table_constructor",
+                "start": 6,
+                "startCol": 4,
+                "end": 6,
+                "endCol": 18,
+                "children": [
+                  {
+                    "kind": "field",
+                    "start": 6,
+                    "startCol": 5,
+                    "end": 6,
+                    "endCol": 10,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "a",
+                        "start": 6,
+                        "startCol": 5,
+                        "end": 6,
+                        "endCol": 6
+                      },
+                      {
+                        "kind": "identifier",
+                        "text": "x",
+                        "start": 6,
+                        "startCol": 9,
+                        "end": 6,
+                        "endCol": 10
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "start": 6,
+                    "startCol": 12,
+                    "end": 6,
+                    "endCol": 17,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "b",
+                        "start": 6,
+                        "startCol": 12,
+                        "end": 6,
+                        "endCol": 13
+                      },
+                      {
+                        "kind": "identifier",
+                        "text": "y",
+                        "start": 6,
+                        "startCol": 16,
+                        "end": 6,
+                        "endCol": 17
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "start": 8,
+        "end": 8,
+        "endCol": 39,
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print",
+            "start": 8,
+            "end": 8,
+            "endCol": 5
+          },
+          {
+            "kind": "arguments",
+            "start": 8,
+            "startCol": 5,
+            "end": 8,
+            "endCol": 39,
+            "children": [
+              {
+                "kind": "function_call",
+                "start": 8,
+                "startCol": 6,
+                "end": 8,
+                "endCol": 38,
+                "children": [
+                  {
+                    "kind": "dot_index_expression",
+                    "start": 8,
+                    "startCol": 6,
+                    "end": 8,
+                    "endCol": 19,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "string",
+                        "start": 8,
+                        "startCol": 6,
+                        "end": 8,
+                        "endCol": 12
+                      },
+                      {
+                        "kind": "identifier",
+                        "text": "format",
+                        "start": 8,
+                        "startCol": 13,
+                        "end": 8,
+                        "endCol": 19
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "arguments",
+                    "start": 8,
+                    "startCol": 19,
+                    "end": 8,
+                    "endCol": 38,
+                    "children": [
+                      {
+                        "kind": "string",
+                        "text": "\"%s %s\"",
+                        "start": 8,
+                        "startCol": 20,
+                        "end": 8,
+                        "endCol": 27
+                      },
+                      {
+                        "kind": "dot_index_expression",
+                        "start": 8,
+                        "startCol": 29,
+                        "end": 8,
+                        "endCol": 32,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "m",
+                            "start": 8,
+                            "startCol": 29,
+                            "end": 8,
+                            "endCol": 30
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "a",
+                            "start": 8,
+                            "startCol": 31,
+                            "end": 8,
+                            "endCol": 32
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "dot_index_expression",
+                        "start": 8,
+                        "startCol": 34,
+                        "end": 8,
+                        "endCol": 37,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "m",
+                            "start": 8,
+                            "startCol": 34,
+                            "end": 8,
+                            "endCol": 35
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "b",
+                            "start": 8,
+                            "startCol": 36,
+                            "end": 8,
+                            "endCol": 37
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

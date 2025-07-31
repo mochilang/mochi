@@ -1,0 +1,189 @@
+{
+  "root": {
+    "kind": "chunk",
+    "start": 1,
+    "end": 7,
+    "children": [
+      {
+        "kind": "function_declaration",
+        "start": 2,
+        "end": 4,
+        "endCol": 3,
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "triple",
+            "start": 2,
+            "startCol": 9,
+            "end": 2,
+            "endCol": 15
+          },
+          {
+            "kind": "parameters",
+            "start": 2,
+            "startCol": 15,
+            "end": 2,
+            "endCol": 18,
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "x",
+                "start": 2,
+                "startCol": 16,
+                "end": 2,
+                "endCol": 17
+              }
+            ]
+          },
+          {
+            "kind": "block",
+            "start": 3,
+            "startCol": 2,
+            "end": 3,
+            "endCol": 16,
+            "children": [
+              {
+                "kind": "return_statement",
+                "start": 3,
+                "startCol": 2,
+                "end": 3,
+                "endCol": 16,
+                "children": [
+                  {
+                    "kind": "expression_list",
+                    "start": 3,
+                    "startCol": 9,
+                    "end": 3,
+                    "endCol": 16,
+                    "children": [
+                      {
+                        "kind": "parenthesized_expression",
+                        "start": 3,
+                        "startCol": 9,
+                        "end": 3,
+                        "endCol": 16,
+                        "children": [
+                          {
+                            "kind": "binary_expression",
+                            "text": "*",
+                            "start": 3,
+                            "startCol": 10,
+                            "end": 3,
+                            "endCol": 15,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "x",
+                                "start": 3,
+                                "startCol": 10,
+                                "end": 3,
+                                "endCol": 11
+                              },
+                              {
+                                "kind": "number",
+                                "text": "3",
+                                "start": 3,
+                                "startCol": 14,
+                                "end": 3,
+                                "endCol": 15
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "start": 6,
+        "end": 6,
+        "endCol": 22,
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print",
+            "start": 6,
+            "end": 6,
+            "endCol": 5
+          },
+          {
+            "kind": "arguments",
+            "start": 6,
+            "startCol": 5,
+            "end": 6,
+            "endCol": 22,
+            "children": [
+              {
+                "kind": "function_call",
+                "start": 6,
+                "startCol": 6,
+                "end": 6,
+                "endCol": 21,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "triple",
+                    "start": 6,
+                    "startCol": 6,
+                    "end": 6,
+                    "endCol": 12
+                  },
+                  {
+                    "kind": "arguments",
+                    "start": 6,
+                    "startCol": 12,
+                    "end": 6,
+                    "endCol": 21,
+                    "children": [
+                      {
+                        "kind": "parenthesized_expression",
+                        "start": 6,
+                        "startCol": 13,
+                        "end": 6,
+                        "endCol": 20,
+                        "children": [
+                          {
+                            "kind": "binary_expression",
+                            "text": "+",
+                            "start": 6,
+                            "startCol": 14,
+                            "end": 6,
+                            "endCol": 19,
+                            "children": [
+                              {
+                                "kind": "number",
+                                "text": "1",
+                                "start": 6,
+                                "startCol": 14,
+                                "end": 6,
+                                "endCol": 15
+                              },
+                              {
+                                "kind": "number",
+                                "text": "2",
+                                "start": 6,
+                                "startCol": 18,
+                                "end": 6,
+                                "endCol": 19
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

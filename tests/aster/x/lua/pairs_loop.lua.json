@@ -1,0 +1,391 @@
+{
+  "root": {
+    "kind": "chunk",
+    "start": 1,
+    "end": 8,
+    "children": [
+      {
+        "kind": "for_statement",
+        "start": 1,
+        "end": 3,
+        "endCol": 3,
+        "children": [
+          {
+            "kind": "for_generic_clause",
+            "start": 1,
+            "startCol": 4,
+            "end": 1,
+            "endCol": 28,
+            "children": [
+              {
+                "kind": "variable_list",
+                "start": 1,
+                "startCol": 4,
+                "end": 1,
+                "endCol": 8,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "_",
+                    "start": 1,
+                    "startCol": 4,
+                    "end": 1,
+                    "endCol": 5
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "v",
+                    "start": 1,
+                    "startCol": 7,
+                    "end": 1,
+                    "endCol": 8
+                  }
+                ]
+              },
+              {
+                "kind": "expression_list",
+                "start": 1,
+                "startCol": 12,
+                "end": 1,
+                "endCol": 28,
+                "children": [
+                  {
+                    "kind": "function_call",
+                    "start": 1,
+                    "startCol": 12,
+                    "end": 1,
+                    "endCol": 28,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "ipairs",
+                        "start": 1,
+                        "startCol": 12,
+                        "end": 1,
+                        "endCol": 18
+                      },
+                      {
+                        "kind": "arguments",
+                        "start": 1,
+                        "startCol": 18,
+                        "end": 1,
+                        "endCol": 28,
+                        "children": [
+                          {
+                            "kind": "table_constructor",
+                            "start": 1,
+                            "startCol": 19,
+                            "end": 1,
+                            "endCol": 27,
+                            "children": [
+                              {
+                                "kind": "field",
+                                "start": 1,
+                                "startCol": 20,
+                                "end": 1,
+                                "endCol": 22,
+                                "children": [
+                                  {
+                                    "kind": "number",
+                                    "text": "10",
+                                    "start": 1,
+                                    "startCol": 20,
+                                    "end": 1,
+                                    "endCol": 22
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "field",
+                                "start": 1,
+                                "startCol": 24,
+                                "end": 1,
+                                "endCol": 26,
+                                "children": [
+                                  {
+                                    "kind": "number",
+                                    "text": "20",
+                                    "start": 1,
+                                    "startCol": 24,
+                                    "end": 1,
+                                    "endCol": 26
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "block",
+            "start": 2,
+            "startCol": 2,
+            "end": 2,
+            "endCol": 10,
+            "children": [
+              {
+                "kind": "function_call",
+                "start": 2,
+                "startCol": 2,
+                "end": 2,
+                "endCol": 10,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "print",
+                    "start": 2,
+                    "startCol": 2,
+                    "end": 2,
+                    "endCol": 7
+                  },
+                  {
+                    "kind": "arguments",
+                    "start": 2,
+                    "startCol": 7,
+                    "end": 2,
+                    "endCol": 10,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "v",
+                        "start": 2,
+                        "startCol": 8,
+                        "end": 2,
+                        "endCol": 9
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assignment_statement",
+        "start": 4,
+        "end": 4,
+        "endCol": 18,
+        "children": [
+          {
+            "kind": "variable_list",
+            "start": 4,
+            "end": 4,
+            "endCol": 1,
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "m",
+                "start": 4,
+                "end": 4,
+                "endCol": 1
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "start": 4,
+            "startCol": 4,
+            "end": 4,
+            "endCol": 18,
+            "children": [
+              {
+                "kind": "table_constructor",
+                "start": 4,
+                "startCol": 4,
+                "end": 4,
+                "endCol": 18,
+                "children": [
+                  {
+                    "kind": "field",
+                    "start": 4,
+                    "startCol": 5,
+                    "end": 4,
+                    "endCol": 10,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "a",
+                        "start": 4,
+                        "startCol": 5,
+                        "end": 4,
+                        "endCol": 6
+                      },
+                      {
+                        "kind": "number",
+                        "text": "1",
+                        "start": 4,
+                        "startCol": 9,
+                        "end": 4,
+                        "endCol": 10
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "start": 4,
+                    "startCol": 12,
+                    "end": 4,
+                    "endCol": 17,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "b",
+                        "start": 4,
+                        "startCol": 12,
+                        "end": 4,
+                        "endCol": 13
+                      },
+                      {
+                        "kind": "number",
+                        "text": "2",
+                        "start": 4,
+                        "startCol": 16,
+                        "end": 4,
+                        "endCol": 17
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "for_statement",
+        "start": 5,
+        "end": 7,
+        "endCol": 3,
+        "children": [
+          {
+            "kind": "for_generic_clause",
+            "start": 5,
+            "startCol": 4,
+            "end": 5,
+            "endCol": 20,
+            "children": [
+              {
+                "kind": "variable_list",
+                "start": 5,
+                "startCol": 4,
+                "end": 5,
+                "endCol": 8,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "_",
+                    "start": 5,
+                    "startCol": 4,
+                    "end": 5,
+                    "endCol": 5
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "v",
+                    "start": 5,
+                    "startCol": 7,
+                    "end": 5,
+                    "endCol": 8
+                  }
+                ]
+              },
+              {
+                "kind": "expression_list",
+                "start": 5,
+                "startCol": 12,
+                "end": 5,
+                "endCol": 20,
+                "children": [
+                  {
+                    "kind": "function_call",
+                    "start": 5,
+                    "startCol": 12,
+                    "end": 5,
+                    "endCol": 20,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "pairs",
+                        "start": 5,
+                        "startCol": 12,
+                        "end": 5,
+                        "endCol": 17
+                      },
+                      {
+                        "kind": "arguments",
+                        "start": 5,
+                        "startCol": 17,
+                        "end": 5,
+                        "endCol": 20,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "m",
+                            "start": 5,
+                            "startCol": 18,
+                            "end": 5,
+                            "endCol": 19
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "block",
+            "start": 6,
+            "startCol": 2,
+            "end": 6,
+            "endCol": 10,
+            "children": [
+              {
+                "kind": "function_call",
+                "start": 6,
+                "startCol": 2,
+                "end": 6,
+                "endCol": 10,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "print",
+                    "start": 6,
+                    "startCol": 2,
+                    "end": 6,
+                    "endCol": 7
+                  },
+                  {
+                    "kind": "arguments",
+                    "start": 6,
+                    "startCol": 7,
+                    "end": 6,
+                    "endCol": 10,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "v",
+                        "start": 6,
+                        "startCol": 8,
+                        "end": 6,
+                        "endCol": 9
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -53,7 +53,32 @@ This directory contains utilities for inspecting Lua source code and printing it
 48. let_and_print.lua
 49. list_assign.lua
 50. list_index.lua
+51. list_nested_assign.lua
+52. list_set_ops.lua
+53. load_jsonl.lua
+54. load_yaml.lua
+55. map_assign.lua
+56. map_in_operator.lua
+57. map_index.lua
+58. map_int_key.lua
+59. map_literal_dynamic.lua
+60. map_membership.lua
+61. map_nested_assign.lua
+62. match_expr.lua
+63. match_full.lua
+64. math_ops.lua
+65. membership.lua
+66. min_max_builtin.lua
+67. nested_function.lua
+68. order_by_map.lua
+69. outer_join.lua
+70. pairs_loop.lua
+71. partial_application.lua
+72. print_hello.lua
+73. pure_fold.lua
+74. pure_global_fold.lua
+75. python_auto.lua
 
-Checked: 50/50
+Checked: 75/75
 
-_Last updated: 2025-07-31 19:57 GMT+0700_
+_Last updated: 2025-07-31 20:19 GMT+0700_

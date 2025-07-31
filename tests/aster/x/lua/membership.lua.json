@@ -1,0 +1,703 @@
+{
+  "root": {
+    "kind": "chunk",
+    "start": 1,
+    "end": 7,
+    "children": [
+      {
+        "kind": "assignment_statement",
+        "start": 2,
+        "end": 2,
+        "endCol": 16,
+        "children": [
+          {
+            "kind": "variable_list",
+            "start": 2,
+            "end": 2,
+            "endCol": 4,
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "nums",
+                "start": 2,
+                "end": 2,
+                "endCol": 4
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "start": 2,
+            "startCol": 7,
+            "end": 2,
+            "endCol": 16,
+            "children": [
+              {
+                "kind": "table_constructor",
+                "start": 2,
+                "startCol": 7,
+                "end": 2,
+                "endCol": 16,
+                "children": [
+                  {
+                    "kind": "field",
+                    "start": 2,
+                    "startCol": 8,
+                    "end": 2,
+                    "endCol": 9,
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "1",
+                        "start": 2,
+                        "startCol": 8,
+                        "end": 2,
+                        "endCol": 9
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "start": 2,
+                    "startCol": 11,
+                    "end": 2,
+                    "endCol": 12,
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "2",
+                        "start": 2,
+                        "startCol": 11,
+                        "end": 2,
+                        "endCol": 12
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "start": 2,
+                    "startCol": 14,
+                    "end": 2,
+                    "endCol": 15,
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "3",
+                        "start": 2,
+                        "startCol": 14,
+                        "end": 2,
+                        "endCol": 15
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "start": 4,
+        "end": 4,
+        "endCol": 109,
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print",
+            "start": 4,
+            "end": 4,
+            "endCol": 5
+          },
+          {
+            "kind": "arguments",
+            "start": 4,
+            "startCol": 5,
+            "end": 4,
+            "endCol": 109,
+            "children": [
+              {
+                "kind": "function_call",
+                "start": 4,
+                "startCol": 6,
+                "end": 4,
+                "endCol": 108,
+                "children": [
+                  {
+                    "kind": "parenthesized_expression",
+                    "start": 4,
+                    "startCol": 6,
+                    "end": 4,
+                    "endCol": 99,
+                    "children": [
+                      {
+                        "kind": "function_definition",
+                        "start": 4,
+                        "startCol": 7,
+                        "end": 4,
+                        "endCol": 98,
+                        "children": [
+                          {
+                            "kind": "parameters",
+                            "start": 4,
+                            "startCol": 15,
+                            "end": 4,
+                            "endCol": 22,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "lst",
+                                "start": 4,
+                                "startCol": 16,
+                                "end": 4,
+                                "endCol": 19
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "v",
+                                "start": 4,
+                                "startCol": 20,
+                                "end": 4,
+                                "endCol": 21
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "block",
+                            "start": 4,
+                            "startCol": 23,
+                            "end": 4,
+                            "endCol": 94,
+                            "children": [
+                              {
+                                "kind": "for_statement",
+                                "start": 4,
+                                "startCol": 23,
+                                "end": 4,
+                                "endCol": 81,
+                                "children": [
+                                  {
+                                    "kind": "for_generic_clause",
+                                    "start": 4,
+                                    "startCol": 27,
+                                    "end": 4,
+                                    "endCol": 45,
+                                    "children": [
+                                      {
+                                        "kind": "variable_list",
+                                        "start": 4,
+                                        "startCol": 27,
+                                        "end": 4,
+                                        "endCol": 30,
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "text": "_",
+                                            "start": 4,
+                                            "startCol": 27,
+                                            "end": 4,
+                                            "endCol": 28
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "x",
+                                            "start": 4,
+                                            "startCol": 29,
+                                            "end": 4,
+                                            "endCol": 30
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "expression_list",
+                                        "start": 4,
+                                        "startCol": 34,
+                                        "end": 4,
+                                        "endCol": 45,
+                                        "children": [
+                                          {
+                                            "kind": "function_call",
+                                            "start": 4,
+                                            "startCol": 34,
+                                            "end": 4,
+                                            "endCol": 45,
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "ipairs",
+                                                "start": 4,
+                                                "startCol": 34,
+                                                "end": 4,
+                                                "endCol": 40
+                                              },
+                                              {
+                                                "kind": "arguments",
+                                                "start": 4,
+                                                "startCol": 40,
+                                                "end": 4,
+                                                "endCol": 45,
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "lst",
+                                                    "start": 4,
+                                                    "startCol": 41,
+                                                    "end": 4,
+                                                    "endCol": 44
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "block",
+                                    "start": 4,
+                                    "startCol": 49,
+                                    "end": 4,
+                                    "endCol": 77,
+                                    "children": [
+                                      {
+                                        "kind": "if_statement",
+                                        "start": 4,
+                                        "startCol": 49,
+                                        "end": 4,
+                                        "endCol": 77,
+                                        "children": [
+                                          {
+                                            "kind": "binary_expression",
+                                            "text": "==",
+                                            "start": 4,
+                                            "startCol": 52,
+                                            "end": 4,
+                                            "endCol": 56,
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "x",
+                                                "start": 4,
+                                                "startCol": 52,
+                                                "end": 4,
+                                                "endCol": 53
+                                              },
+                                              {
+                                                "kind": "identifier",
+                                                "text": "v",
+                                                "start": 4,
+                                                "startCol": 55,
+                                                "end": 4,
+                                                "endCol": 56
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "block",
+                                            "start": 4,
+                                            "startCol": 62,
+                                            "end": 4,
+                                            "endCol": 73,
+                                            "children": [
+                                              {
+                                                "kind": "return_statement",
+                                                "start": 4,
+                                                "startCol": 62,
+                                                "end": 4,
+                                                "endCol": 73,
+                                                "children": [
+                                                  {
+                                                    "kind": "expression_list",
+                                                    "start": 4,
+                                                    "startCol": 69,
+                                                    "end": 4,
+                                                    "endCol": 73,
+                                                    "children": [
+                                                      {
+                                                        "kind": "true",
+                                                        "text": "true",
+                                                        "start": 4,
+                                                        "startCol": 69,
+                                                        "end": 4,
+                                                        "endCol": 73
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "return_statement",
+                                "start": 4,
+                                "startCol": 82,
+                                "end": 4,
+                                "endCol": 94,
+                                "children": [
+                                  {
+                                    "kind": "expression_list",
+                                    "start": 4,
+                                    "startCol": 89,
+                                    "end": 4,
+                                    "endCol": 94,
+                                    "children": [
+                                      {
+                                        "kind": "false",
+                                        "text": "false",
+                                        "start": 4,
+                                        "startCol": 89,
+                                        "end": 4,
+                                        "endCol": 94
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "arguments",
+                    "start": 4,
+                    "startCol": 99,
+                    "end": 4,
+                    "endCol": 108,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "nums",
+                        "start": 4,
+                        "startCol": 100,
+                        "end": 4,
+                        "endCol": 104
+                      },
+                      {
+                        "kind": "number",
+                        "text": "2",
+                        "start": 4,
+                        "startCol": 106,
+                        "end": 4,
+                        "endCol": 107
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "start": 6,
+        "end": 6,
+        "endCol": 109,
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print",
+            "start": 6,
+            "end": 6,
+            "endCol": 5
+          },
+          {
+            "kind": "arguments",
+            "start": 6,
+            "startCol": 5,
+            "end": 6,
+            "endCol": 109,
+            "children": [
+              {
+                "kind": "function_call",
+                "start": 6,
+                "startCol": 6,
+                "end": 6,
+                "endCol": 108,
+                "children": [
+                  {
+                    "kind": "parenthesized_expression",
+                    "start": 6,
+                    "startCol": 6,
+                    "end": 6,
+                    "endCol": 99,
+                    "children": [
+                      {
+                        "kind": "function_definition",
+                        "start": 6,
+                        "startCol": 7,
+                        "end": 6,
+                        "endCol": 98,
+                        "children": [
+                          {
+                            "kind": "parameters",
+                            "start": 6,
+                            "startCol": 15,
+                            "end": 6,
+                            "endCol": 22,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "lst",
+                                "start": 6,
+                                "startCol": 16,
+                                "end": 6,
+                                "endCol": 19
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "v",
+                                "start": 6,
+                                "startCol": 20,
+                                "end": 6,
+                                "endCol": 21
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "block",
+                            "start": 6,
+                            "startCol": 23,
+                            "end": 6,
+                            "endCol": 94,
+                            "children": [
+                              {
+                                "kind": "for_statement",
+                                "start": 6,
+                                "startCol": 23,
+                                "end": 6,
+                                "endCol": 81,
+                                "children": [
+                                  {
+                                    "kind": "for_generic_clause",
+                                    "start": 6,
+                                    "startCol": 27,
+                                    "end": 6,
+                                    "endCol": 45,
+                                    "children": [
+                                      {
+                                        "kind": "variable_list",
+                                        "start": 6,
+                                        "startCol": 27,
+                                        "end": 6,
+                                        "endCol": 30,
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "text": "_",
+                                            "start": 6,
+                                            "startCol": 27,
+                                            "end": 6,
+                                            "endCol": 28
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "x",
+                                            "start": 6,
+                                            "startCol": 29,
+                                            "end": 6,
+                                            "endCol": 30
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "expression_list",
+                                        "start": 6,
+                                        "startCol": 34,
+                                        "end": 6,
+                                        "endCol": 45,
+                                        "children": [
+                                          {
+                                            "kind": "function_call",
+                                            "start": 6,
+                                            "startCol": 34,
+                                            "end": 6,
+                                            "endCol": 45,
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "ipairs",
+                                                "start": 6,
+                                                "startCol": 34,
+                                                "end": 6,
+                                                "endCol": 40
+                                              },
+                                              {
+                                                "kind": "arguments",
+                                                "start": 6,
+                                                "startCol": 40,
+                                                "end": 6,
+                                                "endCol": 45,
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "lst",
+                                                    "start": 6,
+                                                    "startCol": 41,
+                                                    "end": 6,
+                                                    "endCol": 44
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "block",
+                                    "start": 6,
+                                    "startCol": 49,
+                                    "end": 6,
+                                    "endCol": 77,
+                                    "children": [
+                                      {
+                                        "kind": "if_statement",
+                                        "start": 6,
+                                        "startCol": 49,
+                                        "end": 6,
+                                        "endCol": 77,
+                                        "children": [
+                                          {
+                                            "kind": "binary_expression",
+                                            "text": "==",
+                                            "start": 6,
+                                            "startCol": 52,
+                                            "end": 6,
+                                            "endCol": 56,
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "x",
+                                                "start": 6,
+                                                "startCol": 52,
+                                                "end": 6,
+                                                "endCol": 53
+                                              },
+                                              {
+                                                "kind": "identifier",
+                                                "text": "v",
+                                                "start": 6,
+                                                "startCol": 55,
+                                                "end": 6,
+                                                "endCol": 56
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "block",
+                                            "start": 6,
+                                            "startCol": 62,
+                                            "end": 6,
+                                            "endCol": 73,
+                                            "children": [
+                                              {
+                                                "kind": "return_statement",
+                                                "start": 6,
+                                                "startCol": 62,
+                                                "end": 6,
+                                                "endCol": 73,
+                                                "children": [
+                                                  {
+                                                    "kind": "expression_list",
+                                                    "start": 6,
+                                                    "startCol": 69,
+                                                    "end": 6,
+                                                    "endCol": 73,
+                                                    "children": [
+                                                      {
+                                                        "kind": "true",
+                                                        "text": "true",
+                                                        "start": 6,
+                                                        "startCol": 69,
+                                                        "end": 6,
+                                                        "endCol": 73
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "return_statement",
+                                "start": 6,
+                                "startCol": 82,
+                                "end": 6,
+                                "endCol": 94,
+                                "children": [
+                                  {
+                                    "kind": "expression_list",
+                                    "start": 6,
+                                    "startCol": 89,
+                                    "end": 6,
+                                    "endCol": 94,
+                                    "children": [
+                                      {
+                                        "kind": "false",
+                                        "text": "false",
+                                        "start": 6,
+                                        "startCol": 89,
+                                        "end": 6,
+                                        "endCol": 94
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "arguments",
+                    "start": 6,
+                    "startCol": 99,
+                    "end": 6,
+                    "endCol": 108,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "nums",
+                        "start": 6,
+                        "startCol": 100,
+                        "end": 6,
+                        "endCol": 104
+                      },
+                      {
+                        "kind": "number",
+                        "text": "4",
+                        "start": 6,
+                        "startCol": 106,
+                        "end": 6,
+                        "endCol": 107
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
