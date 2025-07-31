@@ -3,27 +3,27 @@
 package swift
 
 import (
-        "bytes"
-        "fmt"
-        "strings"
+	"bytes"
+	"fmt"
+	"strings"
 )
 
 // Print returns Swift source code for the given Program.
 func Print(p *Program) (string, error) {
-        if p == nil || p.File == nil {
-                return "", fmt.Errorf("nil program")
-        }
-        var b bytes.Buffer
-        writeFile(&b, p.File, 0)
-        out := b.String()
-        if len(out) > 0 && out[len(out)-1] != '\n' {
-                out += "\n"
-        }
-        return out, nil
+	if p == nil || p.File == nil {
+		return "", fmt.Errorf("nil program")
+	}
+	var b bytes.Buffer
+	writeFile(&b, p.File, 0)
+	out := b.String()
+	if len(out) > 0 && out[len(out)-1] != '\n' {
+		out += "\n"
+	}
+	return out, nil
 }
 
 func indentStr(n int) string {
-        return strings.Repeat("    ", n)
+	return strings.Repeat("    ", n)
 }
 
 func writeFile(b *bytes.Buffer, f *SourceFile, indent int) {
@@ -46,6 +46,16 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 		writeForStmt(b, n, indent)
 	case "if_statement":
 		writeIfStmt(b, n, indent)
+	case "while_statement":
+		writeWhileStmt(b, n, indent)
+	case "assignment":
+		b.WriteString(indentStr(indent))
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" = ")
+			writeExpr(b, n.Children[1], indent)
+		}
+		b.WriteByte('\n')
 	case "control_transfer_statement":
 		b.WriteString(indentStr(indent))
 		b.WriteString("return")
@@ -140,6 +150,19 @@ func writeForStmt(b *bytes.Buffer, n *Node, indent int) {
 	b.WriteString("}\n")
 }
 
+func writeWhileStmt(b *bytes.Buffer, n *Node, indent int) {
+	if len(n.Children) < 2 {
+		return
+	}
+	b.WriteString(indentStr(indent))
+	b.WriteString("while ")
+	writeExpr(b, n.Children[0], indent)
+	b.WriteString(" {\n")
+	writeStmt(b, n.Children[1], indent+1)
+	b.WriteString(indentStr(indent))
+	b.WriteString("}\n")
+}
+
 func writeIfStmt(b *bytes.Buffer, n *Node, indent int) {
 	if len(n.Children) < 2 {
 		return
@@ -180,7 +203,7 @@ func writeType(b *bytes.Buffer, n *Node) {
 
 func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	switch n.Kind {
-	case "simple_identifier", "type_identifier", "integer_literal", "bang":
+	case "simple_identifier", "type_identifier", "identifier", "integer_literal", "bang":
 		b.WriteString(n.Text)
 	case "line_string_literal":
 		b.WriteByte('"')
@@ -232,6 +255,12 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString(" + ")
 			writeExpr(b, n.Children[1], indent)
 		}
+	case "multiplicative_expression":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" * ")
+			writeExpr(b, n.Children[1], indent)
+		}
 	case "range_expression":
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indent)
@@ -243,6 +272,38 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, n.Children[0], indent)
 			b.WriteString(" == ")
 			writeExpr(b, n.Children[1], indent)
+		}
+	case "comparison_expression":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" < ")
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "conjunction_expression":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" && ")
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "disjunction_expression":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" || ")
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "nil_coalescing_expression":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" ?? ")
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "ternary_expression":
+		if len(n.Children) == 3 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" ? ")
+			writeExpr(b, n.Children[1], indent)
+			b.WriteString(" : ")
+			writeExpr(b, n.Children[2], indent)
 		}
 	case "prefix_expression":
 		if len(n.Children) == 1 {
@@ -287,23 +348,23 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		}
 	case "call_suffix":
 		writeCallSuffix(b, n)
-       case "value_arguments":
-               b.WriteByte('(')
-               for i, arg := range n.Children {
-                       if i > 0 {
-                               b.WriteString(", ")
-                       }
-                       if len(arg.Children) > 0 {
-                               writeExpr(b, arg.Children[0], indent)
-                       }
-               }
-               b.WriteByte(')')
-       default:
-               // fallback
-               for _, c := range n.Children {
-                       writeExpr(b, c, indent)
-               }
-       }
+	case "value_arguments":
+		b.WriteByte('(')
+		for i, arg := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			if len(arg.Children) > 0 {
+				writeExpr(b, arg.Children[0], indent)
+			}
+		}
+		b.WriteByte(')')
+	default:
+		// fallback
+		for _, c := range n.Children {
+			writeExpr(b, c, indent)
+		}
+	}
 }
 
 func isIndexingCall(callee *Node) bool {
