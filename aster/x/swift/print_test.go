@@ -102,7 +102,7 @@ func TestPrint_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("read src: %v", err)
 			}
-			prog, err := swift.Inspect(string(data))
+			prog, err := swift.Inspect(string(data), swift.Option{Comments: true})
 			if err != nil {
 				t.Fatalf("inspect: %v", err)
 			}
