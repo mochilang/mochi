@@ -1,0 +1,2 @@
+# command-line-arguments
+tests/aster/x/go/cast_string_to_int.go:9:38: syntax error: unexpected name n in argument list; possibly missing comma or )

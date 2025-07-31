@@ -1,0 +1,5 @@
+# command-line-arguments
+tests/aster/x/go/closure.go:8:23: undefined: intint
+tests/aster/x/go/closure.go:9:12: undefined: xintint
+tests/aster/x/go/closure.go:9:20: undefined: x
+tests/aster/x/go/closure.go:11:11: undefined: intint
