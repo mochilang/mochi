@@ -1,3 +1,5 @@
+//go:build slow
+
 package dart
 
 import (
@@ -52,7 +54,7 @@ func writeFunction(b *bytes.Buffer, sig *Node, body *Node, indentLevel int) {
 
 func writeFuncSig(b *bytes.Buffer, n *Node) {
 	idx := 0
-	if idx < len(n.Children) && n.Children[idx].Kind == "type_identifier" {
+	if idx < len(n.Children) && (n.Children[idx].Kind == "type_identifier" || n.Children[idx].Kind == "void_type") {
 		writeExpr(b, n.Children[idx])
 		idx++
 		if idx < len(n.Children) && n.Children[idx].Kind == "type_arguments" {
@@ -204,7 +206,7 @@ func writeParameters(b *bytes.Buffer, n *Node) {
 
 func writeExpr(b *bytes.Buffer, n *Node) {
 	switch n.Kind {
-	case "identifier", "decimal_integer_literal", "string_literal", "comment", "type_identifier":
+	case "identifier", "decimal_integer_literal", "string_literal", "comment", "type_identifier", "void_type", "true", "false", "null":
 		b.WriteString(n.Text)
 	case "type_arguments":
 		b.WriteByte('<')
