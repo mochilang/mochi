@@ -4,8 +4,8 @@ This directory holds golden files for inspecting and printing Racket programs us
 
 ## Progress
 
-Completed 10/103 files
-Generated: 2025-07-31 15:30 +0700
+Completed 25/103 files
+Generated: 2025-07-31 18:24 +0700
 
 ## Checklist
 
@@ -19,3 +19,18 @@ Generated: 2025-07-31 15:30 +0700
 8. [x] cast_struct
 9. [x] closure
 10. [x] count_builtin
+11. [x] cross_join
+12. [x] cross_join_filter
+13. [x] cross_join_triple
+14. [x] dataset_sort_take_limit
+15. [x] dataset_where_filter
+16. [x] exists_builtin
+17. [x] for_list_collection
+18. [x] for_loop
+19. [x] for_map_collection
+20. [x] fun_call
+21. [x] fun_expr_in_let
+22. [x] fun_three_args
+23. [x] go_auto
+24. [x] group_by
+25. [x] group_by_conditional_sum

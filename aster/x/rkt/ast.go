@@ -28,6 +28,8 @@ type (
 	LangName    Node
 	List        Node
 	Number      Node
+	Keyword     Node
+	Boolean     Node
 	Quote       Node
 	String      Node
 	Symbol      Node
@@ -83,7 +85,7 @@ func convertNode(n *sitter.Node, src []byte, withPos bool) *Node {
 
 func isValueNode(kind string) bool {
 	switch kind {
-	case "comment", "lang_name", "number", "string", "symbol", "list", "quote", "extension":
+	case "comment", "lang_name", "number", "string", "symbol", "list", "quote", "extension", "boolean", "keyword":
 		return true
 	default:
 		return false
