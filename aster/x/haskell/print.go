@@ -56,7 +56,7 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 	case "module":
 		for i, c := range n.Children {
 			if i > 0 {
-				b.WriteByte(' ')
+				b.WriteByte('.')
 			}
 			writeNode(b, &c, indent)
 		}
@@ -76,6 +76,15 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 			}
 			writeNode(b, &c, indent)
 		}
+	case "prefix_id":
+		b.WriteByte('(')
+		for i := range n.Children {
+			if i > 0 {
+				b.WriteByte(' ')
+			}
+			writeNode(b, &n.Children[i], indent)
+		}
+		b.WriteByte(')')
 	case "function":
 		if len(n.Children) >= 3 {
 			writeNode(b, &n.Children[0], indent)
