@@ -1,0 +1,122 @@
+{
+  "root": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "x"
+                  }
+                ]
+              },
+              {
+                "kind": "integer",
+                "text": "12"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "msg"
+                  }
+                ]
+              },
+              {
+                "kind": "parenthesized_expression",
+                "children": [
+                  {
+                    "kind": "conditional_expression",
+                    "text": "? :",
+                    "children": [
+                      {
+                        "kind": "binary_expression",
+                        "text": "\u003e",
+                        "children": [
+                          {
+                            "kind": "variable_name",
+                            "children": [
+                              {
+                                "kind": "name",
+                                "text": "x"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "integer",
+                            "text": "10"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "encapsed_string",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "yes"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "encapsed_string",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "no"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "echo_statement",
+        "children": [
+          {
+            "kind": "sequence_expression",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "msg"
+                  }
+                ]
+              },
+              {
+                "kind": "name",
+                "text": "PHP_EOL"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

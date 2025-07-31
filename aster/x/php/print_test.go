@@ -32,8 +32,8 @@ func TestPrint_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
-	if len(files) > 30 {
-		files = files[:30]
+	if len(files) > 50 {
+		files = files[:50]
 	}
 
 	for _, src := range files {

@@ -167,7 +167,7 @@ func isValueNode(kind string) bool {
 
 func keepEmptyNode(kind string) bool {
 	switch kind {
-	case "arguments", "formal_parameters":
+	case "arguments", "formal_parameters", "array_creation_expression":
 		return true
 	default:
 		return false
