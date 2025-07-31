@@ -1,0 +1,91 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "let",
+        "text": "data",
+        "children": [
+          {
+            "kind": "list",
+            "children": [
+              {
+                "kind": "int",
+                "text": "1"
+              },
+              {
+                "kind": "int",
+                "text": "2"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "let",
+        "text": "flag",
+        "children": [
+          {
+            "kind": "call",
+            "text": "exists",
+            "children": [
+              {
+                "kind": "query",
+                "text": "x",
+                "children": [
+                  {
+                    "kind": "source",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "data"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "where",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "==",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "x"
+                          },
+                          {
+                            "kind": "int",
+                            "text": "1"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "select",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "x"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "selector",
+            "text": "flag"
+          }
+        ]
+      }
+    ]
+  }
+}

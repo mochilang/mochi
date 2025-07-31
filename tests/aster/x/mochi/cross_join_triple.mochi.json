@@ -1,0 +1,230 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "let",
+        "text": "nums",
+        "children": [
+          {
+            "kind": "list",
+            "children": [
+              {
+                "kind": "int",
+                "text": "1"
+              },
+              {
+                "kind": "int",
+                "text": "2"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "let",
+        "text": "letters",
+        "children": [
+          {
+            "kind": "list",
+            "children": [
+              {
+                "kind": "string",
+                "text": "A"
+              },
+              {
+                "kind": "string",
+                "text": "B"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "let",
+        "text": "bools",
+        "children": [
+          {
+            "kind": "list",
+            "children": [
+              {
+                "kind": "bool",
+                "text": "true"
+              },
+              {
+                "kind": "bool",
+                "text": "false"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "let",
+        "text": "combos",
+        "children": [
+          {
+            "kind": "query",
+            "text": "n",
+            "children": [
+              {
+                "kind": "source",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "nums"
+                  }
+                ]
+              },
+              {
+                "kind": "from",
+                "text": "l",
+                "children": [
+                  {
+                    "kind": "source",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "letters"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "from",
+                "text": "b",
+                "children": [
+                  {
+                    "kind": "source",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "bools"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "select",
+                "children": [
+                  {
+                    "kind": "map",
+                    "children": [
+                      {
+                        "kind": "entry",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "n"
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "n"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "entry",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "l"
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "l"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "entry",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "b"
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "b"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "string",
+            "text": "--- Cross Join of three lists ---"
+          }
+        ]
+      },
+      {
+        "kind": "for",
+        "text": "c",
+        "children": [
+          {
+            "kind": "in",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "combos"
+              }
+            ]
+          },
+          {
+            "kind": "block",
+            "children": [
+              {
+                "kind": "call",
+                "text": "print",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "n",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "c"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "selector",
+                    "text": "l",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "c"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "selector",
+                    "text": "b",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "c"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

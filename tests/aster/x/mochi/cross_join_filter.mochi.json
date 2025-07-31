@@ -1,0 +1,206 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "let",
+        "text": "nums",
+        "children": [
+          {
+            "kind": "list",
+            "children": [
+              {
+                "kind": "int",
+                "text": "1"
+              },
+              {
+                "kind": "int",
+                "text": "2"
+              },
+              {
+                "kind": "int",
+                "text": "3"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "let",
+        "text": "letters",
+        "children": [
+          {
+            "kind": "list",
+            "children": [
+              {
+                "kind": "string",
+                "text": "A"
+              },
+              {
+                "kind": "string",
+                "text": "B"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "let",
+        "text": "pairs",
+        "children": [
+          {
+            "kind": "query",
+            "text": "n",
+            "children": [
+              {
+                "kind": "source",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "nums"
+                  }
+                ]
+              },
+              {
+                "kind": "from",
+                "text": "l",
+                "children": [
+                  {
+                    "kind": "source",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "letters"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "where",
+                "children": [
+                  {
+                    "kind": "binary",
+                    "text": "==",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "%",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "n"
+                          },
+                          {
+                            "kind": "int",
+                            "text": "2"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "int",
+                        "text": "0"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "select",
+                "children": [
+                  {
+                    "kind": "map",
+                    "children": [
+                      {
+                        "kind": "entry",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "n"
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "n"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "entry",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "l"
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "l"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "string",
+            "text": "--- Even pairs ---"
+          }
+        ]
+      },
+      {
+        "kind": "for",
+        "text": "p",
+        "children": [
+          {
+            "kind": "in",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "pairs"
+              }
+            ]
+          },
+          {
+            "kind": "block",
+            "children": [
+              {
+                "kind": "call",
+                "text": "print",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "n",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "p"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "selector",
+                    "text": "l",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "p"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

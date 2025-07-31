@@ -1,0 +1,391 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "type",
+        "text": "People",
+        "children": [
+          {
+            "kind": "field",
+            "text": "name",
+            "children": [
+              {
+                "kind": "type",
+                "text": "string"
+              }
+            ]
+          },
+          {
+            "kind": "field",
+            "text": "age",
+            "children": [
+              {
+                "kind": "type",
+                "text": "int"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "let",
+        "text": "people",
+        "children": [
+          {
+            "kind": "type",
+            "text": "list",
+            "children": [
+              {
+                "kind": "type",
+                "text": "People"
+              }
+            ]
+          },
+          {
+            "kind": "list",
+            "children": [
+              {
+                "kind": "struct",
+                "text": "People",
+                "children": [
+                  {
+                    "kind": "field",
+                    "text": "name",
+                    "children": [
+                      {
+                        "kind": "string",
+                        "text": "Alice"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "text": "age",
+                    "children": [
+                      {
+                        "kind": "int",
+                        "text": "30"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "struct",
+                "text": "People",
+                "children": [
+                  {
+                    "kind": "field",
+                    "text": "name",
+                    "children": [
+                      {
+                        "kind": "string",
+                        "text": "Bob"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "text": "age",
+                    "children": [
+                      {
+                        "kind": "int",
+                        "text": "15"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "struct",
+                "text": "People",
+                "children": [
+                  {
+                    "kind": "field",
+                    "text": "name",
+                    "children": [
+                      {
+                        "kind": "string",
+                        "text": "Charlie"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "text": "age",
+                    "children": [
+                      {
+                        "kind": "int",
+                        "text": "65"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "struct",
+                "text": "People",
+                "children": [
+                  {
+                    "kind": "field",
+                    "text": "name",
+                    "children": [
+                      {
+                        "kind": "string",
+                        "text": "Diana"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "text": "age",
+                    "children": [
+                      {
+                        "kind": "int",
+                        "text": "45"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "type",
+        "text": "Adult",
+        "children": [
+          {
+            "kind": "field",
+            "text": "name",
+            "children": [
+              {
+                "kind": "type",
+                "text": "string"
+              }
+            ]
+          },
+          {
+            "kind": "field",
+            "text": "age",
+            "children": [
+              {
+                "kind": "type",
+                "text": "int"
+              }
+            ]
+          },
+          {
+            "kind": "field",
+            "text": "is_senior",
+            "children": [
+              {
+                "kind": "type",
+                "text": "bool"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "let",
+        "text": "adults",
+        "children": [
+          {
+            "kind": "query",
+            "text": "person",
+            "children": [
+              {
+                "kind": "source",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "people"
+                  }
+                ]
+              },
+              {
+                "kind": "where",
+                "children": [
+                  {
+                    "kind": "binary",
+                    "text": "\u003e=",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "age",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "person"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "int",
+                        "text": "18"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "select",
+                "children": [
+                  {
+                    "kind": "struct",
+                    "text": "Adult",
+                    "children": [
+                      {
+                        "kind": "field",
+                        "text": "name",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "name",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "person"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "field",
+                        "text": "age",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "age",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "person"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "field",
+                        "text": "is_senior",
+                        "children": [
+                          {
+                            "kind": "binary",
+                            "text": "\u003e=",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "age",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "person"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "int",
+                                "text": "60"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "string",
+            "text": "--- Adults ---"
+          }
+        ]
+      },
+      {
+        "kind": "for",
+        "text": "person",
+        "children": [
+          {
+            "kind": "in",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "adults"
+              }
+            ]
+          },
+          {
+            "kind": "block",
+            "children": [
+              {
+                "kind": "call",
+                "text": "print",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "name",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "person"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "string",
+                    "text": "is"
+                  },
+                  {
+                    "kind": "selector",
+                    "text": "age",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "person"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "if_expr",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "is_senior",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "person"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "string",
+                        "text": " (senior)"
+                      },
+                      {
+                        "kind": "string"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
