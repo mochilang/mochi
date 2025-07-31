@@ -1,5 +1,23 @@
 # 📦 CHANGELOG.md
 
+## [0.10.51] – 2025-07-31T09:04:29+07:00
+
+### Added
+
+* `mochix` inspect command for AST output
+* Typed AST examples for `print_hello`, `cross_join` and `two-sum`
+* New builtins `padStart`, `slice` and `repeat`
+
+### Changed
+
+* Parsers migrated to official tree-sitter grammars
+* Rosetta outputs regenerated with new benchmarks
+* Transpiler improvements across languages
+
+### Fixed
+
+* Variable scope, string key and MD5Hex bugs
+
 ## [0.10.50] – 2025-07-30T16:21:04+07:00
 
 ### Added
