@@ -1,0 +1,106 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "fun",
+        "text": "makeAdder",
+        "children": [
+          {
+            "kind": "param",
+            "text": "n",
+            "children": [
+              {
+                "kind": "type",
+                "text": "int"
+              }
+            ]
+          },
+          {
+            "kind": "typefun",
+            "children": [
+              {
+                "kind": "type",
+                "text": "int"
+              },
+              {
+                "kind": "type",
+                "text": "int"
+              }
+            ]
+          },
+          {
+            "kind": "return",
+            "children": [
+              {
+                "kind": "funexpr",
+                "children": [
+                  {
+                    "kind": "param",
+                    "text": "x",
+                    "children": [
+                      {
+                        "kind": "type",
+                        "text": "int"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "type",
+                    "text": "int"
+                  },
+                  {
+                    "kind": "binary",
+                    "text": "+",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "x"
+                      },
+                      {
+                        "kind": "selector",
+                        "text": "n"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "let",
+        "text": "add10",
+        "children": [
+          {
+            "kind": "call",
+            "text": "makeAdder",
+            "children": [
+              {
+                "kind": "int",
+                "text": "10"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "call",
+            "text": "add10",
+            "children": [
+              {
+                "kind": "int",
+                "text": "7"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

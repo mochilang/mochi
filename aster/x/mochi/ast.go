@@ -83,8 +83,17 @@ func convert(n *mochiast.Node, withPos bool) *Node {
 			node.Children = append(node.Children, child)
 		}
 	}
+
+	// Preserve control flow statements like break and continue even if they
+	// have no text or children so the printed output can reconstruct the
+	// original program structure.
 	if len(node.Children) == 0 && node.Text == "" {
-		return nil
+		switch node.Kind {
+		case "break", "continue":
+			// keep
+		default:
+			return nil
+		}
 	}
 	return node
 }
