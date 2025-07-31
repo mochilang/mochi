@@ -23,16 +23,11 @@ func Print(p *Program) (string, error) {
 }
 
 func writeProgram(b *bytes.Buffer, n *ProgramNode, indent int) {
-	prev := 0
 	for i, c := range n.Children {
 		if i > 0 {
-			if c.Start > prev && prev != 0 {
-				b.WriteByte('\n')
-			}
 			b.WriteByte('\n')
 		}
 		writeTop(b, c, indent)
-		prev = c.End
 	}
 }
 
@@ -64,13 +59,9 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 			return
 		}
 		b.WriteByte('(')
-		prev := 0
 		for i, c := range n.Children {
 			if i > 0 {
-				if c.Start > prev && prev != 0 {
-					b.WriteByte('\n')
-					b.WriteString(strings.Repeat("  ", indent+1))
-				} else if c.Kind == "list" {
+				if c.Kind == "list" {
 					b.WriteByte('\n')
 					b.WriteString(strings.Repeat("  ", indent+1))
 				} else {
@@ -78,7 +69,6 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 				}
 			}
 			writeNode(b, c, indent+1)
-			prev = c.End
 		}
 		b.WriteByte(')')
 	case "quote":

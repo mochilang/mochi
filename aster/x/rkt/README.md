@@ -4,8 +4,8 @@ This directory holds golden files for inspecting and printing Racket programs us
 
 ## Progress
 
-Completed 30/103 files
-Generated: 2025-07-31 19:24 +0700
+Completed 50/103 files
+Generated: 2025-07-31 19:49 +0700
 
 ## Checklist
 
@@ -39,3 +39,23 @@ Generated: 2025-07-31 19:24 +0700
 28. [x] group_by_left_join
 29. [x] group_by_multi_join
 30. [x] group_by_multi_join_sort
+31. [x] group_by_multi_sort
+32. [x] group_by_sort
+33. [x] group_items_iteration
+34. [x] if_else
+35. [x] if_then_else
+36. [x] if_then_else_nested
+37. [x] in_operator
+38. [x] in_operator_extended
+39. [x] inner_join
+40. [x] join_multi
+41. [x] json_builtin
+42. [x] left_join
+43. [x] left_join_multi
+44. [x] len_builtin
+45. [x] len_map
+46. [x] len_string
+47. [x] let_and_print
+48. [x] list_assign
+49. [x] list_index
+50. [x] list_nested_assign
