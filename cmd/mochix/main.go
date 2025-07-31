@@ -176,6 +176,10 @@ type InspectCmd struct {
 	Language string `arg:"positional,required" help:"Programming language"`
 	File     string `arg:"positional,required" help:"Source file ('-' for stdin)"`
 }
+type PrintCmd struct {
+	Language string `arg:"positional,required" help:"Programming language"`
+	File     string `arg:"positional,required" help:"Source file ('-' for stdin)"`
+}
 type ServeCmd struct{}
 type CheatsheetCmd struct{}
 
@@ -583,6 +587,220 @@ func runInspect(cmd *InspectCmd) error {
 		return err
 	}
 	fmt.Println(string(out))
+	return nil
+}
+
+func runPrint(cmd *PrintCmd) error {
+	var data []byte
+	var err error
+	if cmd.File == "-" {
+		data, err = io.ReadAll(os.Stdin)
+	} else {
+		data, err = os.ReadFile(cmd.File)
+	}
+	if err != nil {
+		return err
+	}
+	src := string(data)
+	lang := strings.ToLower(cmd.Language)
+	var out string
+	switch lang {
+	case "c":
+		prog, err := cast.Inspect(src)
+		if err == nil {
+			out, err = cast.Print(prog)
+		}
+		if err != nil {
+			return err
+		}
+	case "clj", "clojure":
+		prog, err := cljast.Inspect(src)
+		if err == nil {
+			out, err = cljast.Print(prog)
+		}
+		if err != nil {
+			return err
+		}
+	case "cpp", "c++":
+		prog, err := cppast.Inspect(src)
+		if err == nil {
+			out, err = cppast.Print(prog)
+		}
+		if err != nil {
+			return err
+		}
+	case "cs", "csharp":
+		prog, err := csast.Inspect(src)
+		if err == nil {
+			out, err = csast.Print(prog)
+		}
+		if err != nil {
+			return err
+		}
+	case "dart":
+		prog, err := dartast.Inspect(src)
+		if err == nil {
+			out, err = dartast.Print(prog)
+		}
+		if err != nil {
+			return err
+		}
+	case "elixir", "ex":
+		prog, err := elixirast.Inspect(src)
+		if err == nil {
+			out, err = elixirast.Print(prog)
+		}
+		if err != nil {
+			return err
+		}
+	case "fs", "fsharp":
+		prog, err := fsast.Inspect(src)
+		if err == nil {
+			out, err = fsast.Print(prog)
+		}
+		if err != nil {
+			return err
+		}
+	case "go":
+		prog, err := goast.Inspect(src)
+		if err == nil {
+			out, err = goast.Print(prog)
+		}
+		if err != nil {
+			return err
+		}
+	case "haskell":
+		prog, err := haskellast.Inspect(src)
+		if err == nil {
+			out, err = haskellast.Print(prog)
+		}
+		if err != nil {
+			return err
+		}
+	case "java":
+		prog, err := javaast.Inspect(src, javaast.Options{})
+		if err == nil {
+			out, err = javaast.Print(prog)
+		}
+		if err != nil {
+			return err
+		}
+	case "kotlin", "kt":
+		prog, err := kotlinast.Inspect(src)
+		if err == nil {
+			out, err = kotlinast.Print(prog)
+		}
+		if err != nil {
+			return err
+		}
+	case "lua":
+		prog, err := luaast.Inspect(src)
+		if err == nil {
+			out, err = luaast.Print(prog)
+		}
+		if err != nil {
+			return err
+		}
+	case "mochi":
+		prog, err := mochiins.Inspect(src)
+		if err == nil {
+			out, err = mochiins.Print(prog)
+		}
+		if err != nil {
+			return err
+		}
+	case "ocaml":
+		prog, err := ocamlast.Inspect(src)
+		if err == nil {
+			out, err = ocamlast.Print(prog)
+		}
+		if err != nil {
+			return err
+		}
+	case "php":
+		prog, err := phpast.Inspect(src, nil)
+		if err == nil {
+			out, err = phpast.Print(prog)
+		}
+		if err != nil {
+			return err
+		}
+	case "prolog":
+		prog, err := prologast.Inspect(src)
+		if err == nil {
+			out, err = prologast.Print(prog)
+		}
+		if err != nil {
+			return err
+		}
+	case "py", "python":
+		prog, err := pyast.Inspect(src)
+		if err == nil {
+			out, err = pyast.Print(prog)
+		}
+		if err != nil {
+			return err
+		}
+	case "rb", "ruby":
+		prog, err := rbast.Inspect(src)
+		if err == nil {
+			out, err = rbast.Print(prog)
+		}
+		if err != nil {
+			return err
+		}
+	case "zig":
+		prog, err := zigast.Inspect(src)
+		if err == nil {
+			out, err = zigast.Print(prog)
+		}
+		if err != nil {
+			return err
+		}
+	case "rs", "rust":
+		prog, err := rsast.Inspect(src, rsast.Option{})
+		if err == nil {
+			out, err = rsast.Print(prog)
+		}
+		if err != nil {
+			return err
+		}
+	case "scala":
+		prog, err := scalaast.Inspect(src)
+		if err == nil {
+			out, err = scalaast.Print(prog)
+		}
+		if err != nil {
+			return err
+		}
+	case "scheme":
+		prog, err := schemeast.Inspect(src)
+		if err == nil {
+			out, err = schemeast.Print(prog)
+		}
+		if err != nil {
+			return err
+		}
+	case "swift":
+		prog, err := swiftast.Inspect(src)
+		if err == nil {
+			out, err = swiftast.Print(prog)
+		}
+		if err != nil {
+			return err
+		}
+	case "ts", "typescript":
+		prog, err := tsast.Inspect(src)
+		if err == nil {
+			out, err = tsast.Print(prog)
+		}
+		if err != nil {
+			return err
+		}
+	default:
+		return fmt.Errorf("unknown language: %s", cmd.Language)
+	}
+	fmt.Print(out)
 	return nil
 }
 
@@ -1035,6 +1253,7 @@ func newRootCmd() *cobra.Command {
 		newLLMCmd(),
 		newInferCmd(),
 		newInspectCmd(),
+		newPrintCmd(),
 		newServeCmd(),
 		newCheatsheetCmd(),
 	)
@@ -1205,6 +1424,21 @@ func newInspectCmd() *cobra.Command {
 			ic.Language = args[0]
 			ic.File = args[1]
 			return runInspect(&ic)
+		},
+	}
+	return c
+}
+
+func newPrintCmd() *cobra.Command {
+	var pc PrintCmd
+	c := &cobra.Command{
+		Use:   "print <language> <file>",
+		Short: "Inspect and pretty-print a source file",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			pc.Language = args[0]
+			pc.File = args[1]
+			return runPrint(&pc)
 		},
 	}
 	return c
