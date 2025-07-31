@@ -4,8 +4,8 @@ This directory holds golden files for inspecting and printing Racket programs us
 
 ## Progress
 
-Completed 25/103 files
-Generated: 2025-07-31 18:24 +0700
+Completed 30/103 files
+Generated: 2025-07-31 19:24 +0700
 
 ## Checklist
 
@@ -34,3 +34,8 @@ Generated: 2025-07-31 18:24 +0700
 23. [x] go_auto
 24. [x] group_by
 25. [x] group_by_conditional_sum
+26. [x] group_by_having
+27. [x] group_by_join
+28. [x] group_by_left_join
+29. [x] group_by_multi_join
+30. [x] group_by_multi_join_sort
