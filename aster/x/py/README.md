@@ -79,7 +79,32 @@ Python ASTs. The golden tests exercise a small set of example programs.
 73. pure_fold.py
 74. pure_global_fold.py
 75. python_auto.py
+76. python_math.py
+77. query_sum_select.py
+78. record_assign.py
+79. right_join.py
+80. save_jsonl_stdout.py
+81. short_circuit.py
+82. slice.py
+83. sort_stable.py
+84. str_builtin.py
+85. string_compare.py
+86. string_concat.py
+87. string_contains.py
+88. string_in_operator.py
+89. string_index.py
+90. string_prefix_slice.py
+91. substring_builtin.py
+92. sum_builtin.py
+93. tail_recursion.py
+94. test_block.py
+95. tree_sum.py
+96. two-sum.py
+97. typed_let.py
+98. typed_var.py
+99. unary_neg.py
+100. update_stmt.py
 
-Checked: 75/75
+Checked: 100/100
 
-_Last updated: 2025-07-31 18:23 GMT+7_
+_Last updated: 2025-07-31 18:35 GMT+7_
