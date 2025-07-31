@@ -10,6 +10,9 @@ func Print(p *Program) (string, error) {
 	if p == nil {
 		return "", fmt.Errorf("nil program")
 	}
+	if len(p.Forms) == 0 {
+		return "", fmt.Errorf("empty program")
+	}
 	var b bytes.Buffer
 	for i, f := range p.Forms {
 		if f == nil {
