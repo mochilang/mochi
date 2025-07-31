@@ -1,4 +1,4 @@
-# Elixir AST Print Progress (10/10 completed)
+# Elixir AST Print Progress (20/20 completed)
 
 This file tracks golden tests for the Elixir AST printer.
 
@@ -13,5 +13,15 @@ This file tracks golden tests for the Elixir AST printer.
 8. [x] closure
 9. [x] cross_join
 10. [x] print_hello
+11. [x] count_builtin
+12. [x] cross_join_filter
+13. [x] dataset_sort_take_limit
+14. [x] dataset_where_filter
+15. [x] exists_builtin
+16. [x] for_list_collection
+17. [x] for_loop
+18. [x] for_map_collection
+19. [x] fun_call
+20. [x] fun_expr_in_let
 
-Updated: 2025-07-31 16:04 GMT+7
+Updated: 2025-07-31 18:23 GMT+7
