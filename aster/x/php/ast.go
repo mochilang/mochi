@@ -161,6 +161,8 @@ func isValueNode(kind string) bool {
 	switch kind {
 	case "name", "variable_name", "integer", "float", "string", "string_content", "comment", "encapsed_string":
 		return true
+	case "escape_sequence":
+		return true
 	default:
 		return false
 	}
