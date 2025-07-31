@@ -10,7 +10,18 @@ import (
 // IncludePositions controls whether parsed nodes include position
 // information. When false (the default) the position fields will
 // be omitted from the marshalled JSON because they remain zero.
+// IncludePositions controls whether parsed nodes include position
+// information. When false (the default) position fields remain zero
+// and are omitted from the marshalled JSON due to the `omitempty`
+// struct tags.
 var IncludePositions bool
+
+// Option configures how the AST is produced when parsing source code.
+// When Positions is true the parser populates Start/End information
+// on all nodes.
+type Option struct {
+	Positions bool
+}
 
 // Node represents a simplified Ruby AST node. Only meaningful tokens
 // contain text. Position information can be optionally included.
