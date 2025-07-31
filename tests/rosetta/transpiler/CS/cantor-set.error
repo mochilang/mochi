@@ -1,5 +1,0 @@
-dotnet run: exit status 1
-/tmp/TestCSTranspiler_Rosetta_Golden4206192004/001/Program.cs(83,53): error CS0266: Cannot implicitly convert type 'object' to 'System.Collections.Generic.Dictionary<string, long>'. An explicit conversion exists (are you missing a cast?) [/tmp/TestCSTranspiler_Rosetta_Golden4206192004/001/app.csproj]
-/tmp/TestCSTranspiler_Rosetta_Golden4206192004/001/Program.cs(101,74): error CS0030: Cannot convert type 'System.Collections.Generic.Dictionary<string, object>' to 'System.Collections.Generic.Dictionary<string, long>' [/tmp/TestCSTranspiler_Rosetta_Golden4206192004/001/app.csproj]
-
-The build failed. Fix the build errors and run again.

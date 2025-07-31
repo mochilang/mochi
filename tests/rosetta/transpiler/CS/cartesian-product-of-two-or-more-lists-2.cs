@@ -86,33 +86,48 @@ class Program {
         return s_4;
     }
 
-    static long[] concat(long[] a_6, long[] b_7) {
-        long[] out_8 = new long[]{};
-        foreach (var v_9 in a_6) {
-            out_8 = (Enumerable.ToArray(Enumerable.Append(out_8, v_9)));
-        };
-        foreach (var v_10 in b_7) {
-            out_8 = (Enumerable.ToArray(Enumerable.Append(out_8, v_10)));
-        };
-        return out_8;
-    }
-
-    static long[][] cartN(object lists_11) {
-        if ((lists_11 == null)) {
+    static long[][] cartN(object lists_6) {
+        if ((lists_6 == null)) {
             return new long[][]{};
         };
-        long[][] a_12 = (lists_11 as long[][]) ?? new long[][]{};
-        if ((a_12.Length == 0)) {
+        long[][] a_7 = (lists_6 as long[][]) ?? new long[][]{};
+        if ((a_7.Length == 0)) {
             return new long[][]{new long[]{}};
         };
-        long[][] out_13 = new long[][]{};
-        long[][] rest_14 = cartN(a_12.Skip((int)(1)).Take((int)((a_12.Length - 1))).ToArray());
-        foreach (var x_15 in a_12[(int)(0)]) {
-            foreach (var p_16 in rest_14) {
-                out_13 = (Enumerable.ToArray(Enumerable.Append(out_13, concat(new long[]{x_15}, p_16))));
-            }
+        long c_8 = 1;
+        foreach (var xs_9 in a_7) {
+            c_8 = (((dynamic)(c_8)) * ((dynamic)(xs_9.Length)));
         };
-        return out_13;
+        if ((c_8 == 0)) {
+            return new long[][]{};
+        };
+        long[][] res_10 = new long[][]{};
+        long[] idx_11 = new long[]{};
+        foreach (var __12 in a_7) {
+            idx_11 = (Enumerable.ToArray(Enumerable.Append(idx_11, 0)));
+        };
+        var n_13 = a_7.Length;
+        long count_14 = 0;
+        while ((count_14 < c_8)) {
+            long[] row_15 = new long[]{};
+            long j_16 = 0;
+            while ((Convert.ToDouble(j_16) < Convert.ToDouble(n_13))) {
+                row_15 = (Enumerable.ToArray(Enumerable.Append(row_15, a_7[(int)(j_16)][(int)(idx_11[(int)(j_16)])])));
+                j_16 = (j_16 + 1);
+            }
+            res_10 = (Enumerable.ToArray(Enumerable.Append(res_10, row_15)));
+            long k_17 = (((dynamic)(n_13)) - ((dynamic)(1)));
+            while ((k_17 >= 0)) {
+                idx_11[k_17] = (idx_11[(int)(k_17)] + 1);
+                if ((Convert.ToDouble(idx_11[(int)(k_17)]) < Convert.ToDouble(a_7[(int)(k_17)].Length))) {
+                    break;
+                }
+                idx_11[k_17] = 0;
+                k_17 = (k_17 - 1);
+            }
+            count_14 = (count_14 + 1);
+        };
+        return res_10;
     }
 
     static void main() {
@@ -122,8 +137,8 @@ class Program {
         Console.WriteLine(_fmtTop(llStr(cartN(new long[][]{new long[]{}, new long[]{1, 2}}))));
         Console.WriteLine(_fmtTop(""));
         Console.WriteLine(_fmtTop("["));
-        foreach (var p_17 in cartN(new long[][]{new long[]{1776, 1789}, new long[]{7, 12}, new long[]{4, 14, 23}, new long[]{0, 1}})) {
-            Console.WriteLine(_fmtTop((" " + listStr(p_17))));
+        foreach (var p_18 in cartN(new long[][]{new long[]{1776, 1789}, new long[]{7, 12}, new long[]{4, 14, 23}, new long[]{0, 1}})) {
+            Console.WriteLine(_fmtTop((" " + listStr(p_18))));
         };
         Console.WriteLine(_fmtTop("]"));
         Console.WriteLine(_fmtTop(llStr(cartN(new long[][]{new long[]{1, 2, 3}, new long[]{30}, new long[]{500, 100}}))));
