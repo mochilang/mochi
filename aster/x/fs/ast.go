@@ -67,7 +67,7 @@ type (
 // value leaf node. Only these kinds will retain their textual content.
 func isValueNode(kind string) bool {
 	switch kind {
-	case "identifier", "int", "string", "line_comment":
+	case "identifier", "int", "string", "line_comment", "infix_op", "prefix_op":
 		return true
 	default:
 		return false
