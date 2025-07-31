@@ -1,3 +1,48 @@
+## Progress (2025-07-30 18:04 UTC)
+- pascal: add array-length rosetta output (progress 88/105)
+
+## Progress (2025-07-30 18:04 UTC)
+- pascal: add array-length rosetta output (progress 88/105)
+
+## Progress (2025-07-30 18:04 UTC)
+- pascal: add array-length rosetta output (progress 88/105)
+
+## Progress (2025-07-30 18:04 UTC)
+- pascal: add array-length rosetta output (progress 88/105)
+
+## Progress (2025-07-30 18:04 UTC)
+- pascal: add array-length rosetta output (progress 88/105)
+
+## Progress (2025-07-30 18:04 UTC)
+- pascal: add array-length rosetta output (progress 88/105)
+
+## Progress (2025-07-30 18:04 UTC)
+- pascal: add array-length rosetta output (progress 88/105)
+
+## Progress (2025-07-30 18:04 UTC)
+- pascal: add array-length rosetta output (progress 88/105)
+
+## Progress (2025-07-30 18:04 UTC)
+- pascal: add array-length rosetta output (progress 88/105)
+
+## Progress (2025-07-30 18:04 UTC)
+- pascal: add array-length rosetta output (progress 88/105)
+
+## Progress (2025-07-30 18:04 UTC)
+- pascal: add array-length rosetta output (progress 88/105)
+
+## Progress (2025-07-30 18:04 UTC)
+- pascal: add array-length rosetta output (progress 88/105)
+
+## Progress (2025-07-31 00:59 +0700)
+- transpiler/pas: update rosetta outputs up to index 84 (progress 88/105)
+
+## Progress (2025-07-31 00:59 +0700)
+- transpiler/pas: update rosetta outputs up to index 84 (progress 88/105)
+
+## Progress (2025-07-31 00:59 +0700)
+- transpiler/pas: update rosetta outputs up to index 84 (progress 88/105)
+
 ## Progress (2025-07-31 00:46 +0700)
 - pascal transpiler: handle variant array append (progress 88/105)
 

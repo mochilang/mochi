@@ -151,6 +151,7 @@ type Program struct {
 	UseInput      bool
 	UseBigRat     bool
 	Maps          []MapLitDef
+	VarTypes      map[string]string
 }
 
 // Stmt represents a Pascal statement.
@@ -664,6 +665,28 @@ func (i *IfExpr) emit(w io.Writer) {
 func (b *BinaryExpr) isBool() bool { return b.Bool }
 
 func (b *BinaryExpr) emit(w io.Writer) {
+	if b.Op == "+" {
+		_, leftList := b.Left.(*ListLit)
+		_, rightList := b.Right.(*ListLit)
+		if leftList || rightList {
+			io.WriteString(w, "concat(")
+			b.Left.emit(w)
+			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
+		lt := inferType(b.Left)
+		rt := inferType(b.Right)
+		if strings.HasPrefix(lt, "array of ") && strings.HasPrefix(rt, "array of ") {
+			io.WriteString(w, "concat(")
+			b.Left.emit(w)
+			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
+	}
 	if b.Op == "in" {
 		io.WriteString(w, "Pos(")
 		b.Left.emit(w)
@@ -883,6 +906,9 @@ func (a *AssignStmt) emit(w io.Writer) {
 // Emit renders Pascal code for the program with a deterministic header.
 func (p *Program) Emit() []byte {
 	currProg = p
+	prev := currentVarTypes
+	currentVarTypes = p.VarTypes
+	defer func() { currentVarTypes = prev }()
 	var buf bytes.Buffer
 	buf.WriteString("{$mode objfpc}\nprogram Main;\n")
 	var uses []string
@@ -1404,10 +1430,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				pr.Vars = append(pr.Vars, vd)
 			case st.Assign != nil:
 				name := sanitize(st.Assign.Name)
-				ex, err := convertExpr(env, st.Assign.Value)
-				if err != nil {
-					return nil, err
-				}
+				var ex Expr
+				var err error
 				if isEmptyMapLiteral(st.Assign.Value) {
 					if t, ok := varTypes[name]; ok && strings.HasPrefix(t, "specialize TFPGMap") {
 						parts := strings.TrimPrefix(t, "specialize TFPGMap<")
@@ -1418,6 +1442,12 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 							valT := strings.TrimSpace(kv[1])
 							ex = &CallExpr{Name: fmt.Sprintf("specialize TFPGMap<%s, %s>.Create", keyT, valT)}
 						}
+					}
+				}
+				if ex == nil {
+					ex, err = convertExpr(env, st.Assign.Value)
+					if err != nil {
+						return nil, err
 					}
 				}
 				if len(st.Assign.Field) > 0 {
@@ -1500,6 +1530,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 							} else if _, ok := lt.Elem.(types.BoolType); ok {
 								typ = "boolean"
 							}
+						} else if mt, ok := tt.(types.MapType); ok {
+							typ = pasTypeFromType(mt.Key)
 						}
 					}
 				}
@@ -1705,6 +1737,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 		}
 		pr.Vars = globals
 	}
+	pr.VarTypes = varTypes
 	currProg = nil
 	return pr, nil
 }
@@ -3334,6 +3367,9 @@ func ensureRecord(fields []Field) string {
 }
 
 func ensureMap(keyType, valType string, items []MapItem) string {
+	if valType == "" {
+		valType = "Variant"
+	}
 	for _, m := range currProg.Maps {
 		if m.KeyType == keyType && m.ValType == valType && len(m.Items) == len(items) {
 			match := true
@@ -4101,6 +4137,8 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 		return &StringLit{Value: *l.Str}, nil
 	case l.Bool != nil:
 		return &BoolLit{Value: bool(*l.Bool)}, nil
+	case l.Null:
+		return &VarRef{Name: "nil"}, nil
 	default:
 		return nil, fmt.Errorf("unsupported literal")
 	}
