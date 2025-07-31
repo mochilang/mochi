@@ -14,6 +14,15 @@
             "text": "defmodule"
           },
           {
+            "kind": "arguments",
+            "children": [
+              {
+                "kind": "alias",
+                "text": "Main"
+              }
+            ]
+          },
+          {
             "kind": "do_block",
             "children": [
               {
@@ -97,6 +106,10 @@
                                     "kind": "dot",
                                     "children": [
                                       {
+                                        "kind": "alias",
+                                        "text": "Enum"
+                                      },
+                                      {
                                         "kind": "identifier",
                                         "text": "each"
                                       }
@@ -161,6 +174,10 @@
                                                       {
                                                         "kind": "dot",
                                                         "children": [
+                                                          {
+                                                            "kind": "alias",
+                                                            "text": "Enum"
+                                                          },
                                                           {
                                                             "kind": "identifier",
                                                             "text": "each"
@@ -252,6 +269,10 @@
                                                                                             "kind": "dot",
                                                                                             "children": [
                                                                                               {
+                                                                                                "kind": "alias",
+                                                                                                "text": "Enum"
+                                                                                              },
+                                                                                              {
                                                                                                 "kind": "identifier",
                                                                                                 "text": "at"
                                                                                               }
@@ -278,6 +299,10 @@
                                                                                           {
                                                                                             "kind": "dot",
                                                                                             "children": [
+                                                                                              {
+                                                                                                "kind": "alias",
+                                                                                                "text": "Enum"
+                                                                                              },
                                                                                               {
                                                                                                 "kind": "identifier",
                                                                                                 "text": "at"
@@ -542,6 +567,10 @@
                             "kind": "dot",
                             "children": [
                               {
+                                "kind": "alias",
+                                "text": "IO"
+                              },
+                              {
                                 "kind": "identifier",
                                 "text": "puts"
                               }
@@ -556,6 +585,10 @@
                                   {
                                     "kind": "dot",
                                     "children": [
+                                      {
+                                        "kind": "alias",
+                                        "text": "Enum"
+                                      },
                                       {
                                         "kind": "identifier",
                                         "text": "at"
@@ -588,6 +621,10 @@
                             "kind": "dot",
                             "children": [
                               {
+                                "kind": "alias",
+                                "text": "IO"
+                              },
+                              {
                                 "kind": "identifier",
                                 "text": "puts"
                               }
@@ -602,6 +639,10 @@
                                   {
                                     "kind": "dot",
                                     "children": [
+                                      {
+                                        "kind": "alias",
+                                        "text": "Enum"
+                                      },
                                       {
                                         "kind": "identifier",
                                         "text": "at"
@@ -641,6 +682,10 @@
           {
             "kind": "dot",
             "children": [
+              {
+                "kind": "alias",
+                "text": "Main"
+              },
               {
                 "kind": "identifier",
                 "text": "main"

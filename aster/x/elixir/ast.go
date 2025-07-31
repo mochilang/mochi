@@ -106,12 +106,12 @@ func convert(n *sitter.Node, src []byte) *Node {
 // isValueNode reports whether the given node kind represents a value that
 // should be preserved even when it has no named children.
 func isValueNode(kind string) bool {
-	switch kind {
-	case "identifier", "atom", "integer", "float", "char", "string",
-		"string_line", "string_content", "quoted_content", "keyword",
-		"comment":
-		return true
-	default:
-		return false
-	}
+        switch kind {
+        case "identifier", "atom", "integer", "float", "char", "string",
+               "string_line", "string_content", "quoted_content", "keyword",
+               "comment", "alias":
+                return true
+        default:
+                return false
+        }
 }
