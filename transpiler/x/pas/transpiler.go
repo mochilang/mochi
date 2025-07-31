@@ -1522,6 +1522,13 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						case "boolean":
 							typ = "boolean"
 						}
+					} else if strings.HasPrefix(t, "specialize TFPGMap") {
+						parts := strings.TrimPrefix(t, "specialize TFPGMap<")
+						parts = strings.TrimSuffix(parts, ">")
+						kv := strings.Split(parts, ",")
+						if len(kv) == 2 {
+							typ = strings.TrimSpace(kv[0])
+						}
 					} else {
 						tt := types.ExprType(st.For.Source, env)
 						if lt, ok := tt.(types.ListType); ok {
@@ -1550,6 +1557,15 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						return nil, err
 					}
 					pr.Stmts = append(pr.Stmts, &ForRangeStmt{Name: name, Start: start, End: end, Body: body})
+				} else if strings.HasPrefix(inferType(start), "specialize TFPGMap") {
+					idxVar := fmt.Sprintf("%s_idx", name)
+					varTypes[idxVar] = "integer"
+					setVarType(idxVar, "integer")
+					keySel := &SelectorExpr{Root: exprToVarRef(start), Tail: []string{"Keys"}}
+					assignKey := &AssignStmt{Name: name, Expr: &IndexExpr{Target: keySel, Index: &VarRef{Name: idxVar}}}
+					body = append([]Stmt{assignKey}, body...)
+					end := &SelectorExpr{Root: exprToVarRef(start), Tail: []string{"Count"}}
+					pr.Stmts = append(pr.Stmts, &ForRangeStmt{Name: idxVar, Start: &IntLit{Value: 0}, End: end, Body: body})
 				} else {
 					pr.Stmts = append(pr.Stmts, &ForEachStmt{Name: name, Iterable: start, Body: body})
 				}
@@ -3336,6 +3352,18 @@ func exprToIdent(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+func exprToVarRef(e Expr) string {
+	switch v := e.(type) {
+	case *VarRef:
+		return v.Name
+	case *SelectorExpr:
+		if len(v.Tail) == 0 {
+			return v.Root
+		}
+	}
+	return ""
+}
+
 func ensureRecord(fields []Field) string {
 	for _, r := range currProg.Records {
 		if len(r.Fields) != len(fields) {
@@ -4303,6 +4331,8 @@ func inferType(e Expr) string {
 		return v.Type
 	case *ContainsExpr:
 		return "boolean"
+	case *MapContainsExpr:
+		return "boolean"
 	case *IndexExpr:
 		if v.String {
 			return "string"
@@ -4310,6 +4340,14 @@ func inferType(e Expr) string {
 		t := resolveAlias(inferType(v.Target))
 		if strings.HasPrefix(t, "array of ") {
 			return strings.TrimPrefix(t, "array of ")
+		}
+		if strings.HasPrefix(t, "specialize TFPGMap") {
+			parts := strings.TrimPrefix(t, "specialize TFPGMap<")
+			parts = strings.TrimSuffix(parts, ">")
+			kv := strings.Split(parts, ",")
+			if len(kv) == 2 {
+				return strings.TrimSpace(kv[1])
+			}
 		}
 		return "integer"
 	case *SliceExpr:
