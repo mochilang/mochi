@@ -83,12 +83,12 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 		writeForRangeLoop(b, n, indent)
 	case "if_statement":
 		writeIfStatement(b, n, indent)
-	default:
-		// Fallback: treat as expression statement
-		b.WriteString(ind)
-		writeExpr(b, n, indent)
-		b.WriteByte('\n')
-	}
+       default:
+               // Fallback: treat as expression statement
+               b.WriteString(ind)
+               writeExpr(b, n, indent)
+               b.WriteByte('\n')
+       }
 }
 
 func writeFunctionDefinition(b *bytes.Buffer, n *Node, indent int) {
@@ -178,27 +178,47 @@ func writeForStatement(b *bytes.Buffer, n *Node, indent int) {
 }
 
 func writeIfStatement(b *bytes.Buffer, n *Node, indent int) {
-	if len(n.Children) < 2 {
-		return
-	}
-	ind := strings.Repeat("    ", indent)
-	b.WriteString(ind)
-	b.WriteString("if (")
-	cond := n.Children[0]
-	if cond.Kind == "condition_clause" && len(cond.Children) > 0 {
-		writeExpr(b, cond.Children[0], indent)
-	} else {
-		writeExpr(b, cond, indent)
-	}
-	b.WriteString(") {\n")
-	body := n.Children[1]
-	if body.Kind == "compound_statement" {
-		writeBlock(b, body, indent+1)
-	} else {
-		writeStmt(b, body, indent+1)
-	}
-	b.WriteString(ind)
-	b.WriteString("}\n")
+        if len(n.Children) < 2 {
+                return
+        }
+        ind := strings.Repeat("    ", indent)
+        b.WriteString(ind)
+        b.WriteString("if (")
+        cond := n.Children[0]
+        if cond.Kind == "condition_clause" && len(cond.Children) > 0 {
+                writeExpr(b, cond.Children[0], indent)
+        } else {
+                writeExpr(b, cond, indent)
+        }
+        b.WriteString(") {\n")
+        body := n.Children[1]
+        if body.Kind == "compound_statement" {
+                writeBlock(b, body, indent+1)
+        } else {
+                writeStmt(b, body, indent+1)
+        }
+        b.WriteString(ind)
+        b.WriteString("}")
+        if len(n.Children) > 2 {
+                elseNode := n.Children[2]
+                if elseNode.Kind == "else_clause" && len(elseNode.Children) > 0 {
+                        child := elseNode.Children[0]
+                        if child.Kind == "if_statement" {
+                                b.WriteString(" else ")
+                                writeIfStatement(b, child, indent)
+                                return
+                        }
+                        b.WriteString(" else {\n")
+                        if child.Kind == "compound_statement" {
+                                writeBlock(b, child, indent+1)
+                        } else {
+                                writeStmt(b, child, indent+1)
+                        }
+                        b.WriteString(ind)
+                        b.WriteString("}")
+                }
+        }
+        b.WriteByte('\n')
 }
 
 func writeBlock(b *bytes.Buffer, n *Node, indent int) {
@@ -382,13 +402,19 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		if len(n.Children) > 0 {
 			writeExpr(b, n.Children[0], indent)
 		}
-	case "binary_expression":
-		op := strings.TrimSpace(n.Text)
-		if op == "" {
-			op = detectOperator(n)
-		}
-		writeBinaryOp(b, n, indent, op)
-	case "update_expression":
+        case "binary_expression":
+                op := strings.TrimSpace(n.Text)
+                if op == "" {
+                        op = detectOperator(n)
+                }
+                writeBinaryOp(b, n, indent, op)
+       case "assignment_expression":
+               if len(n.Children) == 2 {
+                       writeExpr(b, n.Children[0], indent)
+                       b.WriteString(" = ")
+                       writeExpr(b, n.Children[1], indent)
+               }
+        case "update_expression":
 		op := strings.TrimSpace(n.Text)
 		prefix := false
 		if strings.HasPrefix(op, "pre") {
@@ -480,9 +506,13 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString(n.Children[0].Text)
 			b.WriteByte('\'')
 		}
-	default:
-		b.WriteString(n.Kind)
-	}
+       default:
+               if n.Text != "" {
+                       b.WriteString(n.Text)
+               } else {
+                       b.WriteString(n.Kind)
+               }
+       }
 }
 
 func writeArgumentList(b *bytes.Buffer, n *Node, indent int) { writeExpr(b, n, indent) }

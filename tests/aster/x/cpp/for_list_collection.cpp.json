@@ -60,6 +60,7 @@
           },
           {
             "kind": "function_declarator",
+            "text": "main()",
             "children": [
               {
                 "kind": "identifier",

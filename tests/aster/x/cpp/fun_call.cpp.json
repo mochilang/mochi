@@ -51,6 +51,7 @@
           },
           {
             "kind": "function_declarator",
+            "text": "add(int a, int b)",
             "children": [
               {
                 "kind": "identifier",
@@ -129,6 +130,7 @@
           },
           {
             "kind": "function_declarator",
+            "text": "main()",
             "children": [
               {
                 "kind": "identifier",

@@ -72,10 +72,10 @@ func TestPrint_Golden(t *testing.T) {
 		if count <= 10 {
 			continue
 		}
-		selected = append(selected, f)
-		if len(selected) >= 10 {
-			break
-		}
+               selected = append(selected, f)
+               if len(selected) >= 15 {
+                       break
+               }
 	}
 	files = selected
 
