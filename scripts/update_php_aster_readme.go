@@ -18,9 +18,6 @@ func main() {
 	srcDir := filepath.Join(root, "tests", "transpiler", "x", "php")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.php"))
 	sort.Strings(files)
-	if len(files) > 25 {
-		files = files[:25]
-	}
 	var names []string
 	for _, f := range files {
 		names = append(names, strings.TrimSuffix(filepath.Base(f), ".php"))

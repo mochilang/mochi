@@ -210,9 +210,13 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeBlock(b, &Node{}, indent+1, true)
 		}
 	case "function_call_expression":
-		if len(n.Children) >= 2 {
+		if len(n.Children) >= 1 {
 			writeExpr(b, n.Children[0], indent)
-			writeArguments(b, n.Children[1])
+			if len(n.Children) >= 2 {
+				writeArguments(b, n.Children[1])
+			} else {
+				b.WriteString("()")
+			}
 		}
 	case "arguments":
 		writeArguments(b, n)
@@ -261,10 +265,12 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		}
 		b.WriteByte(')')
 	case "subscript_expression":
-		if len(n.Children) == 2 {
+		if len(n.Children) >= 1 {
 			writeExpr(b, n.Children[0], indent)
 			b.WriteByte('[')
-			writeExpr(b, n.Children[1], indent)
+			if len(n.Children) == 2 {
+				writeExpr(b, n.Children[1], indent)
+			}
 			b.WriteByte(']')
 		}
 	case "sequence_expression":
