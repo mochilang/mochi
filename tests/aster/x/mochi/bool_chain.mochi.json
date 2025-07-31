@@ -1,0 +1,256 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "fun",
+        "text": "boom",
+        "children": [
+          {
+            "kind": "type",
+            "text": "bool"
+          },
+          {
+            "kind": "call",
+            "text": "print",
+            "children": [
+              {
+                "kind": "string",
+                "text": "boom"
+              }
+            ]
+          },
+          {
+            "kind": "return",
+            "children": [
+              {
+                "kind": "bool",
+                "text": "true"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "binary",
+            "text": "\u0026\u0026",
+            "children": [
+              {
+                "kind": "binary",
+                "text": "\u0026\u0026",
+                "children": [
+                  {
+                    "kind": "group",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "\u003c",
+                        "children": [
+                          {
+                            "kind": "int",
+                            "text": "1"
+                          },
+                          {
+                            "kind": "int",
+                            "text": "2"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "group",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "\u003c",
+                        "children": [
+                          {
+                            "kind": "int",
+                            "text": "2"
+                          },
+                          {
+                            "kind": "int",
+                            "text": "3"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "children": [
+                  {
+                    "kind": "binary",
+                    "text": "\u003c",
+                    "children": [
+                      {
+                        "kind": "int",
+                        "text": "3"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "4"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "binary",
+            "text": "\u0026\u0026",
+            "children": [
+              {
+                "kind": "binary",
+                "text": "\u0026\u0026",
+                "children": [
+                  {
+                    "kind": "group",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "\u003c",
+                        "children": [
+                          {
+                            "kind": "int",
+                            "text": "1"
+                          },
+                          {
+                            "kind": "int",
+                            "text": "2"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "group",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "\u003e",
+                        "children": [
+                          {
+                            "kind": "int",
+                            "text": "2"
+                          },
+                          {
+                            "kind": "int",
+                            "text": "3"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "call",
+                "text": "boom"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "binary",
+            "text": "\u0026\u0026",
+            "children": [
+              {
+                "kind": "binary",
+                "text": "\u0026\u0026",
+                "children": [
+                  {
+                    "kind": "binary",
+                    "text": "\u0026\u0026",
+                    "children": [
+                      {
+                        "kind": "group",
+                        "children": [
+                          {
+                            "kind": "binary",
+                            "text": "\u003c",
+                            "children": [
+                              {
+                                "kind": "int",
+                                "text": "1"
+                              },
+                              {
+                                "kind": "int",
+                                "text": "2"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "group",
+                        "children": [
+                          {
+                            "kind": "binary",
+                            "text": "\u003c",
+                            "children": [
+                              {
+                                "kind": "int",
+                                "text": "2"
+                              },
+                              {
+                                "kind": "int",
+                                "text": "3"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "group",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "\u003e",
+                        "children": [
+                          {
+                            "kind": "int",
+                            "text": "3"
+                          },
+                          {
+                            "kind": "int",
+                            "text": "4"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "call",
+                "text": "boom"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

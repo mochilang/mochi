@@ -1,0 +1,46 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "let",
+        "text": "a",
+        "children": [
+          {
+            "kind": "list",
+            "children": [
+              {
+                "kind": "int",
+                "text": "1"
+              },
+              {
+                "kind": "int",
+                "text": "2"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "call",
+            "text": "append",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "a"
+              },
+              {
+                "kind": "int",
+                "text": "3"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

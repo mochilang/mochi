@@ -312,7 +312,9 @@ func exprString(n *Node) string {
 				right = "(" + right + ")"
 			}
 		}
-		return fmt.Sprintf("(%s %s %s)", exprString(n.Children[0]), n.Value, right)
+		op := fmt.Sprint(n.Value)
+		op = strings.ReplaceAll(op, "_", " ")
+		return fmt.Sprintf("(%s %s %s)", exprString(n.Children[0]), op, right)
 	case "list":
 		parts := make([]string, len(n.Children))
 		for i, c := range n.Children {
@@ -418,7 +420,11 @@ func exprString(n *Node) string {
 				if strings.HasPrefix(expr, "(") && strings.HasSuffix(expr, ")") && parenBalanced(expr) {
 					expr = expr[1 : len(expr)-1]
 				}
-				fmt.Fprintf(&sb, "%s %s", c.Kind, expr)
+				keyword := c.Kind
+				if keyword == "sort" {
+					keyword = "sort by"
+				}
+				fmt.Fprintf(&sb, "%s %s", keyword, expr)
 			case "group_by":
 				fmt.Fprintf(&sb, "group by %s into %s", exprString(c.Children[0]), c.Children[1].Value)
 			case "select":

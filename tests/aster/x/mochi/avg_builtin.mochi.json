@@ -1,0 +1,36 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "call",
+            "text": "avg",
+            "children": [
+              {
+                "kind": "list",
+                "children": [
+                  {
+                    "kind": "int",
+                    "text": "1"
+                  },
+                  {
+                    "kind": "int",
+                    "text": "2"
+                  },
+                  {
+                    "kind": "int",
+                    "text": "3"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
