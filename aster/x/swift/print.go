@@ -325,6 +325,15 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		}
 		b.WriteString(indentStr(indent))
 		b.WriteByte('}')
+	case "postfix_expression":
+		if len(n.Children) == 2 && n.Children[1].Kind == "bang" {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(n.Children[1].Text)
+		} else {
+			for _, c := range n.Children {
+				writeExpr(b, c, indent)
+			}
+		}
 	case "navigation_expression":
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indent)
