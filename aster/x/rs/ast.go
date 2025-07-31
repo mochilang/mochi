@@ -170,7 +170,8 @@ func isValueNode(kind string) bool {
 	case "identifier", "field_identifier", "type_identifier", "primitive_type",
 		"integer_literal", "string_content", "escape_sequence", "mutable_specifier",
 		"arguments", "parameters", "self", "token_tree", "line_comment",
-		"true", "false", "boolean_literal", "break_expression", "continue_expression":
+		"true", "false", "boolean_literal", "break_expression", "continue_expression",
+		"wildcard_pattern":
 		return true
 	default:
 		return false
