@@ -1,0 +1,189 @@
+{
+  "root": {
+    "kind": "chunk",
+    "start": 1,
+    "end": 5,
+    "children": [
+      {
+        "kind": "for_statement",
+        "start": 2,
+        "end": 4,
+        "endCol": 3,
+        "children": [
+          {
+            "kind": "for_generic_clause",
+            "start": 2,
+            "startCol": 4,
+            "end": 2,
+            "endCol": 29,
+            "children": [
+              {
+                "kind": "variable_list",
+                "start": 2,
+                "startCol": 4,
+                "end": 2,
+                "endCol": 8,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "_",
+                    "start": 2,
+                    "startCol": 4,
+                    "end": 2,
+                    "endCol": 5
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "n",
+                    "start": 2,
+                    "startCol": 7,
+                    "end": 2,
+                    "endCol": 8
+                  }
+                ]
+              },
+              {
+                "kind": "expression_list",
+                "start": 2,
+                "startCol": 12,
+                "end": 2,
+                "endCol": 29,
+                "children": [
+                  {
+                    "kind": "function_call",
+                    "start": 2,
+                    "startCol": 12,
+                    "end": 2,
+                    "endCol": 29,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "ipairs",
+                        "start": 2,
+                        "startCol": 12,
+                        "end": 2,
+                        "endCol": 18
+                      },
+                      {
+                        "kind": "arguments",
+                        "start": 2,
+                        "startCol": 18,
+                        "end": 2,
+                        "endCol": 29,
+                        "children": [
+                          {
+                            "kind": "table_constructor",
+                            "start": 2,
+                            "startCol": 19,
+                            "end": 2,
+                            "endCol": 28,
+                            "children": [
+                              {
+                                "kind": "field",
+                                "start": 2,
+                                "startCol": 20,
+                                "end": 2,
+                                "endCol": 21,
+                                "children": [
+                                  {
+                                    "kind": "number",
+                                    "text": "1",
+                                    "start": 2,
+                                    "startCol": 20,
+                                    "end": 2,
+                                    "endCol": 21
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "field",
+                                "start": 2,
+                                "startCol": 23,
+                                "end": 2,
+                                "endCol": 24,
+                                "children": [
+                                  {
+                                    "kind": "number",
+                                    "text": "2",
+                                    "start": 2,
+                                    "startCol": 23,
+                                    "end": 2,
+                                    "endCol": 24
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "field",
+                                "start": 2,
+                                "startCol": 26,
+                                "end": 2,
+                                "endCol": 27,
+                                "children": [
+                                  {
+                                    "kind": "number",
+                                    "text": "3",
+                                    "start": 2,
+                                    "startCol": 26,
+                                    "end": 2,
+                                    "endCol": 27
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "block",
+            "start": 3,
+            "startCol": 2,
+            "end": 3,
+            "endCol": 10,
+            "children": [
+              {
+                "kind": "function_call",
+                "start": 3,
+                "startCol": 2,
+                "end": 3,
+                "endCol": 10,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "print",
+                    "start": 3,
+                    "startCol": 2,
+                    "end": 3,
+                    "endCol": 7
+                  },
+                  {
+                    "kind": "arguments",
+                    "start": 3,
+                    "startCol": 7,
+                    "end": 3,
+                    "endCol": 10,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "n",
+                        "start": 3,
+                        "startCol": 8,
+                        "end": 3,
+                        "endCol": 9
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

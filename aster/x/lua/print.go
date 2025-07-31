@@ -301,7 +301,13 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		}
 	case "function_definition":
 		b.WriteString("function")
-		if len(n.Children) >= 2 {
+		switch len(n.Children) {
+		case 1:
+			b.WriteString("()\n")
+			writeBlock(b, n.Children[0], indent+1)
+			b.WriteString(strings.Repeat("  ", indent))
+			b.WriteString("end")
+		case 2:
 			writeParams(b, n.Children[0])
 			b.WriteByte('\n')
 			writeBlock(b, n.Children[1], indent+1)

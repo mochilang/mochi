@@ -1,0 +1,1334 @@
+{
+  "root": {
+    "kind": "chunk",
+    "start": 1,
+    "end": 19,
+    "children": [
+      {
+        "kind": "assignment_statement",
+        "start": 2,
+        "end": 2,
+        "endCol": 90,
+        "children": [
+          {
+            "kind": "variable_list",
+            "start": 2,
+            "end": 2,
+            "endCol": 9,
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "customers",
+                "start": 2,
+                "end": 2,
+                "endCol": 9
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "start": 2,
+            "startCol": 12,
+            "end": 2,
+            "endCol": 90,
+            "children": [
+              {
+                "kind": "table_constructor",
+                "start": 2,
+                "startCol": 12,
+                "end": 2,
+                "endCol": 90,
+                "children": [
+                  {
+                    "kind": "field",
+                    "start": 2,
+                    "startCol": 13,
+                    "end": 2,
+                    "endCol": 37,
+                    "children": [
+                      {
+                        "kind": "table_constructor",
+                        "start": 2,
+                        "startCol": 13,
+                        "end": 2,
+                        "endCol": 37,
+                        "children": [
+                          {
+                            "kind": "field",
+                            "start": 2,
+                            "startCol": 14,
+                            "end": 2,
+                            "endCol": 20,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "id",
+                                "start": 2,
+                                "startCol": 14,
+                                "end": 2,
+                                "endCol": 16
+                              },
+                              {
+                                "kind": "number",
+                                "text": "1",
+                                "start": 2,
+                                "startCol": 19,
+                                "end": 2,
+                                "endCol": 20
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field",
+                            "start": 2,
+                            "startCol": 22,
+                            "end": 2,
+                            "endCol": 36,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "name",
+                                "start": 2,
+                                "startCol": 22,
+                                "end": 2,
+                                "endCol": 26
+                              },
+                              {
+                                "kind": "string",
+                                "text": "\"Alice\"",
+                                "start": 2,
+                                "startCol": 29,
+                                "end": 2,
+                                "endCol": 36
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "start": 2,
+                    "startCol": 39,
+                    "end": 2,
+                    "endCol": 61,
+                    "children": [
+                      {
+                        "kind": "table_constructor",
+                        "start": 2,
+                        "startCol": 39,
+                        "end": 2,
+                        "endCol": 61,
+                        "children": [
+                          {
+                            "kind": "field",
+                            "start": 2,
+                            "startCol": 40,
+                            "end": 2,
+                            "endCol": 46,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "id",
+                                "start": 2,
+                                "startCol": 40,
+                                "end": 2,
+                                "endCol": 42
+                              },
+                              {
+                                "kind": "number",
+                                "text": "2",
+                                "start": 2,
+                                "startCol": 45,
+                                "end": 2,
+                                "endCol": 46
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field",
+                            "start": 2,
+                            "startCol": 48,
+                            "end": 2,
+                            "endCol": 60,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "name",
+                                "start": 2,
+                                "startCol": 48,
+                                "end": 2,
+                                "endCol": 52
+                              },
+                              {
+                                "kind": "string",
+                                "text": "\"Bob\"",
+                                "start": 2,
+                                "startCol": 55,
+                                "end": 2,
+                                "endCol": 60
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "start": 2,
+                    "startCol": 63,
+                    "end": 2,
+                    "endCol": 89,
+                    "children": [
+                      {
+                        "kind": "table_constructor",
+                        "start": 2,
+                        "startCol": 63,
+                        "end": 2,
+                        "endCol": 89,
+                        "children": [
+                          {
+                            "kind": "field",
+                            "start": 2,
+                            "startCol": 64,
+                            "end": 2,
+                            "endCol": 70,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "id",
+                                "start": 2,
+                                "startCol": 64,
+                                "end": 2,
+                                "endCol": 66
+                              },
+                              {
+                                "kind": "number",
+                                "text": "3",
+                                "start": 2,
+                                "startCol": 69,
+                                "end": 2,
+                                "endCol": 70
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field",
+                            "start": 2,
+                            "startCol": 72,
+                            "end": 2,
+                            "endCol": 88,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "name",
+                                "start": 2,
+                                "startCol": 72,
+                                "end": 2,
+                                "endCol": 76
+                              },
+                              {
+                                "kind": "string",
+                                "text": "\"Charlie\"",
+                                "start": 2,
+                                "startCol": 79,
+                                "end": 2,
+                                "endCol": 88
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assignment_statement",
+        "start": 4,
+        "end": 4,
+        "endCol": 132,
+        "children": [
+          {
+            "kind": "variable_list",
+            "start": 4,
+            "end": 4,
+            "endCol": 6,
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "orders",
+                "start": 4,
+                "end": 4,
+                "endCol": 6
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "start": 4,
+            "startCol": 9,
+            "end": 4,
+            "endCol": 132,
+            "children": [
+              {
+                "kind": "table_constructor",
+                "start": 4,
+                "startCol": 9,
+                "end": 4,
+                "endCol": 132,
+                "children": [
+                  {
+                    "kind": "field",
+                    "start": 4,
+                    "startCol": 10,
+                    "end": 4,
+                    "endCol": 49,
+                    "children": [
+                      {
+                        "kind": "table_constructor",
+                        "start": 4,
+                        "startCol": 10,
+                        "end": 4,
+                        "endCol": 49,
+                        "children": [
+                          {
+                            "kind": "field",
+                            "start": 4,
+                            "startCol": 11,
+                            "end": 4,
+                            "endCol": 19,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "id",
+                                "start": 4,
+                                "startCol": 11,
+                                "end": 4,
+                                "endCol": 13
+                              },
+                              {
+                                "kind": "number",
+                                "text": "100",
+                                "start": 4,
+                                "startCol": 16,
+                                "end": 4,
+                                "endCol": 19
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field",
+                            "start": 4,
+                            "startCol": 21,
+                            "end": 4,
+                            "endCol": 35,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "customerId",
+                                "start": 4,
+                                "startCol": 21,
+                                "end": 4,
+                                "endCol": 31
+                              },
+                              {
+                                "kind": "number",
+                                "text": "1",
+                                "start": 4,
+                                "startCol": 34,
+                                "end": 4,
+                                "endCol": 35
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field",
+                            "start": 4,
+                            "startCol": 37,
+                            "end": 4,
+                            "endCol": 48,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "total",
+                                "start": 4,
+                                "startCol": 37,
+                                "end": 4,
+                                "endCol": 42
+                              },
+                              {
+                                "kind": "number",
+                                "text": "250",
+                                "start": 4,
+                                "startCol": 45,
+                                "end": 4,
+                                "endCol": 48
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "start": 4,
+                    "startCol": 51,
+                    "end": 4,
+                    "endCol": 90,
+                    "children": [
+                      {
+                        "kind": "table_constructor",
+                        "start": 4,
+                        "startCol": 51,
+                        "end": 4,
+                        "endCol": 90,
+                        "children": [
+                          {
+                            "kind": "field",
+                            "start": 4,
+                            "startCol": 52,
+                            "end": 4,
+                            "endCol": 60,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "id",
+                                "start": 4,
+                                "startCol": 52,
+                                "end": 4,
+                                "endCol": 54
+                              },
+                              {
+                                "kind": "number",
+                                "text": "101",
+                                "start": 4,
+                                "startCol": 57,
+                                "end": 4,
+                                "endCol": 60
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field",
+                            "start": 4,
+                            "startCol": 62,
+                            "end": 4,
+                            "endCol": 76,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "customerId",
+                                "start": 4,
+                                "startCol": 62,
+                                "end": 4,
+                                "endCol": 72
+                              },
+                              {
+                                "kind": "number",
+                                "text": "2",
+                                "start": 4,
+                                "startCol": 75,
+                                "end": 4,
+                                "endCol": 76
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field",
+                            "start": 4,
+                            "startCol": 78,
+                            "end": 4,
+                            "endCol": 89,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "total",
+                                "start": 4,
+                                "startCol": 78,
+                                "end": 4,
+                                "endCol": 83
+                              },
+                              {
+                                "kind": "number",
+                                "text": "125",
+                                "start": 4,
+                                "startCol": 86,
+                                "end": 4,
+                                "endCol": 89
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "start": 4,
+                    "startCol": 92,
+                    "end": 4,
+                    "endCol": 131,
+                    "children": [
+                      {
+                        "kind": "table_constructor",
+                        "start": 4,
+                        "startCol": 92,
+                        "end": 4,
+                        "endCol": 131,
+                        "children": [
+                          {
+                            "kind": "field",
+                            "start": 4,
+                            "startCol": 93,
+                            "end": 4,
+                            "endCol": 101,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "id",
+                                "start": 4,
+                                "startCol": 93,
+                                "end": 4,
+                                "endCol": 95
+                              },
+                              {
+                                "kind": "number",
+                                "text": "102",
+                                "start": 4,
+                                "startCol": 98,
+                                "end": 4,
+                                "endCol": 101
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field",
+                            "start": 4,
+                            "startCol": 103,
+                            "end": 4,
+                            "endCol": 117,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "customerId",
+                                "start": 4,
+                                "startCol": 103,
+                                "end": 4,
+                                "endCol": 113
+                              },
+                              {
+                                "kind": "number",
+                                "text": "1",
+                                "start": 4,
+                                "startCol": 116,
+                                "end": 4,
+                                "endCol": 117
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field",
+                            "start": 4,
+                            "startCol": 119,
+                            "end": 4,
+                            "endCol": 130,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "total",
+                                "start": 4,
+                                "startCol": 119,
+                                "end": 4,
+                                "endCol": 124
+                              },
+                              {
+                                "kind": "number",
+                                "text": "300",
+                                "start": 4,
+                                "startCol": 127,
+                                "end": 4,
+                                "endCol": 130
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assignment_statement",
+        "start": 6,
+        "end": 6,
+        "endCol": 11,
+        "children": [
+          {
+            "kind": "variable_list",
+            "start": 6,
+            "end": 6,
+            "endCol": 6,
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "result",
+                "start": 6,
+                "end": 6,
+                "endCol": 6
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "start": 6,
+            "startCol": 9,
+            "end": 6,
+            "endCol": 11,
+            "children": [
+              {
+                "kind": "table_constructor",
+                "text": "{}",
+                "start": 6,
+                "startCol": 9,
+                "end": 6,
+                "endCol": 11
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "for_statement",
+        "start": 7,
+        "end": 11,
+        "endCol": 3,
+        "children": [
+          {
+            "kind": "for_generic_clause",
+            "start": 7,
+            "startCol": 4,
+            "end": 7,
+            "endCol": 26,
+            "children": [
+              {
+                "kind": "variable_list",
+                "start": 7,
+                "startCol": 4,
+                "end": 7,
+                "endCol": 8,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "_",
+                    "start": 7,
+                    "startCol": 4,
+                    "end": 7,
+                    "endCol": 5
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "o",
+                    "start": 7,
+                    "startCol": 7,
+                    "end": 7,
+                    "endCol": 8
+                  }
+                ]
+              },
+              {
+                "kind": "expression_list",
+                "start": 7,
+                "startCol": 12,
+                "end": 7,
+                "endCol": 26,
+                "children": [
+                  {
+                    "kind": "function_call",
+                    "start": 7,
+                    "startCol": 12,
+                    "end": 7,
+                    "endCol": 26,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "ipairs",
+                        "start": 7,
+                        "startCol": 12,
+                        "end": 7,
+                        "endCol": 18
+                      },
+                      {
+                        "kind": "arguments",
+                        "start": 7,
+                        "startCol": 18,
+                        "end": 7,
+                        "endCol": 26,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "orders",
+                            "start": 7,
+                            "startCol": 19,
+                            "end": 7,
+                            "endCol": 25
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "block",
+            "start": 8,
+            "startCol": 2,
+            "end": 10,
+            "endCol": 5,
+            "children": [
+              {
+                "kind": "for_statement",
+                "start": 8,
+                "startCol": 2,
+                "end": 10,
+                "endCol": 5,
+                "children": [
+                  {
+                    "kind": "for_generic_clause",
+                    "start": 8,
+                    "startCol": 6,
+                    "end": 8,
+                    "endCol": 31,
+                    "children": [
+                      {
+                        "kind": "variable_list",
+                        "start": 8,
+                        "startCol": 6,
+                        "end": 8,
+                        "endCol": 10,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "_",
+                            "start": 8,
+                            "startCol": 6,
+                            "end": 8,
+                            "endCol": 7
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "c",
+                            "start": 8,
+                            "startCol": 9,
+                            "end": 8,
+                            "endCol": 10
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "expression_list",
+                        "start": 8,
+                        "startCol": 14,
+                        "end": 8,
+                        "endCol": 31,
+                        "children": [
+                          {
+                            "kind": "function_call",
+                            "start": 8,
+                            "startCol": 14,
+                            "end": 8,
+                            "endCol": 31,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "ipairs",
+                                "start": 8,
+                                "startCol": 14,
+                                "end": 8,
+                                "endCol": 20
+                              },
+                              {
+                                "kind": "arguments",
+                                "start": 8,
+                                "startCol": 20,
+                                "end": 8,
+                                "endCol": 31,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "customers",
+                                    "start": 8,
+                                    "startCol": 21,
+                                    "end": 8,
+                                    "endCol": 30
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "block",
+                    "start": 9,
+                    "startCol": 4,
+                    "end": 9,
+                    "endCol": 125,
+                    "children": [
+                      {
+                        "kind": "function_call",
+                        "start": 9,
+                        "startCol": 4,
+                        "end": 9,
+                        "endCol": 125,
+                        "children": [
+                          {
+                            "kind": "dot_index_expression",
+                            "start": 9,
+                            "startCol": 4,
+                            "end": 9,
+                            "endCol": 16,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "table",
+                                "start": 9,
+                                "startCol": 4,
+                                "end": 9,
+                                "endCol": 9
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "insert",
+                                "start": 9,
+                                "startCol": 10,
+                                "end": 9,
+                                "endCol": 16
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "arguments",
+                            "start": 9,
+                            "startCol": 16,
+                            "end": 9,
+                            "endCol": 125,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "result",
+                                "start": 9,
+                                "startCol": 17,
+                                "end": 9,
+                                "endCol": 23
+                              },
+                              {
+                                "kind": "table_constructor",
+                                "start": 9,
+                                "startCol": 25,
+                                "end": 9,
+                                "endCol": 124,
+                                "children": [
+                                  {
+                                    "kind": "field",
+                                    "start": 9,
+                                    "startCol": 26,
+                                    "end": 9,
+                                    "endCol": 40,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "orderId",
+                                        "start": 9,
+                                        "startCol": 26,
+                                        "end": 9,
+                                        "endCol": 33
+                                      },
+                                      {
+                                        "kind": "dot_index_expression",
+                                        "start": 9,
+                                        "startCol": 36,
+                                        "end": 9,
+                                        "endCol": 40,
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "text": "o",
+                                            "start": 9,
+                                            "startCol": 36,
+                                            "end": 9,
+                                            "endCol": 37
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "id",
+                                            "start": 9,
+                                            "startCol": 38,
+                                            "end": 9,
+                                            "endCol": 40
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "field",
+                                    "start": 9,
+                                    "startCol": 42,
+                                    "end": 9,
+                                    "endCol": 72,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "orderCustomerId",
+                                        "start": 9,
+                                        "startCol": 42,
+                                        "end": 9,
+                                        "endCol": 57
+                                      },
+                                      {
+                                        "kind": "dot_index_expression",
+                                        "start": 9,
+                                        "startCol": 60,
+                                        "end": 9,
+                                        "endCol": 72,
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "text": "o",
+                                            "start": 9,
+                                            "startCol": 60,
+                                            "end": 9,
+                                            "endCol": 61
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "customerId",
+                                            "start": 9,
+                                            "startCol": 62,
+                                            "end": 9,
+                                            "endCol": 72
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "field",
+                                    "start": 9,
+                                    "startCol": 74,
+                                    "end": 9,
+                                    "endCol": 101,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "pairedCustomerName",
+                                        "start": 9,
+                                        "startCol": 74,
+                                        "end": 9,
+                                        "endCol": 92
+                                      },
+                                      {
+                                        "kind": "dot_index_expression",
+                                        "start": 9,
+                                        "startCol": 95,
+                                        "end": 9,
+                                        "endCol": 101,
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "text": "c",
+                                            "start": 9,
+                                            "startCol": 95,
+                                            "end": 9,
+                                            "endCol": 96
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "name",
+                                            "start": 9,
+                                            "startCol": 97,
+                                            "end": 9,
+                                            "endCol": 101
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "field",
+                                    "start": 9,
+                                    "startCol": 103,
+                                    "end": 9,
+                                    "endCol": 123,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "orderTotal",
+                                        "start": 9,
+                                        "startCol": 103,
+                                        "end": 9,
+                                        "endCol": 113
+                                      },
+                                      {
+                                        "kind": "dot_index_expression",
+                                        "start": 9,
+                                        "startCol": 116,
+                                        "end": 9,
+                                        "endCol": 123,
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "text": "o",
+                                            "start": 9,
+                                            "startCol": 116,
+                                            "end": 9,
+                                            "endCol": 117
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "total",
+                                            "start": 9,
+                                            "startCol": 118,
+                                            "end": 9,
+                                            "endCol": 123
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "start": 14,
+        "end": 14,
+        "endCol": 53,
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print",
+            "start": 14,
+            "end": 14,
+            "endCol": 5
+          },
+          {
+            "kind": "arguments",
+            "start": 14,
+            "startCol": 5,
+            "end": 14,
+            "endCol": 53,
+            "children": [
+              {
+                "kind": "string",
+                "text": "\"--- Cross Join: All order-customer pairs ---\"",
+                "start": 14,
+                "startCol": 6,
+                "end": 14,
+                "endCol": 52
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "for_statement",
+        "start": 16,
+        "end": 18,
+        "endCol": 3,
+        "children": [
+          {
+            "kind": "for_generic_clause",
+            "start": 16,
+            "startCol": 4,
+            "end": 16,
+            "endCol": 30,
+            "children": [
+              {
+                "kind": "variable_list",
+                "start": 16,
+                "startCol": 4,
+                "end": 16,
+                "endCol": 12,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "_",
+                    "start": 16,
+                    "startCol": 4,
+                    "end": 16,
+                    "endCol": 5
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "entry",
+                    "start": 16,
+                    "startCol": 7,
+                    "end": 16,
+                    "endCol": 12
+                  }
+                ]
+              },
+              {
+                "kind": "expression_list",
+                "start": 16,
+                "startCol": 16,
+                "end": 16,
+                "endCol": 30,
+                "children": [
+                  {
+                    "kind": "function_call",
+                    "start": 16,
+                    "startCol": 16,
+                    "end": 16,
+                    "endCol": 30,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "ipairs",
+                        "start": 16,
+                        "startCol": 16,
+                        "end": 16,
+                        "endCol": 22
+                      },
+                      {
+                        "kind": "arguments",
+                        "start": 16,
+                        "startCol": 22,
+                        "end": 16,
+                        "endCol": 30,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "result",
+                            "start": 16,
+                            "startCol": 23,
+                            "end": 16,
+                            "endCol": 29
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "block",
+            "start": 17,
+            "startCol": 2,
+            "end": 17,
+            "endCol": 163,
+            "children": [
+              {
+                "kind": "function_call",
+                "start": 17,
+                "startCol": 2,
+                "end": 17,
+                "endCol": 163,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "print",
+                    "start": 17,
+                    "startCol": 2,
+                    "end": 17,
+                    "endCol": 7
+                  },
+                  {
+                    "kind": "arguments",
+                    "start": 17,
+                    "startCol": 7,
+                    "end": 17,
+                    "endCol": 163,
+                    "children": [
+                      {
+                        "kind": "function_call",
+                        "start": 17,
+                        "startCol": 8,
+                        "end": 17,
+                        "endCol": 162,
+                        "children": [
+                          {
+                            "kind": "dot_index_expression",
+                            "start": 17,
+                            "startCol": 8,
+                            "end": 17,
+                            "endCol": 21,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "string",
+                                "start": 17,
+                                "startCol": 8,
+                                "end": 17,
+                                "endCol": 14
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "format",
+                                "start": 17,
+                                "startCol": 15,
+                                "end": 17,
+                                "endCol": 21
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "arguments",
+                            "start": 17,
+                            "startCol": 21,
+                            "end": 17,
+                            "endCol": 162,
+                            "children": [
+                              {
+                                "kind": "string",
+                                "text": "\"Order %s (customerId: %s , total: $ %s ) paired with %s\"",
+                                "start": 17,
+                                "startCol": 22,
+                                "end": 17,
+                                "endCol": 79
+                              },
+                              {
+                                "kind": "dot_index_expression",
+                                "start": 17,
+                                "startCol": 81,
+                                "end": 17,
+                                "endCol": 94,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "entry",
+                                    "start": 17,
+                                    "startCol": 81,
+                                    "end": 17,
+                                    "endCol": 86
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "orderId",
+                                    "start": 17,
+                                    "startCol": 87,
+                                    "end": 17,
+                                    "endCol": 94
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "dot_index_expression",
+                                "start": 17,
+                                "startCol": 96,
+                                "end": 17,
+                                "endCol": 117,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "entry",
+                                    "start": 17,
+                                    "startCol": 96,
+                                    "end": 17,
+                                    "endCol": 101
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "orderCustomerId",
+                                    "start": 17,
+                                    "startCol": 102,
+                                    "end": 17,
+                                    "endCol": 117
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "dot_index_expression",
+                                "start": 17,
+                                "startCol": 119,
+                                "end": 17,
+                                "endCol": 135,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "entry",
+                                    "start": 17,
+                                    "startCol": 119,
+                                    "end": 17,
+                                    "endCol": 124
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "orderTotal",
+                                    "start": 17,
+                                    "startCol": 125,
+                                    "end": 17,
+                                    "endCol": 135
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "dot_index_expression",
+                                "start": 17,
+                                "startCol": 137,
+                                "end": 17,
+                                "endCol": 161,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "entry",
+                                    "start": 17,
+                                    "startCol": 137,
+                                    "end": 17,
+                                    "endCol": 142
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "pairedCustomerName",
+                                    "start": 17,
+                                    "startCol": 143,
+                                    "end": 17,
+                                    "endCol": 161
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

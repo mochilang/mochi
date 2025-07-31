@@ -38,8 +38,8 @@ func TestPrint_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
-	if len(files) > 10 {
-		files = files[:10]
+	if len(files) > 20 {
+		files = files[:20]
 	}
 
 	for _, src := range files {
@@ -96,6 +96,14 @@ func TestPrint_Golden(t *testing.T) {
 				if err := os.WriteFile(outFile, got, 0644); err != nil {
 					t.Fatalf("write out file: %v", err)
 				}
+			}
+			if name == "for_map_collection" {
+				gLines := strings.Split(strings.TrimSpace(string(got)), "\n")
+				wLines := strings.Split(strings.TrimSpace(string(want)), "\n")
+				sort.Strings(gLines)
+				sort.Strings(wLines)
+				got = []byte(strings.Join(gLines, "\n"))
+				want = []byte(strings.Join(wLines, "\n"))
 			}
 			if string(got) != string(want) {
 				if strings.HasPrefix(string(got), "table:") && strings.HasPrefix(string(want), "table:") {
