@@ -35,8 +35,8 @@ func TestPrint_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
-	if len(files) > 5 {
-		files = files[:5]
+	if len(files) > 10 {
+		files = files[:10]
 	}
 
 	for _, src := range files {
@@ -79,12 +79,14 @@ func TestPrint_Golden(t *testing.T) {
 					t.Fatalf("write out: %v", err)
 				}
 			}
-			cmd := exec.Command("zig", "run", outPath)
+			cmd := exec.Command("zig", "run", filepath.Base(outPath))
+			cmd.Dir = filepath.Dir(outPath)
 			got, err := cmd.CombinedOutput()
 			if err != nil {
 				t.Fatalf("run printed: %v\n%s", err, got)
 			}
-			wantCmd := exec.Command("zig", "run", src)
+			wantCmd := exec.Command("zig", "run", filepath.Base(src))
+			wantCmd.Dir = filepath.Dir(src)
 			want, err := wantCmd.CombinedOutput()
 			if err != nil {
 				t.Fatalf("run original: %v\n%s", err, want)
