@@ -1,7 +1,7 @@
 # Haskell AST Printer
 
-Completed programs: 5/96
-Last updated: 2025-07-31 14:22 GMT+7
+Completed programs: 10/96
+Last updated: 2025-07-31 15:30 GMT+7
 
 ## Checklist
 - [x] append_builtin
@@ -9,11 +9,11 @@ Last updated: 2025-07-31 14:22 GMT+7
 - [x] basic_compare
 - [x] binary_precedence
 - [x] bool_chain
-- [ ] break_continue
-- [ ] cast_string_to_int
-- [ ] cast_struct
-- [ ] closure
-- [ ] count_builtin
+- [x] break_continue
+- [x] cast_string_to_int
+- [x] cast_struct
+- [x] closure
+- [x] count_builtin
 - [ ] cross_join
 - [ ] cross_join_filter
 - [ ] cross_join_triple
